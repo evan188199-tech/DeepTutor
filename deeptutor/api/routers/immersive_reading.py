@@ -31,6 +31,10 @@ class RestartRequest(BaseModel):
     reset_focus_checks: bool = False
 
 
+class SkipSectionRequest(BaseModel):
+    section_id: str = Field(min_length=1, max_length=80)
+
+
 class SearchRequest(BaseModel):
     query: str = Field(min_length=1, max_length=4000)
     mode: Literal["exact", "fuzzy", "description", "description_fast", "description_fine"] = "exact"
@@ -56,7 +60,7 @@ class QuerySelectionRequest(BaseModel):
 class FocusCheckRequest(BaseModel):
     section_id: str
     summary: str = Field(min_length=1, max_length=20_000)
-    reflection: str = Field(min_length=1, max_length=12_000)
+    reflection: str = Field(default="", max_length=12_000)
     language: Literal["zh", "en"] = "en"
 
 
@@ -245,6 +249,17 @@ async def restart(document_id: str, request: RestartRequest) -> dict:
     try:
         progress = get_immersive_reading_service().restart(
             document_id, reset_focus_checks=request.reset_focus_checks
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return {"progress": progress.model_dump(mode="json")}
+
+
+@router.post("/documents/{document_id}/skip-section")
+async def skip_section(document_id: str, request: SkipSectionRequest) -> dict:
+    try:
+        progress = get_immersive_reading_service().skip_section(
+            document_id, request.section_id
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

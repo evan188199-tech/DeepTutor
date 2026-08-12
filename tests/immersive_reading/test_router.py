@@ -54,6 +54,19 @@ def test_progress_endpoint_persists_reader_position(client: TestClient, imported
     assert response.json()["progress"]["scroll_percent"] == 72.5
 
 
+def test_skip_section_endpoint_records_intent(client: TestClient, imported_document: dict) -> None:
+    document_id = imported_document["id"]
+    section_id = imported_document["sections"][1]["id"]
+
+    response = client.post(
+        f"/api/v1/immersive-reading/documents/{document_id}/skip-section",
+        json={"section_id": section_id},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["progress"]["skipped_section_ids"] == [section_id]
+
+
 def test_exact_search_endpoint_returns_hits(client: TestClient, imported_document: dict) -> None:
     response = client.post(
         f"/api/v1/immersive-reading/documents/{imported_document['id']}/search",

@@ -54,11 +54,16 @@
   "/(workspace)/co-writer/[docId]/page": "/co-writer/[docId]",
   "/(workspace)/co-writer/page": "/co-writer",
   "/(workspace)/home/[[...sessionId]]/page": "/home/[[...sessionId]]",
+  "/(workspace)/immersive-reading/page": "/immersive-reading",
   "/(workspace)/page": "/",
   "/(workspace)/partners/[partnerId]/page": "/partners/[partnerId]",
   "/(workspace)/partners/new/page": "/partners/new",
   "/(workspace)/partners/page": "/partners",
   "/(workspace)/playground/page": "/playground",
   "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found"
+  "/_not-found/page": "/_not-found",
+  "/kids/[documentId]/page": "/kids/[documentId]",
+  "/kids/manage/page": "/kids/manage",
+  "/kids/p/[profileId]/page": "/kids/p/[profileId]",
+  "/kids/page": "/kids"
 }

@@ -180,6 +180,7 @@ class FetchModelsPayload(BaseModel):
 class NetworkSettingsUpdate(BaseModel):
     backend_port: int = Field(ge=1, le=65535)
     frontend_port: int = Field(ge=1, le=65535)
+    lan_access: bool = False
     public_api_base: str = ""
     cors_origins: list[str] = Field(default_factory=list)
 
@@ -522,6 +523,7 @@ def _network_settings_payload() -> dict[str, Any]:
         "settings": {
             "backend_port": file_system["backend_port"],
             "frontend_port": file_system["frontend_port"],
+            "lan_access": file_system["lan_access"],
             "public_api_base": file_system["next_public_api_base_external"],
             "cors_origins": normalize_origins(
                 [file_system["cors_origin"], file_system["cors_origins"]]
@@ -530,6 +532,7 @@ def _network_settings_payload() -> dict[str, Any]:
         "effective": {
             "backend_url": backend_url,
             "frontend_url": f"http://localhost:{effective_system['frontend_port']}",
+            "lan_access": bool(effective_system["lan_access"]),
             "browser_api_base": browser_api_base,
             "api_base_source": _api_base_source(effective_system),
             "cors_mode": "explicit" if auth_enabled else "permissive",
@@ -627,6 +630,7 @@ async def update_network_settings(payload: NetworkSettingsUpdate):
             **current,
             "backend_port": payload.backend_port,
             "frontend_port": payload.frontend_port,
+            "lan_access": payload.lan_access,
             "next_public_api_base_external": payload.public_api_base.strip(),
             "cors_origin": "",
             "cors_origins": normalize_origins(payload.cors_origins),

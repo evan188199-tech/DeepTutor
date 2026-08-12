@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
+
 import pytest
 
-from deeptutor.immersive_reading.models import ReadingDocument, ReadingProgress, ReadingSection
+from deeptutor.immersive_reading.models import (
+    FocusAttempt,
+    ReadingDocument,
+    ReadingProgress,
+    ReadingSection,
+)
 from deeptutor.immersive_reading.service import ImmersiveReadingService
 
 
@@ -66,7 +74,7 @@ def test_import_epub_uses_source_extractor(
             "The Compass Book",
             "Ada Writer",
             "chapters",
-            [("Chapter 1", "The original EPUB chapter text.", 1, 1)],
+            [("Chapter 1", "The original EPUB chapter text.", 1, 1, -1, 1)],
             None,
         ),
     )
@@ -105,7 +113,7 @@ def test_fuzzy_search_normalizes_whitespace(
     assert "brass compass" in hits[0].excerpt
 
 
-def test_progress_blocks_later_chapters_until_focus_check_passes(
+def test_progress_allows_non_linear_technical_reading(
     reading_service: ImmersiveReadingService, imported_document: dict
 ) -> None:
     document_id = imported_document["id"]
@@ -116,8 +124,133 @@ def test_progress_blocks_later_chapters_until_focus_check_passes(
 
     assert progress.current_section_id == chapter_one
     assert progress.scroll_percent == 64.5
-    with pytest.raises(PermissionError, match="Focus-Check"):
-        reading_service.update_progress(document_id, chapter_two, 1)
+    later = reading_service.update_progress(document_id, chapter_two, 1)
+
+    assert later.current_section_id == chapter_two
+    assert reading_service.get_section(document_id, chapter_two)["locked"] is False
+
+
+def test_contents_pages_are_exempted_for_existing_imports(
+    reading_service: ImmersiveReadingService, imported_document: dict
+) -> None:
+    document_id = imported_document["id"]
+    manifest_path = reading_service._manifest_path(document_id)
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["sections"][0]["title"] = "目錄"
+    manifest["sections"][0]["checkpoint_kind"] = "chapter"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    document = reading_service.load_document(document_id)
+
+    assert document is not None
+    assert document.sections[0].checkpoint_kind == "none"
+
+
+def test_skip_section_is_recorded_and_does_not_erase_attempts(
+    reading_service: ImmersiveReadingService, imported_document: dict
+) -> None:
+    document_id = imported_document["id"]
+    section_id = imported_document["sections"][1]["id"]
+    progress = reading_service.load_progress(document_id)
+    progress.focus_attempts[section_id] = FocusAttempt(
+        section_id=section_id, score=25, attempt_count=1
+    )
+    reading_service._save_progress(progress)
+
+    skipped = reading_service.skip_section(document_id, section_id)
+
+    assert skipped.skipped_section_ids == [section_id]
+    assert skipped.focus_attempts[section_id].score == 25
+    assert skipped.focus_history[section_id][0].answer_recorded is False
+
+
+@pytest.mark.asyncio
+async def test_focus_check_saves_answers_feedback_and_history(
+    reading_service: ImmersiveReadingService, imported_document: dict, monkeypatch
+) -> None:
+    import deeptutor.immersive_reading.service as service_module
+
+    monkeypatch.setattr(
+        service_module,
+        "complete",
+        lambda **_kwargs: asyncio.sleep(
+            0,
+            result=(
+                '{"passed":true,"score":82,"feedback":"Useful and accurate.",'
+                '"strengths":["clear"],"missing_points":[]}'
+            ),
+        ),
+    )
+    document_id = imported_document["id"]
+    section_id = imported_document["sections"][1]["id"]
+
+    result = await reading_service.focus_check(
+        document_id,
+        section_id,
+        "Ada follows the brass compass through the observatory and learns where it points.",
+        "The navigation idea is useful for deciding what to inspect next.",
+        "en",
+    )
+    stored = reading_service.load_progress(document_id)
+    record = stored.focus_history[section_id][0]
+
+    assert result.passed is True
+    assert record.summary.startswith("Ada follows")
+    assert record.reflection.startswith("The navigation idea")
+    assert record.status == "graded"
+    assert record.score == 82
+    assert record.feedback == "Useful and accurate."
+    assert record.model == "test-model"
+    assert record.prompt_version.startswith("focus-check-v4-structured-")
+    assert record.pass_threshold == 65
+
+
+@pytest.mark.asyncio
+async def test_focus_check_keeps_submitted_answer_when_grading_fails(
+    reading_service: ImmersiveReadingService, imported_document: dict, monkeypatch
+) -> None:
+    import deeptutor.immersive_reading.service as service_module
+
+    monkeypatch.setattr(
+        service_module,
+        "complete",
+        lambda **_kwargs: asyncio.sleep(0, result="not json"),
+    )
+    document_id = imported_document["id"]
+    section_id = imported_document["sections"][1]["id"]
+
+    with pytest.raises(RuntimeError, match="invalid Focus-Check response"):
+        await reading_service.focus_check(
+            document_id,
+            section_id,
+            "This answer is long enough and describes the chapter's central event.",
+            "This detail is practically useful to me.",
+            "en",
+        )
+
+    record = reading_service.load_progress(document_id).focus_history[section_id][0]
+    assert record.summary.startswith("This answer")
+    assert record.status == "error"
+    assert "invalid Focus-Check response" in record.error
+
+
+def test_restart_resets_current_status_but_preserves_focus_history(
+    reading_service: ImmersiveReadingService, imported_document: dict
+) -> None:
+    document_id = imported_document["id"]
+    section_id = imported_document["sections"][1]["id"]
+    progress = reading_service.load_progress(document_id)
+    progress.focus_attempts[section_id] = FocusAttempt(
+        section_id=section_id, passed=False, score=25, attempt_count=1
+    )
+    reading_service._save_progress(progress)
+    reading_service.load_progress(document_id)
+
+    restarted = reading_service.restart(document_id, reset_focus_checks=True)
+
+    assert restarted.focus_attempts == {}
+    assert restarted.skipped_section_ids == []
+    assert restarted.focus_history[section_id][0].score == 25
 
 
 def test_citations_round_trip_and_delete(
@@ -144,3 +277,36 @@ def test_render_reference_can_scope_to_selected_sections(
     assert title == "ada-journey"
     assert "## Chapter 2" in reference
     assert "## Chapter 1" not in reference
+
+
+def test_oversized_chapter_is_split_with_parent_navigation(
+    reading_service: ImmersiveReadingService,
+) -> None:
+    """Large chapters should be split into a navigational parent + readable children."""
+    padding = "This is a long sentence that pads the chapter to exceed the split threshold. " * 800
+    intro = "An introduction that is long enough to pass the heading distance filter. " * 10
+    outro = "A brief conclusion with enough text to clear the filter too. " * 10
+    source = "\n\n".join(
+        [
+            "# Intro\n" + intro,
+            "# Mega Chapter\n" + padding,
+            "# Outro\n" + outro,
+        ]
+    )
+    document = reading_service.import_document("mega-book.txt", source.encode("utf-8"))
+
+    # Parent should be navigational; children should be readable.
+    parent = document["sections"][1]
+    assert parent["title"] == "Mega Chapter"
+    assert parent["checkpoint_kind"] == "none"
+    assert parent["level"] == 1
+
+    children = [s for s in document["sections"] if s.get("parent_id") == parent["id"]]
+    assert len(children) >= 2
+    assert all(c["level"] == 2 for c in children)
+    assert all(c["checkpoint_kind"] != "none" for c in children)
+
+    # Each child should have actual content
+    for child in children:
+        content = reading_service.get_section(document["id"], child["id"])["content"]
+        assert len(content) > 100

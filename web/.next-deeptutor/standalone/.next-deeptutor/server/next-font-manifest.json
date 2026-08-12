@@ -220,6 +220,10 @@
       "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
       "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
     ],
+    "[project]/app/(workspace)/immersive-reading/page": [
+      "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
+      "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
+    ],
     "[project]/app/(workspace)/page": [
       "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
       "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
@@ -241,6 +245,22 @@
       "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
     ],
     "[project]/app/_not-found/page": [
+      "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
+      "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
+    ],
+    "[project]/app/kids/[documentId]/page": [
+      "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
+      "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
+    ],
+    "[project]/app/kids/manage/page": [
+      "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
+      "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
+    ],
+    "[project]/app/kids/p/[profileId]/page": [
+      "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
+      "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
+    ],
+    "[project]/app/kids/page": [
       "static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2",
       "static/media/8c2eb9ceedecfc8e-s.p.0oeo8epbafgia.woff2"
     ]

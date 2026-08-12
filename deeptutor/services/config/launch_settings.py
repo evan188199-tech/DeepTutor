@@ -20,6 +20,7 @@ DEFAULT_LANGUAGE = "en"
 class LaunchSettings:
     backend_port: int
     frontend_port: int
+    lan_access: bool
     language: str
     source: str
     settings_dir: Path
@@ -88,6 +89,7 @@ def load_launch_settings(project_root: Path | None = None) -> LaunchSettings:
     backend_port = _coerce_port(system_settings.get("backend_port")) or DEFAULT_BACKEND_PORT
     frontend_port = _coerce_port(system_settings.get("frontend_port")) or DEFAULT_FRONTEND_PORT
     language = interface_language or process_language or DEFAULT_LANGUAGE
+    lan_access = bool(system_settings.get("lan_access", False))
 
     sources: list[str] = []
     if settings_backend_port is not None or settings_frontend_port is not None:
@@ -106,6 +108,7 @@ def load_launch_settings(project_root: Path | None = None) -> LaunchSettings:
     return LaunchSettings(
         backend_port=backend_port,
         frontend_port=frontend_port,
+        lan_access=lan_access,
         language=language,
         source=" + ".join(sources),
         settings_dir=settings_dir,

@@ -220,6 +220,19 @@ def _port_accepts_connection(port: int) -> bool:
         return False
 
 
+def _detect_lan_ip() -> str | None:
+    """Return the first non-loopback IPv4 address, or ``None`` if unavailable."""
+    try:
+        hostname = socket.gethostname()
+        for info in socket.getaddrinfo(hostname, None, socket.AF_INET):
+            ip = info[4][0]
+            if not ip.startswith("127."):
+                return ip
+    except OSError:
+        pass
+    return None
+
+
 def _port_listeners(port: int) -> list[tuple[int, str]]:
     """Best-effort list of ``(pid, command)`` for processes listening on ``port``."""
     if os.name == "nt":
@@ -956,6 +969,8 @@ def start(home: str | Path | None = None, *, dev: bool = False) -> None:
 
     backend_port = settings.backend_port
     frontend_port = settings.frontend_port
+    lan_access = settings.lan_access
+    bind_host = "0.0.0.0" if lan_access else "127.0.0.1"
     backend_url = f"http://127.0.0.1:{backend_port}"
     api_base = (
         runtime_env.get("NEXT_PUBLIC_API_BASE_EXTERNAL")
@@ -1012,11 +1027,18 @@ def start(home: str | Path | None = None, *, dev: bool = False) -> None:
         else f"http://localhost:{frontend_port}"
     )
 
+    lan_ip = _detect_lan_ip() if lan_access else None
+    lan_frontend_url = (
+        f"http://{lan_ip}:{frontend_port}" if lan_ip else None
+    )
+
     print_banner(language=language, mode_key="start.mode")
     _log(f"{_t('start.backend'):<10} {backend_url}")
     if api_base != backend_url:
         _log(f"{_t('start.browser_api'):<10} {api_base}")
     _log(f"{_t('start.frontend'):<10} {frontend_url}")
+    if lan_frontend_url:
+        _log(f"{_t('start.lan'):<10} {lan_frontend_url}")
     _log(f"{_t('start.workspace'):<10} {runtime_home}")
     _log(f"{_t('start.frontend_runtime')}: {frontend.kind}")
     _log(_t("start.press_ctrl_c"))
@@ -1027,7 +1049,7 @@ def start(home: str | Path | None = None, *, dev: bool = False) -> None:
     common_env["BACKEND_PORT"] = str(backend_port)
     common_env["FRONTEND_PORT"] = str(frontend_port)
     common_env["PORT"] = str(frontend_port)
-    common_env["HOSTNAME"] = "0.0.0.0"
+    common_env["HOSTNAME"] = bind_host
     common_env["NEXT_PUBLIC_API_BASE"] = api_base
     common_env["NEXT_PUBLIC_AUTH_ENABLED"] = "true" if auth_enabled else "false"
     # The Next.js middleware (web/proxy.ts) runs in the frontend's Node runtime
@@ -1054,7 +1076,7 @@ def start(home: str | Path | None = None, *, dev: bool = False) -> None:
         "uvicorn",
         "deeptutor.api.main:app",
         "--host",
-        "0.0.0.0",
+        bind_host,
         "--port",
         str(backend_port),
         "--log-level",
@@ -1139,6 +1161,8 @@ def start(home: str | Path | None = None, *, dev: bool = False) -> None:
                 should_stop=lambda: shutdown_requested,
             )
         _log(_t("start.open_in_browser", url=frontend_url))
+        if lan_frontend_url:
+            _log(_t("start.lan_open", url=lan_frontend_url))
 
         while not shutdown_requested:
             for proc in processes:

@@ -11,6 +11,8 @@ export interface ReadingSection {
   source_end: number;
   checkpoint_kind: "chapter" | "chunk" | "none";
   source_href?: string;
+  parent_id?: string;
+  level?: number;
 }
 
 export interface FocusAttempt {
@@ -22,13 +24,40 @@ export interface FocusAttempt {
   updated_at: number;
 }
 
+export interface FocusAttemptRecord {
+  id: string;
+  section_id: string;
+  attempt_number: number;
+  immersive_run: number;
+  summary: string;
+  reflection: string;
+  language: string;
+  model: string;
+  binding: string;
+  prompt_version: string;
+  pass_threshold: number;
+  answer_recorded: boolean;
+  status: "pending" | "graded" | "error";
+  passed: boolean;
+  score: number | null;
+  feedback: string;
+  strengths: string[];
+  missing_points: string[];
+  error: string;
+  latency_seconds: number | null;
+  created_at: number;
+  updated_at: number;
+}
+
 export interface ReadingProgress {
   document_id: string;
   current_section_id: string;
   current_section_index: number;
   scroll_percent: number;
   passed_section_ids: string[];
+  skipped_section_ids: string[];
   focus_attempts: Record<string, FocusAttempt>;
+  focus_history: Record<string, FocusAttemptRecord[]>;
   epub_cfi?: string;
   section_href?: string;
   immersive_run: number;
@@ -122,6 +151,7 @@ export interface FocusCheckResult {
   feedback: string;
   strengths: string[];
   missing_points: string[];
+  prompts: string[];
   progress: ReadingProgress;
 }
 
@@ -210,6 +240,7 @@ export const immersiveReadingApi = {
       section: ReadingSection;
       content: string;
       passed: boolean;
+      skipped: boolean;
       locked: boolean;
     }>(
       `/documents/${encodeURIComponent(documentId)}/sections/${encodeURIComponent(sectionId)}`,
@@ -228,6 +259,14 @@ export const immersiveReadingApi = {
       {
         method: "POST",
         body: JSON.stringify({ reset_focus_checks: resetFocusChecks }),
+      },
+    ),
+  skipSection: (documentId: string, sectionId: string) =>
+    request<{ progress: ReadingProgress }>(
+      `/documents/${encodeURIComponent(documentId)}/skip-section`,
+      {
+        method: "POST",
+        body: JSON.stringify({ section_id: sectionId }),
       },
     ),
   search: (

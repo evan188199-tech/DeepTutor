@@ -16,6 +16,9 @@ DEFAULT_SYSTEM_SETTINGS: dict[str, Any] = {
     "version": 1,
     "backend_port": 8001,
     "frontend_port": 3782,
+    # Bind backend and frontend to 0.0.0.0 so other devices on the LAN can
+    # reach the app. When false (default) both processes bind to 127.0.0.1.
+    "lan_access": False,
     "next_public_api_base_external": "",
     "next_public_api_base": "",
     "cors_origin": "",
@@ -910,6 +913,7 @@ class RuntimeSettingsService:
                 DEFAULT_SYSTEM_SETTINGS["chat_attachment_max_chars_total"],
                 *CHAT_ATTACHMENT_CHARS_RANGE,
             ),
+            "lan_access": _coerce_bool(settings.get("lan_access"), False),
         }
 
     def _normalize_auth(self, settings: dict[str, Any]) -> dict[str, Any]:

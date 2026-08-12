@@ -2,9 +2,9 @@
   "version": 1,
   "config": {
     "env": {
-      "NEXT_PUBLIC_APP_VERSION": "1.5.7",
-      "NEXT_PUBLIC_API_BASE": "http://localhost:8000",
-      "NEXT_PUBLIC_AUTH_ENABLED": "false"
+      "NEXT_PUBLIC_APP_VERSION": "1.5.11",
+      "NEXT_PUBLIC_API_BASE": "http://127.0.0.1:8001",
+      "NEXT_PUBLIC_AUTH_ENABLED": "true"
     },
     "typescript": {
       "ignoreBuildErrors": false
@@ -108,11 +108,11 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/frank/HKUDS/DeepTutor/web",
+    "outputFileTracingRoot": "/Users/Shared/DeepTutor/web",
     "allowedDevOrigins": [
       "127.0.0.1",
-      "192.168.31.97",
-      "28.0.0.1"
+      "192.168.31.181",
+      "100.101.207.44"
     ],
     "cacheComponents": false,
     "cacheLife": {
@@ -175,7 +175,7 @@
       "proxyPrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 9,
+      "cpus": 11,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -319,11 +319,11 @@
       "resolveAlias": {
         "cytoscape": "cytoscape/dist/cytoscape.cjs.js"
       },
-      "root": "/Users/frank/HKUDS/DeepTutor/web"
+      "root": "/Users/Shared/DeepTutor/web"
     },
     "distDirRoot": ".next-deeptutor"
   },
-  "appDir": "/Users/frank/HKUDS/DeepTutor/web",
+  "appDir": "/Users/Shared/DeepTutor/web",
   "relativeAppDir": "",
   "files": [
     ".next-deeptutor/routes-manifest.json",

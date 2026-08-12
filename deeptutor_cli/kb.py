@@ -284,3 +284,134 @@ def register(app: typer.Typer) -> None:
         provider = result.get("provider", DEFAULT_PROVIDER)
         console.print(f"[bold]Provider:[/] {provider}")
         console.print(f"[bold]Answer:[/]\n{answer}")
+
+    # ── GitHub source commands ──────────────────────────────────────
+
+    @app.command("add-github-source")
+    def kb_add_github_source(
+        name: str = typer.Argument(..., help="KB name."),
+        repo: str = typer.Option(..., "--repo", "-r", help="GitHub repo as owner/name or URL."),
+        branch: str = typer.Option("main", "--branch", "-b", help="Branch to track."),
+        path: str = typer.Option("", "--path", "-p", help="Subdirectory prefix (e.g. docs/)."),
+        glob: str = typer.Option("*.md", "--glob", "-g", help="File glob pattern."),
+    ) -> None:
+        """Add a GitHub repo as a Markdown document source for a KB."""
+        mgr = _get_kb_manager()
+        if name not in mgr.list_knowledge_bases():
+            console.print(f"[red]Knowledge base '{name}' not found.[/]")
+            raise typer.Exit(code=1)
+
+        try:
+            info = mgr.add_github_source(name, repo, branch, path, glob)
+        except Exception as exc:
+            console.print(f"[red]Failed to add GitHub source: {exc}[/]")
+            raise typer.Exit(code=1) from exc
+        console.print(f"[green]GitHub source added to '{name}':[/]")
+        console.print_json(json.dumps(info, ensure_ascii=False))
+
+    @app.command("remove-github-source")
+    def kb_remove_github_source(
+        name: str = typer.Argument(..., help="KB name."),
+        source_id: str = typer.Option(..., "--source-id", "-s", help="Source ID to remove."),
+    ) -> None:
+        """Remove a GitHub source from a KB."""
+        mgr = _get_kb_manager()
+        if name not in mgr.list_knowledge_bases():
+            console.print(f"[red]Knowledge base '{name}' not found.[/]")
+            raise typer.Exit(code=1)
+
+        ok = mgr.remove_github_source(name, source_id)
+        if ok:
+            console.print(f"[green]Removed source '{source_id}' from '{name}'.[/]")
+        else:
+            console.print(f"[yellow]Source '{source_id}' not found in '{name}'.[/]")
+            raise typer.Exit(code=1)
+
+    @app.command("list-sources")
+    def kb_list_sources(
+        name: str = typer.Argument(..., help="KB name."),
+        fmt: str = typer.Option("rich", "--format", "-f", help="Output format: rich | json."),
+    ) -> None:
+        """List all GitHub sources for a KB."""
+        mgr = _get_kb_manager()
+        if name not in mgr.list_knowledge_bases():
+            console.print(f"[red]Knowledge base '{name}' not found.[/]")
+            raise typer.Exit(code=1)
+
+        sources = mgr.get_github_sources(name)
+        if fmt == "json":
+            console.print_json(json.dumps(sources, ensure_ascii=False))
+            return
+
+        if not sources:
+            console.print("[dim]No GitHub sources for this KB.[/]")
+            return
+
+        table = Table(title=f"GitHub Sources — {name}")
+        table.add_column("ID", style="dim")
+        table.add_column("Repo")
+        table.add_column("Branch")
+        table.add_column("Path")
+        table.add_column("Status")
+        table.add_column("Last Sync")
+        table.add_column("Files", justify="right")
+
+        for s in sources:
+            table.add_row(
+                s.get("id", ""),
+                s.get("repo", ""),
+                s.get("branch", ""),
+                s.get("path", "") or "/",
+                s.get("last_sync_status", "pending"),
+                s.get("last_synced_at", "") or "—",
+                str(s.get("files_synced", 0)),
+            )
+        console.print(table)
+
+    @app.command("sync")
+    def kb_sync(
+        name: str = typer.Argument(..., help="KB name."),
+    ) -> None:
+        """Immediately sync all GitHub sources for a KB."""
+        mgr = _get_kb_manager()
+        if name not in mgr.list_knowledge_bases():
+            console.print(f"[red]Knowledge base '{name}' not found.[/]")
+            raise typer.Exit(code=1)
+
+        sources = mgr.get_github_sources(name)
+        if not sources:
+            console.print("[yellow]No GitHub sources to sync.[/]")
+            raise typer.Exit(code=0)
+
+        from deeptutor.services.github_source.sync import sync_source
+
+        any_synced = False
+        for src in sources:
+            if not src.get("enabled", True):
+                continue
+            any_synced = True
+            console.print(f"Syncing [bold]{src.get('repo')}[/] ...")
+            try:
+                result = asyncio.run(
+                    sync_source(
+                        kb_name=name,
+                        source=src,
+                        base_dir=str(mgr.base_dir),
+                    )
+                )
+            except Exception as exc:
+                console.print(f"  [red]Error: {exc}[/]")
+                continue
+            if result.skipped:
+                console.print("  [dim]Up to date.[/]")
+            elif result.ok:
+                console.print(
+                    f"  [green]Done: +{result.files_added} added, "
+                    f"~{result.files_updated} updated, "
+                    f"-{result.files_removed} removed.[/]"
+                )
+            else:
+                console.print(f"  [red]Failed: {result.error}[/]")
+
+        if not any_synced:
+            console.print("[yellow]All GitHub sources are disabled.[/]")

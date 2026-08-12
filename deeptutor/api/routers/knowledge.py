@@ -171,6 +171,32 @@ class LinkedFolderInfo(BaseModel):
     file_count: int
 
 
+class AddGitHubSourceRequest(BaseModel):
+    """Request model for adding a GitHub repo as a document source."""
+
+    repo: str
+    branch: str = "main"
+    path: str = ""
+    glob: str = "*.md"
+
+
+class GitHubSourceInfo(BaseModel):
+    """Response model for a GitHub source entry."""
+
+    id: str
+    repo: str
+    branch: str
+    path: str
+    glob: str
+    enabled: bool = True
+    last_synced_sha: str = ""
+    last_synced_at: str = ""
+    last_sync_status: str = "pending"
+    last_sync_error: str | None = None
+    files_synced: int = 0
+    added_at: str = ""
+
+
 class SupportedFileTypesInfo(BaseModel):
     """Upload constraints exposed to the web client."""
 
@@ -2954,6 +2980,107 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
             "file_count": len(files_to_process),
             "task_id": task_id,
         }
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── GitHub source endpoints ──────────────────────────────────────────
+
+
+@router.post("/{kb_name}/github-source", response_model=GitHubSourceInfo)
+async def add_github_source(kb_name: str, request: AddGitHubSourceRequest):
+    """Add a GitHub repo as a Markdown document source for a KB."""
+    try:
+        manager, resolved_name, _ = _writable_kb(kb_name)
+        _assert_not_connected_kb(resolved_name, _load_kb_entry_or_404(manager, resolved_name))
+        info = manager.add_github_source(
+            resolved_name,
+            request.repo,
+            request.branch,
+            request.path,
+            request.glob,
+        )
+        logger.info(f"Added GitHub source '{request.repo}' to KB '{kb_name}'")
+        return GitHubSourceInfo(**info)
+    except HTTPException:
+        raise
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=404, detail=error_msg)
+        raise HTTPException(status_code=400, detail=error_msg)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/{kb_name}/github-sources", response_model=list[GitHubSourceInfo])
+async def get_github_sources(kb_name: str):
+    """List all GitHub sources for a knowledge base."""
+    try:
+        manager, resolved_name, _ = _writable_kb(kb_name)
+        sources = manager.get_github_sources(resolved_name)
+        return [GitHubSourceInfo(**s) for s in sources]
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{kb_name}/github-source/{source_id}")
+async def remove_github_source(kb_name: str, source_id: str):
+    """Remove a GitHub source from a KB."""
+    try:
+        manager, resolved_name, _ = _writable_kb(kb_name)
+        success = manager.remove_github_source(resolved_name, source_id)
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+        logger.info(f"Removed GitHub source '{source_id}' from KB '{kb_name}'")
+        return {"message": "Source removed successfully", "source_id": source_id}
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/{kb_name}/sync-github")
+async def sync_github_sources(kb_name: str):
+    """Manually trigger a sync of all GitHub sources for a KB."""
+    try:
+        manager, resolved_name, kb_base_dir = _writable_kb(kb_name)
+        sources = manager.get_github_sources(resolved_name)
+        if not sources:
+            return {"message": "No GitHub sources to sync", "results": []}
+
+        from deeptutor.services.github_source.sync import sync_source
+
+        results = []
+        for src in sources:
+            if not src.get("enabled", True):
+                continue
+            result = await sync_source(
+                kb_name=resolved_name,
+                source=src,
+                base_dir=str(kb_base_dir),
+            )
+            results.append({
+                "source_id": src.get("id"),
+                "repo": src.get("repo"),
+                "ok": result.ok,
+                "skipped": result.skipped,
+                "files_added": result.files_added,
+                "files_updated": result.files_updated,
+                "files_removed": result.files_removed,
+                "error": result.error or None,
+            })
+        return {"message": f"Synced {len(results)} source(s)", "results": results}
     except HTTPException:
         raise
     except ValueError:

@@ -170,6 +170,78 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/immersive-reading": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/immersive-reading",
+      "dataRoute": "/immersive-reading.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/kids": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/kids",
+      "dataRoute": "/kids.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/kids/manage": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/kids/manage",
+      "dataRoute": "/kids/manage.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/knowledge": {
       "experimentalBypassFor": [
         {
@@ -1374,8 +1446,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "29e18ee9e5c22bef2a397ced4a2b15bc",
-    "previewModeSigningKey": "474498b7087b5f2b2cf5379c4aa5652788569a07e5ac03bc62daa1e5412f656a",
-    "previewModeEncryptionKey": "98bcc9de5dab3290ea5ca6a23b6cf0f4a45c10b9756c5d5db309fbce75178475"
+    "previewModeId": "d373627399ecfd30b26e8904c909ba79",
+    "previewModeSigningKey": "684b02d9811f25adfd96686b4871c16ed30cba9f190f09b1086e29cd2cf10ca6",
+    "previewModeEncryptionKey": "687183831457b8d1497a2b18adde527490ee69596ac2e26c886bde7cc8b09287"
   }
 }

@@ -17,7 +17,6 @@ import {
   Languages,
   Library,
   Loader2,
-  Lock,
   MessageCircleQuestion,
   MoreHorizontal,
   Plus,
@@ -44,6 +43,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   immersiveReadingApi,
+  type FocusAttemptRecord,
   type FocusCheckResult,
   type ReadingCapabilities,
   type ReadingCitation,
@@ -62,7 +62,7 @@ const KidsEpubReader = dynamic(() => import("./components/KidsEpubReader"), { ss
 const KidsManagementPanel = dynamic(() => import("./components/KidsManagementPanel"), { ssr: false });
 
 type SearchMode = "exact" | "fuzzy" | "description_fast" | "description_fine";
-type ShelfView = "library" | "citations";
+type ShelfView = "library" | "citations" | "focus-history";
 type SelectionAction = "translate" | "query";
 type CharacterScope = "current" | "through_current";
 
@@ -78,6 +78,39 @@ function formatNumber(value: number): string {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function FocusHistoryPanel({ history }: { history: FocusAttemptRecord[] }) {
+  const { t } = useTranslation();
+  if (history.length === 0) return null;
+  return (
+    <details className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 text-left text-sm">
+      <summary className="cursor-pointer font-medium">{t("Attempt history ({{count}})", { count: history.length })}</summary>
+      <div className="mt-3 max-h-56 space-y-3 overflow-y-auto">
+        {[...history].reverse().map((attempt) => (
+          <div key={attempt.id} className="rounded-lg bg-[var(--muted)]/45 p-3">
+            <div className="flex justify-between gap-3 text-xs text-[var(--muted-foreground)]">
+              <span>{t("Attempt {{number}}", { number: attempt.attempt_number })}</span>
+              <span>{attempt.score == null ? t("Not graded") : `${attempt.score}/100`}</span>
+            </div>
+            {(attempt.model || attempt.prompt_version) && (
+              <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">
+                {[attempt.model, attempt.prompt_version].filter(Boolean).join(" · ")}
+              </p>
+            )}
+            {attempt.answer_recorded ? (
+              <>
+                <p className="mt-2 whitespace-pre-wrap"><span className="font-medium">{t("Main content")}:</span> {attempt.summary}</p>
+                <p className="mt-2 whitespace-pre-wrap"><span className="font-medium">{t("Additional notes")}:</span> {attempt.reflection}</p>
+              </>
+            ) : <p className="mt-2 text-[var(--muted-foreground)]">{t("Answer text was not stored by the previous version.")}</p>}
+            {attempt.feedback && <p className="mt-2 text-[var(--muted-foreground)]">{attempt.feedback}</p>}
+            {attempt.error && <p className="mt-2 text-red-500">{attempt.error}</p>}
+          </div>
+        ))}
+      </div>
+    </details>
+  );
 }
 
 async function runDescriptionSearchJob(
@@ -342,7 +375,15 @@ function ImmersiveReadingContent() {
 
       <main className="mx-auto w-full max-w-[1500px] px-8 py-7">
         <div className="mb-7 flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--card)] p-1.5 w-fit">
-          {(["library", "citations"] as const).map((view) => (
+          {(["library", "citations", "focus-history"] as const).map((view) => {
+            const attemptCount = documents.reduce(
+              (total, document) => total + Object.values(document.progress.focus_history || {}).reduce(
+                (subtotal, records) => subtotal + records.length,
+                0,
+              ),
+              0,
+            );
+            return (
             <button
               key={view}
               type="button"
@@ -353,13 +394,16 @@ function ImmersiveReadingContent() {
                   : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
               }`}
             >
-              {view === "library" ? <Library size={15} /> : <Quote size={15} />}
-              {view === "library" ? t("Library") : t("Citations")}
+              {view === "library" ? <Library size={15} /> : view === "citations" ? <Quote size={15} /> : <BookCheck size={15} />}
+              {view === "library" ? t("Library") : view === "citations" ? t("Citations") : t("Answer history")}
               {view === "citations" && citations.length > 0 && (
                 <span className="rounded-full bg-current/10 px-1.5 text-[10px]">{citations.length}</span>
               )}
+              {view === "focus-history" && attemptCount > 0 && (
+                <span className="rounded-full bg-current/10 px-1.5 text-[10px]">{attemptCount}</span>
+              )}
             </button>
-          ))}
+          );})}
         </div>
 
         {error && (
@@ -382,6 +426,11 @@ function ImmersiveReadingContent() {
               await immersiveReadingApi.deleteCitation(citation.id);
               await refreshCitations();
             }}
+          />
+        ) : shelfView === "focus-history" ? (
+          <FocusHistoryView
+            documents={documents}
+            onOpen={(bookId, sectionId) => router.push(`/immersive-reading?book=${encodeURIComponent(bookId)}&section=${encodeURIComponent(sectionId)}`)}
           />
         ) : documents.length === 0 ? (
           <div className="flex min-h-[500px] flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--border)] bg-[var(--card)]/35 px-6 text-center">
@@ -534,6 +583,98 @@ function CitationsView({
   );
 }
 
+function FocusHistoryView({
+  documents,
+  onOpen,
+}: {
+  documents: ReadingDocument[];
+  onOpen: (documentId: string, sectionId: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [filterBook, setFilterBook] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "passed" | "failed">("all");
+  const attempts = documents
+    .flatMap((document) => Object.entries(document.progress.focus_history || {}).flatMap(
+      ([sectionId, records]) => {
+        const section = document.sections.find((item) => item.id === sectionId);
+        return records.map((record) => ({ document, section, record }));
+      },
+    ))
+    .sort((left, right) => right.record.created_at - left.record.created_at);
+  const bookOptions = documents.filter((d) => Object.values(d.progress?.focus_history || {}).some((r) => r.length > 0));
+  const filtered = attempts.filter(({ document, record }) => {
+    if (filterBook !== "all" && document.id !== filterBook) return false;
+    if (filterStatus === "passed" && !(record.status === "graded" && record.passed)) return false;
+    if (filterStatus === "failed" && !((record.status === "graded" && !record.passed) || record.status === "error")) return false;
+    return true;
+  });
+  const passedCount = attempts.filter((a) => a.record.status === "graded" && a.record.passed).length;
+  const failedCount = attempts.filter((a) => a.record.status === "graded" && !a.record.passed).length;
+  const errorCount = attempts.filter((a) => a.record.status === "error").length;
+  const gradedScores = attempts.filter((a) => a.record.score != null).map((a) => a.record.score as number);
+  const avgScore = gradedScores.length ? Math.round(gradedScores.reduce((s, v) => s + v, 0) / gradedScores.length) : null;
+
+  if (!attempts.length) {
+    return (
+      <div className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--border)] text-center">
+        <BookCheck size={34} className="mb-4 text-[var(--muted-foreground)]" />
+        <h2 className="font-semibold">{t("No answer history yet")}</h2>
+        <p className="mt-2 max-w-md text-sm text-[var(--muted-foreground)]">{t("Optional Focus-Checks will appear here for review and future optimization.")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-4 rounded-xl bg-[var(--muted)]/35 px-4 py-3">
+        <span className="text-xs text-[var(--muted-foreground)]">{t("{{total}} attempts", { total: attempts.length })}</span>
+        <span className="text-xs text-emerald-500">{t("{{n}} passed", { n: passedCount })}</span>
+        <span className="text-xs text-amber-500">{t("{{n}} failed", { n: failedCount })}</span>
+        {errorCount > 0 && <span className="text-xs text-red-500">{t("{{n}} errors", { n: errorCount })}</span>}
+        {avgScore != null && <span className="text-xs text-[var(--muted-foreground)]">{t("avg {{score}}/100", { score: avgScore })}</span>}
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {bookOptions.length > 1 && (
+          <select value={filterBook} onChange={(e) => setFilterBook(e.target.value)} className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-xs text-[var(--foreground)]">
+            <option value="all">{t("All books")}</option>
+            {bookOptions.map((d) => <option key={d.id} value={d.id}>{d.title}</option>)}
+          </select>
+        )}
+        <div className="flex items-center gap-1">
+          {(["all", "passed", "failed"] as const).map((s) => (
+            <button key={s} type="button" onClick={() => setFilterStatus(s)} className={`rounded-lg px-3 py-1.5 text-xs transition-colors ${filterStatus === s ? "bg-[var(--muted)] font-medium text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}`}>
+              {s === "all" ? t("All") : s === "passed" ? t("Passed") : t("Failed")}
+            </button>
+          ))}
+        </div>
+      </div>
+      {filtered.map(({ document, section, record }) => (
+        <article key={record.id} className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-sm">
+          <button type="button" onClick={() => onOpen(document.id, record.section_id)} className="w-full text-left">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="truncate text-sm font-semibold">{document.title}</h2>
+                <p className="mt-1 truncate text-xs text-[var(--muted-foreground)]">{section?.title || record.section_id} · {t("Attempt {{number}}", { number: record.attempt_number })}</p>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${record.status === "error" ? "bg-red-500/10 text-red-500" : record.passed ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"}`}>
+                {record.status === "error" ? t("Grading failed") : record.score == null ? t("Not graded") : `${record.score}/100`}
+              </span>
+            </div>
+          </button>
+          {record.answer_recorded ? (
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              <div className="rounded-xl bg-[var(--muted)]/45 p-3 text-sm leading-6"><span className="font-medium">{t("Main content")}:</span> <span className="whitespace-pre-wrap">{record.summary}</span></div>
+              <div className="rounded-xl bg-[var(--muted)]/45 p-3 text-sm leading-6"><span className="font-medium">{t("Additional notes")}:</span> <span className="whitespace-pre-wrap">{record.reflection}</span></div>
+            </div>
+          ) : <p className="mt-4 rounded-xl bg-[var(--muted)]/45 p-3 text-sm text-[var(--muted-foreground)]">{t("Answer text was not stored by the previous version.")}</p>}
+          {(record.feedback || record.error) && <p className={`mt-3 text-sm leading-6 ${record.error ? "text-red-500" : "text-[var(--muted-foreground)]"}`}>{record.error || record.feedback}</p>}
+          <p className="mt-3 text-[11px] text-[var(--muted-foreground)]">{[record.model, record.prompt_version].filter(Boolean).join(" · ")}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function Reader({
   documentId,
   capabilities,
@@ -550,6 +691,7 @@ function Reader({
   onErrorToast: (message: string) => void;
 }) {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [document, setDocument] = useState<ReadingDocument | null>(null);
   const [progress, setProgress] = useState<ReadingProgress | null>(null);
@@ -580,6 +722,7 @@ function Reader({
   const [focusValidationError, setFocusValidationError] = useState<string | null>(null);
   const [restartMenu, setRestartMenu] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [, forceSidebarUpdate] = useState(0);
   const [charGraphOpen, setCharGraphOpen] = useState(false);
   const [charGraphScope, setCharGraphScope] = useState<CharacterScope>("current");
   const [charGraphMermaid, setCharGraphMermaid] = useState("");
@@ -590,10 +733,10 @@ function Reader({
   const [charGraphError, setCharGraphError] = useState<string | null>(null);
   const articleRef = useRef<HTMLDivElement>(null);
   const lastProgressSentRef = useRef({ at: 0, value: -1 });
-  const focusTriggeredRef = useRef<string>("");
   const progressRef = useRef<ReadingProgress | null>(null);
   const sectionTransitionRef = useRef(false);
-  const restoreSavedScrollRef = useRef(true);
+ const restoreSavedScrollRef = useRef(true);
+  const collapsedParentsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     progressRef.current = progress;
@@ -631,12 +774,10 @@ function Reader({
     setLoadingSection(true);
     setSelectionMenu(null);
     setSearchOpen(false);
-    focusTriggeredRef.current = "";
     immersiveReadingApi
       .section(documentId, sectionId)
       .then((result) => {
         if (!mounted) return;
-        if (result.locked) throw new Error(t("Complete the current Focus-Check before continuing."));
         setContent(result.content);
         window.requestAnimationFrame(() => {
           const root = scrollRef.current;
@@ -681,16 +822,12 @@ function Reader({
   );
   const currentIndex = currentSection?.index ?? 0;
   const passedSet = useMemo(() => new Set(progress?.passed_section_ids || []), [progress?.passed_section_ids]);
+  const skippedSet = useMemo(() => new Set(progress?.skipped_section_ids || []), [progress?.skipped_section_ids]);
   const currentRequiresFocusCheck = currentSection?.checkpoint_kind !== "none";
-  const firstUnpassedIndex = useMemo(() => {
-    if (!document) return 0;
-    return document.sections.find(
-      (section) => section.checkpoint_kind !== "none" && !passedSet.has(section.id),
-    )?.index ?? document.sections.length;
-  }, [document, passedSet]);
   const currentPassed = Boolean(
     currentSection && (!currentRequiresFocusCheck || passedSet.has(currentSection.id)),
   );
+  const currentSkipped = Boolean(currentSection && skippedSet.has(currentSection.id));
   const focusSections = useMemo(
     () => document?.sections.filter((section) => section.checkpoint_kind !== "none") || [],
     [document],
@@ -699,6 +836,9 @@ function Reader({
     () => focusSections.filter((section) => passedSet.has(section.id)).length,
     [focusSections, passedSet],
   );
+  const focusHistory = currentSection
+    ? progress?.focus_history?.[currentSection.id] || []
+    : [];
 
   useEffect(() => {
     if (currentRequiresFocusCheck) return;
@@ -712,17 +852,13 @@ function Reader({
       if (!document) return;
       const next = document.sections.find((section) => section.id === nextId);
       if (!next) return;
-      if (next.index > firstUnpassedIndex) {
-        onToast(t("Complete the current Focus-Check before continuing."));
-        return;
-      }
       sectionTransitionRef.current = true;
       restoreSavedScrollRef.current = false;
       if (scrollRef.current) scrollRef.current.scrollTop = 0;
       setSectionId(next.id);
       setContent("");
     },
-    [document, firstUnpassedIndex, onToast, t],
+    [document],
   );
 
   const handleScroll = useCallback(() => {
@@ -739,18 +875,7 @@ function Reader({
         .then((result) => setProgress(result.progress))
         .catch(() => undefined);
     }
-    if (
-      percent >= 99.5 &&
-      currentRequiresFocusCheck &&
-      !passedSet.has(currentSection.id) &&
-      focusTriggeredRef.current !== currentSection.id
-    ) {
-      focusTriggeredRef.current = currentSection.id;
-      setFocusResult(null);
-      setFocusValidationError(null);
-      setFocusOpen(true);
-    }
-  }, [currentRequiresFocusCheck, currentSection, documentId, passedSet]);
+  }, [currentSection, documentId]);
 
   const handleSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -880,12 +1005,9 @@ function Reader({
 
   const submitFocusCheck = async () => {
     if (!currentSection) return;
-    if (focusSummary.trim().length < 20 || focusReflection.trim().length < 10) {
+    if (focusSummary.trim().length < 20) {
       setFocusValidationError(
-        t("Write at least {{summary}} characters for the main content and {{reflection}} for your reflection.", {
-          summary: 20,
-          reflection: 10,
-        }),
+        t("Write at least {{count}} characters for the main content.", { count: 20 }),
       );
       return;
     }
@@ -909,6 +1031,7 @@ function Reader({
           ? t("The model returned an empty or invalid Focus-Check response. Your score was not changed; please try again.")
           : detail,
       );
+      await refreshDocument().catch(() => undefined);
     } finally {
       setFocusBusy(false);
     }
@@ -981,16 +1104,19 @@ function Reader({
     else onToast(t("You completed this immersive reading run."));
   };
 
-  const rereadCurrent = () => {
-    setFocusOpen(false);
-    setFocusResult(null);
-    setFocusSummary("");
-    setFocusReflection("");
-    setFocusValidationError(null);
-    focusTriggeredRef.current = "";
-    if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    if (currentSection) {
-      void immersiveReadingApi.progress(documentId, currentSection.id, 0).then((result) => setProgress(result.progress));
+  const skipCurrentSection = async () => {
+    if (!document || !currentSection) return;
+    try {
+      const result = await immersiveReadingApi.skipSection(documentId, currentSection.id);
+      setProgress(result.progress);
+      setFocusOpen(false);
+      setFocusResult(null);
+      setFocusValidationError(null);
+      const nextSection = document.sections[currentSection.index + 1];
+      if (nextSection) openSection(nextSection.id);
+      else onToast(t("Section skipped. You can return to it at any time."));
+    } catch (cause) {
+      onErrorToast(errorMessage(cause));
     }
   };
 
@@ -1049,36 +1175,54 @@ function Reader({
           <span className="text-[10px] text-[var(--muted-foreground)]">{passedFocusCount}/{focusSections.length}</span>
         </div>
         <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
-          {document.sections.map((section) => {
+         {(() => {
+           const parentIds = new Set(document.sections.filter((s) => s.parent_id).map((s) => s.parent_id!));
+           const collapsedParents = collapsedParentsRef;
+           const toggleParent = (pid: string) => {
+              collapsedParents.current = new Set(collapsedParents.current);
+              if (collapsedParents.current.has(pid)) collapsedParents.current.delete(pid);
+              else collapsedParents.current.add(pid);
+              forceSidebarUpdate((n) => n + 1);
+            };
+            return document.sections.map((section) => {
+            const hasChildren = parentIds.has(section.id);
+            const isChild = !!section.parent_id;
+            if (isChild && collapsedParents.current.has(section.parent_id!)) return null;
             const requiresFocusCheck = section.checkpoint_kind !== "none";
             const passed = !requiresFocusCheck || passedSet.has(section.id);
-            const locked = section.index > firstUnpassedIndex;
+            const skipped = skippedSet.has(section.id);
             const active = section.id === sectionId;
             const statusMark = !requiresFocusCheck ? (
               <BookMarked size={11} />
             ) : passed ? (
               <Check size={12} className="text-emerald-500" />
-            ) : locked ? (
-              <Lock size={10} />
+            ) : skipped ? (
+              <span title={t("Skipped")}>—</span>
             ) : (
               section.index + 1
             );
             return (
+              <div key={section.id}>
               <button
-                key={section.id}
                 type="button"
-                onClick={() => openSection(section.id)}
+                onClick={() => {
+                  if (hasChildren) { toggleParent(section.id); return; }
+                  openSection(section.id);
+                  router.replace(`/immersive-reading?book=${encodeURIComponent(documentId)}&section=${encodeURIComponent(section.id)}`);
+                }}
                 className={`mb-1 flex w-full items-start gap-2.5 rounded-xl px-3 py-2.5 text-left transition ${
                   active ? "bg-[var(--primary)]/12 text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:bg-[var(--muted)]/60 hover:text-[var(--foreground)]"
-                } ${locked ? "opacity-45" : ""}`}
+                } ${isChild ? "ml-4" : ""}`}
               >
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-current/20 text-[10px]">
-                  {statusMark}
+                  {hasChildren ? (collapsedParents.current.has(section.id) ? "+" : "−") : statusMark}
                 </span>
                 <span className="line-clamp-2 text-xs leading-5">{section.title}</span>
               </button>
+              </div>
             );
-          })}
+            });
+          })()}
         </nav>
         <div className="border-t border-[var(--border)] px-4 py-3">
           <div className="flex items-center justify-between gap-3 text-[11px]">
@@ -1264,7 +1408,7 @@ function Reader({
               <p className="mt-3 text-xs text-[var(--muted-foreground)]">
                 {formatNumber(currentSection?.char_count || 0)} {t("characters")} · {currentRequiresFocusCheck
                   ? currentPassed ? t("Focus-Check passed") : t("Focus-Check required at the end")
-                  : t("No Focus-Check for front matter")}
+                  : t("No Focus-Check for reference matter")}
               </p>
             </div>
             {loadingSection ? (
@@ -1278,27 +1422,36 @@ function Reader({
               {!currentRequiresFocusCheck ? (
                 <>
                   <BookMarked className="mx-auto text-[var(--primary)]" size={25} />
-                  <p className="mt-2 text-sm font-medium">{t("Front matter does not require a Focus-Check.")}</p>
+                  <p className="mt-2 text-sm font-medium">{t("Reference matter does not require a Focus-Check.")}</p>
                   {next && <button type="button" onClick={() => openSection(next.id)} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]">{t("Continue reading")} <ChevronRight size={15} /></button>}
+                  <FocusHistoryPanel history={focusHistory} />
                 </>
               ) : currentPassed ? (
                 <>
                   <BookCheck className="mx-auto text-emerald-500" size={26} />
                   <p className="mt-2 text-sm font-medium">{t("You already passed this section's Focus-Check.")}</p>
-                  {next && <button type="button" onClick={() => openSection(next.id)} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]">{t("Continue reading")} <ChevronRight size={15} /></button>}
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                    <button type="button" onClick={() => { setFocusResult(null); setFocusValidationError(null); setFocusOpen(true); }} className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium">{t("Try Focus-Check again")}</button>
+                    {next && <button type="button" onClick={() => openSection(next.id)} className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]">{t("Continue reading")} <ChevronRight size={15} /></button>}
+                  </div>
+                  <FocusHistoryPanel history={focusHistory} />
                 </>
               ) : (
                 <>
                   <Sparkles className="mx-auto text-[var(--primary)]" size={24} />
-                  <p className="mt-2 text-sm font-medium">{t("Ready for your Focus-Check?")}</p>
-                  <p className="mt-1 text-xs text-[var(--muted-foreground)]">{t("Briefly recall the main content and the part that affected you most.")}</p>
-                  <button type="button" onClick={() => { setFocusResult(null); setFocusValidationError(null); setFocusOpen(true); }} className="mt-4 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]">{t("Start Focus-Check")}</button>
+                  <p className="mt-2 text-sm font-medium">{currentSkipped ? t("You skipped this section.") : t("Want to check your understanding?")}</p>
+                  <p className="mt-1 text-xs text-[var(--muted-foreground)]">{t("Focus-Check is optional. Technical books can be read in any order.")}</p>
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                    <button type="button" onClick={() => { setFocusResult(null); setFocusValidationError(null); setFocusOpen(true); }} className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]">{focusHistory.length ? t("Try Focus-Check again") : t("Start Focus-Check")}</button>
+                    {!currentSkipped && <button type="button" onClick={() => void skipCurrentSection()} className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium">{t("Skip section")}</button>}
+                    {next && <button type="button" onClick={() => openSection(next.id)} className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium">{t("Continue without a check")}</button>}
+                  </div>
                 </>
               )}
             </div>
             <div className="mt-8 flex items-center justify-between">
               <button type="button" disabled={!previous} onClick={() => previous && openSection(previous.id)} className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2 text-sm disabled:opacity-30"><ChevronLeft size={16} /> {t("Previous section")}</button>
-              <button type="button" disabled={!next || !currentPassed} onClick={() => next && openSection(next.id)} className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-30">{t("Next section")} <ChevronRight size={16} /></button>
+              <button type="button" disabled={!next} onClick={() => next && openSection(next.id)} className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-30">{t("Next section")} <ChevronRight size={16} /></button>
             </div>
           </article>
         </div>
@@ -1434,7 +1587,7 @@ function Reader({
       )}
 
       {focusOpen && currentSection && currentRequiresFocusCheck && (
-        <ModalShell labelledBy="focus-check-title" onClose={() => { if (!focusBusy && currentPassed) setFocusOpen(false); }}>
+        <ModalShell labelledBy="focus-check-title" onClose={() => { if (!focusBusy) setFocusOpen(false); }}>
           <div className="w-full max-w-2xl rounded-3xl border border-[var(--border)] bg-[var(--card)] p-7 shadow-2xl">
             <div className="flex items-start gap-4">
               <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${focusResult?.passed ? "bg-emerald-500/12 text-emerald-500" : focusResult && !focusResult.passed ? "bg-amber-500/12 text-amber-500" : "bg-[var(--primary)]/12 text-[var(--primary)]"}`}>
@@ -1448,16 +1601,22 @@ function Reader({
 
             {!focusResult ? (
               <>
-                <p className="mt-6 text-sm leading-6 text-[var(--muted-foreground)]">{t("Without looking back, describe what happened or what the section argued. Then tell us what affected you most and why.")}</p>
-                <label className="mt-5 block text-sm font-medium">{t("What were the main events or ideas?")}</label>
+                <p className="mt-6 text-sm leading-6 text-[var(--muted-foreground)]">{t("Summarize the key points in your own words.")}</p>
+                <label className="mt-5 block text-sm font-medium">{t("What are the main ideas or takeaways?")}</label>
                 <textarea value={focusSummary} onChange={(event) => { setFocusSummary(event.target.value); setFocusValidationError(null); }} className="mt-2 min-h-28 w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm leading-6 outline-none focus:border-[var(--primary)]" />
                 <p className="mt-1 text-right text-[11px] text-[var(--muted-foreground)]">{focusSummary.trim().length}/20 {t("characters minimum")}</p>
-                <label className="mt-4 block text-sm font-medium">{t("What affected you most, and why?")}</label>
+                <label className="mt-4 block text-sm font-medium">{t("Additional notes (optional)")}</label>
                 <textarea value={focusReflection} onChange={(event) => { setFocusReflection(event.target.value); setFocusValidationError(null); }} className="mt-2 min-h-24 w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm leading-6 outline-none focus:border-[var(--primary)]" />
-                <p className="mt-1 text-right text-[11px] text-[var(--muted-foreground)]">{focusReflection.trim().length}/10 {t("characters minimum")}</p>
+                <p className="mt-1 text-right text-[11px] text-[var(--muted-foreground)]">{t("optional")}</p>
                 <div className="mt-5 flex items-center justify-between gap-4">
-                  <p className="text-xs text-red-500">{focusValidationError}</p>
-                  <button type="button" disabled={focusBusy} onClick={() => void submitFocusCheck()} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-45">{focusBusy && <Loader2 size={15} className="animate-spin" />} {focusBusy ? t("Checking…") : t("Submit Focus-Check")}</button>
+                  <div>
+                    <p className="text-xs text-red-500">{focusValidationError}</p>
+                    {focusHistory.length > 0 && <p className="mt-1 text-xs text-[var(--muted-foreground)]">{t("{{count}} previous attempts are saved.", { count: focusHistory.length })}</p>}
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <button type="button" disabled={focusBusy} onClick={() => void skipCurrentSection()} className="rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-medium disabled:opacity-45">{t("Skip section")}</button>
+                    <button type="button" disabled={focusBusy} onClick={() => void submitFocusCheck()} className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-[var(--primary-foreground)] disabled:opacity-45">{focusBusy && <Loader2 size={15} className="animate-spin" />} {focusBusy ? t("Checking…") : t("Submit Focus-Check")}</button>
+                  </div>
                 </div>
               </>
             ) : (
@@ -1473,13 +1632,23 @@ function Reader({
                       {focusResult.missing_points.map((point) => <li key={point}>{point}</li>)}
                     </ul>
                   )}
+                  {focusResult.prompts.length > 0 && (
+                    <details className="mt-3">
+                      <summary className="cursor-pointer text-xs text-[var(--muted-foreground)]">{t("Guiding questions")}</summary>
+                      <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-[var(--muted-foreground)]">
+                        {focusResult.prompts.map((p) => <li key={p}>{p}</li>)}
+                      </ul>
+                    </details>
+                  )}
                 </div>
-                <div className="mt-6 flex justify-end">
-                  <button type="button" onClick={focusResult.passed ? continueAfterFocus : rereadCurrent} className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-[var(--primary-foreground)]">
-                    {focusResult.passed ? t("Continue reading") : t("Reread section")}
-                    {focusResult.passed ? <ChevronRight size={16} /> : <RotateCcw size={15} />}
+                <div className="mt-6 flex flex-wrap justify-end gap-2">
+                  {!focusResult.passed && <button type="button" onClick={() => { setFocusResult(null); setFocusValidationError(null); }} className="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-medium"><RotateCcw size={15} /> {t("Edit and try again")}</button>}
+                  {!focusResult.passed && <button type="button" onClick={() => void skipCurrentSection()} className="rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-medium">{t("Skip section")}</button>}
+                  <button type="button" onClick={continueAfterFocus} className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-5 py-2.5 text-sm font-medium text-[var(--primary-foreground)]">
+                    {t("Continue reading")} <ChevronRight size={16} />
                   </button>
                 </div>
+                <FocusHistoryPanel history={focusHistory} />
               </div>
             )}
           </div>

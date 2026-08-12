@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+import uuid
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -17,6 +18,8 @@ class ReadingSection(BaseModel):
     source_end: int = 0
     checkpoint_kind: Literal["chapter", "chunk", "none"] = "chapter"
     source_href: str = ""
+    parent_id: str = ""
+    level: int = 1
 
 
 class ReadingDocument(BaseModel):
@@ -80,13 +83,42 @@ class FocusAttempt(BaseModel):
     updated_at: float = Field(default_factory=time.time)
 
 
+class FocusAttemptRecord(BaseModel):
+    """Immutable-ish audit record for one submitted Focus-Check answer."""
+
+    id: str = Field(default_factory=lambda: uuid.uuid4().hex)
+    section_id: str
+    attempt_number: int = 1
+    immersive_run: int = 1
+    summary: str = ""
+    reflection: str = ""
+    language: str = ""
+    model: str = ""
+    binding: str = ""
+    prompt_version: str = ""
+    pass_threshold: int = 65
+    answer_recorded: bool = True
+    status: Literal["pending", "graded", "error"] = "pending"
+    passed: bool = False
+    score: int | None = None
+    feedback: str = ""
+    strengths: list[str] = Field(default_factory=list)
+    missing_points: list[str] = Field(default_factory=list)
+    error: str = ""
+    latency_seconds: float | None = None
+    created_at: float = Field(default_factory=time.time)
+    updated_at: float = Field(default_factory=time.time)
+
+
 class ReadingProgress(BaseModel):
     document_id: str
     current_section_id: str = ""
     current_section_index: int = 0
     scroll_percent: float = 0.0
     passed_section_ids: list[str] = Field(default_factory=list)
+    skipped_section_ids: list[str] = Field(default_factory=list)
     focus_attempts: dict[str, FocusAttempt] = Field(default_factory=dict)
+    focus_history: dict[str, list[FocusAttemptRecord]] = Field(default_factory=dict)
     epub_cfi: str = ""
     section_href: str = ""
     immersive_run: int = 1
@@ -121,6 +153,7 @@ class FocusCheckResult(BaseModel):
     feedback: str
     strengths: list[str] = Field(default_factory=list)
     missing_points: list[str] = Field(default_factory=list)
+    prompts: list[str] = Field(default_factory=list)
     progress: ReadingProgress
 
 
@@ -253,6 +286,7 @@ __all__ = [
     "ChapterSearchCard",
     "FastSearchIndex",
     "FocusAttempt",
+    "FocusAttemptRecord",
     "FocusCheckResult",
     "KidsBookAssignment",
     "KidsLearningProgress",

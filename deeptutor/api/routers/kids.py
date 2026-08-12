@@ -219,6 +219,23 @@ async def get_kids_cover(document_id: str):
     return FileResponse(path, media_type="image/png", filename=f"{document_id}-cover.png")
 
 
+@router.get("/books/{document_id}/epub")
+async def get_kids_epub(
+    document_id: str,
+):
+    """Serve the original EPUB file (public, like cover endpoint).
+
+    epubjs fetches the file without auth headers, so this must be public.
+    The document_id is a hard-to-guess UUID.
+    """
+    ir = get_immersive_reading_service()
+    try:
+        path = ir.original_path(document_id)
+        document = ir.load_document(document_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return FileResponse(path, filename=document.source_filename if document else path.name)
+
 @router.get("/books/{document_id}/sections/{section_id}")
 async def get_kids_section(
     document_id: str,

@@ -15,7 +15,7 @@ from pathlib import Path
 import re
 import shutil
 import time
-from typing import Any, Iterable
+from typing import Any, Iterable, Literal
 import unicodedata
 import uuid
 
@@ -28,6 +28,7 @@ from deeptutor.immersive_reading.models import (
     KidsQuizResult,
     FastSearchIndex,
     FocusAttempt,
+    FocusAttemptRecord,
     FocusCheckResult,
     ReadingCitation,
     ReadingDocument,
@@ -47,7 +48,10 @@ SUPPORTED_FORMATS = {".txt", ".text", ".md", ".markdown", ".pdf", ".epub", ".mob
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 CHUNK_CHAR_TARGET = 20_000
 DESCRIPTION_CONTEXT_MIN = 50_000
+SECTION_SPLIT_THRESHOLD = 50_000
 FOCUS_CHECK_MAX_TOKENS = 4000
+FOCUS_CHECK_PROMPT_VERSION = "focus-check-v4-structured"
+FOCUS_CHECK_PASS_THRESHOLD = 65
 FAST_INDEX_PROMPT_VERSION = "chapter-search-card-v1"
 FAST_INDEX_CONCURRENCY = 4
 FAST_DEEP_MAX_TOKENS = 32_000
@@ -61,14 +65,56 @@ _HEADING_RE = re.compile(
 logger = logging.getLogger(__name__)
 
 
-def _is_front_matter_title(title: str) -> bool:
-    """Identify the synthetic pre-TOC section created by our parsers."""
-    normalized = re.sub(r"[^a-z]+", " ", unicodedata.normalize("NFKC", title).casefold()).strip()
-    return normalized == "front matter"
+def _is_reference_matter_title(title: str) -> bool:
+    """Identify structural pages that are useful to browse but poor quiz material."""
+    normalized = unicodedata.normalize("NFKC", title).casefold().strip()
+    words = re.sub(r"[^a-z]+", " ", normalized).strip()
+    compact = re.sub(r"[\s\W_]+", "", normalized)
+    return words in {"front matter", "contents", "table of contents", "toc", "index"} or compact in {
+        "目录",
+        "目錄",
+        "文档目录",
+        "文檔目錄",
+        "内容目录",
+        "內容目錄",
+        "索引",
+    }
+
+
+# Kept as an alias for older call sites and third-party imports.
+_is_front_matter_title = _is_reference_matter_title
 
 
 def _requires_focus_check(section: ReadingSection) -> bool:
     return section.checkpoint_kind != "none"
+
+
+def _detect_content_type(text: str) -> Literal["code_heavy", "conceptual"]:
+    """Heuristic: code blocks or tables indicate API/tutorial, prose indicates conceptual."""
+    if not text:
+        return "conceptual"
+    code_fences = text.count("```")
+    tables = text.count("|---")
+    lines = text.splitlines()
+    non_blank = max(1, sum(1 for line in lines if line.strip()))
+    code_ratio = (code_fences / 2) / non_blank
+    table_ratio = tables / non_blank
+    return "code_heavy" if code_ratio > 0.03 or table_ratio > 0.02 else "conceptual"
+
+
+def _build_focus_prompts(content_type: str, *, language: str) -> list[str]:
+    zh = language.startswith("zh")
+    if content_type == "code_heavy":
+        return [
+            "这节解决什么问题或实现什么功能？" if zh else "What problem does this section solve or what feature does it implement?",
+            "列出 1-2 个关键 API、命令或配置项" if zh else "List 1-2 key APIs, commands, or config options",
+            "你会怎么在实际中使用？" if zh else "How would you use this in practice?",
+        ]
+    return [
+        "用自己的话概括核心概念" if zh else "Summarize the core concept in your own words",
+        "这个概念和什么相关或依赖什么？" if zh else "What does this concept relate to or depend on?",
+        "它解决了什么问题？" if zh else "What problem does it solve?",
+    ]
 
 
 def _write_json(path: Path, payload: Any) -> None:
@@ -133,8 +179,82 @@ def _split_near(text: str, target: int = CHUNK_CHAR_TARGET) -> list[str]:
     return parts
 
 
-def _text_sections(text: str) -> tuple[str, list[tuple[str, str, int, int]]]:
-    """Return reading mode plus (title, text, start, end) sections."""
+def _text_recursive_sections(
+    headings: list[tuple[int, str, int]],
+    text: str,
+) -> list[tuple[str, str, int, int, int, int]]:
+    """Recursively split text using detected heading levels.
+
+    Mirrors the EPUB/PDF recursive logic: small sections become leaves,
+    oversized sections with sub-headings become navigational parents.
+    """
+    text_len = len(text)
+
+    # Build end-offsets for each heading (next sibling or end-of-text).
+    end_for: list[int] = []
+    for i, (offset, _title, level) in enumerate(headings):
+        end = text_len
+        for j in range(i + 1, len(headings)):
+            if headings[j][2] <= level:
+                end = headings[j][0]
+                break
+        end_for.append(end)
+
+    # Build a tree of (offset, end, title, level, children).
+    tree: list[dict] = []
+    stack: list[dict] = []
+    for i, (offset, title, level) in enumerate(headings):
+        node = {"offset": offset, "end": end_for[i], "title": title, "level": level, "children": []}
+        while stack and stack[-1]["level"] >= level:
+            stack.pop()
+        if stack:
+            stack[-1]["children"].append(node)
+        else:
+            tree.append(node)
+        stack.append(node)
+
+    sections: list[tuple[str, str, int, int, int, int]] = []
+
+    def emit(nodes: list[dict], parent_idx: int, level: int) -> None:
+        for node in nodes:
+            start = node["offset"]
+            end = node["end"]
+            body = _clean_text(text[start:end])
+            if not body:
+                continue
+            has_usable_children = len(node["children"]) >= 2
+            if len(body) <= SECTION_SPLIT_THRESHOLD and not (
+                has_usable_children and len(body) > SECTION_SPLIT_THRESHOLD
+            ):
+                sections.append((node["title"], body, start, end, parent_idx, level))
+            elif has_usable_children:
+                this_idx = len(sections)
+                sections.append((node["title"], "", start, end, parent_idx, level))
+                emit(node["children"], this_idx, level + 1)
+            else:
+                this_idx = len(sections)
+                sections.append((node["title"], "", start, end, parent_idx, level))
+                for ci, chunk in enumerate(_split_near(body)):
+                    sections.append(
+                        (f"{node['title']} \u2013 {ci + 1}", chunk, start, end, this_idx, level + 1)
+                    )
+
+    first_offset = tree[0]["offset"] if tree else 0
+    if first_offset > 0:
+        front = _clean_text(text[:first_offset])
+        if front:
+            sections.append(("Front Matter", front, 0, first_offset, -1, 1))
+
+    emit(tree, -1, 1)
+    return sections
+
+
+def _text_sections(text: str) -> tuple[str, list[tuple[str, str, int, int, int, int]]]:
+    """Return reading mode plus (title, text, start, end, parent_index, level) sections.
+
+    For Markdown / plain-text files we detect heading levels from ``#`` prefixes
+    and build a tree, then apply the same recursive splitting logic as EPUB/PDF.
+    """
     lines = text.splitlines(keepends=True)
     offsets: list[tuple[int, str]] = []
     cursor = 0
@@ -143,31 +263,26 @@ def _text_sections(text: str) -> tuple[str, list[tuple[str, str, int, int]]]:
         if match:
             title = (match.group(1) or match.group(2) or "").strip(" #\t")
             if title:
-                offsets.append((cursor, title))
+                # Detect heading level from markdown hashes.
+                level = 1
+                stripped = line.strip()
+                if stripped.startswith("#"):
+                    level = len(stripped) - len(stripped.lstrip("#"))
+                offsets.append((cursor, title, level))
         cursor += len(line)
 
-    # A contents page often repeats dozens of headings without useful body.
-    # Requiring meaningful distance suppresses most of those duplicates.
-    filtered: list[tuple[int, str]] = []
-    for offset, title in offsets:
+    # De-duplicate headings that are too close (contents-page noise).
+    filtered: list[tuple[int, str, int]] = []
+    for offset, title, level in offsets:
         if not filtered or offset - filtered[-1][0] >= 300:
-            filtered.append((offset, title))
+            filtered.append((offset, title, level))
     if len(filtered) > 2:
-        sections: list[tuple[str, str, int, int]] = []
-        if filtered[0][0] > 0:
-            front_matter = _clean_text(text[: filtered[0][0]])
-            if front_matter:
-                sections.append(("Front Matter", front_matter, 0, filtered[0][0]))
-        for index, (start, title) in enumerate(filtered):
-            end = filtered[index + 1][0] if index + 1 < len(filtered) else len(text)
-            body = _clean_text(text[start:end])
-            if body:
-                sections.append((title, body, start, end))
+        sections = _text_recursive_sections(filtered, text)
         if len(sections) > 2:
             return "chapters", sections
 
     chunks = _split_near(text)
-    result: list[tuple[str, str, int, int]] = []
+    result: list[tuple[str, str, int, int, int, int]] = []
     search_from = 0
     for index, chunk in enumerate(chunks):
         start = text.find(chunk[: min(200, len(chunk))], search_from)
@@ -175,13 +290,133 @@ def _text_sections(text: str) -> tuple[str, list[tuple[str, str, int, int]]]:
             start = search_from
         end = min(len(text), start + len(chunk))
         search_from = end
-        result.append((f"Part {index + 1}", chunk, start, end))
+        result.append((f"Part {index + 1}", chunk, start, end, -1, 1))
     return "chunks", result
+
+
+class _TocNode:
+    """A node in the TOC tree built from a flat PyMuPDF TOC list."""
+
+    __slots__ = ("level", "title", "page", "children")
+
+    def __init__(self, level: int, title: str, page: int) -> None:
+        self.level = level
+        self.title = title
+        self.page = page
+        self.children: list[_TocNode] = []
+
+
+def _build_toc_tree(toc_raw: list, max_page: int) -> list[_TocNode]:
+    """Build a tree from flat ``(level, title, page)`` TOC entries."""
+    roots: list[_TocNode] = []
+    stack: list[_TocNode] = []
+    for item in toc_raw:
+        if len(item) < 3:
+            continue
+        lvl, raw_title, raw_page = int(item[0]), str(item[1]).strip(), int(item[2])
+        if not raw_title:
+            continue
+        page = max(0, min(max_page, raw_page - 1))
+        node = _TocNode(lvl, raw_title, page)
+        while stack and stack[-1].level >= lvl:
+            stack.pop()
+        if stack:
+            stack[-1].children.append(node)
+        else:
+            roots.append(node)
+        stack.append(node)
+    return roots
+
+
+def _fitz_recursive_sections(
+    toc_raw: list,
+    page_texts: list[str],
+) -> list[tuple[str, str, int, int, int, int]]:
+    """Build reading sections from the full TOC tree, recursively.
+
+    Each node becomes either:
+    - a navigational parent (checkpoint_kind=none, empty body) if it has
+      children and is large, or
+    - a leaf section (quizable) if its content fits under the threshold.
+
+    Falls back to paragraph splitting only when a node is oversized AND
+    has no usable TOC children.
+    """
+    max_page = len(page_texts) - 1
+    roots = _build_toc_tree(toc_raw, max_page)
+
+    def next_page(node: _TocNode, siblings: list[_TocNode], idx: int) -> int:
+        """Return the end page for *node* among its siblings."""
+        for sib in siblings[idx + 1 :]:
+            return sib.page
+        return max_page + 1
+
+    def find_next_page_in_tree(node: _TocNode) -> int:
+        """Walk up the tree to find the next sibling/uncle page."""
+        # This is set externally during traversal
+        return _end_page_for.get(id(node), max_page + 1)
+
+    # Pre-compute end pages for every node
+    _end_page_for: dict[int, int] = {}
+
+    def assign_end_pages(nodes: list[_TocNode], fallback: int) -> None:
+        for i, node in enumerate(nodes):
+            ep = nodes[i + 1].page if i + 1 < len(nodes) else fallback
+            _end_page_for[id(node)] = ep
+            child_fallback = ep
+            assign_end_pages(node.children, child_fallback)
+
+    assign_end_pages(roots, max_page + 1)
+
+    sections: list[tuple[str, str, int, int, int, int]] = []
+
+    def emit(
+        nodes: list[_TocNode],
+        parent_idx: int,
+        level: int,
+    ) -> None:
+        for i, node in enumerate(nodes):
+            start = node.page
+            end = _end_page_for.get(id(node), max_page + 1)
+            body = _clean_text("\\n\\n".join(page_texts[start:end]))
+            if not body:
+                continue
+
+            has_usable_children = len(node.children) >= 2
+
+            if len(body) <= SECTION_SPLIT_THRESHOLD and not (
+                has_usable_children and len(body) > SECTION_SPLIT_THRESHOLD
+            ):
+                # Leaf: small enough or no need to split.
+                sections.append((node.title, body, start + 1, end, parent_idx, level))
+            elif has_usable_children:
+                # Navigational parent: no body content (avoid double-counting).
+                this_idx = len(sections)
+                sections.append((node.title, "", start + 1, end, parent_idx, level))
+                emit(node.children, this_idx, level + 1)
+            else:
+                # Oversized leaf with no TOC children: paragraph split.
+                this_idx = len(sections)
+                sections.append((node.title, "", start + 1, end, parent_idx, level))
+                for ci, chunk in enumerate(_split_near(body)):
+                    sections.append(
+                        (f"{node.title} \\u2013 {ci + 1}", chunk, start + 1, end, this_idx, level + 1)
+                    )
+
+    # Handle front matter before the first TOC entry
+    first_page = roots[0].page if roots else 0
+    if first_page > 0:
+        front = _clean_text("\\n\\n".join(page_texts[:first_page]))
+        if front:
+            sections.append(("Front Matter", front, 1, first_page, -1, 1))
+
+    emit(roots, -1, 1)
+    return sections
 
 
 def _fitz_sections(
     path: Path,
-) -> tuple[str, str, str, list[tuple[str, str, int, int]], bytes | None]:
+) -> tuple[str, str, str, list[tuple[str, str, int, int, int, int]], bytes | None]:
     try:
         import fitz
     except ImportError as exc:  # pragma: no cover - core dependency in full app
@@ -203,36 +438,10 @@ def _fitz_sections(
             raise ValueError("No readable text was found in this file")
 
         toc_raw = document.get_toc(simple=True) or []
-        candidates: list[tuple[int, str]] = []
-        seen_pages: set[int] = set()
+        sections: list[tuple[str, str, int, int, int, int]] = []
         if toc_raw:
-            min_level = min(int(item[0]) for item in toc_raw if len(item) >= 3)
-            primary = [item for item in toc_raw if len(item) >= 3 and int(item[0]) == min_level]
-            chosen = (
-                primary
-                if len(primary) > 2
-                else [item for item in toc_raw if len(item) >= 3 and int(item[0]) <= min_level + 1]
-            )
-            for _level, raw_title, raw_page, *_rest in chosen:
-                page_index = max(0, min(len(page_texts) - 1, int(raw_page) - 1))
-                chapter_title = str(raw_title or "").strip()
-                if chapter_title and page_index not in seen_pages:
-                    candidates.append((page_index, chapter_title))
-                    seen_pages.add(page_index)
+            sections = _fitz_recursive_sections(toc_raw, page_texts)
 
-        sections: list[tuple[str, str, int, int]] = []
-        if len(candidates) > 2:
-            if candidates[0][0] > 0:
-                front_matter = _clean_text("\n\n".join(page_texts[: candidates[0][0]]))
-                if front_matter:
-                    sections.append(("Front Matter", front_matter, 1, candidates[0][0]))
-            for index, (start_page, chapter_title) in enumerate(candidates):
-                end_page = (
-                    candidates[index + 1][0] if index + 1 < len(candidates) else len(page_texts)
-                )
-                body = _clean_text("\n\n".join(page_texts[start_page:end_page]))
-                if body:
-                    sections.append((chapter_title, body, start_page + 1, end_page))
         if len(sections) > 2:
             mode = "chapters"
         else:
@@ -245,6 +454,8 @@ def _fitz_sections(
                         chunk,
                         index * CHUNK_CHAR_TARGET,
                         min(len(all_text), (index + 1) * CHUNK_CHAR_TARGET),
+                        -1,
+                        1,
                     )
                 )
 
@@ -298,12 +509,12 @@ class ImmersiveReadingService:
         data = _read_json(self._manifest_path(document_id))
         if not data:
             return None
-        # Backward-compatible migration: books imported before front matter was
-        # exempted already have it persisted as a normal chapter.
+        # Backward-compatible migration: older imports treated front matter,
+        # contents pages and indexes as normal chapters with mandatory checks.
         migrated = False
         for section in data.get("sections", []):
             if (
-                _is_front_matter_title(str(section.get("title") or ""))
+                _is_reference_matter_title(str(section.get("title") or ""))
                 and section.get("checkpoint_kind") != "none"
             ):
                 section["checkpoint_kind"] = "none"
@@ -313,24 +524,45 @@ class ImmersiveReadingService:
             _write_json(self._manifest_path(document_id), document.model_dump(mode="json"))
         return document
 
-    @staticmethod
-    def _first_unpassed_index(document: ReadingDocument, progress: ReadingProgress) -> int:
-        return next(
-            (
-                section.index
-                for section in document.sections
-                if _requires_focus_check(section) and section.id not in progress.passed_section_ids
-            ),
-            len(document.sections),
-        )
-
     def load_progress(self, document_id: str) -> ReadingProgress:
         doc = self.load_document(document_id)
         if doc is None:
             raise ValueError("Reading document not found")
         data = _read_json(self._progress_path(document_id))
         if data:
-            return ReadingProgress.model_validate(data)
+            progress = ReadingProgress.model_validate(data)
+            migrated = False
+            # Scores from older releases are still valuable even though those
+            # releases did not persist the submitted answer text.
+            for section_id, attempt in progress.focus_attempts.items():
+                if progress.focus_history.get(section_id):
+                    continue
+                progress.focus_history[section_id] = [
+                    FocusAttemptRecord(
+                        section_id=section_id,
+                        attempt_number=max(1, attempt.attempt_count),
+                        immersive_run=progress.immersive_run,
+                        prompt_version="legacy-unversioned",
+                        pass_threshold=55,
+                        answer_recorded=False,
+                        status="graded",
+                        passed=attempt.passed,
+                        score=attempt.score,
+                        feedback=attempt.feedback,
+                        created_at=attempt.updated_at,
+                        updated_at=attempt.updated_at,
+                    )
+                ]
+                migrated = True
+            for records in progress.focus_history.values():
+                for record in records:
+                    if not record.answer_recorded and not record.prompt_version:
+                        record.prompt_version = "legacy-unversioned"
+                        record.pass_threshold = 55
+                        migrated = True
+            if migrated:
+                self._save_progress(progress)
+            return progress
         first = doc.sections[0] if doc.sections else None
         progress = ReadingProgress(
             document_id=document_id,
@@ -351,7 +583,8 @@ class ImmersiveReadingService:
             section for section in document.sections if _requires_focus_check(section)
         ]
         if required_sections and all(
-            s.id in progress.passed_section_ids for s in required_sections
+            s.id in progress.passed_section_ids or s.id in progress.skipped_section_ids
+            for s in required_sections
         ):
             fraction = 1.0
         return {
@@ -411,15 +644,25 @@ class ImmersiveReadingService:
             section_models: list[ReadingSection] = []
             total_chars = 0
             total_words = 0
-            for index, (section_title, content, source_start, source_end) in enumerate(
-                raw_sections
-            ):
+            for index, raw_section in enumerate(raw_sections):
+                section_title, content, source_start, source_end, parent_index, level = (
+                    raw_section[0],
+                    raw_section[1],
+                    raw_section[2],
+                    raw_section[3],
+                    raw_section[4],
+                    raw_section[5],
+                )
                 section_id = f"section_{index + 1:04d}"
                 clean_content = _clean_text(content)
                 atomic_write_text(self._section_path(document_id, section_id), clean_content)
                 count = len(clean_content)
                 total_chars += count
                 total_words += _word_count(clean_content)
+                # A parent chapter with children is navigational, not quizable.
+                has_children = any(
+                    raw_sections[j][4] == index for j in range(index + 1, len(raw_sections))
+                )
                 section_models.append(
                     ReadingSection(
                         id=section_id,
@@ -428,9 +671,15 @@ class ImmersiveReadingService:
                         char_count=count,
                         source_start=source_start,
                         source_end=source_end,
+                        parent_id=(
+                            section_models[parent_index].id
+                            if parent_index >= 0 < len(section_models)
+                            else ""
+                        ),
+                        level=level,
                         checkpoint_kind=(
                             "none"
-                            if _is_front_matter_title(section_title)
+                            if _is_reference_matter_title(section_title) or has_children
                             else "chapter"
                             if mode == "chapters"
                             else "chunk"
@@ -498,13 +747,13 @@ class ImmersiveReadingService:
             raise ValueError("Reading section not found")
         content = self._section_path(document_id, section_id).read_text(encoding="utf-8")
         progress = self.load_progress(document_id)
-        first_unpassed = self._first_unpassed_index(doc, progress)
         requires_focus_check = _requires_focus_check(section)
         return {
             "section": section.model_dump(mode="json"),
             "content": content,
             "passed": not requires_focus_check or section_id in progress.passed_section_ids,
-            "locked": section.index > first_unpassed,
+            "skipped": section_id in progress.skipped_section_ids,
+            "locked": False,
         }
 
     def update_progress(
@@ -517,12 +766,26 @@ class ImmersiveReadingService:
         if section is None:
             raise ValueError("Reading section not found")
         progress = self.load_progress(document_id)
-        first_unpassed = self._first_unpassed_index(doc, progress)
-        if section.index > first_unpassed:
-            raise PermissionError("Complete the current Focus-Check before continuing")
         progress.current_section_id = section.id
         progress.current_section_index = section.index
         progress.scroll_percent = max(0.0, min(100.0, float(scroll_percent)))
+        self._save_progress(progress)
+        return progress
+
+    def skip_section(self, document_id: str, section_id: str) -> ReadingProgress:
+        """Record an intentional skip without erasing any prior quiz attempts."""
+        doc = self.load_document(document_id)
+        if doc is None:
+            raise ValueError("Reading document not found")
+        section = next((s for s in doc.sections if s.id == section_id), None)
+        if section is None:
+            raise ValueError("Reading section not found")
+        progress = self.load_progress(document_id)
+        if section.id not in progress.skipped_section_ids:
+            progress.skipped_section_ids.append(section.id)
+        progress.current_section_id = section.id
+        progress.current_section_index = section.index
+        progress.scroll_percent = 100.0
         self._save_progress(progress)
         return progress
 
@@ -535,7 +798,9 @@ class ImmersiveReadingService:
         progress.scroll_percent = 0.0
         if reset_focus_checks:
             progress.passed_section_ids = []
+            progress.skipped_section_ids = []
             progress.focus_attempts = {}
+            # focus_history is an audit trail and intentionally survives a new run.
             progress.immersive_run += 1
         self._save_progress(progress)
         return progress
@@ -1611,51 +1876,90 @@ class ImmersiveReadingService:
             return FocusCheckResult(
                 passed=True,
                 score=100,
-                feedback="No Focus-Check is required for front matter.",
+                feedback="No Focus-Check is required for reference matter.",
                 progress=progress,
             )
-        if section.id in progress.passed_section_ids:
-            existing = progress.focus_attempts.get(section.id)
-            return FocusCheckResult(
-                passed=True,
-                score=existing.score if existing else 100,
-                feedback=existing.feedback if existing else "Already passed.",
-                progress=progress,
-            )
-        if len(summary.strip()) < 20 or len(reflection.strip()) < 10:
-            raise ValueError("Please describe both the main content and what affected you most")
+        if len(summary.strip()) < 20:
+            raise ValueError("Please describe the main content of this section")
 
-        content = self._section_path(document_id, section_id).read_text(encoding="utf-8")
-        material = await self._focus_material(content, language=language)
+        cleaned_summary = summary.strip()
+        cleaned_reflection = reflection.strip()
+        history = progress.focus_history.setdefault(section.id, [])
+        # Detect content type and build structured prompts for the result.
+        try:
+            raw_content = self._section_path(document_id, section_id).read_text(encoding="utf-8")
+        except Exception:
+            raw_content = ""
+        content_type = _detect_content_type(raw_content)
+        focus_prompts = _build_focus_prompts(content_type, language=language)
+        record = FocusAttemptRecord(
+            section_id=section.id,
+            attempt_number=max((item.attempt_number for item in history), default=0) + 1,
+            immersive_run=progress.immersive_run,
+            summary=cleaned_summary,
+            reflection=cleaned_reflection,
+            pass_threshold=FOCUS_CHECK_PASS_THRESHOLD,
+            language=language,
+            prompt_version=f"{FOCUS_CHECK_PROMPT_VERSION}-{content_type}",
+        )
+        history.append(record)
+        # Save before invoking the model so a timeout or malformed response
+        # never causes the learner's submitted answer to disappear.
+        self._save_progress(progress)
+
+        try:
+            cfg = get_llm_config()
+            record.model = str(getattr(cfg, "model", "") or "")
+            record.binding = str(getattr(cfg, "binding", "") or "")
+            material = await self._focus_material(raw_content, language=language)
+        except Exception as exc:
+            record.status = "error"
+            record.error = str(exc)
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise
         zh = language.startswith("zh")
         system = (
             "你是严谨但公平的精读检查员。判断读者是否真正读懂刚才的内容，而不是要求逐字复述。"
-            "主要内容/情节基本准确、有关键因果或观点，并且个人感受能联系原文，即可通过。"
-            "允许措辞不同和合理的个人解读。只输出 JSON："
-            '{"passed":bool,"score":0-100,"feedback":str,"strengths":[str],"missing_points":[str]}。分数达到65通常应通过。'
+            "叙事作品看主要情节、关键因果和有原文依据的感受；技术或参考资料看核心概念、用途、结构或实际收获。"
+            "技术资料不要求情绪反应，也不要求覆盖目录中的每个条目。允许措辞不同、选择性阅读和合理的个人解读。"
+            "读者回答了若干结构化问题；逐条评估，并在 missing_points 中标注哪个问题答得不足。"
+            "只输出 JSON："
+            f'{{"passed":bool,"score":0-100,"feedback":str,"strengths":[str],"missing_points":[str]}}。分数达到{FOCUS_CHECK_PASS_THRESHOLD}通常应通过。'
             if zh
             else "You are a rigorous but fair close-reading checker. Decide whether the reader genuinely understood "
-            "the material without requiring verbatim recall. Pass when the main content is broadly accurate, key "
-            "causality or ideas appear, and the personal response is grounded in the text. Allow different wording and "
-            'reasonable interpretation. Return JSON only: {"passed":bool,"score":0-100,"feedback":str,'
-            '"strengths":[str],"missing_points":[str]}. A score of 65 normally passes.'
+            "the material without requiring verbatim recall. For narrative works, assess the main events, causality, "
+            "and a text-grounded response. For technical or reference material, assess core concepts, purpose, structure, "
+            "or practical takeaways; do not require an emotional reaction or exhaustive coverage of every TOC item. "
+            "The reader answered structured questions; evaluate each one and note in missing_points which question was "
+            "insufficiently addressed. Allow selective reading, different wording, and "
+            f'reasonable interpretation. Return JSON only: {{"passed":bool,"score":0-100,"feedback":str,'
+            f'"strengths":[str],"missing_points":[str]}}. A score of {FOCUS_CHECK_PASS_THRESHOLD} normally passes.'
         )
         prompt = (
             f"Book: {doc.title}\nSection: {section.title}\n\nSource material:\n{material}\n\n"
-            f"Reader's account of the main content:\n{summary.strip()}\n\n"
-            f"What affected the reader most:\n{reflection.strip()}"
+            f"Reader's account of the main content:\n{cleaned_summary}\n\n"
+            f"Reader's additional notes (optional, may be empty):\n{cleaned_reflection}"
         )
         started_at = time.monotonic()
-        raw = await complete(
-            prompt=prompt,
-            system_prompt=system,
-            temperature=0.1,
-            max_tokens=FOCUS_CHECK_MAX_TOKENS,
-            reasoning_effort="minimal",
-            max_retries=0,
-            timeout=30,
-        )
+        try:
+            raw = await complete(
+                prompt=prompt,
+                system_prompt=system,
+                temperature=0.1,
+                max_tokens=FOCUS_CHECK_MAX_TOKENS,
+                reasoning_effort="minimal",
+                max_retries=0,
+                timeout=30,
+            )
+        except Exception as exc:
+            record.status = "error"
+            record.error = str(exc)
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise
         elapsed = time.monotonic() - started_at
+        record.latency_seconds = round(elapsed, 3)
         if not raw or not raw.strip():
             logger.warning(
                 "Focus-Check model returned an empty response document=%s section=%s elapsed=%.2fs",
@@ -1663,9 +1967,12 @@ class ImmersiveReadingService:
                 section_id,
                 elapsed,
             )
-            raise RuntimeError(
-                "The model returned an empty Focus-Check response. Please try again."
-            )
+            message = "The model returned an empty Focus-Check response. Please try again."
+            record.status = "error"
+            record.error = message
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise RuntimeError(message)
         try:
             parsed = parse_json_response(raw)
         except Exception as exc:
@@ -1675,9 +1982,12 @@ class ImmersiveReadingService:
                 section_id,
                 elapsed,
             )
-            raise RuntimeError(
-                "The model returned an invalid Focus-Check response. Please try again."
-            ) from exc
+            message = "The model returned an invalid Focus-Check response. Please try again."
+            record.status = "error"
+            record.error = message
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise RuntimeError(message) from exc
         if (
             not isinstance(parsed, dict)
             or not isinstance(parsed.get("passed"), bool)
@@ -1689,16 +1999,34 @@ class ImmersiveReadingService:
                 section_id,
                 elapsed,
             )
-            raise RuntimeError(
-                "The model returned an invalid Focus-Check response. Please try again."
-            )
+            message = "The model returned an invalid Focus-Check response. Please try again."
+            record.status = "error"
+            record.error = message
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise RuntimeError(message)
         try:
             score = max(0, min(100, int(parsed["score"])))
         except (TypeError, ValueError) as exc:
-            raise RuntimeError(
-                "The model returned an invalid Focus-Check score. Please try again."
-            ) from exc
-        passed = bool(parsed.get("passed")) and score >= 55
+            message = "The model returned an invalid Focus-Check score. Please try again."
+            record.status = "error"
+            record.error = message
+            record.updated_at = time.time()
+            self._save_progress(progress)
+            raise RuntimeError(message) from exc
+        passed = bool(parsed.get("passed")) and score >= FOCUS_CHECK_PASS_THRESHOLD
+        raw_strengths = parsed.get("strengths")
+        raw_missing_points = parsed.get("missing_points")
+        strengths = (
+            [str(item) for item in raw_strengths if str(item).strip()]
+            if isinstance(raw_strengths, list)
+            else []
+        )
+        missing_points = (
+            [str(item) for item in raw_missing_points if str(item).strip()]
+            if isinstance(raw_missing_points, list)
+            else []
+        )
         attempt = progress.focus_attempts.get(section.id) or FocusAttempt(section_id=section.id)
         attempt.attempt_count += 1
         attempt.passed = passed
@@ -1708,11 +2036,18 @@ class ImmersiveReadingService:
         )
         attempt.updated_at = time.time()
         progress.focus_attempts[section.id] = attempt
+        record.status = "graded"
+        record.passed = passed
+        record.score = score
+        record.feedback = attempt.feedback
+        record.strengths = strengths
+        record.missing_points = missing_points
+        record.updated_at = attempt.updated_at
         if passed and section.id not in progress.passed_section_ids:
             progress.passed_section_ids.append(section.id)
+            if section.id in progress.skipped_section_ids:
+                progress.skipped_section_ids.remove(section.id)
             progress.scroll_percent = 100.0
-        elif not passed:
-            progress.scroll_percent = 0.0
         self._save_progress(progress)
         logger.info(
             "Focus-Check completed document=%s section=%s elapsed=%.2fs score=%s passed=%s",
@@ -1726,10 +2061,9 @@ class ImmersiveReadingService:
             passed=passed,
             score=score,
             feedback=attempt.feedback,
-            strengths=[str(item) for item in parsed.get("strengths", []) if str(item).strip()],
-            missing_points=[
-                str(item) for item in parsed.get("missing_points", []) if str(item).strip()
-            ],
+            strengths=strengths,
+            missing_points=missing_points,
+            prompts=focus_prompts,
             progress=progress,
         )
 
