@@ -52,6 +52,7 @@ from .models import (
     BookProposal,
     BookStatus,
     Chapter,
+    CharacterGraph,
     ContentType,
     ExplorationReport,
     Page,
@@ -1274,6 +1275,31 @@ class BookEngine:
             block_type=BlockType.QUIZ,
             params={"num_questions": 2, "difficulty": "easy", "topic": topic},
             stream=stream,
+        )
+
+
+
+    # ── Character relationship graph ─────────────────────────────────────
+
+    async def generate_character_graph(
+        self,
+        *,
+        book_id: str,
+        chapter_id: str,
+        scope: str = "current",
+        force_refresh: bool = False,
+    ) -> CharacterGraph:
+        """Generate or load a cached character relationship graph for a chapter.
+
+        See :mod:`deeptutor.book.character_graph` for extraction details.
+        """
+        from .character_graph import generate_character_graph as _gen
+        return await _gen(
+            book_id=book_id,
+            chapter_id=chapter_id,
+            scope=scope,
+            force_refresh=force_refresh,
+            storage=self._storage,
         )
 
 
