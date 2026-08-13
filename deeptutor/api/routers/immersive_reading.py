@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import time
 from typing import Any, Literal
@@ -392,10 +394,6 @@ class CharacterGraphRequest(BaseModel):
 @router.post("/documents/{document_id}/character-graph")
 async def character_graph(document_id: str, request: CharacterGraphRequest) -> dict:
     """Generate a character relationship graph for an immersive reading document."""
-    import hashlib
-    import json as _json
-    import time as _time
-
     from deeptutor.book.character_graph import (
         extract_character_graph,
         render_character_graph_mermaid,
@@ -408,8 +406,11 @@ async def character_graph(document_id: str, request: CharacterGraphRequest) -> d
 
     sections = doc.sections
     target_index = next(
-        (s.index for s in sections if s.id == request.section_id), 0
+        (index for index, section in enumerate(sections) if section.id == request.section_id),
+        None,
     )
+    if target_index is None:
+        raise HTTPException(status_code=404, detail="Section not found")
 
     if request.scope == "current":
         chosen = [sections[target_index]] if target_index < len(sections) else []
@@ -439,7 +440,7 @@ async def character_graph(document_id: str, request: CharacterGraphRequest) -> d
     )
     if not request.force_refresh and cache_path.exists():
         try:
-            return _json.loads(cache_path.read_text(encoding="utf-8"))
+            return json.loads(cache_path.read_text(encoding="utf-8"))
         except Exception:
             pass
 
@@ -483,14 +484,14 @@ async def character_graph(document_id: str, request: CharacterGraphRequest) -> d
             ],
         },
         "mermaid": mermaid,
-        "generated_at": _time.time(),
+        "generated_at": time.time(),
         "scope": request.scope,
         "section_id": request.section_id,
     }
 
     try:
         cache_path.write_text(
-            _json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+            json.dumps(payload, ensure_ascii=False), encoding="utf-8"
         )
     except Exception:
         pass

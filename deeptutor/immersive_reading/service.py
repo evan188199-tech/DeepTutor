@@ -413,7 +413,7 @@ def _fitz_sections(
     path: Path,
 ) -> tuple[str, str, str, list[tuple[str, str, int, int, int, int]], bytes | None]:
     try:
-        import fitz
+        import pymupdf as fitz
     except ImportError as exc:  # pragma: no cover - core dependency in full app
         raise ValueError("PyMuPDF is required to read PDF and EPUB files") from exc
 
