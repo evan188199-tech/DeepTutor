@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
+  Baby,
   BookCheck,
   BookMarked,
   Check,
@@ -56,6 +57,8 @@ const MarkdownRenderer = dynamic(
   { ssr: false },
 );
 const Mermaid = dynamic(() => import("@/components/Mermaid"), { ssr: false });
+const KidsEpubReader = dynamic(() => import("./components/KidsEpubReader"), { ssr: false, loading: () => null });
+const KidsManagementPanel = dynamic(() => import("./components/KidsManagementPanel"), { ssr: false });
 
 type SearchMode = "exact" | "fuzzy" | "description_fast" | "description_fine";
 type ShelfView = "library" | "citations" | "focus-history";
@@ -708,6 +711,9 @@ function Reader({
   const [selectionQuestion, setSelectionQuestion] = useState("");
   const [selectionBusy, setSelectionBusy] = useState(false);
   const [focusOpen, setFocusOpen] = useState(false);
+  const [kidsMode, setKidsMode] = useState(false);
+  const [kidsToggling, setKidsToggling] = useState(false);
+  const [kidsMgmtOpen, setKidsMgmtOpen] = useState(false);
   const [focusSummary, setFocusSummary] = useState("");
   const [focusReflection, setFocusReflection] = useState("");
   const [focusBusy, setFocusBusy] = useState(false);
@@ -1126,6 +1132,16 @@ function Reader({
 
   if (loading || !document || !progress) {
     return <div className="flex h-full items-center justify-center text-[var(--muted-foreground)]">{error ? error : <Loader2 className="animate-spin" />}</div>;
+  }
+
+  if ((kidsMode || document.experience_mode === "kids") && document.source_format === "epub") {
+    return (
+      <KidsEpubReader
+        document={document}
+        onBack={onBack}
+        onError={onErrorToast}
+      />
+    );
   }
 
   const previous = document.sections[currentIndex - 1];

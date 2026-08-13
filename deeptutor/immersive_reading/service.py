@@ -21,6 +21,11 @@ import uuid
 
 from deeptutor.immersive_reading.models import (
     ChapterSearchCard,
+    KidsBookAssignment,
+    KidsLearningProgress,
+    KidsProfile,
+    KidsQuizQuestion,
+    KidsQuizResult,
     FastSearchIndex,
     FocusAttempt,
     FocusAttemptRecord,
@@ -1921,6 +1926,164 @@ class ImmersiveReadingService:
         return "\n\n".join(blocks), doc.title
 
 
+    def set_experience_mode(self, document_id: str, mode: str) -> dict[str, Any]:
+        """Set the document experience mode (standard | kids)."""
+        if mode not in ("standard", "kids"):
+            raise ValueError("Invalid experience mode")
+        doc = self.load_document(document_id)
+        if doc is None:
+            raise ValueError("Reading document not found")
+        doc.experience_mode = mode
+        doc.updated_at = time.time()
+        _write_json(self._manifest_path(document_id), doc.model_dump(mode="json"))
+        return self._summary(doc)
+
+    def _kids_quiz_path(self, document_id: str, section_id: str) -> Path:
+        return self._document_root(document_id) / "kids-quiz" / f"{section_id}.json"
+
+    def _save_kids_quiz_cache(self, document_id: str, section_id: str, result: KidsQuizResult) -> None:
+        """Persist a quiz result (used by fallback quiz generation)."""
+        quiz_path = self._kids_quiz_path(document_id, section_id)
+        quiz_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(quiz_path, result.model_dump(mode="json"))
+
+    KIDS_QUIZ_PROMPT_VERSION = "kids-quiz-v1"
+
+    async def generate_kids_quiz(
+        self, document_id: str, section_id: str, *, force_refresh: bool = False, age_band: str = "6-8"
+    ) -> KidsQuizResult:
+        """Generate (or load cached) 3 multiple-choice questions for a section."""
+        quiz_path = self._kids_quiz_path(document_id, section_id)
+        cached = _read_json(quiz_path) if quiz_path.exists() else None
+
+        content = self._section_path(document_id, section_id).read_text(encoding="utf-8")
+        content_hash = self._content_hash(content)
+
+        cfg = get_llm_config()
+        model_name = str(getattr(cfg, "model", "") or "")
+
+        if (
+            not force_refresh
+            and cached
+            and cached.get("content_hash") == content_hash
+            and cached.get("prompt_version") == self.KIDS_QUIZ_PROMPT_VERSION
+        ):
+            return KidsQuizResult(**cached)
+
+        doc = self.load_document(document_id)
+        if doc is None:
+            raise ValueError("Reading document not found")
+        section = next((s for s in doc.sections if s.id == section_id), None)
+        if section is None:
+            raise ValueError("Reading section not found")
+
+        # Limit content to 6000 chars for children's books (usually very short)
+        excerpt = content[:6000]
+
+        if age_band == "9-12":
+            system = (
+                "You create vocabulary quizzes for readers aged 9-12. "
+                "Generate exactly 3 multiple-choice questions asking what words from the story mean. "
+                "Choose interesting or challenging words (not basic words like 'the' or 'and'). "
+                "Definitions should be clear and simple but not childish. "
+                "For example: What does 'venture' mean? Choices: a risky journey, a type of food, a loud noise, a small animal. "
+                "Each question has exactly 4 choices. Return JSON only. Schema: "
+                '{"questions":[{"id":"q1","kind":"comprehension","question":"str","choices":["a","b","c","d"],'
+                '"answer_index":0,"explanation":"str"}]}'
+            )
+        else:
+            system = (
+                "You create simple vocabulary quizzes for children learning English. "
+                "Generate exactly 3 multiple-choice questions. "
+                "Each question asks what a word from the story means, using very simple English. "
+                "For example: What does 'said' mean? Choices: talked, ran, sat, ate. "
+                "Pick words that actually appear in the story. "
+                "Use very short, simple definitions a child can understand. "
+                "Each question has exactly 4 choices. "
+                "Return JSON only. Schema: "
+                '{"questions":[{"id":"q1","kind":"comprehension","question":"str","choices":["a","b","c","d"],'
+                '"answer_index":0,"explanation":"str"}]}'
+            )
+
+        raw = await complete(
+            prompt=(
+                f"Book: {doc.title}\n"
+                f"Story: {section.title}\n\n"
+                f"<story_text>\n{excerpt}\n</story_text>"
+            ),
+            system_prompt=system,
+            temperature=0.3,
+            max_tokens=2000,
+            max_retries=1,
+            timeout=120,
+            response_format={"type": "json_object"},
+        )
+
+        if not raw or not raw.strip():
+            raise RuntimeError("The model returned an empty quiz")
+
+        parsed = parse_json_response(raw)
+        questions_raw = parsed.get("questions", [])
+        questions: list[KidsQuizQuestion] = []
+        for i, q in enumerate(questions_raw[:3]):
+            choices = q.get("choices", [])
+            if len(choices) < 2:
+                continue
+            questions.append(
+                KidsQuizQuestion(
+                    id=q.get("id", f"q{i + 1}"),
+                    kind=q.get("kind", "comprehension"),
+                    question=q.get("question", ""),
+                    choices=[str(c) for c in choices[:4]],
+                    answer_index=max(0, min(len(choices) - 1, int(q.get("answer_index", 0)))),
+                    explanation=q.get("explanation", ""),
+                )
+            )
+
+        if not questions:
+            raise RuntimeError("No valid questions were generated")
+
+        result = KidsQuizResult(
+            document_id=document_id,
+            section_id=section_id,
+            questions=questions,
+            content_hash=content_hash,
+            model=model_name,
+            prompt_version=self.KIDS_QUIZ_PROMPT_VERSION,
+        )
+        quiz_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_json(quiz_path, result.model_dump(mode="json"))
+        return result
+
+    def update_kids_progress(
+        self,
+        document_id: str,
+        section_id: str,
+        *,
+        scroll_percent: float = 0.0,
+        epub_cfi: str = "",
+        section_href: str = "",
+    ) -> ReadingProgress:
+        """Update progress without enforcing Focus-Check (kids mode)."""
+        doc = self.load_document(document_id)
+        if doc is None:
+            raise ValueError("Reading document not found")
+        section = next((s for s in doc.sections if s.id == section_id), None)
+        if section is None:
+            raise ValueError("Reading section not found")
+        progress = self.load_progress(document_id)
+        progress.current_section_id = section.id
+        progress.current_section_index = section.index
+        progress.scroll_percent = max(0.0, min(100.0, float(scroll_percent)))
+        if epub_cfi:
+            progress.epub_cfi = epub_cfi
+        if section_href:
+            progress.section_href = section_href
+        self._save_progress(progress)
+        return progress
+
+
+
 _service: ImmersiveReadingService | None = None
 
 
@@ -1931,6 +2094,315 @@ def get_immersive_reading_service() -> ImmersiveReadingService:
     return _service
 
 
+
+def _hash_pin(pin: str) -> str:
+    """Hash a parent PIN using a salted comparison."""
+    import hashlib
+    salt = "deeptutor-kids-pin-v1"
+    return hashlib.sha256(f"{salt}:{pin}".encode()).hexdigest()
+
+
+def _verify_pin(pin: str, pin_hash: str) -> bool:
+    if not pin_hash:
+        return False
+    return hmac.compare_digest(_hash_pin(pin), pin_hash)
+
+
+class KidsManager:
+    """Manages child profiles, book assignments, and per-profile progress.
+
+    All data is stored as JSON files under the immersive-reading root's
+    ``kids/`` subdirectory, scoped to the current user's workspace.
+    """
+
+    def __init__(self) -> None:
+        self._pin_failures: dict[str, list[float]] = {}
+
+    def _kids_root(self) -> Path:
+        root = get_path_service().get_immersive_reading_dir() / "kids"
+        root.mkdir(parents=True, exist_ok=True)
+        return root
+
+    def _profiles_path(self) -> Path:
+        return self._kids_root() / "profiles.json"
+
+    def _assignments_path(self) -> Path:
+        return self._kids_root() / "assignments.json"
+
+    def _progress_dir(self) -> Path:
+        d = self._kids_root() / "progress"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+
+    def _progress_path(self, profile_id: str, document_id: str) -> Path:
+        return self._progress_dir() / f"{profile_id}_{document_id}.json"
+
+    # ── Profiles ───────────────────────────────────────────────────────
+
+    def list_profiles(self) -> list[KidsProfile]:
+        data = _read_json(self._profiles_path(), [])
+        return [KidsProfile(**p) for p in data]
+
+    def get_profile(self, profile_id: str) -> KidsProfile | None:
+        return next((p for p in self.list_profiles() if p.id == profile_id), None)
+
+    def create_profile(
+        self,
+        name: str,
+        *,
+        avatar: str = "default",
+        birth_date: str = "",
+        help_language: str = "en",
+        narration_rate: float = 0.8,
+        daily_limit_minutes: int = 30,
+        parent_pin: str = "",
+    ) -> KidsProfile:
+        profiles = self.list_profiles()
+        profile = KidsProfile(
+            id=uuid.uuid4().hex[:12],
+            name=name.strip() or "Child",
+            avatar=avatar,
+            birth_date=birth_date,
+            help_language=help_language,
+            narration_rate=max(0.5, min(1.5, narration_rate)),
+            daily_limit_minutes=max(5, min(120, daily_limit_minutes)),
+            pin_hash=_hash_pin(parent_pin) if parent_pin else "",
+        )
+        profiles.append(profile)
+        _write_json(self._profiles_path(), [p.model_dump(mode="json") for p in profiles])
+        return profile
+
+    def update_profile(self, profile_id: str, **kwargs: Any) -> KidsProfile:
+        profiles = self.list_profiles()
+        idx = next((i for i, p in enumerate(profiles) if p.id == profile_id), None)
+        if idx is None:
+            raise ValueError("Profile not found")
+        p = profiles[idx]
+        for key in ("name", "avatar", "birth_date", "help_language", "narration_rate", "daily_limit_minutes"):
+            if key in kwargs and kwargs[key] is not None:
+                setattr(p, key, kwargs[key])
+        if "parent_pin" in kwargs and kwargs["parent_pin"]:
+            p.pin_hash = _hash_pin(kwargs["parent_pin"])
+        p.updated_at = time.time()
+        profiles[idx] = p
+        _write_json(self._profiles_path(), [pp.model_dump(mode="json") for pp in profiles])
+        return p
+
+    def delete_profile(self, profile_id: str) -> None:
+        profiles = [p for p in self.list_profiles() if p.id != profile_id]
+        _write_json(self._profiles_path(), [p.model_dump(mode="json") for p in profiles])
+        # Remove assignments and progress for this profile
+        assignments = self.list_assignments()
+        assignments = [a for a in assignments if a.profile_id != profile_id]
+        _write_json(self._assignments_path(), [a.model_dump(mode="json") for a in assignments])
+        # Clean progress files
+        for f in self._progress_dir().glob(f"{profile_id}_*.json"):
+            f.unlink(missing_ok=True)
+
+    def verify_parent_pin(self, profile_id: str, pin: str) -> bool:
+        """Verify parent PIN with rate limiting."""
+        now = time.time()
+        failures = [t for t in self._pin_failures.get(profile_id, []) if now - t < 300]
+        if len(failures) >= 5:
+            return False
+        profile = self.get_profile(profile_id)
+        if profile is None:
+            return False
+        ok = _verify_pin(pin, profile.pin_hash)
+        if not ok:
+            failures.append(now)
+            self._pin_failures[profile_id] = failures
+        else:
+            self._pin_failures.pop(profile_id, None)
+        return ok
+
+    def has_pin(self, profile_id: str) -> bool:
+        p = self.get_profile(profile_id)
+        return bool(p and p.pin_hash)
+
+    # ── Assignments ────────────────────────────────────────────────────
+
+    def list_assignments(self, profile_id: str | None = None) -> list[KidsBookAssignment]:
+        data = _read_json(self._assignments_path(), [])
+        items = [KidsBookAssignment(**a) for a in data]
+        if profile_id:
+            items = [a for a in items if a.profile_id == profile_id]
+        return items
+
+    def assign_book(
+        self,
+        profile_id: str,
+        document_id: str,
+        *,
+        available_through_section_id: str = "",
+        available_through_section_index: int = 999,
+    ) -> KidsBookAssignment:
+        existing = self.list_assignments(profile_id)
+        match = next((a for a in existing if a.document_id == document_id), None)
+        if match:
+            match.status = "active"
+            match.available_through_section_id = available_through_section_id
+            match.available_through_section_index = available_through_section_index
+            match.updated_at = time.time()
+            self._save_assignments()
+            return match
+
+        ir_service = get_immersive_reading_service()
+        doc = ir_service.load_document(document_id)
+        title = doc.title if doc else document_id
+        sort_order = len(existing)
+        assignment = KidsBookAssignment(
+            id=uuid.uuid4().hex[:12],
+            profile_id=profile_id,
+            document_id=document_id,
+            document_title=title,
+            available_through_section_id=available_through_section_id,
+            available_through_section_index=available_through_section_index,
+            sort_order=sort_order,
+        )
+        existing.append(assignment)
+        _write_json(self._assignments_path(), [a.model_dump(mode="json") for a in existing])
+        return assignment
+
+    def unassign_book(self, profile_id: str, document_id: str) -> None:
+        assignments = [a for a in self.list_assignments() if not (a.profile_id == profile_id and a.document_id == document_id)]
+        _write_json(self._assignments_path(), [a.model_dump(mode="json") for a in assignments])
+
+    def update_assignment(self, profile_id: str, document_id: str, **kwargs: Any) -> KidsBookAssignment:
+        assignments = self.list_assignments()
+        idx = next(
+            (i for i, a in enumerate(assignments) if a.profile_id == profile_id and a.document_id == document_id),
+            None,
+        )
+        if idx is None:
+            raise ValueError("Assignment not found")
+        a = assignments[idx]
+        for key in ("status", "sort_order", "is_next_read", "available_through_section_id", "available_through_section_index"):
+            if key in kwargs and kwargs[key] is not None:
+                setattr(a, key, kwargs[key])
+        a.updated_at = time.time()
+        assignments[idx] = a
+        _write_json(self._assignments_path(), [aa.model_dump(mode="json") for aa in assignments])
+        return a
+
+    def _save_assignments(self) -> None:
+        assignments = self.list_assignments()
+        _write_json(self._assignments_path(), [a.model_dump(mode="json") for a in assignments])
+
+    def get_kids_library(self, profile_id: str) -> list[dict[str, Any]]:
+        """Return assigned books with progress for a child profile."""
+        assignments = [a for a in self.list_assignments(profile_id) if a.status == "active"]
+        assignments.sort(key=lambda a: a.sort_order)
+        ir_service = get_immersive_reading_service()
+        library: list[dict[str, Any]] = []
+        for a in assignments:
+            doc = ir_service.load_document(a.document_id)
+            if doc is None:
+                continue
+            progress = self.load_kids_progress(profile_id, a.document_id)
+            library.append({
+                "assignment": a.model_dump(mode="json"),
+                "document": ir_service._summary(doc),
+                "progress": progress.model_dump(mode="json"),
+            })
+        return library
+
+    # ── Progress ───────────────────────────────────────────────────────
+
+    def load_kids_progress(self, profile_id: str, document_id: str) -> KidsLearningProgress:
+        data = _read_json(self._progress_path(profile_id, document_id))
+        if data:
+            return KidsLearningProgress(**data)
+        return KidsLearningProgress(profile_id=profile_id, document_id=document_id)
+
+    def update_kids_progress_record(
+        self,
+        profile_id: str,
+        document_id: str,
+        *,
+        section_id: str = "",
+        section_index: int = 0,
+        scroll_percent: float = 0.0,
+        epub_cfi: str = "",
+        section_href: str = "",
+        time_delta: float = 0.0,
+    ) -> KidsLearningProgress:
+        progress = self.load_kids_progress(profile_id, document_id)
+        if section_id:
+            progress.current_section_id = section_id
+            progress.current_section_index = section_index
+        progress.scroll_percent = max(0.0, min(100.0, scroll_percent))
+        if epub_cfi:
+            progress.epub_cfi = epub_cfi
+        if section_href:
+            progress.section_href = section_href
+        progress.time_spent_seconds += time_delta
+        progress.last_read_at = time.time()
+        progress.updated_at = time.time()
+        _write_json(self._progress_path(profile_id, document_id), progress.model_dump(mode="json"))
+        return progress
+
+    def mark_section_completed(self, profile_id: str, document_id: str, section_id: str) -> KidsLearningProgress:
+        progress = self.load_kids_progress(profile_id, document_id)
+        if section_id not in progress.completed_section_ids:
+            progress.completed_section_ids.append(section_id)
+            progress.updated_at = time.time()
+            _write_json(self._progress_path(profile_id, document_id), progress.model_dump(mode="json"))
+        return progress
+
+    def add_stars(self, profile_id: str, document_id: str, stars: int) -> KidsLearningProgress:
+        progress = self.load_kids_progress(profile_id, document_id)
+        progress.total_stars += max(0, stars)
+        progress.updated_at = time.time()
+        _write_json(self._progress_path(profile_id, document_id), progress.model_dump(mode="json"))
+        return progress
+
+    def record_quiz(self, profile_id: str, document_id: str, score: int, total: int) -> KidsLearningProgress:
+        progress = self.load_kids_progress(profile_id, document_id)
+        progress.quiz_attempts += 1
+        progress.quiz_best_score = max(progress.quiz_best_score, score)
+        progress.updated_at = time.time()
+        _write_json(self._progress_path(profile_id, document_id), progress.model_dump(mode="json"))
+        return progress
+
+    def get_report(self, profile_id: str) -> dict[str, Any]:
+        """Aggregate learning report for a child profile."""
+        profile = self.get_profile(profile_id)
+        if profile is None:
+            raise ValueError("Profile not found")
+        library = self.get_kids_library(profile_id)
+        total_stars = sum(item["progress"]["total_stars"] for item in library)
+        total_time = sum(item["progress"]["time_spent_seconds"] for item in library)
+        total_quizzes = sum(item["progress"]["quiz_attempts"] for item in library)
+        return {
+            "profile": profile.model_dump(mode="json"),
+            "books": library,
+            "total_stars": total_stars,
+            "total_time_seconds": total_time,
+            "total_quiz_attempts": total_quizzes,
+            "total_books": len(library),
+        }
+
+    def is_section_allowed(self, profile_id: str, document_id: str, section_index: int) -> bool:
+        """Check if a child is allowed to read a section based on assignment limits."""
+        assignments = self.list_assignments(profile_id)
+        assignment = next((a for a in assignments if a.document_id == document_id and a.status == "active"), None)
+        if assignment is None:
+            return False
+        return section_index <= assignment.available_through_section_index
+
+
+# Singleton
+_kids_manager: KidsManager | None = None
+
+
+def get_kids_manager() -> KidsManager:
+    global _kids_manager
+    if _kids_manager is None:
+        _kids_manager = KidsManager()
+    return _kids_manager
+
+
 __all__ = [
     "CHUNK_CHAR_TARGET",
     "DESCRIPTION_CONTEXT_MIN",
@@ -1938,4 +2410,5 @@ __all__ = [
     "MAX_UPLOAD_BYTES",
     "SUPPORTED_FORMATS",
     "get_immersive_reading_service",
+    "get_kids_manager",
 ]

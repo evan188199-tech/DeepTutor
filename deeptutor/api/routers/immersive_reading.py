@@ -497,3 +497,265 @@ async def character_graph(document_id: str, request: CharacterGraphRequest) -> d
         pass
 
     return payload
+
+
+# ── Bilingual paired reading ────────────────────────────────────────────
+
+import asyncio
+
+from deeptutor.immersive_reading.bilingual.service import get_pairing_service
+
+
+class PairRequest(BaseModel):
+    en_document_id: str
+    zh_document_id: str
+    target_lang: str | None = None
+    translator: str = ""
+
+
+class ChapterMapUpdateRequest(BaseModel):
+    chapter_map: list[Any]
+
+
+class AnnotationRequest(BaseModel):
+    chapter_id: str
+    group_index: int
+    issue_type: Literal[
+        "misalignment", "wrong_chapter", "missing_translation", "translation_error", "other"
+    ]
+    note: str = Field(default="", max_length=4000)
+
+
+class ResolveAnnotationRequest(BaseModel):
+    resolved: bool = True
+
+
+class AlignmentOverridesRequest(BaseModel):
+    overrides_json: str = Field(min_length=2, max_length=100_000)
+
+
+@router.post("/bilingual/pair")
+async def bilingual_pair(request: PairRequest) -> dict[str, Any]:
+    """Create a bilingual pairing from two imported reading documents."""
+    try:
+        return get_pairing_service().pair_documents(
+            en_document_id=request.en_document_id,
+            zh_document_id=request.zh_document_id,
+            target_lang=request.target_lang,
+            translator=request.translator,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.get("/bilingual")
+async def bilingual_list_pairings() -> dict[str, Any]:
+    """List all bilingual pairings."""
+    return {"pairings": get_pairing_service().list_pairings()}
+
+
+@router.get("/bilingual/{pairing_id}")
+async def bilingual_get_pairing(pairing_id: str) -> dict[str, Any]:
+    """Get pairing details + chapter map."""
+    try:
+        return get_pairing_service().get_pairing(pairing_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.put("/bilingual/{pairing_id}/chapter-map")
+async def bilingual_update_chapter_map(
+    pairing_id: str, request: ChapterMapUpdateRequest
+) -> dict[str, Any]:
+    """Replace the chapter map with a user-edited version."""
+    try:
+        return get_pairing_service().update_chapter_map(pairing_id, request.chapter_map)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/bilingual/{pairing_id}/align")
+async def bilingual_align(pairing_id: str, force: bool = False) -> dict[str, Any]:
+    """Run or re-run paragraph alignment for all mapped chapters."""
+    try:
+        return await asyncio.to_thread(get_pairing_service().align, pairing_id, force)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/bilingual/{pairing_id}/section/{chapter_id}")
+async def bilingual_get_section(pairing_id: str, chapter_id: str) -> dict[str, Any]:
+    """Get aligned paragraph pairs for one chapter."""
+    try:
+        return get_pairing_service().get_bilingual_section(pairing_id, chapter_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/bilingual/{pairing_id}/report")
+async def bilingual_get_report(pairing_id: str) -> dict[str, Any]:
+    """Get the alignment review report."""
+    try:
+        return {"report": get_pairing_service().get_report(pairing_id)}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/bilingual/{pairing_id}/export")
+async def bilingual_export(pairing_id: str) -> FileResponse:
+    """Build and download a bilingual EPUB."""
+    try:
+        epub_path = await asyncio.to_thread(get_pairing_service().export_epub, pairing_id)
+        return FileResponse(
+            path=str(epub_path),
+            media_type="application/epub+zip",
+            filename=epub_path.name,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.get("/bilingual/{pairing_id}/annotations")
+async def bilingual_list_annotations(
+    pairing_id: str, status: str | None = None
+) -> dict[str, Any]:
+    """List annotations, optionally filtered by status."""
+    try:
+        annotations = get_pairing_service().list_annotations(pairing_id, status)
+        return {"annotations": annotations}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.post("/bilingual/{pairing_id}/annotations")
+async def bilingual_add_annotation(pairing_id: str, request: AnnotationRequest) -> dict[str, Any]:
+    """Flag a paragraph-group alignment issue for review."""
+    try:
+        return get_pairing_service().add_annotation(
+            pairing_id=pairing_id,
+            chapter_id=request.chapter_id,
+            group_index=request.group_index,
+            issue_type=request.issue_type,
+            note=request.note,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.put("/bilingual/{pairing_id}/annotations/{annotation_id}")
+async def bilingual_resolve_annotation(
+    pairing_id: str, annotation_id: str, request: ResolveAnnotationRequest
+) -> dict[str, Any]:
+    """Mark an annotation as resolved or reopen it."""
+    try:
+        return get_pairing_service().resolve_annotation(
+            pairing_id, annotation_id, request.resolved
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.delete("/bilingual/{pairing_id}/annotations/{annotation_id}")
+async def bilingual_delete_annotation(
+    pairing_id: str, annotation_id: str
+) -> dict[str, Any]:
+    """Delete an annotation."""
+    try:
+        get_pairing_service().delete_annotation(pairing_id, annotation_id)
+        return {"status": "deleted"}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.get("/bilingual/{pairing_id}/review-report")
+async def bilingual_review_report(pairing_id: str) -> dict[str, Any]:
+    """Export all open annotations as a structured markdown report for Codex."""
+    try:
+        report_path = get_pairing_service().export_review_report(pairing_id)
+        return {"report": report_path.read_text(encoding="utf-8")}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.put("/bilingual/{pairing_id}/alignment-overrides")
+async def bilingual_save_overrides(
+    pairing_id: str, request: AlignmentOverridesRequest
+) -> dict[str, Any]:
+    """Save alignment overrides JSON (e.g. produced by Codex from the review report).
+
+    After saving, call POST /bilingual/{pairing_id}/align?force=true to re-align.
+    """
+    try:
+        return get_pairing_service().save_alignment_overrides(
+            pairing_id, request.overrides_json
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@router.delete("/bilingual/{pairing_id}")
+async def bilingual_delete(pairing_id: str) -> dict[str, Any]:
+    """Delete a bilingual pairing."""
+    try:
+        get_pairing_service().delete_pairing(pairing_id)
+        return {"status": "deleted", "pairing_id": pairing_id}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+# ── Kids experience mode ───────────────────────────────────────────────────
+
+
+class ExperienceModeRequest(BaseModel):
+    mode: Literal["standard", "kids"] = "kids"
+
+
+class KidsQuizRequest(BaseModel):
+    section_id: str
+    force_refresh: bool = False
+
+
+class KidsProgressRequest(BaseModel):
+    section_id: str
+    scroll_percent: float = Field(default=0, ge=0, le=100)
+    epub_cfi: str = Field(default="", max_length=500)
+    section_href: str = Field(default="", max_length=500)
+
+
+@router.put("/documents/{document_id}/experience-mode")
+async def set_experience_mode(document_id: str, request: ExperienceModeRequest):
+    try:
+        return get_immersive_reading_service().set_experience_mode(document_id, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post("/documents/{document_id}/kids-quiz")
+async def generate_kids_quiz(document_id: str, request: KidsQuizRequest):
+    try:
+        result = await get_immersive_reading_service().generate_kids_quiz(
+            document_id, request.section_id, force_refresh=request.force_refresh
+        )
+        return result.model_dump(mode="json")
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Kids quiz generation failed document=%s", document_id)
+        raise HTTPException(
+            status_code=502, detail=f"Quiz generation failed: {exc}"
+        ) from exc
+
+
+@router.put("/documents/{document_id}/kids-progress")
+async def update_kids_progress(document_id: str, request: KidsProgressRequest):
+    try:
+        progress = get_immersive_reading_service().update_kids_progress(
+            document_id,
+            request.section_id,
+            scroll_percent=request.scroll_percent,
+            epub_cfi=request.epub_cfi,
+            section_href=request.section_href,
+        )
+        return {"progress": progress.model_dump(mode="json")}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
