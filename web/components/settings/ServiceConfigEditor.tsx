@@ -10,19 +10,30 @@ import {
   Loader2,
   Pencil,
   Plus,
+  RefreshCw,
   Terminal,
   Trash2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import ProviderIcon from "@/components/common/ProviderIcon";
-import { reasoningEffortOptions } from "@/lib/reasoning-effort";
+import { apiFetch, apiUrl } from "@/lib/api";
+import {
+  reasoningEffortOptions,
+  reasoningEffortOptionsFromSupportedLevels,
+} from "@/lib/reasoning-effort";
 import { CodexOAuthCard } from "./CodexOAuthCard";
-import { isCodexOAuthProfile, isManagedCodexProfile } from "./codex-profile";
+import { CodeBuddyAuthCard } from "./CodeBuddyAuthCard";
+import {
+  isBoundManagedCodexProfile,
+  isCodexOAuthProfile,
+  isManagedCodexProfile,
+} from "./codex-profile";
 import {
   type CatalogModel,
   type CatalogProfile,
   type LlmContextWindowDetection,
+  type ProviderOption,
   type ServiceName,
   getActiveModel,
   getActiveProfile,
@@ -77,6 +88,7 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
     llmContextDetection,
     applyDetectedContextWindow,
     runDetailedTest,
+    setToast,
   } = useSettings();
 
   const activeProfile = getActiveProfile(draft, service);
@@ -89,6 +101,7 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
     (option) => option.value === activeProviderValue,
   );
   const isManagedCodex = isManagedCodexProfile(activeProfile);
+  const isBoundManagedCodex = isBoundManagedCodexProfile(activeProfile);
   const isCodexOAuth = isCodexOAuthProfile(
     service,
     activeProviderValue,
@@ -102,6 +115,7 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
   const [editingModelName, setEditingModelName] = useState("");
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [editingProfileName, setEditingProfileName] = useState("");
+  const [modelsSyncing, setModelsSyncing] = useState(false);
 
   // Reset API-key visibility whenever we land on a different profile or
   // switch services — same effect the old code had, but using React's
@@ -137,12 +151,82 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
       : null;
   const reasoningOptions =
     service === "llm" && activeModel
-      ? reasoningEffortOptions(
-          activeProfile?.binding,
-          activeModel.model,
-          activeModel.reasoning_effort,
-        )
+      ? isManagedCodex
+        ? isBoundManagedCodex
+          ? reasoningEffortOptionsFromSupportedLevels(
+              activeModel.codex_supported_reasoning_levels ?? [],
+            )
+          : []
+        : reasoningEffortOptions(
+            activeProfile?.binding,
+            activeModel.model,
+            activeModel.reasoning_effort,
+          )
       : [];
+
+  const syncProviderModels = async (
+    connection?: Pick<CatalogProfile, "binding" | "base_url" | "api_key">,
+  ) => {
+    if (service !== "llm" || !activeProfile || modelsSyncing) return;
+    const binding = connection?.binding ?? activeProfile.binding ?? "";
+    const baseUrl = connection?.base_url ?? activeProfile.base_url ?? "";
+    const apiKey = connection?.api_key ?? activeProfile.api_key ?? "";
+    if (!binding || (binding !== "codebuddy" && !baseUrl.trim())) return;
+
+    const profileId = activeProfile.id;
+    setModelsSyncing(true);
+    try {
+      const response = await apiFetch(apiUrl("/api/v1/settings/fetch-models"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          binding,
+          base_url: baseUrl,
+          api_key: apiKey || null,
+        }),
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => ({}))) as {
+          detail?: string;
+        };
+        throw new Error(payload.detail || `HTTP ${response.status}`);
+      }
+      const payload = (await response.json()) as {
+        models?: Array<{ id: string; name?: string }>;
+      };
+      const fetched = payload.models || [];
+      if (fetched.length === 0) throw new Error(t("No models returned"));
+
+      mutateCatalog((next) => {
+        const target = next.services.llm;
+        const profile = target.profiles.find((item) => item.id === profileId);
+        if (!profile || profile.binding !== binding) return;
+        const existing = new Map(
+          profile.models.map((model) => [model.model, model]),
+        );
+        profile.models = fetched.map((item, index) => {
+          const previous = existing.get(item.id);
+          return previous
+            ? { ...previous, name: item.name || previous.name, model: item.id }
+            : {
+                id: `llm-model-${Date.now()}-${index}`,
+                name: item.name || item.id,
+                model: item.id,
+              };
+        });
+        if (
+          !profile.models.some((model) => model.id === target.active_model_id)
+        ) {
+          target.active_model_id = profile.models[0]?.id ?? null;
+        }
+      });
+      setToast(t("Synced {{count}} models", { count: fetched.length }));
+    } catch (error) {
+      setToast(error instanceof Error ? error.message : String(error));
+    } finally {
+      setModelsSyncing(false);
+    }
+  };
 
   const startModelRename = (model: CatalogModel) => {
     setEditingModelId(model.id);
@@ -389,6 +473,44 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
                 isSupportedSearchProvider={isSupportedSearchProvider}
                 isDeprecatedSearchProvider={isDeprecatedSearchProvider}
                 isPerplexityMissingKey={isPerplexityMissingKey}
+                onProviderChanged={(provider, previousProvider) => {
+                  if (service !== "llm" || !activeProfile) return;
+                  const crossesCodeBuddyBoundary =
+                    provider.value === "codebuddy" ||
+                    previousProvider === "codebuddy";
+                  if (crossesCodeBuddyBoundary) {
+                    const profileId = activeProfile.id;
+                    mutateCatalog((next) => {
+                      const target = next.services.llm;
+                      const profile = target.profiles.find(
+                        (item) => item.id === profileId,
+                      );
+                      if (!profile || profile.binding !== provider.value)
+                        return;
+                      if (provider.value === "codebuddy") {
+                        profile.models = [];
+                        target.active_model_id = null;
+                        return;
+                      }
+                      const modelId = `llm-model-${Date.now()}`;
+                      profile.models = [
+                        {
+                          id: modelId,
+                          name: defaultModelLabel(language, 1),
+                          model: "",
+                        },
+                      ];
+                      target.active_model_id = modelId;
+                    });
+                  }
+                  if (provider.value === "codebuddy") {
+                    void syncProviderModels({
+                      binding: provider.value,
+                      base_url: provider.base_url || "",
+                      api_key: "",
+                    });
+                  }
+                }}
               />
             </div>
 
@@ -400,6 +522,20 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
                   </div>
                   {!isCodexOAuth && (
                     <div className="flex items-center gap-2">
+                      {service === "llm" &&
+                        activeProfile.binding === "codebuddy" && (
+                          <button
+                            type="button"
+                            onClick={() => void syncProviderModels()}
+                            disabled={modelsSyncing}
+                            className="inline-flex items-center gap-1 rounded-lg border border-[var(--border)]/50 px-2.5 py-1 text-[12px] text-[var(--muted-foreground)] transition-colors hover:border-[var(--border)] hover:text-[var(--foreground)] disabled:opacity-40"
+                          >
+                            <RefreshCw
+                              className={`h-3 w-3 ${modelsSyncing ? "animate-spin" : ""}`}
+                            />
+                            {t("Sync models")}
+                          </button>
+                        )}
                       <button
                         type="button"
                         onClick={() => addModel(service)}
@@ -502,43 +638,49 @@ export function ServiceConfigEditor({ service }: { service: ServiceName }) {
                     })}
                   </div>
                 )}
-                {activeModel && !isCodexOAuth && (
+                {activeModel && (!isCodexOAuth || isBoundManagedCodex) && (
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <div className="mb-1.5 text-[12px] text-[var(--muted-foreground)]">
-                        {t("Model ID")}
+                    {!isCodexOAuth && (
+                      <div>
+                        <div className="mb-1.5 text-[12px] text-[var(--muted-foreground)]">
+                          {t("Model ID")}
+                        </div>
+                        <input
+                          className={inputClass}
+                          value={activeModel.model}
+                          onChange={(e) =>
+                            updateModelField(service, "model", e.target.value)
+                          }
+                          placeholder="gpt-4o"
+                        />
                       </div>
-                      <input
-                        className={inputClass}
-                        value={activeModel.model}
-                        onChange={(e) =>
-                          updateModelField(service, "model", e.target.value)
-                        }
-                        placeholder="gpt-4o"
-                      />
-                    </div>
+                    )}
                     {service === "llm" && (
                       <>
-                        <div>
-                          <div className="mb-1.5 text-[12px] text-[var(--muted-foreground)]">
-                            {t("Context Window")}
-                          </div>
-                          <input
-                            className={inputClass}
-                            inputMode="numeric"
-                            value={activeModel.context_window || ""}
-                            onChange={(e) =>
-                              updateContextWindowField(e.target.value)
-                            }
-                            placeholder="65536"
-                          />
-                          <ContextWindowMeta model={activeModel} />
-                        </div>
-                        <ContextWindowDetectionBanner
-                          model={activeModel}
-                          detection={activeLlmDetection}
-                          onApply={applyDetectedContextWindow}
-                        />
+                        {!isCodexOAuth && (
+                          <>
+                            <div>
+                              <div className="mb-1.5 text-[12px] text-[var(--muted-foreground)]">
+                                {t("Context Window")}
+                              </div>
+                              <input
+                                className={inputClass}
+                                inputMode="numeric"
+                                value={activeModel.context_window || ""}
+                                onChange={(e) =>
+                                  updateContextWindowField(e.target.value)
+                                }
+                                placeholder="65536"
+                              />
+                              <ContextWindowMeta model={activeModel} />
+                            </div>
+                            <ContextWindowDetectionBanner
+                              model={activeModel}
+                              detection={activeLlmDetection}
+                              onApply={applyDetectedContextWindow}
+                            />
+                          </>
+                        )}
                         {reasoningOptions.length > 0 && (
                           <div>
                             <div className="mb-1.5 text-[12px] text-[var(--muted-foreground)]">
@@ -1013,6 +1155,7 @@ function ProfileFields({
   isSupportedSearchProvider,
   isDeprecatedSearchProvider,
   isPerplexityMissingKey,
+  onProviderChanged,
 }: {
   service: ServiceName;
   profile: CatalogProfile;
@@ -1022,6 +1165,10 @@ function ProfileFields({
   isSupportedSearchProvider: boolean;
   isDeprecatedSearchProvider: boolean;
   isPerplexityMissingKey: boolean;
+  onProviderChanged: (
+    provider: ProviderOption,
+    previousProvider: string,
+  ) => void;
 }) {
   const { t } = useTranslation();
   const { providers, updateProfileField, updateModelField } = useSettings();
@@ -1039,12 +1186,14 @@ function ProfileFields({
     providerOption,
     profile,
   );
+  const isCodeBuddyAuth = service === "llm" && providerValue === "codebuddy";
 
-  const fields = isCodexOAuth
-    ? { apiKey: false, baseUrl: false, baseUrlRequired: false }
-    : service === "search"
-      ? searchProviderFields(profile.provider)
-      : { apiKey: true, baseUrl: true, baseUrlRequired: false };
+  const fields =
+    isCodexOAuth || isCodeBuddyAuth
+      ? { apiKey: false, baseUrl: false, baseUrlRequired: false }
+      : service === "search"
+        ? searchProviderFields(profile.provider)
+        : { apiKey: true, baseUrl: true, baseUrlRequired: false };
   const searxngMissingBaseUrl =
     fields.baseUrlRequired && !String(profile.base_url || "").trim();
 
@@ -1083,8 +1232,14 @@ function ProfileFields({
               if (renamed !== profile.name) {
                 updateProfileField(service, "name", renamed);
               }
-              if (match?.base_url) {
+              if (val === "codebuddy") {
+                updateProfileField(service, "base_url", "");
+                updateProfileField(service, "api_key", "");
+              } else if (match?.base_url) {
                 updateProfileField(service, "base_url", match.base_url);
+              }
+              if (match) {
+                onProviderChanged(match, providerValue);
               }
               if (service === "embedding" && match?.default_dim) {
                 updateModelField(service, "dimension", match.default_dim);
@@ -1147,6 +1302,11 @@ function ProfileFields({
       {isCodexOAuth && (
         <div className="sm:col-span-2">
           <CodexOAuthCard />
+        </div>
+      )}
+      {isCodeBuddyAuth && (
+        <div className="sm:col-span-2">
+          <CodeBuddyAuthCard />
         </div>
       )}
       {fields.baseUrl && (
@@ -1215,7 +1375,7 @@ function ProfileFields({
           </div>
         </div>
       )}
-      {!isCodexOAuth && (
+      {!isCodexOAuth && !isCodeBuddyAuth && (
         <div className="sm:col-span-2 rounded-xl border border-[var(--border)]/60 bg-[var(--muted)]/20">
           <button
             type="button"

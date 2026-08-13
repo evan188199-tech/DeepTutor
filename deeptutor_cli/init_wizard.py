@@ -74,6 +74,12 @@ LLM_FALLBACK_MODELS: dict[str, tuple[str, ...]] = {
         "anthropic/claude-sonnet-4-6",
         "deepseek/deepseek-chat",
     ),
+    "orcarouter": (
+        "orcarouter/auto",
+        "anthropic/claude-sonnet-4-6",
+        "deepseek/deepseek-v4-pro",
+        "openai/gpt-4o",
+    ),
     "ollama": ("llama3.2", "qwen2.5", "mistral"),
 }
 
@@ -109,6 +115,7 @@ EMBEDDING_FALLBACK_MODELS: dict[str, tuple[str, ...]] = {
     "jina": ("jina-embeddings-v3", "jina-embeddings-v2-base-en"),
     "cohere": ("embed-v4.0", "embed-multilingual-v3.0", "embed-english-v3.0"),
     "openrouter": ("openai/text-embedding-3-large",),
+    "orcarouter": ("openai/text-embedding-3-large",),
     "vllm": ("BAAI/bge-m3",),
     "ollama": ("nomic-embed-text", "mxbai-embed-large", "snowflake-arctic-embed"),
 }

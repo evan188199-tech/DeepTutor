@@ -739,7 +739,7 @@ The repo ships a root [`SKILL.md`](SKILL.md) — a ~150-line handover doc that t
 | `deeptutor book list/health/refresh-fingerprints` | Inspect books and refresh source fingerprints |
 | `deeptutor plugin list/info` | Inspect registered tools and capabilities |
 | `deeptutor config show` | Print configuration summary |
-| `deeptutor provider login <provider>` | Provider auth (`openai-codex` OAuth login; `github-copilot` validates an existing Copilot auth session) |
+| `deeptutor provider login <provider>` | Provider auth (`openai-codex` OAuth login; `github-copilot` validates an existing Copilot auth session; `codebuddy` validates CodeBuddy SDK auth and starts login when needed) |
 
 </details>
 
@@ -813,6 +813,22 @@ deeptutor skill install clawhub:git-release-notes@1.0.1
 Add more registries in `settings/skill_hubs.json`: a `type: "clawhub"` entry points at any compatible HTTP API (EduHub and ClawHub both speak it), `type: "command"` wraps whatever fetch CLI a registry ships, and `"default"` chooses the hub used for bare slugs. All of them feed the same import gate.
 
 </details>
+
+## 🤝 Open Source Partners
+
+<p align="center">
+  <a href="https://github.com/VectifyAI/PageIndex" target="_blank">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/figs/partners/pageindex-mark-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="assets/figs/partners/pageindex-mark.svg">
+      <img src="assets/figs/partners/pageindex-mark.svg" alt="PageIndex" height="38">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  Code <b><code>DEEPTUTOR20</code></b> — <b>$20 off</b> your first <a href="https://developer.pageindex.ai/">PageIndex subscription</a> (new customers · Standard / Pro / Max)
+</p>
 
 ## 🌐 Community
 

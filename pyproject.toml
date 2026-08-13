@@ -33,7 +33,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "aiosqlite>=0.19.0",
-    "typer[all]>=0.9.0",
+    "typer>=0.9.0",
     "rich>=13.0.0",
     "prompt_toolkit>=3.0.36",
     "pyte>=0.8.1",  # in-memory terminal emulator: scrape Claude Code's /model TUI on sync
@@ -107,6 +107,15 @@ cli = [
     "reportlab>=4.0.0",
     "defusedxml>=0.7.1",
 ]
+
+# CodeBuddy chat works over HTTP with the login state the IDE plugin / CLI
+# already stores. This extra adds the Agent SDK (a ~130 MB bundled headless
+# CLI) for in-app browser login and CLI-driven agent tools.
+# Upper-bounded on purpose: the provider probes the SDK for its turn-limit
+# and permission-mode kwargs, and a minor bump that renames them would make
+# every options build fail. Not in `all` — it vendors a ~130 MB headless CLI
+# and chat works over plain HTTP without it.
+codebuddy = ["codebuddy-agent-sdk>=0.1.24,<0.2"]
 
 # Compatibility extra for source installs and older docs. These packages are
 # already included in the public `deeptutor` wheel.
