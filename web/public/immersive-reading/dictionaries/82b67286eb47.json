@@ -1,0 +1,101 @@
+{
+  "client": {
+    "word": "client",
+    "phonetic": "'klaiәnt",
+    "definitions": [
+      {
+        "part_of_speech": "n.",
+        "definition": "a person who receives a service",
+        "chinese": "n. 客户, 顾客, 委托人"
+      }
+    ]
+  },
+  "flickered": {
+    "word": "flickered",
+    "phonetic": "ˈflikəd",
+    "definitions": [
+      {
+        "part_of_speech": "v.",
+        "definition": "past form of flicker",
+        "chinese": "v. （通常指灯光）闪烁, 摇曳"
+      }
+    ]
+  },
+  "harbour": {
+    "word": "harbour",
+    "phonetic": "'hɑ:bә",
+    "definitions": [
+      {
+        "part_of_speech": "n.",
+        "definition": "a sheltered port where ships can stay",
+        "chinese": "n. 港, 避难所"
+      }
+    ]
+  },
+  "lantern": {
+    "word": "lantern",
+    "phonetic": "'læntәn",
+    "definitions": [
+      {
+        "part_of_speech": "n.",
+        "definition": "a light in a transparent protective case",
+        "chinese": "n. 灯笼, 提灯, 航标灯"
+      }
+    ]
+  },
+  "quiet": {
+    "word": "quiet",
+    "phonetic": "'kwaiәt",
+    "definitions": [
+      {
+        "part_of_speech": "a.",
+        "definition": "making little or no noise",
+        "chinese": "a. 安静的, 静止的, 寂静的"
+      }
+    ]
+  },
+  "response": {
+    "word": "response",
+    "phonetic": "ri'spɒns",
+    "definitions": [
+      {
+        "part_of_speech": "n.",
+        "definition": "an answer or reaction",
+        "chinese": "n. 反应, 回答, 响应"
+      }
+    ]
+  },
+  "retried": {
+    "word": "retried",
+    "phonetic": "ri:ˈtraid",
+    "definitions": [
+      {
+        "part_of_speech": "v.",
+        "definition": "past form of retry",
+        "chinese": "v. 再试, 重试"
+      }
+    ]
+  },
+  "returned": {
+    "word": "returned",
+    "phonetic": "ri'tә:nd",
+    "definitions": [
+      {
+        "part_of_speech": "v.",
+        "definition": "came or gave back",
+        "chinese": "v. 返回, 归还"
+      }
+    ]
+  },
+  "service": {
+    "word": "service",
+    "phonetic": "'sә:vis",
+    "definitions": [
+      {
+        "part_of_speech": "n.",
+        "definition": "work done by one person or group for another",
+        "chinese": "n. 服务, 业务"
+      }
+    ]
+  }
+}
