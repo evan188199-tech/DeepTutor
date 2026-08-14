@@ -523,7 +523,7 @@ export default function KidsEpubReader({ document: doc, onBack, onError }: Props
           <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
             <div className="mb-3 flex items-center justify-between">
               <span className="flex items-center gap-2 font-bold text-indigo-600">
-                <Languages size={18} /> \u4e2d\u6587
+                <Languages size={18} /> {"\u4e2d\u6587"}
               </span>
               <button type="button" onClick={() => setTranslateResult(null)} className="rounded-lg p-1.5 hover:bg-gray-100">
                 <X size={18} />

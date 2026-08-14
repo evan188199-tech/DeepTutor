@@ -270,7 +270,7 @@ export default function BookLibrary({
             {t("No books match “{{query}}”.", { query })}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {filtered.map((book) => {
               const isPendingDelete = pendingDeleteId === book.id;
               const status = STATUS_STYLES[book.status] || STATUS_STYLES.draft;
@@ -296,7 +296,7 @@ export default function BookLibrary({
                 >
                   {/* Cover */}
                   <div
-                    className="relative h-28 w-full overflow-hidden"
+                    className="relative h-40 w-full overflow-hidden"
                     style={coverStyle}
                   >
                     {/* Soft glow accent */}

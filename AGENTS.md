@@ -136,3 +136,66 @@ Source extras (.[ extra ], defined in pyproject.toml):
 .[dev]            — Test / lint tooling
 .[all]            — Everything above
 ```
+
+## Engineering Delivery Requirements
+
+- Before development, research the relevant open-source context: search for
+  related issues, pull requests, the current implementation, and tests. Cite
+  adopted issues or PRs by number or URL in the delivery report.
+- Use this reference priority: current code and tests; target-branch PRs that
+  are merged and well-validated; confirmed issues or roadmap items; open or
+  draft PRs.
+- Do not copy an older solution mechanically. Check its target branch,
+  compatibility with the current architecture, test evidence, and likely
+  follow-up evolution. Record obsolete or conflicting PRs explicitly.
+- If GitHub is unavailable, continue with local Git history and repository
+  documentation, and disclose the research limitation.
+- Follow `CONTRIBUTING.md` for upstream work. Use `dev` as the usual target
+  branch and `multi-user` for multi-user changes; never silently switch the
+  current branch.
+- Protect existing worktree changes and generated artifacts. Keep the change
+  scope narrow, distinguish new failures from pre-existing failures, and do
+  not clean up unrelated uncommitted work.
+
+### Verification Matrix
+
+- For Python changes, focus on `pytest`; when warranted, run
+  `pytest -q tests deeptutor/learning/tests`.
+- For Python quality, run `ruff check`, `ruff format --check`, or the relevant
+  pre-commit checks when configured.
+- For Web changes, run `npm run test:node`, `npm run lint`, and `npm run build`;
+  add `npm run i18n:check` when copy or locale files are involved.
+- For UI features, actually inspect loading, skeleton, empty, error, desktop,
+  and mobile/responsive states.
+- Choose checks in proportion to risk, run the relevant application flow, and
+  report each acceptance item as `PASS`, `FAIL`, or `BLOCKED` with evidence.
+  Continue fixing failures until they pass; never claim completion for an
+  unverified item.
+
+### Delivery gates
+
+- Follow this default loop for non-trivial work: **research → decision → acceptance checklist → confirmation → development → real verification → fix-and-verify closure**.
+- Before development, read repository rules, relevant code and tests, and current worktree status. Do not ask the user for facts that can be discovered locally.
+- Ask only about decisions that materially change product behavior, architecture, security, or compatibility. Make reasonable assumptions for non-critical details and record them.
+- For a genuine major trade-off, present three materially different enterprise-grade options with benefits, cost, risks, and a recommendation. Do not manufacture three options for a simple fix or explicit issue.
+- For non-trivial work, publish a concise Markdown acceptance checklist and wait for confirmation before coding. For clear, low-risk, repetitive work, self-confirm and record that decision.
+- The checklist should cover applicable items: background and goal; core flow; architecture and interfaces; data and permissions; error and empty states; skeleton and loading states; terminal and responsive behavior; compatibility and migration; tests; and success criteria.
+- After implementation, run relevant tests and the application flow. Report every checklist item as `PASS`, `FAIL`, or `BLOCKED` with evidence. Fix failures and rerun verification; do not claim completion for unverified items.
+
+### Research and upstream reference order
+
+- Search same-topic issues, PRs, current implementation, and tests for every development item.
+- Prefer references in this order: current code and tests; merged and well-validated PRs targeting the current branch; confirmed issues or roadmap items; open or draft PRs.
+- Check target branch, architecture fit, test evidence, compatibility, and future evolution before adopting any precedent. Record stale or conflicting references.
+- When GitHub is unavailable, use local Git history and repository documentation and disclose that limitation.
+
+### Branch and change-boundary rules
+
+- Follow `CONTRIBUTING.md`: normally target `dev`; use `multi-user` for multi-user changes. Never silently switch the current branch.
+- Preserve existing user changes and generated artifacts. Distinguish pre-existing failures from regressions, and never clean unrelated uncommitted work.
+
+### Acceptance and verification record
+
+- Record assumptions, the confirmation decision (or low-risk self-confirmation), selected checks, and evidence in the delivery report.
+- For UI changes, verify loading, skeleton, empty, error, desktop, mobile, and responsive states when applicable.
+- Use `PASS / FAIL / BLOCKED` per acceptance item. A `FAIL` requires another repair-and-rerun cycle; a `BLOCKED` must name the missing access, dependency, or environment evidence.

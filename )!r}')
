@@ -1,0 +1,4 @@
+  File "<string>", line 5
+    print(f'{a} = {getattr(c, a, 
+                          ^
+SyntaxError: '(' was never closed

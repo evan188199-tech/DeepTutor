@@ -393,6 +393,18 @@ class PathService:
         (root / "assets").mkdir(parents=True, exist_ok=True)
         return root
 
+    def get_immersive_reading_bilingual_dir(self) -> Path:
+        """Root directory for bilingual reading pairings."""
+        return self.get_immersive_reading_dir() / "bilingual"
+
+    def get_immersive_reading_pairing_root(self, pairing_id: str) -> Path:
+        return self.get_immersive_reading_bilingual_dir() / f"pairing_{pairing_id}"
+
+    def ensure_immersive_reading_pairing_root(self, pairing_id: str) -> Path:
+        root = self.get_immersive_reading_pairing_root(pairing_id)
+        (root / "sections").mkdir(parents=True, exist_ok=True)
+        return root
+
     def get_run_code_workspace_dir(self) -> Path:
         return self.get_chat_feature_dir("_detached_code_execution")
 
