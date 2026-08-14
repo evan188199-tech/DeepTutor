@@ -28,6 +28,7 @@ import {
   ApiRequestError,
 } from "@/lib/immersive-reading-api";
 import { extractDictionaryWord, type DictionaryAnchorRect } from "@/lib/dictionary-ui";
+import { matchBilingualSentence, type BilingualSide } from "@/lib/bilingual-sentence";
 import {
   getCachedWord,
   setCachedWord,
@@ -57,12 +58,21 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
   const [flagTarget, setFlagTarget] = useState<number | null>(null);
   const [showReview, setShowReview] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [dictPopover, setDictPopover] = useState<{ word: string; context: string; anchor: DictionaryAnchorRect; selectedText: string; initialMode: "dictionary" | "translate" } | null>(null);
+  const [dictPopover, setDictPopover] = useState<{
+    word: string;
+    context: string;
+    anchor: DictionaryAnchorRect;
+    selectedText: string;
+    initialMode: "dictionary" | "translate";
+    targetLanguage: "Chinese" | "English";
+    alignedTranslation: string | null;
+  } | null>(null);
   const [dictResult, setDictResult] = useState<DictionaryResult | null>(null);
   const [dictLoading, setDictLoading] = useState(false);
   const [dictError, setDictError] = useState<string | null>(null);
   const dictReqIdRef = useRef(0);
   const dictAbortRef = useRef<AbortController | null>(null);
+  const offlineDictionaryRef = useRef<Promise<Record<string, DictionaryResult>> | null>(null);
   const lastSelectionRef = useRef("");
 
   useEffect(() => {
@@ -160,6 +170,20 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     }
   };
 
+  const loadOfflineDictionary = useCallback(() => {
+    if (!offlineDictionaryRef.current) {
+      offlineDictionaryRef.current = fetch(
+        `/immersive-reading/dictionaries/${encodeURIComponent(pairingId)}.json`,
+      )
+        .then(async (response) => {
+          if (!response.ok) return {};
+          return (await response.json()) as Record<string, DictionaryResult>;
+        })
+        .catch(() => ({}));
+    }
+    return offlineDictionaryRef.current;
+  }, [pairingId]);
+
   const handleDictionaryLookup = useCallback(async (word: string, context: string) => {
     dictAbortRef.current?.abort();
     const controller = new AbortController();
@@ -179,6 +203,15 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     setDictResult(null);
     setDictError(null);
     try {
+      const offline = await loadOfflineDictionary();
+      const offlineResult = offline[word.trim().toLowerCase()];
+      if (offlineResult) {
+        if (reqId !== dictReqIdRef.current) return;
+        setCachedWord(word, offlineResult);
+        setDictResult(offlineResult);
+        setDictError(null);
+        return;
+      }
       const result = await immersiveReadingApi.dictionary(word, context, controller.signal);
       if (reqId !== dictReqIdRef.current) return;
       setCachedWord(word, result);
@@ -188,7 +221,7 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
       const msg = err instanceof Error ? err.message : String(err);
       const status = err instanceof ApiRequestError ? err.status : undefined;
       if (status === 503) {
-        setDictError(msg || t("Local dictionary unavailable. Run `ollama serve` then `ollama pull qwen3.5:2b`."));
+        setDictError(msg || t("Offline dictionary unavailable."));
       } else if (status === 504) {
         setDictError(t("Dictionary lookup timed out. The local model may still be loading."));
       } else {
@@ -197,14 +230,43 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     } finally {
       if (reqId === dictReqIdRef.current) setDictLoading(false);
     }
-  }, [t]);
+  }, [loadOfflineDictionary, t]);
 
-  const handleTranslateText = useCallback(async (text: string) => {
+  const showTranslation = useCallback((
+    text: string,
+    targetLanguage: "Chinese" | "English",
+    translation: string,
+  ) => {
+    setCachedTranslation(text, targetLanguage, translation);
+    setDictResult({
+      word: text.length > 30 ? text.slice(0, 30) + "\u2026" : text,
+      phonetic: "",
+      definitions: [],
+      context_note: translation,
+    });
+    setDictError(null);
+    setDictLoading(false);
+  }, []);
+
+  const handleAlignedTranslate = useCallback((
+    text: string,
+    targetLanguage: "Chinese" | "English",
+    translation: string,
+  ) => {
+    dictAbortRef.current?.abort();
+    dictReqIdRef.current++;
+    showTranslation(text, targetLanguage, translation);
+  }, [showTranslation]);
+
+  const handleTranslateText = useCallback(async (
+    text: string,
+    targetLanguage: "Chinese" | "English" = "Chinese",
+  ) => {
     dictAbortRef.current?.abort();
     const controller = new AbortController();
     dictAbortRef.current = controller;
     const reqId = ++dictReqIdRef.current;
-    const targetLang = "Chinese";
+    const targetLang = targetLanguage;
     setDictLoading(true);
     setDictResult(null);
     // Client-side cache: instant display for previously translated text.
@@ -223,14 +285,7 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     try {
       const result = await immersiveReadingApi.translate(text, targetLang, controller.signal);
       if (controller.signal.aborted || reqId !== dictReqIdRef.current) return;
-      setCachedTranslation(text, targetLang, result.translation);
-      setDictResult({
-        word: text.length > 30 ? text.slice(0, 30) + "\u2026" : text,
-        phonetic: "",
-        definitions: [],
-        context_note: result.translation,
-      });
-      setDictError(null);
+      showTranslation(text, targetLang, result.translation);
     } catch (err) {
       if (controller.signal.aborted || reqId !== dictReqIdRef.current) return;
       const status = err instanceof ApiRequestError ? err.status : undefined;
@@ -251,7 +306,7 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     } finally {
       if (reqId === dictReqIdRef.current) setDictLoading(false);
     }
-  }, [t]);
+  }, [showTranslation, t]);
 
   const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -268,6 +323,23 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
     lastSelectionRef.current = text;
     // Get the sentence containing the selection for context.
     const fullText = selection.anchorNode.parentElement?.closest("p")?.textContent || "";
+    const paragraphElement = selection.anchorNode.parentElement?.closest("[data-bilingual-paragraph]");
+    const bilingualSide = paragraphElement?.getAttribute("data-bilingual-side") as BilingualSide | null;
+    const bilingualGroupIndex = Number(paragraphElement?.getAttribute("data-bilingual-group"));
+    const bilingualParagraphIndex = Number(paragraphElement?.getAttribute("data-bilingual-paragraph"));
+    const alignedGroup = Number.isInteger(bilingualGroupIndex)
+      ? section?.groups[bilingualGroupIndex]
+      : undefined;
+    const targetLanguage: "Chinese" | "English" = bilingualSide === "zh" ? "English" : "Chinese";
+    const alignedTranslation =
+      bilingualSide && alignedGroup && Number.isInteger(bilingualParagraphIndex)
+        ? matchBilingualSentence(
+            alignedGroup,
+            bilingualSide,
+            bilingualParagraphIndex,
+            selectedText,
+          )
+        : null;
     const rect = selection.getRangeAt(0).getBoundingClientRect();
     const word = extractDictionaryWord(text);
     // Single English word → dictionary mode. Multi-word / sentence → translate.
@@ -281,14 +353,20 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
       context,
       selectedText,
       initialMode,
+      targetLanguage,
+      alignedTranslation,
       anchor: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
     });
     if (isSingleWord) {
       handleDictionaryLookup(word, context);
     } else {
-      handleTranslateText(selectedText);
+      if (alignedTranslation) {
+        handleAlignedTranslate(selectedText, targetLanguage, alignedTranslation);
+      } else {
+        void handleTranslateText(selectedText, targetLanguage);
+      }
     }
-  }, [handleDictionaryLookup, handleTranslateText]);
+  }, [handleAlignedTranslate, handleDictionaryLookup, handleTranslateText, section]);
 
   useEffect(() => {
     const ref = contentRef.current;
@@ -315,7 +393,12 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
 
   const handleTranslateSelection = async () => {
     if (!dictPopover) return;
-    handleTranslateText(dictPopover.selectedText || dictPopover.word);
+    const text = dictPopover.selectedText || dictPopover.word;
+    if (dictPopover.alignedTranslation) {
+      handleAlignedTranslate(text, dictPopover.targetLanguage, dictPopover.alignedTranslation);
+      return;
+    }
+    void handleTranslateText(text, dictPopover.targetLanguage);
   };
 
   if (loading) {
@@ -511,9 +594,15 @@ function BilingualGroup({
 
   if (group.zh.length === 0) {
     return (
-      <div className="group/para relative space-y-1">
+      <div className="group/para relative space-y-1" data-bilingual-group={index}>
         {group.en.map((para, pi) => (
-          <p key={pi} className="leading-7 text-[var(--foreground)]">
+          <p
+            key={pi}
+            data-bilingual-side="en"
+            data-bilingual-group={index}
+            data-bilingual-paragraph={pi}
+            className="leading-7 text-[var(--foreground)]"
+          >
             {para}
           </p>
         ))}
@@ -529,9 +618,15 @@ function BilingualGroup({
   }
 
   return (
-    <div className="group/para relative space-y-0.5">
+    <div className="group/para relative space-y-0.5" data-bilingual-group={index}>
       {group.en.map((para, pi) => (
-        <p key={pi} className="leading-7 text-[var(--foreground)]">
+        <p
+          key={pi}
+          data-bilingual-side="en"
+          data-bilingual-group={index}
+          data-bilingual-paragraph={pi}
+          className="leading-7 text-[var(--foreground)]"
+        >
           {para}
         </p>
       ))}
@@ -547,6 +642,9 @@ function BilingualGroup({
           {group.zh.map((para, pi) => (
             <p
               key={pi}
+              data-bilingual-side="zh"
+              data-bilingual-group={index}
+              data-bilingual-paragraph={pi}
               className="text-sm leading-7 text-[var(--foreground)]"
               style={{ fontFamily: '"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Serif CJK TC",serif' }}
             >

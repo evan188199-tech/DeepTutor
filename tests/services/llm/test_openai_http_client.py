@@ -71,6 +71,17 @@ def test_provider_core_passes_disable_ssl_http_client(monkeypatch: pytest.Monkey
     assert clients[0].kwargs["verify"] is False
 
 
+def test_official_openai_provider_rejects_placeholder_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.llm.provider_core import openai_compat_provider as provider_mod
+
+    _capture_async_openai(monkeypatch, provider_mod)
+
+    with pytest.raises(LLMConfigError, match="OpenAI API key is not configured"):
+        provider_mod.OpenAICompatProvider(provider_name="openai")
+
+
 def test_azure_provider_passes_disable_ssl_http_client(monkeypatch: pytest.MonkeyPatch) -> None:
     from deeptutor.services.llm.provider_core import azure_openai_provider as azure_mod
 

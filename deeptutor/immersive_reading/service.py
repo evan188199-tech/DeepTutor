@@ -58,7 +58,6 @@ from deeptutor.services.llm.context_window import resolve_effective_context_wind
 from deeptutor.services.llm.exceptions import (
     LLMAPIError,
     LLMModelNotFoundError,
-    LLMParseError,
     LLMTimeoutError,
 )
 from deeptutor.services.path_service import get_path_service
@@ -2000,22 +1999,32 @@ class ImmersiveReadingService:
             search_provider=str(search_payload.get("provider") or ""),
         )
 
-    async def _ensure_ollama_ready(self) -> None:
+    async def _ensure_ollama_ready(self, preferred_model: str | None = None) -> str:
         """Verify Ollama is reachable, auto-starting it if needed.
 
         Raises LLMAPIError / LLMModelNotFoundError so the API router returns
         the right HTTP status to the frontend.
         """
         models = await self._ensure_ollama_reachable()
-        has_model = any("qwen3.5" in name and "2b" in name for name in models)
-        if not has_model:
+        if not models:
             from deeptutor.services.llm.exceptions import LLMModelNotFoundError
 
             raise LLMModelNotFoundError(
-                "Model qwen3.5:2b is not installed. Run `ollama pull qwen3.5:2b`.",
-                model="qwen3.5:2b",
+                "No Ollama models are installed. Run `ollama pull <model>`.",
+                model=preferred_model,
                 provider="ollama",
             )
+        if preferred_model is None:
+            cfg = get_llm_config()
+            preferred_model = str(cfg.model or "")
+        selected = self._resolve_ollama_model(preferred_model, models)
+        if selected not in models:
+            raise LLMModelNotFoundError(
+                f"Model {selected} is not installed. Run `ollama pull {selected}`.",
+                model=selected,
+                provider="ollama",
+            )
+        return selected
 
     async def _ensure_ollama_reachable(self) -> list[str]:
         """Verify Ollama is reachable, auto-starting it if needed.
@@ -2068,6 +2077,13 @@ class ImmersiveReadingService:
         models = [m.get("name", "") for m in data.get("models", [])]
         self._ollama_models_cache = (time.monotonic(), models)
         return models
+
+    @staticmethod
+    def _path_exists(path: str | Path) -> bool:
+        try:
+            return Path(path).exists()
+        except OSError:
+            return False
 
     @staticmethod
     def _resolve_ollama_model(preferred: str, installed: list[str]) -> str:
@@ -2151,7 +2167,7 @@ class ImmersiveReadingService:
                 "/usr/local/bin/ollama",
                 "/usr/bin/ollama",
             ):
-                if Path(candidate).exists():
+                if self._path_exists(candidate):
                     ollama_bin = candidate
                     break
         if not ollama_bin:
@@ -2164,7 +2180,7 @@ class ImmersiveReadingService:
                 stdin=subprocess.DEVNULL,
                 start_new_session=True,
             )
-            logger.info("Auto-started Ollama daemon for dictionary lookup")
+            logger.info("Auto-started Ollama daemon")
         except OSError as exc:
             logger.warning("Failed to auto-start Ollama: %s", exc)
 
@@ -2232,74 +2248,6 @@ class ImmersiveReadingService:
             return result.model_copy(update={"definitions": new_defs})
         return result
 
-    async def _fast_dictionary_lookup(self, word: str) -> DictionaryResult | None:
-        """Try the Free Dictionary API (dictionaryapi.dev).
-
-        Returns a DictionaryResult or None if the word is not found / the
-        API is unreachable. English-only — no Chinese translations.
-        """
-        import aiohttp as _aiohttp
-
-        url = _FREE_DICT_API.format(word=word.lower())
-        try:
-            timeout = _aiohttp.ClientTimeout(total=8)
-            async with _aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.get(url) as resp:
-                    if resp.status == 404:
-                        return None
-                    if resp.status != 200:
-                        return None
-                    data = await resp.json()
-        except Exception:
-            return None
-
-        if not isinstance(data, list) or not data:
-            return None
-
-        phonetic = ""
-        defs: list[DictionaryDefinition] = []
-        for entry in data[:3]:  # at most 3 entries
-            if not isinstance(entry, dict):
-                continue
-            if not phonetic:
-                # Prefer the text field from phonetics array
-                for p in entry.get("phonetics", []):
-                    if isinstance(p, dict) and p.get("text"):
-                        phonetic = p["text"]
-                        break
-                if not phonetic and entry.get("phonetic"):
-                    phonetic = entry["phonetic"]
-            for meaning in entry.get("meanings", []):
-                if not isinstance(meaning, dict):
-                    continue
-                pos = meaning.get("partOfSpeech", "")
-                for d in meaning.get("definitions", [])[:3]:  # cap per-pos
-                    if not isinstance(d, dict):
-                        continue
-                    definition = d.get("definition", "")
-                    if not definition:
-                        continue
-                    defs.append(
-                        DictionaryDefinition(
-                            part_of_speech=pos,
-                            definition=definition,
-                            chinese="",
-                            example=d.get("example", "") or "",
-                            synonyms=d.get("synonyms", [])[:5],
-                            context_match=False,
-                        )
-                    )
-
-        if not defs:
-            return None
-
-        return DictionaryResult(
-            word=word,
-            phonetic=phonetic,
-            definitions=defs[:6],  # cap total
-            context_note="",
-        )
-
     def _local_dictionary_lookup(self, word: str) -> DictionaryResult | None:
         """Return a millisecond-level ECDICT result when the local DB exists."""
         try:
@@ -2326,98 +2274,12 @@ class ImmersiveReadingService:
             chinese=entry.translation,
         )
 
-    async def _enrich_with_chinese(self, result: DictionaryResult) -> DictionaryResult:
-        """Fill in Chinese (中文释义) for an English-only DictionaryResult.
-
-        The Free Dictionary API returns authoritative English definitions but no
-        translations, so the frontend "reveal Chinese" feature would have
-        nothing to blur for common words. This asks the local Ollama model to
-        translate each definition. Best-effort: if the model is unavailable or
-        the call fails, the original English-only result is returned unchanged
-        so callers never lose the English definitions.
-        """
-        if not result.definitions or all(d.chinese for d in result.definitions):
-            return result
-
-        try:
-            await self._ensure_ollama_ready()
-        except Exception as exc:  # model missing / Ollama down
-            logger.debug("Ollama unavailable for Chinese enrichment: %s", exc)
-            return result
-
-        items = [{"pos": d.part_of_speech, "definition": d.definition} for d in result.definitions]
-        system_prompt = (
-            "/no_think\n"
-            "You translate English dictionary definitions into concise Chinese "
-            "(中文释义). You receive a word and a JSON array of its English "
-            'definitions. Return a JSON object whose "translations" key holds '
-            "an array of the SAME LENGTH where element i is the concise Chinese "
-            "translation of definition i. Each translation should be a short "
-            "phrase. Respond with ONLY this JSON (no markdown, no explanation):\n"
-            '{"translations": ["中文释义1", "中文释义2"]}'
-        )
-        user_prompt = (
-            f"Word: {result.word}\n"
-            f"Definitions to translate:\n{json.dumps(items, ensure_ascii=False)}"
-        )
-        payload = {
-            "model": "qwen3.5:2b",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "stream": False,
-            "think": False,
-            "format": "json",
-            "options": {"temperature": 0.1, "num_predict": 1024},
-        }
-
-        try:
-            import aiohttp as _aiohttp
-
-            timeout = _aiohttp.ClientTimeout(total=45)
-            async with _aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.post("http://127.0.0.1:11434/api/chat", json=payload) as resp:
-                    if resp.status != 200:
-                        logger.debug("Chinese enrichment Ollama HTTP %s", resp.status)
-                        return result
-                    data = await resp.json()
-        except Exception as exc:
-            logger.debug("Chinese enrichment request failed: %s", exc)
-            return result
-
-        raw = (data.get("message") or {}).get("content", "")
-        cleaned = raw.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```[a-z]*\n?", "", cleaned).rsplit("```", 1)[0].strip()
-        try:
-            parsed = json.loads(cleaned)
-        except json.JSONDecodeError:
-            logger.debug("Chinese enrichment returned unparseable JSON")
-            return result
-
-        translations = parsed.get("translations") if isinstance(parsed, dict) else None
-        if not isinstance(translations, list):
-            return result
-
-        enriched_defs = []
-        for i, d in enumerate(result.definitions):
-            candidate = translations[i] if i < len(translations) else ""
-            chinese = (
-                candidate.strip() if isinstance(candidate, str) and candidate.strip() else d.chinese
-            )
-            enriched_defs.append(d.model_copy(update={"chinese": chinese}))
-        return result.model_copy(update={"definitions": enriched_defs})
-
     async def lookup_word(self, word: str, context: str = "") -> DictionaryResult:
         """Context-aware English/Chinese dictionary lookup.
 
-        ECDICT is the primary source because it returns both English and Chinese
-        data locally.  The online dictionary and local model are reserved for
-        words that are absent from the offline database.
+        ECDICT is the only source because it returns both English and Chinese
+        data locally without a network or model dependency.
         """
-        import json as _json
-
         word = word.strip()
         if not word:
             raise ValueError("Provide a word to look up")
@@ -2436,174 +2298,12 @@ class ImmersiveReadingService:
             self._cache_put(word, local_result)
             return self._mark_context_match(local_result, context) if context else local_result
 
-        # 3. Free Dictionary API - fallback for words absent from ECDICT.
-        fast_result = await self._fast_dictionary_lookup(word)
-        if fast_result is not None:
-            self._cache_put(word, fast_result)
-            return self._mark_context_match(fast_result, context) if context else fast_result
-
-        # 4. Fallback: local Ollama LLM (slower but has Chinese + context).
-        # Pre-flight check: verify Ollama is reachable and the model is available.
-        await self._ensure_ollama_ready()
-
-        system_prompt = (
-            "/no_think\n"
-            "You are a learner's dictionary designed for ESL students. Given a word and optionally "
-            "the sentence it appears in, return JSON with definitions sorted so the meaning that "
-            "fits the context comes FIRST.\n\n"
-            "IMPORTANT rules:\n"
-            "1. Write ALL definitions in SIMPLE English (A2/B1 level). Use short sentences and common "
-            "words. Avoid difficult vocabulary in the explanation itself.\n"
-            '2. For each definition, also provide a CHINESE translation in the "chinese" field.\n'
-            '3. Set "context_match": true only for the definition(s) that match the provided sentence.\n'
-            "4. Include IPA pronunciation, part of speech, a simple example sentence, and 0-3 synonyms.\n\n"
-            "Respond with ONLY this JSON schema (no markdown fence):\n"
-            "{\n"
-            '  "word": "<headword>",\n'
-            '  "phonetic": "<IPA or empty>",\n'
-            '  "definitions": [\n'
-            '    {"part_of_speech": "", "definition": "<simple English>", '
-            '"chinese": "<中文释义>", "example": "", "synonyms": [], '
-            '"context_match": false}\n'
-            "  ],\n"
-            '  "context_note": "<short note on which meaning fits the context, or empty>"\n'
-            "}\n\n"
-            "Return at most 4 definitions. If the context makes the word's meaning unambiguous, "
-            "put that meaning first and mark it context_match=true."
+        # The reader's Dictionary action stays offline. ECDICT has compact
+        # coverage; misses are explicit instead of silently going to the cloud.
+        return DictionaryResult(
+            word=word,
+            definitions=[DictionaryDefinition(definition="Not found in the offline dictionary.")],
         )
-        user_prompt = f"Word: {word}"
-        if context:
-            user_prompt += f"\nSentence from the book: {context}"
-
-        # Call the native Ollama /api/chat endpoint directly instead of the
-        # OpenAI-compatible /v1 path.  The v1 endpoint crashes Ollama 0.32.x
-        # with qwen3.5:2b, and the native API lets us pass think=false to
-        # suppress the model's thinking tokens entirely.
-        import aiohttp as _aiohttp
-
-        ollama_payload = {
-            "model": "qwen3.5:2b",
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "stream": False,
-            "think": False,
-            "format": "json",
-            "options": {"temperature": 0.1, "num_predict": 4096},
-        }
-        try:
-            timeout = _aiohttp.ClientTimeout(total=60)
-            async with _aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.post(
-                    "http://127.0.0.1:11434/api/chat",
-                    json=ollama_payload,
-                ) as resp:
-                    if resp.status == 404:
-                        raise LLMModelNotFoundError(
-                            "Model qwen3.5:2b is not installed. Run `ollama pull qwen3.5:2b`.",
-                            model="qwen3.5:2b",
-                            provider="ollama",
-                        )
-                    if resp.status != 200:
-                        body = await resp.text()
-                        raise LLMAPIError(
-                            f"Ollama returned HTTP {resp.status}: {body[:200]}",
-                            status_code=resp.status,
-                            provider="ollama",
-                        )
-                    result = await resp.json()
-        except (_aiohttp.ClientError, OSError) as exc:
-            raise LLMAPIError(
-                "Cannot reach Ollama at 127.0.0.1:11434. Start it with `ollama serve`.",
-                status_code=503,
-                provider="ollama",
-            ) from exc
-        except asyncio.TimeoutError as exc:
-            raise LLMTimeoutError(
-                "Dictionary lookup timed out. Is Ollama running and is the model loaded?",
-                provider="ollama",
-            ) from exc
-
-        raw = (result.get("message") or {}).get("content", "")
-
-        if not raw.strip():
-            raise LLMParseError(
-                f"Local model returned empty content for word {word!r}.",
-                provider="ollama",
-            )
-
-        cleaned = raw.strip()
-        if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```[a-z]*\n?", "", cleaned).rsplit("```", 1)[0].strip()
-        try:
-            data = _json.loads(cleaned)
-        except _json.JSONDecodeError:
-            raise LLMParseError(
-                f"Local model returned unparseable output for word {word!r}.",
-                provider="ollama",
-            )
-        if not isinstance(data, dict) or not isinstance(data.get("definitions"), list):
-            raise LLMParseError(
-                f"Local model returned an invalid dictionary payload for word {word!r}.",
-                provider="ollama",
-            )
-        for field in ("word", "phonetic", "context_note"):
-            if field in data and not isinstance(data[field], str):
-                raise LLMParseError(
-                    f"Local model returned an invalid {field} for word {word!r}.",
-                    provider="ollama",
-                )
-        defs = []
-        for d in data.get("definitions", []):
-            if not isinstance(d, dict):
-                raise LLMParseError(
-                    f"Local model returned an invalid definition for word {word!r}.",
-                    provider="ollama",
-                )
-            for field in ("part_of_speech", "definition", "example"):
-                if field in d and not isinstance(d[field], str):
-                    raise LLMParseError(
-                        f"Local model returned an invalid definition for word {word!r}.",
-                        provider="ollama",
-                    )
-            synonyms = d.get("synonyms", [])
-            if not isinstance(synonyms, list) or not all(
-                isinstance(item, str) for item in synonyms
-            ):
-                raise LLMParseError(
-                    f"Local model returned invalid synonyms for word {word!r}.",
-                    provider="ollama",
-                )
-            try:
-                defs.append(
-                    DictionaryDefinition(
-                        part_of_speech=d.get("part_of_speech", ""),
-                        definition=d.get("definition", ""),
-                        chinese=d.get("chinese", ""),
-                        example=d.get("example", ""),
-                        synonyms=d.get("synonyms", []),
-                        context_match=bool(d.get("context_match", False)),
-                    )
-                )
-            except Exception as exc:
-                raise LLMParseError(
-                    f"Local model returned an invalid definition for word {word!r}.",
-                    provider="ollama",
-                ) from exc
-        if not defs:
-            raise LLMParseError(
-                f"Local model returned no definitions for word {word!r}.",
-                provider="ollama",
-            )
-        llm_result = DictionaryResult(
-            word=data.get("word", word),
-            phonetic=data.get("phonetic", ""),
-            definitions=defs,
-            context_note=data.get("context_note", ""),
-        )
-        self._cache_put(word, llm_result)
-        return llm_result
 
     async def _focus_material(self, content: str, *, language: str) -> str:
         cfg = get_llm_config()
