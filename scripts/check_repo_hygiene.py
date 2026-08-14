@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
-"""Reject commonly regenerated files that have accidentally been tracked."""
+"""Reject protected-branch commits and commonly regenerated files."""
 
 from __future__ import annotations
 
+import argparse
+from pathlib import PurePosixPath
 import subprocess
 import sys
-from pathlib import PurePosixPath
 
-
+PROTECTED_BRANCHES = {"main", "dev", "multi-user"}
 FORBIDDEN_PARTS = {
     ".DS_Store",
-    ".next",
-    ".next-deeptutor",
+    ".pytest_cache",
+    ".ruff_cache",
     ".turbo",
     "__pycache__",
     "htmlcov",
     "node_modules",
     "playwright-report",
+    "run_code_workspace",
     "test-results",
 }
-FORBIDDEN_SUFFIXES = (".pyc", ".pyo")
+FORBIDDEN_TOP_LEVEL_DIRECTORIES = {"data", "multi-user"}
+FORBIDDEN_WEB_DIRECTORIES = {"build", "coverage", "dist", "out", "static"}
+FORBIDDEN_SUFFIXES = (".pyc", ".pyo", ".tsbuildinfo")
 
 
 def tracked_paths() -> list[str]:
@@ -31,11 +35,31 @@ def tracked_paths() -> list[str]:
     return [path for path in result.stdout.decode("utf-8").split("\0") if path]
 
 
+def staged_paths() -> list[str]:
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--name-only", "-z"],
+        check=True,
+        capture_output=True,
+    )
+    return [path for path in result.stdout.decode("utf-8").split("\0") if path]
+
+
 def violation(path: str) -> str | None:
     pure_path = PurePosixPath(path)
-    if pure_path.parts[0:1] == ("web",) and pure_path.parts[1:2] in (
-        ("out",),
-        ("dist",),
+    if not path:
+        return "empty path"
+    if pure_path.parts[0] in FORBIDDEN_TOP_LEVEL_DIRECTORIES:
+        return "runtime data"
+    if any(part.startswith(".next") for part in pure_path.parts):
+        return "Next.js build output"
+    if (
+        len(pure_path.parts) > 1
+        and pure_path.parts[0] == "web"
+        and pure_path.parts[1]
+        in {
+            *FORBIDDEN_WEB_DIRECTORIES,
+            ".next-deeptutor",
+        }
     ):
         return "frontend build output"
     if any(part in FORBIDDEN_PARTS for part in pure_path.parts):
@@ -49,24 +73,53 @@ def violation(path: str) -> str | None:
     return None
 
 
-def main() -> int:
-    violations = [
-        f"{path}: {reason}"
-        for path in tracked_paths()
-        if (reason := violation(path)) is not None
-    ]
-    if violations:
-        print("Tracked generated or anomalous files found:", file=sys.stderr)
-        print("\n".join(violations), file=sys.stderr)
-        print(
-            "Remove them from the index with `git rm --cached`; keep local files when "
-            "they are useful build output.",
-            file=sys.stderr,
-        )
+def current_branch() -> str | None:
+    result = subprocess.run(
+        ["git", "symbolic-ref", "--quiet", "HEAD"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip().removeprefix("refs/heads/")
+
+
+def main(staged: bool = False) -> int:
+    errors: list[str] = []
+    branch = current_branch()
+    if staged and branch in PROTECTED_BRANCHES:
+        errors.append(f"commits are not allowed directly on protected branch {branch}")
+
+    paths = staged_paths() if staged else tracked_paths()
+    errors.extend(f"{path}: {reason}" for path in paths if (reason := violation(path)) is not None)
+    if errors:
+        scope = "staged" if staged else "tracked"
+        print(f"Repository hygiene check failed for {scope} paths:", file=sys.stderr)
+        print("\n".join(errors), file=sys.stderr)
+        if staged and branch in PROTECTED_BRANCHES:
+            print("Create a codex/<task> branch and worktree instead.", file=sys.stderr)
+        else:
+            print(
+                "Remove generated paths from the index with `git rm --cached`; keep local "
+                "files when they are useful build output.",
+                file=sys.stderr,
+            )
         return 1
+
     print("Repository hygiene check passed.")
     return 0
 
 
+def cli() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--staged",
+        action="store_true",
+        help="check staged files and reject commits on protected branches",
+    )
+    args = parser.parse_args()
+    return main(staged=args.staged)
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(cli())

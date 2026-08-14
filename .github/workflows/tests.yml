@@ -13,6 +13,10 @@ on:
       - "requirements.txt"
       - "pyproject.toml"
       - "web/**"
+      - ".pre-commit-config.yaml"
+      - "AGENTS.md"
+      - "scripts/check_repo_hygiene.py"
+      - "scripts/worktree.py"
       - ".github/workflows/tests.yml"
   pull_request:
     branches:
@@ -26,9 +30,34 @@ on:
       - "requirements.txt"
       - "pyproject.toml"
       - "web/**"
+      - ".pre-commit-config.yaml"
+      - "AGENTS.md"
+      - "scripts/check_repo_hygiene.py"
+      - "scripts/worktree.py"
       - ".github/workflows/tests.yml"
 
 jobs:
+  repo-hygiene:
+    name: Repository Hygiene
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Reject tracked generated files
+        run: python3 scripts/check_repo_hygiene.py
+
+      - name: Reject protected pull-request sources
+        if: github.event_name == 'pull_request'
+        run: |
+          case "${GITHUB_HEAD_REF:-}" in
+            main|dev|multi-user)
+              echo "Pull requests must come from a task branch, not a protected branch." >&2
+              exit 1
+              ;;
+          esac
+
   lint:
     name: Lint and Format
     runs-on: ubuntu-latest
@@ -182,7 +211,7 @@ jobs:
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [lint, web-tests, import-check, python-tests]
+    needs: [repo-hygiene, lint, web-tests, import-check, python-tests]
     if: always()
 
     steps:
@@ -192,11 +221,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository hygiene | ${{ needs.repo-hygiene.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Lint and format | ${{ needs.lint.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Web node tests | ${{ needs.web-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Import check (3.11/3.12/3.13; 3.14 best-effort) | ${{ needs.import-check.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Python tests (3.11/3.12/3.13; 3.14 best-effort) | ${{ needs.python-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
 
       - name: Fail if tests failed
-        if: needs.lint.result == 'failure' || needs.web-tests.result == 'failure' || needs.import-check.result == 'failure' || needs.python-tests.result == 'failure'
+        if: needs.repo-hygiene.result == 'failure' || needs.lint.result == 'failure' || needs.web-tests.result == 'failure' || needs.import-check.result == 'failure' || needs.python-tests.result == 'failure'
         run: exit 1

@@ -136,3 +136,19 @@ Source extras (.[ extra ], defined in pyproject.toml):
 .[dev]            — Test / lint tooling
 .[all]            — Everything above
 ```
+
+## Workspace Contract
+
+- Start every task with `git status --short --branch` and `git worktree list`.
+- Treat `/Users/Shared/DeepTutor` as a read-only anchor: never implement, test,
+  build, stash, reset, clean, or commit on `main`, `dev`, `multi-user`, or in
+  the anchor directory.
+- Create ordinary task worktrees from `origin/dev` and multi-user task
+  worktrees from `origin/multi-user`, using one `codex/<task>` branch and one
+  adjacent worktree per acceptance scope. Prefer
+  `python3 scripts/worktree.py create <slug>`.
+- If unrelated dirty changes appear, stop and report them; never stash, reset,
+  clean, overwrite, or mix them into a task commit.
+- Before delivery, inspect branch/status, worktree inventory, diff scope,
+  generated-file pollution, and the relevant tests or application flow. Keep
+  recovery archives and user artifacts untouched.
