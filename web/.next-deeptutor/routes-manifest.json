@@ -39,6 +39,22 @@
       "namedRegex": "^/home(?:/(?<nxtPsessionId>.+?))?(?:/)?$"
     },
     {
+      "page": "/kids/p/[profileId]",
+      "regex": "^/kids/p/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPprofileId": "nxtPprofileId"
+      },
+      "namedRegex": "^/kids/p/(?<nxtPprofileId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/kids/[documentId]",
+      "regex": "^/kids/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPdocumentId": "nxtPdocumentId"
+      },
+      "namedRegex": "^/kids/(?<nxtPdocumentId>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/memory/l2/[surface]",
       "regex": "^/memory/l2/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -105,6 +121,24 @@
       "regex": "^/co\\-writer(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/co\\-writer(?:/)?$"
+    },
+    {
+      "page": "/immersive-reading",
+      "regex": "^/immersive\\-reading(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/immersive\\-reading(?:/)?$"
+    },
+    {
+      "page": "/kids",
+      "regex": "^/kids(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kids(?:/)?$"
+    },
+    {
+      "page": "/kids/manage",
+      "regex": "^/kids/manage(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/kids/manage(?:/)?$"
     },
     {
       "page": "/knowledge",

@@ -16,12 +16,14 @@ from pydantic import BaseModel, Field
 
 from deeptutor.immersive_reading import get_immersive_reading_service
 from deeptutor.immersive_reading.service import MAX_UPLOAD_BYTES
-from deeptutor.services.llm.exceptions import LLMError, LLMTimeoutError
 from deeptutor.services.llm.exceptions import (
     LLMAuthenticationError,
+    LLMConfigError,
+    LLMError,
     LLMModelNotFoundError,
     LLMParseError,
     LLMRateLimitError,
+    LLMTimeoutError,
 )
 
 router = APIRouter()
@@ -424,6 +426,8 @@ async def translate(request: TranslateRequest) -> dict:
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except LLMConfigError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     except LLMTimeoutError as exc:
         raise HTTPException(status_code=504, detail=str(exc)) from exc
     except LLMModelNotFoundError as exc:
@@ -464,6 +468,8 @@ async def dictionary_lookup(request: DictionaryRequest) -> dict:
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except LLMConfigError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     except LLMTimeoutError as exc:
         raise HTTPException(status_code=504, detail=str(exc)) from exc
     except LLMModelNotFoundError as exc:

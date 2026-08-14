@@ -2000,22 +2000,32 @@ class ImmersiveReadingService:
             search_provider=str(search_payload.get("provider") or ""),
         )
 
-    async def _ensure_ollama_ready(self) -> None:
+    async def _ensure_ollama_ready(self, preferred_model: str | None = None) -> str:
         """Verify Ollama is reachable, auto-starting it if needed.
 
         Raises LLMAPIError / LLMModelNotFoundError so the API router returns
         the right HTTP status to the frontend.
         """
         models = await self._ensure_ollama_reachable()
-        has_model = any("qwen3.5" in name and "2b" in name for name in models)
-        if not has_model:
+        if not models:
             from deeptutor.services.llm.exceptions import LLMModelNotFoundError
 
             raise LLMModelNotFoundError(
-                "Model qwen3.5:2b is not installed. Run `ollama pull qwen3.5:2b`.",
-                model="qwen3.5:2b",
+                "No Ollama models are installed. Run `ollama pull <model>`.",
+                model=preferred_model,
                 provider="ollama",
             )
+        if preferred_model is None:
+            cfg = get_llm_config()
+            preferred_model = str(cfg.model or "")
+        selected = self._resolve_ollama_model(preferred_model, models)
+        if selected not in models:
+            raise LLMModelNotFoundError(
+                f"Model {selected} is not installed. Run `ollama pull {selected}`.",
+                model=selected,
+                provider="ollama",
+            )
+        return selected
 
     async def _ensure_ollama_reachable(self) -> list[str]:
         """Verify Ollama is reachable, auto-starting it if needed.
@@ -2340,7 +2350,7 @@ class ImmersiveReadingService:
             return result
 
         try:
-            await self._ensure_ollama_ready()
+            model = await self._ensure_ollama_ready()
         except Exception as exc:  # model missing / Ollama down
             logger.debug("Ollama unavailable for Chinese enrichment: %s", exc)
             return result
@@ -2361,7 +2371,7 @@ class ImmersiveReadingService:
             f"Definitions to translate:\n{json.dumps(items, ensure_ascii=False)}"
         )
         payload = {
-            "model": "qwen3.5:2b",
+            "model": model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
@@ -2444,7 +2454,7 @@ class ImmersiveReadingService:
 
         # 4. Fallback: local Ollama LLM (slower but has Chinese + context).
         # Pre-flight check: verify Ollama is reachable and the model is available.
-        await self._ensure_ollama_ready()
+        model = await self._ensure_ollama_ready()
 
         system_prompt = (
             "/no_think\n"
@@ -2477,12 +2487,12 @@ class ImmersiveReadingService:
 
         # Call the native Ollama /api/chat endpoint directly instead of the
         # OpenAI-compatible /v1 path.  The v1 endpoint crashes Ollama 0.32.x
-        # with qwen3.5:2b, and the native API lets us pass think=false to
+        # reasoning models, and the native API lets us pass think=false to
         # suppress the model's thinking tokens entirely.
         import aiohttp as _aiohttp
 
         ollama_payload = {
-            "model": "qwen3.5:2b",
+            "model": model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
@@ -2501,8 +2511,8 @@ class ImmersiveReadingService:
                 ) as resp:
                     if resp.status == 404:
                         raise LLMModelNotFoundError(
-                            "Model qwen3.5:2b is not installed. Run `ollama pull qwen3.5:2b`.",
-                            model="qwen3.5:2b",
+                            f"Model {model} is not installed. Run `ollama pull {model}`.",
+                            model=model,
                             provider="ollama",
                         )
                     if resp.status != 200:

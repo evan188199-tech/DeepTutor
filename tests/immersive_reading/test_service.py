@@ -400,8 +400,8 @@ async def test_dictionary_lookup_pins_local_qwen_json_request(
     captured: dict[str, object] = {}
 
     # Bypass the live Ollama readiness probe.
-    async def _noop_ready() -> None:
-        return None
+    async def _noop_ready() -> str:
+        return "qwen3.5:4b"
 
     monkeypatch.setattr(reading_service, "_ensure_ollama_ready", _noop_ready)
 
@@ -446,7 +446,7 @@ async def test_dictionary_lookup_pins_local_qwen_json_request(
     assert result.word == "technical"
     assert result.definitions[0].context_match is True
     # Native Ollama API payload fields
-    assert captured["model"] == "qwen3.5:2b"
+    assert captured["model"] == "qwen3.5:4b"
     assert captured["think"] is False
     assert captured["stream"] is False
     assert captured["format"] == "json"
@@ -488,8 +488,8 @@ async def test_dictionary_lookup_rejects_invalid_local_output(
 ) -> None:
     import aiohttp
 
-    async def _noop_ready() -> None:
-        return None
+    async def _noop_ready() -> str:
+        return "qwen3.5:4b"
 
     monkeypatch.setattr(reading_service, "_ensure_ollama_ready", _noop_ready)
 
@@ -592,6 +592,33 @@ def test_resolve_ollama_model_prefers_exact_then_sibling() -> None:
     assert ImmersiveReadingService._resolve_ollama_model("gpt-4", installed) in installed
     # Empty install list: hand back the preference unchanged.
     assert ImmersiveReadingService._resolve_ollama_model("qwen3.5:4b", []) == "qwen3.5:4b"
+
+
+@pytest.mark.asyncio
+async def test_dictionary_ollama_ready_uses_current_model_and_sibling_fallback(
+    reading_service: ImmersiveReadingService, monkeypatch
+) -> None:
+    from types import SimpleNamespace
+
+    import deeptutor.immersive_reading.service as service_module
+
+    monkeypatch.setattr(
+        service_module,
+        "get_llm_config",
+        lambda: SimpleNamespace(model="qwen3.5:4b", binding="ollama"),
+    )
+
+    async def _installed() -> list[str]:
+        return ["qwen3.5:4b"]
+
+    monkeypatch.setattr(reading_service, "_ensure_ollama_reachable", _installed)
+    assert await reading_service._ensure_ollama_ready() == "qwen3.5:4b"
+
+    async def _siblings() -> list[str]:
+        return ["llama3:8b", "qwen3.5:2b"]
+
+    monkeypatch.setattr(reading_service, "_ensure_ollama_reachable", _siblings)
+    assert await reading_service._ensure_ollama_ready("qwen3.5:4b") == "qwen3.5:2b"
 
 
 @pytest.mark.asyncio
