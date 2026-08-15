@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
+from pathlib import PurePosixPath
 import subprocess
 import sys
-from pathlib import PurePosixPath
-
 
 FORBIDDEN_PARTS = {
     ".DS_Store",
@@ -51,9 +50,7 @@ def violation(path: str) -> str | None:
 
 def main() -> int:
     violations = [
-        f"{path}: {reason}"
-        for path in tracked_paths()
-        if (reason := violation(path)) is not None
+        f"{path}: {reason}" for path in tracked_paths() if (reason := violation(path)) is not None
     ]
     if violations:
         print("Tracked generated or anomalous files found:", file=sys.stderr)
