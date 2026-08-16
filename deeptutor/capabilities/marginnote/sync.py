@@ -19,8 +19,8 @@ from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
 
-from deeptutor.capabilities.marginnote.adapters import AdapterError, WRITEBACK_DIRNAME, open_adapter
-from deeptutor.capabilities.marginnote.adapters.diagnostics import (
+from deeptutor.capabilities.marginnote.data import AdapterError, WRITEBACK_DIRNAME, open_adapter
+from deeptutor.capabilities.marginnote.data.diagnostics import (
     PUBLIC_ADAPTERS,
     SYNC_STATUSES,
     WRITE_MODE_IMPORT_QUEUE,

@@ -3,10 +3,16 @@
 from __future__ import annotations
 
 from deeptutor.capabilities.marginnote.data.base import AdapterError, MarginNoteAdapter
-from deeptutor.capabilities.marginnote.data.export_adapter import ExportAdapter
+from deeptutor.capabilities.marginnote.data.diagnostics import (
+    KNOWN_ADAPTERS,
+    PUBLIC_ADAPTERS,
+    AdapterCapabilities,
+    AdapterDiagnostics,
+)
+from deeptutor.capabilities.marginnote.data.export_adapter import WRITEBACK_DIRNAME, ExportAdapter
 from deeptutor.capabilities.marginnote.data.realm_adapter import RealmAdapter
 
-SUPPORTED_ADAPTERS = ("export", "realm")
+SUPPORTED_ADAPTERS = tuple(sorted(KNOWN_ADAPTERS))
 
 
 def open_adapter(
@@ -24,10 +30,15 @@ def open_adapter(
 
 
 __all__ = [
+    "AdapterCapabilities",
+    "AdapterDiagnostics",
     "AdapterError",
     "ExportAdapter",
+    "KNOWN_ADAPTERS",
     "MarginNoteAdapter",
+    "PUBLIC_ADAPTERS",
     "RealmAdapter",
     "SUPPORTED_ADAPTERS",
+    "WRITEBACK_DIRNAME",
     "open_adapter",
 ]
