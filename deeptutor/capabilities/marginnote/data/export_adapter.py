@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import os
 import hashlib
 import re
 from pathlib import Path
@@ -20,6 +21,13 @@ from deeptutor.capabilities.marginnote.data.base import (
     Note,
     Notebook,
 )
+from deeptutor.capabilities.marginnote.data.diagnostics import (
+    WRITE_MODE_IMPORT_QUEUE,
+    AdapterCapabilities,
+    AdapterDiagnostics,
+    ParseWarning,
+    display_name_for,
+)
 
 WRITEBACK_DIRNAME = "deeptutor-notes"
 IGNORED_DIRS = frozenset({".git", ".obsidian", ".trash", WRITEBACK_DIRNAME})
@@ -30,6 +38,7 @@ _PAGE_RE = re.compile(
 )
 _COLOR_RE = re.compile(r"\[(?:color|colour)\s*[:=]\s*([^\]]+)\]", re.IGNORECASE)
 _FRONTMATTER_RE = re.compile(r"\A---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
+_IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]+\)")
 
 
 def _stable_id(*parts: str) -> str:
@@ -120,6 +129,8 @@ class ExportAdapter(MarginNoteAdapter):
         )
         self._signature: tuple[tuple[str, int, int], ...] | None = None
         self._notebook: Notebook | None = None
+        self._warnings: list[ParseWarning] = []
+        self.adapter_name = "export"
 
     def load(self) -> Notebook:
         signature = self._scan_signature()
@@ -279,6 +290,82 @@ class ExportAdapter(MarginNoteAdapter):
         ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
         return [{"tag": tag, "count": count} for tag, count in ranked[:limit]]
 
+    @property
+    def warnings(self) -> list[ParseWarning]:
+        self.load()
+        return list(self._warnings)
+
+    @property
+    def source_file_count(self) -> int:
+        return len(self.source_signature())
+
+    @property
+    def content_hash(self) -> str:
+        raw = "|".join(f"{rel}:{mtime}:{size}" for rel, mtime, size in self.source_signature())
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+    @property
+    def cursor(self) -> str:
+        return self.content_hash
+
+    def source_signature(self) -> tuple[tuple[str, int, int], ...]:
+        return self._scan_signature()
+
+    def capabilities(self) -> AdapterCapabilities:
+        writable = self._writeback_available()
+        return AdapterCapabilities(
+            adapter="export",
+            can_read=True,
+            can_watch=True,
+            official_write=False,
+            write_verified=False,
+            write_mode=WRITE_MODE_IMPORT_QUEUE,
+            write_block_reason=(
+                "Official MN4 write APIs are not verified; notes stay in the import queue."
+                if writable
+                else "Writeback folder is not writable."
+            ),
+        )
+
+    def diagnose(self) -> AdapterDiagnostics:
+        notebook = self.load()
+        caps = self.capabilities()
+        has_content = bool(
+            notebook.documents or notebook.highlights or notebook.notes or notebook.mindmap
+        )
+        error = ""
+        status = "ready"
+        recover: list[str] = []
+        if not has_content:
+            error = "No readable MarginNote documents, highlights, notes or mind maps."
+            status = "requires_user_action"
+            recover.append("export_markdown_opml")
+        if any(item.code == "unreadable" for item in self._warnings):
+            status = "degraded"
+            recover.append("fix_permissions")
+        writeback_available = self._writeback_available()
+        if not writeback_available:
+            recover.append("choose_writeback_folder")
+        return AdapterDiagnostics(
+            compatible=has_content,
+            adapter="export",
+            export_format="markdown-opml",
+            file_count=self.source_file_count,
+            document_count=len(notebook.documents),
+            highlight_count=len(notebook.highlights),
+            note_count=len(notebook.notes),
+            mindmap_count=len(notebook.mindmap),
+            writeback_available=writeback_available,
+            cursor=self.cursor,
+            content_hash=self.content_hash,
+            capabilities=caps,
+            warnings=list(self._warnings),
+            recover_actions=list(dict.fromkeys(recover)),
+            status_hint=status,
+            notebook_name=display_name_for(str(self._root)),
+            error=error,
+        )
+
     def create_note(
         self,
         rel_path: str,
@@ -337,6 +424,16 @@ class ExportAdapter(MarginNoteAdapter):
 
     # --- internals ----------------------------------------------------------
 
+    def _writeback_available(self) -> bool:
+        root = self._write_root
+        try:
+            if root.exists():
+                return root.is_dir() and os.access(root, os.W_OK)
+            parent = root.parent
+            return parent.is_dir() and os.access(parent, os.W_OK)
+        except OSError:
+            return False
+
     def _scan_signature(self) -> tuple[tuple[str, int, int], ...]:
         rows: list[tuple[str, int, int]] = []
         for path in self._iter_source_files():
@@ -358,15 +455,31 @@ class ExportAdapter(MarginNoteAdapter):
         notes: list[Note] = []
         mindmap: list[MindMapNode] = []
         documents: dict[str, DocumentInfo] = {}
+        self._warnings = []
         for path in self._iter_source_files():
             suffix = path.suffix.lower()
-            if suffix in {".md", ".markdown"}:
-                file_highlights, file_notes, document = self._parse_markdown(path)
-                highlights.extend(file_highlights)
-                notes.extend(file_notes)
-                documents[document.id] = document
-            elif suffix in {".opml", ".xml"}:
-                mindmap.extend(self._parse_opml(path))
+            rel = _rel(self._root, path)
+            try:
+                if path.stat().st_size == 0:
+                    self._warnings.append(ParseWarning(rel, "empty_file", "File is empty."))
+                    continue
+            except OSError as exc:
+                self._warnings.append(
+                    ParseWarning(rel, "unreadable", f"Could not stat file: {exc}")
+                )
+                continue
+            try:
+                if suffix in {".md", ".markdown"}:
+                    file_highlights, file_notes, document = self._parse_markdown(path)
+                    highlights.extend(file_highlights)
+                    notes.extend(file_notes)
+                    documents[document.id] = document
+                elif suffix in {".opml", ".xml"}:
+                    mindmap.extend(self._parse_opml(path))
+            except OSError as exc:
+                self._warnings.append(
+                    ParseWarning(rel, "unreadable", f"Could not read file: {exc}")
+                )
         if not documents and mindmap:
             for node in mindmap:
                 if node.parent_id:
@@ -399,9 +512,20 @@ class ExportAdapter(MarginNoteAdapter):
         )
 
     def _parse_markdown(self, path: Path) -> tuple[list[Highlight], list[Note], DocumentInfo]:
-        text = path.read_text(encoding="utf-8", errors="replace")
-        _front, body = split_frontmatter(text)
+        raw = path.read_bytes()
+        text = raw.decode("utf-8", errors="replace")
         rel = _rel(self._root, path)
+        if "\ufffd" in text:
+            self._warnings.append(
+                ParseWarning(rel, "encoding", "File is not valid UTF-8; replacement characters were used.")
+            )
+        if _IMAGE_RE.search(text):
+            self._warnings.append(
+                ParseWarning(rel, "image_not_extracted", "Embedded images are kept as Markdown links, not extracted.")
+            )
+        _front, body = split_frontmatter(text)
+        if not body.strip():
+            self._warnings.append(ParseWarning(rel, "empty_file", "Markdown file has no body."))
         document_id = rel
         document_name = path.stem
         highlights: list[Highlight] = []
@@ -470,9 +594,18 @@ class ExportAdapter(MarginNoteAdapter):
         )
 
     def _parse_opml(self, path: Path) -> list[MindMapNode]:
+        rel = _rel(self._root, path)
         try:
             tree = ET.parse(path)
-        except ET.ParseError:
+        except ET.ParseError as exc:
+            self._warnings.append(
+                ParseWarning(rel, "corrupt_opml", f"OPML/XML could not be parsed: {exc}")
+            )
+            return []
+        except OSError as exc:
+            self._warnings.append(
+                ParseWarning(rel, "unreadable", f"Could not read OPML: {exc}")
+            )
             return []
         nodes: list[MindMapNode] = []
 

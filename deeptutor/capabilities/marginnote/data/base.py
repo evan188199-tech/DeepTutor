@@ -11,6 +11,12 @@ from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+from deeptutor.capabilities.marginnote.data.diagnostics import (
+    WRITE_MODE_IMPORT_QUEUE,
+    AdapterCapabilities,
+    AdapterDiagnostics,
+)
+
 
 class AdapterError(Exception):
     """A notebook operation could not be completed."""
@@ -98,6 +104,8 @@ class Notebook:
 class MarginNoteAdapter(ABC):
     """Read/write surface every notebook format implements."""
 
+    adapter_name = "export"
+
     def __init__(self, notebook_path: str, writeback_path: str = "") -> None:
         self.notebook_path = notebook_path
         self.writeback_path = writeback_path
@@ -160,8 +168,55 @@ class MarginNoteAdapter(ABC):
     ) -> str:
         ...
 
+    def capabilities(self) -> AdapterCapabilities:
+        return AdapterCapabilities(
+            adapter=self.adapter_name,
+            can_read=True,
+            can_watch=True,
+            official_write=False,
+            write_verified=False,
+            write_mode=WRITE_MODE_IMPORT_QUEUE,
+            write_block_reason="Official MN4 write APIs are not verified.",
+        )
+
+    def diagnose(self) -> AdapterDiagnostics:
+        notebook = self.load()
+        warnings = list(getattr(self, "warnings", []) or [])
+        file_count = int(getattr(self, "source_file_count", 0) or 0)
+        content_hash = str(getattr(self, "content_hash", "") or "")
+        cursor = str(getattr(self, "cursor", "") or content_hash)
+        has_content = bool(
+            notebook.documents or notebook.highlights or notebook.notes or notebook.mindmap
+        )
+        return AdapterDiagnostics(
+            compatible=has_content,
+            adapter=self.adapter_name,
+            export_format="markdown-opml",
+            file_count=file_count,
+            document_count=len(notebook.documents),
+            highlight_count=len(notebook.highlights),
+            note_count=len(notebook.notes),
+            mindmap_count=len(notebook.mindmap),
+            writeback_available=True,
+            cursor=cursor,
+            content_hash=content_hash,
+            capabilities=self.capabilities(),
+            warnings=list(warnings) if isinstance(warnings, list) else [],
+            recover_actions=[] if has_content else ["export_markdown_opml"],
+            status_hint="ready" if has_content else "requires_user_action",
+            notebook_name=notebook.name,
+            error=""
+            if has_content
+            else "No readable MarginNote documents, highlights, notes or mind maps.",
+        )
+
+    def source_signature(self) -> tuple[tuple[str, int, int], ...]:
+        return ()
+
 
 __all__ = [
+    "AdapterCapabilities",
+    "AdapterDiagnostics",
     "AdapterError",
     "DocumentInfo",
     "Highlight",
