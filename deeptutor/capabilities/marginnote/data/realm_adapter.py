@@ -5,16 +5,57 @@ from __future__ import annotations
 from typing import Any
 
 from deeptutor.capabilities.marginnote.data.base import AdapterError, MarginNoteAdapter, Notebook
+from deeptutor.capabilities.marginnote.data.diagnostics import (
+    WRITE_MODE_NONE,
+    AdapterCapabilities,
+    AdapterDiagnostics,
+    display_name_for,
+)
+
+_REALM_BLOCKED = (
+    "The Realm adapter is not implemented and is blocked from public use. "
+    "Export the notebook as Markdown/OPML and connect it with adapter='export'."
+)
 
 
 class RealmAdapter(MarginNoteAdapter):
     """v2 stub. Reading MN4's Realm schema needs a live app install."""
 
-    def load(self) -> Notebook:
-        raise AdapterError(
-            "The Realm adapter is not implemented in v1. Export the notebook "
-            "as Markdown/OPML and connect it with adapter='export'."
+    adapter_name = "realm"
+
+    def capabilities(self) -> AdapterCapabilities:
+        return AdapterCapabilities(
+            adapter="realm",
+            can_read=False,
+            can_watch=False,
+            official_write=False,
+            write_verified=False,
+            write_mode=WRITE_MODE_NONE,
+            write_block_reason=_REALM_BLOCKED,
         )
+
+    def diagnose(self) -> AdapterDiagnostics:
+        return AdapterDiagnostics(
+            compatible=False,
+            adapter="realm",
+            export_format="realm",
+            file_count=0,
+            document_count=0,
+            highlight_count=0,
+            note_count=0,
+            mindmap_count=0,
+            writeback_available=False,
+            cursor="",
+            content_hash="",
+            capabilities=self.capabilities(),
+            recover_actions=["use_export_adapter"],
+            status_hint="disconnected",
+            notebook_name=display_name_for(self.notebook_path),
+            error=_REALM_BLOCKED,
+        )
+
+    def load(self) -> Notebook:
+        raise AdapterError(_REALM_BLOCKED)
 
     def search(self, query: str, *, tag: str = "", limit: int = 20) -> list[dict[str, Any]]:
         self.load()
