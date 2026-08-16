@@ -7,6 +7,9 @@
 # ============================================
 # Runtime data (knowledge bases, tutorbot workspaces, memory, etc.)
 data/
+# MarginNote adapters live under a package directory named data/; keep them tracked.
+!deeptutor/capabilities/marginnote/data/
+!deeptutor/capabilities/marginnote/data/**
 /multi-user/
 run_code_workspace/
 deeptutor/agents/question/reference_papers/
