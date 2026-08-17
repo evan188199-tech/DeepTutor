@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { bilingualApi, type BilingualPositionInput } from "../lib/immersive-reading-api";
+import {
+  bilingualApi,
+  immersiveReadingApi,
+  type BilingualPositionInput,
+} from "../lib/immersive-reading-api";
 
 const POSITION: BilingualPositionInput = {
   chapter_index: 2,
@@ -84,4 +88,41 @@ test("bilingual workflow client uses position, bookmark, and navigation contract
   });
   assert.deepEqual(calls[4].body, { title: "Chapter 2" });
   assert.deepEqual(calls[7].body, POSITION);
+});
+
+test("offline dictionary client checks status and uploads ECDICT CSV", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls: Array<{ path: string; method: string; body?: unknown }> = [];
+  globalThis.fetch = (async (input, init) => {
+    calls.push({
+      path: new URL(String(input), "http://localhost").pathname,
+      method: init?.method || "GET",
+      body: init?.body,
+    });
+    return jsonResponse({
+      installed: false,
+      path: "",
+      entries: null,
+      size_bytes: 0,
+      error: "",
+      imported: true,
+    });
+  }) as typeof fetch;
+
+  try {
+    const status = await immersiveReadingApi.dictionaryStatus();
+    const imported = await immersiveReadingApi.importDictionaryCsv(
+      new File(["word,translation\nhello,你好\n"], "ecdict.csv", { type: "text/csv" }),
+    );
+
+    assert.equal(status.installed, false);
+    assert.deepEqual(calls.map((call) => [call.path, call.method]), [
+      ["/api/v1/immersive-reading/dictionary/status", "GET"],
+      ["/api/v1/immersive-reading/dictionary/ecdict/import", "POST"],
+    ]);
+    assert.equal(calls[1].body instanceof FormData, true);
+    assert.equal(imported.imported, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });

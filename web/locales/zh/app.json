@@ -3258,5 +3258,8 @@
   "Resolve": "已解决",
   "EN": "英文",
   "ZH": "中文",
-  "Copy the report above and paste it to Codex to generate alignment fixes.": "复制上面的报告并发给 Codex，用于生成对齐修复。"
+  "Copy the report above and paste it to Codex to generate alignment fixes.": "复制上面的报告并发给 Codex，用于生成对齐修复。",
+  "Offline dictionary": "离线词典",
+  "Importing...": "导入中...",
+  "Import ECDICT CSV": "导入 ECDICT CSV"
 }
