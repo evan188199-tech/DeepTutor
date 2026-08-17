@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Download,
   Flag,
+  Keyboard,
   Languages,
   ListChecks,
   Loader2,
@@ -40,6 +41,11 @@ import {
 } from "@/lib/immersive-reading-api";
 import { extractDictionaryWord, type DictionaryAnchorRect } from "@/lib/dictionary-ui";
 import { playWordPronunciation, type WordPronunciationAccent } from "@/lib/word-pronunciation";
+import {
+  readerShortcutFromKeyboardEvent,
+  scrollPaneToGroup,
+  visibleGroupFromElements,
+} from "@/lib/bilingual-reader-ux";
 import {
   getCachedWord,
   setCachedWord,
@@ -103,6 +109,20 @@ function groupIndexFromNode(node: Node | null, fallback: number): number {
   return Number.isFinite(value) && value >= 0 ? value : fallback;
 }
 
+function dictionarySeedFromGroup(group: { en: string[] } | undefined): string {
+  const words = (group?.en?.join(" ") || "").match(/[A-Za-z][A-Za-z'-]*/g) || [];
+  const stopWords = new Set([
+    "the", "a", "an", "and", "or", "but", "if", "of", "to", "in", "on", "at",
+    "for", "with", "from", "by", "as", "is", "are", "was", "were", "be", "been",
+    "it", "its", "this", "that", "these", "those", "he", "she", "they", "we",
+  ]);
+  return (
+    words.find((word) => word.length >= 4 && !stopWords.has(word.toLowerCase())) ||
+    words[0] ||
+    ""
+  );
+}
+
 export function BilingualReader({
   pairingId,
   onBack,
@@ -127,11 +147,14 @@ export function BilingualReader({
   const [showReview, setShowReview] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTaskBoard, setShowTaskBoard] = useState(false);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportStyle, setExportStyle] = useState<BilingualExportStyle>("folded");
   const [exportFontFamily, setExportFontFamily] = useState("Noto Serif CJK TC");
   const [exportCss, setExportCss] = useState("");
   const [chapterTaskSummaries, setChapterTaskSummaries] = useState<Array<{ chapter_id: string; completed: boolean }>>([]);
+  const [activeGroup, setActiveGroup] = useState(0);
+  const [manualOpenGroups, setManualOpenGroups] = useState<Set<number>>(new Set());
   const contentRef = useRef<HTMLDivElement>(null);
   const pendingPositionRef = useRef<BilingualReadingPosition | null>(null);
   const pendingGroupJumpRef = useRef(false);
@@ -280,6 +303,7 @@ export function BilingualReader({
       content.scrollTop = 0;
       scrollPercentRef.current = 0;
       visibleGroupRef.current = 0;
+      setActiveGroup(0);
       return;
     }
     const sameChapter = saved.chapter_id === section.chapter;
@@ -292,6 +316,7 @@ export function BilingualReader({
       if (matched >= 0) groupIndex = matched;
     }
     visibleGroupRef.current = groupIndex;
+    setActiveGroup(groupIndex);
     if (pendingGroupJumpRef.current && sameChapter) {
       const groupElement = content.querySelector<HTMLElement>(
         `[data-group-index="${groupIndex}"]`,
@@ -354,15 +379,15 @@ export function BilingualReader({
     const handleScroll = () => {
       const maxScroll = Math.max(1, content.scrollHeight - content.clientHeight);
       scrollPercentRef.current = Math.max(0, Math.min(100, (content.scrollTop / maxScroll) * 100));
-      const elements = content.querySelectorAll<HTMLElement>("[data-group-index]");
-      let visible = visibleGroupRef.current;
-      for (const element of elements) {
-        if (element.offsetTop + element.offsetHeight >= content.scrollTop + 24) {
-          visible = Number(element.dataset.groupIndex || 0);
-          break;
-        }
-      }
+      const elements = Array.from(content.querySelectorAll<HTMLElement>("[data-group-index]"));
+      const visible = visibleGroupFromElements(
+        elements,
+        content.scrollTop,
+        content.clientHeight,
+        visibleGroupRef.current,
+      );
       visibleGroupRef.current = visible;
+      setActiveGroup(visible);
       if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = window.setTimeout(savePosition, 1000);
     };
@@ -372,6 +397,10 @@ export function BilingualReader({
       if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
     };
   }, [savePosition, section]);
+
+  useEffect(() => {
+    setManualOpenGroups(new Set());
+  }, [section?.chapter]);
 
   // Cancel any pending dictionary lookup when chapter changes.
   useEffect(() => {
@@ -420,7 +449,7 @@ export function BilingualReader({
     }
   };
 
-  const handleAddBookmark = async () => {
+  const handleAddBookmark = useCallback(async () => {
     try {
       const input = currentPositionInput();
       const group = section?.groups?.[input.group_index];
@@ -435,7 +464,7 @@ export function BilingualReader({
     } catch {
       // Keep reading if bookmark persistence fails.
     }
-  };
+  }, [currentPositionInput, pairingId, section]);
 
   const handleJumpBookmark = async (bookmark: BilingualBookmark) => {
     pendingPositionRef.current = bookmark;
@@ -722,7 +751,9 @@ export function BilingualReader({
 
   const handlePronounce = useCallback(
     (accent: WordPronunciationAccent) => {
-      const word = extractDictionaryWord(dictPopover?.word || "") || dictPopover?.word;
+      const word =
+        extractDictionaryWord(dictPopover?.word || "") ||
+        dictionarySeedFromGroup(section?.groups?.[activeGroup]);
       if (!word) return;
       void playWordPronunciation(word, accent, {
         onError: (error) => {
@@ -730,10 +761,10 @@ export function BilingualReader({
         },
       });
     },
-    [dictPopover?.word, onToast],
+    [activeGroup, dictPopover?.word, onToast, section],
   );
 
-  const closeDictionary = () => {
+  const closeDictionary = useCallback(() => {
     lastSelectionRef.current = "";
     dictAbortRef.current?.abort();
     dictReqIdRef.current++;
@@ -741,7 +772,129 @@ export function BilingualReader({
     setDictResult(null);
     setDictError(null);
     setDictLoading(false);
-  };
+  }, []);
+
+  const moveGroup = useCallback(
+    (delta: number) => {
+      if (!section?.groups?.length) return;
+      const next = Math.max(0, Math.min(activeGroup + delta, section.groups.length - 1));
+      visibleGroupRef.current = next;
+      setActiveGroup(next);
+      closeDictionary();
+      scrollPaneToGroup(contentRef.current, next, "smooth", 60);
+    },
+    [activeGroup, closeDictionary, section],
+  );
+
+  const toggleTranslation = useCallback(() => {
+    if (expandAll) {
+      onToast(t("All translations are already visible."));
+      return;
+    }
+    setManualOpenGroups((current) => {
+      const next = new Set(current);
+      if (next.has(activeGroup)) next.delete(activeGroup);
+      else next.add(activeGroup);
+      return next;
+    });
+  }, [activeGroup, expandAll, onToast, t]);
+
+  const lookupFromKeyboard = useCallback(() => {
+    const group = section?.groups?.[activeGroup];
+    const word = dictionarySeedFromGroup(group);
+    if (!word || !group) return;
+    const paragraph = contentRef.current?.querySelector<HTMLElement>(
+      `[data-group-index="${activeGroup}"]`,
+    );
+    const rect = paragraph?.getBoundingClientRect();
+    const anchor: DictionaryAnchorRect = rect ?? {
+      left: window.innerWidth / 2 - 20,
+      right: window.innerWidth / 2 + 20,
+      top: Math.max(24, window.innerHeight / 2 - 20),
+      bottom: Math.max(44, window.innerHeight / 2 + 20),
+    };
+    const context = group.en.join(" ");
+    setDictPopover({
+      word,
+      context,
+      selectedText: word,
+      initialMode: "dictionary",
+      groupIndex: activeGroup,
+      anchor,
+    });
+    handleDictionaryLookup(word, context);
+  }, [activeGroup, handleDictionaryLookup, section]);
+
+  useEffect(() => {
+    const modalOpen =
+      flagTarget !== null ||
+      showReview ||
+      showBookmarks ||
+      showTaskBoard ||
+      showExportDialog ||
+      showShortcutsModal;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const shortcut = readerShortcutFromKeyboardEvent(event, { modalOpen });
+      if (!shortcut) return;
+
+      if (shortcut === "close-modal") {
+        if (showShortcutsModal) setShowShortcutsModal(false);
+        else if (showExportDialog) setShowExportDialog(false);
+        else if (showTaskBoard) setShowTaskBoard(false);
+        else if (showBookmarks) setShowBookmarks(false);
+        else if (showReview) setShowReview(false);
+        else if (flagTarget !== null) setFlagTarget(null);
+        else if (dictPopover) closeDictionary();
+        return;
+      }
+
+      event.preventDefault();
+      switch (shortcut) {
+        case "next-group":
+          moveGroup(1);
+          break;
+        case "previous-group":
+          moveGroup(-1);
+          break;
+        case "toggle-translation":
+          toggleTranslation();
+          break;
+        case "lookup":
+          lookupFromKeyboard();
+          break;
+        case "bookmark":
+          void handleAddBookmark();
+          break;
+        case "pronounce":
+          handlePronounce("en-US");
+          break;
+        case "pronounce-uk":
+          handlePronounce("en-GB");
+          break;
+        case "toggle-shortcuts":
+          setShowShortcutsModal((value) => !value);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    closeDictionary,
+    dictPopover,
+    flagTarget,
+    handleAddBookmark,
+    handlePronounce,
+    lookupFromKeyboard,
+    moveGroup,
+    showBookmarks,
+    showExportDialog,
+    showReview,
+    showShortcutsModal,
+    showTaskBoard,
+    toggleTranslation,
+  ]);
 
   const handleSaveVocabulary = async () => {
     if (!dictPopover || !pairing || savingWord) return;
@@ -925,6 +1078,16 @@ export function BilingualReader({
         >
           <ChevronRight size={18} />
         </button>
+        <button
+          type="button"
+          onClick={() => setShowShortcutsModal(true)}
+          title={t("Keyboard Shortcuts")}
+          aria-label={t("Keyboard Shortcuts")}
+          className="flex h-8 shrink-0 items-center gap-1 rounded-lg border border-[var(--border)] px-2 text-xs text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+        >
+          <Keyboard size={14} />
+          <span className="hidden sm:inline">{t("J/K")}</span>
+        </button>
       </div>
 
      {/* Content */}
@@ -943,7 +1106,8 @@ export function BilingualReader({
                 key={gi}
                 group={group}
                 index={gi}
-                forceOpen={expandAll}
+                forceOpen={expandAll || manualOpenGroups.has(gi)}
+                isActive={activeGroup === gi}
                 isFlagged={flaggedGroups.has(gi)}
                 onFlag={() => setFlagTarget(gi)}
               />
@@ -1126,6 +1290,60 @@ export function BilingualReader({
           </div>
         </div>
       )}
+      {showShortcutsModal && (
+        <div
+          className="fixed inset-0 z-[130] flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setShowShortcutsModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-xl border border-[var(--border)] bg-[var(--background)] p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between border-b border-[var(--border)] pb-3">
+              <h3 className="flex items-center gap-2 text-base font-semibold">
+                <Keyboard size={18} className="text-[var(--primary)]" />
+                {t("Keyboard Shortcuts")}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowShortcutsModal(false)}
+                aria-label={t("Close shortcuts")}
+                className="rounded p-1 text-[var(--muted-foreground)] transition hover:bg-[var(--muted)]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="space-y-3">
+              <p className="text-xs text-[var(--muted-foreground)]">
+                {t("Continuous Reading Flow")}
+              </p>
+              <div className="grid gap-2">
+                {[
+                  { key: "J / ↓", desc: t("Next paragraph") },
+                  { key: "K / ↑", desc: t("Previous paragraph") },
+                  { key: "T", desc: t("Toggle paragraph translation") },
+                  { key: "D", desc: t("Dictionary lookup") },
+                  { key: "B", desc: t("Bookmark this position") },
+                  { key: "P", desc: t("Play US pronunciation") },
+                  { key: "Shift + P", desc: t("Play UK pronunciation") },
+                  { key: "? / H", desc: t("Keyboard Shortcuts") },
+                  { key: "Esc", desc: t("Close") },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between rounded-lg bg-[var(--muted)]/40 px-3 py-2 text-xs"
+                  >
+                    <span className="text-[var(--foreground)]">{item.desc}</span>
+                    <kbd className="rounded border border-[var(--border)] bg-[var(--card)] px-2 py-0.5 font-mono font-semibold text-[var(--foreground)]">
+                      {item.key}
+                    </kbd>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showTaskBoard && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
           <div className="flex h-[80vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-[var(--background)] shadow-2xl">
@@ -1256,12 +1474,14 @@ function BilingualGroup({
   group,
   index,
   forceOpen,
+  isActive,
   isFlagged,
   onFlag,
 }: {
   group: import("@/lib/immersive-reading-api").BilingualAlignGroup;
   index: number;
   forceOpen: boolean;
+  isActive: boolean;
   isFlagged: boolean;
   onFlag: () => void;
 }) {
@@ -1274,7 +1494,14 @@ function BilingualGroup({
 
   if (group.zh.length === 0) {
     return (
-      <div className="group/para relative space-y-1" data-group-index={index}>
+      <div
+        className={`group/para relative space-y-1 rounded-lg outline-2 outline-offset-4 transition ${
+          isActive
+            ? "outline-[var(--primary)]/50"
+            : "outline-transparent hover:outline-[var(--muted)]"
+        }`}
+        data-group-index={index}
+      >
         {group.en.map((para, pi) => (
           <p key={pi} className="leading-7 text-[var(--foreground)]">
             {para}
@@ -1292,7 +1519,14 @@ function BilingualGroup({
   }
 
   return (
-    <div className="group/para relative space-y-0.5" data-group-index={index}>
+    <div
+      className={`group/para relative space-y-0.5 rounded-lg outline-2 outline-offset-4 transition ${
+        isActive
+          ? "outline-[var(--primary)]/50"
+          : "outline-transparent hover:outline-[var(--muted)]"
+      }`}
+      data-group-index={index}
+    >
       {group.en.map((para, pi) => (
         <p key={pi} className="leading-7 text-[var(--foreground)]">
           {para}
