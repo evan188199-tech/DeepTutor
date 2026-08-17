@@ -39,6 +39,7 @@ import {
   ApiRequestError,
 } from "@/lib/immersive-reading-api";
 import { extractDictionaryWord, type DictionaryAnchorRect } from "@/lib/dictionary-ui";
+import { playWordPronunciation, type WordPronunciationAccent } from "@/lib/word-pronunciation";
 import {
   getCachedWord,
   setCachedWord,
@@ -719,6 +720,19 @@ export function BilingualReader({
     handleTranslateText(dictPopover.selectedText || dictPopover.word);
   };
 
+  const handlePronounce = useCallback(
+    (accent: WordPronunciationAccent) => {
+      const word = extractDictionaryWord(dictPopover?.word || "") || dictPopover?.word;
+      if (!word) return;
+      void playWordPronunciation(word, accent, {
+        onError: (error) => {
+          onToast(typeof error === "string" ? error : error.message);
+        },
+      });
+    },
+    [dictPopover?.word, onToast],
+  );
+
   const closeDictionary = () => {
     lastSelectionRef.current = "";
     dictAbortRef.current?.abort();
@@ -958,6 +972,9 @@ export function BilingualReader({
             onClose={closeDictionary}
             saveBusy={savingWord}
             onSaveToVocabulary={() => void handleSaveVocabulary()}
+            onPronounce={
+              dictPopover.initialMode === "dictionary" ? handlePronounce : undefined
+            }
           />
         )}
       </div>
