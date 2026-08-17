@@ -3240,6 +3240,8 @@
   "Expand all": "全部展开",
   "Review flagged issues": "查看标记问题",
   "Export EPUB": "导出 EPUB",
+  "Export CSV": "导出 CSV",
+  "Export Anki": "导出 Anki",
   "No aligned content in this chapter.": "本章没有已对齐内容。",
   "Failed to load this chapter.": "本章加载失败。",
   "No bookmarks yet.": "还没有书签。",

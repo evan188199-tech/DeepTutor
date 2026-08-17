@@ -52,6 +52,14 @@ from deeptutor.immersive_reading.models import (
     SelectionQueryResult,
     VocabEntry,
 )
+from deeptutor.immersive_reading.vocabulary import (
+    chapter_difficulty,
+    ensure_cards,
+    grade_review,
+    review_queue,
+    vocabulary_apkg,
+    vocabulary_csv,
+)
 from deeptutor.services.file_io import atomic_write_text
 from deeptutor.services.llm import clean_thinking_tags, complete, get_llm_config
 from deeptutor.services.llm.context_window import resolve_effective_context_window
@@ -1833,6 +1841,25 @@ class ImmersiveReadingService:
     def _vocabulary_path(self) -> Path:
         return self._root() / "vocabulary.json"
 
+    def _bilingual_source_context(
+        self, pairing_id: str, chapter_id: str, group_index: int
+    ) -> tuple[str, str]:
+        section_path = (
+            get_path_service().get_immersive_reading_pairing_root(pairing_id)
+            / "sections"
+            / f"{chapter_id}.json"
+        )
+        section = _read_json(section_path, {})
+        groups = section.get("groups", []) if isinstance(section, dict) else []
+        index = max(0, min(group_index, len(groups) - 1)) if groups else -1
+        if index < 0:
+            return "", ""
+        group = groups[index]
+        return (
+            " ".join(group.get("en", []))[:4000],
+            " ".join(group.get("zh", []))[:4000],
+        )
+
     async def add_word(
         self,
         word: str,
@@ -1901,8 +1928,19 @@ class ImmersiveReadingService:
                     "group_index": max(0, group_index),
                 }
             )
+        bilingual_en, bilingual_zh = (
+            self._bilingual_source_context(pairing_id, chapter_id, group_index)
+            if pairing_id and chapter_id
+            else ("", "")
+        )
+        context_en = bilingual_en or context.strip()[:4000]
+        updates["context_en"] = context_en
+        if bilingual_zh:
+            updates["context_zh"] = bilingual_zh
         entry = existing.model_copy(update=updates)
         entries[entries.index(existing)] = entry
+        entries = [ensure_cards(item, entries) for item in entries]
+        entry = next(item for item in entries if item.id == entry.id)
         _write_json(self._vocabulary_path(), [e.model_dump(mode="json") for e in entries])
         return entry
 
@@ -1916,12 +1954,55 @@ class ImmersiveReadingService:
                 entries.append(VocabEntry.model_validate(item))
             except Exception:
                 continue
+        # Legacy files predate generated cards; keep reads non-mutating but make
+        # every caller see the complete review/export shape.
+        if any(len(entry.cards) != 2 for entry in entries):
+            entries = [ensure_cards(entry, entries) for entry in entries]
         if document_id:
             entries = [e for e in entries if e.document_id == document_id]
         if pairing_id:
             entries = [e for e in entries if e.pairing_id == pairing_id]
         entries.sort(key=lambda e: e.created_at, reverse=True)
         return entries
+
+    def review_vocabulary(self, limit: int = 10) -> list[VocabEntry]:
+        limit = max(1, min(50, limit))
+        return review_queue(self.list_vocabulary(), limit=limit)
+
+    def grade_vocabulary_review(self, entry_id: str, *, correct: bool) -> VocabEntry:
+        entries = self.list_vocabulary()
+        entries, updated = grade_review(entries, entry_id, correct=correct)
+        _write_json(self._vocabulary_path(), [e.model_dump(mode="json") for e in entries])
+        return updated
+
+    def export_vocabulary_csv(self) -> Path:
+        entries = self.list_vocabulary()
+        if not entries:
+            raise ValueError("No vocabulary entries to export")
+        target = self._root() / "exports" / "vocabulary.csv"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(vocabulary_csv(entries))
+        return target
+
+    def export_vocabulary_apkg(self) -> Path:
+        entries = self.list_vocabulary()
+        if not entries:
+            raise ValueError("No vocabulary entries to export")
+        target = self._root() / "exports" / "vocabulary.apkg"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(vocabulary_apkg(entries, "DeepTutor Vocabulary"))
+        return target
+
+    def analyze_vocabulary_difficulty(self, content: str) -> dict[str, Any]:
+        dictionary: ECDictionary | None = None
+        try:
+            dictionary = ECDictionary(self._ecdict_path())
+            saved = [entry.word for entry in self.list_vocabulary()]
+            result = chapter_difficulty(content, dictionary, saved_words=saved)
+        finally:
+            if dictionary is not None:
+                dictionary.close()
+        return result.model_dump(mode="json")
 
     def delete_word(self, entry_id: str) -> None:
         entries = self.list_vocabulary()
@@ -2531,6 +2612,7 @@ class ImmersiveReadingService:
     def dictionary_status(self) -> dict[str, object]:
         path = self._ecdict_path()
         entries: int | None = None
+        frequency_fields = False
         error = ""
         if path.is_file():
             try:
@@ -2538,10 +2620,16 @@ class ImmersiveReadingService:
 
                 with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as connection:
                     entries = int(connection.execute("SELECT count(*) FROM entries").fetchone()[0])
+                dictionary = ECDictionary(path)
+                try:
+                    frequency_fields = dictionary.frequency_columns_available
+                finally:
+                    dictionary.close()
             except Exception as exc:
                 error = str(exc)
         return {
             "installed": path.is_file() and entries is not None,
+            "frequency_fields": frequency_fields if entries is not None else False,
             "path": str(path),
             "entries": entries,
             "size_bytes": path.stat().st_size if path.exists() else 0,

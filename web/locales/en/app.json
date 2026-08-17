@@ -3240,6 +3240,8 @@
   "Expand all": "Expand all",
   "Review flagged issues": "Review flagged issues",
   "Export EPUB": "Export EPUB",
+  "Export CSV": "Export CSV",
+  "Export Anki": "Export Anki",
   "No aligned content in this chapter.": "No aligned content in this chapter.",
   "Failed to load this chapter.": "Failed to load this chapter.",
   "No bookmarks yet.": "No bookmarks yet.",

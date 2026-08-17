@@ -174,6 +174,7 @@ export interface DictionaryResult {
 
 export interface DictionaryStatus {
   installed: boolean;
+  frequency_fields: boolean;
   path: string;
   entries: number | null;
   size_bytes: number;
@@ -194,10 +195,59 @@ export interface VocabEntry {
   chapter_id?: string;
   chapter_index?: number;
   group_index?: number;
+  context_en: string;
+  context_zh: string;
+  cards: VocabularyCard[];
+  review: VocabularyReviewState;
   created_at: number;
   updated_at?: number;
   occurrence_count?: number;
   mn4_exported: boolean;
+}
+
+export interface VocabularyCard {
+  id: string;
+  card_type: "cloze" | "choice";
+  front: string;
+  back: string;
+  context_en: string;
+  context_zh: string;
+  choices: string[];
+  answer: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface VocabularyReviewState {
+  due_at: number;
+  interval_index: number;
+  consecutive_correct: number;
+  review_count: number;
+  correct_count: number;
+  wrong_count: number;
+  last_result: "unset" | "correct" | "wrong";
+  last_reviewed_at: number;
+}
+
+export type VocabularyBand = "core" | "common" | "advanced" | "low" | "unknown";
+
+export interface VocabularyDifficultyWord {
+  word: string;
+  lemma: string;
+  count: number;
+  frequency_rank: number | null;
+  oxford: boolean;
+  band: VocabularyBand;
+  phonetic: string;
+  definition: string;
+  chinese: string;
+}
+
+export interface VocabularyDifficultyPreview {
+  available: boolean;
+  reason: string;
+  words: VocabularyDifficultyWord[];
+  distribution: Record<VocabularyBand, number | undefined>;
 }
 
 export interface CharacterNode {
@@ -456,7 +506,30 @@ export const immersiveReadingApi = {
     request<{ deleted: boolean }>(`/vocabulary/${encodeURIComponent(entryId)}`, {
       method: "DELETE",
     }),
- characterGraph: (
+  reviewVocabulary: (limit = 10) =>
+    request<{ entries: VocabEntry[] }>(
+      `/vocabulary/review?limit=${encodeURIComponent(String(limit))}`,
+    ),
+  gradeVocabularyReview: (entryId: string, correct: boolean) =>
+    request<{ entry: VocabEntry }>("/vocabulary/review/grade", {
+      method: "POST",
+      body: JSON.stringify({ entry_id: entryId, correct }),
+    }),
+  vocabularyExportUrl: (format: "csv" | "apkg") =>
+    `${apiUrl(BASE)}/vocabulary/export/${format}`,
+  sectionVocabularyDifficulty: (documentId: string, sectionId: string) =>
+    request<VocabularyDifficultyPreview>(
+      `/documents/${encodeURIComponent(documentId)}/sections/${encodeURIComponent(
+        sectionId,
+      )}/vocabulary-difficulty`,
+    ),
+  bilingualVocabularyDifficulty: (pairingId: string, chapterId: string) =>
+    request<VocabularyDifficultyPreview>(
+      `/bilingual/${encodeURIComponent(pairingId)}/section/${encodeURIComponent(
+        chapterId,
+      )}/vocabulary-difficulty`,
+    ),
+  characterGraph: (
     documentId: string,
     sectionId: string,
     scope: "current" | "through_current" = "current",
