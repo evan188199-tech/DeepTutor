@@ -783,6 +783,12 @@ class RenameBookmarkRequest(BaseModel):
     title: str = Field(min_length=1, max_length=200)
 
 
+class BilingualExportRequest(BaseModel):
+    style: Literal["folded", "alternating", "two_column"] = "folded"
+    font_family: str = Field(default="", max_length=300)
+    custom_css: str = Field(default="", max_length=100_000)
+
+
 @router.post("/bilingual/pair")
 async def bilingual_pair(request: PairRequest) -> dict[str, Any]:
     """Create a bilingual pairing from two imported reading documents."""
@@ -887,10 +893,19 @@ async def bilingual_get_report(pairing_id: str) -> dict[str, Any]:
 
 
 @router.post("/bilingual/{pairing_id}/export")
-async def bilingual_export(pairing_id: str) -> FileResponse:
+async def bilingual_export(
+    pairing_id: str, request: BilingualExportRequest | None = None
+) -> FileResponse:
     """Build and download a bilingual EPUB."""
+    options = request or BilingualExportRequest()
     try:
-        epub_path = await asyncio.to_thread(get_pairing_service().export_epub, pairing_id)
+        epub_path = await asyncio.to_thread(
+            get_pairing_service().export_epub,
+            pairing_id,
+            style=options.style,
+            font_family=options.font_family,
+            custom_css=options.custom_css,
+        )
         return FileResponse(
             path=str(epub_path),
             media_type="application/epub+zip",

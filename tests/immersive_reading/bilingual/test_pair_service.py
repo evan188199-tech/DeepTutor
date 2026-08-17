@@ -15,22 +15,30 @@ from tests.immersive_reading.bilingual._fixtures import make_minimal_epub
 @pytest.fixture
 def en_epub(tmp_path: Path) -> Path:
     path = tmp_path / "english.epub"
-    make_minimal_epub(path, "Test Book", [
-        ("Chapter One", ["The cat sat on the mat."]),
-        ("Chapter Two", ["The dog ran fast."]),
-        ("Chapter Three", ["Birds fly high."]),
-    ])
+    make_minimal_epub(
+        path,
+        "Test Book",
+        [
+            ("Chapter One", ["The cat sat on the mat."]),
+            ("Chapter Two", ["The dog ran fast."]),
+            ("Chapter Three", ["Birds fly high."]),
+        ],
+    )
     return path
 
 
 @pytest.fixture
 def zh_epub(tmp_path: Path) -> Path:
     path = tmp_path / "chinese.epub"
-    make_minimal_epub(path, "測試書", [
-        ("第一章", ["貓坐在墊子上。"]),
-        ("第二章", ["狗跑得快。"]),
-        ("第三章", ["鳥高飛。"]),
-    ])
+    make_minimal_epub(
+        path,
+        "測試書",
+        [
+            ("第一章", ["貓坐在墊子上。"]),
+            ("第二章", ["狗跑得快。"]),
+            ("第三章", ["鳥高飛。"]),
+        ],
+    )
     return path
 
 
@@ -193,6 +201,27 @@ def test_export_epub(en_epub: Path, zh_epub: Path, tmp_path: Path, monkeypatch):
     result = svc.pair_documents("en002", "zh002")
     svc.align(result["pairing_id"])
 
-    epub_path = svc.export_epub(result["pairing_id"])
+    section_path = svc._section_path(result["pairing_id"], "ch001")
+    section = svc_module._read_json(section_path, {})
+    section["groups"][0]["translation_source"] = "translation_task"
+    section["groups"][0]["zh"] = ["任务译文"]
+    section_path.write_text(svc_module.json.dumps(section), encoding="utf-8")
+
+    epub_path = svc.export_epub(
+        result["pairing_id"],
+        style="two_column",
+        font_family="Safe Font",
+        custom_css="body { color: #123456; }",
+    )
     assert epub_path.exists()
     assert epub_path.suffix == ".epub"
+    assert epub_path.name == "Test Book_bilingual_two-column.epub"
+
+    import zipfile
+
+    with zipfile.ZipFile(epub_path) as archive:
+        chapter = archive.read("chapter0.xhtml").decode("utf-8")
+
+    assert 'class="bilingual-row"' in chapter
+    assert "任务译文" in chapter
+    assert '--dt-bilingual-font-family: "Safe Font",' in chapter

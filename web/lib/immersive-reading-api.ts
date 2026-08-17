@@ -625,6 +625,14 @@ export interface BilingualSection {
   review: Array<Record<string, unknown>>;
 }
 
+export type BilingualExportStyle = "folded" | "alternating" | "two_column";
+
+export interface BilingualExportOptions {
+  style?: BilingualExportStyle;
+  font_family?: string;
+  custom_css?: string;
+}
+
 export interface BilingualReadingPosition {
   pairing_id: string;
   chapter_id: string;

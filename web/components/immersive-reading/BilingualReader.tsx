@@ -29,6 +29,7 @@ import {
   immersiveReadingApi,
   type BilingualAnnotation,
   type BilingualBookmark,
+  type BilingualExportStyle,
   type BilingualNavigation,
   type BilingualPairing,
   type BilingualReadingPosition,
@@ -125,6 +126,10 @@ export function BilingualReader({
   const [showReview, setShowReview] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTaskBoard, setShowTaskBoard] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [exportStyle, setExportStyle] = useState<BilingualExportStyle>("folded");
+  const [exportFontFamily, setExportFontFamily] = useState("Noto Serif CJK TC");
+  const [exportCss, setExportCss] = useState("");
   const [chapterTaskSummaries, setChapterTaskSummaries] = useState<Array<{ chapter_id: string; completed: boolean }>>([]);
   const contentRef = useRef<HTMLDivElement>(null);
   const pendingPositionRef = useRef<BilingualReadingPosition | null>(null);
@@ -386,19 +391,29 @@ export function BilingualReader({
   const handleExport = async () => {
     setExporting(true);
     try {
-      const response = await apiFetch(bilingualApi.exportUrl(pairingId), { method: "POST" });
-      if (!response.ok) throw new Error("Export failed");
+      const response = await apiFetch(bilingualApi.exportUrl(pairingId), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          style: exportStyle,
+          font_family: exportFontFamily,
+          custom_css: exportCss,
+        }),
+      });
+      if (!response.ok) throw new Error(t("Export failed."));
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${pairing?.en_title || "book"}_bilingual.epub`;
+      a.download = `${pairing?.en_title || "bilingual"}_${exportStyle}.epub`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    } catch {
-      // ignore
+      onToast(t("EPUB exported successfully."));
+      setShowExportDialog(false);
+    } catch (err) {
+      onErrorToast(err instanceof Error ? err.message : t("Export failed."));
     } finally {
       setExporting(false);
     }
@@ -859,11 +874,11 @@ export function BilingualReader({
           </button>
         )}
         <button
-          onClick={handleExport}
-          disabled={exporting}
+          type="button"
+          onClick={() => setShowExportDialog(true)}
           className="flex items-center gap-1 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-[var(--primary-foreground)] hover:opacity-90 disabled:opacity-50"
         >
-          {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+          <Download size={14} />
           {t("Export EPUB")}
         </button>
       </div>
@@ -973,6 +988,126 @@ export function BilingualReader({
           onRename={handleRenameBookmark}
           onDelete={handleDeleteBookmark}
         />
+      )}
+      {showExportDialog && (
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 p-4"
+          onClick={() => !exporting && setShowExportDialog(false)}
+        >
+          <div
+            className="flex max-h-[85vh] w-full max-w-[520px] flex-col overflow-hidden rounded-xl bg-[var(--background)] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("Export EPUB")}
+          >
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
+              <h3 className="flex items-center gap-2 text-sm font-semibold">
+                <Download size={16} />
+                {t("Export EPUB")}
+              </h3>
+              <button
+                type="button"
+                onClick={() => !exporting && setShowExportDialog(false)}
+                disabled={exporting}
+                className="rounded p-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)] disabled:opacity-40"
+                aria-label={t("Close")}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+              <div className="space-y-2">
+                <span className="text-xs font-medium text-[var(--muted-foreground)]">
+                  {t("Layout")}
+                </span>
+                <div
+                  className="grid grid-cols-3 gap-1 rounded-lg bg-[var(--muted)] p-1"
+                  role="group"
+                  aria-label={t("Layout")}
+                >
+                  {([
+                    { value: "folded", label: t("Folded") },
+                    { value: "alternating", label: t("Alternating") },
+                    { value: "two_column", label: t("Two columns") },
+                  ] as const).map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setExportStyle(option.value)}
+                      disabled={exporting}
+                      aria-pressed={exportStyle === option.value}
+                      className={`h-9 rounded-md px-2 text-xs transition disabled:opacity-50 ${
+                        exportStyle === option.value
+                          ? "bg-[var(--background)] font-semibold text-[var(--foreground)] shadow-sm"
+                          : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="bilingual-export-font"
+                  className="text-xs font-medium text-[var(--muted-foreground)]"
+                >
+                  {t("Font family")}
+                </label>
+                <input
+                  id="bilingual-export-font"
+                  value={exportFontFamily}
+                  onChange={(event) => setExportFontFamily(event.target.value)}
+                  maxLength={300}
+                  disabled={exporting}
+                  className="h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="bilingual-export-css"
+                  className="text-xs font-medium text-[var(--muted-foreground)]"
+                >
+                  {t("Custom CSS")}
+                </label>
+                <textarea
+                  id="bilingual-export-css"
+                  value={exportCss}
+                  onChange={(event) => setExportCss(event.target.value)}
+                  maxLength={100000}
+                  disabled={exporting}
+                  spellCheck={false}
+                  rows={6}
+                  className="w-full resize-y rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 font-mono text-xs leading-5"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 border-t border-[var(--border)] px-5 py-3">
+              <button
+                type="button"
+                onClick={() => setShowExportDialog(false)}
+                disabled={exporting}
+                className="rounded-lg px-3 py-2 text-sm text-[var(--muted-foreground)] hover:bg-[var(--muted)] disabled:opacity-40"
+              >
+                {t("Cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleExport()}
+                disabled={exporting}
+                className="inline-flex h-10 items-center gap-2 rounded-lg bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] hover:opacity-90 disabled:opacity-50"
+              >
+                {exporting ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <Download size={15} />
+                )}
+                {exporting ? t("Exporting...") : t("Download EPUB")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {showTaskBoard && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">

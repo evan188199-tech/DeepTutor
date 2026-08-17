@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from deeptutor.book.models import CharacterGraph, CharacterNode
@@ -45,7 +47,9 @@ def test_get_section_returns_source_content(client: TestClient, imported_documen
     assert "brass compass" in response.json()["content"]
 
 
-def test_progress_endpoint_persists_reader_position(client: TestClient, imported_document: dict) -> None:
+def test_progress_endpoint_persists_reader_position(
+    client: TestClient, imported_document: dict
+) -> None:
     document_id = imported_document["id"]
     section_id = imported_document["sections"][1]["id"]
 
@@ -97,6 +101,54 @@ def test_missing_document_returns_not_found(client: TestClient) -> None:
     response = client.get("/api/v1/immersive-reading/documents/missing")
 
     assert response.status_code == 404
+
+
+def test_bilingual_export_accepts_style_options_and_empty_body(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    import deeptutor.api.routers.immersive_reading as router_module
+
+    calls: list[dict[str, object]] = []
+    epub_path = tmp_path / "styled.epub"
+    epub_path.write_bytes(b"fake-epub")
+
+    class FakePairingService:
+        def export_epub(self, pairing_id: str, **options):
+            calls.append({"pairing_id": pairing_id, **options})
+            return epub_path
+
+    app = FastAPI()
+    monkeypatch.setattr(router_module, "get_pairing_service", lambda: FakePairingService())
+    app.include_router(router_module.router, prefix="/api/v1/immersive-reading")
+    client = TestClient(app)
+
+    styled = client.post(
+        "/api/v1/immersive-reading/bilingual/pair001/export",
+        json={
+            "style": "two_column",
+            "font_family": "Safe Font",
+            "custom_css": "body { color: #123456; }",
+        },
+    )
+    default = client.post("/api/v1/immersive-reading/bilingual/pair001/export")
+
+    assert styled.status_code == 200, styled.text
+    assert styled.content == b"fake-epub"
+    assert default.status_code == 200, default.text
+    assert calls == [
+        {
+            "pairing_id": "pair001",
+            "style": "two_column",
+            "font_family": "Safe Font",
+            "custom_css": "body { color: #123456; }",
+        },
+        {
+            "pairing_id": "pair001",
+            "style": "folded",
+            "font_family": "",
+            "custom_css": "",
+        },
+    ]
 
 
 def test_character_graph_current_scope_uses_only_selected_section(
