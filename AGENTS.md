@@ -136,3 +136,59 @@ Source extras (.[ extra ], defined in pyproject.toml):
 .[dev]            — Test / lint tooling
 .[all]            — Everything above
 ```
+
+## Upstream Collaboration & Contribution Workflow
+
+DeepTutor is developed in a fork/upstream model. In this checkout, `origin`
+points to `HKUDS/DeepTutor` and `myfork` points to the contributor fork. Treat
+`origin` as read-only by default and publish personal branches only to
+`myfork`. Upstream's `CONTRIBUTING.md` requires normal contributions to target
+`dev` or `multi-user`, not `main`.
+
+### Contribution Boundary
+
+- During the research phase of every non-trivial change, inspect the relevant
+  upstream branch, open issues, recent merged PRs, and contribution guidance.
+- Prefer upstreamable fixes for bugs, compatibility problems, tests, docs,
+  tooling, and generally useful APIs. Keep deployment-specific behavior,
+  private integrations, credentials, local UI preferences, and experiments
+  local unless maintainers explicitly request upstream support.
+- Before implementing a potentially reusable change, check whether an issue
+  already exists. Reuse or reference the existing issue instead of opening a
+  duplicate; open a new issue only when the problem is reproducible and its
+  scope is clear.
+
+### Branch and PR Discipline
+
+- Start each upstream candidate from the current target branch, normally
+  `origin/dev`; use `origin/multi-user` only for multi-user behavior.
+- Use one focused branch per contribution, named `codex/upstream-<topic>`.
+  Keep local product work on separate branches and do not mix it into an
+  upstream candidate.
+- Keep commits atomic and reviewable. A PR should address one issue or one
+  cohesive improvement, include tests or a documented reason they are not
+  practical, and update docs when the public contract changes.
+- Rebase or merge the latest target branch before handoff, rerun the affected
+  checks, and prepare a concise PR summary with reproduction, root cause,
+  behavior change, compatibility impact, and verification evidence.
+- Prepare issue and PR text in the worktree when useful, but never create an
+  external issue, push to `origin`, or open a PR without an explicit user
+  request for that external action. Never push directly to upstream `main`.
+
+### Contribution Gate for Daily Work
+
+At the end of research and before closing a development task, report:
+
+1. Upstream references checked and any matching issue or merged PR.
+2. Whether the current change is upstreamable, local-only, or needs maintainer
+   discussion.
+3. A proposed issue title/body when a reproducible upstream gap exists.
+4. A proposed atomic PR branch, target branch, files, tests, and remaining
+   risks when implementation is justified.
+5. Concrete verification results. Mark checks that could not run as
+   `BLOCKED` with the reason; do not present an unverified contribution as
+   ready.
+
+This workflow improves upstream compatibility without changing upstream's
+branches by itself: documentation and local branch preparation affect only
+this checkout until an explicitly authorized push or PR creation occurs.
