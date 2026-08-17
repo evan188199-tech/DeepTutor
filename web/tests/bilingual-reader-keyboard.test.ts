@@ -87,11 +87,11 @@ test("bilingual reader wires shortcuts to navigation and support actions", async
   );
 
   assert.match(source, /readerShortcutFromKeyboardEvent\(event, \{ modalOpen \}\)/);
-  assert.match(source, /scrollPaneToGroup\(contentRef\.current, next, "smooth", 60\)/);
+  assert.match(source, /scrollPaneToGroup\(inlinePaneRef\.current, next, "smooth", 60\)/);
   assert.match(source, /case "toggle-translation":/);
   assert.match(source, /case "lookup":/);
   assert.match(source, /case "bookmark":/);
   assert.match(source, /case "pronounce-uk":/);
   assert.match(source, /\{showShortcutsModal && \(/);
-  assert.match(source, /isActive=\{activeGroup === gi\}/);
+  assert.match(source, /active=\{activeGroup === gi\}/);
 });

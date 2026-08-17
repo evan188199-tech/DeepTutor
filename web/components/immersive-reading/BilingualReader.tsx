@@ -5,21 +5,29 @@ import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  AudioLines,
   Bookmark,
   BookmarkPlus,
+  BookOpen,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   ChevronsDownUp,
   ChevronsUpDown,
   ClipboardList,
+  Columns2,
   Download,
+  Eye,
   Flag,
   Keyboard,
   Languages,
   ListChecks,
   Loader2,
+  MousePointerClick,
   Pencil,
   Trash2,
+  Volume2,
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -40,11 +48,24 @@ import {
   ApiRequestError,
 } from "@/lib/immersive-reading-api";
 import { extractDictionaryWord, type DictionaryAnchorRect } from "@/lib/dictionary-ui";
-import { playWordPronunciation, type WordPronunciationAccent } from "@/lib/word-pronunciation";
 import {
+  playWordPronunciation,
+  subscribePronunciationState,
+  type PronunciationPlaybackState,
+  type WordPronunciationAccent,
+} from "@/lib/word-pronunciation";
+import {
+  BILINGUAL_CLICK_LOOKUP_STORAGE_KEY,
+  BILINGUAL_DUAL_PANE_MEDIA_QUERY,
+  BILINGUAL_READER_MODE_STORAGE_KEY,
+  parseBilingualReaderMode,
+  parseStoredBoolean,
   readerShortcutFromKeyboardEvent,
   scrollPaneToGroup,
+  shouldIgnoreLookupTarget,
   visibleGroupFromElements,
+  wordRangeAtPoint,
+  type BilingualReaderMode,
 } from "@/lib/bilingual-reader-ux";
 import {
   getCachedWord,
@@ -53,6 +74,7 @@ import {
   setCachedTranslation,
 } from "@/lib/dictionary-cache";
 import DictionaryPanel from "@/components/common/DictionaryPanel";
+import MiniDictionaryTooltip from "@/components/common/MiniDictionaryTooltip";
 import TranslationTaskBoardPanel from "@/components/translation/TranslationTaskBoard";
 import { translationTaskApi } from "@/lib/translation-tasks-api";
 import { apiFetch } from "@/lib/api";
@@ -68,6 +90,7 @@ interface BilingualReaderProps {
 }
 
 type IssueType = "misalignment" | "wrong_chapter" | "missing_translation" | "translation_error" | "other";
+type DictionaryPresentation = "mini" | "full";
 
 function rangePointFromOffsets(container: HTMLElement, start: number, end: number): Range | null {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
@@ -138,6 +161,14 @@ export function BilingualReader({
   const [chapterIndex, setChapterIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [sectionLoading, setSectionLoading] = useState(false);
+  const [preferredReaderMode, setPreferredReaderMode] = useState<BilingualReaderMode>(() =>
+    parseBilingualReaderMode(
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem(BILINGUAL_READER_MODE_STORAGE_KEY),
+    ),
+  );
+  const [dualPaneSupported, setDualPaneSupported] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [annotations, setAnnotations] = useState<BilingualAnnotation[]>([]);
@@ -155,14 +186,39 @@ export function BilingualReader({
   const [chapterTaskSummaries, setChapterTaskSummaries] = useState<Array<{ chapter_id: string; completed: boolean }>>([]);
   const [activeGroup, setActiveGroup] = useState(0);
   const [manualOpenGroups, setManualOpenGroups] = useState<Set<number>>(new Set());
+  const [manualClosedGroups, setManualClosedGroups] = useState<Set<number>>(new Set());
+  const [hoveredGroup, setHoveredGroup] = useState<number | null>(null);
+  const [pinnedHoverGroup, setPinnedHoverGroup] = useState<number | null>(null);
+  const [clickLookupEnabled, setClickLookupEnabled] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : parseStoredBoolean(window.localStorage.getItem(BILINGUAL_CLICK_LOOKUP_STORAGE_KEY)),
+  );
+  const [audioState, setAudioState] = useState<PronunciationPlaybackState>({
+    isPlaying: false,
+    word: null,
+    accent: null,
+  });
   const contentRef = useRef<HTMLDivElement>(null);
+  const inlinePaneRef = useRef<HTMLDivElement>(null);
+  const englishPaneRef = useRef<HTMLDivElement>(null);
+  const chinesePaneRef = useRef<HTMLDivElement>(null);
+  const dualSyncGuardRef = useRef(0);
   const pendingPositionRef = useRef<BilingualReadingPosition | null>(null);
   const pendingGroupJumpRef = useRef(false);
   const scrollPercentRef = useRef(0);
   const visibleGroupRef = useRef(0);
   const saveTimerRef = useRef<number | null>(null);
   const sectionRequestRef = useRef(0);
-  const [dictPopover, setDictPopover] = useState<{ word: string; context: string; anchor: DictionaryAnchorRect; selectedText: string; initialMode: "dictionary" | "translate"; groupIndex: number } | null>(null);
+  const [dictPopover, setDictPopover] = useState<{
+    word: string;
+    context: string;
+    anchor: DictionaryAnchorRect;
+    selectedText: string;
+    initialMode: "dictionary" | "translate";
+    groupIndex: number;
+    presentation: DictionaryPresentation;
+  } | null>(null);
   const [dictResult, setDictResult] = useState<DictionaryResult | null>(null);
   const [dictLoading, setDictLoading] = useState(false);
   const [dictError, setDictError] = useState<string | null>(null);
@@ -170,7 +226,31 @@ export function BilingualReader({
   const dictReqIdRef = useRef(0);
   const dictAbortRef = useRef<AbortController | null>(null);
   const lastSelectionRef = useRef("");
+  const miniLookupRef = useRef<{ word: string; at: number }>({ word: "", at: 0 });
   const lastCompletedChapterCountRef = useRef<number | null>(null);
+
+  const readerMode: BilingualReaderMode =
+    preferredReaderMode === "dual" && !dualPaneSupported ? "inline" : preferredReaderMode;
+
+  useEffect(() => {
+    return subscribePronunciationState(setAudioState);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(BILINGUAL_READER_MODE_STORAGE_KEY, preferredReaderMode);
+  }, [preferredReaderMode]);
+
+  useEffect(() => {
+    window.localStorage.setItem(BILINGUAL_CLICK_LOOKUP_STORAGE_KEY, String(clickLookupEnabled));
+  }, [clickLookupEnabled]);
+
+  useEffect(() => {
+    const query = window.matchMedia(BILINGUAL_DUAL_PANE_MEDIA_QUERY);
+    const update = () => setDualPaneSupported(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -296,11 +376,12 @@ export function BilingualReader({
   );
 
   useEffect(() => {
-    const content = contentRef.current;
+    const content = readerMode === "dual" ? englishPaneRef.current : inlinePaneRef.current;
     const saved = pendingPositionRef.current;
     if (!content || sectionLoading || !section) return;
     if (!saved) {
       content.scrollTop = 0;
+      if (readerMode === "dual") scrollPaneToGroup(chinesePaneRef.current, 0);
       scrollPercentRef.current = 0;
       visibleGroupRef.current = 0;
       setActiveGroup(0);
@@ -323,6 +404,7 @@ export function BilingualReader({
       );
       if (groupElement) {
         content.scrollTop = Math.max(0, groupElement.offsetTop - 24);
+        if (readerMode === "dual") scrollPaneToGroup(chinesePaneRef.current, groupIndex);
         const maxScroll = Math.max(1, content.scrollHeight - content.clientHeight);
         scrollPercentRef.current = Math.max(
           0,
@@ -336,8 +418,9 @@ export function BilingualReader({
     const maxScroll = Math.max(1, content.scrollHeight - content.clientHeight);
     scrollPercentRef.current = sameChapter ? saved.scroll_percent : 0;
     content.scrollTop = (maxScroll * scrollPercentRef.current) / 100;
+    if (readerMode === "dual") scrollPaneToGroup(chinesePaneRef.current, groupIndex);
     pendingPositionRef.current = null;
-  }, [section, sectionLoading]);
+  }, [readerMode, section, sectionLoading]);
 
   const currentPositionInput = useCallback(() => {
     const entry = pairing?.chapter_map?.[chapterIndex];
@@ -374,33 +457,84 @@ export function BilingualReader({
   }, []);
 
   useEffect(() => {
-    const content = contentRef.current;
-    if (!content) return;
-    const handleScroll = () => {
-      const maxScroll = Math.max(1, content.scrollHeight - content.clientHeight);
-      scrollPercentRef.current = Math.max(0, Math.min(100, (content.scrollTop / maxScroll) * 100));
-      const elements = Array.from(content.querySelectorAll<HTMLElement>("[data-group-index]"));
+    if (readerMode !== "dual") {
+      const content = inlinePaneRef.current;
+      if (!content) return;
+      const handleScroll = () => {
+        const maxScroll = Math.max(1, content.scrollHeight - content.clientHeight);
+        scrollPercentRef.current = Math.max(0, Math.min(100, (content.scrollTop / maxScroll) * 100));
+        const elements = Array.from(content.querySelectorAll<HTMLElement>("[data-group-index]"));
+        const visible = visibleGroupFromElements(
+          elements,
+          content.scrollTop,
+          content.clientHeight,
+          visibleGroupRef.current,
+        );
+        visibleGroupRef.current = visible;
+        setActiveGroup(visible);
+        if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = window.setTimeout(savePosition, 1000);
+      };
+      content.addEventListener("scroll", handleScroll, { passive: true });
+      return () => {
+        content.removeEventListener("scroll", handleScroll);
+        if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
+      };
+    }
+
+    const english = englishPaneRef.current;
+    const chinese = chinesePaneRef.current;
+    if (!english || !chinese) return;
+    const handleDualScroll = (source: HTMLDivElement, other: HTMLDivElement) => {
+      if (performance.now() < dualSyncGuardRef.current) return;
+      const elements = Array.from(source.querySelectorAll<HTMLElement>("[data-group-index]"));
       const visible = visibleGroupFromElements(
         elements,
-        content.scrollTop,
-        content.clientHeight,
+        source.scrollTop,
+        source.clientHeight,
         visibleGroupRef.current,
       );
-      visibleGroupRef.current = visible;
-      setActiveGroup(visible);
+      if (visible !== visibleGroupRef.current) {
+        visibleGroupRef.current = visible;
+        setActiveGroup(visible);
+        dualSyncGuardRef.current = performance.now() + 100;
+        scrollPaneToGroup(other, visible, "auto", 48);
+      }
+      if (source === english) {
+        const maxScroll = Math.max(1, english.scrollHeight - english.clientHeight);
+        scrollPercentRef.current = Math.max(0, Math.min(100, (english.scrollTop / maxScroll) * 100));
+      }
       if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = window.setTimeout(savePosition, 1000);
     };
-    content.addEventListener("scroll", handleScroll, { passive: true });
+    const onEnglishScroll = () => handleDualScroll(english, chinese);
+    const onChineseScroll = () => handleDualScroll(chinese, english);
+    english.addEventListener("scroll", onEnglishScroll, { passive: true });
+    chinese.addEventListener("scroll", onChineseScroll, { passive: true });
     return () => {
-      content.removeEventListener("scroll", handleScroll);
+      english.removeEventListener("scroll", onEnglishScroll);
+      chinese.removeEventListener("scroll", onChineseScroll);
       if (saveTimerRef.current !== null) window.clearTimeout(saveTimerRef.current);
     };
-  }, [savePosition, section]);
+  }, [readerMode, savePosition, section]);
 
   useEffect(() => {
     setManualOpenGroups(new Set());
-  }, [section?.chapter]);
+    setManualClosedGroups(new Set());
+    setHoveredGroup(null);
+    setPinnedHoverGroup(null);
+    if (readerMode === "dual") {
+      scrollPaneToGroup(englishPaneRef.current, visibleGroupRef.current, "auto", 48);
+      scrollPaneToGroup(chinesePaneRef.current, visibleGroupRef.current, "auto", 48);
+    } else {
+      scrollPaneToGroup(inlinePaneRef.current, visibleGroupRef.current, "auto", 48);
+    }
+  }, [chapterIndex, readerMode]);
+
+  useEffect(() => {
+    setManualOpenGroups(new Set());
+    setManualClosedGroups(new Set());
+  }, [expandAll]);
 
   // Cancel any pending dictionary lookup when chapter changes.
   useEffect(() => {
@@ -642,6 +776,12 @@ export function BilingualReader({
       lastSelectionRef.current = "";
       return;
     }
+    if (
+      miniLookupRef.current.word === text &&
+      performance.now() - miniLookupRef.current.at < 400
+    ) {
+      return;
+    }
     const anchor = selection.anchorNode;
     if (!anchor || !contentRef.current.contains(anchor)) {
       return;
@@ -666,6 +806,7 @@ export function BilingualReader({
       initialMode,
       groupIndex,
       anchor: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
+      presentation: "full",
     });
     if (isSingleWord) {
       handleDictionaryLookup(word, context);
@@ -673,6 +814,40 @@ export function BilingualReader({
       handleTranslateText(selectedText);
     }
   }, [handleDictionaryLookup, handleTranslateText]);
+
+  const openWordLookupAtPoint = useCallback(
+    (x: number, y: number, target: EventTarget | null) => {
+      if (shouldIgnoreLookupTarget(target)) return;
+      const surface = contentRef.current;
+      const targetNode = target instanceof Node ? target : null;
+      const targetElement = target instanceof Element ? target : targetNode?.parentElement;
+      const paragraph = targetElement?.closest("p");
+      if (!surface || !paragraph || !surface.contains(paragraph)) return;
+
+      const range = wordRangeAtPoint(paragraph, x, y);
+      if (!range) return;
+      const word = extractDictionaryWord(range.toString());
+      if (!word) return;
+      const rect = range.getBoundingClientRect();
+      const anchor: DictionaryAnchorRect =
+        rect.width || rect.height
+          ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }
+          : { left: x, right: x + 1, top: y, bottom: y + 1 };
+      const context = (paragraph.textContent || "").slice(0, 2000);
+      miniLookupRef.current = { word, at: performance.now() };
+      setDictPopover({
+        word,
+        context,
+        selectedText: word,
+        initialMode: "dictionary",
+        groupIndex: groupIndexFromNode(range.startContainer, visibleGroupRef.current),
+        anchor,
+        presentation: "mini",
+      });
+      handleDictionaryLookup(word, context);
+    },
+    [handleDictionaryLookup],
+  );
 
   const handleSentenceClick = useCallback((event: MouseEvent) => {
     if (event.detail !== 3) return;
@@ -715,6 +890,7 @@ export function BilingualReader({
       initialMode: "translate",
       groupIndex: groupIndexFromNode(paragraph, visibleGroupRef.current),
       anchor: { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom },
+      presentation: "full",
     });
     void handleTranslateText(sentence);
   }, [handleTranslateText]);
@@ -723,6 +899,16 @@ export function BilingualReader({
     const ref = contentRef.current;
     if (!ref) return;
     let timer: number | null = null;
+    const handleClickLookup = (event: MouseEvent) => {
+      if (
+        event.detail !== 1 ||
+        !clickLookupEnabled ||
+        window.getSelection()?.toString().trim()
+      ) {
+        return;
+      }
+      openWordLookupAtPoint(event.clientX, event.clientY, event.target);
+    };
     const scheduleSelection = () => {
       if (timer !== null) window.clearTimeout(timer);
       // Mobile browsers may finish the native selection after pointerup.
@@ -730,14 +916,22 @@ export function BilingualReader({
     };
     ref.addEventListener("pointerup", scheduleSelection);
     ref.addEventListener("click", handleSentenceClick);
+    ref.addEventListener("click", handleClickLookup);
     document.addEventListener("selectionchange", scheduleSelection);
     return () => {
       ref.removeEventListener("pointerup", scheduleSelection);
       ref.removeEventListener("click", handleSentenceClick);
+      ref.removeEventListener("click", handleClickLookup);
       document.removeEventListener("selectionchange", scheduleSelection);
       if (timer !== null) window.clearTimeout(timer);
     };
-  }, [handleSentenceClick, handleTextSelection, sectionLoading]);
+  }, [
+    clickLookupEnabled,
+    handleSentenceClick,
+    handleTextSelection,
+    openWordLookupAtPoint,
+    sectionLoading,
+  ]);
 
   const handleDictLookupClick = () => {
     if (!dictPopover) return;
@@ -764,6 +958,10 @@ export function BilingualReader({
     [activeGroup, dictPopover?.word, onToast, section],
   );
 
+  const handleOpenFullDictionary = useCallback(() => {
+    setDictPopover((current) => (current ? { ...current, presentation: "full" } : current));
+  }, []);
+
   const closeDictionary = useCallback(() => {
     lastSelectionRef.current = "";
     dictAbortRef.current?.abort();
@@ -781,31 +979,50 @@ export function BilingualReader({
       visibleGroupRef.current = next;
       setActiveGroup(next);
       closeDictionary();
-      scrollPaneToGroup(contentRef.current, next, "smooth", 60);
+      if (readerMode === "dual") {
+        scrollPaneToGroup(englishPaneRef.current, next, "smooth", 60);
+        scrollPaneToGroup(chinesePaneRef.current, next, "smooth", 60);
+      } else {
+        scrollPaneToGroup(inlinePaneRef.current, next, "smooth", 60);
+      }
     },
-    [activeGroup, closeDictionary, section],
+    [activeGroup, closeDictionary, readerMode, section],
   );
 
-  const toggleTranslation = useCallback(() => {
-    if (expandAll) {
-      onToast(t("All translations are already visible."));
+  const toggleTranslation = useCallback((groupIndex = activeGroup) => {
+    if (readerMode === "hover") {
+      setPinnedHoverGroup((current) => (current === groupIndex ? null : groupIndex));
       return;
     }
+    if (readerMode === "dual") {
+      onToast(t("Translations are always visible in dual-pane mode."));
+      return;
+    }
+    const isOpen = expandAll
+      ? !manualClosedGroups.has(groupIndex)
+      : manualOpenGroups.has(groupIndex);
     setManualOpenGroups((current) => {
       const next = new Set(current);
-      if (next.has(activeGroup)) next.delete(activeGroup);
-      else next.add(activeGroup);
+      if (isOpen) next.delete(groupIndex);
+      else next.add(groupIndex);
       return next;
     });
-  }, [activeGroup, expandAll, onToast, t]);
+    setManualClosedGroups((current) => {
+      const next = new Set(current);
+      if (isOpen) next.add(groupIndex);
+      else next.delete(groupIndex);
+      return next;
+    });
+  }, [activeGroup, expandAll, manualClosedGroups, manualOpenGroups, onToast, readerMode, t]);
 
   const lookupFromKeyboard = useCallback(() => {
     const group = section?.groups?.[activeGroup];
     const word = dictionarySeedFromGroup(group);
     if (!word || !group) return;
-    const paragraph = contentRef.current?.querySelector<HTMLElement>(
+    const surface = readerMode === "dual" ? englishPaneRef.current : contentRef.current;
+    const paragraph = surface?.querySelector<HTMLElement>(
       `[data-group-index="${activeGroup}"]`,
-    );
+    )?.querySelector("p");
     const rect = paragraph?.getBoundingClientRect();
     const anchor: DictionaryAnchorRect = rect ?? {
       left: window.innerWidth / 2 - 20,
@@ -821,9 +1038,10 @@ export function BilingualReader({
       initialMode: "dictionary",
       groupIndex: activeGroup,
       anchor,
+      presentation: "full",
     });
     handleDictionaryLookup(word, context);
-  }, [activeGroup, handleDictionaryLookup, section]);
+  }, [activeGroup, handleDictionaryLookup, readerMode, section]);
 
   useEffect(() => {
     const modalOpen =
@@ -963,11 +1181,74 @@ export function BilingualReader({
       .filter((a) => a.chapter_id === currentChapter?.id)
       .map((a) => a.group_index),
   );
+  const peekGroup = pinnedHoverGroup ?? hoveredGroup;
+  const bookmarkedGroups = new Set(
+    bookmarks
+      .filter((bookmark) => bookmark.chapter_id === currentChapter?.id)
+      .map((bookmark) => bookmark.group_index),
+  );
+  const groupIsOpen = (index: number) =>
+    manualClosedGroups.has(index)
+      ? false
+      : manualOpenGroups.has(index) || expandAll;
+  const totalGroups = section?.groups?.length || 0;
+  const progressPercent =
+    totalGroups > 0 ? Math.round(((activeGroup + 1) / totalGroups) * 100) : 0;
+
+  const renderGroups = (pane: "combined" | "english" | "chinese") => {
+    if (!section) return null;
+    return (
+      <>
+        {pane !== "chinese" && section.en_title && (
+          <h2 className="mb-4 text-xl font-bold">{section.en_title}</h2>
+        )}
+        {section.groups.map((group, gi) => (
+          <BilingualGroup
+            key={`${pane}-${gi}`}
+            group={group}
+            index={gi}
+            mode={readerMode}
+            pane={pane}
+            open={groupIsOpen(gi)}
+            active={activeGroup === gi}
+            isBookmarked={bookmarkedGroups.has(gi)}
+            peekVisible={readerMode === "hover" && peekGroup === gi}
+            isFlagged={flaggedGroups.has(gi)}
+            onSelect={() => {
+              setActiveGroup(gi);
+              visibleGroupRef.current = gi;
+            }}
+            onToggle={() => toggleTranslation(gi)}
+            onFlag={() => setFlagTarget(gi)}
+            onPointerEnter={() => setHoveredGroup(gi)}
+            onPointerLeave={() =>
+              setHoveredGroup((current) => (current === gi ? null : current))
+            }
+            onPeekToggle={() =>
+              setPinnedHoverGroup((current) => (current === gi ? null : gi))
+            }
+          />
+        ))}
+        {section.groups.length === 0 && (
+          <p className="py-8 text-center text-[var(--muted-foreground)]">
+            {t("No aligned content in this chapter.")}
+          </p>
+        )}
+      </>
+    );
+  };
 
   return (
     <div className="flex h-full flex-col">
+      <div className="h-1 w-full overflow-hidden bg-[var(--border)]/40">
+        <div
+          className="h-full bg-[var(--primary)] transition-all duration-300"
+          style={{ width: `${progressPercent}%` }}
+        />
+      </div>
+
       {/* Toolbar */}
-      <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-2">
+      <div className="flex min-w-0 items-center gap-2 overflow-x-auto border-b border-[var(--border)] px-4 py-2">
         <button
           onClick={onBack}
           className="flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
@@ -978,6 +1259,7 @@ export function BilingualReader({
           <span className="truncate text-sm font-medium">{pairing.en_title}</span>
           <span className="truncate text-xs text-[var(--muted-foreground)]">
             {currentChapter?.en_title || currentChapter?.id} · {chapterIndex + 1}/{chapters.length}
+            {totalGroups > 0 ? ` · ${activeGroup + 1}/${totalGroups} (${progressPercent}%)` : ""}
             {currentChapterCompleted ? ` · ${t("Chapter translated")}` : ""}
             {annotations.length > 0 && ` · ${annotations.length} ${t("flagged")}`}
           </span>
@@ -1023,13 +1305,16 @@ export function BilingualReader({
         >
           <ListChecks size={16} />
         </button>
-        <button
-          onClick={() => setExpandAll((v) => !v)}
-          className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
-          title={expandAll ? t("Collapse all") : t("Expand all")}
-        >
-          {expandAll ? <ChevronsDownUp size={15} /> : <ChevronsUpDown size={15} />}
-        </button>
+        {readerMode === "inline" && (
+          <button
+            type="button"
+            onClick={() => setExpandAll((v) => !v)}
+            className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+            title={expandAll ? t("Collapse all") : t("Expand all")}
+          >
+            {expandAll ? <ChevronsDownUp size={15} /> : <ChevronsUpDown size={15} />}
+          </button>
+        )}
         {annotations.length > 0 && (
           <button
             onClick={() => setShowReview(true)}
@@ -1046,12 +1331,56 @@ export function BilingualReader({
           className="flex items-center gap-1 rounded-lg bg-[var(--primary)] px-3 py-1.5 text-xs font-medium text-[var(--primary-foreground)] hover:opacity-90 disabled:opacity-50"
         >
           <Download size={14} />
-          {t("Export EPUB")}
+          <span className="hidden sm:inline">{t("Export EPUB")}</span>
         </button>
       </div>
 
       {/* Chapter navigation */}
       <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-1.5">
+        <div
+          data-reader-control
+          className="flex shrink-0 items-center gap-1 rounded-lg bg-[var(--muted)] p-0.5"
+          role="group"
+          aria-label={t("Reader mode")}
+        >
+          {([
+            { value: "inline", icon: ChevronsUpDown, label: t("Inline") },
+            { value: "dual", icon: Columns2, label: t("Dual pane") },
+            { value: "hover", icon: Eye, label: t("Hover peek") },
+          ] as const).map(({ value, icon: Icon, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setPreferredReaderMode(value)}
+              disabled={value === "dual" && !dualPaneSupported}
+              aria-pressed={readerMode === value}
+              title={label}
+              className={`flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-xs transition disabled:opacity-40 ${
+                readerMode === value
+                  ? "bg-[var(--card)] font-semibold text-[var(--foreground)] shadow-sm"
+                  : "text-[var(--muted-foreground)]"
+              }`}
+            >
+              <Icon size={14} />
+              <span className="ml-1 hidden lg:inline">{label}</span>
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          data-reader-control
+          onClick={() => setClickLookupEnabled((value) => !value)}
+          aria-pressed={clickLookupEnabled}
+          title={t("Tap-to-lookup mode")}
+          className={`flex h-8 shrink-0 items-center gap-1 rounded-lg border px-2 text-xs transition ${
+            clickLookupEnabled
+              ? "border-[var(--primary)]/50 bg-[var(--primary)]/10 text-[var(--primary)]"
+              : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
+          }`}
+        >
+          <MousePointerClick size={14} />
+          <span className="hidden md:inline">{t("Tap words")}</span>
+        </button>
         <button
           onClick={() => loadChapter(chapterIndex - 1)}
           disabled={chapterIndex === 0}
@@ -1090,40 +1419,60 @@ export function BilingualReader({
         </button>
       </div>
 
-     {/* Content */}
-     <div ref={contentRef} className="relative flex-1 overflow-y-auto px-4 py-6">
+      {/* Content */}
+      <div
+        ref={contentRef}
+        className="relative min-h-0 flex-1 pb-16"
+        onMouseLeave={() => setHoveredGroup(null)}
+      >
         {sectionLoading ? (
-          <div className="flex justify-center py-12">
+          <div className="flex h-full justify-center py-12">
             <Loader2 className="size-6 animate-spin text-[var(--muted-foreground)]" />
           </div>
         ) : section ? (
-          <div className="mx-auto max-w-2xl space-y-1">
-            {section.en_title && (
-              <h2 className="mb-4 text-xl font-bold">{section.en_title}</h2>
-            )}
-            {section.groups.map((group, gi) => (
-              <BilingualGroup
-                key={gi}
-                group={group}
-                index={gi}
-                forceOpen={expandAll || manualOpenGroups.has(gi)}
-                isActive={activeGroup === gi}
-                isFlagged={flaggedGroups.has(gi)}
-                onFlag={() => setFlagTarget(gi)}
-              />
-            ))}
-            {section.groups.length === 0 && (
-              <p className="py-8 text-center text-[var(--muted-foreground)]">
-                {t("No aligned content in this chapter.")}
-              </p>
-            )}
-          </div>
+          readerMode === "dual" ? (
+            <div className="grid h-full grid-cols-2 divide-x divide-[var(--border)] overflow-hidden">
+              <div
+                ref={englishPaneRef}
+                aria-label={t("English pane")}
+                className="relative h-full overflow-y-auto px-6 py-6"
+              >
+                <div className="mx-auto max-w-2xl space-y-4">{renderGroups("english")}</div>
+              </div>
+              <div
+                ref={chinesePaneRef}
+                aria-label={t("Chinese pane")}
+                className="relative h-full overflow-y-auto bg-[var(--muted)]/20 px-6 py-6"
+              >
+                <div className="mx-auto max-w-2xl space-y-4">{renderGroups("chinese")}</div>
+              </div>
+            </div>
+          ) : (
+            <div ref={inlinePaneRef} className="h-full overflow-y-auto px-4 py-6">
+              <div className="mx-auto max-w-2xl space-y-2">{renderGroups("combined")}</div>
+            </div>
+          )
         ) : (
-          <p className="py-8 text-center text-[var(--muted-foreground)]">
-            {t("Failed to load this chapter.")}
-          </p>
+          <div ref={inlinePaneRef} className="h-full overflow-y-auto px-4 py-6">
+            <p className="py-8 text-center text-[var(--muted-foreground)]">
+              {t("Failed to load this chapter.")}
+            </p>
+          </div>
         )}
-        {dictPopover && (
+
+        {dictPopover?.presentation === "mini" && (
+          <MiniDictionaryTooltip
+            word={dictPopover.word}
+            anchor={dictPopover.anchor}
+            loading={dictLoading}
+            result={dictResult}
+            error={dictError}
+            onOpenFull={handleOpenFullDictionary}
+            onPronounce={handlePronounce}
+            onClose={closeDictionary}
+          />
+        )}
+        {dictPopover?.presentation === "full" && (
           <DictionaryPanel
             word={dictPopover.word}
             anchor={dictPopover.anchor}
@@ -1141,6 +1490,105 @@ export function BilingualReader({
             }
           />
         )}
+      </div>
+
+      {/* Floating action bar for touch readers */}
+      <div
+        className="fixed left-1/2 z-40 -translate-x-1/2 select-none"
+        style={{
+          bottom: "max(12px, env(safe-area-inset-bottom, 12px))",
+          touchAction: "manipulation",
+        }}
+        data-reader-control
+      >
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--background)]/92 px-3 py-1.5 shadow-2xl backdrop-blur-lg">
+          <button
+            type="button"
+            onClick={() => moveGroup(-1)}
+            disabled={activeGroup <= 0}
+            title={`${t("Previous paragraph")} (K / ↑)`}
+            aria-label={t("Previous paragraph")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)] disabled:opacity-30"
+          >
+            <ChevronUp size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => moveGroup(1)}
+            disabled={!section?.groups?.length || activeGroup >= section.groups.length - 1}
+            title={`${t("Next paragraph")} (J / ↓)`}
+            aria-label={t("Next paragraph")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)] disabled:opacity-30"
+          >
+            <ChevronDown size={18} />
+          </button>
+          <div className="mx-0.5 h-4 w-[1px] bg-[var(--border)]" />
+          <button
+            type="button"
+            onClick={() => toggleTranslation()}
+            title={`${t("Toggle paragraph translation")} (T)`}
+            aria-label={t("Toggle paragraph translation")}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+              groupIsOpen(activeGroup)
+                ? "bg-[var(--primary)]/15 text-[var(--primary)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Languages size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={lookupFromKeyboard}
+            title={`${t("Dictionary lookup")} (D)`}
+            aria-label={t("Dictionary lookup")}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            <BookOpen size={17} />
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleAddBookmark()}
+            title={`${t("Bookmark this position")} (B)`}
+            aria-label={t("Bookmark this position")}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+              bookmarkedGroups.has(activeGroup)
+                ? "text-[var(--primary)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Bookmark
+              size={17}
+              className={bookmarkedGroups.has(activeGroup) ? "fill-[var(--primary)]" : ""}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePronounce("en-US")}
+            title={`${t("Play US pronunciation (P)")} (P)`}
+            aria-label={t("Play US pronunciation (P)")}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+              audioState.isPlaying
+                ? "animate-pulse bg-[var(--primary)]/20 text-[var(--primary)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            {audioState.isPlaying ? <AudioLines size={17} /> : <Volume2 size={17} />}
+          </button>
+          <div className="mx-0.5 hidden h-4 w-[1px] bg-[var(--border)] sm:block" />
+          <button
+            type="button"
+            onClick={() => setShowShortcutsModal(true)}
+            title={t("Keyboard Shortcuts")}
+            aria-label={t("Keyboard Shortcuts")}
+            className={`hidden h-9 w-9 items-center justify-center rounded-full transition sm:flex ${
+              showShortcutsModal
+                ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Keyboard size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Flag dialog */}
@@ -1473,44 +1921,109 @@ function BookmarkPanel({
 function BilingualGroup({
   group,
   index,
-  forceOpen,
-  isActive,
+  mode,
+  pane,
+  open,
+  active,
+  isBookmarked,
+  peekVisible,
   isFlagged,
+  onSelect,
+  onToggle,
   onFlag,
+  onPointerEnter,
+  onPointerLeave,
+  onPeekToggle,
 }: {
   group: import("@/lib/immersive-reading-api").BilingualAlignGroup;
   index: number;
-  forceOpen: boolean;
-  isActive: boolean;
+  mode: BilingualReaderMode;
+  pane: "combined" | "english" | "chinese";
+  open: boolean;
+  active: boolean;
+  isBookmarked: boolean;
+  peekVisible: boolean;
   isFlagged: boolean;
+  onSelect: () => void;
+  onToggle: () => void;
   onFlag: () => void;
+  onPointerEnter: () => void;
+  onPointerLeave: () => void;
+  onPeekToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const activeClass = active
+    ? "outline-[var(--primary)]/50"
+    : "outline-transparent hover:outline-[var(--muted)]";
 
-  useEffect(() => {
-    setOpen(forceOpen);
-  }, [forceOpen]);
-
-  if (group.zh.length === 0) {
+  if (pane === "chinese") {
     return (
       <div
-        className={`group/para relative space-y-1 rounded-lg outline-2 outline-offset-4 transition ${
-          isActive
-            ? "outline-[var(--primary)]/50"
-            : "outline-transparent hover:outline-[var(--muted)]"
-        }`}
+        className={`group/para relative cursor-pointer rounded-lg px-3.5 py-2.5 outline-2 outline-offset-4 transition ${activeClass}`}
         data-group-index={index}
+        data-active={active || undefined}
+        onClick={onSelect}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
       >
+        {isBookmarked && (
+          <span
+            className="absolute right-2 top-2 text-[var(--primary)]"
+            title={t("Bookmarked")}
+          >
+            <Bookmark size={13} className="fill-current" />
+          </span>
+        )}
+        {group.zh.length > 0 ? (
+          group.zh.map((para, pi) => (
+            <p key={pi} className="text-sm leading-7 text-[var(--foreground)]">
+              {para}
+            </p>
+          ))
+        ) : (
+          <p className="text-sm text-[var(--muted-foreground)]">
+            {t("No Chinese translation")}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (pane === "english") {
+    return (
+      <div
+        className={`group/para relative cursor-pointer rounded-lg px-3.5 py-2.5 outline-2 outline-offset-4 transition ${activeClass}`}
+        data-group-index={index}
+        data-active={active || undefined}
+        onClick={onSelect}
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+      >
+        {isBookmarked && (
+          <span
+            className="absolute right-6 top-2 text-[var(--primary)]"
+            title={t("Bookmarked")}
+          >
+            <Bookmark size={13} className="fill-current" />
+          </span>
+        )}
         {group.en.map((para, pi) => (
-          <p key={pi} className="leading-7 text-[var(--foreground)]">
+          <p key={pi} className="select-text leading-7 text-[var(--foreground)]">
             {para}
           </p>
         ))}
+        {group.low_confidence && group.shape !== "1:1" && (
+          <span className="text-xs text-[var(--muted-foreground)]">({group.shape})</span>
+        )}
         <button
-          onClick={onFlag}
-          className="absolute -right-8 top-0 rounded p-1 text-[var(--muted-foreground)] opacity-0 transition hover:bg-[var(--muted)] group-hover/para:opacity-100"
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onFlag();
+          }}
+          className="absolute right-1 top-1 rounded p-1 text-[var(--muted-foreground)] opacity-0 transition hover:bg-[var(--muted)] focus-visible:opacity-100 group-hover/para:opacity-100"
           title={t("Flag issue")}
+          aria-label={t("Flag issue")}
         >
           <Flag size={14} className={isFlagged ? "fill-amber-400 text-amber-500" : ""} />
         </button>
@@ -1520,45 +2033,104 @@ function BilingualGroup({
 
   return (
     <div
-      className={`group/para relative space-y-0.5 rounded-lg outline-2 outline-offset-4 transition ${
-        isActive
-          ? "outline-[var(--primary)]/50"
-          : "outline-transparent hover:outline-[var(--muted)]"
-      }`}
+      className={`group/para relative cursor-pointer space-y-1 rounded-lg px-3 py-2 outline-2 outline-offset-4 transition ${activeClass}`}
       data-group-index={index}
+      data-active={active || undefined}
+      onClick={onSelect}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
     >
+      {isBookmarked && (
+        <span
+          className="absolute right-6 top-2 text-[var(--primary)]"
+          title={t("Bookmarked")}
+        >
+          <Bookmark size={13} className="fill-current" />
+        </span>
+      )}
       {group.en.map((para, pi) => (
-        <p key={pi} className="leading-7 text-[var(--foreground)]">
+        <p key={pi} className="select-text leading-7 text-[var(--foreground)]">
           {para}
         </p>
       ))}
-      <details
-        open={open}
-        onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
-        className="bilingual-zh-details my-1 rounded-md border-l-[3px] border-l-[var(--primary)] bg-[var(--muted)]/40 px-3 py-2"
-      >
-        <summary className="cursor-pointer text-sm font-semibold text-[var(--primary)]">
-          {t("Show Chinese")}
-        </summary>
-        <div className="mt-1.5 space-y-1.5 pt-1">
-          {group.zh.map((para, pi) => (
-            <p
-              key={pi}
-              className="text-sm leading-7 text-[var(--foreground)]"
-              style={{ fontFamily: '"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Serif CJK TC",serif' }}
-            >
-              {para}
-            </p>
-          ))}
-        </div>
-      </details>
-      {group.low_confidence && group.shape !== "1:1" && (
+
+      {mode === "hover" ? (
+        <>
+          <button
+            type="button"
+            data-reader-control
+            onClick={(event) => {
+              event.stopPropagation();
+              onPeekToggle();
+            }}
+            className="absolute right-0 top-0 rounded p-1 text-[var(--muted-foreground)] opacity-100 transition hover:bg-[var(--muted)] focus-visible:opacity-100 sm:opacity-0 sm:group-hover/para:opacity-100"
+            title={t("Show translation")}
+            aria-label={t("Show translation")}
+            aria-expanded={peekVisible}
+          >
+            <Eye size={14} />
+          </button>
+          <div
+            className={`absolute right-0 top-7 z-20 w-[min(24rem,calc(100%-0.5rem))] rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 shadow-xl transition-opacity duration-150 ${
+              peekVisible
+                ? "pointer-events-auto opacity-100"
+                : "pointer-events-none opacity-0 group-hover/para:opacity-100"
+            }`}
+          >
+            {group.zh.length > 0 ? (
+              group.zh.map((para, pi) => (
+                <p key={pi} className="text-sm leading-7 text-[var(--foreground)]">
+                  {para}
+                </p>
+              ))
+            ) : (
+              <p className="text-sm text-[var(--muted-foreground)]">
+                {t("No Chinese translation")}
+              </p>
+            )}
+          </div>
+        </>
+      ) : group.zh.length > 0 ? (
+        <details
+          open={open}
+          onClick={(event) => event.stopPropagation()}
+          onToggle={(event) => {
+            if ((event.target as HTMLDetailsElement).open !== open) onToggle();
+          }}
+          className="bilingual-zh-details my-1.5 rounded-lg border-l-[3px] border-l-[var(--primary)] bg-[var(--muted)]/40 px-3.5 py-2.5"
+        >
+          <summary
+            data-reader-control
+            className="cursor-pointer select-none text-xs font-semibold text-[var(--primary)]"
+          >
+            {open ? t("Hide Chinese") : t("Show Chinese")}
+          </summary>
+          <div className="mt-2 space-y-1.5 pt-1">
+            {group.zh.map((para, pi) => (
+              <p
+                key={pi}
+                className="text-sm leading-7 text-[var(--foreground)]"
+                style={{ fontFamily: '"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Serif CJK TC",serif' }}
+              >
+                {para}
+              </p>
+            ))}
+          </div>
+        </details>
+      ) : null}
+
+      {mode !== "hover" && group.low_confidence && group.shape !== "1:1" && (
         <span className="text-xs text-[var(--muted-foreground)]">({group.shape})</span>
       )}
       <button
-        onClick={onFlag}
-        className="absolute -right-8 top-0 rounded p-1 text-[var(--muted-foreground)] opacity-0 transition hover:bg-[var(--muted)] group-hover/para:opacity-100"
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onFlag();
+        }}
+        className="absolute right-0 top-0 rounded p-1 text-[var(--muted-foreground)] opacity-0 transition hover:bg-[var(--muted)] focus-visible:opacity-100 group-hover/para:opacity-100"
         title={t("Flag issue")}
+        aria-label={t("Flag issue")}
       >
         <Flag size={14} className={isFlagged ? "fill-amber-400 text-amber-500" : ""} />
       </button>
