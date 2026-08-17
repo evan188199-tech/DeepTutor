@@ -1552,7 +1552,7 @@
   "Document title": "文档标题",
   "Loading document…": "正在加载文档…",
   "Saved": "已保存",
-  "Saving…": "正在保存…",
+  "Saving…": "保存中…",
   "This document may have been deleted, or the link is incorrect.": "此文档可能已被删除，或链接不正确。",
   "Untitled draft": "未命名草稿",
   "Click again to confirm": "再次点击确认",
@@ -3261,5 +3261,7 @@
   "Copy the report above and paste it to Codex to generate alignment fixes.": "复制上面的报告并发给 Codex，用于生成对齐修复。",
   "Offline dictionary": "离线词典",
   "Importing...": "导入中...",
-  "Import ECDICT CSV": "导入 ECDICT CSV"
+  "Import ECDICT CSV": "导入 ECDICT CSV",
+  "Bilingual source": "双语来源",
+  "Seen {{count}} times": "遇到 {{count}} 次"
 }

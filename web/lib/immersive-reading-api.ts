@@ -190,7 +190,13 @@ export interface VocabEntry {
   document_id: string;
   document_title: string;
   section_title: string;
+  pairing_id?: string;
+  chapter_id?: string;
+  chapter_index?: number;
+  group_index?: number;
   created_at: number;
+  updated_at?: number;
+  occurrence_count?: number;
   mn4_exported: boolean;
 }
 
@@ -397,32 +403,44 @@ export const immersiveReadingApi = {
       "/query",
       { method: "POST", body: JSON.stringify({ text, question, language }) },
     ),
- dictionary: (word: string, context: string = "", signal?: AbortSignal) =>
-   request<DictionaryResult>("/dictionary", {
-     method: "POST",
-     body: JSON.stringify({ word, context }),
-     signal,
-   }),
- dictionaryStatus: () => request<DictionaryStatus>("/dictionary/status"),
- importDictionaryCsv: (file: File) => {
-   const body = new FormData();
-   body.append("file", file);
-   return request<{ imported: boolean; entries: number }>(
-     "/dictionary/ecdict/import",
-     { method: "POST", body },
-   );
- },
-  vocabulary: (documentId?: string) =>
-    request<{ entries: VocabEntry[] }>(
-      `/vocabulary${documentId ? `?document_id=${encodeURIComponent(documentId)}` : ""}`,
-    ),
+  dictionary: (word: string, context = "", signal?: AbortSignal) =>
+    request<DictionaryResult>("/dictionary", {
+      method: "POST",
+      body: JSON.stringify({ word, context }),
+      signal,
+    }),
+  dictionaryStatus: () => request<DictionaryStatus>("/dictionary/status"),
+  importDictionaryCsv: (file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    return request<{ imported: boolean; entries: number }>("/dictionary/ecdict/import", {
+      method: "POST",
+      body,
+    });
+  },
+  vocabulary: (documentId?: string, pairingId?: string) => {
+    const query = new URLSearchParams(
+      Object.entries({ document_id: documentId, pairing_id: pairingId }).filter(
+        ([, value]) => Boolean(value),
+      ) as Array<[string, string]>,
+    ).toString();
+    return request<{ entries: VocabEntry[] }>(
+      `/vocabulary${query ? `?${query}` : ""}`,
+    );
+  },
   addWord: (
     word: string,
     context: string,
     documentId: string,
     documentTitle: string,
     sectionTitle: string,
- ) =>
+    source?: {
+      pairing_id?: string;
+      chapter_id?: string;
+      chapter_index?: number;
+      group_index?: number;
+    },
+  ) =>
    request<{ entry: VocabEntry; lookup_warning?: string }>("/vocabulary", {
      method: "POST",
      body: JSON.stringify({
@@ -431,6 +449,7 @@ export const immersiveReadingApi = {
        document_id: documentId,
        document_title: documentTitle,
        section_title: sectionTitle,
+       ...source,
       }),
     }),
   deleteWord: (entryId: string) =>

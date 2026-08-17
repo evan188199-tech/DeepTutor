@@ -3261,5 +3261,7 @@
   "Copy the report above and paste it to Codex to generate alignment fixes.": "Copy the report above and paste it to Codex to generate alignment fixes.",
   "Offline dictionary": "Offline dictionary",
   "Importing...": "Importing...",
-  "Import ECDICT CSV": "Import ECDICT CSV"
+  "Import ECDICT CSV": "Import ECDICT CSV",
+  "Bilingual source": "Bilingual source",
+  "Seen {{count}} times": "Seen {{count}} times"
 }

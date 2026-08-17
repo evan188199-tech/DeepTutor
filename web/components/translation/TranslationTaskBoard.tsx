@@ -89,6 +89,7 @@ export default function TranslationTaskBoardPanel({
   const [error, setError] = useState<string | null>(null);
   const [glossaryDraft, setGlossaryDraft] = useState<TranslationGlossaryEntry[] | null>(null);
   const boardLoadedRef = useRef(onBoardLoaded);
+  const boardRef = useRef<Board | null>(null);
   const streamAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -96,6 +97,7 @@ export default function TranslationTaskBoardPanel({
   }, [onBoardLoaded]);
 
   const applyBoard = useCallback((next: Board) => {
+    boardRef.current = next;
     setBoard(next);
     setGlossaryDraft(null);
     boardLoadedRef.current?.(next);
@@ -150,7 +152,7 @@ export default function TranslationTaskBoardPanel({
         return;
       }
       if (event.type === "snapshot" && event.board) {
-        setBoard(event.board);
+        applyBoard(event.board);
         return;
       }
       if (event.type === "run_cancelled" || event.type === "run_completed") {
@@ -160,11 +162,14 @@ export default function TranslationTaskBoardPanel({
         }
       }
       if (event.task) {
-        setBoard((current) => (current ? applyTask(current, event.task!) : current));
+        const current = boardRef.current;
+        if (current) {
+          applyBoard(applyTask(current, event.task));
+        }
         if (event.type === "group_translated") onGroupTranslated?.(event.task);
       }
     },
-    [onGroupTranslated, t, runningRunId],
+    [applyBoard, onGroupTranslated, t, runningRunId],
   );
 
   const handlePlanAndRun = async () => {
