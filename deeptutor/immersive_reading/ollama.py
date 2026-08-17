@@ -5,10 +5,9 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import time
 from pathlib import Path
+import time
 
-from deeptutor.services.llm import get_llm_config
 from deeptutor.services.llm.exceptions import (
     LLMAPIError,
     LLMModelNotFoundError,
@@ -22,6 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 class OllamaMixin:
+    def _get_ollama_config(self) -> object:
+        """Keep the service module as the compatibility point for config patches."""
+        from deeptutor.immersive_reading import service as service_module
+
+        return service_module.get_llm_config()
+
     async def _ensure_ollama_ready(
         self, preferred_model: str | None = None, *, for_translation: bool = False
     ) -> str:
@@ -34,7 +39,7 @@ class OllamaMixin:
                 provider="ollama",
             )
         if preferred_model is None:
-            cfg = get_llm_config()
+            cfg = self._get_ollama_config()
             preferred_model = str(cfg.model or "")
         selected = self._resolve_ollama_model(
             preferred_model, models, for_translation=for_translation
