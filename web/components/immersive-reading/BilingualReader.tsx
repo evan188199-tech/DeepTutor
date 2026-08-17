@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -27,6 +27,7 @@ import {
   MousePointerClick,
   Pencil,
   Trash2,
+  Type,
   Volume2,
   X,
 } from "lucide-react";
@@ -57,15 +58,24 @@ import {
 import {
   BILINGUAL_CLICK_LOOKUP_STORAGE_KEY,
   BILINGUAL_DUAL_PANE_MEDIA_QUERY,
+  BILINGUAL_FONT_FAMILY_STORAGE_KEY,
+  BILINGUAL_FONT_SIZE_STORAGE_KEY,
   BILINGUAL_READER_MODE_STORAGE_KEY,
+  BILINGUAL_THEME_STORAGE_KEY,
+  parseBilingualFontFamily,
+  parseBilingualFontSize,
   parseBilingualReaderMode,
+  parseBilingualTheme,
   parseStoredBoolean,
   readerShortcutFromKeyboardEvent,
   scrollPaneToGroup,
   shouldIgnoreLookupTarget,
   visibleGroupFromElements,
   wordRangeAtPoint,
+  type BilingualFontFamily,
+  type BilingualFontSize,
   type BilingualReaderMode,
+  type BilingualTheme,
 } from "@/lib/bilingual-reader-ux";
 import {
   getCachedWord,
@@ -91,6 +101,54 @@ interface BilingualReaderProps {
 
 type IssueType = "misalignment" | "wrong_chapter" | "missing_translation" | "translation_error" | "other";
 type DictionaryPresentation = "mini" | "full";
+
+const THEME_STYLES: Record<BilingualTheme, CSSProperties> = {
+  system: {},
+  sepia: {
+    backgroundColor: "#f8f1e3",
+    color: "#2d241e",
+    "--background": "#f8f1e3",
+    "--foreground": "#2d241e",
+    "--card": "#efe6d5",
+    "--muted": "#e8deca",
+    "--muted-foreground": "#786b5e",
+    "--border": "#dfd3be",
+    "--primary": "#8c4f27",
+    "--primary-foreground": "#ffffff",
+  } as CSSProperties,
+  dark: {
+    backgroundColor: "#18181b",
+    color: "#fafafa",
+    "--background": "#18181b",
+    "--foreground": "#fafafa",
+    "--card": "#27272a",
+    "--muted": "#3f3f46",
+    "--muted-foreground": "#a1a1aa",
+    "--border": "#3f3f46",
+    "--primary": "#60a5fa",
+    "--primary-foreground": "#000000",
+  } as CSSProperties,
+  oled: {
+    backgroundColor: "#000000",
+    color: "#f1f5f9",
+    "--background": "#000000",
+    "--foreground": "#f1f5f9",
+    "--card": "#0a0a0a",
+    "--muted": "#171717",
+    "--muted-foreground": "#94a3b8",
+    "--border": "#262626",
+    "--primary": "#38bdf8",
+    "--primary-foreground": "#000000",
+  } as CSSProperties,
+};
+
+const FONT_SIZE_STYLES: Record<BilingualFontSize, { en: string; zh: string }> = {
+  sm: { en: "text-[14px] leading-[1.65]", zh: "text-[13px] leading-[1.65]" },
+  base: { en: "text-[16px] leading-[1.8]", zh: "text-[14px] leading-[1.8]" },
+  lg: { en: "text-[18px] leading-[1.9]", zh: "text-[16px] leading-[1.9]" },
+  xl: { en: "text-[20px] leading-[2.0]", zh: "text-[18px] leading-[2.0]" },
+  "2xl": { en: "text-[22px] leading-[2.1]", zh: "text-[20px] leading-[2.1]" },
+};
 
 function rangePointFromOffsets(container: HTMLElement, start: number, end: number): Range | null {
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
@@ -168,6 +226,27 @@ export function BilingualReader({
         : window.localStorage.getItem(BILINGUAL_READER_MODE_STORAGE_KEY),
     ),
   );
+  const [theme, setTheme] = useState<BilingualTheme>(() =>
+    parseBilingualTheme(
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem(BILINGUAL_THEME_STORAGE_KEY),
+    ),
+  );
+  const [fontSize, setFontSize] = useState<BilingualFontSize>(() =>
+    parseBilingualFontSize(
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem(BILINGUAL_FONT_SIZE_STORAGE_KEY),
+    ),
+  );
+  const [fontFamily, setFontFamily] = useState<BilingualFontFamily>(() =>
+    parseBilingualFontFamily(
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem(BILINGUAL_FONT_FAMILY_STORAGE_KEY),
+    ),
+  );
   const [dualPaneSupported, setDualPaneSupported] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -179,6 +258,7 @@ export function BilingualReader({
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTaskBoard, setShowTaskBoard] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showAppearanceModal, setShowAppearanceModal] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [exportStyle, setExportStyle] = useState<BilingualExportStyle>("folded");
   const [exportFontFamily, setExportFontFamily] = useState("Noto Serif CJK TC");
@@ -239,6 +319,18 @@ export function BilingualReader({
   useEffect(() => {
     window.localStorage.setItem(BILINGUAL_READER_MODE_STORAGE_KEY, preferredReaderMode);
   }, [preferredReaderMode]);
+
+  useEffect(() => {
+    window.localStorage.setItem(BILINGUAL_THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  useEffect(() => {
+    window.localStorage.setItem(BILINGUAL_FONT_SIZE_STORAGE_KEY, fontSize);
+  }, [fontSize]);
+
+  useEffect(() => {
+    window.localStorage.setItem(BILINGUAL_FONT_FAMILY_STORAGE_KEY, fontFamily);
+  }, [fontFamily]);
 
   useEffect(() => {
     window.localStorage.setItem(BILINGUAL_CLICK_LOOKUP_STORAGE_KEY, String(clickLookupEnabled));
@@ -1050,6 +1142,7 @@ export function BilingualReader({
       showBookmarks ||
       showTaskBoard ||
       showExportDialog ||
+      showAppearanceModal ||
       showShortcutsModal;
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -1059,6 +1152,7 @@ export function BilingualReader({
       if (shortcut === "close-modal") {
         if (showShortcutsModal) setShowShortcutsModal(false);
         else if (showExportDialog) setShowExportDialog(false);
+        else if (showAppearanceModal) setShowAppearanceModal(false);
         else if (showTaskBoard) setShowTaskBoard(false);
         else if (showBookmarks) setShowBookmarks(false);
         else if (showReview) setShowReview(false);
@@ -1108,6 +1202,7 @@ export function BilingualReader({
     moveGroup,
     showBookmarks,
     showExportDialog,
+    showAppearanceModal,
     showReview,
     showShortcutsModal,
     showTaskBoard,
@@ -1212,6 +1307,8 @@ export function BilingualReader({
             open={groupIsOpen(gi)}
             active={activeGroup === gi}
             isBookmarked={bookmarkedGroups.has(gi)}
+            fontSize={fontSize}
+            fontFamily={fontFamily}
             peekVisible={readerMode === "hover" && peekGroup === gi}
             isFlagged={flaggedGroups.has(gi)}
             onSelect={() => {
@@ -1239,7 +1336,10 @@ export function BilingualReader({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div
+      className="flex h-full flex-col transition-colors duration-200"
+      style={THEME_STYLES[theme]}
+    >
       <div className="h-1 w-full overflow-hidden bg-[var(--border)]/40">
         <div
           className="h-full bg-[var(--primary)] transition-all duration-300"
@@ -1380,6 +1480,17 @@ export function BilingualReader({
         >
           <MousePointerClick size={14} />
           <span className="hidden md:inline">{t("Tap words")}</span>
+        </button>
+        <button
+          type="button"
+          data-reader-control
+          onClick={() => setShowAppearanceModal(true)}
+          title={t("Appearance & Typography")}
+          aria-label={t("Appearance & Typography")}
+          className="flex h-8 shrink-0 items-center gap-1 rounded-lg border border-[var(--border)] px-2 text-xs text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+        >
+          <Type size={14} />
+          <span className="hidden sm:inline">{t("Appearance")}</span>
         </button>
         <button
           onClick={() => loadChapter(chapterIndex - 1)}
@@ -1574,6 +1685,19 @@ export function BilingualReader({
           >
             {audioState.isPlaying ? <AudioLines size={17} /> : <Volume2 size={17} />}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowAppearanceModal(true)}
+            title={t("Appearance & Typography")}
+            aria-label={t("Appearance & Typography")}
+            className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+              showAppearanceModal
+                ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            }`}
+          >
+            <Type size={16} />
+          </button>
           <div className="mx-0.5 hidden h-4 w-[1px] bg-[var(--border)] sm:block" />
           <button
             type="button"
@@ -1734,6 +1858,127 @@ export function BilingualReader({
                 )}
                 {exporting ? t("Exporting...") : t("Download EPUB")}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showAppearanceModal && (
+        <div
+          className="fixed inset-0 z-[130] flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          onClick={() => setShowAppearanceModal(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-xl border border-[var(--border)] bg-[var(--background)] p-5 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-sm font-semibold">
+                <Type size={16} className="text-[var(--primary)]" />
+                {t("Appearance & Typography")}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAppearanceModal(false)}
+                aria-label={t("Close")}
+                className="rounded p-1 text-[var(--muted-foreground)] transition hover:bg-[var(--muted)]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="space-y-4 text-sm">
+              <div>
+                <label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  {t("Reading Theme")}
+                </label>
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {[
+                    {
+                      key: "system",
+                      label: t("System"),
+                      bg: "bg-gradient-to-tr from-zinc-800 to-zinc-200",
+                    },
+                    {
+                      key: "sepia",
+                      label: t("Sepia (Warm)"),
+                      bg: "border border-[#dfd3be] bg-[#f8f1e3]",
+                    },
+                    {
+                      key: "dark",
+                      label: t("Zinc Dark"),
+                      bg: "border border-[#3f3f46] bg-[#18181b]",
+                    },
+                    {
+                      key: "oled",
+                      label: t("OLED Black"),
+                      bg: "border border-zinc-800 bg-black",
+                    },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => setTheme(item.key as BilingualTheme)}
+                      aria-pressed={theme === item.key}
+                      className={`flex flex-col items-center gap-1.5 rounded-lg border p-2 text-xs transition ${
+                        theme === item.key
+                          ? "border-[var(--primary)] font-medium ring-2 ring-[var(--primary)]/30"
+                          : "border-[var(--border)] hover:bg-[var(--muted)]"
+                      }`}
+                    >
+                      <div className={`h-6 w-full rounded-md shadow-sm ${item.bg}`} />
+                      <span className="w-full truncate text-center text-[11px]">
+                        {item.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  {t("Font Size")}
+                </label>
+                <div className="mt-2 flex items-center justify-between gap-1 rounded-lg bg-[var(--muted)]/50 p-1">
+                  {(["sm", "base", "lg", "xl", "2xl"] as const).map((size, index) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setFontSize(size)}
+                      aria-pressed={fontSize === size}
+                      className={`flex-1 rounded-md py-1.5 text-xs transition ${
+                        fontSize === size
+                          ? "bg-[var(--background)] font-semibold text-[var(--foreground)] shadow-sm"
+                          : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      {index === 0 ? "A-" : index === 4 ? "A++" : `A${"+".repeat(index - 1)}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  {t("Font Family")}
+                </label>
+                <div className="mt-2 flex gap-2">
+                  {[
+                    { key: "sans", label: t("Modern Sans"), fontClass: "font-sans" },
+                    { key: "serif", label: t("Literary Serif"), fontClass: "font-serif" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => setFontFamily(item.key as BilingualFontFamily)}
+                      aria-pressed={fontFamily === item.key}
+                      className={`flex-1 rounded-lg border py-2 text-xs transition ${item.fontClass} ${
+                        fontFamily === item.key
+                          ? "border-[var(--primary)] bg-[var(--primary)]/10 font-medium text-[var(--primary)]"
+                          : "border-[var(--border)] hover:bg-[var(--muted)]"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1926,6 +2171,8 @@ function BilingualGroup({
   open,
   active,
   isBookmarked,
+  fontSize,
+  fontFamily,
   peekVisible,
   isFlagged,
   onSelect,
@@ -1942,6 +2189,8 @@ function BilingualGroup({
   open: boolean;
   active: boolean;
   isBookmarked: boolean;
+  fontSize: BilingualFontSize;
+  fontFamily: BilingualFontFamily;
   peekVisible: boolean;
   isFlagged: boolean;
   onSelect: () => void;
@@ -1955,6 +2204,14 @@ function BilingualGroup({
   const activeClass = active
     ? "outline-[var(--primary)]/50"
     : "outline-transparent hover:outline-[var(--muted)]";
+  const fontClass = fontFamily === "serif" ? "font-serif" : "font-sans";
+  const sizeStyles = FONT_SIZE_STYLES[fontSize];
+  const chineseFont = {
+    fontFamily:
+      fontFamily === "serif"
+        ? '"Songti SC","Noto Serif CJK SC","PingFang TC","Heiti TC",serif'
+        : '"PingFang SC","Microsoft YaHei","Heiti SC",sans-serif',
+  };
 
   if (pane === "chinese") {
     return (
@@ -1976,7 +2233,11 @@ function BilingualGroup({
         )}
         {group.zh.length > 0 ? (
           group.zh.map((para, pi) => (
-            <p key={pi} className="text-sm leading-7 text-[var(--foreground)]">
+            <p
+              key={pi}
+              className={`${fontClass} ${sizeStyles.zh} text-[var(--foreground)]`}
+              style={chineseFont}
+            >
               {para}
             </p>
           ))
@@ -2008,7 +2269,10 @@ function BilingualGroup({
           </span>
         )}
         {group.en.map((para, pi) => (
-          <p key={pi} className="select-text leading-7 text-[var(--foreground)]">
+          <p
+            key={pi}
+            className={`select-text ${fontClass} ${sizeStyles.en} text-[var(--foreground)]`}
+          >
             {para}
           </p>
         ))}
@@ -2049,7 +2313,10 @@ function BilingualGroup({
         </span>
       )}
       {group.en.map((para, pi) => (
-        <p key={pi} className="select-text leading-7 text-[var(--foreground)]">
+        <p
+          key={pi}
+          className={`select-text ${fontClass} ${sizeStyles.en} text-[var(--foreground)]`}
+        >
           {para}
         </p>
       ))}
@@ -2079,7 +2346,11 @@ function BilingualGroup({
           >
             {group.zh.length > 0 ? (
               group.zh.map((para, pi) => (
-                <p key={pi} className="text-sm leading-7 text-[var(--foreground)]">
+                <p
+                  key={pi}
+                  className={`${fontClass} ${sizeStyles.zh} text-[var(--foreground)]`}
+                  style={chineseFont}
+                >
                   {para}
                 </p>
               ))
@@ -2109,8 +2380,8 @@ function BilingualGroup({
             {group.zh.map((para, pi) => (
               <p
                 key={pi}
-                className="text-sm leading-7 text-[var(--foreground)]"
-                style={{ fontFamily: '"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Serif CJK TC",serif' }}
+                className={`${fontClass} ${sizeStyles.zh} text-[var(--foreground)]`}
+                style={chineseFont}
               >
                 {para}
               </p>

@@ -1,11 +1,29 @@
 export type BilingualReaderMode = "inline" | "dual" | "hover";
+export type BilingualTheme = "system" | "sepia" | "dark" | "oled";
+export type BilingualFontSize = "sm" | "base" | "lg" | "xl" | "2xl";
+export type BilingualFontFamily = "sans" | "serif";
 
 export const BILINGUAL_READER_MODE_STORAGE_KEY = "deeptutor.bilingual-reader.mode";
 export const BILINGUAL_DUAL_PANE_MEDIA_QUERY = "(min-width: 1180px)";
 export const BILINGUAL_CLICK_LOOKUP_STORAGE_KEY = "deeptutor.bilingual-reader.click-lookup";
+export const BILINGUAL_THEME_STORAGE_KEY = "deeptutor.bilingual-reader.theme";
+export const BILINGUAL_FONT_SIZE_STORAGE_KEY = "deeptutor.bilingual-reader.font-size";
+export const BILINGUAL_FONT_FAMILY_STORAGE_KEY = "deeptutor.bilingual-reader.font-family";
 
 export function parseBilingualReaderMode(value: string | null): BilingualReaderMode {
   return value === "dual" || value === "hover" ? value : "inline";
+}
+
+export function parseBilingualTheme(value: string | null): BilingualTheme {
+  return value === "sepia" || value === "dark" || value === "oled" ? value : "system";
+}
+
+export function parseBilingualFontSize(value: string | null): BilingualFontSize {
+  return value === "sm" || value === "lg" || value === "xl" || value === "2xl" ? value : "base";
+}
+
+export function parseBilingualFontFamily(value: string | null): BilingualFontFamily {
+  return value === "serif" ? "serif" : "sans";
 }
 
 export function parseStoredBoolean(value: string | null): boolean {
