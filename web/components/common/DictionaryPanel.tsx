@@ -65,9 +65,16 @@ export interface DictionaryPanelProps {
 /*  Shared content fragments                                            */
 /* ------------------------------------------------------------------ */
 
+function formatDictionaryText(text: string): string {
+  return text.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n");
+}
+
 function CompactDefinition({ result }: { result: DictionaryResult }) {
   const { t } = useTranslation();
   const [revealChinese, setRevealChinese] = useState(false);
+  // A new lookup should always begin as a recall prompt, even while the
+  // dictionary sheet stays mounted between word selections.
+  useEffect(() => setRevealChinese(false), [result.word]);
   const primary =
     result.definitions.find((d) => d.context_match) ?? result.definitions[0];
 
@@ -77,6 +84,16 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
         <p className="text-xs italic leading-relaxed text-[var(--muted-foreground)]">
           {result.context_note}
         </p>
+      )}
+      {(primary?.chinese || result.chinese) && !revealChinese && (
+        <button
+          type="button"
+          onClick={() => setRevealChinese(true)}
+          className="inline-flex min-h-[32px] items-center gap-1 rounded-md px-2.5 py-1 text-xs text-[var(--muted-foreground)] hover:bg-[var(--muted)] active:bg-[var(--muted)]"
+        >
+          <Languages size={12} />
+          {t("Show Chinese")}
+        </button>
       )}
       {primary && (
       <div>
@@ -90,10 +107,10 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
             </span>
           )}
         </div>
-        <p className="text-sm leading-relaxed text-[var(--foreground)]">
-          {primary.definition}
+        <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--foreground)]">
+          {formatDictionaryText(primary.definition)}
         </p>
-        {primary.chinese && (
+        {revealChinese && primary.chinese && (
           <button
             type="button"
             onClick={() => setRevealChinese(true)}
@@ -101,12 +118,12 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
             title={revealChinese ? undefined : t("Tap to reveal")}
             className={chineseRevealClassName(revealChinese)}
           >
-            {primary.chinese}
+            {formatDictionaryText(primary.chinese)}
           </button>
         )}
       </div>
       )}
-      {result.chinese && (
+      {revealChinese && result.chinese && (
         <button
           type="button"
           onClick={() => setRevealChinese(true)}
@@ -114,7 +131,7 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
           title={revealChinese ? undefined : t("Tap to reveal")}
           className={chineseRevealClassName(revealChinese)}
         >
-          {result.chinese}
+          {formatDictionaryText(result.chinese)}
         </button>
       )}
     </div>
@@ -124,6 +141,9 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
 function FullDefinitions({ result }: { result: DictionaryResult }) {
   const { t } = useTranslation();
   const [revealChinese, setRevealChinese] = useState(false);
+  // Keep Chinese hidden for every newly selected word, not just when the
+  // dictionary panel is first mounted.
+  useEffect(() => setRevealChinese(false), [result.word]);
   const hasChinese = !!result.chinese || result.definitions.some((d) => d.chinese);
 
   return (
@@ -145,14 +165,14 @@ function FullDefinitions({ result }: { result: DictionaryResult }) {
           </button>
         </div>
       )}
-      {result.chinese && (
+      {revealChinese && result.chinese && (
         <button
           type="button"
           onClick={() => setRevealChinese((v) => !v)}
           aria-expanded={revealChinese}
           className={chineseRevealClassName(revealChinese)}
         >
-          {result.chinese}
+          {formatDictionaryText(result.chinese)}
         </button>
       )}
       {result.definitions.map((def, i) => (
@@ -174,10 +194,10 @@ function FullDefinitions({ result }: { result: DictionaryResult }) {
               </span>
             )}
           </div>
-          <p className="text-sm leading-relaxed text-[var(--foreground)]">
-            {def.definition}
+          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--foreground)]">
+            {formatDictionaryText(def.definition)}
           </p>
-          {def.chinese && (
+          {revealChinese && def.chinese && (
             <button
               type="button"
               onClick={() => setRevealChinese(true)}
@@ -185,7 +205,7 @@ function FullDefinitions({ result }: { result: DictionaryResult }) {
               title={revealChinese ? undefined : t("Tap to reveal")}
               className={chineseRevealClassName(revealChinese)}
             >
-              {def.chinese}
+              {formatDictionaryText(def.chinese)}
             </button>
           )}
           {def.example && (
@@ -311,7 +331,10 @@ function PanelContent({
       </div>
 
       {/* Body */}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-2">
+      <div
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-2"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {loading && (
           <div className="flex items-center gap-2 py-6 text-sm text-[var(--muted-foreground)]">
             <Loader2 className="size-4 animate-spin" />
@@ -393,11 +416,14 @@ function PanelContent({
 
 function MobileSheet(props: DictionaryPanelProps) {
   const { onClose } = props;
+  const { t } = useTranslation();
   const vh = useDynamicViewportHeight();
   const [expanded, setExpanded] = useState(false);
 
-  const collapsedH = Math.round((vh || 600) * 0.35);
-  const expandedH = Math.round((vh || 600) * 0.85);
+  // A 35% sheet is too short for multi-sense definitions on iPhone. Start at
+  // a readable height while retaining an explicit full-height reading mode.
+  const collapsedH = Math.round((vh || 600) * 0.62);
+  const expandedH = Math.round((vh || 600) * 0.92);
   const height = expanded ? expandedH : collapsedH;
 
   useEffect(() => {
@@ -422,9 +448,14 @@ function MobileSheet(props: DictionaryPanelProps) {
       }}
     >
       {/* Drag handle */}
-      <div className="flex shrink-0 justify-center pt-2 pb-1">
+      <button
+        type="button"
+        onClick={() => setExpanded((value) => !value)}
+        aria-label={expanded ? t("Collapse dictionary") : t("Expand dictionary")}
+        className="flex shrink-0 touch-manipulation justify-center pt-2 pb-1"
+      >
         <div className="h-1 w-9 rounded-full bg-[var(--muted-foreground)]/30" />
-      </div>
+      </button>
       <div className="min-h-0 flex-1">
         <PanelContent
           word={props.word}

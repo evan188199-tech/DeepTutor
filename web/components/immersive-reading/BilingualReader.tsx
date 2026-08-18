@@ -774,7 +774,11 @@ export function BilingualReader({ pairingId, onBack }: BilingualReaderProps) {
       </div>
 
      {/* Content */}
-     <div ref={contentRef} className="relative flex-1 overflow-y-auto px-4 py-6">
+      <div
+        ref={contentRef}
+        className="immersive-selectable-text relative flex-1 overflow-y-auto px-4 py-6"
+        style={{ WebkitUserSelect: "text", WebkitTouchCallout: "default", userSelect: "text", touchAction: "pan-y" }}
+      >
         {sectionLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="size-6 animate-spin text-[var(--muted-foreground)]" />
