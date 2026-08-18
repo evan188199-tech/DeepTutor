@@ -37,6 +37,7 @@ from deeptutor.knowledge.add_documents import DocumentAdder, remove_raw_document
 from deeptutor.knowledge.initializer import KnowledgeBaseInitializer
 from deeptutor.knowledge.kb_types import is_connected_kb, supports_local_raw_files
 from deeptutor.knowledge.manager import KnowledgeBaseManager
+from deeptutor.capabilities.marginnote.probe import probe_marginnote
 from deeptutor.knowledge.naming import validate_knowledge_base_name
 from deeptutor.knowledge.progress_tracker import ProgressStage, ProgressTracker
 from deeptutor.logging import PROCESS_LOG_PRIVATE_ATTR
@@ -1646,6 +1647,75 @@ async def set_default_kb(kb_name: str):
         raise
     except Exception as e:
         logger.error(f"Error setting default KB: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class ConnectMarginNoteRequest(BaseModel):
+    name: str
+    notebook_path: str
+    description: str = ""
+    adapter: str = "export"
+    writeback_path: str = ""
+    source_docs: list[str] | None = None
+
+
+class ProbeMarginNoteRequest(BaseModel):
+    notebook_path: str
+    adapter: str = "export"
+    writeback_path: str = ""
+
+
+@router.post("/probe-marginnote")
+async def probe_marginnote_endpoint(payload: ProbeMarginNoteRequest):
+    """Probe a MarginNote export folder for compatibility and diagnostics."""
+    path = (payload.notebook_path or "").strip()
+    if not path:
+        raise HTTPException(status_code=400, detail="notebook_path is required.")
+    try:
+        folder = assert_path_allowed(path)
+        writeback = (payload.writeback_path or "").strip()
+        if writeback:
+            writeback = str(assert_path_allowed(writeback))
+        return probe_marginnote(str(folder), adapter=payload.adapter, writeback_path=writeback)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/connect-marginnote")
+async def connect_marginnote_notebook(payload: ConnectMarginNoteRequest):
+    """Connect a MarginNote 4 export folder as a knowledge base."""
+    name = (payload.name or "").strip()
+    notebook_path = (payload.notebook_path or "").strip()
+    if not name or not notebook_path:
+        raise HTTPException(status_code=400, detail="Both name and notebook_path are required.")
+    try:
+        folder = assert_path_allowed(notebook_path)
+        writeback = (payload.writeback_path or "").strip()
+        if writeback:
+            writeback = str(assert_path_allowed(writeback))
+        manager = get_kb_manager()
+        entry = manager.register_marginnote_notebook(
+            name,
+            str(folder),
+            adapter=payload.adapter,
+            writeback_path=writeback,
+            source_docs=list(payload.source_docs or []),
+            description=payload.description,
+        )
+        return {
+            "status": "connected",
+            "name": name,
+            "notebook_path": entry["notebook_path"],
+            "adapter": entry.get("adapter", "export"),
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error connecting MarginNote notebook: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

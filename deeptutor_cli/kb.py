@@ -284,3 +284,33 @@ def register(app: typer.Typer) -> None:
         provider = result.get("provider", DEFAULT_PROVIDER)
         console.print(f"[bold]Provider:[/] {provider}")
         console.print(f"[bold]Answer:[/]\n{answer}")
+
+    @app.command("connect-marginnote")
+    def kb_connect_marginnote(
+        name: str = typer.Argument(..., help="New KB name."),
+        notebook_path: str = typer.Argument(..., help="Path to MarginNote 4 export folder."),
+        adapter: str = typer.Option("export", "--adapter", "-a", help="Adapter: export | realm."),
+        writeback_path: str = typer.Option("", "--writeback-path", "-w", help="Optional writeback folder."),
+        description: str = typer.Option("", "--description", help="Optional KB description."),
+    ) -> None:
+        """Connect a MarginNote 4 notebook (Markdown/OPML export) as a knowledge base."""
+        mgr = _get_kb_manager()
+        try:
+            name = validate_knowledge_base_name(name)
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+        try:
+            entry = mgr.register_marginnote_notebook(
+                name,
+                notebook_path,
+                adapter=adapter,
+                writeback_path=writeback_path,
+                description=description,
+            )
+        except Exception as exc:
+            console.print(f"[red]Failed to connect MarginNote notebook: {exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+        console.print(f"[green]Connected MarginNote notebook '{name}' -> {entry['notebook_path']}[/]")

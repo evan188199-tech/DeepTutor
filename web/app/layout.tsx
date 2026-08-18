@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Lora } from "next/font/google";
 import "./globals.css";
 import ThemeScript from "@/components/ThemeScript";
@@ -23,6 +23,12 @@ const fontSerif = Lora({
 export const metadata: Metadata = {
   title: "DeepTutor",
   description: "Agent-native intelligent learning companion",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DeepTutor",
+  },
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -30,6 +36,13 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -46,6 +59,12 @@ export default function RootLayout({
     >
       <head>
         <ThemeScript />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js'); }); }",
+          }}
+        />
       </head>
       <body
         className="font-sans bg-[var(--background)] text-[var(--foreground)]"

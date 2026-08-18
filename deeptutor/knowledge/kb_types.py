@@ -52,6 +52,8 @@ from typing import Any
 # capability navigates the live files. See ``capabilities/obsidian``.
 OBSIDIAN_KB_TYPE = "obsidian"
 
+MARGINNOTE_KB_TYPE = "marginnote"
+
 # A linked engine index: a pointer (``external_path``) to a folder that already
 # contains a self-contained index built by one of our local providers. We mount
 # it in place and retrieve via the bound provider — no copy, no re-index.
@@ -79,6 +81,7 @@ IMA_KB_TYPE = "ima"
 CONNECTED_KB_TYPES = frozenset(
     {
         OBSIDIAN_KB_TYPE,
+        MARGINNOTE_KB_TYPE,
         LINKED_KB_TYPE,
         SUBAGENT_KB_TYPE,
         LIGHTRAG_SERVER_KB_TYPE,
@@ -110,11 +113,12 @@ def external_root_of(entry: Any) -> str | None:
     """
     if not isinstance(entry, dict):
         return None
-    return entry.get("external_path") or entry.get("vault_path")
+    return entry.get("external_path") or entry.get("vault_path") or entry.get("notebook_path")
 
 
 __all__ = [
     "OBSIDIAN_KB_TYPE",
+    "MARGINNOTE_KB_TYPE",
     "LINKED_KB_TYPE",
     "SUBAGENT_KB_TYPE",
     "LIGHTRAG_SERVER_KB_TYPE",

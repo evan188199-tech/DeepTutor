@@ -21,6 +21,7 @@ from deeptutor.knowledge.kb_types import (
     IMA_KB_TYPE,
     LIGHTRAG_SERVER_KB_TYPE,
     LINKED_KB_TYPE,
+    MARGINNOTE_KB_TYPE,
     OBSIDIAN_KB_TYPE,
     SUBAGENT_KB_TYPE,
     external_root_of,
@@ -722,6 +723,66 @@ class KnowledgeBaseManager:
         self._save_config()
         return entry
 
+    def register_marginnote_notebook(
+        self,
+        name: str,
+        notebook_path: str,
+        *,
+        adapter: str = "export",
+        writeback_path: str = "",
+        source_docs: list[str] | None = None,
+        description: str = "",
+    ) -> dict:
+        """Register a connected MarginNote 4 notebook as a pointer-type KB.
+
+        Unlike a normal KB this creates no folder under base_dir and runs no
+        index pipeline: it records a type: marginnote entry pointing at the
+        user's export folder (or future Realm path). Raises ValueError on a
+        missing/invalid path, unknown adapter, or a name clash.
+        """
+        name = (name or "").strip()
+        if not name:
+            raise ValueError("Knowledge base name is required.")
+        notebook = Path(notebook_path).expanduser()
+        if not notebook.is_dir():
+            raise ValueError(f"Notebook path is not a directory: {notebook_path}")
+        kind = (adapter or "export").strip().lower() or "export"
+        if kind not in {"export", "realm"}:
+            raise ValueError(f"Unknown MarginNote adapter: {adapter!r}")
+
+        writeback = (writeback_path or "").strip()
+        if writeback:
+            dest = Path(writeback).expanduser()
+            if dest.exists() and not dest.is_dir():
+                raise ValueError(f"Writeback path is not a directory: {writeback_path}")
+            writeback = str(dest.resolve())
+
+        docs = [str(item).strip() for item in (source_docs or []) if str(item).strip()]
+
+        self.config = self._load_config()
+        knowledge_bases = self.config.setdefault("knowledge_bases", {})
+        if name in knowledge_bases:
+            raise ValueError(f"A knowledge base named '{name}' already exists.")
+
+        now = datetime.now().isoformat()
+        entry: dict[str, Any] = {
+            "path": name,
+            "type": MARGINNOTE_KB_TYPE,
+            "notebook_path": str(notebook.resolve()),
+            "adapter": kind,
+            "description": description or f"MarginNote notebook: {name}",
+            "status": "ready",
+            "created_at": now,
+            "updated_at": now,
+        }
+        if writeback:
+            entry["writeback_path"] = writeback
+        if docs:
+            entry["source_docs"] = docs
+        knowledge_bases[name] = entry
+        self._save_config()
+        return entry
+
     def register_linked_kb(
         self,
         name: str,
@@ -1087,6 +1148,10 @@ class KnowledgeBaseManager:
                 "type": kb_config.get("type"),
                 "vault_path": kb_config.get("vault_path"),
                 "external_path": kb_config.get("external_path"),
+                "notebook_path": kb_config.get("notebook_path"),
+                "adapter": kb_config.get("adapter"),
+                "writeback_path": kb_config.get("writeback_path"),
+                "source_docs": kb_config.get("source_docs"),
                 # LightRAG server pointer (the URL is safe to surface; the API
                 # key deliberately is not).
                 "server_url": kb_config.get("server_url"),

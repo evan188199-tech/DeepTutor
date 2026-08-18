@@ -1605,3 +1605,41 @@ def test_assert_not_connected_kb_blocks_connected_writes() -> None:
         assert excinfo.value.status_code == 409
     # An ordinary KB is writable — the guard is a no-op.
     guard("kb", {"path": "kb", "status": "ready"})
+
+
+def test_connect_marginnote_and_probe_endpoints(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    app = _build_app()
+    client = TestClient(app)
+    export_dir = tmp_path / "mn_export"
+    export_dir.mkdir()
+    (export_dir / "Note.md").write_text("# Chapter 1\n> Highlight (p.1)\n", encoding="utf-8")
+    manager = knowledge_router_module.KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_router_module, "assert_path_allowed", lambda p: Path(p))
+
+    # Test probe endpoint
+    probe_resp = client.post(
+        "/api/v1/knowledge/probe-marginnote",
+        json={"notebook_path": str(export_dir), "adapter": "export"},
+    )
+    assert probe_resp.status_code == 200
+    probe_data = probe_resp.json()
+    assert probe_data["compatible"] is True
+    assert probe_data["adapter"] == "export"
+    assert probe_data["counts"]["highlights"] == 1
+
+    # Test connect endpoint
+    connect_resp = client.post(
+        "/api/v1/knowledge/connect-marginnote",
+        json={
+            "name": "MyMN4",
+            "notebook_path": str(export_dir),
+            "adapter": "export",
+            "description": "My MarginNote 4 notebook",
+        },
+    )
+    assert connect_resp.status_code == 200
+    connect_data = connect_resp.json()
+    assert connect_data["status"] == "connected"
+    assert connect_data["name"] == "MyMN4"
+    assert connect_data["adapter"] == "export"

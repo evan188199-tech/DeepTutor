@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from deeptutor.capabilities.explore_context import ExploreContextCapability
 from deeptutor.capabilities.mastery import MasteryLoopCapability
+from deeptutor.capabilities.marginnote import MarginNoteCapability
 from deeptutor.capabilities.obsidian import ObsidianCapability
 from deeptutor.capabilities.protocol import LoopCapability
 from deeptutor.capabilities.solve import SolveLoopCapability
@@ -13,6 +14,7 @@ from deeptutor.core.context import UnifiedContext
 LOOP_CAPABILITIES: tuple[LoopCapability, ...] = (
     MasteryLoopCapability(),
     SolveLoopCapability(),
+    MarginNoteCapability(),
     ObsidianCapability(),
     SubagentCapability(),
     ExploreContextCapability(),
