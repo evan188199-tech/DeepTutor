@@ -71,6 +71,8 @@ export interface KnowledgeBase {
     agent_kind?: string;
     /** Bound partner id when agent_kind === "partner". */
     partner_id?: string;
+    /** Dedicated SQLite store for MarginNote 4 bridge objects. */
+    db_path?: string;
   };
   progress?: ProgressInfo;
   statistics?: {
@@ -164,6 +166,7 @@ export const formatKnowledgeTimestamp = (value?: string): string | null => {
 /** The retrieval engine a KB is bound to. Connected vaults badge by source. */
 export const kbProvider = (kb: KnowledgeBase): string => {
   if (kb.metadata?.type === "obsidian") return "obsidian";
+  if (kb.metadata?.type === "marginnote4") return "marginnote4";
   return (
     (kb.statistics?.rag_provider as string | undefined) ||
     (kb.metadata?.rag_provider as string | undefined) ||

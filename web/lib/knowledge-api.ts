@@ -656,6 +656,188 @@ export async function connectObsidianVault(payload: {
   };
 }
 
+export async function connectMarginNote4(payload: {
+  name: string;
+}): Promise<{ status: string; name: string; db_path?: string }> {
+  const res = await apiFetch(apiUrl("/api/v1/knowledge/connect-marginnote4"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: payload.name }),
+  });
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to connect MarginNote 4 bridge"),
+    );
+  }
+  invalidateKnowledgeCaches();
+  return (await res.json()) as { status: string; name: string; db_path?: string };
+}
+
+export interface MarginNote4PairingCode {
+  code: string;
+  expires_at: string;
+  kb_name: string;
+  command: string;
+}
+
+export async function createMarginNote4PairingCode(payload: {
+  kbName: string;
+}): Promise<MarginNote4PairingCode> {
+  const res = await apiFetch(
+    apiUrl("/api/v1/marginnote4/pairing-codes"),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kb_name: payload.kbName }),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to create MarginNote 4 pairing code"),
+    );
+  }
+  return (await res.json()) as MarginNote4PairingCode;
+}
+
+export interface MarginNote4Device {
+  device_id: string;
+  user_id: string;
+  kb_id: string;
+  kb_name: string;
+  device_name: string;
+  device_kind: string;
+  paired_at: string;
+  last_seen: string;
+  active: boolean;
+}
+
+export async function listMarginNote4Devices(payload: {
+  kbName: string;
+}): Promise<MarginNote4Device[]> {
+  const query = new URLSearchParams({ kb_name: payload.kbName });
+  const res = await apiFetch(
+    apiUrl(`/api/v1/marginnote4/devices?${query.toString()}`),
+  );
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to load MarginNote 4 devices"),
+    );
+  }
+  return (await res.json()) as MarginNote4Device[];
+}
+
+export interface MarginNote4BridgeStatus {
+  status: string;
+  object_count: number;
+  pending_writebacks: number;
+}
+
+export async function getMarginNote4BridgeStatus(payload: {
+  kbName: string;
+}): Promise<MarginNote4BridgeStatus> {
+  const query = new URLSearchParams({ kb_name: payload.kbName });
+  const res = await apiFetch(
+    apiUrl(`/api/v1/marginnote4/status?${query.toString()}`),
+  );
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to load MarginNote 4 bridge status"),
+    );
+  }
+  return (await res.json()) as MarginNote4BridgeStatus;
+}
+
+export interface MarginNote4Writeback {
+  writeback_id: string;
+  status: string;
+  title: string;
+  markdown: string;
+  tags: string[];
+  source_refs: string[];
+  target_notebook: string;
+  payload_hash: string;
+  delivery_mode: string;
+  provider: string;
+  external_id: string;
+  last_error: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function listMarginNote4Writebacks(payload: {
+  kbName: string;
+}): Promise<{ count: number; writebacks: MarginNote4Writeback[] }> {
+  const query = new URLSearchParams({ kb_name: payload.kbName });
+  const res = await apiFetch(
+    apiUrl(`/api/v1/marginnote4/writebacks?${query.toString()}`),
+  );
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to load MarginNote 4 writebacks"),
+    );
+  }
+  return (await res.json()) as {
+    count: number;
+    writebacks: MarginNote4Writeback[];
+  };
+}
+
+async function marginNote4WritebackAction(
+  kbName: string,
+  writebackId: string,
+  action: "approve" | "reject" | "imported",
+): Promise<MarginNote4Writeback> {
+  const res = await apiFetch(
+    apiUrl(
+      `/api/v1/marginnote4/writebacks/${encodeURIComponent(writebackId)}/${action}`,
+    ),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kb_name: kbName }),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to update MarginNote 4 writeback"),
+    );
+  }
+  return (await res.json()) as MarginNote4Writeback;
+}
+
+export function approveMarginNote4Writeback(payload: {
+  kbName: string;
+  writebackId: string;
+}): Promise<MarginNote4Writeback> {
+  return marginNote4WritebackAction(
+    payload.kbName,
+    payload.writebackId,
+    "approve",
+  );
+}
+
+export function rejectMarginNote4Writeback(payload: {
+  kbName: string;
+  writebackId: string;
+}): Promise<MarginNote4Writeback> {
+  return marginNote4WritebackAction(
+    payload.kbName,
+    payload.writebackId,
+    "reject",
+  );
+}
+
+export function markMarginNote4WritebackImported(payload: {
+  kbName: string;
+  writebackId: string;
+}): Promise<MarginNote4Writeback> {
+  return marginNote4WritebackAction(
+    payload.kbName,
+    payload.writebackId,
+    "imported",
+  );
+}
+
 export interface LinkedFolderProbe {
   /** Whether the folder holds a ready index for the chosen engine. */
   ok: boolean;

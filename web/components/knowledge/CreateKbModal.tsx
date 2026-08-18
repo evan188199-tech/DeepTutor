@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
+  Cable,
   Check,
   FolderOpen,
   FolderSearch,
@@ -46,6 +47,7 @@ const PAGEINDEX_FORMATS = [
   ".csv",
 ];
 const OBSIDIAN_SOURCE = "obsidian";
+const MARGINNOTE4_SOURCE = "marginnote4";
 const LIGHTRAG_SERVER_PROVIDER = "lightrag-server";
 const EXAMPLE_INDEX_PATH = "/Users/you/knowledge_bases/my-kb";
 const EXAMPLE_VAULT_PATH = "/Users/you/Documents/MyVault";
@@ -74,6 +76,8 @@ interface CreateKbModalProps {
     name: string;
     vaultPath: string;
   }) => Promise<void>;
+  /** Register a MarginNote 4 bridge target; pairing happens from the KB. */
+  onConnectMarginNote4: (params: { name: string }) => Promise<void>;
   /** Connect an external LightRAG server (retrieval only, no local index). */
   onConnectLightRagServer: (params: {
     name: string;
@@ -104,6 +108,7 @@ export default function CreateKbModal({
   onCreate,
   onConnectLinkedFolder,
   onConnectObsidian,
+  onConnectMarginNote4,
   onConnectLightRagServer,
   onConnectIma,
   onConfigureProvider,
@@ -131,6 +136,7 @@ export default function CreateKbModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const linkIsObsidian = linkSource === OBSIDIAN_SOURCE;
+  const linkIsMarginNote4 = linkSource === MARGINNOTE4_SOURCE;
   const linkIsIma = linkSource === IMA_PROVIDER;
   const imaConnection = useImaConnection({
     name,
@@ -174,7 +180,11 @@ export default function CreateKbModal({
     setProvider(
       initialProvider || createProviders(providers)[0]?.id || "llamaindex",
     );
-    setLinkSource(initialSource || firstLinkable || OBSIDIAN_SOURCE);
+    setLinkSource(
+      initialSource === MARGINNOTE4_SOURCE
+        ? MARGINNOTE4_SOURCE
+        : initialSource || firstLinkable || OBSIDIAN_SOURCE,
+    );
     setFolderPath("");
     setProbe(null);
     setProbing(false);
@@ -233,8 +243,9 @@ export default function CreateKbModal({
       return !providerUnavailable && selection.validFiles.length > 0;
     }
     if (linkIsIma) return imaConnection.canSubmit;
-    if (!trimmedPath) return false;
     if (linkIsObsidian) return true;
+    if (linkIsMarginNote4) return true;
+    if (!trimmedPath) return false;
     // An engine index must pass the probe before it can be linked.
     return !!probe?.ok;
   })();
@@ -304,6 +315,8 @@ export default function CreateKbModal({
         });
       } else if (linkIsObsidian) {
         await onConnectObsidian({ name: trimmed, vaultPath: trimmedPath });
+      } else if (linkIsMarginNote4) {
+        await onConnectMarginNote4({ name: trimmed });
       } else {
         await onConnectLinkedFolder({
           name: trimmed,
@@ -324,7 +337,7 @@ export default function CreateKbModal({
       ? isLightRagServer
         ? t("Connect")
         : t("Create")
-      : linkIsObsidian || linkIsIma
+      : linkIsObsidian || linkIsIma || linkIsMarginNote4
         ? t("Connect")
         : t("Link");
 
@@ -427,6 +440,7 @@ export default function CreateKbModal({
             linkSource={linkSource}
             setLinkSource={handleLinkSourceChange}
             linkIsObsidian={linkIsObsidian}
+            linkIsMarginNote4={linkIsMarginNote4}
             linkIsIma={linkIsIma}
             folderPath={folderPath}
             setFolderPath={setFolderPath}
@@ -792,6 +806,7 @@ function LinkModeFields({
   linkSource,
   setLinkSource,
   linkIsObsidian,
+  linkIsMarginNote4,
   linkIsIma,
   folderPath,
   setFolderPath,
@@ -806,6 +821,7 @@ function LinkModeFields({
   linkSource: string;
   setLinkSource: (id: string) => void;
   linkIsObsidian: boolean;
+  linkIsMarginNote4: boolean;
   linkIsIma: boolean;
   folderPath: string;
   setFolderPath: (value: string) => void;
@@ -824,7 +840,8 @@ function LinkModeFields({
         </label>
         <div className="grid gap-2 sm:grid-cols-2">
           {providers.map((p) => {
-            const selected = !linkIsObsidian && linkSource === p.id;
+            const selected =
+              !linkIsObsidian && !linkIsMarginNote4 && linkSource === p.id;
             const enabled = linkSourceEnabled(p);
             const disabled = submitting || !enabled;
             return (
@@ -895,11 +912,43 @@ function LinkModeFields({
               )}
             </span>
           </button>
+
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => setLinkSource(MARGINNOTE4_SOURCE)}
+            className={`group flex flex-col gap-1 rounded-2xl border p-3 text-left transition-colors disabled:opacity-50 ${
+              linkIsMarginNote4
+                ? "border-[var(--primary)] bg-[var(--primary)]/5"
+                : "border-[var(--border)] hover:border-[var(--ring)]"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--foreground)]">
+                <Cable className="h-3.5 w-3.5" />
+                {t("MarginNote 4")}
+              </span>
+              {linkIsMarginNote4 && (
+                <Check className="h-3.5 w-3.5 text-[var(--primary)]" />
+              )}
+            </div>
+            <span className="text-[11.5px] leading-snug text-[var(--muted-foreground)]">
+              {t(
+                "A local bridge syncs exports from your Mac and returns reviewed notes.",
+              )}
+            </span>
+          </button>
         </div>
       </div>
 
       {linkIsIma ? (
         connectionForm
+      ) : linkIsMarginNote4 ? (
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--muted)]/40 px-3 py-2.5 text-[12px] text-[var(--muted-foreground)]">
+          {t(
+            "Register this knowledge base, then pair your Mac from its Bridge tab.",
+          )}
+        </div>
       ) : (
         <>
           <div>

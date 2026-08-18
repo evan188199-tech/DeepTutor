@@ -38,6 +38,7 @@ export default function KnowledgePage() {
     deleteKb,
     connectObsidian,
     connectLinkedFolder,
+    connectMarginNote4,
     connectLightRagServer,
     connectIma,
   } = useKnowledgeBases();
@@ -71,6 +72,10 @@ export default function KnowledgePage() {
   // the unified create flow, pre-set to "link existing → Obsidian".
   const openObsidian = useCallback(() => {
     setCreatePreset({ mode: "link", source: "obsidian" });
+    setCreateOpen(true);
+  }, []);
+  const openMarginNote4 = useCallback(() => {
+    setCreatePreset({ mode: "link", source: "marginnote4" });
     setCreateOpen(true);
   }, []);
   // Lands on the Overview console unless deep-linked to a KB or an engine.
@@ -142,6 +147,19 @@ export default function KnowledgePage() {
       }
     },
     [createKb, openKb, setError],
+  );
+
+  const handleConnectMarginNote4 = useCallback(
+    async (params: { name: string }) => {
+      try {
+        await connectMarginNote4(params);
+        openKb(params.name);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+        throw err;
+      }
+    },
+    [connectMarginNote4, openKb, setError],
   );
 
   const handleSetDefault = useCallback(
@@ -257,6 +275,7 @@ export default function KnowledgePage() {
               onOpenEngine={openEngine}
               onCreate={openCreate}
               onConnectObsidian={openObsidian}
+              onConnectMarginNote4={openMarginNote4}
             />
           ) : view === "engine" && selectedProvider ? (
             <EngineDetail
@@ -277,6 +296,7 @@ export default function KnowledgePage() {
               onOpenEngine={openEngine}
               onCreate={openCreate}
               onConnectObsidian={openObsidian}
+              onConnectMarginNote4={openMarginNote4}
             />
           ) : (
             <KnowledgeBaseDetail
@@ -305,6 +325,7 @@ export default function KnowledgePage() {
         onCreate={handleCreate}
         onConnectLinkedFolder={connectLinkedFolder}
         onConnectObsidian={connectObsidian}
+        onConnectMarginNote4={handleConnectMarginNote4}
         onConnectLightRagServer={connectLightRagServer}
         onConnectIma={connectIma}
         initialMode={createPreset?.mode}

@@ -16,6 +16,7 @@ from .config_cmd import register as register_config
 from .init_cmd import register as register_init
 from .kb import register as register_kb
 from .memory import register as register_memory
+from .mn4_bridge import register as register_mn4_bridge
 from .notebook import register as register_notebook
 from .partner import register as register_partner
 from .plugin import register as register_plugin
@@ -57,6 +58,7 @@ app.add_typer(session_app, name="session")
 app.add_typer(notebook_app, name="notebook")
 app.add_typer(provider_app, name="provider")
 app.add_typer(book_app, name="book")
+register_mn4_bridge(app)
 
 register_partner(partner_app)
 register_chat(chat_app)

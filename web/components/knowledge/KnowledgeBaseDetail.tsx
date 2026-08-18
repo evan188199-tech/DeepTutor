@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
+  Cable,
   Database,
   FileText,
   Layers,
@@ -26,6 +27,7 @@ import KbFilesTab from "./KbFilesTab";
 import KbDocumentsSection from "./KbDocumentsSection";
 import KbIndexVersionsSection from "./KbIndexVersionsSection";
 import KbSettingsSection from "./KbSettingsSection";
+import MarginNote4BridgePanel from "./MarginNote4BridgePanel";
 
 type DetailSection = "files" | "add" | "versions" | "settings";
 
@@ -104,7 +106,10 @@ export default function KnowledgeBaseDetail({
   }
 
   const meta = kb.metadata || {};
-  const provider = kb.statistics?.rag_provider || "llamaindex";
+  const isMarginNote4 = meta.type === "marginnote4";
+  const provider = isMarginNote4
+    ? "marginnote4"
+    : kb.statistics?.rag_provider || "llamaindex";
   const embeddingLabel = meta.embedding_model
     ? typeof meta.embedding_dim === "number"
       ? `${meta.embedding_model} · ${meta.embedding_dim}${t("d")}`
@@ -130,7 +135,9 @@ export default function KnowledgeBaseDetail({
     }
   };
 
-  const fullBleed = FULL_BLEED_SECTIONS.has(section);
+  const sections = isMarginNote4
+    ? [{ key: "files" as DetailSection, label: "Bridge", Icon: Cable }]
+    : SECTIONS;
 
   return (
     <main className="flex h-full flex-1 flex-col overflow-hidden bg-[var(--background)]">
@@ -199,7 +206,7 @@ export default function KnowledgeBaseDetail({
 
         {/* Section nav */}
         <nav className="-mb-3 mt-3 flex gap-1 overflow-x-auto">
-          {SECTIONS.map(({ key, label, Icon }) => {
+          {sections.map(({ key, label, Icon }) => {
             const active = section === key;
             return (
               <button
@@ -222,11 +229,17 @@ export default function KnowledgeBaseDetail({
 
       {/* Body */}
       <div className="min-h-0 flex-1 overflow-hidden">
-        {section === "files" ? (
+        {section === "files" && isMarginNote4 ? (
+          <div className="h-full overflow-y-auto px-6 py-5">
+            <div className="mx-auto max-w-3xl">
+              <MarginNote4BridgePanel kbName={kb.name} />
+            </div>
+          </div>
+        ) : section === "files" ? (
           <KbFilesTab key={kb.name} kb={kb} task={task} />
         ) : (
           <div className="h-full overflow-y-auto px-6 py-5">
-            <div className={fullBleed ? "" : "mx-auto max-w-3xl"}>
+            <div className="mx-auto max-w-3xl">
               {section === "add" && (
                 <KbDocumentsSection
                   kb={kb}
