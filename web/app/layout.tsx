@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Lora } from "next/font/google";
+import { Geist, Lora } from "next/font/google"  // TEMP
 import "./globals.css";
 import ThemeScript from "@/components/ThemeScript";
 import ToastViewport from "@/components/common/ToastViewport";

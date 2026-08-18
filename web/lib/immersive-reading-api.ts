@@ -353,6 +353,19 @@ export const immersiveReadingApi = {
         }),
       },
     ),
+  setExperienceMode: (documentId: string, mode: "standard" | "kids") =>
+    request<{ experience_mode: string; progress_percent: number }>(
+      `/documents/${encodeURIComponent(documentId)}/experience-mode`,
+      { method: "PUT", body: JSON.stringify({ mode }) },
+    ),
+  kidsProgress: (
+    documentId: string, sectionId: string,
+    data: { scroll_percent?: number; epub_cfi?: string; section_href?: string },
+  ) =>
+    request<{ progress: ReadingProgress }>(
+      `/documents/${encodeURIComponent(documentId)}/kids-progress`,
+      { method: "PUT", body: JSON.stringify({ section_id: sectionId, ...data }) },
+    ),
 };
 
 // ── Bilingual paired reading ────────────────────────────────────────────
