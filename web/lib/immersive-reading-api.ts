@@ -178,6 +178,10 @@ export interface DictionaryStatus {
   path: string;
   entries: number | null;
   size_bytes: number;
+  version?: string | null;
+  checksum?: string | null;
+  license?: string | null;
+  import_progress?: number | null;
   error: string;
 }
 

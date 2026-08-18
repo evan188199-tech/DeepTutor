@@ -78,8 +78,21 @@ function OfflineDictionarySetup() {
       <div className="flex items-center gap-2 text-xs font-medium text-[var(--foreground)]">
         <Upload size={13} />
         {t("Offline dictionary")}
+        {status.version && (
+          <span className="ml-2 rounded border border-[var(--border)] bg-[var(--muted)] px-1.5 py-0.5 text-[10px] text-[var(--muted-foreground)]">
+            v{status.version}
+          </span>
+        )}
       </div>
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {status.import_progress !== null && status.import_progress !== undefined && (
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--muted)]">
+          <div
+            className="h-full bg-[var(--primary)] transition-all duration-300"
+            style={{ width: `${Math.max(0, Math.min(100, status.import_progress * 100))}%` }}
+          />
+        </div>
+      )}
       <input
         ref={fileInputRef}
         type="file"
@@ -151,6 +164,12 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
   const [revealChinese, setRevealChinese] = useState(false);
   const primary =
     result.definitions.find((d) => d.context_match) ?? result.definitions[0];
+  const primaryChinese = primary?.chinese;
+  const globalChinese = result.chinese;
+  const shouldShowPrimaryChinese = !!normalizeChineseText(primaryChinese);
+  const shouldShowGlobalChinese =
+    !!normalizeChineseText(globalChinese) &&
+    normalizeChineseText(primaryChinese) !== normalizeChineseText(globalChinese);
 
   return (
     <div className="space-y-1.5">
@@ -174,7 +193,7 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
         <p className="text-sm leading-relaxed text-[var(--foreground)]">
           {primary.definition}
         </p>
-        {primary.chinese && (
+        {shouldShowPrimaryChinese && (
           <button
             type="button"
             onClick={() => setRevealChinese(true)}
@@ -182,12 +201,12 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
             title={revealChinese ? undefined : t("Tap to reveal")}
             className={chineseRevealClassName(revealChinese)}
           >
-            {primary.chinese}
+            {primaryChinese}
           </button>
         )}
       </div>
       )}
-      {result.chinese && (
+      {shouldShowGlobalChinese && (
         <button
           type="button"
           onClick={() => setRevealChinese(true)}
@@ -205,7 +224,9 @@ function CompactDefinition({ result }: { result: DictionaryResult }) {
 function FullDefinitions({ result }: { result: DictionaryResult }) {
   const { t } = useTranslation();
   const [revealChinese, setRevealChinese] = useState(false);
+  const seenDefinitionChinese = new Set<string>();
   const hasChinese = !!result.chinese || result.definitions.some((d) => d.chinese);
+  const globalChinese = normalizeChineseText(result.chinese);
 
   return (
     <div className="space-y-3">
@@ -226,7 +247,7 @@ function FullDefinitions({ result }: { result: DictionaryResult }) {
           </button>
         </div>
       )}
-      {result.chinese && (
+      {globalChinese && (
         <button
           type="button"
           onClick={() => setRevealChinese((v) => !v)}
@@ -258,17 +279,24 @@ function FullDefinitions({ result }: { result: DictionaryResult }) {
           <p className="text-sm leading-relaxed text-[var(--foreground)]">
             {def.definition}
           </p>
-          {def.chinese && (
-            <button
-              type="button"
-              onClick={() => setRevealChinese(true)}
-              aria-expanded={revealChinese}
-              title={revealChinese ? undefined : t("Tap to reveal")}
-              className={chineseRevealClassName(revealChinese)}
-            >
-              {def.chinese}
-            </button>
-          )}
+          {(() => {
+            const definitionChinese = normalizeChineseText(def.chinese);
+            if (!definitionChinese) return null;
+            if (definitionChinese === globalChinese) return null;
+            if (seenDefinitionChinese.has(definitionChinese)) return null;
+            seenDefinitionChinese.add(definitionChinese);
+            return (
+              <button
+                type="button"
+                onClick={() => setRevealChinese(true)}
+                aria-expanded={revealChinese}
+                title={revealChinese ? undefined : t("Tap to reveal")}
+                className={chineseRevealClassName(revealChinese)}
+              >
+                {definitionChinese}
+              </button>
+            );
+          })()}
           {def.example && (
             <p className="mt-1 text-xs italic text-[var(--muted-foreground)]">
               &ldquo;{def.example}&rdquo;
@@ -305,6 +333,10 @@ interface ContentProps {
   onSaveToVocabulary?: () => void;
   saveBusy?: boolean;
   onPronounce?: (accent: WordPronunciationAccent) => void;
+}
+
+function normalizeChineseText(value: string | null | undefined): string {
+  return (value || "").trim().replace(/\s+/g, " ");
 }
 
 function PanelContent({

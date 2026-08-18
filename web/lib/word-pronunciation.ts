@@ -4,7 +4,6 @@ export interface WordPronunciationOptions {
   rate?: number;
   pitch?: number;
   volume?: number;
-  preferNativeStream?: boolean;
   onStart?: () => void;
   onEnd?: () => void;
   onError?: (error: Error | string) => void;
@@ -19,7 +18,6 @@ export interface PronunciationPlaybackState {
 const DEFAULT_RATE = 0.92;
 const DEFAULT_VOLUME = 1.0;
 
-let currentAudio: HTMLAudioElement | null = null;
 let currentUtterance: SpeechSynthesisUtterance | null = null;
 // Keep strong references to active utterances to prevent Safari iOS GC mid-speech
 const activeUtterances = new Set<SpeechSynthesisUtterance>();
@@ -69,53 +67,23 @@ export function isPronouncingWord(
 /** Check whether audio pronunciation is supported in the current environment. */
 export function wordPronunciationSupported(): boolean {
   if (typeof window === "undefined") return false;
-  const hasAudio = typeof Audio !== "undefined";
   const hasSpeech = typeof window.speechSynthesis !== "undefined";
-  const hasWebAudio =
-    typeof window.AudioContext !== "undefined" ||
-    typeof (window as any).webkitAudioContext !== "undefined";
-  return hasAudio || hasSpeech || hasWebAudio;
+  return hasSpeech;
 }
-
-/** Standard high-quality pronunciation audio URLs (US: type=2, UK: type=1). */
-export function getPronunciationAudioUrl(
-  word: string,
-  accent: WordPronunciationAccent = "en-US",
-): string {
-  const clean = word.trim().toLowerCase().replace(/[^a-z0-9'-]/g, "");
-  const type = accent === "en-GB" ? 1 : 2;
-  return `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(clean)}&type=${type}`;
-}
-
-const audioCache = new Map<string, HTMLAudioElement>();
 
 export function preloadWordAudio(
   word: string,
   accent: WordPronunciationAccent = "en-US",
 ): void {
-  if (typeof window === "undefined" || typeof Audio === "undefined") return;
-  const url = getPronunciationAudioUrl(word, accent);
-  if (audioCache.has(url)) return;
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
   try {
-    const audio = new Audio();
-    audio.preload = "auto";
-    audio.src = url;
-    audioCache.set(url, audio);
+    window.speechSynthesis.getVoices();
   } catch {
-    // Ignore preload failures
+    // Ignore pre-warm failures.
   }
 }
 
 export function stopPronunciation(): void {
-  if (currentAudio) {
-    try {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    } catch {
-      // Ignore pause failures
-    }
-    currentAudio = null;
-  }
   if (typeof window !== "undefined" && window.speechSynthesis) {
     try {
       window.speechSynthesis.cancel();
@@ -209,10 +177,7 @@ function speakWithSpeechSynthesis(
   });
 }
 
-/**
- * Play standard pronunciation for a given word.
- * Tries high-quality native audio stream first, falling back to Web Speech API / TTS.
- */
+/** Play a word with the browser's local speech engine. */
 export async function playWordPronunciation(
   word: string,
   accent: WordPronunciationAccent = "en-US",
@@ -222,73 +187,10 @@ export async function playWordPronunciation(
   if (!cleanWord) return false;
 
   stopPronunciation();
-
-  const preferStream = options.preferNativeStream !== false;
-
-  if (preferStream && typeof window !== "undefined" && typeof Audio !== "undefined") {
-    const url = getPronunciationAudioUrl(cleanWord, accent);
-    let audio = audioCache.get(url);
-    if (!audio) {
-      audio = new Audio(url);
-      audio.preload = "auto";
-      audioCache.set(url, audio);
-    }
-
-    try {
-      audio.currentTime = 0;
-      audio.volume = options.volume ?? DEFAULT_VOLUME;
-      if (options.rate && options.rate !== 1) {
-        audio.playbackRate = options.rate;
-      }
-
-      currentAudio = audio;
-      notifyStateChange({ isPlaying: true, word: cleanWord, accent });
-      options.onStart?.();
-
-      const playPromise = new Promise<boolean>((resolve) => {
-        let settled = false;
-        const cleanup = () => {
-          audio?.removeEventListener("ended", onEnded);
-          audio?.removeEventListener("error", onError);
-        };
-
-        const onEnded = () => {
-          if (settled) return;
-          settled = true;
-          cleanup();
-          currentAudio = null;
-          notifyStateChange({ isPlaying: false, word: null, accent: null });
-          options.onEnd?.();
-          resolve(true);
-        };
-
-        const onError = () => {
-          if (settled) return;
-          settled = true;
-          cleanup();
-          currentAudio = null;
-          // Fallback to speech synthesis on network/audio stream error
-          void speakWithSpeechSynthesis(cleanWord, accent, options).then(resolve);
-        };
-
-        audio?.addEventListener("ended", onEnded, { once: true });
-        audio?.addEventListener("error", onError, { once: true });
-
-        // Fallback timeout in case audio hangs or is blocked
-        window.setTimeout(() => {
-          if (!settled && currentAudio === audio && audio.paused) {
-            onError();
-          }
-        }, 3500);
-      });
-
-      await audio.play();
-      return await playPromise;
-    } catch {
-      // Audio element play failed (e.g. autoplay restriction / offline / decoding error)
-      currentAudio = null;
-      return await speakWithSpeechSynthesis(cleanWord, accent, options);
-    }
+  const hasSpeech = typeof window !== "undefined" && window.speechSynthesis;
+  if (!hasSpeech) {
+    options.onError?.("No local speech engine available. Add/enable a system voice.");
+    return false;
   }
 
   return await speakWithSpeechSynthesis(cleanWord, accent, options);

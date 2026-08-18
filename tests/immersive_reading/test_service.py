@@ -471,15 +471,36 @@ async def test_local_ecdict_result_wins_before_network_or_model(
         lambda _word: local.model_copy(deep=True),
     )
 
-    async def fail_online(*_args, **_kwargs):
-        raise AssertionError("online dictionary must not run after an ECDICT hit")
+    async def fail_model(for_translation: bool = False, *_args, **_kwargs):
+        raise AssertionError("local model must not run after an ECDICT hit")
 
-    monkeypatch.setattr(reading_service, "_fast_dictionary_lookup", fail_online)
+    monkeypatch.setattr(reading_service, "_ensure_ollama_ready", fail_model)
 
     result = await reading_service.lookup_word("TECHNICAL")
 
     assert result.chinese == "a. 技术的"
     assert reading_service._cache_get("technical").chinese == "a. 技术的"
+
+
+def test_dictionary_status_reports_package_metadata(
+    reading_service: ImmersiveReadingService, tmp_path
+) -> None:
+    csv_path = tmp_path / "ecdict.csv"
+    csv_path.write_text(
+        "word,phonetic,definition,translation,pos,exchange\n"
+        "technical,'teknikl,a. relating to a specialized subject,a. 技术的,a,\n",
+        encoding="utf-8",
+    )
+
+    assert reading_service.import_ecdict_csv(csv_path) == 1
+    status = reading_service.dictionary_status()
+
+    assert status["installed"] is True
+    assert status["entries"] == 1
+    assert status["version"] == "1.0.28"
+    assert status["license"] == "GPL-3.0"
+    assert status["checksum"] is None
+    assert status["import_progress"] is None
 
 
 @pytest.mark.asyncio
@@ -530,7 +551,7 @@ async def test_dictionary_model_missing_is_marked_service_unavailable(
 ) -> None:
     from deeptutor.services.llm.exceptions import LLMModelNotFoundError
 
-    async def _model_missing() -> None:
+    async def _model_missing(for_translation: bool = False) -> None:
         raise LLMModelNotFoundError(
             "Model qwen3.5:2b is not installed.",
             model="qwen3.5:2b",
@@ -540,12 +561,8 @@ async def test_dictionary_model_missing_is_marked_service_unavailable(
     def _no_local_result(word: str) -> None:
         return None
 
-    async def _no_fast_result(word: str) -> None:
-        return None
-
     monkeypatch.setattr(reading_service, "_ensure_ollama_ready", _model_missing)
     monkeypatch.setattr(reading_service, "_local_dictionary_lookup", _no_local_result)
-    monkeypatch.setattr(reading_service, "_fast_dictionary_lookup", _no_fast_result)
 
     # Service raises LLMModelNotFoundError (a subclass of LLMAPIError).  The
     # API router maps this to HTTP 503 for the /dictionary endpoint.
@@ -555,39 +572,81 @@ async def test_dictionary_model_missing_is_marked_service_unavailable(
 
 
 @pytest.mark.asyncio
-async def test_fast_online_result_returns_without_waiting_for_model(
+async def test_dictionary_lookup_falls_back_to_local_model_when_ecdict_misses(
     reading_service: ImmersiveReadingService, monkeypatch
 ) -> None:
-    """Words absent from ECDICT still display English immediately."""
-    from deeptutor.immersive_reading.models import (
-        DictionaryDefinition,
-        DictionaryResult,
-    )
+    """Words absent from ECDICT fall back to the local model."""
+    import aiohttp
 
-    english_only = DictionaryResult(
-        word="complex",
-        phonetic="/kəmpleks/",
-        definitions=[
-            DictionaryDefinition(
-                part_of_speech="adjective",
-                definition="Made up of multiple parts; not simple.",
-            ),
-        ],
-    )
+    def no_ecdict(_word: str):
+        return None
 
-    async def fail_model(*_args, **_kwargs):
-        raise AssertionError("online dictionary hit must not wait for Ollama")
+    async def ensure_model() -> str:
+        return "qwen3.5:4b"
 
-    async def _fast(_word: str):
-        return english_only.model_copy(deep=True)
+    class FakeResponse:
+        status = 200
 
-    monkeypatch.setattr(reading_service, "_fast_dictionary_lookup", _fast)
-    monkeypatch.setattr(reading_service, "_ensure_ollama_ready", fail_model)
+        async def json(self):
+            return {
+                "message": {
+                    "content": (
+                        '{"word":"complex","phonetic":"/kəmpleks/","definitions":'
+                        '[{"part_of_speech":"adjective","definition":"Made up of multiple parts; '
+                        'not simple.","chinese":"复杂的","example":"","synonyms":[],'
+                        '"context_match":true}],"context_note":""}'
+                    )
+                }
+            }
+
+        async def text(self):
+            return ""
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return False
+
+    class FakeSession:
+        def post(self, _url, json=None):
+            return FakeResponse()
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return False
+
+    monkeypatch.setattr(reading_service, "_local_dictionary_lookup", no_ecdict)
+    monkeypatch.setattr(reading_service, "_ensure_ollama_ready", ensure_model)
+    monkeypatch.setattr(aiohttp, "ClientSession", lambda **_kwargs: FakeSession())
 
     result = await reading_service.lookup_word("complex")
 
-    assert result.definitions[0].definition == ("Made up of multiple parts; not simple.")
+    assert result.definitions[0].chinese == "复杂的"
     assert reading_service._cache_get("complex") is not None
+
+
+@pytest.mark.asyncio
+async def test_lookup_dictionary_delegates_to_lookup_word_for_strict_local_policy(
+    reading_service: ImmersiveReadingService, monkeypatch
+) -> None:
+    """The legacy endpoint wrapper must preserve ECDICT-first behavior."""
+    called_with = []
+
+    async def mock_lookup_word(word: str, context: str = ""):
+        from deeptutor.immersive_reading.models import DictionaryResult
+
+        called_with.append((word, context))
+        return DictionaryResult(word=word, phonetic="", definitions=[], context_note="")
+
+    monkeypatch.setattr(reading_service, "lookup_word", mock_lookup_word)
+
+    result = await reading_service.lookup_dictionary("delegated", "some context")
+
+    assert called_with == [("delegated", "some context")]
+    assert result["word"] == "delegated"
 
 
 def test_resolve_ollama_model_prefers_exact_then_sibling() -> None:

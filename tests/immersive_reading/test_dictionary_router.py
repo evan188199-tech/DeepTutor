@@ -32,9 +32,14 @@ def client(monkeypatch):
         def dictionary_status(self):
             return {
                 "installed": True,
+                "frequency_fields": False,
                 "path": "/tmp/ecdict.db",
                 "entries": 3,
                 "size_bytes": 128,
+                "version": "1.0.28",
+                "checksum": None,
+                "license": "GPL-3.0",
+                "import_progress": None,
                 "error": "",
             }
 
@@ -68,8 +73,13 @@ def test_dictionary_status_reports_offline_database(client):
     assert response.status_code == 200
     assert response.json() == {
         "installed": True,
+        "frequency_fields": False,
         "path": "/tmp/ecdict.db",
         "entries": 3,
         "size_bytes": 128,
+        "version": "1.0.28",
+        "checksum": None,
+        "license": "GPL-3.0",
+        "import_progress": None,
         "error": "",
     }

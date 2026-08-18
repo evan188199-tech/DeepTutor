@@ -4,7 +4,6 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import {
-  getPronunciationAudioUrl,
   getPronunciationState,
   isPronouncingWord,
   playWordPronunciation,
@@ -14,15 +13,15 @@ import {
   wordPronunciationSupported,
 } from "../lib/word-pronunciation";
 
-test("getPronunciationAudioUrl produces valid US and UK URLs", () => {
-  const usUrl = getPronunciationAudioUrl("Hello", "en-US");
-  assert.equal(usUrl, "https://dict.youdao.com/dictvoice?audio=hello&type=2");
+test("word pronunciation does not depend on remote audio streams", async () => {
+  const source = await readFile(
+    join(process.cwd(), "lib/word-pronunciation.ts"),
+    "utf8",
+  );
 
-  const ukUrl = getPronunciationAudioUrl("Hello", "en-GB");
-  assert.equal(ukUrl, "https://dict.youdao.com/dictvoice?audio=hello&type=1");
-
-  const cleanUrl = getPronunciationAudioUrl(" well-known! ", "en-US");
-  assert.equal(cleanUrl, "https://dict.youdao.com/dictvoice?audio=well-known&type=2");
+  assert.doesNotMatch(source, /dict\.youdao\.com|dictionaryapi\.dev/i);
+  assert.doesNotMatch(source, /new Audio\(|HTMLAudioElement/);
+  assert.match(source, /window\.speechSynthesis/);
 });
 
 test("pronunciation state and subscription manage listeners cleanly", () => {
