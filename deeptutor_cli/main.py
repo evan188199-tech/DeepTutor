@@ -12,6 +12,7 @@ from deeptutor.runtime.mode import RunMode, set_mode
 from .book import register as register_book
 from .chat import register as register_chat
 from .common import build_turn_request, console, maybe_run
+from .companion import register as register_companion
 from .config_cmd import register as register_config
 from .init_cmd import register as register_init
 from .kb import register as register_kb
@@ -70,6 +71,7 @@ register_notebook(notebook_app)
 register_provider(provider_app)
 register_book(book_app)
 register_init(app)
+register_companion(app)
 
 
 @app.command("run")

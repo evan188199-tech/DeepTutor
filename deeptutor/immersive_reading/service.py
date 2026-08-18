@@ -947,6 +947,43 @@ class ImmersiveReadingService:
             pass
         return path
 
+    def export_offline_package(self, document_id: str) -> Path:
+        """Build an atomic ZIP package containing a document's offline data."""
+        document = self.load_document(document_id)
+        if document is None:
+            raise ValueError("Reading document not found")
+
+        root = self._document_root(document_id)
+        sections_dir = root / "sections"
+        target = root / f"{document_id}_offline.zip"
+        temporary = target.with_name(f"{target.name}.tmp")
+        temporary.unlink(missing_ok=True)
+
+        try:
+            with zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED) as archive:
+                manifest_path = self._manifest_path(document_id)
+                if manifest_path.is_file():
+                    archive.write(manifest_path, arcname="manifest.json")
+                progress_path = self._progress_path(document_id)
+                if progress_path.is_file():
+                    archive.write(progress_path, arcname="progress.json")
+                try:
+                    cover_path = self.cover_path(document_id)
+                except ValueError:
+                    cover_path = None
+                if cover_path is not None and cover_path.is_file():
+                    archive.write(cover_path, arcname="cover.png")
+                if sections_dir.is_dir():
+                    for section_path in sorted(sections_dir.glob("*.txt")):
+                        archive.write(section_path, arcname=f"sections/{section_path.name}")
+                archive.writestr("translations.json", "[]")
+                archive.writestr("ecdict_subset.json", "[]")
+            temporary.replace(target)
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
+        return target
+
     def get_section(self, document_id: str, section_id: str) -> dict[str, Any]:
         doc = self.load_document(document_id)
         if doc is None:

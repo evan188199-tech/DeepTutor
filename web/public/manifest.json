@@ -1,0 +1,25 @@
+{
+  "name": "DeepTutor",
+  "short_name": "DeepTutor",
+  "description": "Agent-native intelligent learning companion",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x177",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "575x567",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
