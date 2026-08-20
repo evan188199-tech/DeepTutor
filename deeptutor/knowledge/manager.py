@@ -21,6 +21,7 @@ from deeptutor.knowledge.kb_types import (
     IMA_KB_TYPE,
     LIGHTRAG_SERVER_KB_TYPE,
     LINKED_KB_TYPE,
+    MARGINNOTE4_KB_TYPE,
     OBSIDIAN_KB_TYPE,
     SUBAGENT_KB_TYPE,
     external_root_of,
@@ -932,6 +933,46 @@ class KnowledgeBaseManager:
         self._save_config()
         return entry
 
+    def register_marginnote4_kb(
+        self,
+        name: str,
+        *,
+        library_id: str,
+        description: str = "",
+    ) -> dict:
+        """Register a connected MarginNote 4 library as a pointer KB.
+
+        The bridge database is never selected by this pointer. It stores only
+        the server-bound MN4 library ID; pairing and access control remain in
+        the MarginNote 4 service.
+        """
+        name = (name or "").strip()
+        library_id = (library_id or "").strip()
+        if not name:
+            raise ValueError("Knowledge base name is required.")
+        if not library_id:
+            raise ValueError("MarginNote 4 library_id is required.")
+
+        self.config = self._load_config()
+        knowledge_bases = self.config.setdefault("knowledge_bases", {})
+        if name in knowledge_bases:
+            raise ValueError(f"A knowledge base named '{name}' already exists.")
+
+        now = datetime.now().isoformat()
+        entry: dict[str, Any] = {
+            "path": name,
+            "type": MARGINNOTE4_KB_TYPE,
+            "library_id": library_id,
+            "description": description or f"MarginNote 4 library: {name}",
+            "status": "ready",
+            "needs_reindex": False,
+            "created_at": now,
+            "updated_at": now,
+        }
+        knowledge_bases[name] = entry
+        self._save_config()
+        return entry
+
     def get_knowledge_base_path(self, name: str | None = None) -> Path:
         """Get path to a knowledge base.
 
@@ -1087,6 +1128,8 @@ class KnowledgeBaseManager:
                 # base this KB reads; the client id and API key are credentials
                 # and are deliberately absent from this allowlist.
                 "knowledge_base_id": kb_config.get("knowledge_base_id"),
+                # MarginNote 4 bridge pointer.
+                "library_id": kb_config.get("library_id"),
                 # Subagent connection fields (None for non-subagent KBs).
                 "agent_kind": kb_config.get("agent_kind"),
                 "cwd": kb_config.get("cwd"),
@@ -1243,6 +1286,8 @@ class KnowledgeBaseManager:
         # Same split for IMA: the library id is shown, the credentials are not.
         if kb_config.get("knowledge_base_id"):
             metadata["knowledge_base_id"] = kb_config.get("knowledge_base_id")
+        if kb_config.get("library_id"):
+            metadata["library_id"] = kb_config.get("library_id")
 
         metadata.update(self._embedding_fields(kb_config))
 

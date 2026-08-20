@@ -1714,6 +1714,39 @@ class ConnectLightRagServerRequest(BaseModel):
     search_mode: str = ""
 
 
+class ConnectMarginNote4Request(BaseModel):
+    name: str
+    library_id: str
+    description: str = ""
+
+
+@router.post("/connect-marginnote4")
+async def connect_marginnote4_library(payload: ConnectMarginNote4Request):
+    """Register one server-bound MN4 library as a connected, read-only KB."""
+    name = (payload.name or "").strip()
+    library_id = (payload.library_id or "").strip()
+    if not name or not library_id:
+        raise HTTPException(status_code=400, detail="Both name and library_id are required.")
+    try:
+        manager = get_kb_manager()
+        entry = manager.register_marginnote4_kb(
+            name,
+            library_id=library_id,
+            description=payload.description,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        logger.error("Error connecting MarginNote 4 library: %s", exc)
+        raise HTTPException(status_code=500, detail=str(exc))
+    return {
+        "status": "connected",
+        "name": name,
+        "library_id": entry["library_id"],
+        "type": entry["type"],
+    }
+
+
 @router.post("/probe-lightrag-server")
 async def probe_lightrag_server_route(payload: ProbeLightRagServerRequest):
     """Test-connect to an external LightRAG server before binding a KB to it.

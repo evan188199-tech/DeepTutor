@@ -1,0 +1,72 @@
+{
+  "protocol_version": 1,
+  "session_api": {
+    "create_pairing": "POST /api/v1/marginnote4/pairing-sessions",
+    "confirm_pairing": "POST /api/v1/marginnote4/pairing-sessions/{session_id}/confirm",
+    "cancel_pairing": "POST /api/v1/marginnote4/pairing-sessions/{session_id}/cancel",
+    "list_devices": "GET /api/v1/marginnote4/devices",
+    "revoke_device": "DELETE /api/v1/marginnote4/devices/{device_id}"
+  },
+  "device_api": {
+    "claim": "POST /api/v1/marginnote4/device/claim",
+    "release_token": "POST /api/v1/marginnote4/device/{device_id}/token",
+    "push": "POST /api/v1/marginnote4/device/sync",
+    "pull": "GET /api/v1/marginnote4/device/changes?cursor={cursor}",
+    "heartbeat": "POST /api/v1/marginnote4/device/heartbeat"
+  },
+  "object_fields": [
+    "protocol_version",
+    "library_id",
+    "device_id",
+    "object_id",
+    "object_type",
+    "revision",
+    "updated_at",
+    "source_locator"
+  ],
+  "object_types": [
+    "note",
+    "excerpt",
+    "card",
+    "mindmap_node",
+    "document",
+    "comment"
+  ],
+  "push_example": {
+    "protocol_version": 1,
+    "operation_id": "device-0000000001-op-0001",
+    "objects": [
+      {
+        "object_id": "mn-note-1001",
+        "object_type": "note",
+        "revision": 1,
+        "title": "resilience",
+        "content": "Systems fail in combination.",
+        "source_locator": {
+          "kind": "marginnote4",
+          "note_id": "1001",
+          "uri": "marginnote3app://note/1001"
+        }
+      }
+    ],
+    "deletions": []
+  },
+  "pull_example": {
+    "cursor": "0",
+    "changes": [
+      {
+        "seq": 1,
+        "action": "upsert",
+        "object_id": "mn-note-1001",
+        "object_type": "note",
+        "revision": 1
+      }
+    ]
+  },
+  "security": {
+    "device_authorization": "Bearer mn4_<opaque-token>",
+    "database_selection_header": null,
+    "token_storage": "sha-256-hash-only",
+    "non_loopback_transport": "https-or-trusted-https-tunnel"
+  }
+}

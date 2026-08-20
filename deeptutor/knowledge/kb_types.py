@@ -74,6 +74,10 @@ LIGHTRAG_SERVER_KB_TYPE = "lightrag_server"
 # ``search_knowledge`` OpenAPI by the ``ima`` provider.
 IMA_KB_TYPE = "ima"
 
+# A connected MarginNote 4 library. The bridge service owns pairing and a
+# normalized SQLite mirror; this KB is only a pointer to the bound library ID.
+MARGINNOTE4_KB_TYPE = "marginnote4"
+
 # Every pointer/connected KB type. Membership here is what makes the manager
 # skip the index pipeline, the orphan prune and the embedding reconcile.
 CONNECTED_KB_TYPES = frozenset(
@@ -83,6 +87,7 @@ CONNECTED_KB_TYPES = frozenset(
         SUBAGENT_KB_TYPE,
         LIGHTRAG_SERVER_KB_TYPE,
         IMA_KB_TYPE,
+        MARGINNOTE4_KB_TYPE,
     }
 )
 
@@ -119,6 +124,7 @@ __all__ = [
     "SUBAGENT_KB_TYPE",
     "LIGHTRAG_SERVER_KB_TYPE",
     "IMA_KB_TYPE",
+    "MARGINNOTE4_KB_TYPE",
     "CONNECTED_KB_TYPES",
     "is_connected_kb",
     "supports_local_raw_files",

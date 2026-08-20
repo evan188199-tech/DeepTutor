@@ -322,6 +322,7 @@ from deeptutor.api.routers import (
     knowledge,
     mastery_path,
     mcp_settings,
+    marginnote4,
     memory,
     notebook,
     outputs,
@@ -392,6 +393,11 @@ app.include_router(
 )
 app.include_router(book.router, prefix="/api/v1/book", tags=["book"], dependencies=_auth)
 app.include_router(memory.router, prefix="/api/v1/memory", tags=["memory"], dependencies=_auth)
+app.include_router(
+    marginnote4.router,
+    prefix="/api/v1/marginnote4",
+    tags=["marginnote4"],
+)
 app.include_router(
     capabilities_settings.router,
     prefix="/api/v1/capabilities",
