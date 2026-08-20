@@ -82,6 +82,97 @@ export function sanitizeIframeHtml(html: string): string {
     .replace(/\starget\s*=\s*(['"])_(top|parent)\1/gi, ' target="_self"');
 }
 
+export interface IframeLearningOutcome {
+  schemaVersion: number;
+  eventId: string;
+  occurredAt: number;
+  objectiveIds: string[];
+  activityType: string;
+  result: "observed" | "completed" | "struggled" | "mastered";
+  payload: Record<string, unknown>;
+}
+
+const LEARNING_RESULTS = new Set([
+  "observed",
+  "completed",
+  "struggled",
+  "mastered",
+]);
+const MAX_LEARNING_OBJECTIVES = 12;
+const MAX_LEARNING_PAYLOAD_BYTES = 8 * 1024;
+const UNIX_MILLISECONDS_THRESHOLD = 100_000_000_000;
+
+function jsonUtf8Size(value: Record<string, unknown>): number | null {
+  try {
+    return new TextEncoder().encode(JSON.stringify(value)).byteLength;
+  } catch {
+    return null;
+  }
+}
+
+export function parseIframeLearningOutcome(
+  data: unknown,
+  allowedObjectiveIds: readonly string[],
+): IframeLearningOutcome | null {
+  if (!data || typeof data !== "object") return null;
+  const event = data as Record<string, unknown>;
+  if (event.type !== "dt:learning-outcome" || event.schemaVersion !== 1) return null;
+
+  const eventId = typeof event.eventId === "string" ? event.eventId.trim() : "";
+  if (!eventId || eventId.length > 128) return null;
+
+  let occurredAt =
+    typeof event.occurredAt === "number" ? event.occurredAt : Number.NaN;
+  if (!Number.isFinite(occurredAt) || occurredAt < 0) return null;
+  if (occurredAt >= UNIX_MILLISECONDS_THRESHOLD) occurredAt /= 1000;
+
+  const allowed = new Set(allowedObjectiveIds);
+  if (
+    !Array.isArray(event.objectiveIds) ||
+    event.objectiveIds.length > MAX_LEARNING_OBJECTIVES
+  ) {
+    return null;
+  }
+  const objectiveIds: string[] = [];
+  for (const rawId of event.objectiveIds) {
+    if (typeof rawId !== "string") return null;
+    const objectiveId = rawId.trim();
+    if (!objectiveId || objectiveId.length > 128 || !allowed.has(objectiveId)) {
+      return null;
+    }
+    if (!objectiveIds.includes(objectiveId)) objectiveIds.push(objectiveId);
+  }
+
+  const activityType =
+    typeof event.activityType === "string" ? event.activityType.trim() : "";
+  if (!activityType || activityType.length > 64) return null;
+
+  const result = event.result;
+  if (typeof result !== "string" || !LEARNING_RESULTS.has(result)) return null;
+
+  if (
+    event.payload !== undefined &&
+    (event.payload === null ||
+      typeof event.payload !== "object" ||
+      Array.isArray(event.payload))
+  ) {
+    return null;
+  }
+  const payload = (event.payload || {}) as Record<string, unknown>;
+  const payloadSize = jsonUtf8Size(payload);
+  if (payloadSize === null || payloadSize > MAX_LEARNING_PAYLOAD_BYTES) return null;
+
+  return {
+    schemaVersion: 1,
+    eventId,
+    occurredAt,
+    objectiveIds,
+    activityType,
+    result: result as IframeLearningOutcome["result"],
+    payload,
+  };
+}
+
 /**
  * Bridge injected into every widget iframe. The iframe runs in a null origin
  * (sandbox="allow-scripts", no allow-same-origin), so it talks to the host only
@@ -94,6 +185,13 @@ export function sanitizeIframeHtml(html: string): string {
 const BRIDGE_SCRIPT =
   `<script data-dt-bridge>
 (function () {
+  var LEARNING_RESULT = /^(observed|completed|struggled|mastered)$/;
+  var MAX_PAYLOAD_BYTES = 8192;
+  var UNIX_MILLISECONDS_THRESHOLD = 100000000000;
+  function utf8Size(text) {
+    if (typeof TextEncoder === "function") return new TextEncoder().encode(text).byteLength;
+    return unescape(encodeURIComponent(text)).length;
+  }
   window.sendPrompt = function (text) {
     try {
       parent.postMessage({
@@ -101,6 +199,69 @@ const BRIDGE_SCRIPT =
         text: String(text || "")
       }, "*");
     } catch (error) {}
+  };
+
+  var outcomeCounter = 0;
+  function nextEventId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+        var bytes = new Uint8Array(16);
+        window.crypto.getRandomValues(bytes);
+        return Array.prototype.map.call(bytes, function (byte) {
+          return (byte + 0x100).toString(16).slice(1);
+        }).join("");
+      }
+    } catch (error) {}
+    outcomeCounter += 1;
+    return "evt-" + Date.now() + "-" + outcomeCounter + "-" + Math.random().toString(16).slice(2);
+  }
+
+  window.reportLearningOutcome = function (outcome) {
+    try {
+      if (!outcome || typeof outcome !== "object") return false;
+      var objectiveIds = [];
+      if (Array.isArray(outcome.objectiveIds)) {
+        if (outcome.objectiveIds.length > 12) return false;
+        for (var i = 0; i < outcome.objectiveIds.length; i++) {
+          if (typeof outcome.objectiveIds[i] !== "string") return false;
+          var objectiveId = outcome.objectiveIds[i].trim();
+          if (!objectiveId || objectiveId.length > 128) return false;
+          if (objectiveId && objectiveIds.indexOf(objectiveId) === -1) objectiveIds.push(objectiveId);
+        }
+      }
+      var activityType = String(outcome.activityType || "interactive_lab").trim();
+      if (!activityType || activityType.length > 64) return false;
+      var result = LEARNING_RESULT.test(String(outcome.result || ""))
+        ? String(outcome.result)
+        : "observed";
+      if (outcome.payload !== undefined && (
+        !outcome.payload || typeof outcome.payload !== "object" || Array.isArray(outcome.payload)
+      )) return false;
+      var serializedPayload = JSON.stringify(outcome.payload || {});
+      if (utf8Size(serializedPayload) > MAX_PAYLOAD_BYTES) return false;
+      var payload = JSON.parse(serializedPayload);
+      var occurredAt = Number(outcome.occurredAt);
+      if (!isFinite(occurredAt) || occurredAt < 0) occurredAt = Date.now() / 1000;
+      if (occurredAt >= UNIX_MILLISECONDS_THRESHOLD) occurredAt /= 1000;
+      var eventId = String(outcome.eventId || nextEventId()).trim();
+      if (!eventId || eventId.length > 128) return false;
+      parent.postMessage({
+        type: "dt:learning-outcome",
+        schemaVersion: 1,
+        eventId: eventId,
+        occurredAt: occurredAt,
+        objectiveIds: objectiveIds,
+        activityType: activityType,
+        result: result,
+        payload: payload
+      }, "*");
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   function reportHeight() {

@@ -26,6 +26,7 @@ import type {
   Spine,
   LearningCapture,
 } from "@/lib/book-types";
+import type { IframeLearningOutcome } from "@/lib/iframe-html";
 import {
   RESET_BOOK_PROGRESS,
   emptyBookProgress,
@@ -771,6 +772,33 @@ function BookPageInner() {
       );
     });
 
+  const learningActivityBookId = detail?.book.id;
+  const learningActivityPageId = selectedPage?.id;
+  const handleLearningOutcome = useCallback(
+    (block: Block, outcome: IframeLearningOutcome) =>
+      guard("Record activity", async () => {
+        if (!learningActivityBookId || !learningActivityPageId) return;
+        const { progress } = await bookApi.recordLearningActivity({
+          book_id: learningActivityBookId,
+          page_id: learningActivityPageId,
+          block_id: block.id,
+          schema_version: outcome.schemaVersion,
+          event_id: outcome.eventId,
+          objective_ids: outcome.objectiveIds,
+          activity_type: outcome.activityType,
+          result: outcome.result,
+          payload: outcome.payload,
+          occurred_at: outcome.occurredAt,
+        });
+        setDetail((current) =>
+          current && current.book.id === learningActivityBookId
+            ? { ...current, progress }
+            : current,
+        );
+      }),
+    [guard, learningActivityBookId, learningActivityPageId],
+  );
+
   /**
    * Add a remediation callout + explanation + easier quiz for a topic.
    *
@@ -988,6 +1016,9 @@ function BookPageInner() {
                     onOpenPage={(pageId) => handleSelectPage(pageId)}
                     onQuizAttempt={(block, args) =>
                       void handleQuizAttempt(block, args)
+                    }
+                    onLearningOutcome={(block, outcome) =>
+                      void handleLearningOutcome(block, outcome)
                     }
                     onRequestSupplement={(block) =>
                       void handleRequestSupplement(block)

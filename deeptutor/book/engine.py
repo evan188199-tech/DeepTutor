@@ -1752,6 +1752,58 @@ class BookEngine:
         self.storage.save_progress(progress)
         return progress
 
+    def record_learning_activity(
+        self,
+        *,
+        book_id: str,
+        page_id: str,
+        block_id: str,
+        schema_version: int,
+        event_id: str,
+        objective_ids: list[str],
+        activity_type: str,
+        result: str,
+        payload: dict[str, Any],
+        occurred_at: float,
+    ) -> Progress | None:
+        """Persist one objective-linked interactive activity event."""
+        if self.storage.load_book(book_id) is None:
+            return None
+        page = self.storage.load_page(book_id, page_id)
+        if page is None or page.book_id != book_id:
+            return None
+        block = page.block_by_id(block_id)
+        if block is None or block.type is not BlockType.INTERACTIVE:
+            return None
+
+        raw_refs = block.payload.get("learning_objectives")
+        allowed_objective_ids: set[str] = set()
+        if isinstance(raw_refs, list):
+            for raw_ref in raw_refs:
+                if isinstance(raw_ref, dict) and raw_ref.get("id"):
+                    allowed_objective_ids.add(str(raw_ref["id"]))
+
+        clean_objective_ids = progress_ops.normalize_learning_objective_ids(objective_ids)
+        if not set(clean_objective_ids) <= allowed_objective_ids:
+            raise ValueError("learning activity contains an unknown objective id")
+
+        progress = self.load_progress(book_id)
+        changed = progress_ops.record_learning_activity(
+            progress,
+            schema_version=schema_version,
+            event_id=event_id,
+            page_id=page_id,
+            block_id=block_id,
+            objective_ids=clean_objective_ids,
+            activity_type=activity_type,
+            result=result,
+            payload=payload,
+            occurred_at=occurred_at,
+        )
+        if changed:
+            self.storage.save_progress(progress)
+        return progress
+
     # ── Reading position / bookmarks ────────────────────────────────────
 
     def mark_page_visited(self, *, book_id: str, page_id: str) -> Progress:

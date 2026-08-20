@@ -188,6 +188,19 @@ export interface QuizAttempt {
   timestamp: number;
 }
 
+export interface LearningActivity {
+  schema_version: number;
+  event_id: string;
+  block_id: string;
+  page_id: string;
+  objective_ids: string[];
+  activity_type: string;
+  result: "observed" | "completed" | "struggled" | "mastered";
+  payload: Record<string, unknown>;
+  occurred_at: number;
+  recorded_at: number;
+}
+
 export type LearningCaptureStatus =
   | "captured"
   | "drafted"
@@ -224,6 +237,7 @@ export interface Progress {
   visited_page_ids: string[];
   bookmarked_page_ids: string[];
   quiz_attempts: QuizAttempt[];
+  learning_activities: LearningActivity[];
   weak_chapters: string[];
   score: number;
   updated_at: number;

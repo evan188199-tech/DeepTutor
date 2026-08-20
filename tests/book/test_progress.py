@@ -4,6 +4,8 @@ These three fields existed on the model from the beginning and were never once
 written to, so none of this behaviour had cover.
 """
 
+import pytest
+
 from deeptutor.book import progress as progress_ops
 from deeptutor.book.models import Progress, QuizAttempt
 
@@ -131,3 +133,96 @@ def test_latest_attempt_wins_per_question() -> None:
     )
     assert progress_ops.recompute_score(progress) == 1
     assert progress_ops.recompute_weak_chapters(progress, PAGE_TO_CHAPTER) == ["ch_2"]
+
+
+def test_learning_activities_are_idempotent_by_event_id() -> None:
+    progress = Progress(book_id="bk")
+    args = {
+        "schema_version": 1,
+        "event_id": "event-1",
+        "page_id": "pg_1",
+        "block_id": "blk_1",
+        "objective_ids": ["obj_one"],
+        "activity_type": "parameter_change",
+        "result": "completed",
+        "payload": {"parameter": "amplitude", "value": 2},
+        "occurred_at": 1.0,
+    }
+
+    assert progress_ops.record_learning_activity(progress, **args) is True
+    assert progress_ops.record_learning_activity(progress, **args) is False
+    assert len(progress.learning_activities) == 1
+    assert progress.learning_activities[0].objective_ids == ["obj_one"]
+    assert progress.learning_activities[0].payload == args["payload"]
+
+
+def test_learning_activity_schema_and_event_id_are_validated() -> None:
+    progress = Progress(book_id="bk")
+    common = {
+        "page_id": "pg_1",
+        "block_id": "blk_1",
+        "objective_ids": [],
+        "activity_type": "interactive_lab",
+        "result": "observed",
+        "payload": {},
+        "occurred_at": 1.0,
+    }
+
+    with pytest.raises(ValueError, match="schema"):
+        progress_ops.record_learning_activity(
+            progress, schema_version=2, event_id="event-1", **common
+        )
+
+    with pytest.raises(ValueError, match="event_id"):
+        progress_ops.record_learning_activity(progress, schema_version=1, event_id=" ", **common)
+
+    with pytest.raises(ValueError, match="objective id"):
+        progress_ops.record_learning_activity(
+            progress,
+            schema_version=1,
+            event_id="event-2",
+            **{**common, "objective_ids": ["x" * 129]},
+        )
+
+
+def test_learning_activity_normalizes_ids_and_browser_timestamps() -> None:
+    progress = Progress(book_id="bk")
+    args = {
+        "schema_version": 1,
+        "page_id": "pg_1",
+        "block_id": "blk_1",
+        "objective_ids": [" obj_one ", "obj_one"],
+        "activity_type": " parameter_change ",
+        "result": "completed",
+        "payload": {},
+        "occurred_at": 1_760_000_000_000,
+    }
+
+    assert progress_ops.record_learning_activity(progress, event_id=" event-1 ", **args) is True
+    assert progress_ops.record_learning_activity(progress, event_id="event-1", **args) is False
+    activity = progress.learning_activities[0]
+    assert activity.event_id == "event-1"
+    assert activity.objective_ids == ["obj_one"]
+    assert activity.activity_type == "parameter_change"
+    assert activity.occurred_at == 1_760_000_000
+
+
+def test_learning_activity_retains_the_latest_bounded_history() -> None:
+    progress = Progress(book_id="bk")
+    common = {
+        "schema_version": 1,
+        "page_id": "pg_1",
+        "block_id": "blk_1",
+        "objective_ids": [],
+        "activity_type": "interactive_lab",
+        "result": "observed",
+        "payload": {},
+        "occurred_at": 1.0,
+    }
+
+    for index in range(progress_ops.MAX_LEARNING_ACTIVITIES + 1):
+        assert progress_ops.record_learning_activity(progress, event_id=f"event-{index}", **common)
+
+    assert len(progress.learning_activities) == progress_ops.MAX_LEARNING_ACTIVITIES
+    assert progress.learning_activities[0].event_id == "event-1"
+    assert progress.learning_activities[-1].event_id == "event-500"

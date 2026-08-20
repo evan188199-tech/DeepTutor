@@ -28,7 +28,48 @@ that only ever ratchets one way tells the reader nothing.
 
 from __future__ import annotations
 
-from .models import Progress, QuizAttempt
+import json
+import math
+from typing import Any
+
+from .models import LearningActivity, Progress, QuizAttempt
+
+LEARNING_ACTIVITY_SCHEMA_VERSION = 1
+MAX_LEARNING_ACTIVITIES = 500
+MAX_LEARNING_ACTIVITY_EVENT_ID_LENGTH = 128
+MAX_LEARNING_ACTIVITY_OBJECTIVES = 12
+MAX_LEARNING_ACTIVITY_OBJECTIVE_ID_LENGTH = 128
+MAX_LEARNING_ACTIVITY_TYPE_LENGTH = 64
+MAX_LEARNING_ACTIVITY_PAYLOAD_BYTES = 8 * 1024
+LEARNING_ACTIVITY_RESULTS = frozenset({"observed", "completed", "struggled", "mastered"})
+
+
+def learning_activity_payload_size(payload: dict[str, Any]) -> int:
+    """Return the compact JSON payload size in UTF-8 bytes."""
+    try:
+        encoded = json.dumps(
+            payload,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+    except (RecursionError, TypeError, ValueError) as exc:
+        raise ValueError("learning activity payload must be JSON serializable") from exc
+    return len(encoded)
+
+
+def normalize_learning_objective_ids(objective_ids: list[str]) -> list[str]:
+    """Trim and de-duplicate objective ids while preserving their order."""
+    if len(objective_ids) > MAX_LEARNING_ACTIVITY_OBJECTIVES:
+        raise ValueError("learning activity contains too many objective ids")
+    normalized: list[str] = []
+    for objective_id in objective_ids:
+        clean_id = objective_id.strip()
+        if len(clean_id) > MAX_LEARNING_ACTIVITY_OBJECTIVE_ID_LENGTH:
+            raise ValueError("learning activity objective id is too long")
+        if clean_id and clean_id not in normalized:
+            normalized.append(clean_id)
+    return normalized
 
 
 def _question_key(attempt: QuizAttempt) -> tuple[str, str]:
@@ -92,6 +133,68 @@ def record_attempt(
     return progress
 
 
+def record_learning_activity(
+    progress: Progress,
+    *,
+    schema_version: int,
+    event_id: str,
+    page_id: str,
+    block_id: str,
+    objective_ids: list[str],
+    activity_type: str,
+    result: str,
+    payload: dict[str, Any],
+    occurred_at: float,
+) -> bool:
+    """Validate and append one idempotent, size-bounded activity event."""
+    if schema_version != LEARNING_ACTIVITY_SCHEMA_VERSION:
+        raise ValueError("unsupported learning activity schema version")
+    clean_event_id = event_id.strip()
+    if not clean_event_id:
+        raise ValueError("learning activity event_id is required")
+    if len(clean_event_id) > MAX_LEARNING_ACTIVITY_EVENT_ID_LENGTH:
+        raise ValueError("learning activity event_id is too long")
+    if any(activity.event_id == clean_event_id for activity in progress.learning_activities):
+        return False
+
+    clean_objective_ids = normalize_learning_objective_ids(objective_ids)
+    clean_activity_type = activity_type.strip()
+    if not clean_activity_type:
+        raise ValueError("learning activity activity_type is required")
+    if len(clean_activity_type) > MAX_LEARNING_ACTIVITY_TYPE_LENGTH:
+        raise ValueError("learning activity activity_type is too long")
+    if result not in LEARNING_ACTIVITY_RESULTS:
+        raise ValueError("learning activity result is invalid")
+    if learning_activity_payload_size(payload) > MAX_LEARNING_ACTIVITY_PAYLOAD_BYTES:
+        raise ValueError("learning activity payload is too large")
+
+    clean_occurred_at = float(occurred_at)
+    if not math.isfinite(clean_occurred_at) or clean_occurred_at < 0:
+        raise ValueError("learning activity occurred_at is invalid")
+    # Browser timestamps conventionally use milliseconds. Progress timestamps
+    # use Unix seconds, so accept either at the boundary and persist one unit.
+    if clean_occurred_at >= 100_000_000_000:
+        clean_occurred_at /= 1000
+
+    progress.learning_activities.append(
+        LearningActivity(
+            schema_version=schema_version,
+            event_id=clean_event_id,
+            block_id=block_id,
+            page_id=page_id,
+            objective_ids=clean_objective_ids,
+            activity_type=clean_activity_type,
+            result=result,
+            payload=payload,
+            occurred_at=clean_occurred_at,
+        )
+    )
+    if len(progress.learning_activities) > MAX_LEARNING_ACTIVITIES:
+        del progress.learning_activities[:-MAX_LEARNING_ACTIVITIES]
+    progress.updated_at = max(progress.updated_at, progress.learning_activities[-1].recorded_at)
+    return True
+
+
 def mark_visited(progress: Progress, page_id: str) -> bool:
     """Record that the reader opened *page_id*. True when anything changed.
 
@@ -130,6 +233,9 @@ __all__ = [
     "recompute_score",
     "recompute_weak_chapters",
     "record_attempt",
+    "record_learning_activity",
+    "learning_activity_payload_size",
+    "normalize_learning_objective_ids",
     "mark_visited",
     "toggle_bookmark",
     "completion_ratio",

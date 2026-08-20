@@ -264,6 +264,23 @@ export const bookApi = {
       body: JSON.stringify(params),
     }),
 
+  recordLearningActivity: (params: {
+    book_id: string;
+    page_id: string;
+    block_id: string;
+    schema_version: number;
+    event_id: string;
+    objective_ids: string[];
+    activity_type: string;
+    result: "observed" | "completed" | "struggled" | "mastered";
+    payload: Record<string, unknown>;
+    occurred_at: number;
+  }) =>
+    request<{ progress: Progress }>("/books/learning-activity", {
+      method: "POST",
+      body: JSON.stringify(params),
+    }),
+
   supplement: (book_id: string, page_id: string, topic: string) =>
     request<{ block: Block }>("/books/supplement", {
       method: "POST",

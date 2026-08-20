@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Block, BlockType, Page, QuizAttempt } from "@/lib/book-types";
+import type { IframeLearningOutcome } from "@/lib/iframe-html";
 import BlockRenderer from "./blocks/BlockRenderer";
 import type { QuizAttemptArgs } from "./blocks/QuizBlock";
 import PageOutlineNav from "./PageOutlineNav";
@@ -43,6 +44,10 @@ export interface PageReaderProps {
   onDeepDive?: (topic: string, blockId: string) => Promise<void> | void;
   onOpenPage?: (pageId: string) => void;
   onQuizAttempt?: (block: Block, args: QuizAttemptArgs) => void;
+  onLearningOutcome?: (
+    block: Block,
+    outcome: IframeLearningOutcome,
+  ) => Promise<void> | void;
   /** Reader asked for extra practice on a quiz they got wrong. */
   onRequestSupplement?: (block: Block) => void;
   supplementingBlockId?: string | null;
@@ -81,6 +86,7 @@ export default function PageReader({
   onDeepDive,
   onOpenPage,
   onQuizAttempt,
+  onLearningOutcome,
   onRequestSupplement,
   supplementingBlockId,
   onUpdateBody,
@@ -411,6 +417,7 @@ export default function PageReader({
                   onDeepDive={onDeepDive}
                   onOpenPage={onOpenPage}
                   onQuizAttempt={onQuizAttempt}
+                  onLearningOutcome={onLearningOutcome}
                   onRequestSupplement={onRequestSupplement}
                   supplementing={supplementingBlockId === block.id}
                   onUpdateBody={onUpdateBody}

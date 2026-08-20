@@ -32,6 +32,17 @@ def test_every_visual_block_has_a_brief_in_every_language(block: str, language: 
         assert get_book_prompt(prompts, key).strip(), f"{block}/{language} missing {key}"
 
 
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_interactive_blocks_know_the_learning_outcome_bridge(language: str) -> None:
+    prompt = get_book_prompt(load_book_prompts("interactive", language), "activity_bridge")
+    contract = prompt.format(objective_ids='["obj_one", "obj_two"]')
+
+    assert "window.reportLearningOutcome" in contract
+    assert '["obj_one", "obj_two"]' in contract
+    assert "eventId" in contract
+    assert "occurredAt" in contract
+
+
 @pytest.mark.parametrize("block", VISUAL_BLOCKS)
 @pytest.mark.parametrize("language", LANGUAGES)
 def test_the_brief_renders_with_and_without_a_focus(block: str, language: str) -> None:

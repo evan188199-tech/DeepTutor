@@ -13,14 +13,39 @@ placeholder page into the book.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 from typing import Any
 
-from ..models import BlockType, SourceAnchor
+from ..models import BlockType, ObjectiveReference, SourceAnchor
 from ._prompts import get_book_prompt, load_book_prompts
 from .base import BlockContext, BlockGenerator, GenerationFailure
 
 logger = logging.getLogger(__name__)
+
+
+def _objective_references(objectives: Any) -> list[ObjectiveReference]:
+    """Create stable ids for objective text without changing the source model.
+
+    Hashing only the normalized text intentionally gives identical objectives
+    in different chapters the same id. A regenerate that keeps the objective
+    wording also keeps its evidence linkage.
+    """
+
+    references: list[ObjectiveReference] = []
+    seen: set[str] = set()
+    for raw in objectives or []:
+        label = " ".join(str(raw or "").strip().split())
+        if not label:
+            continue
+        digest = hashlib.sha256(label.casefold().encode("utf-8")).hexdigest()[:16]
+        objective_id = f"obj_{digest}"
+        if objective_id in seen:
+            continue
+        seen.add(objective_id)
+        references.append(ObjectiveReference(id=objective_id, label=label))
+    return references
 
 
 class InteractiveGenerator(BlockGenerator):
@@ -33,6 +58,7 @@ class InteractiveGenerator(BlockGenerator):
         chapter_title = params.get("chapter_title", ctx.chapter.title)
         chapter_summary = params.get("chapter_summary", ctx.chapter.summary)
         objectives = params.get("objectives") or ctx.chapter.learning_objectives
+        objective_refs = _objective_references(objectives)
         focus = str(params.get("focus") or "")
         interaction = str(params.get("interaction") or "interactive")
         prompts = load_book_prompts("interactive", ctx.language)
@@ -62,6 +88,15 @@ class InteractiveGenerator(BlockGenerator):
                 focus_clause=focus_clause,
             )
         )
+        if objective_refs:
+            activity_bridge = get_book_prompt(prompts, "activity_bridge").strip()
+            user_input = (
+                user_input
+                + "\n\n"
+                + activity_bridge.format(
+                    objective_ids=json.dumps([ref.id for ref in objective_refs])
+                )
+            )
 
         try:
             from deeptutor.agents.visualize.pipeline import VisualizePipeline
@@ -99,6 +134,8 @@ class InteractiveGenerator(BlockGenerator):
                 "code": {"language": "html", "content": code},
                 "description": analysis.description,
                 "chart_type": analysis.chart_type,
+                "learning_objectives": [ref.model_dump(mode="json") for ref in objective_refs],
+                "activity_schema_version": 1,
             },
             [],
             {

@@ -12,7 +12,7 @@ import asyncio
 import hashlib
 import logging
 import time
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
@@ -27,6 +27,11 @@ from deeptutor.book import (
 from deeptutor.book.estimate import chapter_basis
 from deeptutor.book.export import export_filename, render_book_markdown
 from deeptutor.book.models import ContentType, LearningCapture, LearningCaptureStatus
+from deeptutor.book.progress import (
+    LEARNING_ACTIVITY_SCHEMA_VERSION,
+    MAX_LEARNING_ACTIVITY_PAYLOAD_BYTES,
+    learning_activity_payload_size,
+)
 from deeptutor.book.storage import get_book_storage
 from deeptutor.book.streaming import SOURCE as BOOK_SOURCE
 from deeptutor.core.stream_bus import StreamBus
@@ -123,6 +128,19 @@ class QuizAttemptRequest(BaseModel):
     # ``None`` = revealed but not graded (a written answer the reader skipped
     # self-assessing). Distinct from ``False``, which means they got it wrong.
     is_correct: bool | None = None
+
+
+class LearningActivityRequest(BaseModel):
+    book_id: str
+    page_id: str
+    block_id: str
+    schema_version: int = 1
+    event_id: str = Field(min_length=1, max_length=128)
+    objective_ids: list[str] = Field(default_factory=list, max_length=12)
+    activity_type: str = Field(default="interactive_lab", min_length=1, max_length=64)
+    result: Literal["observed", "completed", "struggled", "mastered"] = "observed"
+    payload: dict[str, Any] = Field(default_factory=dict)
+    occurred_at: float | None = None
 
 
 class UpdateBlockRequest(BaseModel):
@@ -731,6 +749,38 @@ async def quiz_attempt(req: QuizAttemptRequest) -> dict[str, Any]:
         user_answer=req.user_answer,
         is_correct=req.is_correct,
     )
+    return {"progress": progress.model_dump(mode="json")}
+
+
+@router.post("/books/learning-activity")
+async def learning_activity(req: LearningActivityRequest) -> dict[str, Any]:
+    if req.schema_version != LEARNING_ACTIVITY_SCHEMA_VERSION:
+        raise HTTPException(status_code=400, detail="Unsupported learning activity schema")
+    try:
+        payload_size = learning_activity_payload_size(req.payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if payload_size > MAX_LEARNING_ACTIVITY_PAYLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="Learning activity payload is too large")
+
+    engine = get_book_engine()
+    try:
+        progress = engine.record_learning_activity(
+            book_id=req.book_id,
+            page_id=req.page_id,
+            block_id=req.block_id,
+            schema_version=req.schema_version,
+            event_id=req.event_id,
+            objective_ids=req.objective_ids,
+            activity_type=req.activity_type,
+            result=req.result,
+            payload=req.payload,
+            occurred_at=req.occurred_at if req.occurred_at is not None else time.time(),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if progress is None:
+        raise HTTPException(status_code=404, detail="Interactive block not found")
     return {"progress": progress.model_dump(mode="json")}
 
 

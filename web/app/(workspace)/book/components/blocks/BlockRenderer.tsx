@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Block, BlockType, QuizAttempt } from "@/lib/book-types";
+import type { IframeLearningOutcome } from "@/lib/iframe-html";
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
 
 import BlockBodyEditor from "./BlockBodyEditor";
@@ -69,6 +70,10 @@ export interface BlockRendererProps {
   onDeepDive?: (topic: string, blockId: string) => Promise<void> | void;
   onOpenPage?: (pageId: string) => void;
   onQuizAttempt?: (block: Block, args: QuizAttemptArgs) => void;
+  onLearningOutcome?: (
+    block: Block,
+    outcome: IframeLearningOutcome,
+  ) => Promise<void> | void;
   onRequestSupplement?: (block: Block) => void;
   supplementing?: boolean;
   /** Previous quiz answers, passed through to `QuizBlock`. */
@@ -90,6 +95,7 @@ export default function BlockRenderer({
   onDeepDive,
   onOpenPage,
   onQuizAttempt,
+  onLearningOutcome,
   onRequestSupplement,
   supplementing = false,
   attempts,
@@ -193,7 +199,12 @@ export default function BlockRenderer({
       body = <FigureBlock block={block} />;
       break;
     case "interactive":
-      body = <InteractiveBlock block={block} />;
+      body = (
+        <InteractiveBlock
+          block={block}
+          onLearningOutcome={onLearningOutcome}
+        />
+      );
       break;
     case "animation":
       body = <AnimationBlock block={block} />;

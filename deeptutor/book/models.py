@@ -491,6 +491,36 @@ class QuizAttempt(BaseModel):
     timestamp: float = Field(default_factory=_now)
 
 
+class LearningActivity(BaseModel):
+    """One meaningful interaction with an objective-linked learning activity.
+
+    ``event_id`` is client-generated and idempotent: replaying the same iframe
+    event (for example after a reconnect) must not duplicate evidence.
+    """
+
+    model_config = ConfigDict(extra="ignore")
+
+    schema_version: int = 1
+    event_id: str
+    block_id: str
+    page_id: str
+    objective_ids: list[str] = Field(default_factory=list)
+    activity_type: str = "interactive_lab"
+    result: str = "observed"
+    payload: dict[str, Any] = Field(default_factory=dict)
+    occurred_at: float = Field(default_factory=_now)
+    recorded_at: float = Field(default_factory=_now)
+
+
+class ObjectiveReference(BaseModel):
+    """A stable handle to a chapter/page learning objective."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    id: str
+    label: str
+
+
 class Progress(BaseModel):
     """Per-user progress through the book."""
 
@@ -501,6 +531,7 @@ class Progress(BaseModel):
     visited_page_ids: list[str] = Field(default_factory=list)
     bookmarked_page_ids: list[str] = Field(default_factory=list)
     quiz_attempts: list[QuizAttempt] = Field(default_factory=list)
+    learning_activities: list[LearningActivity] = Field(default_factory=list)
     weak_chapters: list[str] = Field(default_factory=list)
     score: int = 0
     updated_at: float = Field(default_factory=_now)

@@ -8,3 +8,4 @@ focus_clause: "，聚焦于{focus}"
 
 context_summary: "章节摘要：{chapter_summary}"
 context_objectives: "学习目标："
+activity_bridge: "在有意义的学习交互发生时调用 `window.reportLearningOutcome({{ objectiveIds: string[], activityType: string, result: 'observed' | 'completed' | 'struggled' | 'mastered', payload?: object, eventId?: string, occurredAt?: number }})`。此组件可用的 objective id 为：{objective_ids}。`occurredAt` 可使用 Unix 毫秒或秒；省略时使用当前时间。只有在重放同一事件时复用 eventId，否则省略。不要在每次鼠标移动时调用。"

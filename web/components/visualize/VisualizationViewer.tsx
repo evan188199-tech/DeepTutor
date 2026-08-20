@@ -6,7 +6,11 @@ import { createPortal } from "react-dom";
 import { Code2, Copy, Check, ExternalLink, Maximize2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Mermaid } from "@/components/Mermaid";
-import { prepareIframeHtml } from "@/lib/iframe-html";
+import {
+  parseIframeLearningOutcome,
+  prepareIframeHtml,
+  type IframeLearningOutcome,
+} from "@/lib/iframe-html";
 import { isManimResult, type VisualizeResult } from "@/lib/visualize-types";
 import "./svg-theme.css";
 
@@ -107,7 +111,15 @@ function ChartJsRenderer({ config }: { config: string }) {
   );
 }
 
-function HtmlRenderer({ html }: { html: string }) {
+function HtmlRenderer({
+  html,
+  learningObjectiveIds,
+  onLearningOutcome,
+}: {
+  html: string;
+  learningObjectiveIds?: string[];
+  onLearningOutcome?: (outcome: IframeLearningOutcome) => void;
+}) {
   const { t } = useTranslation();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(560);
@@ -126,23 +138,27 @@ function HtmlRenderer({ html }: { html: string }) {
     const onMessage = (e: MessageEvent) => {
       const iframe = iframeRef.current;
       if (!iframe || e.source !== iframe.contentWindow) return;
-      const data = e.data as { type?: string; text?: string; height?: number };
+      const data = e.data;
       if (!data || typeof data !== "object") return;
-      if (data.type === "dt:visualize-prompt" && data.text) {
+      const bridge = data as { type?: string; text?: string; height?: number };
+      if (bridge.type === "dt:visualize-prompt" && bridge.text) {
         window.dispatchEvent(
-          new CustomEvent("dt:visualize-prompt", { detail: data.text }),
+          new CustomEvent("dt:visualize-prompt", { detail: bridge.text }),
         );
       } else if (
-        data.type === "dt:visualize-height" &&
-        typeof data.height === "number" &&
-        Number.isFinite(data.height)
+        bridge.type === "dt:visualize-height" &&
+        typeof bridge.height === "number" &&
+        Number.isFinite(bridge.height)
       ) {
-        setHeight(Math.min(2400, Math.max(240, Math.ceil(data.height) + 8)));
+        setHeight(Math.min(2400, Math.max(240, Math.ceil(bridge.height) + 8)));
+      } else if (bridge.type === "dt:learning-outcome") {
+        const outcome = parseIframeLearningOutcome(data, learningObjectiveIds || []);
+        if (outcome) onLearningOutcome?.(outcome);
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [learningObjectiveIds, onLearningOutcome]);
 
   const handleOpenInNewTab = () => {
     try {
@@ -366,7 +382,11 @@ type TextResult = Extract<
   { render_type: "svg" | "chartjs" | "mermaid" | "html" }
 >;
 
-function renderTextVisualization(result: TextResult) {
+function renderTextVisualization(
+  result: TextResult,
+  learningObjectiveIds?: string[],
+  onLearningOutcome?: (outcome: IframeLearningOutcome) => void,
+) {
   if (result.render_type === "svg") {
     return <SvgRenderer svg={result.code.content} />;
   }
@@ -374,15 +394,25 @@ function renderTextVisualization(result: TextResult) {
     return <Mermaid chart={result.code.content} />;
   }
   if (result.render_type === "html") {
-    return <HtmlRenderer html={result.code.content} />;
+    return (
+      <HtmlRenderer
+        html={result.code.content}
+        learningObjectiveIds={learningObjectiveIds}
+        onLearningOutcome={onLearningOutcome}
+      />
+    );
   }
   return <ChartJsRenderer config={result.code.content} />;
 }
 
 export default function VisualizationViewer({
   result,
+  learningObjectiveIds,
+  onLearningOutcome,
 }: {
   result: VisualizeResult;
+  learningObjectiveIds?: string[];
+  onLearningOutcome?: (outcome: IframeLearningOutcome) => void;
 }) {
   const { t } = useTranslation();
 
@@ -448,7 +478,7 @@ export default function VisualizationViewer({
             {t("Fullscreen")}
           </button>
         )}
-        {renderTextVisualization(result)}
+        {renderTextVisualization(result, learningObjectiveIds, onLearningOutcome)}
       </div>
 
       {/* Toolbar */}

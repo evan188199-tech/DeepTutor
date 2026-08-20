@@ -8,3 +8,4 @@ focus_clause: " focusing on {focus}"
 
 context_summary: "Chapter summary: {chapter_summary}"
 context_objectives: "Learning objectives:"
+activity_bridge: "Report meaningful learning interactions with `window.reportLearningOutcome({{ objectiveIds: string[], activityType: string, result: 'observed' | 'completed' | 'struggled' | 'mastered', payload?: object, eventId?: string, occurredAt?: number }})`. These are the valid objective ids for this widget: {objective_ids}. `occurredAt` may be Unix milliseconds or seconds; omit it to use the current time. Use the same eventId only when replaying one event; otherwise omit it. Do not call it on every pointer movement."

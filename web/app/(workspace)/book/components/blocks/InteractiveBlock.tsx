@@ -1,16 +1,22 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
 import VisualizationViewer from "@/components/visualize/VisualizationViewer";
 import MarkdownRenderer from "@/components/common/MarkdownRenderer";
 import { useTranslation } from "react-i18next";
 import type { Block } from "@/lib/book-types";
+import type { IframeLearningOutcome } from "@/lib/iframe-html";
 import type { VisualizeResult } from "@/lib/visualize-types";
 
 export interface InteractiveBlockProps {
   block: Block;
+  onLearningOutcome?: (block: Block, outcome: IframeLearningOutcome) => void;
 }
 
-export default function InteractiveBlock({ block }: InteractiveBlockProps) {
+export default function InteractiveBlock({
+  block,
+  onLearningOutcome,
+}: InteractiveBlockProps) {
   const { t } = useTranslation();
   const code =
     (block.payload?.code as
@@ -23,6 +29,24 @@ export default function InteractiveBlock({ block }: InteractiveBlockProps) {
   const chartType = block.payload?.chart_type
     ? String(block.payload.chart_type)
     : "interactive";
+  const rawLearningObjectives = block.payload?.learning_objectives;
+  const learningObjectiveIds = useMemo(
+    () =>
+      Array.isArray(rawLearningObjectives)
+        ? rawLearningObjectives
+            .map((ref) =>
+              ref && typeof ref === "object" && "id" in ref
+                ? String((ref as { id?: unknown }).id || "")
+                : "",
+            )
+            .filter(Boolean)
+        : [],
+    [rawLearningObjectives],
+  );
+  const handleLearningOutcome = useCallback(
+    (outcome: IframeLearningOutcome) => onLearningOutcome?.(block, outcome),
+    [block, onLearningOutcome],
+  );
 
   if (!content.trim()) {
     return (
@@ -53,7 +77,11 @@ export default function InteractiveBlock({ block }: InteractiveBlockProps) {
 
   return (
     <figure className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-sm">
-      <VisualizationViewer result={result} />
+      <VisualizationViewer
+        result={result}
+        learningObjectiveIds={learningObjectiveIds}
+        onLearningOutcome={onLearningOutcome ? handleLearningOutcome : undefined}
+      />
       {description && (
         <figcaption className="mt-3 text-xs leading-snug text-[var(--muted-foreground)]">
           <MarkdownRenderer content={description} variant="default" />
