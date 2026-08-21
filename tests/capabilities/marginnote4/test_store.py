@@ -1,4 +1,4 @@
-"""Tests for the MarginNote 4 SQLite store: pairing, sync ingest, search."""
+"""Tests for the MarginNote 4 production SQLite store."""
 
 from __future__ import annotations
 
@@ -8,16 +8,17 @@ import pytest
 
 from deeptutor.capabilities.marginnote4.models import (
     CARD,
-    DOCUMENT,
     MINDMAP_NODE,
     NOTE,
+    DeletedMarginNoteObject,
     MarginNoteObject,
+    MarginNoteSyncConflict,
     SyncBatch,
 )
 from deeptutor.capabilities.marginnote4.store import MarginNoteStore
 
 
-def _seed_objects(device_id: str = "dev1") -> list[MarginNoteObject]:
+def _objects(device_id: str = "dev1") -> list[MarginNoteObject]:
     return [
         MarginNoteObject(
             object_id="note1",
@@ -34,6 +35,8 @@ def _seed_objects(device_id: str = "dev1") -> list[MarginNoteObject]:
             created_at="2025-01-01T00:00:00Z",
             updated_at="2025-01-02T00:00:00Z",
             device_id=device_id,
+            revision=1,
+            raw={"mnId": "note1"},
         ),
         MarginNoteObject(
             object_id="card1",
@@ -43,6 +46,7 @@ def _seed_objects(device_id: str = "dev1") -> list[MarginNoteObject]:
             tags=["biology"],
             links=["note1"],
             device_id=device_id,
+            revision=1,
         ),
         MarginNoteObject(
             object_id="node1",
@@ -51,184 +55,149 @@ def _seed_objects(device_id: str = "dev1") -> list[MarginNoteObject]:
             content="Central concept linking photosynthesis and respiration",
             links=["note1", "card1"],
             device_id=device_id,
+            revision=1,
         ),
     ]
 
 
-# ---- device pairing --------------------------------------------------------
-
-def test_pair_device_returns_token(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    device, token = store.pair_device(device_name="MacBook", device_kind="macos")
-    assert device.device_id
-    assert len(token) > 20
-    assert device.device_name == "MacBook"
-    assert device.device_kind == "macos"
-
-
-def test_verify_token_roundtrip(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    device, token = store.pair_device(device_name="iPad")
-    assert store.verify_token(device.device_id, token) is True
-    assert store.verify_token(device.device_id, "wrong") is False
-    assert store.verify_token("nonexistent", token) is False
-
-
-def test_revoke_device_blocks_token(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    device, token = store.pair_device()
-    assert store.verify_token(device.device_id, token) is True
-    assert store.revoke_device(device.device_id) is True
-    assert store.verify_token(device.device_id, token) is False
-    assert store.revoke_device(device.device_id) is False  # already revoked
-
-
-# ---- sync ingest -----------------------------------------------------------
-
-def test_ingest_stores_objects(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    objects = _seed_objects()
-    batch = SyncBatch(device_id="dev1", objects=objects)
-    result = store.ingest(batch)
-    assert result.stored == 3
-    assert result.updated == 0
-    assert result.deleted == 0
-    assert result.new_cursor
-    assert store.count(device_id="dev1") == 3
-
-
-def test_ingest_updates_existing(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    objects = _seed_objects()
-    store.ingest(SyncBatch(device_id="dev1", objects=objects))
-    # Re-sync with updated content
-    updated = [MarginNoteObject(
-        object_id="note1", object_type=NOTE, title="Photosynthesis Updated",
-        content="New content", device_id="dev1",
-    )]
-    result = store.ingest(SyncBatch(device_id="dev1", objects=updated))
-    assert result.stored == 0
-    assert result.updated == 1
-    obj = store.get("note1")
-    assert obj is not None
-    assert obj.title == "Photosynthesis Updated"
-
-
-def test_ingest_handles_deletions(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    result = store.ingest(
-        SyncBatch(device_id="dev1", deleted_ids=["note1", "card1"])
+def _sync(
+    store: MarginNoteStore,
+    *,
+    batch_id: str,
+    cursor: str,
+    objects: list[MarginNoteObject] | None = None,
+    deleted: list[DeletedMarginNoteObject] | None = None,
+) -> object:
+    return store.ingest(
+        SyncBatch(
+            device_id="dev1",
+            batch_id=batch_id,
+            cursor=cursor,
+            objects=_objects() if objects is None else objects,
+            deleted_objects=deleted or [],
+        )
     )
-    assert result.deleted == 2
-    assert store.count(device_id="dev1") == 1
+
+
+def test_schema_v2_and_integrity(tmp_path: Path) -> None:
+    store = MarginNoteStore(tmp_path / "test.db")
+    assert store.schema_version == 2
+    assert store.check_integrity() is True
+
+
+def test_incremental_ingest_is_idempotent(tmp_path: Path) -> None:
+    store = MarginNoteStore(tmp_path / "test.db")
+    first = _sync(store, batch_id="batch-0001", cursor=store.server_cursor())
+    assert (first.stored, first.updated, first.deleted) == (3, 0, 0)
+    assert store.count() == 3
+
+    second = _sync(
+        store,
+        batch_id="batch-0001",
+        cursor="obsolete-client-cursor",
+        objects=[_objects()[0]],
+    )
+    assert second.duplicate is True
+    assert second.new_cursor == first.new_cursor
+    assert store.count() == 3
+
+
+def test_incremental_update_and_delete(tmp_path: Path) -> None:
+    store = MarginNoteStore(tmp_path / "test.db")
+    first = _sync(store, batch_id="batch-0001", cursor=store.server_cursor())
+    updated = _objects()[:1]
+    updated[0].title = "Photosynthesis Updated"
+    updated[0].revision = 2
+    second = _sync(store, batch_id="batch-0002", cursor=first.new_cursor, objects=updated)
+    assert second.updated == 1
+    assert store.get("note1").title == "Photosynthesis Updated"
+
+    third = _sync(
+        store,
+        batch_id="batch-0003",
+        cursor=second.new_cursor,
+        objects=[],
+        deleted=[DeletedMarginNoteObject("note1", "2025-01-03T00:00:00Z")],
+    )
+    assert third.deleted == 1
     assert store.get("note1") is None
 
 
-def test_ingest_skips_unknown_types(tmp_path: Path) -> None:
+def test_stale_cursor_returns_server_cursor(tmp_path: Path) -> None:
     store = MarginNoteStore(tmp_path / "test.db")
-    bad = [MarginNoteObject(
-        object_id="bad1", object_type="unknown_type", device_id="dev1"
-    )]
-    result = store.ingest(SyncBatch(device_id="dev1", objects=bad))
-    assert result.stored == 0
-    assert store.count() == 0
+    _sync(store, batch_id="batch-0001", cursor=store.server_cursor())
+    with pytest.raises(MarginNoteSyncConflict) as exc_info:
+        _sync(store, batch_id="batch-0002", cursor="stale", objects=[])
+    assert exc_info.value.server_cursor == store.server_cursor()
 
 
-# ---- search ----------------------------------------------------------------
-
-def test_search_finds_by_unique_term(tmp_path: Path) -> None:
+def test_snapshot_is_invisible_until_commit_and_commit_is_idempotent(tmp_path: Path) -> None:
     store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    # "chlorophyll" appears only in note1
-    hits = store.search("chlorophyll")
-    # Adjust: search for a term unique to one object
-    hits = store.search("green plants")
-    assert len(hits) == 1
-    assert hits[0]["object_id"] == "note1"
+    _sync(store, batch_id="initial", cursor=store.server_cursor())
+    snapshot = store.create_snapshot(device_id="dev1", total_batches=1)
+    replacement = MarginNoteObject(
+        object_id="new1", object_type=NOTE, title="Replacement", revision=1
+    )
+    response = store.append_snapshot(
+        snapshot["snapshot_id"], sequence=1, batch_id="snap-batch-1", objects=[replacement]
+    )
+    assert response["stored"] == 1
+    assert store.get("new1") is None
+    assert store.count() == 3
+
+    committed = store.commit_snapshot(snapshot["snapshot_id"])
+    assert committed["state"] == "committed"
+    assert store.count() == 1
+    assert store.get("new1") is not None
+
+    duplicate = store.commit_snapshot(snapshot["snapshot_id"])
+    assert duplicate["duplicate"] is True
+    assert store.count() == 1
 
 
-def test_search_finds_common_term_across_objects(tmp_path: Path) -> None:
+def test_snapshot_batch_retry_is_idempotent(tmp_path: Path) -> None:
     store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    # "photosynthesis" appears in note1 title, card1 title, and node1 content
+    snapshot = store.create_snapshot(device_id="dev1", total_batches=2)
+    args = (snapshot["snapshot_id"],)
+    kwargs = {"sequence": 1, "batch_id": "same-id", "objects": _objects()}
+    first = store.append_snapshot(*args, **kwargs)
+    retry = store.append_snapshot(*args, **kwargs)
+    assert first["duplicate"] is False
+    assert retry["duplicate"] is True
+
+
+def test_search_reads_only_live_generation_and_filters_type(tmp_path: Path) -> None:
+    store = MarginNoteStore(tmp_path / "test.db")
+    _sync(store, batch_id="initial", cursor=store.server_cursor())
     hits = store.search("photosynthesis")
-    assert len(hits) == 3
-    ids = {h["object_id"] for h in hits}
-    assert "note1" in ids
-    assert "card1" in ids
-    assert "node1" in ids
+    assert {hit["object_id"] for hit in hits} >= {"note1", "card1", "node1"}
+    cards = store.search("photosynthesis", object_type="card")
+    assert [hit["object_id"] for hit in cards] == ["card1"]
+    assert all(hit["locator"] for hit in hits)
 
 
-def test_search_includes_document_title(tmp_path: Path) -> None:
+def test_documents_tags_links_and_pagination(tmp_path: Path) -> None:
     store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    # "Biology Textbook" is a document_title, not in any note's content
-    hits = store.search("Biology Textbook")
-    assert len(hits) >= 1
-    assert any(h["object_id"] == "note1" for h in hits)
+    _sync(store, batch_id="initial", cursor=store.server_cursor())
+    documents = store.list_documents()
+    assert documents[0]["document_id"] == "doc1"
+    assert {item["tag"] for item in store.collect_tags()} == {"biology", "plants"}
+    assert {item["object_id"] for item in store.linked_objects("note1")} >= {
+        "card1",
+        "node1",
+    }
+    page_one = store.list_objects(limit=2, offset=0)
+    page_two = store.list_objects(limit=2, offset=2)
+    assert len(page_one) == 2
+    assert len(page_two) == 1
+    assert len({item["object_id"] for item in page_one + page_two}) == 3
 
 
-def test_search_filters_by_type(tmp_path: Path) -> None:
+def test_reset_for_resync_creates_clean_generation(tmp_path: Path) -> None:
     store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    hits = store.search("energy", object_type="card")
-    assert len(hits) == 1
-    assert hits[0]["object_type"] == "card"
-
-
-def test_search_empty_query_returns_nothing(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    assert store.search("") == []
-
-
-# ---- list / documents / tags ----------------------------------------------
-
-def test_list_objects_by_type(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    cards = store.list_objects(object_type="card")
-    assert len(cards) == 1
-    assert cards[0]["object_id"] == "card1"
-
-
-def test_list_documents_grouped(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    docs = store.list_documents()
-    assert len(docs) == 1
-    assert docs[0]["document_id"] == "doc1"
-    assert docs[0]["title"] == "Biology Textbook"
-    assert int(docs[0]["count"]) == 1
-
-
-def test_collect_tags_ranked(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    tags = store.collect_tags()
-    tag_map = {t["tag"]: t["count"] for t in tags}
-    assert tag_map["biology"] == 2  # note1 + card1
-    assert tag_map["plants"] == 1
-
-
-# ---- links -----------------------------------------------------------------
-
-def test_linked_objects_bidirectional(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    links = store.linked_objects("note1")
-    linked_ids = {item["object_id"] for item in links}
-    assert "card1" in linked_ids  # note1.links includes card1
-    assert "node1" in linked_ids  # node1.links includes note1
-
-
-# ---- cursor ----------------------------------------------------------------
-
-def test_cursor_advances(tmp_path: Path) -> None:
-    store = MarginNoteStore(tmp_path / "test.db")
-    assert store.get_cursor("dev1") == ""
-    result = store.ingest(SyncBatch(device_id="dev1", objects=_seed_objects()))
-    cursor = store.get_cursor("dev1")
-    assert cursor != ""
-    assert cursor == result.new_cursor
+    _sync(store, batch_id="initial", cursor=store.server_cursor())
+    store.reset_for_resync()
+    assert store.count() == 0
+    assert store.search("photosynthesis") == []
+    _sync(store, batch_id="after-reset", cursor=store.server_cursor())
+    assert store.count() == 3

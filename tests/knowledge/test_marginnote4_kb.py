@@ -14,10 +14,8 @@ from pathlib import Path
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 
 
-def _seed_mn4(manager: KnowledgeBaseManager, name: str, db_path: str = "") -> None:
+def _seed_mn4(manager: KnowledgeBaseManager, name: str) -> None:
     entry: dict = {"type": "marginnote4", "description": "Connected MN4 library"}
-    if db_path:
-        entry["db_path"] = db_path
     manager.config.setdefault("knowledge_bases", {})[name] = entry
     manager._save_config()
 
@@ -32,19 +30,19 @@ def test_mn4_entry_survives_orphan_prune(tmp_path: Path) -> None:
 
 def test_get_metadata_surfaces_type(tmp_path: Path) -> None:
     manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
-    _seed_mn4(manager, "MyLibrary", db_path="/data/mn4/test.db")
+    _seed_mn4(manager, "MyLibrary")
     meta = manager.get_metadata("MyLibrary")
     assert meta["type"] == "marginnote4"
-    assert meta["db_path"] == "/data/mn4/test.db"
+    assert "db_path" not in meta
 
 
 def test_reconcile_does_not_clobber_mn4_entry(tmp_path: Path) -> None:
     manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
-    _seed_mn4(manager, "MyLibrary", db_path="/data/mn4/test.db")
+    _seed_mn4(manager, "MyLibrary")
     reloaded = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
     entry = reloaded.config["knowledge_bases"]["MyLibrary"]
     assert entry["type"] == "marginnote4"
-    assert entry["db_path"] == "/data/mn4/test.db"
+    assert "db_path" not in entry
     assert entry.get("needs_reindex") is not True
     assert "index_versions" not in entry
 
@@ -54,9 +52,7 @@ def test_ordinary_kb_metadata_has_no_mn4_fields(tmp_path: Path) -> None:
     kb_dir = manager.base_dir / "plain"
     (kb_dir / "version-1").mkdir(parents=True)
     (kb_dir / "version-1" / "docstore.json").write_text("{}", encoding="utf-8")
-    manager.config.setdefault("knowledge_bases", {})["plain"] = {
-        "path": "plain", "status": "ready"
-    }
+    manager.config.setdefault("knowledge_bases", {})["plain"] = {"path": "plain", "status": "ready"}
     manager._save_config()
     meta = manager.get_metadata("plain")
     assert "type" not in meta
@@ -65,11 +61,9 @@ def test_ordinary_kb_metadata_has_no_mn4_fields(tmp_path: Path) -> None:
 
 def test_register_marginnote4_kb_creates_pointer(tmp_path: Path) -> None:
     manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
-    entry = manager.register_marginnote4_kb(
-        "MyLibrary", db_path="/data/mn4/test.db", description="Test lib"
-    )
+    entry = manager.register_marginnote4_kb("MyLibrary", description="Test lib")
     assert entry["type"] == "marginnote4"
-    assert entry["db_path"] == "/data/mn4/test.db"
+    assert "db_path" not in entry
     assert entry["description"] == "Test lib"
     assert "MyLibrary" in manager.list_knowledge_bases()
 
@@ -85,5 +79,6 @@ def test_register_marginnote4_kb_rejects_duplicate(tmp_path: Path) -> None:
     manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
     manager.register_marginnote4_kb("Lib")
     import pytest
+
     with pytest.raises(ValueError, match="already exists"):
         manager.register_marginnote4_kb("Lib")

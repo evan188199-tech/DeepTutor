@@ -9,6 +9,7 @@ import {
   FolderSearch,
   Link2,
   Loader2,
+  Notebook,
   Plus,
   Server,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const PAGEINDEX_FORMATS = [
   ".csv",
 ];
 const OBSIDIAN_SOURCE = "obsidian";
+const MARGINNOTE_SOURCE = "marginnote4";
 const LIGHTRAG_SERVER_PROVIDER = "lightrag-server";
 const EXAMPLE_INDEX_PATH = "/Users/you/knowledge_bases/my-kb";
 const EXAMPLE_VAULT_PATH = "/Users/you/Documents/MyVault";
@@ -67,6 +69,8 @@ interface CreateKbModalProps {
     name: string;
     vaultPath: string;
   }) => Promise<void>;
+  /** Connect a MarginNote 4 library and pair its Add-on later. */
+  onConnectMarginNote: (params: { name: string }) => Promise<void>;
   /** Connect an external LightRAG server (retrieval only, no local index). */
   onConnectLightRagServer: (params: {
     name: string;
@@ -90,6 +94,7 @@ export default function CreateKbModal({
   onCreate,
   onConnectLinkedFolder,
   onConnectObsidian,
+  onConnectMarginNote,
   onConnectLightRagServer,
   onConfigureProvider,
   initialMode = "new",
@@ -175,6 +180,7 @@ export default function CreateKbModal({
 
   // ---- Link mode (mount an existing folder) ----------------------------
   const linkIsObsidian = linkSource === OBSIDIAN_SOURCE;
+  const linkIsMarginNote = linkSource === MARGINNOTE_SOURCE;
   const trimmed = name.trim();
   const trimmedPath = folderPath.trim();
 
@@ -190,6 +196,7 @@ export default function CreateKbModal({
       }
       return !providerUnavailable && selection.validFiles.length > 0;
     }
+    if (linkIsMarginNote) return true;
     if (!trimmedPath) return false;
     if (linkIsObsidian) return true;
     // An engine index must pass the probe before it can be linked.
@@ -252,6 +259,8 @@ export default function CreateKbModal({
         }
       } else if (linkIsObsidian) {
         await onConnectObsidian({ name: trimmed, vaultPath: trimmedPath });
+      } else if (linkIsMarginNote) {
+        await onConnectMarginNote({ name: trimmed });
       } else {
         await onConnectLinkedFolder({
           name: trimmed,
@@ -272,7 +281,7 @@ export default function CreateKbModal({
       ? isLightRagServer
         ? t("Connect")
         : t("Create")
-      : linkIsObsidian
+      : linkIsObsidian || linkIsMarginNote
         ? t("Connect")
         : t("Link");
 
@@ -375,6 +384,7 @@ export default function CreateKbModal({
             linkSource={linkSource}
             setLinkSource={setLinkSource}
             linkIsObsidian={linkIsObsidian}
+            linkIsMarginNote={linkIsMarginNote}
             folderPath={folderPath}
             setFolderPath={setFolderPath}
             submitting={submitting}
@@ -731,6 +741,7 @@ function LinkModeFields({
   linkSource,
   setLinkSource,
   linkIsObsidian,
+  linkIsMarginNote,
   folderPath,
   setFolderPath,
   submitting,
@@ -743,6 +754,7 @@ function LinkModeFields({
   linkSource: string;
   setLinkSource: (id: string) => void;
   linkIsObsidian: boolean;
+  linkIsMarginNote: boolean;
   folderPath: string;
   setFolderPath: (value: string) => void;
   submitting: boolean;
@@ -825,9 +837,36 @@ function LinkModeFields({
               )}
             </span>
           </button>
+
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => setLinkSource(MARGINNOTE_SOURCE)}
+            className={`group flex flex-col gap-1 rounded-2xl border p-3 text-left transition-colors disabled:opacity-50 ${
+              linkIsMarginNote
+                ? "border-[var(--primary)] bg-[var(--primary)]/5"
+                : "border-[var(--border)] hover:border-[var(--ring)]"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--foreground)]">
+                <Notebook className="h-3.5 w-3.5" />
+                {t("MarginNote 4")}
+              </span>
+              {linkIsMarginNote && (
+                <Check className="h-3.5 w-3.5 text-[var(--primary)]" />
+              )}
+            </div>
+            <span className="text-[11.5px] leading-snug text-[var(--muted-foreground)]">
+              {t(
+                "A synced study library from the MarginNote 4 Add-on — read-only retrieval.",
+              )}
+            </span>
+          </button>
         </div>
       </div>
 
+      {!linkIsMarginNote && (
       <div>
         <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
           {linkIsObsidian ? t("Vault path") : t("Folder path")}
@@ -866,6 +905,7 @@ function LinkModeFields({
               )}
         </p>
       </div>
+      )}
 
       {!linkIsObsidian && probe && <ProbeVerdict probe={probe} t={t} />}
     </>

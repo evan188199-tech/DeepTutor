@@ -38,6 +38,7 @@ export default function KnowledgePage() {
     deleteKb,
     connectObsidian,
     connectLinkedFolder,
+    connectMarginNote4,
     connectLightRagServer,
   } = useKnowledgeBases();
 
@@ -70,6 +71,10 @@ export default function KnowledgePage() {
   // the unified create flow, pre-set to "link existing → Obsidian".
   const openObsidian = useCallback(() => {
     setCreatePreset({ mode: "link", source: "obsidian" });
+    setCreateOpen(true);
+  }, []);
+  const openMarginNote = useCallback(() => {
+    setCreatePreset({ mode: "link", source: "marginnote4" });
     setCreateOpen(true);
   }, []);
   // Lands on the Overview console unless deep-linked to a KB or an engine.
@@ -256,6 +261,7 @@ export default function KnowledgePage() {
               onOpenEngine={openEngine}
               onCreate={openCreate}
               onConnectObsidian={openObsidian}
+              onConnectMarginNote={openMarginNote}
             />
           ) : view === "engine" && selectedProvider ? (
             <EngineDetail
@@ -276,6 +282,7 @@ export default function KnowledgePage() {
               onOpenEngine={openEngine}
               onCreate={openCreate}
               onConnectObsidian={openObsidian}
+              onConnectMarginNote={openMarginNote}
             />
           ) : (
             <KnowledgeBaseDetail
@@ -304,6 +311,7 @@ export default function KnowledgePage() {
         onCreate={handleCreate}
         onConnectLinkedFolder={connectLinkedFolder}
         onConnectObsidian={connectObsidian}
+        onConnectMarginNote={connectMarginNote4}
         onConnectLightRagServer={connectLightRagServer}
         initialMode={createPreset?.mode}
         initialSource={createPreset?.source}

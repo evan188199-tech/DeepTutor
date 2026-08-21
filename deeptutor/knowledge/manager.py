@@ -885,16 +885,13 @@ class KnowledgeBaseManager:
         self,
         name: str,
         *,
-        db_path: str = "",
         description: str = "",
     ) -> dict:
         """Register a connected MarginNote 4 library as a pointer KB.
 
         Creates no folder under ``base_dir`` and runs no index pipeline: it
-        records a ``type: marginnote4`` entry whose ``db_path`` (when given)
-        the MarginNote capability binds to. When ``db_path`` is omitted the
-        capability derives a default SQLite path from the KB name, so callers
-        can leave it blank for the simple single-library case. Raises
+        records a ``type: marginnote4`` entry. The capability derives the
+        owner-scoped SQLite path from the KB name. Raises
         ``ValueError`` on a missing name or a name clash.
         """
         name = (name or "").strip()
@@ -916,9 +913,6 @@ class KnowledgeBaseManager:
             "created_at": now,
             "updated_at": now,
         }
-        db_path = (db_path or "").strip()
-        if db_path:
-            entry["db_path"] = db_path
         knowledge_bases[name] = entry
         self._save_config()
         return entry
@@ -1123,8 +1117,6 @@ class KnowledgeBaseManager:
                 "type": kb_config.get("type"),
                 "vault_path": kb_config.get("vault_path"),
                 "external_path": kb_config.get("external_path"),
-                # MarginNote 4 pointer (SQLite store path for synced data).
-                "db_path": kb_config.get("db_path"),
                 # LightRAG server pointer (the URL is safe to surface; the API
                 # key deliberately is not).
                 "server_url": kb_config.get("server_url"),
@@ -1270,15 +1262,13 @@ class KnowledgeBaseManager:
             metadata["last_error"] = kb_config.get("last_error")
         if kb_config.get("last_error_at"):
             metadata["last_error_at"] = kb_config.get("last_error_at")
-        # Connected-KB fields, so the UI can badge it and show the path.
+        # Connected-KB fields, so the UI can badge external sources.
         if kb_config.get("type"):
             metadata["type"] = kb_config.get("type")
         if kb_config.get("vault_path"):
             metadata["vault_path"] = kb_config.get("vault_path")
         if kb_config.get("external_path"):
             metadata["external_path"] = kb_config.get("external_path")
-        if kb_config.get("db_path"):
-            metadata["db_path"] = kb_config.get("db_path")
         if kb_config.get("agent_kind"):
             metadata["agent_kind"] = kb_config.get("agent_kind")
         # The server URL is shown read-only in the UI; the API key never leaves

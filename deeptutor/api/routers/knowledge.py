@@ -1535,7 +1535,6 @@ async def connect_obsidian_vault(payload: ConnectObsidianRequest):
 
 class ConnectMarginNote4Request(BaseModel):
     name: str
-    db_path: str = ""
     description: str = ""
 
 
@@ -1544,8 +1543,8 @@ async def connect_marginnote4(payload: ConnectMarginNote4Request):
     """Register a connected MarginNote 4 library as a knowledge base.
 
     Creates a ``type: marginnote4`` pointer so the MarginNote capability can
-    bind to it on turns where the user selects this KB. When ``db_path`` is
-    omitted the capability derives a default SQLite path from the KB name.
+    bind to it on turns where the user selects this KB. The SQLite path is
+    derived from the authenticated owner's workspace.
     """
     name = (payload.name or "").strip()
     if not name:
@@ -1554,13 +1553,9 @@ async def connect_marginnote4(payload: ConnectMarginNote4Request):
         manager = get_kb_manager()
         entry = manager.register_marginnote4_kb(
             name,
-            db_path=(payload.db_path or "").strip(),
             description=(payload.description or "").strip(),
         )
-        result = {"status": "connected", "name": name}
-        if entry.get("db_path"):
-            result["db_path"] = entry["db_path"]
-        return result
+        return {"status": "connected", "name": name, "type": entry["type"]}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

@@ -26,16 +26,14 @@ from typing import Any
 # Object types — what kind of MN4 entity a row represents.
 # --------------------------------------------------------------------------- #
 
-NOTE = "note"           # A highlight, underline, or text selection annotation.
-EXCERPT = "excerpt"     # An excerpt block (longer quoted passage).
-CARD = "card"           # A flashcard with front/back.
+NOTE = "note"  # A highlight, underline, or text selection annotation.
+EXCERPT = "excerpt"  # An excerpt block (longer quoted passage).
+CARD = "card"  # A flashcard with front/back.
 MINDMAP_NODE = "mindmap_node"  # A node in the study mindmap.
-DOCUMENT = "document"   # A source document (PDF, EPUB, web).
-COMMENT = "comment"     # A free-form comment attached to a note or node.
+DOCUMENT = "document"  # A source document (PDF, EPUB, web).
+COMMENT = "comment"  # A free-form comment attached to a note or node.
 
-ALL_TYPES: frozenset[str] = frozenset(
-    {NOTE, EXCERPT, CARD, MINDMAP_NODE, DOCUMENT, COMMENT}
-)
+ALL_TYPES: frozenset[str] = frozenset({NOTE, EXCERPT, CARD, MINDMAP_NODE, DOCUMENT, COMMENT})
 
 
 @dataclass(slots=True)
@@ -80,6 +78,8 @@ class MarginNoteObject:
     updated_at: str = ""
     synced_at: str = ""
     device_id: str = ""
+    revision: int = 0
+    content_hash: str = ""
     raw: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -99,9 +99,20 @@ class SyncBatch:
     """
 
     device_id: str
+    batch_id: str = ""
+    protocol_version: int = 1
     cursor: str = ""
     objects: list[MarginNoteObject] = field(default_factory=list)
     deleted_ids: list[str] = field(default_factory=list)
+    deleted_objects: list[DeletedMarginNoteObject] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class DeletedMarginNoteObject:
+    """A deletion carrying the source object's last version timestamp."""
+
+    object_id: str
+    updated_at: str = ""
 
 
 @dataclass(slots=True)
@@ -112,6 +123,16 @@ class SyncResult:
     updated: int = 0
     deleted: int = 0
     new_cursor: str = ""
+    skipped: int = 0
+    duplicate: bool = False
+
+
+class MarginNoteSyncConflict(RuntimeError):
+    """A device submitted a batch against an obsolete server cursor."""
+
+    def __init__(self, server_cursor: str) -> None:
+        super().__init__("MarginNote sync cursor does not match the server cursor")
+        self.server_cursor = server_cursor
 
 
 @dataclass(slots=True)

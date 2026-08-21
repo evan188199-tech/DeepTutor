@@ -576,6 +576,27 @@ export async function connectObsidianVault(payload: {
   };
 }
 
+export async function connectMarginNote4Library(payload: {
+  name: string;
+  description?: string;
+}): Promise<{ status: string; name: string; type: string }> {
+  const res = await apiFetch(apiUrl("/api/v1/knowledge/connect-marginnote4"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: payload.name,
+      description: payload.description ?? "",
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Failed to connect MarginNote library"),
+    );
+  }
+  invalidateKnowledgeCaches();
+  return (await res.json()) as { status: string; name: string; type: string };
+}
+
 export interface LinkedFolderProbe {
   /** Whether the folder holds a ready index for the chosen engine. */
   ok: boolean;
