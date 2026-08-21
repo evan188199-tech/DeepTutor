@@ -264,11 +264,50 @@ class SourceExplorer(BaseAgent):
     # Step 2 — parallel RAG retrieval
     # ------------------------------------------------------------------ #
 
+    @staticmethod
+    def partition_knowledge_bases(kb_list: list[str]) -> tuple[list[str], list[str]]:
+        """Split *kb_list* into (retrievable, unreachable).
+
+        Only the KBs ``rag_search`` genuinely cannot reach are set aside: an
+        Obsidian vault (no index — its capability navigates live files), a
+        MarginNote 4 library (same shape: synced objects in their own store,
+        reachable only through the MN4 tools) and a connected subagent (not a
+        document collection). Sweeping those returned
+        nothing and looked identical to a source that simply had no relevant
+        content, so the reader never learned their vault contributed zero;
+        reaching them properly means driving each capability, which is separate
+        work, and naming them is the honest interim.
+
+        Every other pointer KB *is* retrievable and is swept normally — a
+        ``linked`` folder mounts an index built elsewhere, and ``lightrag_server``
+        / ``ima`` offload retrieval over HTTP. Treating "connected" as
+        "unsearchable" silently dropped those sources from every book.
+        """
+        retrievable: list[str] = []
+        unreachable: list[str] = []
+        for kb in kb_list:
+            try:
+                from deeptutor.knowledge.kb_types import supports_rag_retrieval
+                from deeptutor.multi_user.knowledge_access import resolve_kb_metadata
+
+                meta = resolve_kb_metadata(kb)
+            except Exception:  # noqa: BLE001 - unresolvable → treat as ordinary
+                meta = None
+            (retrievable if supports_rag_retrieval(meta) else unreachable).append(kb)
+        return retrievable, unreachable
+
     async def _retrieve_kb_chunks(
         self,
         queries: list[str],
         kb_list: list[str],
     ) -> list[SourceChunk]:
+        kb_list, skipped = self.partition_knowledge_bases(kb_list)
+        if skipped:
+            logger.info(
+                "source exploration skipped %d connected KB(s) with no local index: %s",
+                len(skipped),
+                ", ".join(skipped),
+            )
         try:
             from deeptutor.tools.rag_tool import rag_search
         except Exception as exc:  # pragma: no cover - import guard
