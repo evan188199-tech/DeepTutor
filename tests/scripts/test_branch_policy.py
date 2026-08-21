@@ -24,25 +24,26 @@ def _completed(returncode: int = 0, stdout: str = "") -> object:
 
 def test_allows_normal_branches(monkeypatch, capsys) -> None:
     module = _load_branch_policy_module()
+    monkeypatch.setattr(module, "is_control_checkout", lambda: False)
     monkeypatch.setattr(module, "current_branch", lambda: "dev")
 
     assert module.main() == 0
     assert not capsys.readouterr().err
 
 
-def test_rejects_main_without_explicit_exception(monkeypatch, capsys) -> None:
+def test_rejects_every_direct_commit_in_control_checkout(monkeypatch, capsys) -> None:
     module = _load_branch_policy_module()
-    monkeypatch.setattr(module, "current_branch", lambda: "main")
-    monkeypatch.setattr(module, "allows_main_commit", lambda: False)
+    monkeypatch.setattr(module, "is_control_checkout", lambda: True)
+    monkeypatch.setattr(module, "current_branch", lambda: "codex/fix/login-timeout")
 
     assert module.main() == 1
-    assert "Direct commits to main are forbidden" in capsys.readouterr().err
+    assert "Direct commits in the control checkout are forbidden" in capsys.readouterr().err
 
 
-def test_allows_explicit_main_exception(monkeypatch, capsys) -> None:
+def test_allows_commits_in_linked_task_worktree(monkeypatch, capsys) -> None:
     module = _load_branch_policy_module()
+    monkeypatch.setattr(module, "is_control_checkout", lambda: False)
     monkeypatch.setattr(module, "current_branch", lambda: "main")
-    monkeypatch.setattr(module, "allows_main_commit", lambda: True)
 
     assert module.main() == 0
     assert not capsys.readouterr().err

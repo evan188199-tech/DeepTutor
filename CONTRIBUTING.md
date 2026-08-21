@@ -31,10 +31,12 @@ Thank you for your interest in contributing to DeepTutor! We welcome developers 
 
 ## Branching Strategy
 
-We use a multi-branch model to keep development organized:
+We use a protected integration model. `main` is the release branch and `dev` is
+the default integration branch. Neither is a workspace for feature development.
 
 | Branch | Purpose | Stability |
 |---|---|---|
+| `main` | Releases only | Protected; no direct PRs or local commits |
 | `dev` | General development | May have bugs or breaking changes |
 | `multi-user` | Multi-user scenario development | Experimental, focused on multi-tenant features |
 
@@ -59,31 +61,63 @@ We use a multi-branch model to keep development organized:
 > [!NOTE]
 > When in doubt, target `dev` — it is the default development branch.
 
+### Task Branch Names
+
+Create one short-lived task branch per PR:
+
+| Prefix | Use for |
+|---|---|
+| `codex/feat/<slug>` | New capability or behavior |
+| `codex/fix/<slug>` | Bug fix |
+| `codex/docs/<slug>` | Documentation-only improvement |
+| `codex/chore/<slug>` | Tooling, dependencies, or generated setup |
+| `codex/refactor/<slug>` | Behavior-preserving structure change |
+| `codex/test/<slug>` | Test or audit-suite expansion |
+| `codex/perf/<slug>` | Performance change |
+
+Use lowercase letters, digits, and hyphens. Branch from `origin/dev` unless a
+maintainer explicitly asks for a release hotfix based on `origin/main`.
+
 ---
 
 ## Quick Start for Contributors
 
-1. **Fork & Clone** the repository.
+1. **Fork & Clone** the repository. Keep the upstream project as `origin` and
+   your fork as a separate remote (locally, for example, `myfork`).
 2. **Sync** with the target branch before starting:
 
 ```bash
-git checkout dev && git pull origin dev
+git fetch origin dev
 ```
 
 3. **Create** your feature branch from the target branch:
 
 ```bash
-git checkout -b feature/your-feature-name
+python3 scripts/workspace_governance.py create feat/your-feature-name
 ```
 
-4. **Develop** your changes, following the coding standards below.
-5. **Validate** by running pre-commit checks:
+4. **Develop** your changes in that isolated worktree.
+5. **Follow upstream** without merge commits in the topic branch:
+
+```bash
+python3 scripts/workspace_governance.py sync ../DeepTutor-worktrees-feat-your-feature-name
+```
+
+6. **Validate** by running pre-commit checks:
 
 ```bash
 pre-commit run --all-files
 ```
 
-6. **Submit** your Pull Request to the correct target branch (not `main` unless it's a hotfix or docs-only change).
+7. **Push your topic branch to your fork** (prefer SSH), then open a PR to
+   upstream `dev`, or `multi-user` only for that scoped work:
+
+```bash
+git push myfork codex/feat/your-feature-name
+```
+
+Use rebase to incorporate later upstream changes. Do not merge `dev` into a
+topic branch merely to synchronize it.
 
 > [!TIP]
 > Browse our [Issues](https://github.com/HKUDS/DeepTutor/issues) for tasks labeled `good first issue` to find a great starting point. Comment on the issue to let others know you're working on it.
@@ -160,16 +194,15 @@ Fresh checkouts can enable the dependency-free safety hook with:
 git config core.hooksPath scripts/hooks
 ```
 
-The hook also blocks accidental direct commits on `main`. Release maintainers who
-deliberately need a local `main` commit may opt in once with
-`git config deeptutor.allowMainCommit true`, then remove the setting immediately
-afterward.
+The hook blocks direct commits in the primary control checkout and rejects task
+branches checked out there. `main` and `dev` are fast-forward mirrors; make
+changes in a linked task worktree.
 
-Use a separate Git worktree for each feature (`git worktree add ../DeepTutor-<task>
--b <branch> dev`) and keep the primary checkout clean. This lets builds, tests,
-and long-running agents operate independently without rewriting one another's
-outputs. Before removing a worktree, commit or explicitly preserve its changes;
-do not use `git reset --hard` or `git clean` as a routine cleanup shortcut.
+Use a separate Git worktree for each task and keep the primary checkout clean.
+This lets builds, tests, and long-running agents operate independently without
+rewriting one another's outputs. Before removing a worktree, commit or explicitly
+preserve its changes; do not use `git reset --hard` or `git clean` as a routine
+cleanup shortcut.
 
 Use the workspace governance helper to audit, create, archive, and retire worktrees safely:
 
@@ -177,8 +210,14 @@ Use the workspace governance helper to audit, create, archive, and retire worktr
 # Audit all registered worktrees and their cleanliness
 python3 scripts/workspace_governance.py audit
 
-# Create an isolated task worktree tracking origin/dev
-python3 scripts/workspace_governance.py create my-feature --base dev
+# Create an isolated task worktree from origin/dev
+python3 scripts/workspace_governance.py create feat/my-feature
+
+# Fail if the control checkout is dirty or checked out to a task branch
+python3 scripts/workspace_governance.py audit --strict
+
+# Fetch upstream and rebase a clean task worktree onto origin/dev
+python3 scripts/workspace_governance.py sync /path/to/worktree --remote origin --base dev
 
 # Snapshot an existing worktree before retirement
 python3 scripts/workspace_governance.py archive /path/to/worktree

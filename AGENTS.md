@@ -20,8 +20,28 @@ These rules apply by default to development in DeepTutor:
 
 ## Workspace Governance
 
-- **Control Checkout**: `/Users/Shared/DeepTutor` is a clean control checkout only (tracking `dev` or `main`). Direct edits and scratch files belong in task worktrees.
-- **Task Worktrees**: Create isolated task worktrees using `python3 scripts/workspace_governance.py create <name> --base dev`.
+### Branch and Remote Model
+
+| Branch | Allowed use | Update rule |
+| --- | --- | --- |
+| `main` | Release mirror of upstream `HKUDS/DeepTutor` | Fast-forward only from `origin/main`; never local commits or edits |
+| `dev` | Integration mirror of upstream `dev` | Fast-forward only from `origin/dev`; never local commits or edits |
+| `multi-user` | Special integration branch | Base only for multi-user work that upstream routes there |
+| `codex/feat/<slug>` | New user-visible capability | Create from `origin/dev`; rebase onto upstream `dev` |
+| `codex/fix/<slug>` | Bug fix destined for upstream | Create from `origin/dev`; rebase onto upstream `dev` |
+| `codex/{docs,chore,refactor,test,perf}/<slug>` | Scoped non-feature work | Create from `origin/dev`; rebase onto upstream `dev` |
+
+On this machine, `origin` is the upstream repository (`HKUDS/DeepTutor`) and
+`myfork` is the contribution fork. Never push task branches to `origin`; push
+them to `myfork`, open a PR from the fork to upstream `dev`, and use SSH remotes
+when available.
+
+### Control and Task Worktrees
+
+- **Control Checkout**: `/Users/Shared/DeepTutor` must remain clean and on `main` or `dev`. It receives no direct commits, no task branches, and no scratch edits.
+- **Task Worktrees**: Create isolated worktrees with `python3 scripts/workspace_governance.py create feat/<name>` or `fix/<name>`. The tool creates `codex/<type>/<name>` from `origin/dev`.
+- **Upstream Sync**: Run `python3 scripts/workspace_governance.py sync <worktree> --remote origin --base dev` in a clean worktree. It fetches upstream and rebases the task branch; `main` and `dev` use fast-forward only.
+- **Contribution Back**: After tests pass, push the topic branch to `myfork`, open a PR to upstream `dev`, and keep the PR rebased rather than merging `dev` into the topic.
 - **Archive-Before-Retire**: Worktrees are archived to `/Users/Shared/DeepTutor-worktree-archives/` before retirement via `python3 scripts/workspace_governance.py archive <path>`.
 - **Safe Retirement**: Only retire worktrees whose PRs are merged/closed and whose local state is cleanly archived.
 

@@ -16,12 +16,20 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
+import sys
 import time
 
 DEFAULT_ARCHIVE_DIR = Path("/Users/Shared/DeepTutor-worktree-archives")
 DEFAULT_WORKTREE_PARENT = Path("/Users/Shared")
+CONTROL_BRANCHES = {"main", "dev"}
+SUPPORTED_BASE_BRANCHES = {"dev", "main", "multi-user"}
+TASK_BRANCH_PATTERN = re.compile(
+    r"^codex/(feat|fix|docs|chore|refactor|test|perf)/"
+    r"[a-z0-9]+(?:-[a-z0-9]+)*$"
+)
 
 
 def _run_cmd(
@@ -43,6 +51,18 @@ def _git(
     args: list[str], *, cwd: Path | None = None, check: bool = False
 ) -> subprocess.CompletedProcess[str]:
     return _run_cmd(["git", *args], cwd=cwd, check=check)
+
+
+def normalize_task_branch(name: str) -> str:
+    branch = name.removeprefix("refs/heads/")
+    if not branch.startswith("codex/"):
+        branch = f"codex/{branch}"
+    if not TASK_BRANCH_PATTERN.fullmatch(branch):
+        raise ValueError(
+            "Task branch must match codex/{feat|fix|docs|chore|refactor|test|perf}/"
+            "<lowercase-hyphenated-slug>. Example: codex/fix/login-timeout"
+        )
+    return branch
 
 
 @dataclass
@@ -167,7 +187,19 @@ def create_workspace(
     repo_root: Path,
     target_parent: Path = DEFAULT_WORKTREE_PARENT,
 ) -> WorkspaceInfo:
-    branch_name = f"codex/{name}" if not name.startswith("codex/") else name
+    if base_branch not in SUPPORTED_BASE_BRANCHES:
+        supported = ", ".join(sorted(SUPPORTED_BASE_BRANCHES))
+        raise ValueError(f"Unsupported base branch {base_branch!r}; choose one of: {supported}")
+
+    control = inspect_workspace(repo_root, repo_root)
+    if not control.is_clean:
+        raise RuntimeError("The control checkout is dirty; archive or clean it before new work.")
+    if control.branch not in CONTROL_BRANCHES:
+        raise RuntimeError(
+            f"The control checkout is on {control.branch!r}; switch it to main or dev before new work."
+        )
+
+    branch_name = normalize_task_branch(name)
     worktree_dir_name = f"DeepTutor-worktrees-{name.replace('codex/', '').replace('/', '-')}"
     target_dir = target_parent / worktree_dir_name
 
@@ -199,6 +231,41 @@ def create_workspace(
             pass
 
     return inspect_workspace(target_dir, repo_root)
+
+
+def sync_workspace(
+    worktree_path: Path,
+    *,
+    remote: str = "origin",
+    base_branch: str = "dev",
+) -> WorkspaceInfo:
+    if base_branch not in SUPPORTED_BASE_BRANCHES:
+        supported = ", ".join(sorted(SUPPORTED_BASE_BRANCHES))
+        raise ValueError(f"Unsupported base branch {base_branch!r}; choose one of: {supported}")
+
+    info = inspect_workspace(worktree_path, worktree_path)
+    if not info.is_clean:
+        raise RuntimeError(
+            f"Refusing to sync a dirty workspace ({len(info.dirty_files)} modified, "
+            f"{len(info.untracked_files)} untracked)."
+        )
+    if info.branch == "(detached)":
+        raise RuntimeError("Refusing to sync a detached HEAD worktree.")
+    if info.branch not in CONTROL_BRANCHES:
+        normalize_task_branch(info.branch)
+
+    fetch = _git(["fetch", remote, base_branch], cwd=worktree_path)
+    if fetch.returncode != 0:
+        raise RuntimeError(f"Failed to fetch {remote}/{base_branch}: {fetch.stderr.strip()}")
+
+    remote_ref = f"{remote}/{base_branch}"
+    if info.branch in CONTROL_BRANCHES:
+        update = _git(["merge", "--ff-only", remote_ref], cwd=worktree_path)
+    else:
+        update = _git(["rebase", remote_ref], cwd=worktree_path)
+    if update.returncode != 0:
+        raise RuntimeError(f"Failed to update from {remote_ref}: {update.stderr.strip()}")
+    return inspect_workspace(worktree_path, worktree_path)
 
 
 def archive_workspace(
@@ -324,12 +391,23 @@ def main() -> int:
     )
     audit_p.add_argument("--json", action="store_true", help="Output JSON format")
     audit_p.add_argument("--repo", default=".", help="Repository root path")
+    audit_p.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail when the control checkout is dirty or not on main/dev",
+    )
 
     # create
     create_p = subparsers.add_parser("create", help="Create an isolated task worktree")
     create_p.add_argument("name", help="Task / feature name")
     create_p.add_argument("--base", default="dev", help="Base branch (default: dev)")
     create_p.add_argument("--repo", default=".", help="Repository root path")
+
+    # sync
+    sync_p = subparsers.add_parser("sync", help="Update a clean workspace from its upstream base")
+    sync_p.add_argument("path", help="Worktree directory path")
+    sync_p.add_argument("--remote", default="origin", help="Upstream remote (default: origin)")
+    sync_p.add_argument("--base", default="dev", help="Integration base (default: dev)")
 
     # archive
     archive_p = subparsers.add_parser(
@@ -375,12 +453,33 @@ def main() -> int:
                 print(f"  Branch: {w.branch} @ {w.head_sha[:8]} | Status: {status}{archived_tag}")
                 if w.retirement_blockers:
                     print(f"  Blockers: {'; '.join(w.retirement_blockers)}")
+        if args.strict:
+            control = next((w for w in worktrees if w.is_main), None)
+            if control is None:
+                print("Strict audit failed: control checkout not found.", file=sys.stderr)
+                return 1
+            if not control.is_clean or control.branch not in CONTROL_BRANCHES:
+                print(
+                    "Strict audit failed: control checkout must be clean and on main or dev.",
+                    file=sys.stderr,
+                )
+                return 1
         return 0
 
     if args.command == "create":
         info = create_workspace(args.name, base_branch=args.base, repo_root=repo_root)
         print(f"Workspace created successfully at: {info.path}")
         print(f"Branch: {info.branch}")
+        return 0
+
+    if args.command == "sync":
+        info = sync_workspace(
+            Path(args.path),
+            remote=args.remote,
+            base_branch=args.base,
+        )
+        print(f"Workspace synchronized: {info.path}")
+        print(f"Branch: {info.branch} @ {info.head_sha[:8]}")
         return 0
 
     if args.command == "archive":

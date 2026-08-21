@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from types import SimpleNamespace
 
 script_path = Path(__file__).resolve().parents[2] / "scripts" / "workspace_governance.py"
 spec = importlib.util.spec_from_file_location("workspace_governance", script_path)
@@ -20,6 +21,8 @@ inspect_workspace = workspace_governance.inspect_workspace
 verify_archive = workspace_governance.verify_archive
 list_worktrees = workspace_governance.list_worktrees
 retire_workspace = workspace_governance.retire_workspace
+normalize_task_branch = workspace_governance.normalize_task_branch
+sync_workspace = workspace_governance.sync_workspace
 
 
 def _git(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -30,6 +33,70 @@ def _git(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
     )
+
+
+def test_task_branch_names_require_an_approved_type_and_slug() -> None:
+    assert normalize_task_branch("feat/kids-library") == "codex/feat/kids-library"
+    assert normalize_task_branch("codex/fix/login-timeout") == "codex/fix/login-timeout"
+
+    for invalid in ("kids-library", "codex/kids-library", "codex/feat/Kids"):
+        try:
+            normalize_task_branch(invalid)
+        except ValueError as error:
+            assert "Task branch must match" in str(error)
+        else:
+            raise AssertionError(f"Expected {invalid!r} to be rejected")
+
+
+def test_create_workspace_refuses_a_dirty_control_checkout(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(["init", "-b", "main"], repo)
+    _git(["config", "user.name", "Tester"], repo)
+    _git(["config", "user.email", "tester@example.com"], repo)
+    tracked = repo / "tracked.txt"
+    tracked.write_text("dirty\n", encoding="utf-8")
+
+    try:
+        workspace_governance.create_workspace(
+            "feat/should-not-start",
+            repo_root=repo,
+            target_parent=tmp_path / "worktrees",
+        )
+    except RuntimeError as error:
+        assert "control checkout is dirty" in str(error)
+    else:
+        raise AssertionError("Expected create_workspace to refuse a dirty control checkout")
+
+
+def test_sync_workspace_rebases_clean_task_branch_from_upstream_dev(
+    monkeypatch, tmp_path: Path
+) -> None:
+    calls: list[list[str]] = []
+
+    def fake_git(args: list[str], *, cwd: Path | None = None, check: bool = False):
+        calls.append(args)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    info = SimpleNamespace(
+        path=str(tmp_path),
+        head_sha="1234567890abcdef",
+        branch="codex/feat/kids-library",
+        is_clean=True,
+        dirty_files=[],
+        untracked_files=[],
+        listening_ports=[],
+        archived=False,
+        safe_to_retire=True,
+        retirement_blockers=[],
+    )
+    monkeypatch.setattr(workspace_governance, "_git", fake_git)
+    monkeypatch.setattr(workspace_governance, "inspect_workspace", lambda *args, **kwargs: info)
+
+    synced = sync_workspace(tmp_path, remote="origin", base_branch="dev")
+
+    assert synced.branch == "codex/feat/kids-library"
+    assert calls == [["fetch", "origin", "dev"], ["rebase", "origin/dev"]]
 
 
 def test_inspect_workspace_detects_clean_and_dirty_state(tmp_path: Path) -> None:

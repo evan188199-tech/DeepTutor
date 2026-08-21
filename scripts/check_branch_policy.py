@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Reject accidental direct commits on the release branch."""
+"""Reject accidental direct commits in the control checkout."""
 
 from __future__ import annotations
 
+from pathlib import Path
 import subprocess
 import sys
 
@@ -17,22 +18,27 @@ def current_branch() -> str | None:
     return result.stdout.strip() or None
 
 
-def allows_main_commit() -> bool:
-    result = subprocess.run(
-        ["git", "config", "--bool", "deeptutor.allowMainCommit"],
-        check=False,
+def is_control_checkout() -> bool:
+    top_level = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        check=True,
         capture_output=True,
         text=True,
-    )
-    return result.returncode == 0 and result.stdout.strip().lower() == "true"
+    ).stdout.strip()
+    common_git_dir = subprocess.run(
+        ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    return Path(top_level) == Path(common_git_dir).parent
 
 
 def main() -> int:
-    if current_branch() == "main" and not allows_main_commit():
+    if is_control_checkout():
         print(
-            "Direct commits to main are forbidden. Develop on dev or a topic branch, "
-            "then integrate through review. For an explicit release exception, set "
-            "deeptutor.allowMainCommit=true and unset it afterward.",
+            "Direct commits in the control checkout are forbidden. Create a task "
+            "worktree from origin/dev, then integrate through review.",
             file=sys.stderr,
         )
         return 1
