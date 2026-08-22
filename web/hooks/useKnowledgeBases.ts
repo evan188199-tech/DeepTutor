@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   connectLightRagServer as connectLightRagServerApi,
   connectLinkedFolder as connectLinkedFolderApi,
+  connectMarginNote4Library as connectMarginNote4Api,
   connectObsidianVault as connectObsidianApi,
   createKnowledgeBase as createKbApi,
   deleteKnowledgeBase as deleteKbApi,
@@ -326,6 +327,14 @@ export function useKnowledgeBases() {
     [load],
   );
 
+  const connectMarginNote4 = useCallback(
+    async (params: { name: string; description?: string }) => {
+      await connectMarginNote4Api(params);
+      await load({ force: true, showSpinner: false });
+    },
+    [load],
+  );
+
   const connectLightRagServer = useCallback(
     async (params: {
       name: string;
@@ -362,6 +371,7 @@ export function useKnowledgeBases() {
     deleteKb,
     connectObsidian,
     connectLinkedFolder,
+    connectMarginNote4,
     connectLightRagServer,
   };
 }

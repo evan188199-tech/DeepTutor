@@ -1,8 +1,9 @@
 """Resolve which connected MarginNote 4 library (if any) the current turn targets.
 
 Mirrors the Obsidian binding pattern: the first selected KB whose metadata is
-``type == marginnote4`` wins. The KB's ``db_path`` (or a computed default)
-becomes the live store the MarginNote tools query. The result is cached on
+``type == marginnote4`` wins. The store path is always derived from the current
+owner's PathService scope; metadata ``db_path`` values are intentionally ignored.
+The result is cached on
 ``context.metadata`` so ``is_active`` / ``augment_kwargs`` / ``system_block``
 share a single resolution.
 """
@@ -36,13 +37,9 @@ def _resolve(context: UnifiedContext) -> dict[str, str] | None:
         meta = resolve_kb_metadata(ref)
         if not meta or meta.get("type") != MARGINNOTE4_KB_TYPE:
             continue
-        # The KB entry may carry an explicit ``db_path``; otherwise we derive
-        # one from the KB name so each connected library gets its own SQLite file.
-        db_path = str(meta.get("db_path") or "").strip()
-        if not db_path:
-            from deeptutor.capabilities.marginnote4.store import _default_db_path
+        from deeptutor.capabilities.marginnote4.store import _default_db_path
 
-            db_path = str(_default_db_path(ref))
+        db_path = str(_default_db_path(ref))
         return {"name": str(meta.get("name") or ref), "db_path": db_path}
     return None
 

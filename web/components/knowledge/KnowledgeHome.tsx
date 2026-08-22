@@ -11,6 +11,7 @@ import {
   Database,
   FolderOpen,
   Network,
+  Notebook,
   Plus,
   Search,
   Server,
@@ -36,6 +37,8 @@ interface KnowledgeHomeProps {
   onCreate: () => void;
   /** Open the create flow pre-set to link an Obsidian vault. */
   onConnectObsidian: () => void;
+  /** Open the create flow pre-set to connect MarginNote 4. */
+  onConnectMarginNote: () => void;
 }
 
 const ENGINE_ICONS: Record<string, LucideIcon> = {
@@ -101,6 +104,7 @@ export default function KnowledgeHome({
   onOpenEngine,
   onCreate,
   onConnectObsidian,
+  onConnectMarginNote,
 }: KnowledgeHomeProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -110,6 +114,10 @@ export default function KnowledgeHome({
 
   const obsidianCount = useMemo(
     () => kbs.filter((kb) => kb.metadata?.type === "obsidian").length,
+    [kbs],
+  );
+  const marginNoteCount = useMemo(
+    () => kbs.filter((kb) => kb.metadata?.type === "marginnote4").length,
     [kbs],
   );
   const kbCountByProvider = useMemo(() => {
@@ -229,6 +237,42 @@ export default function KnowledgeHome({
                 <span className="inline-flex items-center gap-1">
                   <FolderOpen className="h-3 w-3" />
                   {t("Connect vault")}
+                </span>
+                <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-60" />
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={onConnectMarginNote}
+              className="group flex flex-col gap-2 rounded-2xl border border-[var(--border)] p-3.5 text-left transition-colors hover:border-[var(--ring)]"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Notebook
+                    className="h-4 w-4 shrink-0 text-[var(--muted-foreground)]"
+                    strokeWidth={1.7}
+                  />
+                  <span className="truncate text-[13.5px] font-medium text-[var(--foreground)]">
+                    {t("MarginNote 4")}
+                  </span>
+                </div>
+                {marginNoteCount > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
+                    <Check className="h-3 w-3" />
+                    {t("{{count}} connected", { count: marginNoteCount })}
+                  </span>
+                )}
+              </div>
+              <p className="line-clamp-2 text-[11.5px] leading-snug text-[var(--muted-foreground)]">
+                {t(
+                  "Sync notes, cards and mind maps from MarginNote 4 for read-only tutoring.",
+                )}
+              </p>
+              <div className="mt-auto flex items-center gap-2 pt-1 text-[11px] text-[var(--muted-foreground)]">
+                <span className="inline-flex items-center gap-1">
+                  <Notebook className="h-3 w-3" />
+                  {t("Connect library")}
                 </span>
                 <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-60" />
               </div>

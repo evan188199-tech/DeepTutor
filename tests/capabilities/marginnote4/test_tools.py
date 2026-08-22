@@ -33,6 +33,8 @@ def _seed_store(tmp_path: Path) -> str:
     store.ingest(
         SyncBatch(
             device_id="dev1",
+            batch_id="seed-batch",
+            cursor=store.server_cursor(),
             objects=[
                 MarginNoteObject(
                     object_id="note1",
@@ -100,6 +102,7 @@ async def test_read_returns_full_object(tmp_path: Path) -> None:
     assert data["document_title"] == "Biology Textbook"
     assert data["page"] == 42
     assert data["tags"] == ["biology"]
+    assert "raw" not in data
 
 
 @pytest.mark.asyncio
@@ -112,9 +115,7 @@ async def test_read_missing_object_fails(tmp_path: Path) -> None:
 @pytest.mark.asyncio
 async def test_list_by_type(tmp_path: Path) -> None:
     db_path = _seed_store(tmp_path)
-    res = await MarginNoteListTool().execute(
-        object_type="card", _db_path=db_path
-    )
+    res = await MarginNoteListTool().execute(object_type="card", _db_path=db_path)
     assert res.success
     data = json.loads(res.content)
     assert data["count"] == 1

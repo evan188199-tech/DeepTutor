@@ -2952,5 +2952,19 @@
   "Container available": "容器可用",
   "{{used}} · {{percent}}% of {{total}}": "{{used}} · 占 {{total}} 的 {{percent}}%",
   "(backend only)": "（仅后端）",
-  "Only the backend and its own children. Start DeepTutor through the launcher to include the web server.": "仅统计后端及其子进程。通过 DeepTutor 启动器运行才能把前端服务一起算进来。"
+  "Only the backend and its own children. Start DeepTutor through the launcher to include the web server.": "仅统计后端及其子进程。通过 DeepTutor 启动器运行才能把前端服务一起算进来。",
+  "MarginNote 4": "MarginNote 4",
+  "A synced study library from the MarginNote 4 Add-on — read-only retrieval.": "来自 MarginNote 4 插件的同步学习库，仅用于只读检索。",
+  "Sync notes, cards and mind maps from MarginNote 4 for read-only tutoring.": "同步 MarginNote 4 的笔记、卡片和思维导图，用于只读辅导。",
+  "Connect library": "连接学习库",
+  "MarginNote 4 device": "MarginNote 4 设备",
+  "Pair one MarginNote 4 installation. Its notes, cards and mind maps stay read-only.": "配对一台 MarginNote 4 安装。笔记、卡片和思维导图保持只读。",
+  "Refresh devices": "刷新设备",
+  "Generate pairing code": "生成配对码",
+  "One-time pairing code": "一次性配对码",
+  "Expires in {{seconds}}s": "{{seconds}} 秒后过期",
+  "Loading devices…": "正在加载设备…",
+  "Protocol {{version}}": "协议 {{version}}",
+  "No MarginNote device paired yet.": "尚未配对 MarginNote 设备。",
+  "Revoke this MarginNote device?": "撤销这台 MarginNote 设备？"
 }

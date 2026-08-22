@@ -13,6 +13,7 @@ The store path is injected server-side as ``_db_path`` by the capability's
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 from typing import Any
@@ -68,7 +69,11 @@ def _ok(payload: Any) -> ToolResult:
 
 
 def _err(message: str) -> ToolResult:
-    return ToolResult(content=message, success=False)
+    return ToolResult(content=json.dumps({"error": message}, ensure_ascii=False), success=False)
+
+
+async def _db_call(fn, *args, **kwargs):
+    return await asyncio.to_thread(fn, *args, **kwargs)
 
 
 def _as_int(value: Any, *, default: int, lo: int, hi: int) -> int:
@@ -117,8 +122,7 @@ class MarginNoteSearchTool(_MN4Tool):
                     name="object_type",
                     type="string",
                     description=(
-                        "Filter by type: note, excerpt, card, mindmap_node, "
-                        "document, comment."
+                        "Filter by type: note, excerpt, card, mindmap_node, document, comment."
                     ),
                     required=False,
                     enum=sorted(ALL_TYPES),
@@ -126,7 +130,13 @@ class MarginNoteSearchTool(_MN4Tool):
                 ToolParameter(
                     name="limit",
                     type="integer",
-                    description="Max results (default 20).",
+                    description="Max results (default 20, max 100).",
+                    required=False,
+                ),
+                ToolParameter(
+                    name="offset",
+                    type="integer",
+                    description="Stable pagination offset (default 0).",
                     required=False,
                 ),
             ],
@@ -138,7 +148,9 @@ class MarginNoteSearchTool(_MN4Tool):
             return _err("marginnote_search needs a non-empty 'query'.")
         obj_type = str(kwargs.get("object_type") or "").strip()
         limit = _as_int(kwargs.get("limit"), default=20, lo=1, hi=100)
-        hits = store.search(query, object_type=obj_type, limit=limit)
+        offset = _as_int(kwargs.get("offset"), default=0, lo=0, hi=1_000_000)
+        hits = await _db_call(store.search, query, object_type=obj_type, limit=limit + offset)
+        hits = hits[offset : offset + limit]
         return _ok({"query": query, "count": len(hits), "results": hits})
 
 
@@ -160,6 +172,12 @@ class MarginNoteReadTool(_MN4Tool):
                     type="string",
                     description="The MN4 object ID from a search or list result.",
                 ),
+                ToolParameter(
+                    name="include_raw",
+                    type="boolean",
+                    description="Whether to include the original MN4 payload.",
+                    required=False,
+                ),
             ],
         )
 
@@ -167,10 +185,13 @@ class MarginNoteReadTool(_MN4Tool):
         oid = str(kwargs.get("object_id") or "").strip()
         if not oid:
             return _err("marginnote_read needs an 'object_id'.")
-        obj = store.get(oid)
+        obj = await _db_call(store.get, oid)
         if obj is None:
             return _err(f"Object {oid!r} not found in the MarginNote library.")
-        return _ok(obj.to_dict())
+        payload = obj.to_dict()
+        if str(kwargs.get("include_raw") or "").lower() not in {"1", "true", "yes"}:
+            payload.pop("raw", None)
+        return _ok(payload)
 
 
 class MarginNoteListTool(_MN4Tool):
@@ -201,7 +222,13 @@ class MarginNoteListTool(_MN4Tool):
                 ToolParameter(
                     name="limit",
                     type="integer",
-                    description="Max results (default 200).",
+                    description="Max results (default 200, max 1000).",
+                    required=False,
+                ),
+                ToolParameter(
+                    name="offset",
+                    type="integer",
+                    description="Stable pagination offset (default 0).",
                     required=False,
                 ),
             ],
@@ -211,8 +238,13 @@ class MarginNoteListTool(_MN4Tool):
         obj_type = str(kwargs.get("object_type") or "").strip()
         doc_id = str(kwargs.get("document_id") or "").strip()
         limit = _as_int(kwargs.get("limit"), default=200, lo=1, hi=1000)
-        items = store.list_objects(
-            object_type=obj_type, document_id=doc_id, limit=limit
+        offset = _as_int(kwargs.get("offset"), default=0, lo=0, hi=1_000_000)
+        items = await _db_call(
+            store.list_objects,
+            object_type=obj_type,
+            document_id=doc_id,
+            limit=limit,
+            offset=offset,
         )
         return _ok({"count": len(items), "objects": items})
 
@@ -232,7 +264,7 @@ class MarginNoteDocumentsTool(_MN4Tool):
         )
 
     async def _run(self, store: MarginNoteStore, kwargs: dict[str, Any]) -> ToolResult:
-        docs = store.list_documents()
+        docs = await _db_call(store.list_documents)
         return _ok({"count": len(docs), "documents": docs})
 
 
@@ -261,7 +293,7 @@ class MarginNoteLinksTool(_MN4Tool):
         oid = str(kwargs.get("object_id") or "").strip()
         if not oid:
             return _err("marginnote_links needs an 'object_id'.")
-        links = store.linked_objects(oid)
+        links = await _db_call(store.linked_objects, oid)
         return _ok({"object_id": oid, "count": len(links), "links": links})
 
 
@@ -287,7 +319,7 @@ class MarginNoteTagsTool(_MN4Tool):
 
     async def _run(self, store: MarginNoteStore, kwargs: dict[str, Any]) -> ToolResult:
         limit = _as_int(kwargs.get("limit"), default=200, lo=1, hi=1000)
-        tags = store.collect_tags(limit=limit)
+        tags = await _db_call(store.collect_tags, limit=limit)
         return _ok({"count": len(tags), "tags": tags})
 
 
@@ -314,7 +346,7 @@ class MarginNoteCardsTool(_MN4Tool):
 
     async def _run(self, store: MarginNoteStore, kwargs: dict[str, Any]) -> ToolResult:
         limit = _as_int(kwargs.get("limit"), default=100, lo=1, hi=500)
-        cards = store.list_objects(object_type="card", limit=limit)
+        cards = await _db_call(store.list_objects, object_type="card", limit=limit)
         return _ok({"count": len(cards), "cards": cards})
 
 

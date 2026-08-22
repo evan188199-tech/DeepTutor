@@ -6,6 +6,7 @@ import {
   formatKnowledgeTimestamp,
   type KnowledgeBase,
 } from "@/lib/knowledge-helpers";
+import MarginNoteDevicePanel from "./MarginNoteDevicePanel";
 
 interface KbSettingsSectionProps {
   kb: KnowledgeBase;
@@ -57,6 +58,8 @@ export default function KbSettingsSection({
           )}
         </dl>
       </section>
+
+      <MarginNoteDevicePanel kb={kb} />
 
       <section className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
         <div>

@@ -1,0 +1,8 @@
+{
+  "addonid": "edu.deeptutor.marginnote4",
+  "author": "DeepTutor",
+  "title": "DeepTutor MarginNote 4 Bridge",
+  "version": "1.0.2",
+  "marginnote_version_min": "4.0.0",
+  "cert_key": ""
+}

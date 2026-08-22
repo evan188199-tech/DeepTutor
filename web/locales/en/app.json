@@ -2952,5 +2952,19 @@
   "Container available": "Container available",
   "{{used}} · {{percent}}% of {{total}}": "{{used}} · {{percent}}% of {{total}}",
   "(backend only)": "(backend only)",
-  "Only the backend and its own children. Start DeepTutor through the launcher to include the web server.": "Only the backend and its own children. Start DeepTutor through the launcher to include the web server."
+  "Only the backend and its own children. Start DeepTutor through the launcher to include the web server.": "Only the backend and its own children. Start DeepTutor through the launcher to include the web server.",
+  "MarginNote 4": "MarginNote 4",
+  "A synced study library from the MarginNote 4 Add-on — read-only retrieval.": "A synced study library from the MarginNote 4 Add-on — read-only retrieval.",
+  "Sync notes, cards and mind maps from MarginNote 4 for read-only tutoring.": "Sync notes, cards and mind maps from MarginNote 4 for read-only tutoring.",
+  "Connect library": "Connect library",
+  "MarginNote 4 device": "MarginNote 4 device",
+  "Pair one MarginNote 4 installation. Its notes, cards and mind maps stay read-only.": "Pair one MarginNote 4 installation. Its notes, cards and mind maps stay read-only.",
+  "Refresh devices": "Refresh devices",
+  "Generate pairing code": "Generate pairing code",
+  "One-time pairing code": "One-time pairing code",
+  "Expires in {{seconds}}s": "Expires in {{seconds}}s",
+  "Loading devices…": "Loading devices…",
+  "Protocol {{version}}": "Protocol {{version}}",
+  "No MarginNote device paired yet.": "No MarginNote device paired yet.",
+  "Revoke this MarginNote device?": "Revoke this MarginNote device?"
 }

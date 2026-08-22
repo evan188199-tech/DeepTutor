@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "official_repository": "https://github.com/marginnoteapp/AddonLib",
+  "fork_repository": "https://github.com/evan188199-tech/AddonLib",
+  "base_commit": "df10fd33f31765976f2a981190aca2b3ae9b2c32",
+  "locked_commit": "a9066fdc02449618ea022f07991bdfffee86cb3d",
+  "license": "MIT",
+  "files": {
+    "runtime.js": "6b206c6b4f9d4a221cbe2bff93a1fe8f16897791d8ed71c201052ef3abe672fb",
+    "mnutils.js": "06272fd247caa9c5fa1933ae481a90e9dfcf1669ed9df3893ed0f409b7b052b3",
+    "mnnote.js": "cc6436a6886bf6c5729ee7b2b854e07bf53f7d23254d824f6248eb83108c2989",
+    "LICENSE": "ae3f13a3253b5d1bf1b6ed277547223d64843c58bcaabf310fc2b5e5daf2f954",
+    "assets/dot.png": "6f5e112b7b36fece2a82ca5171e9663339bee39c034b6cee03d5954f6e2ee25a",
+    "data/en.json": "6908549458228ddbc7a0d58dd3c10ab3887a60dd14abc54faba4180dea56c9e9",
+    "data/zh.json": "8934a71f86c0d2f4811a347f1503b3e18e5dec00853b1fb5ae4b32fe0da4a723"
+  }
+}
