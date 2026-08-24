@@ -59,7 +59,7 @@ def _upload(client: TestClient, name: str = "attention.pdf", data: bytes | None 
     return response.json()
 
 
-def _epub_bytes() -> bytes:
+def _epub_bytes(*, language: str = "en", paragraph: str = "Readable EPUB text.") -> bytes:
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w") as archive:
         archive.writestr("mimetype", "application/epub+zip")
@@ -69,10 +69,16 @@ def _epub_bytes() -> bytes:
         )
         archive.writestr(
             "OPS/book.opf",
-            "<package><manifest><item id='one' href='one.xhtml'/></manifest><spine><itemref idref='one'/></spine></package>",
+            "<package xmlns:dc='http://purl.org/dc/elements/1.1/'>"
+            "<metadata><dc:identifier>urn:uuid:router-bilingual</dc:identifier>"
+            "<dc:title>Router book</dc:title>"
+            f"<dc:language>{language}</dc:language></metadata>"
+            "<manifest><item id='one' href='one.xhtml'/></manifest>"
+            "<spine><itemref idref='one'/></spine></package>",
         )
         archive.writestr(
-            "OPS/one.xhtml", "<html><body><h1>Opening</h1><p>Readable EPUB text.</p></body></html>"
+            "OPS/one.xhtml",
+            f"<html><body><h1>Opening</h1><p>{paragraph}</p></body></html>",
         )
     return stream.getvalue()
 
@@ -188,6 +194,59 @@ def test_epub_contract_exposes_source_refs_original_and_position(client: TestCli
     assert saved.status_code == 200
     assert client.get(base).json()["source_anchor"] == "epubcfi(/6/2)"
     assert client.put(base, json={"locator": 2, "percentage": 0}).status_code == 400
+
+
+def test_epub_pairing_requires_confirmation_and_preserves_source_materials(
+    client: TestClient,
+) -> None:
+    english = _upload(client, name="english.epub", data=_epub_bytes())
+    chinese = _upload(
+        client,
+        name="chinese.epub",
+        data=_epub_bytes(language="zh", paragraph="可读的 EPUB 文本。"),
+    )
+
+    candidates = client.get(
+        f"/api/v1/reading/materials/{english['material_id']}/epub-pairing-candidates"
+    )
+    assert candidates.status_code == 200
+    assert candidates.json()[0]["material_id"] == chinese["material_id"]
+    assert client.get("/api/v1/reading/epub-pairings").json() == []
+
+    created = client.post(
+        "/api/v1/reading/epub-pairings",
+        json={
+            "english_material_id": english["material_id"],
+            "chinese_material_id": chinese["material_id"],
+        },
+    )
+    assert created.status_code == 200, created.text
+    body = created.json()
+    assert body["pairing"]["status"] == "confirmed"
+    assert body["pairing"]["english_material_id"] == english["material_id"]
+    assert body["pairing"]["chinese_material_id"] == chinese["material_id"]
+    assert client.get("/api/v1/reading/epub-pairings").json() == [body["pairing"]]
+    assert len(client.get("/api/v1/reading/materials").json()) == 2
+
+    removed = client.delete(f"/api/v1/reading/epub-pairings/{body['pairing']['pairing_id']}")
+    assert removed.status_code == 200
+    assert client.get("/api/v1/reading/epub-pairings").json() == []
+    assert len(client.get("/api/v1/reading/materials").json()) == 2
+
+
+def test_epub_pairing_rejects_the_same_language(client: TestClient) -> None:
+    english = _upload(client, name="english.epub", data=_epub_bytes())
+    other = _upload(client, name="other.epub", data=_epub_bytes())
+
+    response = client.post(
+        "/api/v1/reading/epub-pairings",
+        json={
+            "english_material_id": english["material_id"],
+            "chinese_material_id": other["material_id"],
+        },
+    )
+
+    assert response.status_code == 400
 
 
 # ---------------------------------------------------------------------------
