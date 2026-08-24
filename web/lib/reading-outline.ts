@@ -56,15 +56,25 @@ export function extractReaderHeadings(
 
 export function activeReaderHeading(
   headings: ReaderHeading[],
-  scrollTop: number,
-  headingTops: Readonly<Record<string, number>>,
+  getHeadingTop: (heading: ReaderHeading) => number | null,
 ): string | null {
   let active: string | null = null;
   for (const heading of headings) {
-    const top = headingTops[heading.id];
-    if (top !== undefined && top - 72 <= scrollTop) active = heading.id;
+    const top = getHeadingTop(heading);
+    if (top !== null && top <= 48) active = heading.id;
   }
   return active;
+}
+
+export function filterReaderHeadings(
+  headings: ReaderHeading[],
+  query: string,
+): ReaderHeading[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return headings;
+  return headings.filter((heading) =>
+    heading.title.toLowerCase().includes(needle),
+  );
 }
 
 export function filterOutlineNodes(

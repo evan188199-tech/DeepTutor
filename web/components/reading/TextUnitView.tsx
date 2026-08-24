@@ -74,7 +74,6 @@ export function TextUnitView({
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [headingTops, setHeadingTops] = useState<Record<string, number>>({});
   const headingsChangeRef = useRef(onHeadingsChange);
   const activeHeadingChangeRef = useRef(onActiveHeadingChange);
 
@@ -145,24 +144,6 @@ export function TextUnitView({
   );
 
   useEffect(() => {
-    if (loading || error || pageHeadings.length === 0) {
-      setHeadingTops({});
-      activeHeadingChangeRef.current?.(null);
-      return;
-    }
-    const article = containerRef.current?.querySelector("article");
-    if (!article) return;
-    const tops: Record<string, number> = {};
-    article
-      .querySelectorAll<HTMLElement>("[data-reader-heading-id]")
-      .forEach((element) => {
-        const id = element.dataset.readerHeadingId;
-        if (id) tops[id] = element.offsetTop;
-      });
-    setHeadingTops(tops);
-  }, [error, loading, pageHeadings]);
-
-  useEffect(() => {
     headingsChangeRef.current?.(pageHeadings);
     return () => headingsChangeRef.current?.([]);
   }, [pageHeadings]);
@@ -171,20 +152,34 @@ export function TextUnitView({
     if (!headingJump) return;
     const container = containerRef.current;
     const element = container?.querySelector<HTMLElement>(
-      `#${CSS.escape(headingJump.id)}`,
+      `[data-reader-heading-id="${CSS.escape(headingJump.id)}"]`,
     );
     if (!container || !element) return;
-    container.scrollTop = Math.max(0, element.offsetTop - 72);
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    container.scrollTo({
+      top: Math.max(
+        0,
+        container.scrollTop + elementRect.top - containerRect.top - 24,
+      ),
+    });
     activeHeadingChangeRef.current?.(headingJump.id);
   }, [headingJump]);
 
   const handleContainerScroll = useCallback(() => {
     const container = containerRef.current;
     if (!container || pageHeadings.length === 0) return;
+    const containerRect = container.getBoundingClientRect();
     activeHeadingChangeRef.current?.(
-      activeReaderHeading(pageHeadings, container.scrollTop, headingTops),
+      activeReaderHeading(pageHeadings, (heading) => {
+        const element = container.querySelector<HTMLElement>(
+          `[data-reader-heading-id="${CSS.escape(heading.id)}"]`,
+        );
+        if (!element) return null;
+        return element.getBoundingClientRect().top - containerRect.top;
+      }),
     );
-  }, [headingTops, pageHeadings]);
+  }, [pageHeadings]);
 
   const handlePointerUp = useCallback(() => {
     const selection = window.getSelection();

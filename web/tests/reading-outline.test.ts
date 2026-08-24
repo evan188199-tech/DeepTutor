@@ -6,6 +6,7 @@ import {
   activeReaderHeading,
   buildOutlineTree,
   extractReaderHeadings,
+  filterReaderHeadings,
   filterOutlineNodes,
 } from "../lib/reading-outline";
 
@@ -58,13 +59,24 @@ test("extracts Markdown headings and skips fenced code", () => {
 
 test("active heading follows the reading container", () => {
   const headings = extractReaderHeadings(["# One\n## Two\n### Three"], 1);
-  const active = activeReaderHeading(headings, 500, {
-    "dt-reader-heading-1-1": 0,
-    "dt-reader-heading-1-2": 480,
-    "dt-reader-heading-1-3": 900,
-  });
+  const active = activeReaderHeading(headings, (heading) =>
+    heading.title === "One"
+      ? -20
+      : heading.title === "Two"
+        ? 12
+        : 80,
+  );
 
   assert.equal(active, "dt-reader-heading-1-2");
+});
+
+test("page-heading filtering stays scoped to the current tab", () => {
+  const headings = extractReaderHeadings(["# Install\n## Docker\n## Use"], 2);
+
+  assert.deepEqual(
+    filterReaderHeadings(headings, "dock").map((heading) => heading.title),
+    ["Docker"],
+  );
 });
 
 test("reader outline is persistent, searchable, and wired to page headings", () => {
@@ -75,9 +87,13 @@ test("reader outline is persistent, searchable, and wired to page headings", () 
   assert.match(outline, /aria-label=\{t\("Contents"\)\}/);
   assert.match(outline, /Filter contents/);
   assert.match(outline, /On this page/);
+  assert.match(outline, /role="tablist"/);
+  assert.match(outline, /filterReaderHeadings/);
   assert.match(reader, /dt\.reader\.outline\.\$\{material\.material_id\}/);
   assert.match(reader, /event\.key\.toLowerCase\(\) === "b"/);
   assert.match(reader, /onNavigateHeading/);
   assert.match(textReader, /data-reader-heading-id/);
-  assert.match(textReader, /container\.scrollTop = Math\.max\(0, element\.offsetTop - 72\)/);
+  assert.match(textReader, /container\.scrollTo\(/);
+  assert.match(textReader, /elementRect\.top - containerRect\.top/);
+  assert.doesNotMatch(textReader, /element\.offsetTop - 72/);
 });
