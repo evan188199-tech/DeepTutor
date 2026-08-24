@@ -1,0 +1,104 @@
+import type { OutlineRow } from "@/lib/reading-api";
+
+export interface OutlineNode {
+  row: OutlineRow;
+  children: OutlineNode[];
+}
+
+export interface ReaderHeading {
+  id: string;
+  title: string;
+  level: number;
+}
+
+export function headingAnchor(locator: number, index: number): string {
+  return `dt-reader-heading-${locator}-${index + 1}`;
+}
+
+const HEADING_PATTERN = /^(#{1,6})\s+(.+?)\s*#*$/;
+
+export function readerHeadingLine(line: string): ReaderHeading | null {
+  const match = HEADING_PATTERN.exec(line.trim());
+  if (!match) return null;
+  const title = match[2].replace(/\s+#+$/, "").trim();
+  if (!title) return null;
+  return { id: "", title, level: match[1].length };
+}
+
+/** Extract Markdown headings while ignoring fenced code blocks. */
+export function extractReaderHeadings(
+  sources: Array<string | undefined | null>,
+  locator: number,
+): ReaderHeading[] {
+  const headings: ReaderHeading[] = [];
+  for (const source of sources) {
+    if (!source) continue;
+    let fence: string | null = null;
+    for (const line of source.split(/\r?\n/)) {
+      const fenceMatch = /^\s*(`{3,}|~{3,})/.exec(line);
+      if (fenceMatch) {
+        if (!fence) fence = fenceMatch[1];
+        else if (line.trim().startsWith(fence)) fence = null;
+        continue;
+      }
+      if (fence) continue;
+      const heading = readerHeadingLine(line);
+      if (heading) {
+        headings.push({
+          ...heading,
+          id: headingAnchor(locator, headings.length),
+        });
+      }
+    }
+  }
+  return headings;
+}
+
+export function activeReaderHeading(
+  headings: ReaderHeading[],
+  scrollTop: number,
+  headingTops: Readonly<Record<string, number>>,
+): string | null {
+  let active: string | null = null;
+  for (const heading of headings) {
+    const top = headingTops[heading.id];
+    if (top !== undefined && top - 72 <= scrollTop) active = heading.id;
+  }
+  return active;
+}
+
+export function filterOutlineNodes(
+  nodes: OutlineNode[],
+  query: string,
+): OutlineNode[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return nodes;
+  const visit = (node: OutlineNode): OutlineNode | null => {
+    const children = node.children
+      .map(visit)
+      .filter((row): row is OutlineNode => row !== null);
+    return node.row.title.toLowerCase().includes(needle) || children.length
+      ? { row: node.row, children }
+      : null;
+  };
+  return nodes.map(visit).filter((row): row is OutlineNode => row !== null);
+}
+
+export function buildOutlineTree(rows: OutlineRow[]): OutlineNode[] {
+  const roots: OutlineNode[] = [];
+  const stack: { level: number; node: OutlineNode }[] = [];
+
+  rows.forEach((row) => {
+    let level = Math.max(1, row.level);
+    if (!stack.length) level = 1;
+    else level = Math.min(level, stack[stack.length - 1].level + 1);
+
+    const node: OutlineNode = { row, children: [] };
+    while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+    if (stack.length) stack[stack.length - 1].node.children.push(node);
+    else roots.push(node);
+    stack.push({ level, node });
+  });
+
+  return roots;
+}

@@ -1,10 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { AnnotationItem, UnitKind } from "@/lib/reading-api";
 import { getUnitText } from "@/lib/reading-api";
+import {
+  activeReaderHeading,
+  extractReaderHeadings,
+  readerHeadingLine,
+  type ReaderHeading,
+} from "@/lib/reading-outline";
 import { segmentTextByQuotes } from "@/lib/reading-quote-locator";
 import { cleanQuote } from "@/lib/reading-selection";
 import type { JumpRequest, SelectionPayload } from "./PdfDocumentView";
@@ -27,6 +40,9 @@ export interface TextUnitViewProps {
   onSelection: (payload: SelectionPayload | null) => void;
   onAnnotationClick?: (annotation: AnnotationItem) => void;
   onVisibleLocatorChange?: (locator: number) => void;
+  onHeadingsChange?: (headings: ReaderHeading[]) => void;
+  onActiveHeadingChange?: (headingId: string | null) => void;
+  headingJump?: { id: string; nonce: number } | null;
 }
 
 /**
@@ -48,6 +64,9 @@ export function TextUnitView({
   onSelection,
   onAnnotationClick,
   onVisibleLocatorChange,
+  onHeadingsChange,
+  onActiveHeadingChange,
+  headingJump,
 }: TextUnitViewProps) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -55,6 +74,14 @@ export function TextUnitView({
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [headingTops, setHeadingTops] = useState<Record<string, number>>({});
+  const headingsChangeRef = useRef(onHeadingsChange);
+  const activeHeadingChangeRef = useRef(onActiveHeadingChange);
+
+  useEffect(() => {
+    headingsChangeRef.current = onHeadingsChange;
+    activeHeadingChangeRef.current = onActiveHeadingChange;
+  }, [onActiveHeadingChange, onHeadingsChange]);
 
   useEffect(() => {
     setLocator(1);
@@ -111,6 +138,53 @@ export function TextUnitView({
       ),
     [text, annotations, locator],
   );
+
+  const pageHeadings = useMemo(
+    () => extractReaderHeadings([text], locator),
+    [locator, text],
+  );
+
+  useEffect(() => {
+    if (loading || error || pageHeadings.length === 0) {
+      setHeadingTops({});
+      activeHeadingChangeRef.current?.(null);
+      return;
+    }
+    const article = containerRef.current?.querySelector("article");
+    if (!article) return;
+    const tops: Record<string, number> = {};
+    article
+      .querySelectorAll<HTMLElement>("[data-reader-heading-id]")
+      .forEach((element) => {
+        const id = element.dataset.readerHeadingId;
+        if (id) tops[id] = element.offsetTop;
+      });
+    setHeadingTops(tops);
+  }, [error, loading, pageHeadings]);
+
+  useEffect(() => {
+    headingsChangeRef.current?.(pageHeadings);
+    return () => headingsChangeRef.current?.([]);
+  }, [pageHeadings]);
+
+  useEffect(() => {
+    if (!headingJump) return;
+    const container = containerRef.current;
+    const element = container?.querySelector<HTMLElement>(
+      `#${CSS.escape(headingJump.id)}`,
+    );
+    if (!container || !element) return;
+    container.scrollTop = Math.max(0, element.offsetTop - 72);
+    activeHeadingChangeRef.current?.(headingJump.id);
+  }, [headingJump]);
+
+  const handleContainerScroll = useCallback(() => {
+    const container = containerRef.current;
+    if (!container || pageHeadings.length === 0) return;
+    activeHeadingChangeRef.current?.(
+      activeReaderHeading(pageHeadings, container.scrollTop, headingTops),
+    );
+  }, [headingTops, pageHeadings]);
 
   const handlePointerUp = useCallback(() => {
     const selection = window.getSelection();
@@ -180,6 +254,7 @@ export function TextUnitView({
         ref={containerRef}
         data-reader-unit={locator}
         onMouseUp={handlePointerUp}
+        onScroll={handleContainerScroll}
         className="dt-reader-scroll flex-1 overflow-y-auto overscroll-contain px-8 py-7"
       >
         {loading ? (
@@ -196,41 +271,112 @@ export function TextUnitView({
                 {t("This section has no extractable text.")}
               </span>
             ) : (
-              runs.map((run, index) =>
-                run.mark ? (
-                  <mark
-                    key={index}
-                    title={run.mark.note || undefined}
-                    onClick={() =>
-                      onAnnotationClick?.(run.mark as AnnotationItem)
-                    }
-                    className={`cursor-pointer rounded-[2px] px-[1px] text-[var(--foreground)] ${
-                      run.mark.annotation_id === highlightedAnnotationId
-                        ? "ring-2 ring-[var(--ring)]"
-                        : ""
-                    }`}
-                    style={{
-                      background:
-                        run.mark.kind === "underline"
-                          ? "transparent"
-                          : `rgb(${COLOR_INK[run.mark.color] ?? COLOR_INK.yellow} / 0.55)`,
-                      borderBottom:
-                        run.mark.kind === "underline"
-                          ? `2px solid rgb(${COLOR_INK[run.mark.color] ?? COLOR_INK.yellow})`
-                          : undefined,
-                    }}
-                  >
-                    {run.text}
-                  </mark>
-                ) : (
-                  <span key={index}>{run.text}</span>
-                ),
-              )
+              <RunsWithHeadings
+                runs={runs}
+                headings={pageHeadings}
+                highlightedAnnotationId={highlightedAnnotationId}
+                onAnnotationClick={onAnnotationClick}
+              />
             )}
           </article>
         )}
       </div>
     </div>
+  );
+}
+
+function RunsWithHeadings({
+  runs,
+  headings,
+  highlightedAnnotationId,
+  onAnnotationClick,
+}: {
+  runs: Array<{ text: string; mark: AnnotationItem | null }>;
+  headings: ReaderHeading[];
+  highlightedAnnotationId?: string | null;
+  onAnnotationClick?: (annotation: AnnotationItem) => void;
+}) {
+  const headingAnchors = useMemo(() => {
+    const anchors = new Map<string, ReaderHeading>();
+    let headingIndex = 0;
+    runs.forEach((run, runIndex) => {
+      run.text.split("\n").forEach((line, lineIndex) => {
+        const heading = run.mark ? null : readerHeadingLine(line);
+        const expected = heading ? headings[headingIndex] : undefined;
+        if (
+          heading &&
+          expected &&
+          expected.title === heading.title &&
+          expected.level === heading.level
+        ) {
+          anchors.set(`${runIndex}-${lineIndex}`, expected);
+          headingIndex += 1;
+        }
+      });
+    });
+    return anchors;
+  }, [headings, runs]);
+
+  return (
+    <>
+      {runs.map((run, runIndex) =>
+        run.text.split("\n").map((line, lineIndex) => {
+          const key = `${runIndex}-${lineIndex}`;
+          const heading = run.mark ? null : readerHeadingLine(line);
+          const expected = headingAnchors.get(key);
+          if (heading && expected) {
+            const Heading = `h${expected.level}` as
+              | "h1"
+              | "h2"
+              | "h3"
+              | "h4"
+              | "h5"
+              | "h6";
+            return (
+              <Fragment key={key}>
+                {lineIndex > 0 && <br />}
+                <Heading
+                  id={expected.id}
+                  data-reader-heading-id={expected.id}
+                  className="mt-5 mb-2 font-serif text-[var(--foreground)] first:mt-0"
+                >
+                  {expected.title}
+                </Heading>
+              </Fragment>
+            );
+          }
+          if (run.mark) {
+            return (
+              <mark
+                key={key}
+                title={run.mark.note || undefined}
+                onClick={() =>
+                  onAnnotationClick?.(run.mark as AnnotationItem)
+                }
+                className={`cursor-pointer rounded-[2px] px-[1px] text-[var(--foreground)] ${
+                  run.mark.annotation_id === highlightedAnnotationId
+                    ? "ring-2 ring-[var(--ring)]"
+                    : ""
+                }`}
+                style={{
+                  background:
+                    run.mark.kind === "underline"
+                      ? "transparent"
+                      : `rgb(${COLOR_INK[run.mark.color] ?? COLOR_INK.yellow} / 0.55)`,
+                  borderBottom:
+                    run.mark.kind === "underline"
+                      ? `2px solid rgb(${COLOR_INK[run.mark.color] ?? COLOR_INK.yellow})`
+                      : undefined,
+                }}
+              >
+                {lineIndex > 0 ? `\n${line}` : line}
+              </mark>
+            );
+          }
+          return <span key={key}>{lineIndex > 0 ? `\n${line}` : line}</span>;
+        }),
+      )}
+    </>
   );
 }
 
