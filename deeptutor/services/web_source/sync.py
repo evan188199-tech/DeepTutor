@@ -52,6 +52,27 @@ def _url_to_filename(url: str, base_path_prefix: str) -> str:
     return _to_filename(url, base_path_prefix)
 
 
+def _record_sync_failure(
+    kb_name: str,
+    source_id: str,
+    base_dir: str,
+    error: str,
+) -> None:
+    """Persist a visible error without advancing hashes past failed indexing."""
+    from deeptutor.knowledge.manager import KnowledgeBaseManager
+
+    try:
+        KnowledgeBaseManager(base_dir=base_dir).update_web_source_state(
+            kb_name=kb_name,
+            source_id=source_id,
+            last_synced_at=_utcnow_iso(),
+            last_sync_status="error",
+            last_sync_error=error,
+        )
+    except Exception:
+        logger.exception("Failed to persist web-source sync failure state")
+
+
 async def sync_source(
     kb_name: str,
     source: dict[str, Any],
@@ -71,14 +92,20 @@ async def sync_source(
     raw_dir = kb_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
 
-    diff = await crawl_and_diff(
-        source,
-        raw_dir,
-        max_depth=max_depth,
-        max_pages=max_pages,
-    )
-
+    try:
+        diff = await crawl_and_diff(
+            source,
+            raw_dir,
+            max_depth=max_depth,
+            max_pages=max_pages,
+        )
+    except Exception as exc:
+        logger.exception("Crawl failed for %s", source["url"])
+        error = str(exc)
+        _record_sync_failure(kb_name, source["id"], base_dir, error)
+        return WebSyncResult(ok=False, error=error)
     if not diff.ok:
+        _record_sync_failure(kb_name, source["id"], base_dir, diff.error)
         return WebSyncResult(ok=False, error=diff.error)
 
     # Index changed files via the standard KB pipeline (legacy per-file).
@@ -95,9 +122,13 @@ async def sync_source(
             )
         except Exception as exc:
             logger.warning("Indexing failed for web source files: %s", exc)
+            error = f"Indexing failed: {exc}"
+            _record_sync_failure(kb_name, source["id"], base_dir, error)
+            return WebSyncResult(ok=False, error=error)
 
     # Remove deleted pages from index (legacy per-file removal).
     removed_count = 0
+    removal_errors: list[str] = []
     for fname in diff.pages_removed:
         target = raw_dir / fname
         if target.exists():
@@ -108,6 +139,12 @@ async def sync_source(
                 removed_count += 1
             except Exception as exc:
                 logger.warning("Failed to remove %s: %s", fname, exc)
+                removal_errors.append(f"{fname}: {exc}")
+
+    if removal_errors:
+        error = "Failed to remove deleted pages: " + "; ".join(removal_errors)
+        _record_sync_failure(kb_name, source["id"], base_dir, error)
+        return WebSyncResult(ok=False, error=error)
 
     # Persist sync state.
     from deeptutor.knowledge.manager import KnowledgeBaseManager

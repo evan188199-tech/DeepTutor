@@ -143,6 +143,67 @@ async def test_sync_source_unchanged_pages(tmp_path: Path):
     assert result.pages_unchanged == 1
 
 
+@pytest.mark.asyncio
+async def test_sync_source_records_crawl_failure(tmp_path: Path):
+    base_dir, _kb_dir = _make_kb(tmp_path)
+    from deeptutor.knowledge.manager import KnowledgeBaseManager
+
+    manager = KnowledgeBaseManager(base_dir=base_dir)
+    source = manager.add_web_source("kb", "https://example.com/docs/")
+    result = CrawlResult(errors=["Disallowed host: localhost"])
+
+    with patch(
+        "deeptutor.services.web_source.crawler.crawl_docs_site", new_callable=AsyncMock
+    ) as mock_crawl:
+        mock_crawl.return_value = result
+        outcome = await sync_source("kb", source, base_dir=base_dir)
+
+    assert outcome.ok is False
+    assert "Disallowed host" in outcome.error
+    state = manager.get_web_sources("kb")[0]
+    assert state["last_sync_status"] == "error"
+    assert "Disallowed host" in state["last_sync_error"]
+    assert state["last_synced_at"]
+
+
+@pytest.mark.asyncio
+async def test_sync_source_indexing_failure_keeps_previous_hashes(tmp_path: Path):
+    base_dir, _kb_dir = _make_kb(tmp_path)
+    from deeptutor.knowledge.manager import KnowledgeBaseManager
+
+    manager = KnowledgeBaseManager(base_dir=base_dir)
+    source = manager.add_web_source("kb", "https://example.com/docs/")
+    source["page_hashes"] = {"docs.md": "old"}
+    manager.update_web_source_state("kb", source["id"], page_hashes=source["page_hashes"])
+    result = CrawlResult(
+        pages=[
+            CrawledPage(
+                url="https://example.com/docs/",
+                title="Home",
+                markdown="# Home",
+                content_hash="new",
+            )
+        ]
+    )
+
+    with patch(
+        "deeptutor.services.web_source.crawler.crawl_docs_site", new_callable=AsyncMock
+    ) as mock_crawl:
+        mock_crawl.return_value = result
+        with patch(
+            "deeptutor.knowledge.add_documents.add_documents", new_callable=AsyncMock
+        ) as mock_add:
+            mock_add.side_effect = RuntimeError("index unavailable")
+            outcome = await sync_source("kb", source, base_dir=base_dir)
+
+    assert outcome.ok is False
+    assert "index unavailable" in outcome.error
+    state = manager.get_web_sources("kb")[0]
+    assert state["last_sync_status"] == "error"
+    assert "index unavailable" in state["last_sync_error"]
+    assert state["page_hashes"] == {"docs.md": "old"}
+
+
 # ── Navigation extraction tests ──────────────────────────────────────
 
 

@@ -16,6 +16,7 @@ import shutil
 import stat
 import sys
 from typing import Any
+from urllib.parse import urlparse
 
 from deeptutor.knowledge.kb_types import (
     IMA_KB_TYPE,
@@ -46,6 +47,7 @@ from deeptutor.services.rag.index_probe import (
     inspect_provider_version,
     provider_failure_summary,
 )
+from deeptutor.services.web_source.crawler import MAX_CRAWL_DEPTH, MAX_CRAWL_PAGES
 
 logger = logging.getLogger(__name__)
 
@@ -1986,7 +1988,14 @@ class KnowledgeBaseManager:
         """Register a documentation site URL as a document source for a KB."""
         if kb_name not in self.list_knowledge_bases():
             raise ValueError(f"Knowledge base not found: {kb_name}")
+        if not 1 <= max_depth <= MAX_CRAWL_DEPTH:
+            raise ValueError(f"Web source crawl depth must be between 1 and {MAX_CRAWL_DEPTH}")
+        if not 1 <= max_pages <= MAX_CRAWL_PAGES:
+            raise ValueError(f"Web source crawl page count must be between 1 and {MAX_CRAWL_PAGES}")
         normalized_url = url.strip()
+        parsed_url = urlparse(normalized_url)
+        if parsed_url.scheme.lower() not in ("http", "https") or not parsed_url.hostname:
+            raise ValueError("Web source URL must be an absolute http(s) URL")
         source_id = hashlib.md5(  # noqa: S324
             normalized_url.encode(), usedforsecurity=False
         ).hexdigest()[:8]

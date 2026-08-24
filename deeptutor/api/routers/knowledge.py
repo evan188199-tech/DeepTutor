@@ -3370,9 +3370,9 @@ class GitHubSourceInfo(BaseModel):
 
 
 class AddWebSourceRequest(BaseModel):
-    url: str
-    max_depth: int = 3
-    max_pages: int = 200
+    url: str = Field(min_length=1, max_length=2048)
+    max_depth: int = Field(default=3, ge=1, le=5)
+    max_pages: int = Field(default=200, ge=1, le=200)
 
 
 class WebSourceInfo(BaseModel):

@@ -40,6 +40,8 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MAX_DEPTH = 3
 DEFAULT_MAX_PAGES = 200
+MAX_CRAWL_DEPTH = 5
+MAX_CRAWL_PAGES = DEFAULT_MAX_PAGES
 DEFAULT_CONCURRENCY = 8
 
 
@@ -285,6 +287,18 @@ async def crawl_docs_site(
     result = CrawlResult()
 
     # Validate base URL
+    try:
+        max_depth = int(max_depth)
+        max_pages = int(max_pages)
+    except (TypeError, ValueError):
+        result.errors.append("Crawl depth and page count must be integers")
+        return result
+    if not 1 <= max_depth <= MAX_CRAWL_DEPTH:
+        result.errors.append(f"Crawl depth must be between 1 and {MAX_CRAWL_DEPTH}")
+        return result
+    if not 1 <= max_pages <= MAX_CRAWL_PAGES:
+        result.errors.append(f"Crawl page count must be between 1 and {MAX_CRAWL_PAGES}")
+        return result
     parsed = urlparse(base_url)
     if parsed.scheme.lower() not in ("http", "https"):
         result.errors.append(f"Invalid scheme: {parsed.scheme}")

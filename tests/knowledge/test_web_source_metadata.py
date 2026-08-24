@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 
 
@@ -32,6 +34,33 @@ def test_add_web_source_is_idempotent(tmp_path: Path) -> None:
 
     assert first["id"] == second["id"]
     assert len(manager.get_web_sources(kb)) == 1
+
+
+@pytest.mark.parametrize(
+    ("url", "max_depth", "max_pages"),
+    [
+        ("file:///tmp/private", 3, 200),
+        ("https://example.com/docs", 0, 200),
+        ("https://example.com/docs", 6, 200),
+        ("https://example.com/docs", 3, 0),
+        ("https://example.com/docs", 3, 201),
+    ],
+)
+def test_add_web_source_rejects_unbounded_or_non_http_input(
+    tmp_path: Path,
+    url: str,
+    max_depth: int,
+    max_pages: int,
+) -> None:
+    manager, metadata_file, kb = _make_manager_with_kb(tmp_path)
+
+    with pytest.raises(ValueError):
+        manager.add_web_source(kb, url, max_depth, max_pages)
+
+    assert manager.get_web_sources(kb) == []
+    assert not metadata_file.exists() or "web_sources" not in json.loads(
+        metadata_file.read_text(encoding="utf-8")
+    )
 
 
 def test_remove_web_source(tmp_path: Path) -> None:
