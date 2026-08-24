@@ -16,6 +16,7 @@ pulling the whole file before rendering page one.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from pathlib import Path
 import shutil
@@ -165,6 +166,11 @@ class SupportedFormats(BaseModel):
     raw_view_extensions: list[str]
 
 
+class EpubPairingRequest(BaseModel):
+    english_material_id: str
+    chinese_material_id: str
+
+
 # === Routes ===================================================================
 
 
@@ -238,6 +244,55 @@ async def get_material(material_id: str) -> MaterialDetail:
         return _detail(store, store.manifest(material_id))
     except Exception as exc:
         raise _http_error(exc) from exc
+
+
+@router.get("/materials/{material_id}/epub-pairing-candidates")
+async def epub_pairing_candidates(material_id: str) -> list[dict[str, Any]]:
+    from deeptutor.reading.epub_bilingual import recommend_epub_candidates
+
+    try:
+        return await asyncio.to_thread(recommend_epub_candidates, _store(), material_id)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/epub-pairings")
+async def epub_pairings() -> list[dict[str, Any]]:
+    from deeptutor.reading.epub_bilingual import list_epub_pairings
+
+    return list_epub_pairings(_store())
+
+
+@router.post("/epub-pairings")
+async def create_epub_pairing(payload: EpubPairingRequest) -> dict[str, Any]:
+    from deeptutor.reading.epub_bilingual import create_epub_pairing
+
+    try:
+        pairing, manifest = await asyncio.to_thread(
+            create_epub_pairing,
+            _store(),
+            payload.english_material_id,
+            payload.chinese_material_id,
+        )
+        return {
+            "pairing": pairing,
+            "material": _detail(_store(), manifest).model_dump(),
+        }
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.delete("/epub-pairings/{pairing_id}")
+async def remove_epub_pairing(pairing_id: str) -> dict[str, Any]:
+    from deeptutor.reading.epub_bilingual import delete_epub_pairing
+
+    try:
+        removed = await asyncio.to_thread(delete_epub_pairing, _store(), pairing_id)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+    if not removed:
+        raise HTTPException(status_code=404, detail="EPUB pairing not found")
+    return {"status": "ok", "pairing_id": pairing_id}
 
 
 @router.delete("/materials/{material_id}")

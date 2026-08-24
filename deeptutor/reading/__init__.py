@@ -23,6 +23,13 @@ is testable on its own and the capability that drives it
 
 from __future__ import annotations
 
+from deeptutor.reading.epub_bilingual import (
+    build_bilingual_epub,
+    create_epub_pairing,
+    delete_epub_pairing,
+    list_epub_pairings,
+    recommend_epub_candidates,
+)
 from deeptutor.reading.export import ExportFormat, ExportResult, export_material
 from deeptutor.reading.extract import Extraction, extract_material
 from deeptutor.reading.models import (
@@ -76,12 +83,17 @@ __all__ = [
     "RenderMode",
     "UnitKind",
     "UnitReference",
+    "build_bilingual_epub",
     "content_hash",
+    "create_epub_pairing",
+    "delete_epub_pairing",
     "export_material",
     "extract_material",
+    "list_epub_pairings",
     "material_summary",
     "parse_locators",
     "render_outline",
+    "recommend_epub_candidates",
     "render_units",
     "search_material",
     "search_units",
