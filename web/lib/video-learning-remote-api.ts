@@ -19,15 +19,17 @@ export interface RemoteSession {
 }
 
 export interface RemoteNote {
-  note_id: string;
+  notebook_id: string;
+  record_id: string;
   video_id: string;
   title: string;
   position_ms: number;
   body: string;
   source: string;
   instance_origin: string;
-  created_at: string;
-  updated_at: string;
+  source_url?: string;
+  created_at?: number | string | null;
+  updated_at?: number | string | null;
 }
 
 export interface RemoteCommand {
@@ -38,6 +40,17 @@ export interface RemoteCommand {
   created_at: string;
   acked_at?: string | null;
   error?: string | null;
+}
+
+export interface CapturedTimestamp {
+  session_id: string;
+  video_id: string;
+  title: string;
+  instance_origin: string;
+  position_ms: number;
+  duration_ms: number;
+  playback_state: string;
+  online: boolean;
 }
 
 async function readError(response: Response): Promise<string> {
@@ -100,8 +113,25 @@ export async function getSessionCommand(sessionId: string, commandId: string): P
   return response.json();
 }
 
-export async function listVideoNotes(videoId: string): Promise<RemoteNote[]> {
-  const response = await apiFetch(`/api/v1/video-learning/videos/${encodeURIComponent(videoId)}/notes`);
+export async function captureTimestamp(sessionId: string): Promise<CapturedTimestamp> {
+  const response = await apiFetch(
+    `/api/v1/video-learning/sessions/${encodeURIComponent(sessionId)}/capture-timestamp`,
+    { method: "POST" },
+  );
+  if (!response.ok) throw new Error(await readError(response));
+  return response.json();
+}
+
+export async function listVideoNotes(
+  videoId: string,
+  notebookId?: string | null,
+): Promise<RemoteNote[]> {
+  const params = new URLSearchParams();
+  if (notebookId) params.set("notebook_id", notebookId);
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+  const response = await apiFetch(
+    `/api/v1/video-learning/videos/${encodeURIComponent(videoId)}/notes${suffix}`,
+  );
   if (!response.ok) throw new Error(await readError(response));
   const data = await response.json();
   return data.notes || [];
@@ -109,7 +139,15 @@ export async function listVideoNotes(videoId: string): Promise<RemoteNote[]> {
 
 export async function createVideoNote(
   videoId: string,
-  payload: { body: string; session_id?: string; position_ms?: number; title?: string },
+  payload: {
+    body: string;
+    session_id?: string;
+    position_ms?: number;
+    title?: string;
+    instance_origin?: string;
+    notebook_id?: string | null;
+    capture?: boolean;
+  },
 ): Promise<RemoteNote> {
   const response = await apiFetch(`/api/v1/video-learning/videos/${encodeURIComponent(videoId)}/notes`, {
     method: "POST",
@@ -120,20 +158,28 @@ export async function createVideoNote(
   return response.json();
 }
 
-export async function updateVideoNote(noteId: string, body: string): Promise<RemoteNote> {
-  const response = await apiFetch(`/api/v1/video-learning/notes/${noteId}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ body }),
-  });
+export async function updateVideoNote(
+  notebookId: string,
+  recordId: string,
+  body: string,
+): Promise<RemoteNote> {
+  const response = await apiFetch(
+    `/api/v1/video-learning/notes/${encodeURIComponent(notebookId)}/${encodeURIComponent(recordId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body }),
+    },
+  );
   if (!response.ok) throw new Error(await readError(response));
   return response.json();
 }
 
-export async function deleteVideoNote(noteId: string): Promise<void> {
-  const response = await apiFetch(`/api/v1/video-learning/notes/${noteId}`, {
-    method: "DELETE",
-  });
+export async function deleteVideoNote(notebookId: string, recordId: string): Promise<void> {
+  const response = await apiFetch(
+    `/api/v1/video-learning/notes/${encodeURIComponent(notebookId)}/${encodeURIComponent(recordId)}`,
+    { method: "DELETE" },
+  );
   if (!response.ok) throw new Error(await readError(response));
 }
 

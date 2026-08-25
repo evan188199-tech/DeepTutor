@@ -7,7 +7,6 @@ import pytest
 
 from deeptutor.video_learning.store import (
     VideoLearningConflict,
-    VideoLearningNotFound,
     VideoLearningStore,
 )
 
@@ -49,7 +48,7 @@ def test_pairing_rejects_reuse_and_expiry(store: VideoLearningStore, monkeypatch
         store.claim_pairing(code=expired.code, owner_id="user-1")
 
 
-def test_session_commands_notes_and_isolation(store: VideoLearningStore) -> None:
+def test_session_commands_and_isolation(store: VideoLearningStore) -> None:
     pairing = store.create_pairing()
     _, device, token = store.claim_pairing(code=pairing.code, owner_id="owner-a")
     assert store.verify_token(device.device_id, token)
@@ -85,16 +84,6 @@ def test_session_commands_notes_and_isolation(store: VideoLearningStore) -> None
     assert acked.status == "acked"
     assert store.pending_commands(device.device_id, session.session_id) == []
 
-    note = store.create_note(
-        owner_id="owner-a",
-        video_id="dQw4w9WgXcQ",
-        position_ms=session.position_ms,
-        body="important beat",
-        title=session.title,
-        instance_origin=session.instance_origin,
-    )
-    assert store.list_notes("owner-a", "dQw4w9WgXcQ")[0].note_id == note.note_id
-    assert store.list_notes("owner-b", "dQw4w9WgXcQ") == []
     assert store.revoke_device("owner-a", device.device_id) is True
     assert store.verify_token(device.device_id, token) is None
 

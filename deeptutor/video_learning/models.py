@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-
 CommandType = Literal["pause", "play", "seek"]
 CommandStatus = Literal["pending", "acked", "failed", "expired"]
 PlaybackState = Literal["playing", "paused", "buffering", "ended", "unknown"]
@@ -63,17 +62,3 @@ class PlayerCommand:
     created_at: str = ""
     acked_at: str | None = None
     error: str | None = None
-
-
-@dataclass(slots=True)
-class VideoNote:
-    note_id: str
-    owner_id: str
-    source: str
-    instance_origin: str
-    video_id: str
-    title: str
-    position_ms: int
-    body: str
-    created_at: str
-    updated_at: str

@@ -1,8 +1,9 @@
-"""SQLite store for video-learning remote control and notes.
+"""SQLite store for video-learning remote control.
 
-Owns pairing codes, device tokens, live player sessions, commands, and
-timestamped notes. Device-token endpoints must never create a database from
-unauthenticated input; use VideoLearningStore.open_existing.
+Owns pairing codes, device tokens, live player sessions, and commands.
+Timestamped notes now live in DeepTutor Notebook. Device-token endpoints must
+never create a database from unauthenticated input; use
+VideoLearningStore.open_existing.
 """
 
 from __future__ import annotations
@@ -10,10 +11,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+from pathlib import Path
 import secrets
 import sqlite3
 import string
-from pathlib import Path
 from typing import Any
 
 from deeptutor.video_learning.models import (
@@ -21,7 +22,6 @@ from deeptutor.video_learning.models import (
     Pairing,
     PlayerCommand,
     PlayerSession,
-    VideoNote,
 )
 
 _SCHEMA = """
@@ -90,21 +90,6 @@ CREATE TABLE IF NOT EXISTS commands (
 CREATE INDEX IF NOT EXISTS idx_vl_commands_session_status
     ON commands (session_id, status, created_at);
 
-CREATE TABLE IF NOT EXISTS notes (
-    note_id         TEXT PRIMARY KEY,
-    owner_id        TEXT NOT NULL,
-    source          TEXT NOT NULL DEFAULT 'invidious',
-    instance_origin TEXT NOT NULL DEFAULT '',
-    video_id        TEXT NOT NULL,
-    title           TEXT NOT NULL DEFAULT '',
-    position_ms     INTEGER NOT NULL,
-    body            TEXT NOT NULL DEFAULT '',
-    created_at      TEXT NOT NULL,
-    updated_at      TEXT NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_vl_notes_owner_video
-    ON notes (owner_id, video_id, position_ms);
 """
 
 PAIRING_TTL = timedelta(minutes=5)
@@ -154,7 +139,7 @@ def default_db_path(*, path_service: Any = None) -> Path:
 
 
 class VideoLearningStore:
-    """SQLite-backed remote-control + notes store."""
+    """SQLite-backed remote-control store."""
 
     def __init__(self, db_path: str | Path) -> None:
         self.db_path = Path(db_path)
@@ -236,20 +221,6 @@ class VideoLearningStore:
             error=row["error"],
         )
 
-    @staticmethod
-    def _row_to_note(row: sqlite3.Row) -> VideoNote:
-        return VideoNote(
-            note_id=row["note_id"],
-            owner_id=row["owner_id"],
-            source=row["source"],
-            instance_origin=row["instance_origin"],
-            video_id=row["video_id"],
-            title=row["title"],
-            position_ms=int(row["position_ms"]),
-            body=row["body"],
-            created_at=row["created_at"],
-            updated_at=row["updated_at"],
-        )
 
     def create_pairing(self) -> Pairing:
         now = _now()
@@ -667,90 +638,3 @@ class VideoLearningStore:
                 (command_id, owner_id),
             ).fetchone()
         return self._row_to_command(row) if row else None
-
-    def create_note(
-        self,
-        *,
-        owner_id: str,
-        video_id: str,
-        position_ms: int,
-        body: str,
-        title: str = "",
-        source: str = "invidious",
-        instance_origin: str = "",
-    ) -> VideoNote:
-        body = (body or "").strip()
-        if not body:
-            raise VideoLearningConflict("Note body is required.")
-        if not video_id.strip():
-            raise VideoLearningConflict("video_id is required.")
-        now = _now_iso()
-        note = VideoNote(
-            note_id=secrets.token_urlsafe(12),
-            owner_id=owner_id,
-            source=source or "invidious",
-            instance_origin=instance_origin or "",
-            video_id=video_id.strip(),
-            title=title or "",
-            position_ms=max(0, int(position_ms)),
-            body=body,
-            created_at=now,
-            updated_at=now,
-        )
-        with self._connect() as conn:
-            conn.execute(
-                """INSERT INTO notes
-                   (note_id, owner_id, source, instance_origin, video_id, title,
-                    position_ms, body, created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (
-                    note.note_id,
-                    note.owner_id,
-                    note.source,
-                    note.instance_origin,
-                    note.video_id,
-                    note.title,
-                    note.position_ms,
-                    note.body,
-                    note.created_at,
-                    note.updated_at,
-                ),
-            )
-        return note
-
-    def list_notes(self, owner_id: str, video_id: str) -> list[VideoNote]:
-        with self._connect() as conn:
-            rows = conn.execute(
-                """SELECT * FROM notes
-                   WHERE owner_id = ? AND video_id = ?
-                   ORDER BY position_ms ASC, created_at ASC""",
-                (owner_id, video_id),
-            ).fetchall()
-        return [self._row_to_note(row) for row in rows]
-
-    def update_note(self, owner_id: str, note_id: str, body: str) -> VideoNote:
-        body = (body or "").strip()
-        if not body:
-            raise VideoLearningConflict("Note body is required.")
-        now = _now_iso()
-        with self._connect() as conn:
-            cur = conn.execute(
-                """UPDATE notes SET body = ?, updated_at = ?
-                   WHERE note_id = ? AND owner_id = ?""",
-                (body, now, note_id, owner_id),
-            )
-            if cur.rowcount != 1:
-                raise VideoLearningNotFound("Note not found.")
-            row = conn.execute(
-                "SELECT * FROM notes WHERE note_id = ?",
-                (note_id,),
-            ).fetchone()
-        return self._row_to_note(row)
-
-    def delete_note(self, owner_id: str, note_id: str) -> bool:
-        with self._connect() as conn:
-            cur = conn.execute(
-                "DELETE FROM notes WHERE note_id = ? AND owner_id = ?",
-                (note_id, owner_id),
-            )
-            return cur.rowcount > 0

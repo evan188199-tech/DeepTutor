@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from pathlib import Path
+import time
 from typing import Any
 from urllib.parse import urlparse
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from deeptutor.api.routers.auth import require_auth
 from deeptutor.multi_user.context import get_current_user
 from deeptutor.services.path_service import PathService, get_path_service
+from deeptutor.video_learning import notebook_notes
 from deeptutor.video_learning.store import (
     VideoLearningConflict,
     VideoLearningNotFound,
@@ -121,10 +124,111 @@ class NoteCreateRequest(BaseModel):
     instance_origin: str = Field("", max_length=256)
     video_id: str | None = Field(None, max_length=64)
     session_id: str | None = Field(None, max_length=64)
+    notebook_id: str | None = Field(None, max_length=64)
+    capture: bool = False
 
 
 class NoteUpdateRequest(BaseModel):
     body: str = Field(..., min_length=1, max_length=8000)
+
+
+async def _await_command_ack(
+    store: VideoLearningStore,
+    *,
+    owner_id: str,
+    session_id: str,
+    command_id: str,
+    timeout_s: float = 5.0,
+):
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        command = store.get_command(command_id, owner_id)
+        if command is None:
+            raise VideoLearningNotFound("Command not found.")
+        if command.session_id != session_id:
+            raise VideoLearningNotFound("Command not found.")
+        if command.status in {"acked", "failed", "expired"}:
+            return command
+        await asyncio.sleep(0.25)
+    raise VideoLearningConflict("Timed out waiting for iPad acknowledgement.")
+
+
+async def _refresh_session_after_pause(
+    store: VideoLearningStore,
+    *,
+    session_id: str,
+    owner_id: str,
+    previous_updated_at: str,
+    timeout_s: float = 2.0,
+):
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        session = store.get_session(session_id, owner_id)
+        if session is None:
+            return None
+        if session.playback_state == "paused" or session.updated_at != previous_updated_at:
+            return session
+        await asyncio.sleep(0.2)
+    return store.get_session(session_id, owner_id)
+
+
+async def _capture_session_timestamp(
+    store: VideoLearningStore,
+    *,
+    session_id: str,
+    owner_id: str,
+) -> dict[str, Any]:
+    session = store.get_session(session_id, owner_id)
+    if session is None:
+        raise VideoLearningNotFound("Session not found.")
+    if not store.session_is_online(session):
+        raise VideoLearningConflict(
+            "iPad session is offline; cannot capture the current timestamp."
+        )
+    previous_updated_at = session.updated_at
+    command = store.enqueue_command(session=session, command_type="pause")
+    acked = await _await_command_ack(
+        store,
+        owner_id=owner_id,
+        session_id=session_id,
+        command_id=command.command_id,
+    )
+    if acked.status != "acked":
+        raise VideoLearningConflict(acked.error or f"Pause command {acked.status}.")
+    refreshed = await _refresh_session_after_pause(
+        store,
+        session_id=session_id,
+        owner_id=owner_id,
+        previous_updated_at=previous_updated_at,
+    )
+    if refreshed is None:
+        raise VideoLearningNotFound("Session not found.")
+    return {
+        "session_id": refreshed.session_id,
+        "video_id": refreshed.video_id,
+        "title": refreshed.title,
+        "instance_origin": refreshed.instance_origin,
+        "position_ms": int(refreshed.position_ms),
+        "duration_ms": int(refreshed.duration_ms),
+        "playback_state": refreshed.playback_state,
+        "online": store.session_is_online(refreshed),
+    }
+
+
+def _serialize_note(note: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "notebook_id": note["notebook_id"],
+        "record_id": note["record_id"],
+        "video_id": note.get("video_id") or "",
+        "title": note.get("title") or "",
+        "position_ms": int(note.get("position_ms") or 0),
+        "body": note.get("body") or "",
+        "source": note.get("source") or "invidious",
+        "instance_origin": note.get("instance_origin") or "",
+        "source_url": note.get("source_url") or "",
+        "created_at": note.get("created_at"),
+        "updated_at": note.get("updated_at"),
+    }
 
 
 @router.post("/pairings")
@@ -324,26 +428,27 @@ async def get_session_command(session_id: str, command_id: str) -> dict[str, Any
     }
 
 
-@router.get("/videos/{video_id}/notes", dependencies=_auth)
-async def list_video_notes(video_id: str) -> dict[str, Any]:
+@router.post("/sessions/{session_id}/capture-timestamp", dependencies=_auth)
+async def capture_timestamp(session_id: str) -> dict[str, Any]:
+    """Pause the iPad player and return the authoritative timestamp."""
     store = _store_for_session()
-    notes = store.list_notes(_owner_id(), video_id)
-    return {
-        "notes": [
-            {
-                "note_id": n.note_id,
-                "video_id": n.video_id,
-                "title": n.title,
-                "position_ms": n.position_ms,
-                "body": n.body,
-                "source": n.source,
-                "instance_origin": n.instance_origin,
-                "created_at": n.created_at,
-                "updated_at": n.updated_at,
-            }
-            for n in notes
-        ]
-    }
+    try:
+        return await _capture_session_timestamp(
+            store,
+            session_id=session_id,
+            owner_id=_owner_id(),
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise _http_error(exc) from exc
+
+
+@router.get("/videos/{video_id}/notes", dependencies=_auth)
+async def list_video_notes(
+    video_id: str,
+    notebook_id: str | None = None,
+) -> dict[str, Any]:
+    notes = notebook_notes.list_video_notes(video_id, notebook_id=notebook_id)
+    return {"notes": [_serialize_note(note) for note in notes]}
 
 
 @router.post("/videos/{video_id}/notes", dependencies=_auth, status_code=201)
@@ -352,63 +457,73 @@ async def create_video_note(video_id: str, body: NoteCreateRequest) -> dict[str,
     position_ms = body.position_ms
     title = body.title
     instance_origin = body.instance_origin
-    if body.session_id:
+    needs_capture = body.capture or (body.session_id and position_ms is None)
+
+    if needs_capture:
+        if not body.session_id:
+            raise HTTPException(400, "session_id is required to capture the current timestamp.")
+        try:
+            captured = await _capture_session_timestamp(
+                store,
+                session_id=body.session_id,
+                owner_id=_owner_id(),
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise _http_error(exc) from exc
+        if captured["video_id"] != video_id:
+            raise HTTPException(409, "session video_id mismatch.")
+        position_ms = int(captured["position_ms"])
+        title = title or str(captured.get("title") or "")
+        instance_origin = instance_origin or str(captured.get("instance_origin") or "")
+    elif body.session_id:
         session = store.get_session(body.session_id, _owner_id())
         if session is None:
             raise HTTPException(404, "Session not found.")
         if session.video_id != video_id:
             raise HTTPException(409, "session video_id mismatch.")
-        if position_ms is None:
-            position_ms = session.position_ms
         title = title or session.title
         instance_origin = instance_origin or session.instance_origin
+
     if position_ms is None:
-        raise HTTPException(400, "position_ms is required when no live session is provided.")
+        raise HTTPException(
+            400,
+            "position_ms is required when no live capture is requested.",
+        )
+
     try:
-        note = store.create_note(
-            owner_id=_owner_id(),
+        note = notebook_notes.create_video_note(
             video_id=video_id,
-            position_ms=position_ms,
+            position_ms=int(position_ms),
             body=body.body,
             title=title,
-            source=body.source,
             instance_origin=instance_origin,
+            source=body.source,
+            notebook_id=body.notebook_id,
         )
-    except Exception as exc:  # noqa: BLE001
-        raise _http_error(exc) from exc
-    return {
-        "note_id": note.note_id,
-        "video_id": note.video_id,
-        "title": note.title,
-        "position_ms": note.position_ms,
-        "body": note.body,
-        "source": note.source,
-        "instance_origin": note.instance_origin,
-        "created_at": note.created_at,
-        "updated_at": note.updated_at,
-    }
+    except LookupError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return _serialize_note(note)
 
 
-@router.patch("/notes/{note_id}", dependencies=_auth)
-async def update_note(note_id: str, body: NoteUpdateRequest) -> dict[str, Any]:
-    store = _store_for_session()
+@router.patch("/notes/{notebook_id}/{record_id}", dependencies=_auth)
+async def update_note(
+    notebook_id: str,
+    record_id: str,
+    body: NoteUpdateRequest,
+) -> dict[str, Any]:
     try:
-        note = store.update_note(_owner_id(), note_id, body.body)
-    except Exception as exc:  # noqa: BLE001
-        raise _http_error(exc) from exc
-    return {
-        "note_id": note.note_id,
-        "video_id": note.video_id,
-        "title": note.title,
-        "position_ms": note.position_ms,
-        "body": note.body,
-        "updated_at": note.updated_at,
-    }
+        note = notebook_notes.update_video_note(notebook_id, record_id, body.body)
+    except LookupError as exc:
+        raise HTTPException(404, str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
+    return _serialize_note(note)
 
 
-@router.delete("/notes/{note_id}", dependencies=_auth)
-async def delete_note(note_id: str) -> dict[str, bool]:
-    store = _store_for_session()
-    if not store.delete_note(_owner_id(), note_id):
+@router.delete("/notes/{notebook_id}/{record_id}", dependencies=_auth)
+async def delete_note(notebook_id: str, record_id: str) -> dict[str, bool]:
+    if not notebook_notes.delete_video_note(notebook_id, record_id):
         raise HTTPException(404, "Note not found.")
     return {"deleted": True}

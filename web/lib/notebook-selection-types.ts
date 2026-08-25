@@ -34,6 +34,8 @@ export function getTypeColor(type: string): string {
       return "bg-cyan-100 text-cyan-700 border-cyan-200";
     case "co_writer":
       return "bg-amber-100 text-amber-700 border-amber-200";
+    case "video_note":
+      return "bg-rose-100 text-rose-700 border-rose-200";
     default:
       return "bg-slate-100 text-slate-700 border-slate-200";
   }
