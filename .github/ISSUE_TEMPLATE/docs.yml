@@ -1,6 +1,6 @@
 name: Documentation Issue
 description: Report an inaccuracy, broken link, missing topic, or unclear explanation in the docs at deeptutor.info
-title: "[Docs]: "
+title: "docs(<scope>): <summary>"
 labels: ["docs", "triage"]
 
 body:

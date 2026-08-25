@@ -41,6 +41,67 @@ tokens, or cached credentials.
 Keep rollback snapshots and deployment-recovery trees in ignored local paths
 such as `backups/` or `web/.next-*/`; do not turn them into repository content.
 
+## Issue, PR, and commit naming conventions
+
+### 1. Global Conventional Specification
+
+All engineering deliverables (issues, pull requests, branches, and git commits) must adhere to the unified Conventional Lifecycle:
+
+```text
+<type>(<scope>): <imperative summary>
+```
+
+#### Type & Label Matrix
+
+| Type | Target Label | Description | Example |
+| :--- | :--- | :--- | :--- |
+| `feat` | `enhancement` | New user-facing capability or subsystem | `feat(video-learning): add YouTube immersive watching` |
+| `fix` | `bug` | Defect fix or bug resolution | `fix(reading): restore persistent outline parity` |
+| `refactor` | `enhancement` | Structural restructuring with zero behavior change | `refactor(knowledge): isolate GitHub source sync into standalone pipeline` |
+| `perf` | `performance` | Performance, memory, or latency optimization | `perf(reading): virtualize long outline rendering` |
+| `test` | `testing` | Adding or correcting tests and test harnesses | `test(reading): cover W3C selector clicks` |
+| `docs` | `documentation` | Documentation and architecture guides | `docs: align kids roadmap with learner account` |
+| `arch` / `rfc` | `enhancement` | Architecture designs and governance proposals | `arch(learner): model learners as ordinary users` |
+| `chore` | `chore` | Tooling, build config, CI, or dependency updates | `chore: guard primary checkout hygiene` |
+
+#### Universal Rules
+
+1. **Entity/Domain Nouns for Scope**: Scope must be a concrete subsystem or domain noun (e.g. `reading`, `video-learning`, `learner`, `api`). Never use action verbs or gerunds (e.g. use `video-learning` instead of `watching`).
+2. **Imperative Mood**: Summaries must start with an imperative action verb (`add`, `fix`, `isolate`, `enforce`, `unify`, `support`, `restore`). Avoid conversational phrases (`needs`, `should`).
+3. **No Redundant Articles**: Omit unnecessary leading articles (`a`, `an`, `the`).
+
+### 2. DeepTutor Project Scopes
+
+Map scopes to the corresponding DeepTutor functional subsystems:
+
+| Scope | Subsystem & Coverage |
+| :--- | :--- |
+| `reading` | Immersive reading, EPUB/PDF/Markdown rendering, W3C text selectors, typography, outline navigation |
+| `video-learning` | Timed media, YouTube/Bilibili immersive watching, transcripts/ASR, timestamp citations |
+| `learner` | Learner account architecture, guardian authorization, safety policy, presets, device pairing |
+| `kids` | Kids reading, family library isolation, supervised child reading flow |
+| `knowledge` | Knowledge bases, GitHub source sync, web crawling & sync, bilingual pairing, indexing |
+| `assessment` | Quiz, question notebook, mastery path, Focus-Check, wrong-answer persistence |
+| `plugins` | Learning resource providers (dictionaries, glossaries, external bridges), capability plugins |
+| `partners` | IM companion channels (Feishu/Lark, WeCom, Matrix, Telegram) |
+| `capabilities` | Multi-stage pipelines (`deep_solve`, `deep_research`, `visualize`, `math_animator`, etc.) |
+| `web` | Frontend UI components, layouts, state |
+| `api` / `server` | Backend HTTP/WebSocket endpoints and middleware |
+
+### 3. End-to-End Lifecycle Alignment
+
+1. **Issue Creation via CLI**:
+   - Specify `--template "Feature Request"` (or `"Bug Report"`) to inherit repository labels:
+     ```bash
+     gh issue create --repo HKUDS/DeepTutor \
+       --title "feat(video-learning): add YouTube immersive watching" \
+       --template "Feature Request" \
+       --body-file issue_body.md
+     ```
+2. **Branch Name**: `codex/video-learning-youtube`
+3. **PR Title**: `feat(video-learning): add YouTube immersive watching (#997)`
+4. **Commit Message**: `feat(video-learning): add YouTube immersive watching`
+
 ## Merging
 
 Before merging a branch into `main`:

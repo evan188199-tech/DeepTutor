@@ -207,23 +207,57 @@ We use automated tools (configured via `pyproject.toml` and `.pre-commit-config.
 
 ---
 
-## Commit Message Format
+## Issue, PR, and Commit Naming Conventions
+
+### 1. Global Conventional Specification
+
+All issues, pull requests, branches, and commit messages must follow the universal Conventional Lifecycle:
 
 ```
-<type>: <short description>
+<type>(<scope>): <imperative summary>
 
 [optional body]
 ```
 
-| Type | Description |
-|---|---|
-| `feat` | A new feature (MINOR version bump) |
-| `fix` | A bug fix (PATCH version bump) |
-| `docs` | Documentation only changes |
-| `style` | Formatting, no logic changes |
-| `refactor` | Code restructuring, no new features or fixes |
-| `test` | Adding or correcting tests |
-| `chore` | Build process, tooling, or dependency updates |
+| Type | Target Label | Description | Example |
+|---|---|---|---|
+| `feat` | `enhancement` | A new feature or capability | `feat(video-learning): add YouTube immersive watching` |
+| `fix` | `bug` | A bug fix | `fix(reading): restore persistent outline parity` |
+| `refactor` | `enhancement` | Code restructuring without behavior changes | `refactor(knowledge): isolate GitHub source sync into standalone pipeline` |
+| `perf` | `performance` | Performance improvements | `perf(reading): virtualize long outline rendering` |
+| `test` | `testing` | Adding or correcting tests | `test(reading): cover W3C selector clicks` |
+| `docs` | `documentation` | Documentation only changes | `docs: align kids roadmap with learner account` |
+| `arch` / `rfc` | `enhancement` | Architecture design and governance proposals | `arch(learner): model learners as ordinary users` |
+| `chore` | `chore` | Build process, tooling, or dependency updates | `chore: guard primary checkout hygiene` |
+
+#### Universal Style Rules
+
+1. **Noun-based Scopes**: Scope must always be a concrete subsystem or domain noun (e.g., `auth`, `api`, `storage`, `web`, `cli`, `engine`). Never use action verbs or gerunds (e.g., use `video-learning` or `video` instead of `watching`).
+2. **Imperative Mood**: Summaries must start with a concise action verb (`add`, `fix`, `isolate`, `enforce`, `unify`, `support`, `remove`, `update`, `restore`), avoiding conversational phrases (`needs`, `should`).
+3. **No Leading Articles**: Omit unnecessary articles (`a`, `an`, `the`).
+
+### 2. DeepTutor Project Domain Scopes
+
+When contributing to DeepTutor, use the corresponding domain scope:
+
+- `reading` — Immersive reading, EPUB/PDF/Markdown rendering, W3C text selectors, typography, outline navigation
+- `video-learning` — Timed media, YouTube/Bilibili immersive watching, transcripts/ASR, timestamp citations
+- `learner` — Learner account architecture, guardian authorization, safety policy, presets, device pairing
+- `kids` — Kids reading, family library isolation, supervised child reading flow
+- `knowledge` — Knowledge bases, GitHub source sync, web crawling & sync, bilingual pairing, indexing
+- `assessment` — Quiz, question notebook, mastery path, Focus-Check, wrong-answer persistence
+- `plugins` — Learning resource providers (dictionaries, glossaries, external bridges), capability plugins
+- `partners` — IM companion channels (Feishu/Lark, WeCom, Matrix, Telegram)
+- `capabilities` — Multi-stage pipelines (`deep_solve`, `deep_research`, `visualize`, `math_animator`, etc.)
+- `web` — Frontend UI components, layouts, pages
+- `api` / `server` — Backend HTTP/WebSocket endpoints and middleware
+
+### 3. End-to-End Lifecycle Alignment
+
+1. **Issue**: `feat(video-learning): add YouTube immersive watching` (Label: `enhancement`)
+2. **Branch**: `codex/video-learning-youtube`
+3. **PR**: `feat(video-learning): add YouTube immersive watching (#997)`
+4. **Commit**: `feat(video-learning): add YouTube immersive watching`
 
 ---
 
