@@ -1,6 +1,6 @@
 import { expect, test, type BrowserContext, type Page, type TestInfo } from "@playwright/test";
 
-import type { TimedMediaMaterial, VideoLearningMark } from "../../lib/video-learning-api";
+import type { TimedMediaMaterial, VideoLearningMark, VideoNote } from "../../lib/video-learning-api";
 
 const material: TimedMediaMaterial = {
   version: 1,
@@ -34,7 +34,12 @@ const material: TimedMediaMaterial = {
   learning: { last_position: 0, notes: [], marks: [] },
 };
 
-async function mockWatchingApis(page: Page, marks: VideoLearningMark[], options: { failCreate?: boolean } = {}) {
+async function mockWatchingApis(
+  page: Page,
+  marks: VideoLearningMark[],
+  notes: VideoNote[],
+  options: { failCreate?: boolean } = {},
+) {
   await page.route("**/api/v1/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -92,10 +97,10 @@ async function mockWatchingApis(page: Page, marks: VideoLearningMark[], options:
       });
     }
     if (path === "/api/v1/video-learning/resolve" && request.method() === "POST") {
-      return json({ ...material, learning: { ...material.learning, marks: [...marks] } });
+      return json({ ...material, learning: { ...material.learning, marks: [...marks], notes: [...notes] } });
     }
     if (path === `/api/v1/video-learning/materials/${material.material_id}` && request.method() === "GET") {
-      return json({ ...material, learning: { ...material.learning, marks: [...marks] } });
+      return json({ ...material, learning: { ...material.learning, marks: [...marks], notes: [...notes] } });
     }
     if (path === `/api/v1/video-learning/materials/${material.material_id}/marks` && request.method() === "POST") {
       if (options.failCreate) {
@@ -121,6 +126,17 @@ async function mockWatchingApis(page: Page, marks: VideoLearningMark[], options:
       marks.push(saved);
       return json(saved, 201);
     }
+    if (path === `/api/v1/video-learning/materials/${material.material_id}/notes` && request.method() === "POST") {
+      const body = request.postDataJSON() as Partial<VideoNote>;
+      const saved: VideoNote = {
+        note_id: `note-${notes.length + 1}`,
+        text: String(body?.text || ""),
+        time_seconds: Number(body?.time_seconds || 0),
+        created_at: "2026-08-24T00:00:00Z",
+      };
+      notes.push(saved);
+      return json(saved, 201);
+    }
     if (path.includes("/mark-suggestions") && request.method() === "POST") {
       return json({
         suggestions: [
@@ -144,7 +160,14 @@ async function mockWatchingApis(page: Page, marks: VideoLearningMark[], options:
   });
 }
 
-async function openWatching(page: Page, context: BrowserContext, testInfo: TestInfo, marks: VideoLearningMark[], options: { failCreate?: boolean } = {}) {
+async function openWatching(
+  page: Page,
+  context: BrowserContext,
+  testInfo: TestInfo,
+  marks: VideoLearningMark[],
+  notes: VideoNote[] = [],
+  options: { failCreate?: boolean } = {},
+) {
   await context.addCookies([
     {
       name: "dt_token",
@@ -152,7 +175,7 @@ async function openWatching(page: Page, context: BrowserContext, testInfo: TestI
       url: String(testInfo.project.use.baseURL || "http://localhost:3782"),
     },
   ]);
-  await mockWatchingApis(page, marks, options);
+  await mockWatchingApis(page, marks, notes, options);
   await page.goto("/home");
   await page.getByRole("button", { name: "Chat", exact: true }).click();
   await page.getByRole("button", { name: /Immersive Watching/ }).click();
@@ -163,22 +186,36 @@ async function openWatching(page: Page, context: BrowserContext, testInfo: TestI
 
 test("desktop: select subtitles, save a key point, and replay from the list", async ({ page, context }, testInfo) => {
   const marks: VideoLearningMark[] = [];
-  await openWatching(page, context, testInfo, marks);
+  const notes: VideoNote[] = [];
+  await openWatching(page, context, testInfo, marks, notes);
   const cue = page.getByTestId("watching-cue-text").first();
   await expect(cue).toBeVisible();
   await cue.click({ clickCount: 3 });
   await page.getByTestId("watching-mark-key_point").click();
-  await page.getByTestId("watching-tab-marks").click();
-  await expect(page.getByText("Gradient descent finds a local minimum.")).toBeVisible();
-  await page.getByRole("button", { name: /00:10/ }).click();
+  const card = page.getByTestId("watching-mark-card-key_point");
+  await expect(card).toBeVisible();
+  await card.getByRole("button", { name: /00:10/ }).click();
+  await expect(page.locator('[data-cue-index="0"]')).toHaveAttribute("data-active-cue", "true");
+});
+
+test("desktop: save a timestamped note in the unified learning records", async ({ page, context }, testInfo) => {
+  const marks: VideoLearningMark[] = [];
+  const notes: VideoNote[] = [];
+  await openWatching(page, context, testInfo, marks);
+  await page.getByPlaceholder("Write a note about this timestamp...").fill("Check the learning-rate example.");
+  await page.getByRole("button", { name: "Save note" }).click();
+  const card = page.getByTestId("watching-note-card");
+  await expect(card).toBeVisible();
+  await expect(card).toContainText("Check the learning-rate example.");
+  await expect(card.getByRole("button", { name: /00:00/ })).toBeVisible();
 });
 
 test("touch fallback creates a current-time bookmark", async ({ page, context }, testInfo) => {
   const marks: VideoLearningMark[] = [];
   await openWatching(page, context, testInfo, marks);
   await page.getByRole("button", { name: "Mark here" }).click();
-  await page.getByRole("button", { name: "Review later" }).click();
-  await expect(page.getByText("Review later")).toBeVisible();
+  await page.getByTestId("watching-mark-review").click();
+  await expect(page.getByTestId("watching-mark-card-review")).toBeVisible();
 });
 
 test("extracting key points shows unsaved suggestions", async ({ page, context }, testInfo) => {
@@ -187,16 +224,19 @@ test("extracting key points shows unsaved suggestions", async ({ page, context }
   await page.getByRole("button", { name: "Extract key points" }).click();
   await expect(page.getByText("Suggested marks")).toBeVisible();
   await page.locator("section").getByRole("button", { name: "Save", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Key points", exact: true })).toHaveClass(/font-semibold/);
-  await expect(page.getByText("Gradient descent finds a local minimum.")).toBeVisible();
+  await expect(page.getByTestId("watching-mark-card-key_point")).toBeVisible();
+  await page.getByRole("button", { name: "Key point", exact: true }).click();
+  await expect(page.getByTestId("watching-mark-card-key_point")).toBeVisible();
+  await page.getByRole("button", { name: "All", exact: true }).click();
+  await expect(page.getByTestId("watching-mark-card-key_point")).toBeVisible();
 });
 
 test("save failure keeps the transcript usable", async ({ page, context }, testInfo) => {
   const marks: VideoLearningMark[] = [];
-  await openWatching(page, context, testInfo, marks, { failCreate: true });
+  await openWatching(page, context, testInfo, marks, [], { failCreate: true });
   await page.getByRole("button", { name: "Mark here" }).click();
   await page.getByTestId("watching-mark-key_point").click();
-  await expect(page.getByText("Mark kind must be key_point, question, or review.")).toBeVisible();
+  await expect(page.getByLabel("Learning records").getByText("Mark kind must be key_point, question, or review.")).toBeVisible();
   await expect(page.getByText("Gradient descent finds a local minimum.")).toBeVisible();
 });
 
@@ -206,18 +246,15 @@ for (const viewport of [
 ]) {
   test.describe(viewport.name, () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height }, hasTouch: true, isMobile: true });
-    test("shows transcript selection and key-point tab", async ({ page, context }, testInfo) => {
+    test("keeps transcript and unified records available without tabs", async ({ page, context }, testInfo) => {
       const marks: VideoLearningMark[] = [];
       await openWatching(page, context, testInfo, marks);
-      await expect(page.getByRole("button", { name: "Mark here" })).toBeVisible();
-      await page.getByTestId("watching-tab-marks").click();
-      await expect(page.getByText("No key points yet.")).toBeVisible();
-      await page.getByTestId("watching-tab-transcript").click();
+      await expect(page.getByRole("region", { name: "Transcript" })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Learning records" })).toBeVisible();
+      await expect(page.getByText("No learning records yet.")).toBeVisible();
       await page.getByRole("button", { name: "Mark here" }).click();
       await page.getByTestId("watching-mark-question").click();
-      await expect(page.getByTestId("watching-tab-marks")).toHaveClass(/font-semibold/);
       await expect(page.getByTestId("watching-mark-card-question")).toBeVisible();
     });
   });
 }
-

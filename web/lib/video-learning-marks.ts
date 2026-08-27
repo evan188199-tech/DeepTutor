@@ -1,4 +1,10 @@
-import type { TimedCue, TimedSegment, VideoLearningMark, VideoMarkKind } from "./video-learning-api";
+import type {
+  TimedCue,
+  TimedSegment,
+  VideoLearningMark,
+  VideoMarkKind,
+  VideoNote,
+} from "./video-learning-api";
 
 export const VIDEO_MARK_KINDS = ["key_point", "question", "review"] as const;
 
@@ -7,6 +13,22 @@ export const VIDEO_MARK_COLORS: Record<VideoMarkKind, string> = {
   question: "#1d4ed8",
   review: "#be123c",
 };
+
+export const VIDEO_NOTE_COLOR = "#64748b";
+
+export type LearningEventKind = VideoMarkKind | "note";
+export type LearningEventFilter = LearningEventKind | "all";
+
+export interface LearningEvent {
+  id: string;
+  kind: LearningEventKind;
+  start_seconds: number;
+  end_seconds: number;
+  quote: string;
+  note: string;
+  author: "user" | "assistant";
+  reviewed_at?: string;
+}
 
 export function uniqueSortedIndexes(values: number[]): number[] {
   return [...new Set(values.filter((value) => Number.isInteger(value) && value >= 0))].sort(
@@ -78,15 +100,74 @@ export function filterMarks(
   return kind === "all" ? sorted : sorted.filter((mark) => mark.kind === kind);
 }
 
+export function learningEventsFromLearning(
+  notes: VideoNote[] = [],
+  marks: VideoLearningMark[] = []
+): LearningEvent[] {
+  return [
+    ...notes.map((note) => ({
+      id: note.note_id,
+      kind: "note" as const,
+      start_seconds: note.time_seconds,
+      end_seconds: note.time_seconds,
+      quote: "",
+      note: note.text,
+      author: "user" as const,
+    })),
+    ...marks.map((mark) => ({
+      id: mark.mark_id,
+      kind: mark.kind,
+      start_seconds: mark.start_seconds,
+      end_seconds: mark.end_seconds,
+      quote: mark.quote,
+      note: mark.note,
+      author: mark.author,
+      reviewed_at: mark.reviewed_at,
+    })),
+  ];
+}
+
+export function sortLearningEvents(events: LearningEvent[]): LearningEvent[] {
+  return [...events].sort(
+    (left, right) =>
+      left.start_seconds - right.start_seconds ||
+      left.end_seconds - right.end_seconds ||
+      left.kind.localeCompare(right.kind) ||
+      left.id.localeCompare(right.id)
+  );
+}
+
+export function filterLearningEvents(
+  events: LearningEvent[],
+  filter: LearningEventFilter
+): LearningEvent[] {
+  const sorted = sortLearningEvents(events);
+  return filter === "all" ? sorted : sorted.filter((event) => event.kind === filter);
+}
+
+export function learningEventCoversTime(
+  event: Pick<LearningEvent, "start_seconds" | "end_seconds">,
+  time: number
+): boolean {
+  if (event.end_seconds <= event.start_seconds) {
+    return Math.abs(time - event.start_seconds) <= 1;
+  }
+  return time >= event.start_seconds && time <= event.end_seconds;
+}
+
 export function timelineStyle(
-  mark: Pick<VideoLearningMark, "start_seconds" | "end_seconds">,
+  event: Pick<LearningEvent, "start_seconds" | "end_seconds">,
   duration: number
 ): { left: string; width: string } {
   const total = Math.max(duration, 1);
-  const left = (Math.max(0, mark.start_seconds) / total) * 100;
-  const span = Math.max(mark.end_seconds - mark.start_seconds, 0);
+  const left = (Math.max(0, event.start_seconds) / total) * 100;
+  const span = Math.max(event.end_seconds - event.start_seconds, 0);
   const width = Math.max((span / total) * 100, 0.8);
   return { left: asPercent(left), width: asPercent(width) };
+}
+
+export function learningEventColor(event: Pick<LearningEvent, "kind">): string {
+  return event.kind === "note" ? VIDEO_NOTE_COLOR : VIDEO_MARK_COLORS[event.kind];
 }
 
 function asPercent(value: number): string {

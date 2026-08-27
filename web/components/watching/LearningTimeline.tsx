@@ -1,15 +1,19 @@
 "use client";
 
-import { VIDEO_MARK_COLORS, markCoversTime, timelineStyle } from "@/lib/video-learning-marks";
-import type { VideoLearningMark } from "@/lib/video-learning-api";
+import {
+  learningEventColor,
+  learningEventCoversTime,
+  timelineStyle,
+  type LearningEvent,
+} from "@/lib/video-learning-marks";
 
 export function LearningTimeline({
-  marks,
+  events,
   duration,
   currentTime,
   onSeek,
 }: {
-  marks: VideoLearningMark[];
+  events: LearningEvent[];
   duration: number;
   currentTime: number;
   onSeek: (seconds: number) => void;
@@ -28,26 +32,26 @@ export function LearningTimeline({
         }}
       >
         <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded bg-[var(--border)]" />
-        {marks.map((mark) => {
-          const style = timelineStyle(mark, total);
-          const active = markCoversTime(mark, currentTime);
+        {events.map((event) => {
+          const style = timelineStyle(event, total);
+          const active = learningEventCoversTime(event, currentTime);
           return (
             <button
-              key={mark.mark_id}
+              key={event.id}
               type="button"
-              title={mark.quote || mark.kind}
-              aria-label={mark.kind}
+              title={event.note || event.quote || event.kind}
+              aria-label={event.kind}
               className="absolute top-1/2 h-3 -translate-y-1/2 rounded-sm"
               style={{
                 left: style.left,
                 width: style.width,
-                backgroundColor: VIDEO_MARK_COLORS[mark.kind],
+                backgroundColor: learningEventColor(event),
                 opacity: active ? 1 : 0.72,
-                boxShadow: active ? `0 0 0 2px ${VIDEO_MARK_COLORS[mark.kind]}55` : undefined,
+                boxShadow: active ? `0 0 0 2px ${learningEventColor(event)}55` : undefined,
               }}
-              onClick={(event) => {
-                event.stopPropagation();
-                onSeek(mark.start_seconds);
+              onClick={(clickEvent) => {
+                clickEvent.stopPropagation();
+                onSeek(event.start_seconds);
               }}
             />
           );

@@ -13,7 +13,9 @@ interface WatchingContextValue {
   pendingSeek: number | null;
   openUrl: (url: string) => Promise<void>;
   openMaterial: (materialId: string, options?: { seekSeconds?: number }) => Promise<void>;
-  replaceMaterial: (next: TimedMediaMaterial) => void;
+  replaceMaterial: (
+    next: TimedMediaMaterial | ((current: TimedMediaMaterial | null) => TimedMediaMaterial | null)
+  ) => void;
   close: () => void;
   setCurrentTime: (seconds: number, locator?: number) => void;
   seek: (seconds: number) => void;
@@ -61,7 +63,9 @@ export function WatchingProvider({ children }: { children: ReactNode }) {
     const safe = Math.max(0, Number.isFinite(seconds) ? seconds : 0); setCurrentTimeState(safe); setWatchingViewport({ timeSeconds: safe, locator });
     if (material && Math.abs(safe - lastSavedRef.current) >= 10) { lastSavedRef.current = safe; void saveVideoPosition(material.material_id, safe).catch(() => {}); }
   }, [material]);
-  const replaceMaterial = useCallback((next: TimedMediaMaterial) => { setMaterial(next); }, []);
+  const replaceMaterial = useCallback((
+    next: TimedMediaMaterial | ((current: TimedMediaMaterial | null) => TimedMediaMaterial | null)
+  ) => { setMaterial(next); }, []);
   const close = useCallback(() => { tokenRef.current += 1; setMaterial(null); setError(null); setCurrentTimeState(0); setPendingSeek(null); setWatchingViewport({ timeSeconds: 0, locator: 0 }); }, []);
   const seek = useCallback((seconds: number) => { const safe = Math.max(0, seconds); setPendingSeek(safe); setCurrentTimeState(safe); setWatchingViewport({ timeSeconds: safe }); }, []);
   const clearSeek = useCallback(() => setPendingSeek(null), []);

@@ -3,15 +3,20 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
-import type { TimedCue, TimedSegment, VideoLearningMark } from "../lib/video-learning-api";
+import type { TimedCue, TimedSegment, VideoLearningMark, VideoNote } from "../lib/video-learning-api";
 import {
   cueIndexesFromSelection,
   filterMarks,
+  filterLearningEvents,
   formatMarkRange,
+  learningEventColor,
+  learningEventCoversTime,
+  learningEventsFromLearning,
   locatorsForRange,
   markCoversTime,
   marksAtTime,
   rangeFromCues,
+  sortLearningEvents,
   sortMarks,
   timelineStyle,
   uniqueSortedIndexes,
@@ -70,6 +75,15 @@ const marks: VideoLearningMark[] = [
   },
 ];
 
+const notes: VideoNote[] = [
+  {
+    note_id: "n",
+    text: "Learning rate controls step size.",
+    time_seconds: 20,
+    created_at: "1",
+  },
+];
+
 test("rangeFromCues uses earliest start and latest end", () => {
   const range = rangeFromCues(cues, [1, 0, 0]);
   assert.deepEqual(range, {
@@ -96,6 +110,21 @@ test("filterMarks sorts by time and keeps a kind filter", () => {
   assert.deepEqual(sortMarks(marks).map((mark) => mark.mark_id), ["b", "c", "a"]);
   assert.deepEqual(filterMarks(marks, "review").map((mark) => mark.mark_id), ["a"]);
   assert.equal(filterMarks([], "all").length, 0);
+});
+
+test("learning events merge notes and marks into one chronology", () => {
+  const events = learningEventsFromLearning(notes, marks);
+  assert.deepEqual(sortLearningEvents(events).map((event) => event.id), ["b", "c", "n", "a"]);
+  assert.deepEqual(filterLearningEvents(events, "note").map((event) => event.id), ["n"]);
+  assert.equal(filterLearningEvents(events, "all").length, 4);
+});
+
+test("point notes match nearby playback and use the note timeline color", () => {
+  const [noteEvent] = filterLearningEvents(learningEventsFromLearning(notes, []), "note");
+  assert.equal(learningEventCoversTime(noteEvent, 20.8), true);
+  assert.equal(learningEventCoversTime(noteEvent, 22), false);
+  assert.equal(learningEventColor(noteEvent), "#64748b");
+  assert.deepEqual(timelineStyle(noteEvent, 100), { left: "20%", width: "0.8%" });
 });
 
 test("timelineStyle keeps a visible tick for zero-width bookmarks", () => {
@@ -135,7 +164,7 @@ test("transcript rows expose selectable text instead of a whole-row seek button"
   assert.match(source, /Extract key points/);
   assert.match(source, /Set start/);
   assert.match(source, /LearningTimeline/);
-  assert.match(source, /KeyPointsPanel/);
+  assert.match(source, /LearningRecordsPanel/);
   assert.doesNotMatch(
     source,
     /cues\.map\(\(cue, index\) => \(\s*<button[\s\S]*seek\(cue\.start\)[\s\S]*cue\.text/,

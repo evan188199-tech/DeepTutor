@@ -11,7 +11,6 @@ import {
   Globe,
   Loader2,
   MessageSquareText,
-  Plus,
   Sparkles,
   Upload,
   X,
@@ -36,13 +35,14 @@ import {
   type VideoLearningMark,
   type VideoMarkKind,
   type VideoMarkSuggestion,
+  type VideoNote,
 } from "@/lib/video-learning-api";
 import {
   VIDEO_MARK_COLORS,
   cueIndexesFromSelection,
   formatWatchTime,
+  learningEventsFromLearning,
   locatorsForRange,
-  markCoversTime,
   marksAtTime,
   rangeFromCues,
 } from "@/lib/video-learning-marks";
@@ -52,10 +52,9 @@ import {
   createRendererLaunch,
 } from "@/lib/video-learning-remote-api";
 import { invidiousFallbackUrl, shouldOpenInvidiousInCurrentTab } from "@/lib/invidious-open";
-import { KeyPointsPanel } from "./KeyPointsPanel";
+import { ReaderResizeHandle } from "@/components/reading/ReaderResizeHandle";
+import { LearningRecordsPanel } from "./LearningRecordsPanel";
 import { LearningTimeline } from "./LearningTimeline";
-
-type WatchTab = "transcript" | "notes" | "marks";
 
 export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
@@ -76,10 +75,8 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   const insideMarksRef = useRef<Set<string>>(new Set());
   const [showInvidiousHome, setShowInvidiousHome] = useState(false);
   const [invidiousPublicUrl, setInvidiousPublicUrl] = useState<string>("");
-  const [tab, setTab] = useState<WatchTab>("transcript");
   const [jobMessage, setJobMessage] = useState("");
   const [jobId, setJobId] = useState<string | null>(null);
-  const [noteText, setNoteText] = useState("");
   const [noteMessage, setNoteMessage] = useState("");
   const [playbackErrorMaterialId, setPlaybackErrorMaterialId] = useState<string | null>(null);
   const [draft, setDraft] = useState<{ start_seconds: number; end_seconds: number; quote: string; note?: string } | null>(null);
@@ -180,11 +177,16 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   }, [jobId, material, openUrl, t]);
 
   const marks = useMemo(() => material?.learning.marks || [], [material?.learning.marks]);
+  const notes = useMemo(() => material?.learning.notes || [], [material?.learning.notes]);
+  const learningEvents = useMemo(() => learningEventsFromLearning(notes, marks), [notes, marks]);
   const activeCue = useMemo(
     () => material?.transcript.cues.find((cue) => currentTime >= cue.start && currentTime <= cue.end),
     [material, currentTime]
   );
-  const activeMarks = useMemo(() => (material ? marksAtTime(marks, currentTime) : []), [marks, currentTime, material]);
+  const activeCueIndex = useMemo(
+    () => material?.transcript.cues.findIndex((cue) => cue === activeCue) ?? -1,
+    [activeCue, material]
+  );
   const selectedFormat = material ? Object.keys(material.playback.formats)[0] ?? "" : "";
   const format = material?.playback.formats[selectedFormat];
   const playbackError = playbackErrorMaterialId === material?.material_id;
@@ -199,11 +201,17 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
       if (inside) nextInside.add(mark.mark_id);
       else if (insideMarksRef.current.has(mark.mark_id) && currentTime > mark.end_seconds) {
         setEndPrompt(mark);
-        setTab("marks");
       }
     }
     insideMarksRef.current = nextInside;
   }, [currentTime, marks, material]);
+
+  useEffect(() => {
+    if (activeCueIndex < 0) return;
+    transcriptRef.current
+      ?.querySelector(`[data-cue-index="${activeCueIndex}"]`)
+      ?.scrollIntoView({ block: "nearest" });
+  }, [activeCueIndex]);
 
   const handleVideoSelect = async (videoUrl: string) => {
     setShowInvidiousHome(false);
@@ -292,11 +300,20 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
     );
   };
 
-  const syncMarks = (nextMarks: VideoLearningMark[]) => {
-    replaceMaterial({
-      ...material,
-      learning: { ...material.learning, marks: nextMarks },
-    });
+  const updateMarks = (update: (rows: VideoLearningMark[]) => VideoLearningMark[]) => {
+    replaceMaterial((current) =>
+      current
+        ? { ...current, learning: { ...current.learning, marks: update(current.learning.marks || []) } }
+        : current
+    );
+  };
+
+  const updateNotes = (update: (rows: VideoNote[]) => VideoNote[]) => {
+    replaceMaterial((current) =>
+      current
+        ? { ...current, learning: { ...current.learning, notes: update(current.learning.notes || []) } }
+        : current
+    );
   };
 
   const saveMark = async (payload: {
@@ -310,28 +327,21 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
     const locators = locatorsForRange(material.segments, payload.start_seconds, payload.end_seconds);
     try {
       const saved = await createVideoMark(material.material_id, { ...payload, ...locators });
-      syncMarks([...(material.learning.marks || []), saved]);
+      updateMarks((rows) => (rows.some((row) => row.mark_id === saved.mark_id) ? rows : [...rows, saved]));
       setDraft(null);
       setDraftNote("");
       setRangeStart(null);
       setMarkError("");
       window.getSelection()?.removeAllRanges();
-      setTab("marks");
     } catch (caught) {
       setMarkError(caught instanceof Error ? caught.message : t("Mark could not be saved."));
     }
   };
 
-  const saveNote = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!noteText.trim()) return;
+  const saveNote = async (text: string) => {
     try {
-      const saved = await addVideoNote(material.material_id, noteText.trim(), currentTime);
-      replaceMaterial({
-        ...material,
-        learning: { ...material.learning, notes: [...(material.learning.notes || []), saved] },
-      });
-      setNoteText("");
+      const saved = await addVideoNote(material.material_id, text, currentTime);
+      updateNotes((rows) => (rows.some((row) => row.note_id === saved.note_id) ? rows : [...rows, saved]));
       setNoteMessage(t("Note saved."));
     } catch (caught) {
       setNoteMessage(caught instanceof Error ? caught.message : t("Note could not be saved."));
@@ -400,7 +410,6 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
     try {
       const rows = await suggestVideoMarks(material.material_id, currentTime);
       setSuggestions(rows);
-      setTab("marks");
     } catch (caught) {
       setMarkError(caught instanceof Error ? caught.message : t("Key points could not be extracted."));
     } finally {
@@ -530,16 +539,16 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
           <ExternalLink size={16} />
         </a>
       </header>
-      {(publishMessage || markError) && (
+      {publishMessage && (
         <div className="border-b border-[var(--border)] px-3 py-1.5 text-xs">
-          {publishMessage && <p className="text-[var(--foreground)]">{publishMessage}</p>}
-          {markError && <p className="text-red-600">{markError}</p>}
+          <p className="text-[var(--foreground)]">{publishMessage}</p>
         </div>
       )}
       {rendererMessage && <div className="border-b border-[var(--border)] px-3 py-1.5 text-xs">{rendererMessage}</div>}
 
-      <div className="grid min-h-0 flex-1 grid-rows-[minmax(180px,38%)_auto_1fr]">
-        <div className="border-b border-[var(--border)] bg-black p-2">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:grid lg:grid-cols-[minmax(0,1.25fr)+minmax(300px,0.75fr)] lg:overflow-hidden">
+        <div className="flex min-h-[240px] flex-col border-b border-[var(--border)] lg:min-h-0 lg:border-b-0 lg:border-r">
+          <div className="min-h-0 flex-1 bg-black p-2">
           {format && !playbackError ? (
             <video
               ref={videoRef}
@@ -600,46 +609,31 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
           )}
         </div>
 
-        <LearningTimeline marks={marks} duration={duration || 1} currentTime={currentTime} onSeek={seek} />
+          <LearningTimeline
+            events={learningEvents}
+            duration={duration || 1}
+            currentTime={currentTime}
+            onSeek={seek}
+          />
+        </div>
 
-        <div className="flex min-h-0 flex-col">
-          <div className="flex items-center gap-1 border-b border-[var(--border)] px-3 py-2 text-xs">
-            <button
-              type="button"
-              data-testid="watching-tab-transcript"
-              onClick={() => setTab("transcript")}
-              className={`rounded px-2 py-1 ${tab === "transcript" ? "bg-[var(--muted)] font-semibold" : ""}`}
-            >
+        <div className="flex min-h-0 flex-1 flex-col">
+          <section aria-label={t("Transcript")} className="flex min-h-[220px] flex-[1.15] flex-col border-b border-[var(--border)]">
+          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-[var(--border)] px-2.5 py-2">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">
               {t("Transcript")}
-            </button>
-            <button
-              type="button"
-              data-testid="watching-tab-notes"
-              onClick={() => setTab("notes")}
-              className={`rounded px-2 py-1 ${tab === "notes" ? "bg-[var(--muted)] font-semibold" : ""}`}
-            >
-              {t("Notes")}
-            </button>
-            <button
-              type="button"
-              data-testid="watching-tab-marks"
-              onClick={() => setTab("marks")}
-              className={`rounded px-2 py-1 ${tab === "marks" ? "bg-[var(--muted)] font-semibold" : ""}`}
-            >
-              {t("Key points")}
-            </button>
-            <span className="ml-auto tabular-nums text-[var(--muted-foreground)]">{formatWatchTime(currentTime)}</span>
+            </h3>
+            <span className="tabular-nums text-[10px] text-[var(--muted-foreground)]">{formatWatchTime(currentTime)}</span>
           </div>
 
-          {tab === "transcript" ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-3" ref={transcriptRef} onMouseUp={captureSelection} onTouchEnd={captureSelection}>
+            <div className="min-h-0 flex-1 overflow-y-auto p-2" ref={transcriptRef} onMouseUp={captureSelection} onTouchEnd={captureSelection}>
               {material.transcript.cues.length ? (
                 <>
-                  <div className="mb-3 flex flex-wrap gap-2">
+                  <div className="mb-2 flex flex-wrap gap-1.5">
                     <button
                       type="button"
                       onClick={() => askAboutCurrent("explain")}
-                      className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs hover:bg-[var(--muted)]"
                     >
                       <MessageSquareText size={15} />
                       {t("Explain here")}
@@ -648,7 +642,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                       type="button"
                       onClick={() => void extractKeyPoints()}
                       disabled={extracting}
-                      className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--muted)] disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs hover:bg-[var(--muted)] disabled:opacity-50"
                     >
                       {extracting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
                       {t("Extract key points")}
@@ -656,7 +650,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                     <button
                       type="button"
                       onClick={markCurrentTime}
-                      className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs hover:bg-[var(--muted)]"
                     >
                       <BookmarkPlus size={15} />
                       {t("Mark here")}
@@ -664,7 +658,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                     <button
                       type="button"
                       onClick={() => setRangeAnchor("start")}
-                      className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs hover:bg-[var(--muted)]"
                     >
                       <Flag size={15} />
                       {rangeStart === null ? t("Set start") : `${t("Start")}: ${formatWatchTime(rangeStart)}`}
@@ -672,14 +666,14 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                     <button
                       type="button"
                       onClick={() => setRangeAnchor("end")}
-                      className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 text-sm hover:bg-[var(--muted)]"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 text-xs hover:bg-[var(--muted)]"
                     >
                       {t("Set end")}
                     </button>
                   </div>
                   {draft && (
-                    <div ref={actionBarRef} className="sticky top-0 z-10 mb-3 rounded border border-[var(--border)] bg-[var(--background)] p-2 shadow-sm">
-                      <p className="mb-2 text-xs text-[var(--muted-foreground)]">
+                    <div ref={actionBarRef} className="sticky top-0 z-10 mb-2 rounded-lg border border-[var(--border)] bg-[var(--background)] p-2 shadow-sm">
+                      <p className="mb-1.5 text-[11px] text-[var(--muted-foreground)]">
                         {formatWatchTime(draft.start_seconds)}
                         {draft.end_seconds !== draft.start_seconds ? ` – ${formatWatchTime(draft.end_seconds)}` : ""}
                       </p>
@@ -688,7 +682,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                           <button
                             key={kind}
                             type="button"
-                            className="rounded px-2 py-1 text-xs text-white"
+                        className="rounded-lg px-2 py-1 text-[11px] text-white"
                             data-testid={`watching-mark-${kind}`}
                             style={{ backgroundColor: VIDEO_MARK_COLORS[kind] }}
                             onClick={() => void saveMark({ ...draft, kind, note: draftNote, author: "user" })}
@@ -698,7 +692,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                         ))}
                         <button
                           type="button"
-                          className="rounded border border-[var(--border)] px-2 py-1 text-xs"
+                          className="rounded-lg border border-[var(--border)] px-2 py-1 text-[11px]"
                           onClick={() => {
                             setDraft(null);
                             setDraftNote("");
@@ -712,23 +706,38 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                         value={draftNote}
                         onChange={(event) => setDraftNote(event.target.value)}
                         placeholder={t("Optional note for this mark")}
-                        className="w-full rounded border border-[var(--border)] bg-transparent px-2 py-1 text-xs"
+                        className="w-full rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[11px]"
                       />
                     </div>
                   )}
                   {material.transcript.cues.map((cue, index) => {
                     const cueActive = activeCue === cue;
-                    const marked = activeMarks.some((mark) => markCoversTime(mark, cue.start + (cue.end - cue.start) / 2));
+                    const cueMarks = marksAtTime(marks, cue.start + (cue.end - cue.start) / 2);
                     return (
                       <div
                         key={`${cue.start}-${index}`}
                         data-cue-index={index}
-                        className={`mb-1 flex w-full gap-2 rounded p-2 text-sm ${cueActive ? "bg-[var(--muted)]" : "hover:bg-[var(--muted)]/60"} ${marked ? "ring-1 ring-amber-700/40" : ""}`}
+                        data-active-cue={cueActive}
+                        className={`relative mb-1 flex w-full gap-2 rounded-lg p-2 pl-3.5 text-xs ${cueActive ? "bg-[var(--muted)]" : "hover:bg-[var(--muted)]/60"}`}
                       >
+                        {cueMarks.length > 0 && (
+                          <span
+                            aria-hidden
+                            className="absolute bottom-2 left-1 top-2 flex w-2 gap-0.5 overflow-hidden rounded-full"
+                          >
+                            {cueMarks.slice(0, 3).map((mark) => (
+                              <span
+                                key={mark.mark_id}
+                                className="flex-1"
+                                style={{ backgroundColor: VIDEO_MARK_COLORS[mark.kind] }}
+                              />
+                            ))}
+                          </span>
+                        )}
                         <button
                           type="button"
                           onClick={() => seek(cue.start)}
-                          className="shrink-0 font-mono text-xs text-[var(--muted-foreground)]"
+                          className="shrink-0 font-mono text-[11px] tabular-nums text-[var(--muted-foreground)]"
                         >
                           {formatWatchTime(cue.start)}
                         </button>
@@ -738,12 +747,12 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                   })}
                 </>
               ) : (
-                <div className="space-y-3 p-2 text-sm text-[var(--muted-foreground)]">
+                <div className="space-y-3 p-2 text-xs text-[var(--muted-foreground)]">
                   <p>{t("No subtitles are available for this video.")}</p>
                   <button
                     type="button"
                     disabled={Boolean(jobId)}
-                    className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-2.5 py-1.5 disabled:opacity-50"
                     onClick={() => {
                       void createTranscriptJob(material.material_id)
                         .then((job) => {
@@ -762,79 +771,43 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                 </div>
               )}
             </div>
-          ) : tab === "notes" ? (
-            <div className="min-h-0 flex-1 overflow-y-auto p-3 text-sm text-[var(--muted-foreground)]">
-              <form onSubmit={saveNote} className="flex gap-2">
-                <input
-                  value={noteText}
-                  onChange={(event) => setNoteText(event.target.value)}
-                  placeholder={t("Write a note about this timestamp...")}
-                  className="min-w-0 flex-1 rounded border border-[var(--border)] bg-transparent px-3 py-2"
-                />
-                <button
-                  type="submit"
-                  disabled={!noteText.trim()}
-                  aria-label={t("Save note")}
-                  className="inline-flex items-center gap-2 rounded bg-[var(--foreground)] px-3 py-2 text-sm text-[var(--background)] disabled:opacity-50"
-                >
-                  <Plus size={15} />
-                  {t("Save note")}
-                </button>
-              </form>
-              {noteMessage && <p className="mt-2">{noteMessage}</p>}
-              {material.learning.notes?.length ? (
-                <div className="mt-4 space-y-2">
-                  {[...material.learning.notes].reverse().map((note) => (
-                    <button
-                      type="button"
-                      key={note.note_id}
-                      onClick={() => seek(note.time_seconds)}
-                      className="block w-full rounded border border-[var(--border)] p-2 text-left hover:bg-[var(--muted)]"
-                    >
-                      <span className="mr-2 font-mono text-xs text-[var(--muted-foreground)]">
-                        {formatWatchTime(note.time_seconds)}
-                      </span>
-                      {note.text}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-4">{t("No notes yet.")}</p>
-              )}
-            </div>
-          ) : (
-            <KeyPointsPanel
-              marks={marks}
-              suggestions={suggestions}
-              currentTime={currentTime}
-              durationEndMark={endPrompt}
-              error={markError}
-              onSeek={seek}
-              onDelete={(markId) => {
-                void deleteVideoMark(material.material_id, markId)
-                  .then(() => syncMarks(marks.filter((mark) => mark.mark_id !== markId)))
-                  .catch((caught) => setMarkError(caught instanceof Error ? caught.message : t("Mark could not be deleted.")));
-              }}
-              onReviewed={(mark) => {
-                void patchVideoMark(material.material_id, mark.mark_id, { reviewed: true })
-                  .then((saved) => syncMarks(marks.map((row) => (row.mark_id === saved.mark_id ? saved : row))))
-                  .then(() => setEndPrompt(null))
-                  .catch((caught) => setMarkError(caught instanceof Error ? caught.message : t("Mark could not be saved.")));
-              }}
-              onSaveSuggestion={(suggestion) => {
-                void saveMark({ ...suggestion, author: "assistant" }).then(() => {
-                  setSuggestions((rows) => rows.filter((row) => row !== suggestion));
-                });
-              }}
-              onDismissEnd={() => setEndPrompt(null)}
-              onReplayEnd={(mark) => {
-                setEndPrompt(null);
-                seek(mark.start_seconds);
-              }}
-            />
-          )}
+          </section>
+
+          <LearningRecordsPanel
+            notes={notes}
+            marks={marks}
+            suggestions={suggestions}
+            currentTime={currentTime}
+            durationEndMark={endPrompt}
+            error={markError}
+            noteMessage={noteMessage}
+            onSeek={seek}
+            onDelete={(markId) => {
+              void deleteVideoMark(material.material_id, markId)
+                .then(() => updateMarks((rows) => rows.filter((row) => row.mark_id !== markId)))
+                .catch((caught) => setMarkError(caught instanceof Error ? caught.message : t("Mark could not be deleted.")));
+            }}
+            onReviewed={(mark) => {
+              void patchVideoMark(material.material_id, mark.mark_id, { reviewed: true })
+                .then((saved) => updateMarks((rows) => rows.map((row) => (row.mark_id === saved.mark_id ? saved : row))))
+                .then(() => setEndPrompt(null))
+                .catch((caught) => setMarkError(caught instanceof Error ? caught.message : t("Mark could not be saved.")));
+            }}
+            onSaveSuggestion={(suggestion) => {
+              void saveMark({ ...suggestion, author: "assistant" }).then(() => {
+                setSuggestions((rows) => rows.filter((row) => row !== suggestion));
+              });
+            }}
+            onDismissEnd={() => setEndPrompt(null)}
+            onReplayEnd={(mark) => {
+              setEndPrompt(null);
+              seek(mark.start_seconds);
+            }}
+            onSaveNote={saveNote}
+          />
         </div>
       </div>
+      <ReaderResizeHandle />
     </section>
   );
 }
