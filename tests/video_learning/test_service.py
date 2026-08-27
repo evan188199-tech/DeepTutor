@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 
@@ -198,6 +199,70 @@ async def test_resolve_reuses_feed_launched_remote_material(
     assert resolved["metadata"]["title"] == "Gradient descent"
     assert resolved["transcript"]["cues"]
     assert resolved["learning"]["marks"] == [mark]
+
+
+@pytest.mark.asyncio
+async def test_resolve_uses_ytdlp_automatic_captions_when_invidious_has_none(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base = "http://127.0.0.1:18080"
+    caption_url = "https://www.youtube.com/api/timedtext?v=89ThCi5qq-A&kind=asr&lang=en&fmt=json3"
+    client = _InvidiousClient(
+        {
+            f"{base}/api/v1/videos/89ThCi5qq-A": (
+                200,
+                {
+                    "title": "Automatic captions",
+                    "lengthSeconds": "30",
+                    "captions": [],
+                    "formatStreams": [
+                        {"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}
+                    ],
+                },
+                {},
+            ),
+            caption_url: (
+                200,
+                json.dumps(
+                    {
+                        "events": [
+                            {
+                                "tStartMs": 1200,
+                                "dDurationMs": 800,
+                                "segs": [{"utf8": "Automatic "}, {"utf8": "caption."}],
+                            }
+                        ]
+                    }
+                ).encode("utf-8"),
+                {},
+            ),
+        }
+    )
+
+    async def fake_metadata(_url: str) -> dict[str, Any]:
+        return {
+            "automatic_captions": {
+                "en": [{"ext": "json3", "url": caption_url}],
+            }
+        }
+
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
+    monkeypatch.setattr(
+        "deeptutor.video_learning.service._optional_ytdlp_metadata",
+        fake_metadata,
+    )
+
+    material = await YouTubeResolver(base_url=base).resolve(
+        "https://youtu.be/89ThCi5qq-A",
+        store=TimedMediaStore(tmp_path),
+    )
+
+    assert material["transcript"] == {
+        "language": "en",
+        "source": "yt-dlp-automatic-captions",
+        "cues": [{"start": 1.2, "end": 2.0, "text": "Automatic caption."}],
+    }
 
 
 @pytest.mark.asyncio

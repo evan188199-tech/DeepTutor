@@ -317,6 +317,39 @@ async def test_background_preparation_uses_audio_only_stream(
     assert state["audio_bytes"] == len(b"AUDIODATA")
 
 
+@pytest.mark.asyncio
+async def test_long_audio_is_compressed_before_stt_upload(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import deeptutor.tools.video_learning as video_learning
+
+    monkeypatch.setattr(video_learning, "MAX_STT_AUDIO_BYTES", 4)
+
+    class _Process:
+        returncode = 0
+
+        async def communicate(self, _audio: bytes) -> tuple[bytes, bytes]:
+            return b"C", b""
+
+    captured: list[list[str]] = []
+
+    async def fake_exec(*command: str, **_kwargs: object) -> _Process:
+        captured.append(list(command))
+        return _Process()
+
+    monkeypatch.setattr(video_learning.asyncio, "create_subprocess_exec", fake_exec)
+
+    audio, content_type = await video_learning._prepare_audio_for_asr(
+        b"a" * 5,
+        duration_seconds=60,
+        content_type="audio/mp4",
+    )
+
+    assert audio == b"C"
+    assert content_type == "audio/mpeg"
+    assert captured[0][captured[0].index("-b:a") + 1] == "8000"
+
+
 def test_bilibili_audio_urls_are_limited_to_bilibili_media_domains() -> None:
     from deeptutor.tools.video_learning import _select_bilibili_audio_url
 
@@ -367,7 +400,7 @@ async def test_bilibili_audio_stream_stops_at_size_cap(
 
             return _Context()
 
-    with pytest.raises(ValueError, match="32 MB"):
+    with pytest.raises(ValueError, match="128 MB"):
         await video_learning._read_bilibili_audio(
             _ChunkClient(),
             "https://mirror.bilivideo.com/audio.m4a",

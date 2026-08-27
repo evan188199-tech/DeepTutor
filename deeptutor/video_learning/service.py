@@ -28,7 +28,7 @@ from deeptutor.multi_user.paths import get_current_path_service
 from deeptutor.services.file_io import atomic_write_json
 from deeptutor.tools.web_fetch import _is_disallowed_host
 
-MAX_TRANSCRIPT_BYTES = 2 * 1024 * 1024
+MAX_TRANSCRIPT_BYTES = 8 * 1024 * 1024
 MAX_TRANSCRIPT_CUES = 20_000
 MAX_SEGMENT_SECONDS = 90
 MIN_SEGMENT_SECONDS = 20
@@ -375,9 +375,14 @@ class YouTubeResolver:
                         )
             except (TimedMediaError, httpx.HTTPError):
                 metadata = {}
-        if not metadata or not _formats(metadata.get("formatStreams")):
+        if not cues or not _formats(metadata.get("formatStreams")):
             optional = await _optional_ytdlp_metadata(request.canonical_url)
             metadata = _merge_metadata(metadata, optional)
+        if not cues:
+            cues, language, transcript_source = await self._ytdlp_transcript(
+                metadata,
+                preferred_language=language,
+            )
         if not cues:
             cues, language, transcript_source = await self._optional_transcript(
                 request.video_id,
@@ -535,6 +540,35 @@ class YouTubeResolver:
             return [], "", ""
         return cues, language, "youtube-transcript-api" if cues else ""
 
+    async def _ytdlp_transcript(
+        self,
+        metadata: dict[str, Any],
+        *,
+        preferred_language: str,
+    ) -> tuple[list[dict[str, Any]], str, str]:
+        selected_language, track = _select_ytdlp_caption(metadata, preferred_language)
+        url = str(track.get("url") or "")
+        ext = str(track.get("ext") or "")
+        if not selected_language or not url or ext not in {"json3", "vtt"}:
+            return [], "", ""
+        async with httpx.AsyncClient(timeout=STREAM_TIMEOUT_SECONDS, follow_redirects=False) as client:
+            response = await client.get(url)
+        if response.status_code >= 400:
+            raise TimedMediaError(
+                f"YouTube automatic captions failed with HTTP {response.status_code}."
+            )
+        final_host = (urlparse(str(response.url or url)).hostname or "").lower()
+        if final_host not in {"youtube.com", "www.youtube.com"}:
+            raise TimedMediaError("YouTube automatic captions redirected outside YouTube.")
+        if len(response.content) > MAX_TRANSCRIPT_BYTES:
+            raise TimedMediaError("YouTube automatic captions exceeded the safety limit.")
+        cues = (
+            _parse_youtube_json3(response.content)
+            if ext == "json3"
+            else parse_webvtt(response.content.decode("utf-8", errors="replace"))
+        )
+        return normalize_cues(cues), selected_language, "yt-dlp-automatic-captions" if cues else ""
+
 
 def _is_html_error_response(text: str) -> bool:
     stripped = text.lstrip().lower()
@@ -571,6 +605,67 @@ def parse_webvtt(text: str) -> list[dict[str, Any]]:
         if body:
             result.append({"start": _vtt_time(match.group("start")), "end": _vtt_time(match.group("end")), "text": body})
     return result
+
+
+def _select_ytdlp_caption(
+    metadata: dict[str, Any],
+    preferred_language: str,
+) -> tuple[str, dict[str, Any]]:
+    for field in ("automatic_captions", "subtitles"):
+        tracks_by_language = metadata.get(field)
+        if not isinstance(tracks_by_language, dict):
+            continue
+        preferred = str(preferred_language or "")
+        languages = [
+            language
+            for language in (preferred, "en-orig", "en", "zh-Hans", "zh-CN", "zh")
+            if language and language in tracks_by_language
+        ]
+        language = languages[0] if languages else next(iter(tracks_by_language), "")
+        tracks = tracks_by_language.get(language)
+        if not isinstance(tracks, list):
+            continue
+        for ext in ("json3", "vtt"):
+            track = next(
+                (
+                    row
+                    for row in tracks
+                    if isinstance(row, dict) and str(row.get("ext") or "") == ext and row.get("url")
+                ),
+                None,
+            )
+            if track:
+                return str(language), track
+    return "", {}
+
+
+def _parse_youtube_json3(content: bytes) -> list[dict[str, Any]]:
+    try:
+        payload = json.loads(content)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return []
+    events = payload.get("events") if isinstance(payload, dict) else None
+    if not isinstance(events, list):
+        return []
+    cues: list[dict[str, Any]] = []
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        try:
+            start = max(0.0, float(event.get("tStartMs") or 0) / 1000)
+            duration = max(0.0, float(event.get("dDurationMs") or 0) / 1000)
+        except (TypeError, ValueError):
+            continue
+        segments = event.get("segs")
+        text = "".join(
+            str(segment.get("utf8") or "")
+            for segment in segments
+            if isinstance(segment, dict)
+        ) if isinstance(segments, list) else ""
+        text = text.strip()
+        if text:
+            cues.append({"start": start, "duration": duration, "text": text})
+    return cues
 
 
 def _vtt_time(value: str) -> float:

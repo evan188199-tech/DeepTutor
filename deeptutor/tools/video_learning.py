@@ -27,8 +27,9 @@ VideoProvider = Literal["bilibili", "youtube"]
 
 DEFAULT_TIMEOUT_S = 15.0
 DEFAULT_USER_AGENT = "DeepTutor/1.0 (+https://hkuds.dev/deeptutor)"
-MAX_RESPONSE_BYTES = 2 * 1024 * 1024
-MAX_AUDIO_BYTES = 32 * 1024 * 1024
+MAX_RESPONSE_BYTES = 8 * 1024 * 1024
+MAX_AUDIO_BYTES = 128 * 1024 * 1024
+MAX_STT_AUDIO_BYTES = 24 * 1024 * 1024
 MAX_INVIDIOUS_REDIRECTS = 3
 
 _BVID_RE = re.compile(r"(BV[0-9A-Za-z]{10})", re.IGNORECASE)
@@ -207,9 +208,18 @@ async def _learn_youtube(
         except Exception as exc:
             errors.append(f"youtube-transcript-api: {exc}")
 
-    if not metadata:
+    if not transcript_segments:
         try:
-            metadata = await _youtube_ytdlp_metadata(url, timeout_s=timeout_s)
+            ytdlp_metadata = await _youtube_ytdlp_metadata(url, timeout_s=timeout_s)
+            if not metadata:
+                metadata = ytdlp_metadata
+            transcript_segments, transcript_language = await _youtube_ytdlp_transcript(
+                client,
+                ytdlp_metadata,
+                preferred_language=subtitle_language,
+            )
+            if transcript_segments:
+                transcript_source = "yt-dlp-automatic-captions"
         except Exception as exc:
             errors.append(f"yt-dlp: {exc}")
 
@@ -369,6 +379,89 @@ async def _youtube_ytdlp_metadata(url: str, *, timeout_s: float) -> dict[str, An
         return info if isinstance(info, dict) else {}
 
     return await asyncio.to_thread(extract)
+
+
+async def _youtube_ytdlp_transcript(
+    client: Any,
+    metadata: dict[str, Any],
+    *,
+    preferred_language: str,
+) -> tuple[list[dict[str, Any]], str]:
+    selected_language, track = _select_ytdlp_caption(metadata, preferred_language)
+    if not track:
+        return [], ""
+    url = str(track.get("url") or "")
+    ext = str(track.get("ext") or "")
+    if not url or ext not in {"json3", "vtt"}:
+        return [], ""
+    response = await client.get(url, follow_redirects=False)
+    _ensure_http_success(response, "Fetch YouTube automatic captions")
+    final_host = (urlparse(str(getattr(response, "url") or url)).hostname or "").lower()
+    if final_host not in {"youtube.com", "www.youtube.com"}:
+        raise ValueError("YouTube automatic captions redirected outside YouTube")
+    content = getattr(response, "content", b"")
+    if len(content) > MAX_RESPONSE_BYTES:
+        raise ValueError("YouTube automatic captions exceeded the 8 MB safety cap")
+    if ext == "json3":
+        return _parse_youtube_json3(content), selected_language
+    return _parse_webvtt(content.decode("utf-8", errors="replace")), selected_language
+
+
+def _select_ytdlp_caption(
+    metadata: dict[str, Any],
+    preferred_language: str,
+) -> tuple[str, dict[str, Any]]:
+    for caption_field in ("automatic_captions", "subtitles"):
+        tracks_by_language = metadata.get(caption_field)
+        if not isinstance(tracks_by_language, dict):
+            continue
+        preferred = str(preferred_language or "")
+        languages = [
+            language
+            for language in (preferred, "en-orig", "en", "zh-Hans", "zh-CN", "zh")
+            if language and language in tracks_by_language
+        ]
+        language = languages[0] if languages else next(iter(tracks_by_language), "")
+        tracks = tracks_by_language.get(language)
+        if not isinstance(tracks, list):
+            continue
+        for ext in ("json3", "vtt"):
+            track = next(
+                (row for row in tracks if isinstance(row, dict) and str(row.get("ext") or "") == ext),
+                None,
+            )
+            if track and str(track.get("url") or ""):
+                return str(language), track
+    return "", {}
+
+
+def _parse_youtube_json3(content: bytes) -> list[dict[str, Any]]:
+    try:
+        payload = json.loads(content)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return []
+    events = payload.get("events") if isinstance(payload, dict) else None
+    if not isinstance(events, list):
+        return []
+    cues: list[dict[str, Any]] = []
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        try:
+            start = max(0.0, float(event.get("tStartMs") or 0) / 1000)
+            duration = max(0.0, float(event.get("dDurationMs") or 0) / 1000)
+        except (TypeError, ValueError):
+            continue
+        segments = event.get("segs")
+        text = "".join(
+            str(segment.get("utf8") or "")
+            for segment in segments
+            if isinstance(segment, dict)
+        ) if isinstance(segments, list) else ""
+        text = text.strip()
+        if text:
+            cues.append({"start": start, "duration": duration, "text": text})
+    return cues
 
 
 def _invidious_base_url() -> str:
@@ -717,6 +810,20 @@ async def _run_youtube_transcript_preparation(
                 job_id=job_id,
                 status="running",
                 progress=60,
+                message="Preparing audio for speech-to-text",
+                audio_bytes=len(audio),
+            )
+            audio, content_type = await _prepare_audio_for_asr(
+                audio,
+                duration_seconds=_metadata_duration(resolved_metadata),
+                content_type=content_type,
+            )
+            _save_video_state(
+                request.canonical_url,
+                state_dir,
+                job_id=job_id,
+                status="running",
+                progress=70,
                 message="Transcribing temporary audio",
                 audio_bytes=len(audio),
             )
@@ -829,7 +936,7 @@ async def _read_youtube_audio(client: Any, url: str) -> tuple[bytes, str]:
                 raise ValueError("YouTube redirected audio outside its allowed domains")
             content_length = str(response.headers.get("content-length") or "")
             if content_length.isdigit() and int(content_length) > MAX_AUDIO_BYTES:
-                raise ValueError("YouTube audio exceeds the 32 MB no-download preprocessing cap")
+                raise ValueError("YouTube audio exceeds the 128 MB no-download preprocessing cap")
             content_type = str(response.headers.get("content-type") or "audio/mp4").split(";", 1)[0]
             if not content_type.startswith("audio/"):
                 raise ValueError("YouTube returned a non-audio stream for ASR")
@@ -838,7 +945,7 @@ async def _read_youtube_audio(client: Any, url: str) -> tuple[bytes, str]:
             async for chunk in response.aiter_bytes():
                 total += len(chunk)
                 if total > MAX_AUDIO_BYTES:
-                    raise ValueError("YouTube audio exceeds the 32 MB no-download preprocessing cap")
+                    raise ValueError("YouTube audio exceeds the 128 MB no-download preprocessing cap")
                 chunks.append(chunk)
             audio = b"".join(chunks)
             if not audio:
@@ -1160,6 +1267,20 @@ async def _run_transcript_preparation(
                 job_id=job_id,
                 status="running",
                 progress=55,
+                message="Preparing audio for speech-to-text",
+                audio_bytes=len(audio),
+            )
+            audio, content_type = await _prepare_audio_for_asr(
+                audio,
+                duration_seconds=duration,
+                content_type=content_type,
+            )
+            _save_video_state(
+                canonical_url,
+                state_dir,
+                job_id=job_id,
+                status="running",
+                progress=65,
                 message="Transcribing audio without saving media",
                 audio_bytes=len(audio),
             )
@@ -1400,11 +1521,11 @@ async def _read_bilibili_audio(
             raise ValueError("Bilibili redirected audio outside its allowed CDN domains")
         content_length = str(response.headers.get("content-length") or "")
         if content_length.isdigit() and int(content_length) > MAX_AUDIO_BYTES:
-            raise ValueError("Bilibili audio exceeds the 32 MB no-download preprocessing cap")
+            raise ValueError("Bilibili audio exceeds the 128 MB no-download preprocessing cap")
         async for chunk in response.aiter_bytes():
             total += len(chunk)
             if total > MAX_AUDIO_BYTES:
-                raise ValueError("Bilibili audio exceeds the 32 MB no-download preprocessing cap")
+                raise ValueError("Bilibili audio exceeds the 128 MB no-download preprocessing cap")
             chunks.append(chunk)
         content_type = str(response.headers.get("content-type") or "audio/mpeg").split(";")[0]
 
@@ -1422,7 +1543,12 @@ async def _transcribe_audio_segments(
 ) -> list[dict[str, Any]]:
     from deeptutor.services.voice import transcribe_audio_segments
 
-    filename = "audio.m4a" if "mp4" in content_type else "audio.webm"
+    if "mpeg" in content_type:
+        filename = "audio.mp3"
+    elif "mp4" in content_type:
+        filename = "audio.m4a"
+    else:
+        filename = "audio.webm"
     raw_segments = await transcribe_audio_segments(
         audio,
         filename=filename,
@@ -1441,6 +1567,69 @@ async def _transcribe_audio_segments(
         duration = end - start if end > start else max(0, duration_seconds)
         segments.append({"from": start, "duration": duration, "content": text})
     return segments
+
+
+async def _prepare_audio_for_asr(
+    audio: bytes,
+    *,
+    duration_seconds: int,
+    content_type: str,
+) -> tuple[bytes, str]:
+    """Keep provider uploads under the common 25 MB API limit.
+
+    Long lectures frequently exceed that limit even as audio-only streams. ffmpeg
+    re-encodes them in memory to a mono 16 kHz MP3 whose bitrate adapts to the
+    known duration; no media file is persisted.
+    """
+    if len(audio) <= MAX_STT_AUDIO_BYTES:
+        return audio, content_type
+    if duration_seconds <= 0:
+        raise ValueError("Cannot compress an audio stream with an unknown duration")
+
+    # Leave room for MP3 container overhead and clamp to bitrates that remain
+    # useful for speech recognition.
+    target_bits = (MAX_STT_AUDIO_BYTES - 256 * 1024) * 8
+    bitrate = min(32_000, max(8_000, target_bits // duration_seconds))
+    command = [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-i",
+        "pipe:0",
+        "-vn",
+        "-map",
+        "0:a:0",
+        "-ac",
+        "1",
+        "-ar",
+        "16000",
+        "-c:a",
+        "libmp3lame",
+        "-b:a",
+        str(bitrate),
+        "-f",
+        "mp3",
+        "pipe:1",
+    ]
+    try:
+        process = await asyncio.create_subprocess_exec(
+            *command,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+    except FileNotFoundError as exc:
+        raise ValueError("ffmpeg is required to transcribe long videos") from exc
+    stdout, stderr = await process.communicate(audio)
+    if process.returncode != 0:
+        detail = stderr.decode("utf-8", errors="replace").strip()[-500:]
+        raise ValueError(f"ffmpeg audio compression failed: {detail}")
+    if not stdout:
+        raise ValueError("ffmpeg returned empty audio for speech-to-text")
+    if len(stdout) > MAX_STT_AUDIO_BYTES:
+        raise ValueError("Compressed audio still exceeds the speech-to-text upload limit")
+    return stdout, "audio/mpeg"
 
 
 def _is_bilibili_audio_host(host: str) -> bool:

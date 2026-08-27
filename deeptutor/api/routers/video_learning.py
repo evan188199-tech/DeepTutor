@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import re
+from time import monotonic
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -19,10 +20,11 @@ from starlette.background import BackgroundTask
 
 from deeptutor.multi_user.learning_access import assert_learning_surface
 from deeptutor.multi_user.paths import current_owner_id
+from deeptutor.services.config.provider_runtime import resolve_stt_runtime_config
 from deeptutor.services.config.runtime_settings import (
     load_integrations_settings,
 )
-from deeptutor.tools.video_learning import learn_video
+from deeptutor.tools.video_learning import _load_video_state, learn_video
 from deeptutor.video_learning import (
     TimedMediaError,
     TimedMediaNotFound,
@@ -368,6 +370,12 @@ async def get_video_subtitles(material_id: str) -> Response:
 async def create_transcript_job(material_id: str, payload: TranscriptJobRequest) -> JSONResponse:
     try:
         assert_learning_surface("watching")
+        try:
+            resolve_stt_runtime_config()
+        except ValueError as exc:
+            raise TimedMediaError(
+                "No active speech-to-text model is configured. Configure it in Settings > Voice."
+            ) from exc
         store = get_timed_media_store()
         material = store.get(material_id)
         duration = int(material.get("source", {}).get("duration_seconds") or 0)
@@ -631,6 +639,7 @@ async def _run_transcript_job(job_id: str, material_id: str, language: str, stor
     material = store.get(material_id)
     source_url = str(material.get("source", {}).get("url") or "")
     try:
+        deadline = monotonic() + ASR_JOB_TIMEOUT_SECONDS
         outcome = await asyncio.wait_for(
             learn_video(
                 source_url,
@@ -639,8 +648,32 @@ async def _run_transcript_job(job_id: str, material_id: str, language: str, stor
                 subtitle_language=language,
                 state_dir=store.root,
             ),
-            timeout=ASR_JOB_TIMEOUT_SECONDS,
+            timeout=max(1.0, deadline - monotonic()),
         )
+        while outcome.ok and outcome.preprocessing and not outcome.transcript:
+            state = _load_video_state(source_url, store.root)
+            state_status = str(state.get("status") or "")
+            if state_status in {"failed", "cancelled"}:
+                detail = str(state.get("error") or state.get("message") or "")
+                raise TimedMediaError(detail or f"Video transcript preprocessing {state_status}.")
+            _write_job(
+                store,
+                job_id,
+                status="running",
+                progress=max(5, int(state.get("progress") or 5)),
+            )
+            if monotonic() >= deadline:
+                raise TimedMediaError("Video transcript generation timed out.")
+            await asyncio.sleep(1)
+            outcome = await asyncio.wait_for(
+                learn_video(
+                    source_url,
+                    max_chars=200_000,
+                    subtitle_language=language,
+                    state_dir=store.root,
+                ),
+                timeout=max(1.0, deadline - monotonic()),
+            )
         if not outcome.ok or not outcome.transcript:
             raise TimedMediaError(outcome.error or "The speech-to-text provider returned no transcript.")
         material["transcript"] = {"language": outcome.subtitle_language or language or "auto", "source": "stt", "cues": outcome.transcript}
