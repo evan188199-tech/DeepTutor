@@ -545,11 +545,11 @@ class ReadingStore:
                     break
                 exact.append((locator, start))
                 end = start + len(quote)
-                prefix_matches = not selector or not selector.prefix or unit[:start].endswith(
-                    selector.prefix
+                prefix_matches = (
+                    not selector or not selector.prefix or unit[:start].endswith(selector.prefix)
                 )
-                suffix_matches = not selector or not selector.suffix or unit[end:].startswith(
-                    selector.suffix
+                suffix_matches = (
+                    not selector or not selector.suffix or unit[end:].startswith(selector.suffix)
                 )
                 if prefix_matches and suffix_matches:
                     contextual.append((locator, start))
@@ -803,9 +803,7 @@ class ReadingStore:
         if not path.is_file():
             raise MaterialNotFound("snapshot asset not found")
         try:
-            mime = (self.root / ASSETS_DIR / f"{candidate}.mime").read_text(
-                encoding="utf-8"
-            )
+            mime = (self.root / ASSETS_DIR / f"{candidate}.mime").read_text(encoding="utf-8")
         except OSError:
             mime = "application/octet-stream"
         return path, mime.strip()

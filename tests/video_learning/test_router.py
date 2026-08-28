@@ -69,7 +69,12 @@ def test_video_subtitles_are_served_as_webvtt(client_and_store):
                 "url": "https://youtu.be/dQw4w9WgXcQ",
                 "duration_seconds": 3662,
             },
-            "metadata": {"title": "Test Song", "author": "Singer", "duration_seconds": 3662, "chapters": []},
+            "metadata": {
+                "title": "Test Song",
+                "author": "Singer",
+                "duration_seconds": 3662,
+                "chapters": [],
+            },
             "transcript": {
                 "language": "en",
                 "source": "invidious",
@@ -110,7 +115,9 @@ def test_video_note_persists_optional_subtitle_quote(client_and_store):
             "transcript": {
                 "language": "en",
                 "source": "invidious",
-                "cues": [{"start": 10, "end": 18, "text": "Gradient descent finds a local minimum."}],
+                "cues": [
+                    {"start": 10, "end": 18, "text": "Gradient descent finds a local minimum."}
+                ],
             },
             "segments": [],
             "playback": {"formats": {}, "official_url": "https://youtu.be/dQw4w9WgXcQ"},
@@ -150,7 +157,9 @@ async def test_invidious_callback_flow(client_and_store):
 
     # Valid state
     state = await AuthStateStore.create_state(current_owner_id())
-    resp = client.get(f"/api/v1/video-learning/invidious/callback?token=my_secret_token&state={state}")
+    resp = client.get(
+        f"/api/v1/video-learning/invidious/callback?token=my_secret_token&state={state}"
+    )
     assert resp.status_code == 200
     assert "Connected to Invidious!" in resp.text
     assert resp.headers.get("cache-control") == "no-store, no-cache, must-revalidate, max-age=0"
@@ -188,20 +197,27 @@ async def test_watch_progress_and_history_sync(client_and_store, monkeypatch):
         lambda *args, **kwargs: real_async_client(transport=MockTransport()),
     )
 
-    material = store.create({
-        "type": "timed_media",
-        "source": {
-            "provider": "youtube",
-            "video_id": "dQw4w9WgXcQ",
-            "url": "https://youtu.be/dQw4w9WgXcQ",
-            "duration_seconds": 200,
-        },
-        "metadata": {"title": "Test Song", "author": "Singer", "duration_seconds": 200, "chapters": []},
-        "transcript": {"language": "en", "source": "invidious", "cues": []},
-        "segments": [],
-        "playback": {"formats": {}, "official_url": "https://youtu.be/dQw4w9WgXcQ"},
-        "learning": {"last_position": 0, "notes": []},
-    })
+    material = store.create(
+        {
+            "type": "timed_media",
+            "source": {
+                "provider": "youtube",
+                "video_id": "dQw4w9WgXcQ",
+                "url": "https://youtu.be/dQw4w9WgXcQ",
+                "duration_seconds": 200,
+            },
+            "metadata": {
+                "title": "Test Song",
+                "author": "Singer",
+                "duration_seconds": 200,
+                "chapters": [],
+            },
+            "transcript": {"language": "en", "source": "invidious", "cues": []},
+            "segments": [],
+            "playback": {"formats": {}, "official_url": "https://youtu.be/dQw4w9WgXcQ"},
+            "learning": {"last_position": 0, "notes": []},
+        }
+    )
     mat_id = material["material_id"]
 
     # Threshold for 200s is min(30s, 0.10 * 200) = 20s.

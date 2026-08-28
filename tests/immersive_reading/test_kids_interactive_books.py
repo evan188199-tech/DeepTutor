@@ -59,8 +59,18 @@ def mock_interactive_book(tmp_path, monkeypatch) -> Book:
     book_dir = tmp_path / "book_workspace"
     book_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(storage.path_service, "get_book_dir", lambda: book_dir)
-    monkeypatch.setattr(storage.path_service, "get_book_root", lambda b_id: book_dir / f"book_{b_id}")
-    monkeypatch.setattr(storage.path_service, "ensure_book_root", lambda b_id: (book_dir / f"book_{b_id}") if (book_dir / f"book_{b_id}").mkdir(parents=True, exist_ok=True) is None else (book_dir / f"book_{b_id}"))
+    monkeypatch.setattr(
+        storage.path_service, "get_book_root", lambda b_id: book_dir / f"book_{b_id}"
+    )
+    monkeypatch.setattr(
+        storage.path_service,
+        "ensure_book_root",
+        lambda b_id: (
+            (book_dir / f"book_{b_id}")
+            if (book_dir / f"book_{b_id}").mkdir(parents=True, exist_ok=True) is None
+            else (book_dir / f"book_{b_id}")
+        ),
+    )
 
     book_id = "math_fun_01"
     book = Book(
@@ -119,7 +129,10 @@ def mock_interactive_book(tmp_path, monkeypatch) -> Book:
                 id="blk_anim_1",
                 type=BlockType.ANIMATION,
                 title="图形变变变",
-                payload={"video_url": f"book_{book_id}/assets/triangles.mp4", "caption": "看三角形怎么拼成正方形"},
+                payload={
+                    "video_url": f"book_{book_id}/assets/triangles.mp4",
+                    "caption": "看三角形怎么拼成正方形",
+                },
             ),
             Block(
                 id="blk_quiz_1",
@@ -173,14 +186,14 @@ def kids_client(clean_kids_manager, sample_profile, mock_interactive_book) -> Te
 @pytest.fixture(autouse=True)
 def isolated_reward_provider_cache(monkeypatch):
     reset_kids_reward_provider_cache_for_tests()
-    monkeypatch.setattr(
-        entry_point_module, "entry_points", lambda *, group: []
-    )
+    monkeypatch.setattr(entry_point_module, "entry_points", lambda *, group: [])
     yield
     reset_kids_reward_provider_cache_for_tests()
 
 
-def test_kids_manager_assign_and_progress(clean_kids_manager, sample_profile, mock_interactive_book):
+def test_kids_manager_assign_and_progress(
+    clean_kids_manager, sample_profile, mock_interactive_book
+):
     """Verify assignment and progress tracking on KidsManager layer."""
     assignment = clean_kids_manager.assign_interactive_book(
         sample_profile.id,
@@ -246,7 +259,9 @@ def test_kids_manager_assign_and_progress(clean_kids_manager, sample_profile, mo
     assert prog.quiz_scores["blk_quiz_1"] == 1
 
 
-def test_child_interactive_book_endpoints(kids_client, sample_profile, clean_kids_manager, mock_interactive_book):
+def test_child_interactive_book_endpoints(
+    kids_client, sample_profile, clean_kids_manager, mock_interactive_book
+):
     """Verify child endpoints: book manifest, sanitized page, quiz grading."""
     # 1. Assign book to profile
     clean_kids_manager.assign_interactive_book(
@@ -256,7 +271,9 @@ def test_child_interactive_book_endpoints(kids_client, sample_profile, clean_kid
     )
 
     # 2. Get device token for child
-    auth_resp = kids_client.post("/api/v1/kids/select-profile", json={"profile_id": sample_profile.id})
+    auth_resp = kids_client.post(
+        "/api/v1/kids/select-profile", json={"profile_id": sample_profile.id}
+    )
     assert auth_resp.status_code == 200
     token = auth_resp.json()["token"]
     headers = {"Authorization": f"Bearer {token}"}
@@ -270,13 +287,17 @@ def test_child_interactive_book_endpoints(kids_client, sample_profile, clean_kid
     assert library[0]["book"]["title"] == "趣味数学：数与图形"
 
     # 4. Get interactive book detail
-    book_resp = kids_client.get(f"/api/v1/kids/interactive-books/{mock_interactive_book.id}", headers=headers)
+    book_resp = kids_client.get(
+        f"/api/v1/kids/interactive-books/{mock_interactive_book.id}", headers=headers
+    )
     assert book_resp.status_code == 200
     assert book_resp.json()["book"]["title"] == "趣味数学：数与图形"
     assert len(book_resp.json()["spine"]["chapters"]) == 1
 
     # 5. Get page content — answers MUST be stripped from quiz block for child safety
-    page_resp = kids_client.get(f"/api/v1/kids/interactive-books/{mock_interactive_book.id}/pages/pg_01", headers=headers)
+    page_resp = kids_client.get(
+        f"/api/v1/kids/interactive-books/{mock_interactive_book.id}/pages/pg_01", headers=headers
+    )
     assert page_resp.status_code == 200
     page_data = page_resp.json()["page"]
     quiz_blk = next(b for b in page_data["blocks"] if b["type"] == "quiz")
@@ -302,8 +323,7 @@ def test_child_interactive_book_endpoints(kids_client, sample_profile, clean_kid
     assert grade["score"] == 1
     assert grade["reward"] is None
     assert not any(
-        key in grade
-        for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
+        key in grade for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
     )
     assert grade["per_question"][0]["correct"] is True
     assert "三角形有3条边" in grade["per_question"][0]["explanation"]
@@ -372,7 +392,9 @@ def test_interactive_quiz_dispatches_reward_event(
     assert event.completed is True
 
 
-def test_parent_admin_interactive_books(kids_client, sample_profile, clean_kids_manager, mock_interactive_book):
+def test_parent_admin_interactive_books(
+    kids_client, sample_profile, clean_kids_manager, mock_interactive_book
+):
     """Verify parent management endpoints for listing and assigning interactive books."""
     # List available books in BookEngine
     list_resp = kids_client.get("/api/v1/kids-admin/available-books")
@@ -384,7 +406,11 @@ def test_parent_admin_interactive_books(kids_client, sample_profile, clean_kids_
     # Assign to profile
     assign_resp = kids_client.post(
         f"/api/v1/kids-admin/profiles/{sample_profile.id}/interactive-books",
-        json={"book_id": mock_interactive_book.id, "title": "自定义数学书名", "available_through_page_order": 0},
+        json={
+            "book_id": mock_interactive_book.id,
+            "title": "自定义数学书名",
+            "available_through_page_order": 0,
+        },
     )
     assert assign_resp.status_code == 200
     assignment = assign_resp.json()["assignment"]

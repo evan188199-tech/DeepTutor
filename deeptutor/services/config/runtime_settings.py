@@ -1087,7 +1087,9 @@ class RuntimeSettingsService:
         return {
             "version": 1,
             "invidious_base_url": _string(settings.get("invidious_base_url")).rstrip("/"),
-            "invidious_public_base_url": _string(settings.get("invidious_public_base_url")).rstrip("/"),
+            "invidious_public_base_url": _string(settings.get("invidious_public_base_url")).rstrip(
+                "/"
+            ),
             "pocketbase_url": _string(settings.get("pocketbase_url")).rstrip("/"),
             "pocketbase_port": _coerce_port(settings.get("pocketbase_port"), 8090),
             "pocketbase_external_url": _string(settings.get("pocketbase_external_url")).rstrip("/"),

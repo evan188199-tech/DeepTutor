@@ -182,8 +182,7 @@ async def admin_resources(_: object = Depends(require_admin)) -> dict[str, Any]:
         "partners": _admin_partner_summary(),
         "reading_materials": _admin_reading_summary(),
         "reading_extensions": [
-            extension.manifest.model_dump()
-            for extension in get_reading_extension_registry().all()
+            extension.manifest.model_dump() for extension in get_reading_extension_registry().all()
         ],
         "tools": tool_options["tools"],
         "mcp_tools": tool_options["mcp_tools"],

@@ -2210,7 +2210,9 @@ class TurnRuntimeManager:
                     "reading_material_id": _reading_material_id(payload.get("reading_material_id")),
                     "reading_viewport": _reading_viewport(payload.get("reading_viewport")),
                     "timed_media_id": _timed_media_id(payload.get("timed_media_id")),
-                    "timed_media_viewport": _timed_media_viewport(payload.get("timed_media_viewport")),
+                    "timed_media_viewport": _timed_media_viewport(
+                        payload.get("timed_media_viewport")
+                    ),
                     "book_context": book_context,
                     "book_context_warnings": book_context_result.warnings,
                     "memory_references": memory_references,

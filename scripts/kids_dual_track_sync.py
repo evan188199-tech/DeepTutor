@@ -119,8 +119,7 @@ def merge_collection_rows(
 def max_union(base: Mapping, legacy: Mapping, experimental: Mapping) -> dict:
     keys = set(base) | set(legacy) | set(experimental)
     return {
-        key: max(base.get(key, 0), legacy.get(key, 0), experimental.get(key, 0))
-        for key in keys
+        key: max(base.get(key, 0), legacy.get(key, 0), experimental.get(key, 0)) for key in keys
     }
 
 
@@ -136,10 +135,14 @@ def list_union(base: list, legacy: list, experimental: list) -> list:
 
 def newer_position(base: Mapping, legacy: Mapping, experimental: Mapping) -> dict:
     candidates = [dict(base), dict(legacy), dict(experimental)]
-    return max(candidates, key=lambda row: max(row.get("updated_at", 0), row.get("last_read_at", 0)))
+    return max(
+        candidates, key=lambda row: max(row.get("updated_at", 0), row.get("last_read_at", 0))
+    )
 
 
-def compatible_new_stars(kind: str, previous_scores: Mapping, current_scores: Mapping) -> dict[str, int]:
+def compatible_new_stars(
+    kind: str, previous_scores: Mapping, current_scores: Mapping
+) -> dict[str, int]:
     """Conservatively seed legacy stars for quizzes taken in the extension build.
 
     Reading quizzes always present three questions, so only a perfect score earns
@@ -159,7 +162,9 @@ def compatible_new_stars(kind: str, previous_scores: Mapping, current_scores: Ma
     return {key: value for key, value in awards.items() if value > 0}
 
 
-def merge_progress(name: str, base: dict | None, legacy: dict | None, experimental: dict | None, *, bootstrap: bool) -> dict:
+def merge_progress(
+    name: str, base: dict | None, legacy: dict | None, experimental: dict | None, *, bootstrap: bool
+) -> dict:
     kind = "interactive" if name.startswith("ib_") else "reading"
     if base is None:
         # Bootstrap prefers the legacy cumulative counters while unioning facts.
@@ -168,14 +173,18 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
         primary.setdefault("quiz_scores", {})
         primary.setdefault("quiz_stars_awarded", {})
         primary.setdefault("total_stars", 0)
-        primary["quiz_scores"] = max_union({}, primary["quiz_scores"], secondary.get("quiz_scores", {}))
+        primary["quiz_scores"] = max_union(
+            {}, primary["quiz_scores"], secondary.get("quiz_scores", {})
+        )
         completed_key = "completed_page_ids" if kind == "interactive" else "completed_section_ids"
         primary[completed_key] = list_union(
             [], primary.get(completed_key, []), secondary.get(completed_key, [])
         )
         if not bootstrap and secondary is not None:
             awards = compatible_new_stars(
-                kind, legacy.get("quiz_scores", {}) if legacy else {}, secondary.get("quiz_scores", {})
+                kind,
+                legacy.get("quiz_scores", {}) if legacy else {},
+                secondary.get("quiz_scores", {}),
             )
             previous_awards = primary["quiz_stars_awarded"]
             for key, stars in awards.items():
@@ -191,7 +200,9 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
     position = newer_position(base, legacy, experimental)
     scalar_fields = INTERACTIVE_SCALARS if kind == "interactive" else READING_SCALARS
     for field in scalar_fields:
-        merged[field] = position.get(field, base.get(field, 0 if field.endswith("index") or field.endswith("order") else ""))
+        merged[field] = position.get(
+            field, base.get(field, 0 if field.endswith("index") or field.endswith("order") else "")
+        )
 
     if kind == "reading":
         for field in CUMULATIVE_READING:
@@ -205,7 +216,9 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
         )
 
     base_scores = dict(base.get("quiz_scores", {}))
-    merged["quiz_scores"] = max_union(base_scores, legacy.get("quiz_scores", {}), experimental.get("quiz_scores", {}))
+    merged["quiz_scores"] = max_union(
+        base_scores, legacy.get("quiz_scores", {}), experimental.get("quiz_scores", {})
+    )
 
     completed_key = "completed_page_ids" if kind == "interactive" else "completed_section_ids"
     merged[completed_key] = list_union(
@@ -214,8 +227,12 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
         experimental.get(completed_key, []),
     )
     merged[CUMULATIVE_TIME] = float(base.get(CUMULATIVE_TIME, 0))
-    merged[CUMULATIVE_TIME] += max(0.0, float(legacy.get(CUMULATIVE_TIME, 0)) - float(base.get(CUMULATIVE_TIME, 0)))
-    merged[CUMULATIVE_TIME] += max(0.0, float(experimental.get(CUMULATIVE_TIME, 0)) - float(base.get(CUMULATIVE_TIME, 0)))
+    merged[CUMULATIVE_TIME] += max(
+        0.0, float(legacy.get(CUMULATIVE_TIME, 0)) - float(base.get(CUMULATIVE_TIME, 0))
+    )
+    merged[CUMULATIVE_TIME] += max(
+        0.0, float(experimental.get(CUMULATIVE_TIME, 0)) - float(base.get(CUMULATIVE_TIME, 0))
+    )
     merged["last_read_at"] = max(
         float(base.get("last_read_at", 0)),
         float(legacy.get("last_read_at", 0)),
@@ -229,7 +246,9 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
 
     base_awards = dict(base.get("quiz_stars_awarded", {}))
     legacy_awards = legacy.get("quiz_stars_awarded", base_awards)
-    experimental_awards = compatible_new_stars(kind, base_scores, experimental.get("quiz_scores", {}))
+    experimental_awards = compatible_new_stars(
+        kind, base_scores, experimental.get("quiz_scores", {})
+    )
     merged_awards = max_union(base_awards, legacy_awards, experimental_awards)
     legacy_star_delta = max(0, int(legacy.get("total_stars", 0)) - int(base.get("total_stars", 0)))
     extension_star_delta = sum(
@@ -237,7 +256,9 @@ def merge_progress(name: str, base: dict | None, legacy: dict | None, experiment
         for key in merged_awards
     )
     merged["quiz_stars_awarded"] = merged_awards
-    merged["total_stars"] = int(base.get("total_stars", 0)) + legacy_star_delta + extension_star_delta
+    merged["total_stars"] = (
+        int(base.get("total_stars", 0)) + legacy_star_delta + extension_star_delta
+    )
     return merged
 
 
@@ -420,7 +441,9 @@ def run(legacy_root: Path, experimental_root: Path, *, apply: bool) -> int:
                 state.get("usage", {}).get(name), old_usage.get(name), new_usage.get(name)
             )
 
-        profiles_changed, merged_profiles = merge_collection_rows(old_kids, new_kids, "profiles.json")
+        profiles_changed, merged_profiles = merge_collection_rows(
+            old_kids, new_kids, "profiles.json"
+        )
         assignments_changed, merged_assignments = merge_collection_rows(
             old_kids, new_kids, "assignments.json"
         )
@@ -433,8 +456,7 @@ def run(legacy_root: Path, experimental_root: Path, *, apply: bool) -> int:
             for name in merged_progress
         )
         usage_changed = any(
-            merged_usage[name] != old_usage.get(name)
-            or merged_usage[name] != new_usage.get(name)
+            merged_usage[name] != old_usage.get(name) or merged_usage[name] != new_usage.get(name)
             for name in merged_usage
         )
 
@@ -466,7 +488,10 @@ def run(legacy_root: Path, experimental_root: Path, *, apply: bool) -> int:
         atomic_write_json(new_kids / "profiles.json", merged_profiles)
         atomic_write_json(new_kids / "assignments.json", merged_assignments)
         old_progress_dir, old_usage_dir = progress_dir(legacy_root), usage_dir(legacy_root)
-        new_progress_dir, new_usage_dir = progress_dir(experimental_root), usage_dir(experimental_root)
+        new_progress_dir, new_usage_dir = (
+            progress_dir(experimental_root),
+            usage_dir(experimental_root),
+        )
         for directory in (old_progress_dir, new_progress_dir, old_usage_dir, new_usage_dir):
             directory.mkdir(parents=True, exist_ok=True)
         for name, value in merged_progress.items():
@@ -509,9 +534,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--experimental-root",
         type=Path,
-        default=Path(
-            "/tmp/DeepTutor-kids-dual-home/data/user/workspace/immersive_reading"
-        ),
+        default=Path("/tmp/DeepTutor-kids-dual-home/data/user/workspace/immersive_reading"),
         help="Experimental immersive_reading directory",
     )
     group = parser.add_mutually_exclusive_group(required=True)

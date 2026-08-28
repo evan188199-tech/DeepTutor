@@ -118,8 +118,7 @@ def recommend_epub_candidates(store: ReadingStore, material_id: str) -> list[dic
         )
         author_match = bool(
             source_meta.get("creator")
-            and source_meta.get("creator", "").casefold()
-            == metadata.get("creator", "").casefold()
+            and source_meta.get("creator", "").casefold() == metadata.get("creator", "").casefold()
         )
         candidate_language = _language(metadata.get("language") or "")
         language_bonus = float(
@@ -172,9 +171,7 @@ def _inject_chapter(source: str, translation_text: str) -> tuple[str, int]:
     for index, block in enumerate(blocks):
         output.append(source[cursor : block.end()])
         if index < len(translations):
-            output.append(
-                "\n" + _details(translations[index], low_confidence=low_confidence)
-            )
+            output.append("\n" + _details(translations[index], low_confidence=low_confidence))
         cursor = block.end()
     output.append(source[cursor:])
     merged = "".join(output)

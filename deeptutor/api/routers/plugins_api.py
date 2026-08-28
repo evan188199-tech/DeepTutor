@@ -110,8 +110,7 @@ async def list_plugins():
         "capabilities": capabilities,
         "plugins": plugins,
         "reading_extensions": [
-            extension.manifest.model_dump()
-            for extension in get_reading_extension_registry().all()
+            extension.manifest.model_dump() for extension in get_reading_extension_registry().all()
         ],
     }
 

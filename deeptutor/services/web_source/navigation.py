@@ -105,8 +105,7 @@ def merge_navigation(
         merged_kind = "original"
 
     merged_nodes = [
-        _merge_node(n, zh_by_base, pair_key, index=index)
-        for index, n in enumerate(en_nodes)
+        _merge_node(n, zh_by_base, pair_key, index=index) for index, n in enumerate(en_nodes)
     ]
     return {"kind": merged_kind, "nodes": merged_nodes}
 

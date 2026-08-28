@@ -13,7 +13,9 @@ from deeptutor.video_learning.marks import create_mark
 from deeptutor.video_learning.service import get_timed_media_store
 
 
-def test_renderer_uses_admin_owner_workspace_for_invidious_login(tmp_path: Path, monkeypatch) -> None:
+def test_renderer_uses_admin_owner_workspace_for_invidious_login(
+    tmp_path: Path, monkeypatch
+) -> None:
     from deeptutor.api.routers.auth import _install_current_user
     from deeptutor.multi_user.paths import LOCAL_ADMIN_ID, current_owner_id
     from deeptutor.services.auth import TokenPayload
@@ -84,7 +86,9 @@ def test_renderer_bootstrap_presence_and_open_video(tmp_path: Path, monkeypatch)
         assert redeemed.status_code == 200
         data = redeemed.json()
         auth = {"Authorization": f"VideoLearning {data['device_id']}:{data['token']}"}
-        assert client.post("/api/v1/video-learning/player/presence", headers=auth).status_code == 200
+        assert (
+            client.post("/api/v1/video-learning/player/presence", headers=auth).status_code == 200
+        )
         opened = client.post(
             f"/api/v1/video-learning/devices/{data['device_id']}/commands",
             json={"type": "open_video", "video_id": "dQw4w9WgXcQ"},
@@ -166,7 +170,9 @@ def test_player_sync_rebinds_material_when_video_changes(tmp_path: Path, monkeyp
         second_material = get_timed_media_store().get(second_session["material_id"])
         assert second_material["source"]["video_id"] == second_video_id
         assert second_material["learning"]["marks"] == []
-        assert get_timed_media_store().get(first_session["material_id"])["learning"]["marks"] == [mark]
+        assert get_timed_media_store().get(first_session["material_id"])["learning"]["marks"] == [
+            mark
+        ]
     PathService.reset_instance()
 
 
@@ -183,6 +189,7 @@ def test_renderer_bootstrap_exchanges_one_time_invidious_login(tmp_path: Path, m
         "has_token",
         classmethod(lambda cls, owner_id: True),
     )
+
     async def fake_handoff(owner_id: str):
         return {
             "exchange_code": "one-time-exchange-code",
@@ -251,16 +258,12 @@ def test_renderer_qr_targets_feed_without_losing_fragment(tmp_path: Path, monkey
     PathService.reset_instance()
 
 
-def test_renderer_uses_configured_origin_and_watch_position(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_renderer_uses_configured_origin_and_watch_position(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path))
     PathService.reset_instance()
 
 
-def test_renderer_binds_watch_material_without_exposing_it(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_renderer_binds_watch_material_without_exposing_it(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path))
     PathService.reset_instance()
     monkeypatch.setattr(
@@ -295,9 +298,7 @@ def test_renderer_binds_watch_material_without_exposing_it(
             "/api/v1/video-learning/renderers/bootstrap",
             json={"ticket": created.json()["ticket"]},
         ).json()
-        auth = {
-            "Authorization": f"VideoLearning {redeemed['device_id']}:{redeemed['token']}"
-        }
+        auth = {"Authorization": f"VideoLearning {redeemed['device_id']}:{redeemed['token']}"}
         synced = client.post(
             "/api/v1/video-learning/player/sync",
             headers=auth,
@@ -344,9 +345,7 @@ def test_renderer_binds_watch_material_without_exposing_it(
     PathService.reset_instance()
 
 
-def test_phone_handoff_binds_latest_controller_cookie(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_phone_handoff_binds_latest_controller_cookie(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path))
     PathService.reset_instance()
     monkeypatch.setattr(
@@ -357,9 +356,7 @@ def test_phone_handoff_binds_latest_controller_cookie(
     monkeypatch.setattr(
         video_remote_control,
         "load_tunnel_state",
-        lambda: TunnelState(
-            url="https://deeptutor.example", host="deeptutor.example"
-        ),
+        lambda: TunnelState(url="https://deeptutor.example", host="deeptutor.example"),
     )
     monkeypatch.setattr(
         video_remote_control,
@@ -407,18 +404,15 @@ def test_phone_handoff_binds_latest_controller_cookie(
 
         handoff = client.post("/api/v1/video-learning/player/phone-handoff", headers=auth)
         assert handoff.status_code == 200
-        assert handoff.json()["qr_url"] == "https://deeptutor.example/access/device?pairing=pairing-id"
+        assert (
+            handoff.json()["qr_url"] == "https://deeptutor.example/access/device?pairing=pairing-id"
+        )
 
         command_url = f"/api/v1/video-learning/sessions/{session_id}/commands"
         assert client.post(command_url, json={"type": "pause"}).status_code == 403
         client.cookies.set("dt_video_controller", f"{session_id}:wrong")
-        assert (
-            client.post(command_url, json={"type": "pause"}).status_code
-            == 403
-        )
-        client.cookies.set(
-            "dt_video_controller", f"{session_id}:{secrets_captured[0]}"
-        )
+        assert client.post(command_url, json={"type": "pause"}).status_code == 403
+        client.cookies.set("dt_video_controller", f"{session_id}:{secrets_captured[0]}")
         volume = client.post(
             command_url,
             json={"type": "volume", "volume": 35},
@@ -434,9 +428,7 @@ def test_phone_handoff_binds_latest_controller_cookie(
         annotation_url = f"/api/v1/video-learning/sessions/{session_id}/annotations"
         client.cookies.delete("dt_video_controller")
         assert client.get(annotation_url).status_code == 403
-        client.cookies.set(
-            "dt_video_controller", f"{session_id}:{secrets_captured[0]}"
-        )
+        client.cookies.set("dt_video_controller", f"{session_id}:{secrets_captured[0]}")
         created_annotation = client.post(
             annotation_url,
             json={"kind": "key_point", "note": "Remote key idea"},
@@ -449,14 +441,9 @@ def test_phone_handoff_binds_latest_controller_cookie(
 
         replaced = client.post("/api/v1/video-learning/player/phone-handoff", headers=auth)
         assert replaced.status_code == 200
-        assert (
-            client.post(command_url, json={"type": "pause"}).status_code
-            == 403
-        )
+        assert client.post(command_url, json={"type": "pause"}).status_code == 403
         assert client.get(annotation_url).status_code == 403
-        client.cookies.set(
-            "dt_video_controller", f"{session_id}:{secrets_captured[1]}"
-        )
+        client.cookies.set("dt_video_controller", f"{session_id}:{secrets_captured[1]}")
         seek = client.post(
             command_url,
             json={"type": "seek", "delta_ms": -20_000},

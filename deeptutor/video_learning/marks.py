@@ -97,11 +97,11 @@ def quote_for_range(material: dict[str, Any], start: float, end: float) -> str:
     return _clip_text(" ".join(selected), MAX_QUOTE_CHARS)
 
 
-def nearby_cues(material: dict[str, Any], time_seconds: float, window: float = NEARBY_WINDOW_SECONDS) -> list[dict[str, Any]]:
+def nearby_cues(
+    material: dict[str, Any], time_seconds: float, window: float = NEARBY_WINDOW_SECONDS
+) -> list[dict[str, Any]]:
     return [
-        row
-        for row in _cues(material)
-        if abs(float(row.get("start") or 0) - time_seconds) <= window
+        row for row in _cues(material) if abs(float(row.get("start") or 0) - time_seconds) <= window
     ]
 
 
@@ -141,8 +141,16 @@ def normalize_mark(
     kind = str(payload.get("kind") or (existing or {}).get("kind") or "").strip()
     if kind not in MARK_KINDS:
         raise TimedMediaError("Mark kind must be key_point, question, or review.")
-    start = _as_seconds(payload["start_seconds"] if "start_seconds" in payload else (existing or {}).get("start_seconds", 0))
-    end = _as_seconds(payload["end_seconds"] if "end_seconds" in payload else (existing or {}).get("end_seconds", start))
+    start = _as_seconds(
+        payload["start_seconds"]
+        if "start_seconds" in payload
+        else (existing or {}).get("start_seconds", 0)
+    )
+    end = _as_seconds(
+        payload["end_seconds"]
+        if "end_seconds" in payload
+        else (existing or {}).get("end_seconds", start)
+    )
     if end < start:
         raise TimedMediaError("Mark end must be at or after the start time.")
     duration = _duration_seconds(material)
@@ -151,7 +159,9 @@ def normalize_mark(
             raise TimedMediaError("Mark start is beyond the video duration.")
         end = min(end, duration)
     derived_start, derived_end = locators_for_range(material, start, end)
-    start_locator = payload.get("start_locator", (existing or {}).get("start_locator", derived_start))
+    start_locator = payload.get(
+        "start_locator", (existing or {}).get("start_locator", derived_start)
+    )
     end_locator = payload.get("end_locator", (existing or {}).get("end_locator", derived_end))
     try:
         start_locator = max(0, int(start_locator or 0))
@@ -292,7 +302,11 @@ def heuristic_suggestions(material: dict[str, Any], time_seconds: float) -> list
                 "author": "assistant",
             }
         )
-    return [_public_suggestion(material, row) for row in candidates[:MAX_SUGGESTIONS] if _public_suggestion(material, row)]
+    return [
+        _public_suggestion(material, row)
+        for row in candidates[:MAX_SUGGESTIONS]
+        if _public_suggestion(material, row)
+    ]
 
 
 def _public_suggestion(material: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any] | None:

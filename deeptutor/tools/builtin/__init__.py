@@ -971,9 +971,7 @@ class WebFetchTool(_PromptHintsMixin, BaseTool):
             video = await learn_video(
                 url,
                 max_chars=max_chars,
-                generate_transcript_if_missing=bool(
-                    kwargs.get("generate_transcript_if_missing")
-                ),
+                generate_transcript_if_missing=bool(kwargs.get("generate_transcript_if_missing")),
                 state_dir=get_current_path_service().user_data_dir / "video_learning",
             )
             if not video.ok:

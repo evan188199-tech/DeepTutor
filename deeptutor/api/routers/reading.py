@@ -1127,9 +1127,7 @@ def _kb_tutorial_payload(
         sections = (
             (
                 "\n\n".join(
-                    normalize_snapshot_links(
-                        str(item.get("en_content") or ""), str(row["url"])
-                    )
+                    normalize_snapshot_links(str(item.get("en_content") or ""), str(row["url"]))
                     for item in aligned_rows
                 ),
             )

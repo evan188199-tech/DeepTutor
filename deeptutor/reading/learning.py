@@ -38,7 +38,9 @@ class LearningLedger:
             value = json.loads(path.read_text(encoding="utf-8"))
         except (FileNotFoundError, OSError, json.JSONDecodeError):
             return []
-        return [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+        return (
+            [dict(row) for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+        )
 
     def records(self) -> list[dict[str, Any]]:
         return self._read(self.records_path)
@@ -58,7 +60,11 @@ class LearningLedger:
 
     def interaction(self, interaction_id: str) -> dict[str, Any] | None:
         return next(
-            (row for row in self._read(self.interactions_path) if row.get("interaction_id") == interaction_id),
+            (
+                row
+                for row in self._read(self.interactions_path)
+                if row.get("interaction_id") == interaction_id
+            ),
             None,
         )
 
@@ -69,10 +75,10 @@ class LearningLedger:
         submission: dict[str, Any],
         result: dict[str, Any],
     ) -> dict[str, Any]:
-        canonical = json.dumps(submission, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-        event_id = sha256(
-            f"{interaction.get('interaction_id')}|{canonical}".encode()
-        ).hexdigest()
+        canonical = json.dumps(
+            submission, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        event_id = sha256(f"{interaction.get('interaction_id')}|{canonical}".encode()).hexdigest()
         with _lock:
             rows = self._read(self.records_path)
             existing = next((row for row in rows if row.get("event_id") == event_id), None)

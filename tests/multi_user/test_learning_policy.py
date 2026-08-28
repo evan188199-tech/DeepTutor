@@ -133,9 +133,7 @@ def test_admin_policy_is_always_none(as_user):
 
 
 @pytest.mark.asyncio
-async def test_http_surface_guard_returns_403_for_default_denied_surface(
-    monkeypatch, as_user
-):
+async def test_http_surface_guard_returns_403_for_default_denied_surface(monkeypatch, as_user):
     from fastapi import HTTPException
 
     from deeptutor.api.routers.auth import require_learning_surface
@@ -157,9 +155,7 @@ async def test_surface_guard_accepts_websocket_connections(as_user):
 
     from deeptutor.api.routers.auth import require_learning_surface
 
-    connection = HTTPConnection(
-        {"type": "websocket", "path": "/api/v1/ws", "headers": []}
-    )
+    connection = HTTPConnection({"type": "websocket", "path": "/api/v1/ws", "headers": []})
     with as_user("u_admin", role="admin"):
         await require_learning_surface(connection)
 

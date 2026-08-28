@@ -189,9 +189,7 @@ def test_kids_profile_and_library_require_pin_or_device_session(tmp_path, monkey
     app = FastAPI()
     app.include_router(kids_router_module.router, prefix="/api/v1/kids")
     client = TestClient(app)
-    select_without_pin = client.post(
-        "/api/v1/kids/select-profile", json={"profile_id": profile.id}
-    )
+    select_without_pin = client.post("/api/v1/kids/select-profile", json={"profile_id": profile.id})
     assert select_without_pin.status_code == 403
 
     library_without_session = client.get(

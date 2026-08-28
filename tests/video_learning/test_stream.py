@@ -32,7 +32,9 @@ async def test_stream_proxy_forwards_range_without_buffering_complete_video(
         }
         if raw_range:
             headers["Content-Range"] = f"bytes {start}-{end}/{len(payload)}"
-        return httpx.Response(206 if raw_range else 200, content=body, headers=headers, request=request)
+        return httpx.Response(
+            206 if raw_range else 200, content=body, headers=headers, request=request
+        )
 
     real_client = httpx.AsyncClient
     monkeypatch.setattr(
@@ -40,7 +42,9 @@ async def test_stream_proxy_forwards_range_without_buffering_complete_video(
         "AsyncClient",
         lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
     )
-    monkeypatch.setattr(router, "load_integrations_settings", lambda: {"invidious_base_url": base_url})
+    monkeypatch.setattr(
+        router, "load_integrations_settings", lambda: {"invidious_base_url": base_url}
+    )
     store = TimedMediaStore(tmp_path)
     material = store.create(
         {
@@ -73,7 +77,9 @@ class _Request:
 
 
 @pytest.mark.asyncio
-async def test_video_note_is_persisted_in_the_material_store(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_video_note_is_persisted_in_the_material_store(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setattr(router, "assert_learning_surface", lambda _surface: None)
     store = TimedMediaStore(tmp_path)
     material = store.create({"source": {"video_id": "89ThCi5qq-A"}, "learning": {"notes": []}})

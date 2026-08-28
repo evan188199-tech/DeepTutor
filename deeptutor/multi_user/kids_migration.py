@@ -78,9 +78,7 @@ class KidsToLearningMigration:
         journal_path: Path | None = None,
     ) -> None:
         admin = get_admin_path_service()
-        self.immersive_root = immersive_root or admin.get_workspace_feature_dir(
-            "immersive_reading"
-        )
+        self.immersive_root = immersive_root or admin.get_workspace_feature_dir("immersive_reading")
         self.kids_root = kids_root or self.immersive_root / "kids"
         self.users_root = users_root or USERS_ROOT
         self.journal_path = journal_path or JOURNAL_PATH
@@ -113,7 +111,10 @@ class KidsToLearningMigration:
             missing = []
             for row in assigned:
                 if row.get("content_type") == "interactive_book":
-                    source = get_admin_path_service().get_workspace_feature_dir("book") / f"book_{row.get('book_id')}"
+                    source = (
+                        get_admin_path_service().get_workspace_feature_dir("book")
+                        / f"book_{row.get('book_id')}"
+                    )
                 else:
                     source = self.immersive_root / f"document_{row.get('document_id')}"
                 if not source.exists():
@@ -129,7 +130,8 @@ class KidsToLearningMigration:
                     if progress_dir.is_dir()
                     else 0,
                     "missing_content": missing,
-                    "already_migrated": isinstance(prior, dict) and prior.get("status") == "complete",
+                    "already_migrated": isinstance(prior, dict)
+                    and prior.get("status") == "complete",
                 }
             )
         return {
@@ -179,8 +181,17 @@ class KidsToLearningMigration:
                     continue
                 if assignment.get("content_type") == "interactive_book":
                     book_id = str(assignment.get("book_id") or "")
-                    source = get_admin_path_service().get_workspace_feature_dir("book") / f"book_{book_id}"
-                    target = user_workspace / "reading_extensions" / "interactive_books" / "content" / f"book_{book_id}"
+                    source = (
+                        get_admin_path_service().get_workspace_feature_dir("book")
+                        / f"book_{book_id}"
+                    )
+                    target = (
+                        user_workspace
+                        / "reading_extensions"
+                        / "interactive_books"
+                        / "content"
+                        / f"book_{book_id}"
+                    )
                     if source.is_dir() and not target.exists():
                         target.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copytree(source, target)
@@ -208,15 +219,24 @@ class KidsToLearningMigration:
                     continue
                 material_ids.append(manifest.material_id)
                 migrated_documents[document_id] = manifest.material_id
-                progress = _read(self.kids_root / "progress" / f"{profile_id}_{document_id}.json", {})
+                progress = _read(
+                    self.kids_root / "progress" / f"{profile_id}_{document_id}.json", {}
+                )
                 if isinstance(progress, dict):
-                    locator = max(1, min(manifest.unit_count, int(progress.get("current_section_index") or 0) + 1))
+                    locator = max(
+                        1,
+                        min(
+                            manifest.unit_count, int(progress.get("current_section_index") or 0) + 1
+                        ),
+                    )
                     reading_store.save_position(
                         manifest.material_id,
                         ReadingPosition(
                             locator=locator,
                             source_anchor=str(progress.get("epub_cfi") or "")[:4096],
-                            percentage=max(0.0, min(1.0, float(progress.get("scroll_percent") or 0) / 100)),
+                            percentage=max(
+                                0.0, min(1.0, float(progress.get("scroll_percent") or 0) / 100)
+                            ),
                             updated_at=float(progress.get("updated_at") or 0),
                         ),
                     )
@@ -301,7 +321,9 @@ class KidsToLearningMigration:
         for section_id, score in (progress.get("quiz_scores") or {}).items():
             facts.append(("quiz", str(section_id), int(score), 3, True))
         if progress.get("quiz_attempts") and not progress.get("quiz_scores"):
-            facts.append(("quiz", "legacy-best", int(progress.get("quiz_best_score") or 0), 3, True))
+            facts.append(
+                ("quiz", "legacy-best", int(progress.get("quiz_best_score") or 0), 3, True)
+            )
         existing = {row.get("event_id") for row in rows if isinstance(row, dict)}
         for action, item, score, total, completed in facts:
             event_id = sha256(f"kids|{user_id}|{material_id}|{action}|{item}".encode()).hexdigest()

@@ -141,7 +141,9 @@ def _error(exc: Exception) -> HTTPException:
         return HTTPException(status_code=404, detail=str(exc))
     if isinstance(exc, TimedMediaError):
         return HTTPException(status_code=400, detail=str(exc))
-    return HTTPException(status_code=500, detail="The video learning service could not complete the request.")
+    return HTTPException(
+        status_code=500, detail="The video learning service could not complete the request."
+    )
 
 
 def _public_material(material: dict[str, Any]) -> dict[str, Any]:
@@ -226,6 +228,7 @@ def _write_job(store: TimedMediaStore, job_id: str, **fields: Any) -> dict[str, 
 
 
 # Invidious account & feed endpoints
+
 
 @router.get("/invidious/status")
 async def get_invidious_status() -> dict[str, Any]:
@@ -320,7 +323,10 @@ async def disconnect_invidious_account() -> dict[str, bool]:
 
 @router.get("/invidious/home")
 async def get_invidious_home(
-    tab: str = Query(default="", description="Feed tab name: Popular, Trending, Subscriptions, Playlists, History"),
+    tab: str = Query(
+        default="",
+        description="Feed tab name: Popular, Trending, Subscriptions, Playlists, History",
+    ),
 ) -> dict[str, Any]:
     try:
         assert_learning_surface("watching")
@@ -331,6 +337,7 @@ async def get_invidious_home(
 
 
 # Video learning material endpoints
+
 
 @router.post("/resolve")
 async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
@@ -346,7 +353,25 @@ async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
 async def get_video_material(material_id: str) -> dict[str, Any]:
     try:
         assert_learning_surface("watching")
-        return _public_material(get_timed_media_store().get(material_id))
+        store = get_timed_media_store()
+        material = store.get(material_id)
+        cues = material.get("transcript", {}).get("cues")
+        if not cues and material.get("source", {}).get("video_id"):
+            try:
+                resolver = YouTubeResolver()
+                video_id = str(material["source"]["video_id"])
+                new_cues, lang, source = await resolver.get_transcript(video_id)
+                if new_cues:
+                    with store.lock(material_id):
+                        curr = store.get(material_id)
+                        curr["transcript"] = {"language": lang, "source": source, "cues": new_cues}
+                        from deeptutor.video_learning.service import build_segments
+
+                        curr["segments"] = build_segments(new_cues)
+                        material = store.save(curr)
+            except Exception:
+                pass
+        return _public_material(material)
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -355,7 +380,24 @@ async def get_video_material(material_id: str) -> dict[str, Any]:
 async def get_video_subtitles(material_id: str) -> Response:
     try:
         assert_learning_surface("watching")
-        material = get_timed_media_store().get(material_id)
+        store = get_timed_media_store()
+        material = store.get(material_id)
+        cues = material.get("transcript", {}).get("cues")
+        if not cues and material.get("source", {}).get("video_id"):
+            try:
+                resolver = YouTubeResolver()
+                video_id = str(material["source"]["video_id"])
+                new_cues, lang, source = await resolver.get_transcript(video_id)
+                if new_cues:
+                    with store.lock(material_id):
+                        curr = store.get(material_id)
+                        curr["transcript"] = {"language": lang, "source": source, "cues": new_cues}
+                        from deeptutor.video_learning.service import build_segments
+
+                        curr["segments"] = build_segments(new_cues)
+                        material = store.save(curr)
+            except Exception:
+                pass
         return Response(
             content=_material_vtt(material),
             media_type="text/vtt",
@@ -375,12 +417,25 @@ async def create_transcript_job(material_id: str, payload: TranscriptJobRequest)
         if duration > MAX_JOB_DURATION_SECONDS:
             raise TimedMediaError("Audio preprocessing is limited to four hours per video.")
         root_key = str(store.root)
-        active_jobs = sum(1 for key, task in _JOBS.items() if not task.done() and _JOB_ROOTS.get(key) == root_key)
+        active_jobs = sum(
+            1 for key, task in _JOBS.items() if not task.done() and _JOB_ROOTS.get(key) == root_key
+        )
         if active_jobs >= MAX_ACTIVE_TRANSCRIPT_JOBS_PER_USER:
             raise TimedMediaError("Too many transcript jobs are already running for this user.")
-        job_id = hashlib.sha256(f"{material_id}-{datetime.now(timezone.utc).timestamp()}".encode()).hexdigest()[:32]
-        _write_job(store, job_id, material_id=material_id, status="queued", progress=0, language=payload.language)
-        task = asyncio.create_task(_run_transcript_job(job_id, material_id, payload.language, store))
+        job_id = hashlib.sha256(
+            f"{material_id}-{datetime.now(timezone.utc).timestamp()}".encode()
+        ).hexdigest()[:32]
+        _write_job(
+            store,
+            job_id,
+            material_id=material_id,
+            status="queued",
+            progress=0,
+            language=payload.language,
+        )
+        task = asyncio.create_task(
+            _run_transcript_job(job_id, material_id, payload.language, store)
+        )
         _JOBS[job_id] = task
         _JOB_ROOTS[job_id] = root_key
 
@@ -418,7 +473,9 @@ async def save_video_position(material_id: str, payload: PositionRequest) -> dic
 
 
 @router.post("/materials/{material_id}/watch-progress")
-async def record_video_watch_progress(material_id: str, payload: WatchProgressRequest) -> dict[str, Any]:
+async def record_video_watch_progress(
+    material_id: str, payload: WatchProgressRequest
+) -> dict[str, Any]:
     """Update position and sync watched status to Invidious history once cumulative playback threshold is met."""
     try:
         assert_learning_surface("watching")
@@ -503,7 +560,9 @@ async def add_video_mark(material_id: str, payload: MarkCreateRequest) -> dict[s
 
 
 @router.patch("/materials/{material_id}/marks/{mark_id}")
-async def patch_video_mark(material_id: str, mark_id: str, payload: MarkPatchRequest) -> dict[str, Any]:
+async def patch_video_mark(
+    material_id: str, mark_id: str, payload: MarkPatchRequest
+) -> dict[str, Any]:
     try:
         assert_learning_surface("watching")
         store = get_timed_media_store()
@@ -555,14 +614,18 @@ async def publish_video_to_kb(material_id: str, payload: PublishToKbRequest) -> 
 
 
 @router.post("/materials/{material_id}/create-book")
-async def create_book_from_video(material_id: str, payload: CreateBookFromVideoRequest) -> dict[str, Any]:
+async def create_book_from_video(
+    material_id: str, payload: CreateBookFromVideoRequest
+) -> dict[str, Any]:
     """Create an interactive Book grounded on this video's marks and published note."""
     try:
         assert_learning_surface("watching")
         store = get_timed_media_store()
         material = store.get(material_id)
         metadata = material.get("metadata") if isinstance(material.get("metadata"), dict) else {}
-        title = str(metadata.get("title") or material.get("source", {}).get("video_id") or material_id)
+        title = str(
+            metadata.get("title") or material.get("source", {}).get("video_id") or material_id
+        )
         kb_name = payload.kb_name or "default"
         if payload.publish or learning_publish_state(material) is None:
             published = await publish_material_to_kb(material, kb_name=kb_name)
@@ -628,7 +691,9 @@ async def stream_video(material_id: str, format_id: str, request: Request):
         raise _error(exc) from exc
 
 
-async def _run_transcript_job(job_id: str, material_id: str, language: str, store: TimedMediaStore) -> None:
+async def _run_transcript_job(
+    job_id: str, material_id: str, language: str, store: TimedMediaStore
+) -> None:
     _write_job(store, job_id, status="running", progress=5)
     material = store.get(material_id)
     source_url = str(material.get("source", {}).get("url") or "")
@@ -644,8 +709,14 @@ async def _run_transcript_job(job_id: str, material_id: str, language: str, stor
             timeout=ASR_JOB_TIMEOUT_SECONDS,
         )
         if not outcome.ok or not outcome.transcript:
-            raise TimedMediaError(outcome.error or "The speech-to-text provider returned no transcript.")
-        material["transcript"] = {"language": outcome.subtitle_language or language or "auto", "source": "stt", "cues": outcome.transcript}
+            raise TimedMediaError(
+                outcome.error or "The speech-to-text provider returned no transcript."
+            )
+        material["transcript"] = {
+            "language": outcome.subtitle_language or language or "auto",
+            "source": "stt",
+            "cues": outcome.transcript,
+        }
         from deeptutor.video_learning.service import build_segments
 
         material["segments"] = build_segments(outcome.transcript)
@@ -666,7 +737,11 @@ def _format_for(material: dict[str, Any], format_id: str) -> dict[str, Any]:
     parsed = urlparse(str(row["url"]))
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         raise TimedMediaError("The stored video stream URL is invalid.")
-    configured = str(load_integrations_settings().get("invidious_base_url") or "")
+    configured = str(
+        load_integrations_settings().get("invidious_base_url")
+        or load_integrations_settings().get("invidious_public_base_url")
+        or ""
+    )
     _validate_stream_host(
         parsed.hostname,
         urlparse(configured).hostname or "",
@@ -683,7 +758,9 @@ def _stream_headers(row: dict[str, Any]) -> dict[str, str]:
     return headers
 
 
-async def _open_stream(store: TimedMediaStore, material: dict[str, Any], format_id: str, request: Request):
+async def _open_stream(
+    store: TimedMediaStore, material: dict[str, Any], format_id: str, request: Request
+):
     row = _format_for(material, format_id)
     response = await _upstream_stream(material, row, request.headers.get("range"))
     if response.status_code in {401, 403}:
@@ -706,18 +783,36 @@ async def _open_stream(store: TimedMediaStore, material: dict[str, Any], format_
             await client.aclose()
 
     headers = _stream_headers(row)
-    for key in ("content-length", "content-range", "content-type", "accept-ranges", "etag", "last-modified"):
+    for key in (
+        "content-length",
+        "content-range",
+        "content-type",
+        "accept-ranges",
+        "etag",
+        "last-modified",
+    ):
         if response.headers.get(key):
             headers[key.title()] = response.headers[key]
-    return StreamingResponse(response.aiter_bytes(), status_code=response.status_code, headers=headers, background=BackgroundTask(close))
+    return StreamingResponse(
+        response.aiter_bytes(),
+        status_code=response.status_code,
+        headers=headers,
+        background=BackgroundTask(close),
+    )
 
 
-async def _upstream_stream(material: dict[str, Any], row: dict[str, Any], range_header: str | None) -> httpx.Response:
+async def _upstream_stream(
+    material: dict[str, Any], row: dict[str, Any], range_header: str | None
+) -> httpx.Response:
     url = str(row.get("url") or "")
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         raise TimedMediaError("The stored video stream URL is invalid.")
-    base = str(load_integrations_settings().get("invidious_base_url") or "")
+    base = str(
+        load_integrations_settings().get("invidious_base_url")
+        or load_integrations_settings().get("invidious_public_base_url")
+        or ""
+    )
     _validate_stream_host(parsed.hostname, urlparse(base).hostname or "")
     client = httpx.AsyncClient(timeout=STREAM_TIMEOUT_SECONDS, follow_redirects=False)
     headers = {"User-Agent": "DeepTutor/1.0", "Accept": "video/mp4"}
@@ -729,8 +824,12 @@ async def _upstream_stream(material: dict[str, Any], row: dict[str, Any], range_
             parsed = urlparse(current)
             if parsed.scheme not in {"http", "https"} or not parsed.hostname:
                 raise TimedMediaError("The stored video stream URL is invalid.")
-            _validate_stream_host(parsed.hostname, urlparse(base).hostname or "", scheme=parsed.scheme)
-            upstream = await client.send(client.build_request("GET", current, headers=headers), stream=True)
+            _validate_stream_host(
+                parsed.hostname, urlparse(base).hostname or "", scheme=parsed.scheme
+            )
+            upstream = await client.send(
+                client.build_request("GET", current, headers=headers), stream=True
+            )
             if upstream.is_redirect:
                 location = upstream.headers.get("location")
                 await upstream.aclose()
@@ -761,7 +860,11 @@ async def _noop_async() -> None:
 def _validate_stream_host(host: str, configured_host: str, *, scheme: str = "https") -> None:
     lowered = host.lower().rstrip(".")
     configured = configured_host.lower().rstrip(".")
-    if lowered == configured or lowered.endswith(".googlevideo.com") or lowered.endswith(".googleusercontent.com"):
+    if (
+        lowered == configured
+        or lowered.endswith(".googlevideo.com")
+        or lowered.endswith(".googleusercontent.com")
+    ):
         if scheme != "https" and not _is_local_host(lowered):
             raise TimedMediaError("The video stream must use HTTPS outside the local network.")
         return

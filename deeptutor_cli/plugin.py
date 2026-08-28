@@ -107,7 +107,9 @@ def register(app: typer.Typer) -> None:
                         "entry_point_group": ENTRY_POINT_GROUP,
                         "scope": ENTRY_POINT_SCOPE,
                         "version": provider.version,
-                        "status": "active" if active_kids_reward_provider() is provider else "not enabled",
+                        "status": "active"
+                        if active_kids_reward_provider() is provider
+                        else "not enabled",
                         "interface": ["record(event)", "snapshot(profile_id)"],
                     },
                     indent=2,

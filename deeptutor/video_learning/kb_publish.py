@@ -40,8 +40,15 @@ def format_timestamp(seconds: float) -> str:
 
 def note_relative_path(material: dict[str, Any]) -> str:
     source = material.get("source") if isinstance(material.get("source"), dict) else {}
-    provider = re.sub(r"[^a-z0-9_-]+", "-", str(source.get("provider") or "video").lower()).strip("-") or "video"
-    video_id = re.sub(r"[^A-Za-z0-9_-]+", "-", str(source.get("video_id") or material.get("material_id") or "unknown")).strip("-")
+    provider = (
+        re.sub(r"[^a-z0-9_-]+", "-", str(source.get("provider") or "video").lower()).strip("-")
+        or "video"
+    )
+    video_id = re.sub(
+        r"[^A-Za-z0-9_-]+",
+        "-",
+        str(source.get("video_id") or material.get("material_id") or "unknown"),
+    ).strip("-")
     return f"{NOTE_DIR}/{provider}-{video_id}.md"
 
 
@@ -50,17 +57,14 @@ def watching_jump_url(material_id: str, start_seconds: float) -> str:
     return f"/home?watching_material={material_id}&t={start:.3f}".rstrip("0").rstrip(".")
 
 
-def timed_media_ref(material_id: str, start_seconds: float, end_seconds: float | None = None) -> str:
+def timed_media_ref(
+    material_id: str, start_seconds: float, end_seconds: float | None = None
+) -> str:
     start = max(0.0, float(start_seconds or 0.0))
     if end_seconds is None:
         return f"{material_id}#t={start:.3f}".rstrip("0").rstrip(".")
     end = max(start, float(end_seconds or start))
-    return (
-        f"{material_id}#t={start:.3f}-{end:.3f}"
-        .replace(".000-", "-")
-        .rstrip("0")
-        .rstrip(".")
-    )
+    return f"{material_id}#t={start:.3f}-{end:.3f}".replace(".000-", "-").rstrip("0").rstrip(".")
 
 
 def parse_timed_media_ref(ref: str) -> dict[str, Any] | None:
@@ -94,7 +98,9 @@ def _marks(material: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(rows, list):
         return []
     out = [row for row in rows if isinstance(row, dict)]
-    out.sort(key=lambda row: (float(row.get("start_seconds") or 0), float(row.get("end_seconds") or 0)))
+    out.sort(
+        key=lambda row: (float(row.get("start_seconds") or 0), float(row.get("end_seconds") or 0))
+    )
     return out[:MAX_MARKS_IN_NOTE]
 
 
@@ -149,7 +155,9 @@ def render_video_learning_note(material: dict[str, Any]) -> str:
     lines: list[str] = ["---", json.dumps(frontmatter, ensure_ascii=False, indent=2), "---", ""]
     lines.append(f"# {title}")
     lines.append("")
-    meta_bits = [bit for bit in (provider, author, format_timestamp(duration) if duration else "") if bit]
+    meta_bits = [
+        bit for bit in (provider, author, format_timestamp(duration) if duration else "") if bit
+    ]
     if meta_bits:
         lines.append(" · ".join(meta_bits))
         lines.append("")
@@ -188,7 +196,11 @@ def render_video_learning_note(material: dict[str, Any]) -> str:
             lines.append(f"Anchor: `{timed_media_ref(material_id, start, end)}`")
             lines.append("")
 
-    notes = material.get("learning", {}).get("notes") if isinstance(material.get("learning"), dict) else []
+    notes = (
+        material.get("learning", {}).get("notes")
+        if isinstance(material.get("learning"), dict)
+        else []
+    )
     if isinstance(notes, list) and notes:
         lines.append("## Viewer notes")
         lines.append("")
@@ -214,7 +226,9 @@ def render_video_learning_note(material: dict[str, Any]) -> str:
         if not text:
             continue
         start = float(cue.get("start") or 0)
-        transcript_bits.append(f"[{format_timestamp(start)}]({watching_jump_url(material_id, start)}) {text}")
+        transcript_bits.append(
+            f"[{format_timestamp(start)}]({watching_jump_url(material_id, start)}) {text}"
+        )
     transcript_body = "\n\n".join(transcript_bits)
     if len(transcript_body) > MAX_TRANSCRIPT_CHARS:
         transcript_body = transcript_body[:MAX_TRANSCRIPT_CHARS].rstrip() + "\n\n…"
@@ -338,7 +352,9 @@ def source_chunks_for_material(material: dict[str, Any]) -> list[dict[str, Any]]
             }
         )
     if not chunks:
-        transcript = material.get("transcript") if isinstance(material.get("transcript"), dict) else {}
+        transcript = (
+            material.get("transcript") if isinstance(material.get("transcript"), dict) else {}
+        )
         cues = transcript.get("cues") if isinstance(transcript.get("cues"), list) else []
         preview = " ".join(
             str(cue.get("text") or "").strip()

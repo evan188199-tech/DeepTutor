@@ -331,7 +331,8 @@ async def create_renderer(body: RendererCreateRequest, response: Response) -> di
         "expires_at": expires_at,
         "launch_url": launch_url,
         "qr_data_url": generate_qr_data_url(launch_url),
-        "invidious_login_available": origin == configured_origin and InvidiousTokenStore.has_token(_owner_id()),
+        "invidious_login_available": origin == configured_origin
+        and InvidiousTokenStore.has_token(_owner_id()),
     }
 
 
@@ -371,10 +372,19 @@ async def bootstrap_renderer(body: RendererBootstrapRequest, response: Response)
 @router.post("/player/presence")
 async def player_presence(auth=Depends(_auth_device)) -> dict[str, Any]:
     device, store = auth
-    return {"device_id": device.device_id, "online": True, "commands": [
-        {"command_id": c.command_id, "type": c.command_type, "payload": c.payload, "created_at": c.created_at}
-        for c in store.pending_device_commands(device.device_id)
-    ]}
+    return {
+        "device_id": device.device_id,
+        "online": True,
+        "commands": [
+            {
+                "command_id": c.command_id,
+                "type": c.command_type,
+                "payload": c.payload,
+                "created_at": c.created_at,
+            }
+            for c in store.pending_device_commands(device.device_id)
+        ],
+    }
 
 
 @router.post("/devices/{device_id}/commands", dependencies=_auth)
@@ -382,10 +392,18 @@ async def create_device_command(device_id: str, body: DeviceCommandRequest) -> d
     if body.type != "open_video" or not re.fullmatch(r"[A-Za-z0-9_-]{11}", body.video_id):
         raise HTTPException(400, "Invalid open_video command.")
     try:
-        command = _store_for_session().enqueue_device_command(owner_id=_owner_id(), device_id=device_id, payload={"video_id": body.video_id})
+        command = _store_for_session().enqueue_device_command(
+            owner_id=_owner_id(), device_id=device_id, payload={"video_id": body.video_id}
+        )
     except Exception as exc:
         raise _http_error(exc) from exc
-    return {"command_id": command.command_id, "type": command.command_type, "payload": command.payload, "status": command.status, "created_at": command.created_at}
+    return {
+        "command_id": command.command_id,
+        "type": command.command_type,
+        "payload": command.payload,
+        "status": command.status,
+        "created_at": command.created_at,
+    }
 
 
 @router.get("/devices/{device_id}/commands/{command_id}", dependencies=_auth)
@@ -406,23 +424,36 @@ async def get_device_command(device_id: str, command_id: str) -> dict[str, Any]:
 
 
 @router.post("/player/device-commands/{command_id}/ack")
-async def ack_device_command(command_id: str, body: CommandAckRequest, auth=Depends(_auth_device)) -> dict[str, Any]:
+async def ack_device_command(
+    command_id: str, body: CommandAckRequest, auth=Depends(_auth_device)
+) -> dict[str, Any]:
     device, store = auth
     try:
-        command = store.ack_device_command(device_id=device.device_id, command_id=command_id, ok=body.ok, error=body.error)
+        command = store.ack_device_command(
+            device_id=device.device_id, command_id=command_id, ok=body.ok, error=body.error
+        )
     except Exception as exc:
         raise _http_error(exc) from exc
-    return {"command_id": command.command_id, "status": command.status, "acked_at": command.acked_at, "error": command.error}
+    return {
+        "command_id": command.command_id,
+        "status": command.status,
+        "acked_at": command.acked_at,
+        "error": command.error,
+    }
 
 
 @router.delete("/devices/{device_id}", dependencies=_auth)
 async def revoke_device(device_id: str) -> dict[str, str]:
     store = _store_for_session()
-    renderer_session = store.get_renderer_invidious_session(owner_id=_owner_id(), device_id=device_id)
+    renderer_session = store.get_renderer_invidious_session(
+        owner_id=_owner_id(), device_id=device_id
+    )
     if renderer_session and not await revoke_renderer_session(
         _owner_id(), str(renderer_session["session_id"])
     ):
-        raise HTTPException(502, "Could not revoke the iPad Invidious session. Reconnect Invidious and try again.")
+        raise HTTPException(
+            502, "Could not revoke the iPad Invidious session. Reconnect Invidious and try again."
+        )
     if not store.revoke_device(_owner_id(), device_id):
         raise HTTPException(404, "Device not found.")
     if renderer_session:
@@ -461,11 +492,14 @@ async def player_sync(
             )
         except TimedMediaError as exc:
             raise HTTPException(400, str(exc)) from exc
-        session = store.bind_session_material(
-            session_id=session.session_id,
-            owner_id=session.owner_id,
-            material_id=str(material["material_id"]),
-        ) or session
+        session = (
+            store.bind_session_material(
+                session_id=session.session_id,
+                owner_id=session.owner_id,
+                material_id=str(material["material_id"]),
+            )
+            or session
+        )
     commands = store.pending_commands(device.device_id, session.session_id)
     return {
         "session": {
@@ -633,14 +667,18 @@ async def get_session_command(session_id: str, command_id: str) -> dict[str, Any
 def _session_material(session) -> dict[str, Any]:
     material_id = str(session.material_id or "")
     if not material_id:
-        raise HTTPException(409, "The player has not synced a learning material yet. Wait a moment and retry.")
+        raise HTTPException(
+            409, "The player has not synced a learning material yet. Wait a moment and retry."
+        )
     try:
         material = get_timed_media_store().get(material_id)
     except Exception as exc:
         raise HTTPException(404, "The bound learning material is unavailable.") from exc
     source = material.get("source") if isinstance(material.get("source"), dict) else {}
     if str(source.get("video_id") or "") != session.video_id:
-        raise HTTPException(409, "The player changed videos. Wait for the new QR session and retry.")
+        raise HTTPException(
+            409, "The player changed videos. Wait for the new QR session and retry."
+        )
     return material
 
 

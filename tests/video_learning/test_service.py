@@ -19,7 +19,10 @@ from deeptutor.video_learning.service import (
 
 
 def test_normalize_cues_decodes_html_entities():
-    assert normalize_cues([{"start": 78, "duration": 2, "text": "&gt;&gt; Speaker"}])[0]["text"] == ">> Speaker"
+    assert (
+        normalize_cues([{"start": 78, "duration": 2, "text": "&gt;&gt; Speaker"}])[0]["text"]
+        == ">> Speaker"
+    )
 
 
 def test_parse_webvtt_decodes_entities_and_removes_youtube_echo_cues():
@@ -40,7 +43,7 @@ invest<00:01:18.720><c> aggressively</c><00:01:19.200><c> in</c><00:01:19.360><c
     )
 
     assert len(cues) == 2
-    assert cues[0]["text"].endswith('>> Mark Zuckerberg says, "We\'ll continue to')
+    assert cues[0]["text"].endswith(">> Mark Zuckerberg says, \"We'll continue to")
     assert cues[1]["text"].startswith("invest aggressively in infrastructure")
     assert all("&gt;" not in cue["text"] for cue in cues)
 
@@ -94,11 +97,13 @@ def test_parse_timestamp(raw: str, expected: int):
 
 
 def test_build_segments_combines_short_adjacent_cues():
-    cues = normalize_cues([
-        {"start": 0, "duration": 5, "text": "First"},
-        {"start": 5, "duration": 5, "text": "idea."},
-        {"start": 40, "duration": 5, "text": "Second"},
-    ])
+    cues = normalize_cues(
+        [
+            {"start": 0, "duration": 5, "text": "First"},
+            {"start": 5, "duration": 5, "text": "idea."},
+            {"start": 40, "duration": 5, "text": "Second"},
+        ]
+    )
     segments = build_segments(cues)
     assert len(segments) == 2
     assert segments[0]["text"] == "First idea."
@@ -265,7 +270,11 @@ async def test_invidious_caption_redirect_within_configured_origin_is_followed()
     companion_url = f"{base}/companion/api/v1/captions/89ThCi5qq-A?lang=en&check=trusted"
     client = _InvidiousClient(
         {
-            caption_url: (302, b"", {"location": "/companion/api/v1/captions/89ThCi5qq-A?lang=en&check=trusted"}),
+            caption_url: (
+                302,
+                b"",
+                {"location": "/companion/api/v1/captions/89ThCi5qq-A?lang=en&check=trusted"},
+            ),
             companion_url: (200, b"WEBVTT\n\n00:00:00.000 --> 00:00:02.000\nOpening idea\n", {}),
         }
     )
@@ -287,8 +296,16 @@ async def test_invidious_caption_label_is_used_when_language_code_is_missing() -
     client = _InvidiousClient(
         {
             transcript_url: (404, {"error": "not found"}, {}),
-            caption_url: (302, b"", {"location": f"/companion/api/v1/captions/{video_id}?{query}&check=trusted"}),
-            companion_url: (200, b"WEBVTT\n\n00:00:00.000 --> 00:00:02.000\n \nOpening <c>idea</c>\n", {}),
+            caption_url: (
+                302,
+                b"",
+                {"location": f"/companion/api/v1/captions/{video_id}?{query}&check=trusted"},
+            ),
+            companion_url: (
+                200,
+                b"WEBVTT\n\n00:00:00.000 --> 00:00:02.000\n \nOpening <c>idea</c>\n",
+                {},
+            ),
         }
     )
 
@@ -304,7 +321,9 @@ async def test_invidious_caption_label_is_used_when_language_code_is_missing() -
 
 
 @pytest.mark.asyncio
-async def test_resolve_honors_requested_caption_language(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_resolve_honors_requested_caption_language(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     base = "http://127.0.0.1:18080"
     video_url = f"{base}/api/v1/videos/89ThCi5qq-A"
     transcript_url = f"{base}/api/v1/transcripts/89ThCi5qq-A?lang=en"
@@ -316,15 +335,23 @@ async def test_resolve_honors_requested_caption_language(tmp_path: Path, monkeyp
                     "title": "Language selection",
                     "lengthSeconds": "30",
                     "captions": [{"languageCode": "zh-CN"}, {"languageCode": "en"}],
-                    "formatStreams": [{"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}],
+                    "formatStreams": [
+                        {"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}
+                    ],
                 },
                 {},
             ),
-            transcript_url: (200, [{"start": 0, "duration": 21, "text": "English caption."}], {},),
+            transcript_url: (
+                200,
+                [{"start": 0, "duration": 21, "text": "English caption."}],
+                {},
+            ),
         }
     )
     monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
-    monkeypatch.setattr("deeptutor.video_learning.service._optional_ytdlp_metadata", lambda _url: {})
+    monkeypatch.setattr(
+        "deeptutor.video_learning.service._optional_ytdlp_metadata", lambda _url: {}
+    )
     material = await YouTubeResolver(base_url=base).resolve(
         "https://youtu.be/89ThCi5qq-A",
         language="en",
@@ -332,3 +359,50 @@ async def test_resolve_honors_requested_caption_language(tmp_path: Path, monkeyp
     )
     assert material["transcript"]["language"] == "en"
     assert material["transcript"]["cues"][0]["text"] == "English caption."
+
+
+@pytest.mark.asyncio
+async def test_resolve_uses_companion_caption_endpoint_when_standard_endpoints_fail(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    base = "http://127.0.0.1:18080"
+    video_url = f"{base}/api/v1/videos/KL9_1GbmCic"
+    transcript_url = f"{base}/api/v1/transcripts/KL9_1GbmCic?lang=en"
+    caption_url = f"{base}/api/v1/captions/KL9_1GbmCic?lang=en"
+    companion_url = f"{base}/companion/api/v1/captions/KL9_1GbmCic?lang=en"
+    client = _InvidiousClient(
+        {
+            video_url: (
+                200,
+                {
+                    "title": "Sam Altman Video",
+                    "lengthSeconds": "1421",
+                    "captions": [{"languageCode": "en", "label": "English (auto-generated)"}],
+                    "formatStreams": [
+                        {"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}
+                    ],
+                },
+                {},
+            ),
+            transcript_url: (400, {"error": "YouTube API error"}, {}),
+            caption_url: (200, b"WEBVTT\nKind: captions\nLanguage: en\n", {}),
+            companion_url: (
+                200,
+                b"WEBVTT\nKind: captions\nLanguage: en\n\n00:00:00.080 --> 00:00:02.310\nI finished reading\n",
+                {},
+            ),
+        }
+    )
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
+    monkeypatch.setattr(
+        "deeptutor.video_learning.service._optional_ytdlp_metadata", lambda _url: {}
+    )
+    material = await YouTubeResolver(base_url=base).resolve(
+        "https://youtu.be/KL9_1GbmCic",
+        language="en",
+        store=TimedMediaStore(tmp_path),
+    )
+    assert material["transcript"]["language"] == "en"
+    assert material["transcript"]["source"] == "invidious"
+    assert len(material["transcript"]["cues"]) == 1
+    assert material["transcript"]["cues"][0]["text"] == "I finished reading"

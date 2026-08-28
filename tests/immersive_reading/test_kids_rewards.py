@@ -124,7 +124,7 @@ class FakeQuizReadingService:
                 SimpleNamespace(
                     id="section-1", title="Chapter 1", index=0, checkpoint_kind="chapter"
                 )
-            ]
+            ],
         )
 
     def _summary(self, document) -> dict:
@@ -222,9 +222,7 @@ def test_old_reward_progress_fields_are_ignored_and_dropped_on_save(tmp_path, mo
     legacy_data.update(total_stars=12, quiz_stars_awarded={"section-1": 3})
     _write_json(manager._progress_path(profile.id, "doc001"), legacy_data)
 
-    progress = manager.record_reading_quiz_result(
-        profile.id, "doc001", "section-1", 3, 3
-    )
+    progress = manager.record_reading_quiz_result(profile.id, "doc001", "section-1", 3, 3)
 
     assert progress.quiz_scores["section-1"] == 3
     assert "total_stars" not in progress.model_dump(mode="json")
@@ -236,9 +234,7 @@ def test_old_reward_progress_fields_are_ignored_and_dropped_on_save(tmp_path, mo
     ).model_dump(mode="json")
     legacy_interactive.update(total_stars=7, quiz_stars_awarded={"block-1": 3})
     _write_json(manager._interactive_progress_path(profile.id, "book001"), legacy_interactive)
-    interactive = manager.record_interactive_quiz_result(
-        profile.id, "book001", "block-1", 1, 1
-    )
+    interactive = manager.record_interactive_quiz_result(profile.id, "book001", "block-1", 1, 1)
     assert interactive.quiz_scores["block-1"] == 1
     assert "total_stars" not in interactive.model_dump(mode="json")
     assert "quiz_stars_awarded" not in interactive.model_dump(mode="json")
@@ -267,9 +263,7 @@ def _reading_client(monkeypatch, tmp_path: Path, provider: FakeStarsProvider):
     app = FastAPI()
     app.include_router(kids_router_module.router, prefix="/api/v1/kids")
     client = TestClient(app)
-    selected = client.post(
-        "/api/v1/kids/select-profile", json={"profile_id": profile.id}
-    )
+    selected = client.post("/api/v1/kids/select-profile", json={"profile_id": profile.id})
     headers = {"Authorization": f"Bearer {selected.json()['token']}"}
     return client, headers, profile.id
 
@@ -292,8 +286,7 @@ def test_reading_quiz_emits_neutral_events_and_provider_snapshot(monkeypatch, tm
     assert payload["reward"]["provider"] == "fake_stars"
     assert payload["reward"]["title"] == "My rewards"
     assert not any(
-        key in payload
-        for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
+        key in payload for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
     )
     assert set(provider.events) == {
         build_kids_reward_event(
@@ -343,9 +336,7 @@ def test_library_adds_provider_totals_without_persisting_legacy_fields(monkeypat
         document_id="readingdoc001",
     ).model_dump(mode="json")
     legacy_progress["total_stars"] = 99
-    _write_json(
-        get_kids_manager()._progress_path(profile_id, "readingdoc001"), legacy_progress
-    )
+    _write_json(get_kids_manager()._progress_path(profile_id, "readingdoc001"), legacy_progress)
 
     response = client.get("/api/v1/kids/library", headers=headers)
 
@@ -366,9 +357,7 @@ def test_child_rewards_endpoint_requires_device_session(monkeypatch, tmp_path):
 
     assert response.status_code == 401
 
-    provider_route = TestClient(app).get(
-        "/api/v1/kids/reward-providers/fake_stars"
-    )
+    provider_route = TestClient(app).get("/api/v1/kids/reward-providers/fake_stars")
     assert provider_route.status_code == 404
 
 
@@ -434,8 +423,7 @@ def test_reading_quiz_survives_provider_failure_and_omits_reward(monkeypatch, tm
     assert payload["total"] == 3
     assert payload["reward"] is None
     assert not any(
-        key in payload
-        for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
+        key in payload for key in ("stars", "new_stars_awarded", "total_stars", "encouragements")
     )
     rewards = client.get("/api/v1/kids/rewards", headers=headers)
     assert rewards.status_code == 200

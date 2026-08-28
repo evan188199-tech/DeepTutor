@@ -206,14 +206,22 @@ class VideoLearningStore:
             conn.executescript(_SCHEMA)
             session_columns = {row[1] for row in conn.execute("PRAGMA table_info(sessions)")}
             if "controller_token_hash" not in session_columns:
-                conn.execute("ALTER TABLE sessions ADD COLUMN controller_token_hash TEXT NOT NULL DEFAULT ''")
+                conn.execute(
+                    "ALTER TABLE sessions ADD COLUMN controller_token_hash TEXT NOT NULL DEFAULT ''"
+                )
             if "material_id" not in session_columns:
                 conn.execute("ALTER TABLE sessions ADD COLUMN material_id TEXT NOT NULL DEFAULT ''")
-            bootstrap_columns = {row[1] for row in conn.execute("PRAGMA table_info(renderer_bootstraps)")}
+            bootstrap_columns = {
+                row[1] for row in conn.execute("PRAGMA table_info(renderer_bootstraps)")
+            }
             if "invidious_origin" not in bootstrap_columns:
-                conn.execute("ALTER TABLE renderer_bootstraps ADD COLUMN invidious_origin TEXT NOT NULL DEFAULT ''")
+                conn.execute(
+                    "ALTER TABLE renderer_bootstraps ADD COLUMN invidious_origin TEXT NOT NULL DEFAULT ''"
+                )
             if "material_id" not in bootstrap_columns:
-                conn.execute("ALTER TABLE renderer_bootstraps ADD COLUMN material_id TEXT NOT NULL DEFAULT ''")
+                conn.execute(
+                    "ALTER TABLE renderer_bootstraps ADD COLUMN material_id TEXT NOT NULL DEFAULT ''"
+                )
 
     @staticmethod
     def _row_to_pairing(row: sqlite3.Row) -> Pairing:
@@ -277,9 +285,17 @@ class VideoLearningStore:
 
     @staticmethod
     def _row_to_device_command(row: sqlite3.Row) -> DeviceCommand:
-        return DeviceCommand(command_id=row["command_id"], owner_id=row["owner_id"], device_id=row["device_id"],
-            command_type=row["command_type"], payload=json.loads(row["payload"] or "{}"), status=row["status"],
-            created_at=row["created_at"], acked_at=row["acked_at"], error=row["error"])
+        return DeviceCommand(
+            command_id=row["command_id"],
+            owner_id=row["owner_id"],
+            device_id=row["device_id"],
+            command_type=row["command_type"],
+            payload=json.loads(row["payload"] or "{}"),
+            status=row["status"],
+            created_at=row["created_at"],
+            acked_at=row["acked_at"],
+            error=row["error"],
+        )
 
     @staticmethod
     def _row_to_note(row: sqlite3.Row) -> VideoNote:
@@ -465,14 +481,28 @@ class VideoLearningStore:
         ticket, bootstrap_id = secrets.token_urlsafe(32), secrets.token_urlsafe(12)
         expires_at = (_now() + PAIRING_TTL).isoformat()
         with self._connect() as conn:
-            conn.execute("INSERT INTO renderer_bootstraps (bootstrap_id,ticket_hash,owner_id,device_name,device_kind,invidious_origin,material_id,expires_at) VALUES (?,?,?,?,?,?,?,?)",
-                         (bootstrap_id, _hash_token(ticket), owner_id, device_name or "iPad", device_kind or "ipad", invidious_origin, material_id, expires_at))
+            conn.execute(
+                "INSERT INTO renderer_bootstraps (bootstrap_id,ticket_hash,owner_id,device_name,device_kind,invidious_origin,material_id,expires_at) VALUES (?,?,?,?,?,?,?,?)",
+                (
+                    bootstrap_id,
+                    _hash_token(ticket),
+                    owner_id,
+                    device_name or "iPad",
+                    device_kind or "ipad",
+                    invidious_origin,
+                    material_id,
+                    expires_at,
+                ),
+            )
         return bootstrap_id, ticket, expires_at
 
     def redeem_renderer_bootstrap(self, *, ticket: str) -> tuple[Device, str, str]:
         now, device_id, token = _now_iso(), secrets.token_urlsafe(12), secrets.token_urlsafe(32)
         with self._connect() as conn:
-            row = conn.execute("SELECT * FROM renderer_bootstraps WHERE ticket_hash=? AND redeemed_at IS NULL", (_hash_token(ticket),)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM renderer_bootstraps WHERE ticket_hash=? AND redeemed_at IS NULL",
+                (_hash_token(ticket),),
+            ).fetchone()
             if row is None:
                 raise VideoLearningNotFound("Bootstrap ticket not found.")
             if _parse_iso(row["expires_at"]) <= _now():
@@ -483,8 +513,18 @@ class VideoLearningStore:
             )
             if redeemed.rowcount != 1:
                 raise VideoLearningConflict("Bootstrap ticket already redeemed.")
-            conn.execute("INSERT INTO devices (device_id,owner_id,device_name,device_kind,token_hash,paired_at,last_seen,active) VALUES (?,?,?,?,?,?,?,1)",
-                         (device_id,row["owner_id"],row["device_name"],row["device_kind"],_hash_token(token),now,now))
+            conn.execute(
+                "INSERT INTO devices (device_id,owner_id,device_name,device_kind,token_hash,paired_at,last_seen,active) VALUES (?,?,?,?,?,?,?,1)",
+                (
+                    device_id,
+                    row["owner_id"],
+                    row["device_name"],
+                    row["device_kind"],
+                    _hash_token(token),
+                    now,
+                    now,
+                ),
+            )
             if row["material_id"]:
                 conn.execute(
                     """INSERT INTO renderer_material_bindings
@@ -496,7 +536,11 @@ class VideoLearningStore:
                          created_at=excluded.created_at""",
                     (device_id, row["owner_id"], row["material_id"], now),
                 )
-        return Device(device_id,row["owner_id"],row["device_name"],row["device_kind"],now,now), token, str(row["invidious_origin"] or "")
+        return (
+            Device(device_id, row["owner_id"], row["device_name"], row["device_kind"], now, now),
+            token,
+            str(row["invidious_origin"] or ""),
+        )
 
     def get_renderer_material_binding(self, *, owner_id: str, device_id: str) -> str:
         with self._connect() as conn:
@@ -506,7 +550,9 @@ class VideoLearningStore:
             ).fetchone()
         return str(row["material_id"] or "") if row is not None else ""
 
-    def save_renderer_invidious_session(self, *, device_id: str, owner_id: str, invidious_origin: str, session_id: str) -> None:
+    def save_renderer_invidious_session(
+        self, *, device_id: str, owner_id: str, invidious_origin: str, session_id: str
+    ) -> None:
         with self._connect() as conn:
             conn.execute(
                 """INSERT INTO renderer_invidious_sessions
@@ -520,7 +566,9 @@ class VideoLearningStore:
                 (device_id, owner_id, invidious_origin, session_id, _now_iso()),
             )
 
-    def get_renderer_invidious_session(self, *, owner_id: str, device_id: str) -> dict[str, Any] | None:
+    def get_renderer_invidious_session(
+        self, *, owner_id: str, device_id: str
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
             row = conn.execute(
                 "SELECT * FROM renderer_invidious_sessions WHERE device_id=? AND owner_id=?",
@@ -528,7 +576,9 @@ class VideoLearningStore:
             ).fetchone()
         return dict(row) if row is not None else None
 
-    def delete_renderer_invidious_session(self, *, owner_id: str, device_id: str) -> dict[str, Any] | None:
+    def delete_renderer_invidious_session(
+        self, *, owner_id: str, device_id: str
+    ) -> dict[str, Any] | None:
         with self._connect() as conn:
             row = conn.execute(
                 "SELECT * FROM renderer_invidious_sessions WHERE device_id=? AND owner_id=?",
@@ -541,26 +591,43 @@ class VideoLearningStore:
                 )
         return dict(row) if row is not None else None
 
-    def enqueue_device_command(self, *, owner_id: str, device_id: str, payload: dict[str, Any]) -> DeviceCommand:
-        device = next((d for d in self.list_devices(owner_id) if d.device_id == device_id and d.active), None)
+    def enqueue_device_command(
+        self, *, owner_id: str, device_id: str, payload: dict[str, Any]
+    ) -> DeviceCommand:
+        device = next(
+            (d for d in self.list_devices(owner_id) if d.device_id == device_id and d.active), None
+        )
         if device is None:
             raise VideoLearningNotFound("Device not found.")
         if not self.device_is_online(device):
             raise VideoLearningConflict("Renderer is offline.")
         cid, now = secrets.token_urlsafe(12), _now_iso()
         with self._connect() as conn:
-            conn.execute("INSERT INTO device_commands (command_id,owner_id,device_id,command_type,payload,status,created_at) VALUES (?,?,?,'open_video',?,'pending',?)", (cid,owner_id,device_id,json.dumps(payload),now))
-            row = conn.execute("SELECT * FROM device_commands WHERE command_id=?", (cid,)).fetchone()
+            conn.execute(
+                "INSERT INTO device_commands (command_id,owner_id,device_id,command_type,payload,status,created_at) VALUES (?,?,?,'open_video',?,'pending',?)",
+                (cid, owner_id, device_id, json.dumps(payload), now),
+            )
+            row = conn.execute(
+                "SELECT * FROM device_commands WHERE command_id=?", (cid,)
+            ).fetchone()
         return self._row_to_device_command(row)
 
     def pending_device_commands(self, device_id: str) -> list[DeviceCommand]:
         cutoff = (_now() - COMMAND_TTL).isoformat()
         with self._connect() as conn:
-            conn.execute("UPDATE device_commands SET status='expired' WHERE device_id=? AND status='pending' AND created_at<?",(device_id,cutoff))
-            rows=conn.execute("SELECT * FROM device_commands WHERE device_id=? AND status='pending' ORDER BY created_at",(device_id,)).fetchall()
+            conn.execute(
+                "UPDATE device_commands SET status='expired' WHERE device_id=? AND status='pending' AND created_at<?",
+                (device_id, cutoff),
+            )
+            rows = conn.execute(
+                "SELECT * FROM device_commands WHERE device_id=? AND status='pending' ORDER BY created_at",
+                (device_id,),
+            ).fetchall()
         return [self._row_to_device_command(row) for row in rows]
 
-    def get_device_command(self, owner_id: str, device_id: str, command_id: str) -> DeviceCommand | None:
+    def get_device_command(
+        self, owner_id: str, device_id: str, command_id: str
+    ) -> DeviceCommand | None:
         with self._connect() as conn:
             row = conn.execute(
                 "SELECT * FROM device_commands WHERE command_id=? AND owner_id=? AND device_id=?",
@@ -568,7 +635,9 @@ class VideoLearningStore:
             ).fetchone()
         return self._row_to_device_command(row) if row else None
 
-    def ack_device_command(self, *, device_id: str, command_id: str, ok: bool, error: str | None = None) -> DeviceCommand:
+    def ack_device_command(
+        self, *, device_id: str, command_id: str, ok: bool, error: str | None = None
+    ) -> DeviceCommand:
         with self._connect() as conn:
             row = conn.execute(
                 "SELECT * FROM device_commands WHERE command_id=? AND device_id=?",
@@ -576,8 +645,13 @@ class VideoLearningStore:
             ).fetchone()
             if row is None:
                 raise VideoLearningNotFound("Device command not found.")
-            conn.execute("UPDATE device_commands SET status=?, acked_at=?, error=? WHERE command_id=?",("acked" if ok else "failed",_now_iso(),error,command_id))
-            row=conn.execute("SELECT * FROM device_commands WHERE command_id=?",(command_id,)).fetchone()
+            conn.execute(
+                "UPDATE device_commands SET status=?, acked_at=?, error=? WHERE command_id=?",
+                ("acked" if ok else "failed", _now_iso(), error, command_id),
+            )
+            row = conn.execute(
+                "SELECT * FROM device_commands WHERE command_id=?", (command_id,)
+            ).fetchone()
         return self._row_to_device_command(row)
 
     def revoke_device(self, owner_id: str, device_id: str) -> bool:
@@ -695,7 +769,9 @@ class VideoLearningStore:
             ).fetchone()
         return self._row_to_session(row)
 
-    def bind_session_material(self, *, session_id: str, owner_id: str, material_id: str) -> PlayerSession | None:
+    def bind_session_material(
+        self, *, session_id: str, owner_id: str, material_id: str
+    ) -> PlayerSession | None:
         if not material_id:
             return None
         with self._connect() as conn:
@@ -705,7 +781,9 @@ class VideoLearningStore:
             )
             if cur.rowcount != 1:
                 return None
-            row = conn.execute("SELECT * FROM sessions WHERE session_id=?", (session_id,)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM sessions WHERE session_id=?", (session_id,)
+            ).fetchone()
         return self._row_to_session(row) if row else None
 
     def list_sessions(self, owner_id: str) -> list[dict[str, Any]]:
@@ -819,7 +897,15 @@ class VideoLearningStore:
         payload: dict[str, Any] | None = None,
         command_id: str | None = None,
     ) -> PlayerCommand:
-        if command_type not in {"pause", "play", "seek", "volume", "mute", "playback_rate", "fullscreen"}:
+        if command_type not in {
+            "pause",
+            "play",
+            "seek",
+            "volume",
+            "mute",
+            "playback_rate",
+            "fullscreen",
+        }:
             raise VideoLearningConflict(f"Unsupported command type: {command_type}")
         if not self.session_is_online(session):
             raise VideoLearningConflict("Player session is offline.")
@@ -853,7 +939,9 @@ class VideoLearningStore:
             ).fetchone()
         return self._row_to_command(row)
 
-    def pending_commands(self, device_id: str, session_id: str | None = None) -> list[PlayerCommand]:
+    def pending_commands(
+        self, device_id: str, session_id: str | None = None
+    ) -> list[PlayerCommand]:
         cutoff = (_now() - COMMAND_TTL).isoformat()
         with self._connect() as conn:
             conn.execute(

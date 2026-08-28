@@ -312,7 +312,6 @@ def _normalize_chat_selections(
     return sels
 
 
-
 def _normalize_timed_media_ids(raw: list[str] | None) -> list[str]:
     out: list[str] = []
     seen: set[str] = set()

@@ -40,6 +40,7 @@ def test_timed_media_id_is_persisted_in_turn_snapshot() -> None:
     assert snapshot["timedMediaId"] == "0123456789abcdef0123456789abcdef"
     assert snapshot["timedMediaViewport"] == {"time_seconds": 1122.5, "locator": 17}
 
+
 # ---------------------------------------------------------------------------
 # material id normalisation
 # ---------------------------------------------------------------------------

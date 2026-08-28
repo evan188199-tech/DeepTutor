@@ -295,9 +295,7 @@ def _parse_robots_txt(raw: str, user_agent: str = DEFAULT_USER_AGENT) -> RobotsP
         group_agents = group.get("agents")
         assert isinstance(group_agents, set)
         return any(
-            token == "*" or normalized_agent.startswith(token)
-            for token in group_agents
-            if token
+            token == "*" or normalized_agent.startswith(token) for token in group_agents if token
         )
 
     applicable = [group for group in groups if agent_applies(group)]

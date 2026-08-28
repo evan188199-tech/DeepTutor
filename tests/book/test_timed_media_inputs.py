@@ -30,7 +30,9 @@ def _material(store: TimedMediaStore) -> dict:
             "transcript": {
                 "language": "en",
                 "source": "invidious",
-                "cues": [{"start": 5, "end": 12, "text": "A Fourier series decomposes periodic signals."}],
+                "cues": [
+                    {"start": 5, "end": 12, "text": "A Fourier series decomposes periodic signals."}
+                ],
             },
             "segments": [
                 {

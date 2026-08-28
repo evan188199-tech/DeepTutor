@@ -26,7 +26,12 @@ def _material(store: TimedMediaStore, *, duration: float = 120) -> dict:
                 "url": "https://youtu.be/dQw4w9WgXcQ",
                 "duration_seconds": duration,
             },
-            "metadata": {"title": "Demo", "author": "Tutor", "duration_seconds": duration, "chapters": []},
+            "metadata": {
+                "title": "Demo",
+                "author": "Tutor",
+                "duration_seconds": duration,
+                "chapters": [],
+            },
             "transcript": {
                 "language": "en",
                 "source": "invidious",
@@ -37,8 +42,18 @@ def _material(store: TimedMediaStore, *, duration: float = 120) -> dict:
                 ],
             },
             "segments": [
-                {"locator": 1, "start": 10, "end": 30, "text": "Gradient descent finds a local minimum. Why does the learning rate matter?"},
-                {"locator": 2, "start": 40, "end": 55, "text": "This example is worth reviewing later."},
+                {
+                    "locator": 1,
+                    "start": 10,
+                    "end": 30,
+                    "text": "Gradient descent finds a local minimum. Why does the learning rate matter?",
+                },
+                {
+                    "locator": 2,
+                    "start": 40,
+                    "end": 55,
+                    "text": "This example is worth reviewing later.",
+                },
             ],
             "playback": {"formats": {}, "official_url": "https://youtu.be/dQw4w9WgXcQ"},
             "learning": {"last_position": 0, "notes": [], "marks": []},
@@ -57,7 +72,12 @@ def client_and_store(tmp_path: Path, monkeypatch):
 
 
 def test_normalize_mark_rejects_kind_and_reversed_times():
-    material = {"source": {"duration_seconds": 100}, "segments": [], "transcript": {"cues": []}, "learning": {"marks": []}}
+    material = {
+        "source": {"duration_seconds": 100},
+        "segments": [],
+        "transcript": {"cues": []},
+        "learning": {"marks": []},
+    }
     with pytest.raises(TimedMediaError):
         normalize_mark(material, {"kind": "highlight", "start_seconds": 1, "end_seconds": 2})
     with pytest.raises(TimedMediaError):
@@ -84,7 +104,9 @@ def test_update_and_delete_are_owner_material_scoped(tmp_path: Path):
     store = TimedMediaStore(tmp_path)
     material = _material(store)
     mark = create_mark(material, {"kind": "review", "start_seconds": 40, "end_seconds": 55})
-    updated = update_mark(material, mark["mark_id"], {"note": "rewatch the example", "reviewed": True})
+    updated = update_mark(
+        material, mark["mark_id"], {"note": "rewatch the example", "reviewed": True}
+    )
     assert updated["note"] == "rewatch the example"
     assert updated["reviewed_at"]
     deleted = delete_mark(material, mark["mark_id"])
@@ -148,7 +170,12 @@ def test_router_mark_crud_and_isolation(client_and_store):
 
     created = client.post(
         f"/api/v1/video-learning/materials/{mat_id}/marks",
-        json={"kind": "key_point", "start_seconds": 10, "end_seconds": 18, "quote": "Gradient descent finds a local minimum."},
+        json={
+            "kind": "key_point",
+            "start_seconds": 10,
+            "end_seconds": 18,
+            "quote": "Gradient descent finds a local minimum.",
+        },
     )
     assert created.status_code == 201
     mark_id = created.json()["mark_id"]

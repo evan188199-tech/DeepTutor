@@ -136,7 +136,10 @@ class AuthStateStore:
 
 def get_invidious_base_url() -> str:
     """Backend-reachable Invidious URL."""
-    url = str(runtime_settings.load_integrations_settings().get("invidious_base_url") or "").strip()
+    settings = runtime_settings.load_integrations_settings()
+    url = str(settings.get("invidious_base_url") or "").strip()
+    if not url:
+        url = str(settings.get("invidious_public_base_url") or "").strip()
     return _validate_instance_url(url) if url else ""
 
 
@@ -175,7 +178,9 @@ def get_callback_base_url(override: str | None = None) -> str:
         if parsed.scheme in {"http", "https"} and parsed.netloc:
             return f"{parsed.scheme}://{parsed.netloc}"
     system = runtime_settings.load_system_settings()
-    base = str(system.get("next_public_api_base_external") or system.get("public_api_base") or "").strip()
+    base = str(
+        system.get("next_public_api_base_external") or system.get("public_api_base") or ""
+    ).strip()
     # Quick Tunnel deployments rotate their public hostname daily. When an
     # explicit external API base is not configured, use the operator-written
     # current tunnel state so Invidious OAuth callbacks keep working without a
@@ -201,7 +206,10 @@ async def get_authorization_url(owner_id: str, external_api_base: str | None = N
             "External public API base is not configured (system.next_public_api_base_external)."
         )
     state = await AuthStateStore.create_state(owner_id)
-    callback_url = urljoin(callback_base.rstrip("/") + "/", "api/v1/video-learning/invidious/callback") + f"?state={state}"
+    callback_url = (
+        urljoin(callback_base.rstrip("/") + "/", "api/v1/video-learning/invidious/callback")
+        + f"?state={state}"
+    )
     return (
         f"{public_base}/authorize_token"
         f"?scopes={quote(INVIDIOUS_AUTH_SCOPES, safe='')}"
@@ -351,7 +359,9 @@ def _normalize_thumbnail(thumbnails: Any, video_id: str, public_base: str) -> st
     return f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg" if video_id else ""
 
 
-def _normalize_feed_item(item: dict[str, Any], history_ids: set[str], public_base: str) -> dict[str, Any] | None:
+def _normalize_feed_item(
+    item: dict[str, Any], history_ids: set[str], public_base: str
+) -> dict[str, Any] | None:
     video_id = str(item.get("videoId") or item.get("video_id") or "").strip()
     if not video_id:
         return None
@@ -369,7 +379,9 @@ def _normalize_feed_item(item: dict[str, Any], history_ids: set[str], public_bas
     except (TypeError, ValueError):
         pass
     published = str(item.get("publishedText") or "").strip()
-    thumb = _normalize_thumbnail(item.get("videoThumbnails") or item.get("thumbnails"), video_id, public_base)
+    thumb = _normalize_thumbnail(
+        item.get("videoThumbnails") or item.get("thumbnails"), video_id, public_base
+    )
     return {
         "video_id": video_id,
         "title": title,

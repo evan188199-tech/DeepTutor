@@ -639,7 +639,9 @@ class SourceExplorer(BaseAgent):
                     try:
                         material = store.get(material_id)
                     except Exception as exc:  # noqa: BLE001
-                        logger.debug("Timed media %s unavailable for exploration: %s", material_id, exc)
+                        logger.debug(
+                            "Timed media %s unavailable for exploration: %s", material_id, exc
+                        )
                         continue
                     for row in source_chunks_for_material(material)[:24]:
                         if not isinstance(row, dict):

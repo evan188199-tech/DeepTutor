@@ -24,7 +24,9 @@ def _source(tmp_path):
     )
     document = immersive / "document_doc1"
     document.mkdir(parents=True)
-    (document / "original.txt").write_text("Chapter One\nThe moon reflects sunlight.", encoding="utf-8")
+    (document / "original.txt").write_text(
+        "Chapter One\nThe moon reflects sunlight.", encoding="utf-8"
+    )
     _write(document / "manifest.json", {"source_filename": "moon.txt"})
     _write(
         kids / "progress" / "p1_doc1.json",

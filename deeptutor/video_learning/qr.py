@@ -75,7 +75,13 @@ def generate_pairing_qr_data_url(code: str) -> tuple[str, str]:
 
 def generate_qr_data_url(payload: str) -> str:
     """Generate a controlled SVG data URL for a non-pairing bootstrap link."""
-    qr = qrcode.QRCode(version=None, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=8, border=2, image_factory=qrcode.image.svg.SvgPathImage)
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=8,
+        border=2,
+        image_factory=qrcode.image.svg.SvgPathImage,
+    )
     qr.add_data(payload)
     qr.make(fit=True)
     image = qr.make_image()

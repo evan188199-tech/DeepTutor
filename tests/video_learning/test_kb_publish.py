@@ -115,7 +115,9 @@ def test_render_note_and_source_chunks_include_marks(tmp_path: Path):
     assert chunks
     assert chunks[0]["source"] == "timed_media"
     assert "jump_url" in chunks[0]["metadata"]
-    assert "core claim" in ideation_text_for_material(material) or "Gradient descent" in ideation_text_for_material(material)
+    assert "core claim" in ideation_text_for_material(
+        material
+    ) or "Gradient descent" in ideation_text_for_material(material)
 
 
 @pytest.mark.asyncio
@@ -188,7 +190,9 @@ def test_router_publish_and_create_book(client_and_store, monkeypatch, tmp_path:
 
     monkeypatch.setattr("deeptutor.book.engine.get_book_engine", lambda: FakeEngine())
 
-    published = client.post(f"/api/v1/video-learning/materials/{mat_id}/publish-to-kb", json={"kb_name": "default"})
+    published = client.post(
+        f"/api/v1/video-learning/materials/{mat_id}/publish-to-kb", json={"kb_name": "default"}
+    )
     assert published.status_code == 200
     body = published.json()
     assert body["updated"] is True

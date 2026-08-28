@@ -245,7 +245,14 @@ class PathService:
             "_detached_code_execution",
         }:
             return self.get_chat_feature_dir(cast(ChatWorkspaceFeature, feature))
-        if feature in {"memory", "notebook", "co-writer", "book", "immersive_reading", "timed_media"}:
+        if feature in {
+            "memory",
+            "notebook",
+            "co-writer",
+            "book",
+            "immersive_reading",
+            "timed_media",
+        }:
             return self.get_workspace_feature_dir(cast(WorkspaceFeature, feature))
         raise ValueError(f"Unknown workspace feature: {feature}")
 

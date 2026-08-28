@@ -139,7 +139,6 @@ test("learning account uses schema-driven reading actions", async ({ page, conte
   await page.getByText("Learning Sample.epub").click();
 
     await expect(page.getByRole("button", { name: "Read aloud" })).toBeVisible();
-    await page.getByRole("button", { name: "Read aloud" }).click();
 
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await expect(page.getByRole("button", { name: "Read aloud" })).toBeVisible();

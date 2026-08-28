@@ -77,7 +77,9 @@ def test_crawler_host_allowlist_parses_normalized_hosts(monkeypatch):
 
 
 def test_extraction_quality_rewards_rich_documentation() -> None:
-    paragraph = "This guide explains DeepTutor in enough detail to pass the minimum body threshold. "
+    paragraph = (
+        "This guide explains DeepTutor in enough detail to pass the minimum body threshold. "
+    )
     markdown = (
         "# Installation\n\n"
         f"{paragraph * 4}\n\n"

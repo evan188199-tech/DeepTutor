@@ -13,8 +13,8 @@ from deeptutor.video_learning.invidious_auth import (
     InvidiousTokenStore,
     disconnect_account,
     get_authorization_url,
-    get_invidious_public_base_url,
     get_invidious_home_feed,
+    get_invidious_public_base_url,
     get_user_history_ids,
     get_user_preferences,
     sync_watch_history,
@@ -49,7 +49,9 @@ def test_tailnet_host_validation():
 def test_public_invidious_url_skips_ssrf_dns(monkeypatch):
     monkeypatch.setattr(
         "deeptutor.services.config.runtime_settings.load_integrations_settings",
-        lambda: {"invidious_public_base_url": "https://uses-firewall-coupon-wal.trycloudflare.com/"},
+        lambda: {
+            "invidious_public_base_url": "https://uses-firewall-coupon-wal.trycloudflare.com/"
+        },
     )
     assert get_invidious_public_base_url() == "https://uses-firewall-coupon-wal.trycloudflare.com"
 
@@ -185,14 +187,31 @@ async def test_watch_history_sync_and_home_feed(tmp_path: Path, monkeypatch):
             if "/api/v1/auth/history/dQw4w9WgXcQ" in url:
                 return httpx.Response(200, json={"status": "ok"})
             if "/api/v1/auth/history" in url:
-                return httpx.Response(200, json=[{"videoId": "dQw4w9WgXcQ", "title": "Never Gonna Give You Up"}])
+                return httpx.Response(
+                    200, json=[{"videoId": "dQw4w9WgXcQ", "title": "Never Gonna Give You Up"}]
+                )
             if "/api/v1/auth/preferences" in url:
                 return httpx.Response(200, json={"default_home": "Popular"})
             if "/api/v1/popular" in url:
-                return httpx.Response(200, json=[
-                    {"videoId": "dQw4w9WgXcQ", "title": "Rick Astley", "author": "RickAstleyVEVO", "lengthSeconds": 213, "viewCount": 1000000},
-                    {"videoId": "other123456", "title": "Other Video", "author": "OtherAuthor", "lengthSeconds": 100, "viewCount": 500},
-                ])
+                return httpx.Response(
+                    200,
+                    json=[
+                        {
+                            "videoId": "dQw4w9WgXcQ",
+                            "title": "Rick Astley",
+                            "author": "RickAstleyVEVO",
+                            "lengthSeconds": 213,
+                            "viewCount": 1000000,
+                        },
+                        {
+                            "videoId": "other123456",
+                            "title": "Other Video",
+                            "author": "OtherAuthor",
+                            "lengthSeconds": 100,
+                            "viewCount": 500,
+                        },
+                    ],
+                )
             return httpx.Response(404)
 
     real_async_client = httpx.AsyncClient

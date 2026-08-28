@@ -307,9 +307,7 @@ async def test_background_preparation_uses_audio_only_stream(
         "https://www.bilibili.com/video/BV1234567890", tmp_path
     )
     assert state["status"] == "succeeded", state
-    assert state["segments"] == [
-        {"start": 3, "end": 60, "text": "自动转写文本", "locator": 1}
-    ]
+    assert state["segments"] == [{"start": 3, "end": 60, "text": "自动转写文本", "locator": 1}]
     assert state["transcript"]["source"]["duration_seconds"] == 60
     assert state["transcript"]["source"]["video_id"] == "BV1234567890"
     assert state["transcript"]["source"]["cid"] == 111

@@ -72,7 +72,9 @@ def parse_youtube_url(value: str) -> YouTubeRequest:
         raise TimedMediaError("Unsupported or invalid YouTube URL.")
     entry = parse_timestamp(query.get("t", query.get("start", ["0"]))[0])
     canonical_query = {"t": str(entry)} if entry else {}
-    canonical = urlunparse(("https", "youtu.be", f"/{video_id}", "", urlencode(canonical_query), ""))
+    canonical = urlunparse(
+        ("https", "youtu.be", f"/{video_id}", "", urlencode(canonical_query), "")
+    )
     return YouTubeRequest(video_id=video_id, canonical_url=canonical, entry_time_seconds=entry)
 
 
@@ -112,10 +114,15 @@ def normalize_cues(rows: Any) -> list[dict[str, Any]]:
         if not text:
             continue
         try:
-            start = max(0.0, float(merged.get("start") or merged.get("from") or merged.get("startMs", 0) / 1000))
+            start = max(
+                0.0,
+                float(merged.get("start") or merged.get("from") or merged.get("startMs", 0) / 1000),
+            )
             end = float(merged.get("end") or merged.get("to") or merged.get("endMs", 0) / 1000)
             if end <= start:
-                end = start + float(merged.get("duration") or merged.get("durationMs", 0) / 1000 or 0)
+                end = start + float(
+                    merged.get("duration") or merged.get("durationMs", 0) / 1000 or 0
+                )
         except (TypeError, ValueError):
             continue
         result.append({"start": start, "end": max(start, end), "text": text})
@@ -133,9 +140,13 @@ def build_segments(cues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         gap = max(0.0, float(cue["start"]) - float(current["end"]))
         length = float(cue["end"]) - float(current["start"])
         sentence_end = str(current["text"]).rstrip().endswith((".", "!", "?", "。", "！", "？"))
-        if length < MAX_SEGMENT_SECONDS and gap <= 4 and not (length >= MIN_SEGMENT_SECONDS and sentence_end):
+        if (
+            length < MAX_SEGMENT_SECONDS
+            and gap <= 4
+            and not (length >= MIN_SEGMENT_SECONDS and sentence_end)
+        ):
             current["end"] = cue["end"]
-            current["text"] = f'{current["text"]} {cue["text"]}'.strip()
+            current["text"] = f"{current['text']} {cue['text']}".strip()
         else:
             segments.append(current)
             current = {"start": cue["start"], "end": cue["end"], "text": cue["text"]}
@@ -150,7 +161,9 @@ class TimedMediaStore:
     """Atomic, user-scoped JSON store for timed media materials."""
 
     def __init__(self, root: Path | None = None) -> None:
-        self.root = (root or get_current_path_service().get_workspace_feature_dir("timed_media")).resolve()
+        self.root = (
+            root or get_current_path_service().get_workspace_feature_dir("timed_media")
+        ).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
     def _path(self, material_id: str) -> Path:
@@ -207,7 +220,7 @@ class TimedMediaStore:
         material = dict(material)
         if not str(material.get("material_id") or ""):
             material["material_id"] = hashlib.sha256(
-                f'{material.get("source", {}).get("video_id", "")}-{datetime.now(timezone.utc).timestamp()}'.encode()
+                f"{material.get('source', {}).get('video_id', '')}-{datetime.now(timezone.utc).timestamp()}".encode()
             ).hexdigest()[:32]
         material.setdefault("version", 1)
         material.setdefault("type", "timed_media")
@@ -219,7 +232,9 @@ def get_timed_media_store() -> TimedMediaStore:
     return TimedMediaStore()
 
 
-def ensure_remote_material(video_id: str, *, title: str = "", duration_seconds: float = 0) -> dict[str, Any]:
+def ensure_remote_material(
+    video_id: str, *, title: str = "", duration_seconds: float = 0
+) -> dict[str, Any]:
     """Get or create an owner-scoped material for a feed-launched Invidious video."""
     video_id = video_id.strip()
     if not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id):
@@ -270,9 +285,9 @@ class YouTubeResolver:
 
     def __init__(self, *, base_url: str | None = None, timeout: float = 15.0) -> None:
         if base_url is None:
-            from deeptutor.services.config.runtime_settings import load_integrations_settings
+            from deeptutor.video_learning.invidious_auth import get_invidious_base_url
 
-            base_url = str(load_integrations_settings().get("invidious_base_url") or "")
+            base_url = get_invidious_base_url()
         self.base_url = _validate_instance_url(base_url)
         self.timeout = timeout
 
@@ -314,7 +329,9 @@ class YouTubeResolver:
         _validate_video_id(video_id)
         if metadata is None:
             metadata = await self.get_metadata(video_id)
-        return _formats(metadata.get("formatStreams")) or _formats(metadata.get("formats"), yt_dlp=True)
+        return _formats(metadata.get("formatStreams")) or _formats(
+            metadata.get("formats"), yt_dlp=True
+        )
 
     async def get_storyboard(
         self,
@@ -348,7 +365,14 @@ class YouTubeResolver:
             and str(row.get("type") or row.get("mimeType") or "").startswith("audio/")
             and row.get("url")
         ]
-        return min(candidates, key=lambda row: float(row.get("bitrate") or row.get("audioBitrate") or 0)) if candidates else None
+        return (
+            min(
+                candidates,
+                key=lambda row: float(row.get("bitrate") or row.get("audioBitrate") or 0),
+            )
+            if candidates
+            else None
+        )
 
     async def resolve(
         self,
@@ -364,8 +388,12 @@ class YouTubeResolver:
         transcript_source = ""
         if self.base_url:
             try:
-                async with httpx.AsyncClient(timeout=self.timeout, follow_redirects=False) as client:
-                    response = await self._json(client, f"{self.base_url}/api/v1/videos/{request.video_id}")
+                async with httpx.AsyncClient(
+                    timeout=self.timeout, follow_redirects=False
+                ) as client:
+                    response = await self._json(
+                        client, f"{self.base_url}/api/v1/videos/{request.video_id}"
+                    )
                     if isinstance(response, dict):
                         metadata = response
                         cues, language, transcript_source = await self._transcript(
@@ -385,12 +413,18 @@ class YouTubeResolver:
                 preferred_language=language,
             )
         if not metadata:
-            raise TimedMediaError("Video metadata is unavailable. Configure Invidious or install the video-learning extra.")
+            raise TimedMediaError(
+                "Video metadata is unavailable. Configure Invidious or install the video-learning extra."
+            )
         duration = _duration(metadata)
         segments = build_segments(cues)
-        formats = _formats(metadata.get("formatStreams")) or _formats(metadata.get("formats"), yt_dlp=True)
+        formats = _formats(metadata.get("formatStreams")) or _formats(
+            metadata.get("formats"), yt_dlp=True
+        )
         if not formats:
-            raise TimedMediaError("Invidious returned no compatible muxed MP4 stream. Open the video in YouTube instead.")
+            raise TimedMediaError(
+                "Invidious returned no compatible muxed MP4 stream. Open the video in YouTube instead."
+            )
         playback = {item["format_id"]: item for item in formats}
         material = {
             "version": 1,
@@ -415,9 +449,16 @@ class YouTubeResolver:
             "segments": segments,
             "playback": {
                 "formats": playback,
-                "official_url": f"https://youtu.be/{request.video_id}?t={request.entry_time_seconds}" if request.entry_time_seconds else f"https://youtu.be/{request.video_id}",
+                "official_url": f"https://youtu.be/{request.video_id}?t={request.entry_time_seconds}"
+                if request.entry_time_seconds
+                else f"https://youtu.be/{request.video_id}",
             },
-            "learning": {"last_position": request.entry_time_seconds, "notes": [], "questions": [], "marks": []},
+            "learning": {
+                "last_position": request.entry_time_seconds,
+                "notes": [],
+                "questions": [],
+                "marks": [],
+            },
         }
         target_store = store or get_timed_media_store()
         existing = target_store.find_by_video_id(request.video_id)
@@ -452,11 +493,17 @@ class YouTubeResolver:
                 if isinstance(response, dict):
                     metadata = response
         if not metadata:
-            metadata = await _optional_ytdlp_metadata(str(material.get("source", {}).get("url") or ""))
-        formats = _formats(metadata.get("formatStreams")) or _formats(metadata.get("formats"), yt_dlp=True)
+            metadata = await _optional_ytdlp_metadata(
+                str(material.get("source", {}).get("url") or "")
+            )
+        formats = _formats(metadata.get("formatStreams")) or _formats(
+            metadata.get("formats"), yt_dlp=True
+        )
         if not formats:
             raise TimedMediaError("Invidious returned no compatible MP4 stream.")
-        material.setdefault("playback", {})["formats"] = {item["format_id"]: item for item in formats}
+        material.setdefault("playback", {})["formats"] = {
+            item["format_id"]: item for item in formats
+        }
         return material
 
     async def _json(self, client: httpx.AsyncClient, url: str) -> Any:
@@ -491,31 +538,90 @@ class YouTubeResolver:
         preferred_language: str = "",
     ) -> tuple[list[dict[str, Any]], str, str]:
         captions = metadata.get("captions") if isinstance(metadata.get("captions"), list) else []
-        selected = _select_caption(captions, preferred_language)
-        if selected:
-            language = str(selected.get("languageCode") or selected.get("language_code") or "")
-            label = str(selected.get("label") or "")
-            query = (
-                urlencode({"lang": language})
-                if language
-                else urlencode({"label": label})
-                if label
-                else ""
-            )
+        if not captions:
             try:
-                payload = await self._json(client, f"{self.base_url}/api/v1/transcripts/{video_id}{f'?{query}' if query else ''}")
-                rows = payload.get("transcript", payload) if isinstance(payload, dict) else payload
-                cues = normalize_cues(rows)
-                if cues:
-                    return cues, language, "invidious"
-            except (TimedMediaError, httpx.HTTPError, ValueError):
+                payload = await self._json(
+                    client, f"{self.base_url}/companion/api/v1/captions/{video_id}"
+                )
+                if isinstance(payload, dict) and isinstance(payload.get("captions"), list):
+                    captions = payload["captions"]
+            except Exception:
                 pass
-            response = await self._get(client, f"{self.base_url}/api/v1/captions/{video_id}{f'?{query}' if query else ''}")
-            if len(response.content) > MAX_TRANSCRIPT_BYTES:
-                raise TimedMediaError("YouTube transcript exceeded the safety limit.")
-            cues = normalize_cues(parse_webvtt(response.text))
-            if cues:
-                return cues, language, "invidious"
+
+        ranked = _rank_captions(captions, preferred_language)
+        if not ranked and captions:
+            ranked = captions
+
+        trials: list[tuple[str, str, str]] = []
+        for cap in ranked:
+            lang = str(cap.get("languageCode") or cap.get("language_code") or "")
+            label = str(cap.get("label") or "")
+            raw_url = str(cap.get("url") or "")
+            trials.append((lang, label, raw_url))
+
+        if not trials:
+            trials.append((preferred_language or "en", "", ""))
+
+        for language, label, raw_url in trials:
+            urls_to_try: list[str] = []
+            if raw_url:
+                urls_to_try.append(urljoin(self.base_url + "/", raw_url.lstrip("/")))
+                if "/api/v1/captions/" in raw_url:
+                    urls_to_try.append(
+                        urljoin(
+                            self.base_url + "/",
+                            raw_url.replace(
+                                "/api/v1/captions/", "/companion/api/v1/captions/"
+                            ).lstrip("/"),
+                        )
+                    )
+
+            queries: list[str] = []
+            if language:
+                queries.append(urlencode({"lang": language}))
+            if label:
+                queries.append(urlencode({"label": label}))
+
+            for q in queries:
+                urls_to_try.append(f"{self.base_url}/companion/api/v1/captions/{video_id}?{q}")
+                urls_to_try.append(f"{self.base_url}/api/v1/transcripts/{video_id}?{q}")
+                if language:
+                    urls_to_try.append(f"{self.base_url}/api/v1/transcripts/{video_id}?{q}&autogen")
+                urls_to_try.append(f"{self.base_url}/api/v1/captions/{video_id}?{q}")
+
+            urls_to_try.append(f"{self.base_url}/companion/api/v1/captions/{video_id}")
+            urls_to_try.append(f"{self.base_url}/api/v1/transcripts/{video_id}")
+            urls_to_try.append(f"{self.base_url}/api/v1/captions/{video_id}")
+
+            seen_urls = set()
+            for url in urls_to_try:
+                if url in seen_urls:
+                    continue
+                seen_urls.add(url)
+                try:
+                    response = await self._get(client, url)
+                    if len(response.content) > MAX_TRANSCRIPT_BYTES or not response.content:
+                        continue
+                    content_type = response.headers.get("content-type", "")
+                    if "json" in content_type:
+                        payload = response.json()
+                        rows = (
+                            payload.get("transcript", payload)
+                            if isinstance(payload, dict)
+                            else payload
+                        )
+                        if isinstance(rows, list):
+                            cues = normalize_cues(rows)
+                            if cues:
+                                return cues, language, "invidious"
+                    text = response.text
+                    if "WEBVTT" in text or "-->" in text:
+                        cues = normalize_cues(parse_webvtt(text))
+                        if cues:
+                            return cues, language, "invidious"
+                except Exception:
+                    continue
+
         return await self._optional_transcript(video_id, preferred_language=preferred_language)
 
     async def _optional_transcript(
@@ -531,11 +637,15 @@ class YouTubeResolver:
 
         def fetch() -> tuple[list[dict[str, Any]], str]:
             api = YouTubeTranscriptApi()
-            languages = [preferred_language] if preferred_language else ["zh-CN", "zh-Hans", "zh", "en"]
+            languages = (
+                [preferred_language] if preferred_language else ["zh-CN", "zh-Hans", "zh", "en"]
+            )
             if hasattr(api, "fetch"):
                 result = api.fetch(video_id, languages=languages)
                 return normalize_cues(list(result)), str(getattr(result, "language_code", "") or "")
-            return normalize_cues(YouTubeTranscriptApi.get_transcript(video_id, languages=languages)), ""
+            return normalize_cues(
+                YouTubeTranscriptApi.get_transcript(video_id, languages=languages)
+            ), ""
 
         try:
             cues, language = await asyncio.to_thread(fetch)
@@ -561,7 +671,10 @@ def _rank_captions(captions: list[Any], preferred_language: str = "") -> list[di
     matched: list[dict[str, Any]] = []
     for language in priorities:
         for row in rows:
-            if str(row.get("languageCode") or row.get("language_code") or "") == language and row not in matched:
+            if (
+                str(row.get("languageCode") or row.get("language_code") or "") == language
+                and row not in matched
+            ):
                 matched.append(row)
     for row in rows:
         if not row.get("autoGenerated") and not row.get("auto_generated") and row not in matched:
@@ -570,6 +683,7 @@ def _rank_captions(captions: list[Any], preferred_language: str = "") -> list[di
         if row not in matched:
             matched.append(row)
     return matched
+
 
 def parse_webvtt(text: str) -> list[dict[str, Any]]:
     timing = re.compile(
@@ -617,7 +731,9 @@ def _normalize_rolling_vtt(cues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         lines = _unique_caption_lines(str(cue["text"]))
         text = " ".join(lines)
         duration = float(cue["end"]) - float(cue["start"])
-        next_text = _collapse_repeated_lines(str(cues[index + 1]["text"])) if index + 1 < len(cues) else ""
+        next_text = (
+            _collapse_repeated_lines(str(cues[index + 1]["text"])) if index + 1 < len(cues) else ""
+        )
         if duration <= 0.05 and next_text and _rolling_text_contains(next_text, text):
             continue
         if result and len(lines) > 1 and _rolling_text_contains(str(result[-1]["text"]), lines[0]):
@@ -625,7 +741,9 @@ def _normalize_rolling_vtt(cues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if not text:
             continue
         normalized = {**cue, "text": text}
-        if result and _normalized_caption_text(result[-1]["text"]) == _normalized_caption_text(text):
+        if result and _normalized_caption_text(result[-1]["text"]) == _normalized_caption_text(
+            text
+        ):
             result[-1]["end"] = max(float(result[-1]["end"]), float(cue["end"]))
             continue
         result.append(normalized)
@@ -674,7 +792,13 @@ def _validate_instance_url(value: str) -> str:
     if not value:
         return ""
     parsed = urlparse(value)
-    if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password or parsed.path not in {"", "/"}:
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.path not in {"", "/"}
+    ):
         raise TimedMediaError("Invidious base URL must be a plain HTTP(S) origin.")
     host = parsed.hostname.lower().rstrip(".")
     if parsed.scheme != "https" and not _is_local_host(host):
@@ -693,7 +817,12 @@ def _is_local_host(host: str) -> bool:
         address = ipaddress.ip_address(host)
     except ValueError:
         return False
-    return address.is_loopback or address.is_private or address.is_link_local or address in TAILSCALE_CGNAT_NET
+    return (
+        address.is_loopback
+        or address.is_private
+        or address.is_link_local
+        or address in TAILSCALE_CGNAT_NET
+    )
 
 
 def _ensure_response(response: httpx.Response) -> None:
@@ -722,10 +851,20 @@ def _select_caption(captions: list[Any], preferred_language: str = "") -> dict[s
     rows = [row for row in captions if isinstance(row, dict)]
     priorities = [preferred_language] if preferred_language else ["zh-CN", "zh-Hans", "zh", "en"]
     for language in priorities:
-        found = next((row for row in rows if str(row.get("languageCode") or row.get("language_code") or "") == language), None)
+        found = next(
+            (
+                row
+                for row in rows
+                if str(row.get("languageCode") or row.get("language_code") or "") == language
+            ),
+            None,
+        )
         if found:
             return found
-    return next((row for row in rows if not row.get("autoGenerated") and not row.get("auto_generated")), None) or (rows[0] if rows else None)
+    return next(
+        (row for row in rows if not row.get("autoGenerated") and not row.get("auto_generated")),
+        None,
+    ) or (rows[0] if rows else None)
 
 
 def _formats(value: Any, *, yt_dlp: bool = False) -> list[dict[str, Any]]:
@@ -740,7 +879,10 @@ def _formats(value: Any, *, yt_dlp: bool = False) -> list[dict[str, Any]]:
         if yt_dlp and not mime:
             mime = "video/mp4" if str(item.get("ext") or "") == "mp4" else ""
         url = str(item.get("url") or "").strip()
-        if yt_dlp and (str(item.get("vcodec") or "none") == "none" or str(item.get("acodec") or "none") == "none"):
+        if yt_dlp and (
+            str(item.get("vcodec") or "none") == "none"
+            or str(item.get("acodec") or "none") == "none"
+        ):
             continue
         if mime != "video/mp4" or not url or not url.startswith(("https://", "http://")):
             continue
@@ -753,13 +895,17 @@ def _formats(value: Any, *, yt_dlp: bool = False) -> list[dict[str, Any]]:
             format_id = f"{base_format_id}-{suffix}"
             suffix += 1
         seen_ids.add(format_id)
-        result.append({
-            "format_id": format_id,
-            "url": url,
-            "mime_type": mime,
-            "quality": str(item.get("qualityLabel") or item.get("quality") or ""),
-            "content_length": int(item.get("clen") or 0) if str(item.get("clen") or "").isdigit() else 0,
-        })
+        result.append(
+            {
+                "format_id": format_id,
+                "url": url,
+                "mime_type": mime,
+                "quality": str(item.get("qualityLabel") or item.get("quality") or ""),
+                "content_length": int(item.get("clen") or 0)
+                if str(item.get("clen") or "").isdigit()
+                else 0,
+            }
+        )
     result.sort(key=lambda row: _quality_rank(row["quality"]), reverse=True)
     return result
 
@@ -773,7 +919,14 @@ async def _optional_ytdlp_metadata(url: str) -> dict[str, Any]:
             import yt_dlp
         except ImportError:
             return {}
-        options = {"quiet": True, "no_warnings": True, "skip_download": True, "noplaylist": True, "ignoreconfig": True, "cachedir": False}
+        options = {
+            "quiet": True,
+            "no_warnings": True,
+            "skip_download": True,
+            "noplaylist": True,
+            "ignoreconfig": True,
+            "cachedir": False,
+        }
         try:
             with yt_dlp.YoutubeDL(options) as downloader:
                 data = downloader.extract_info(url, download=False)
@@ -803,7 +956,9 @@ def _chapters(value: Any) -> list[dict[str, Any]]:
         if not isinstance(row, dict):
             continue
         try:
-            start = int(float(row.get("startTime") or row.get("start_time") or row.get("start") or 0))
+            start = int(
+                float(row.get("startTime") or row.get("start_time") or row.get("start") or 0)
+            )
         except (TypeError, ValueError):
             continue
         result.append({"start": max(0, start), "title": str(row.get("title") or "")})
