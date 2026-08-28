@@ -37,6 +37,7 @@ import {
   GraduationCap,
   Loader2,
   MessageSquarePlus,
+  NotebookPen,
   Paperclip,
   X,
 } from "lucide-react";
@@ -52,6 +53,7 @@ import {
 } from "@/components/chat/home/SessionActivityPanel";
 import QuizFollowupTabBody from "@/components/quiz/QuizFollowupTabBody";
 import SubagentTabBody from "@/components/chat/home/SubagentTabBody";
+import ChatCoWriterTab from "@/components/chat/home/ChatCoWriterTab";
 import type { QuizFollowupTabContext } from "@/context/QuizFollowupContext";
 import type { GeogebraTabPayload } from "@/context/GeogebraTabContext";
 import { apiUrl } from "@/lib/api";
@@ -159,6 +161,11 @@ type ViewerTab =
       label: string;
       callId: string;
       events: StreamEvent[];
+    }
+  | {
+      kind: "co-writer";
+      id: string;
+      label: string;
     };
 
 export interface SessionViewerPanelHandle {
@@ -175,6 +182,8 @@ export interface SessionViewerPanelHandle {
   openGeogebraTab(payload: GeogebraTabPayload): void;
   /** Opens (first time) or live-updates a connected subagent's run tab. */
   openSubagentTab(callId: string, label: string, events: StreamEvent[]): void;
+  /** Opens a persistent side-panel Markdown draft backed by Co-Writer. */
+  openCoWriterTab(): void;
   /** Opens the panel and switches to the Activity home (where the
    *  capability-config card lives). */
   focusActivityHome(): void;
@@ -214,6 +223,8 @@ function geogebraTabIdFor(payloadId: string): string {
 function subagentTabIdFor(callId: string): string {
   return `subagent:${callId}`;
 }
+
+const CO_WRITER_TAB_ID = "co-writer:chat-note";
 
 function hostnameFor(url: string): string {
   try {
@@ -311,8 +322,13 @@ function SessionViewerPanelInner(
   );
   if (trackedSessionId !== sessionId) {
     setTrackedSessionId(sessionId);
-    setTabs([]);
-    setActiveTabId(null);
+    // Chat notes belong to the learner rather than the conversation that
+    // opened them; conversation-scoped previews still get wiped below.
+    setTabs((prev) => {
+      const next = prev.filter((tab) => tab.id === CO_WRITER_TAB_ID);
+      setActiveTabId(next.length ? CO_WRITER_TAB_ID : null);
+      return next;
+    });
   }
 
   const openFileTab = useCallback(
@@ -522,6 +538,23 @@ function SessionViewerPanelInner(
     onAutoOpen();
   }, [onAutoOpen]);
 
+  const openCoWriterTab = useCallback(() => {
+    setTabs((prev) => {
+      if (prev.some((tab) => tab.id === CO_WRITER_TAB_ID)) {
+        setActiveTabId(CO_WRITER_TAB_ID);
+        return prev;
+      }
+      const next: ViewerTab = {
+        kind: "co-writer",
+        id: CO_WRITER_TAB_ID,
+        label: t("Chat note"),
+      };
+      setActiveTabId(CO_WRITER_TAB_ID);
+      return [...prev, next];
+    });
+    onAutoOpen();
+  }, [onAutoOpen, t]);
+
   useImperativeHandle(
     ref,
     () => ({
@@ -532,6 +565,7 @@ function SessionViewerPanelInner(
       openGeogebraTab,
       openSubagentTab,
       focusActivityHome,
+      openCoWriterTab,
     }),
     [
       openFileTab,
@@ -541,6 +575,7 @@ function SessionViewerPanelInner(
       openGeogebraTab,
       openSubagentTab,
       focusActivityHome,
+      openCoWriterTab,
     ],
   );
 
@@ -607,6 +642,7 @@ function SessionViewerPanelInner(
     <div
       role="dialog"
       aria-hidden={!visible}
+      aria-label={t("Activity viewer")}
       className={`fixed right-0 top-0 z-[30] flex h-dvh flex-col border-l border-[var(--border)] bg-[var(--card)] transition-transform ease-out max-md:!w-full md:max-w-[92vw] ${
         // shadow-2xl only while visible — when closed, translate-x-full moves
         // the box off-screen but its blurred shadow still bleeds ~38px back
@@ -666,6 +702,8 @@ function SessionViewerPanelInner(
             tabEvents={activeTab.events}
             sessionId={sessionId}
           />
+        ) : activeTab?.kind === "co-writer" ? (
+          <ChatCoWriterTab />
         ) : (
           <ActivityHome
             activity={activity}
@@ -737,6 +775,8 @@ function TabBar({
           const Icon =
             tab.kind === "web"
               ? Globe
+              : tab.kind === "co-writer"
+                ? NotebookPen
               : tab.kind === "selection-tutor"
                 ? GraduationCap
                 : tab.kind === "quiz-followup"

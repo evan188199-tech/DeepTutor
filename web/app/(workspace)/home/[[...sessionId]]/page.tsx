@@ -529,6 +529,9 @@ export default function ChatPage() {
     setViewerOpen(true);
     viewerPanelRef.current?.focusActivityHome();
   }, [setViewerOpen]);
+  const openChatCoWriterTab = useCallback(() => {
+    viewerPanelRef.current?.openCoWriterTab();
+  }, []);
   const attachmentErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -2284,6 +2287,12 @@ export default function ChatPage() {
                   disabled={!chatSavePayload}
                   icon={BookmarkPlus}
                   label={t("Save to Notebook")}
+                />
+                <HeaderActionButton
+                  onClick={openChatCoWriterTab}
+                  icon={PenLine}
+                  label={t("Chat note")}
+                  title={t("Write a Co-Writer draft from chat")}
                 />
                 <HeaderActionButton
                   onClick={handleDownloadMarkdown}
