@@ -12,6 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 from deeptutor.services.file_io import atomic_write_text
+from deeptutor.utils.secret_files import write_secret_text
 
 from .book_permission import (
     BookPermission,
@@ -21,7 +22,6 @@ from .book_permission import (
 )
 from .models import Role
 from .paths import PROJECT_ROOT, SYSTEM_ROOT, migrate_legacy_multi_user_tree
-from deeptutor.utils.secret_files import write_secret_text
 
 logger = logging.getLogger(__name__)
 
