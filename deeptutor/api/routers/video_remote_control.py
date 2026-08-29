@@ -166,7 +166,7 @@ class RendererCreateRequest(BaseModel):
     invidious_origin: str | None = Field(None, max_length=256)
     video_id: str | None = Field(None, min_length=11, max_length=11)
     material_id: str | None = Field(None, min_length=16, max_length=64)
-    position_seconds: int = Field(0, ge=0)
+    position_seconds: float = Field(0.0, ge=0)
 
 
 class RendererBootstrapRequest(BaseModel):

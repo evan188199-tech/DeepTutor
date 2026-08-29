@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { findCitationAnchor } from "@/lib/markdown-anchors";
@@ -73,6 +73,45 @@ function stripLeadingHashes(children: React.ReactNode): React.ReactNode {
     if (cleaned !== arr[0]) return [cleaned, ...arr.slice(1)];
   }
   return children;
+}
+
+function SimpleMarkdownImage({ src, alt, className, ...props }: any) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <span
+        className="my-1 inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--muted)]/50 px-2 py-0.5 text-xs text-[var(--muted-foreground)]"
+        title={alt || "Image unavailable"}
+      >
+        <svg
+          className="h-3.5 w-3.5 shrink-0 opacity-70"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+        <span className="truncate max-w-[280px]">{alt || "Image"}</span>
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt || ""}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={className}
+      {...props}
+    />
+  );
 }
 
 export default function SimpleMarkdownRenderer({
@@ -427,10 +466,9 @@ export default function SimpleMarkdownRenderer({
       );
     },
     img: ({ node, src, alt, ...props }: any) => (
-      <img
+      <SimpleMarkdownImage
         src={src}
         alt={alt || ""}
-        loading="lazy"
         className={`${gap} inline-block max-w-full rounded-lg border border-[var(--border)]`}
         {...props}
       />

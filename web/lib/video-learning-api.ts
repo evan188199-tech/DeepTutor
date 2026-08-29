@@ -39,6 +39,7 @@ export interface TimedMediaMaterial {
     language: string;
     source: string;
     cues: TimedCue[];
+    fetch?: SubtitleFetchState;
   };
   segments: TimedSegment[];
   playback: {
@@ -53,6 +54,33 @@ export interface TimedMediaMaterial {
     marks?: VideoLearningMark[];
     kb_publish?: KbPublishState | null;
   };
+}
+
+export type SubtitleFetchStatus = "not_requested" | "queued" | "fetching" | "ready" | "retry_wait" | "auth_required" | "unavailable" | "error";
+
+export interface SubtitleFetchState {
+  status: SubtitleFetchStatus;
+  attempts: number;
+  next_retry_at?: string | null;
+  updated_at?: string | null;
+  error_code?: string | null;
+}
+
+export interface YouTubeSessionStatus {
+  connection: "disconnected" | "connecting" | "connected" | "expired" | "error";
+  helper_available: boolean;
+  last_validated_at?: string | null;
+  last_error_code?: string | null;
+  next_prefetch_at?: string | null;
+}
+
+export interface YouTubeConnectOperation {
+  operation_id?: string;
+  connection: YouTubeSessionStatus["connection"];
+  helper_available: boolean;
+  last_error_code?: string | null;
+  material_id?: string;
+  mode?: "isolated" | "host_chrome";
 }
 
 export interface VideoNote {
@@ -132,6 +160,7 @@ export interface InvidiousStatus {
 
 export interface InvidiousFeedItem {
   video_id: string;
+  material_id?: string;
   title: string;
   author: string;
   author_id: string;
@@ -140,6 +169,10 @@ export interface InvidiousFeedItem {
   view_count: number;
   published_text: string;
   watched: boolean;
+  last_position_seconds?: number;
+  notes_count?: number;
+  marks_count?: number;
+  updated_at?: string;
 }
 
 export interface InvidiousHomeFeed {
@@ -179,6 +212,35 @@ export async function getVideoLearningMaterial(materialId: string): Promise<Time
       cache: "no-store",
     })
   );
+}
+
+export async function getYouTubeSessionStatus(): Promise<YouTubeSessionStatus> {
+  return unwrap(await apiFetch(apiUrl("/api/v1/video-learning/youtube-session/status"), { cache: "no-store" }));
+}
+
+export async function connectYouTubeSession(materialId = "", mode: "isolated" | "host_chrome" = "host_chrome"): Promise<YouTubeConnectOperation> {
+  return unwrap(
+    await apiFetch(apiUrl("/api/v1/video-learning/youtube-session/connect"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ material_id: materialId, mode }),
+    })
+  );
+}
+
+export async function getYouTubeConnectOperation(operationId: string): Promise<YouTubeConnectOperation> {
+  return unwrap(await apiFetch(apiUrl(`/api/v1/video-learning/youtube-session/connect/${encodeURIComponent(operationId)}`), { cache: "no-store" }));
+}
+
+export async function disconnectYouTubeSession(): Promise<void> {
+  await unwrap(await apiFetch(apiUrl("/api/v1/video-learning/youtube-session"), { method: "DELETE" }));
+}
+
+export async function requestSubtitlePrefetch(materialId: string): Promise<SubtitleFetchState> {
+  const payload = await unwrap<{ fetch: SubtitleFetchState }>(
+    await apiFetch(apiUrl(`/api/v1/video-learning/materials/${encodeURIComponent(materialId)}/subtitle-prefetch`), { method: "POST" })
+  );
+  return payload.fetch;
 }
 
 export async function saveVideoPosition(materialId: string, timeSeconds: number): Promise<void> {

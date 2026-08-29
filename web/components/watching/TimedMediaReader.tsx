@@ -30,15 +30,17 @@ import {
   createTranscriptJob,
   createVideoMark,
   deleteVideoMark,
+  connectYouTubeSession,
+  getYouTubeConnectOperation,
   getInvidiousStatus,
   getVideoLearningMaterial,
   getTranscriptJob,
   patchVideoMark,
   publishVideoToKb,
   recordWatchProgress,
+  requestSubtitlePrefetch,
   suggestVideoMarks,
   timedMediaStreamUrl,
-  timedMediaSubtitleUrl,
   type VideoLearningMark,
   type VideoMarkKind,
   type VideoMarkSuggestion,
@@ -75,10 +77,33 @@ function showVideoCaptions(video: HTMLVideoElement | null) {
   }
 }
 
+function subtitleTimestamp(value: number): string {
+  const milliseconds = Math.max(0, Math.round(Number(value || 0) * 1000));
+  const hours = Math.floor(milliseconds / 3_600_000);
+  const minutes = Math.floor((milliseconds % 3_600_000) / 60_000);
+  const seconds = Math.floor((milliseconds % 60_000) / 1000);
+  const remainder = milliseconds % 1000;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(remainder).padStart(3, "0")}`;
+}
+
+function subtitleVtt(cues: Array<{ start: number; end: number; text: string }>): string {
+  return [
+    "WEBVTT",
+    "",
+    ...cues.flatMap((cue, index) => [
+      String(index + 1),
+      `${subtitleTimestamp(cue.start)} --> ${subtitleTimestamp(cue.end)}`,
+      cue.text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"),
+      "",
+    ]),
+  ].join("\n");
+}
+
 export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const {
     material,
+    loading,
     currentTime,
     pendingSeek,
     openUrl,
@@ -96,6 +121,8 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   const [showInvidiousHome, setShowInvidiousHome] = useState(false);
   const [invidiousPublicUrl, setInvidiousPublicUrl] = useState<string>("");
   const [tab, setTab] = useState<WatchTab>("transcript");
+  const [youtubeMessage, setYoutubeMessage] = useState("");
+  const [youtubeConnecting, setYoutubeConnecting] = useState(false);
   const [jobMessage, setJobMessage] = useState("");
   const [jobId, setJobId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
@@ -120,10 +147,28 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   const [assistantPanelOpen, setAssistantPanelOpen] = useState(false);
   const [pipSupported, setPipSupported] = useState(false);
   const [pipActive, setPipActive] = useState(false);
+  const subtitleText = useMemo(
+    () => subtitleVtt(material?.transcript.cues || []),
+    [material?.transcript.cues],
+  );
+  const [subtitleBlobUrl, setSubtitleBlobUrl] = useState("");
 
   const cumulativePlayedRef = useRef<number>(0);
   const lastPlaybackTimeRef = useRef<number>(-1);
   const wasEditingTranscriptRef = useRef(false);
+
+  useEffect(() => {
+    if (!material?.transcript.cues.length) {
+      setSubtitleBlobUrl("");
+      return;
+    }
+    // Native <track> requests cannot attach the app's bearer token. Build a
+    // same-page VTT blob from the already authenticated material instead of
+    // making an unauthenticated request to /subtitles.vtt.
+    const url = URL.createObjectURL(new Blob([subtitleText], { type: "text/vtt" }));
+    setSubtitleBlobUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [material?.material_id, material?.transcript.cues.length, subtitleText]);
 
   useEffect(() => {
     if (!focusMode) return;
@@ -190,6 +235,80 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const materialId = material?.material_id;
+    if (!materialId || (material.transcript.cues || []).length > 0) return;
+    let cancelled = false;
+    const refreshTranscript = async () => {
+      try {
+        const refreshed = await getVideoLearningMaterial(materialId);
+        if (!cancelled && (refreshed.transcript.cues || []).length > 0) {
+          replaceMaterial(refreshed);
+        }
+      } catch {
+        // The server applies its own retry backoff; playback must stay usable.
+      }
+    };
+    void refreshTranscript();
+    const status = material.transcript.fetch?.status;
+    if (status === "auth_required" || status === "unavailable" || status === "retry_wait") return () => { cancelled = true; };
+    const delays = [2_000, 5_000, 10_000, 30_000, 60_000];
+    let timer = 0;
+    let index = 0;
+    const schedule = () => {
+      timer = window.setTimeout(async () => {
+        await refreshTranscript();
+        if (!cancelled) {
+          index = Math.min(index + 1, delays.length - 1);
+          schedule();
+        }
+      }, delays[index]);
+    };
+    schedule();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [material?.material_id, material?.transcript.cues, material?.transcript.fetch?.status, replaceMaterial]);
+
+  const connectYouTube = async () => {
+    if (!material) return;
+    setYoutubeConnecting(true);
+    setYoutubeMessage(t("Using this Mac's existing Chrome session to retrieve YouTube subtitles."));
+    try {
+      const operation = await connectYouTubeSession(material.material_id);
+      if (!operation.helper_available) {
+        setYoutubeMessage(t("Chrome or Chromium is required on the Mac running DeepTutor."));
+        return;
+      }
+      const operationId = operation.operation_id;
+      if (operation.mode === "host_chrome" || !operationId) {
+        await requestSubtitlePrefetch(material.material_id);
+        setYoutubeMessage(t("Preparing subtitles with this Mac's Chrome session."));
+        return;
+      }
+      const until = Date.now() + 10 * 60_000;
+      while (Date.now() < until) {
+        await new Promise((resolve) => window.setTimeout(resolve, 2_000));
+        const current = await getYouTubeConnectOperation(operationId);
+        if (current.connection === "connected") {
+          await requestSubtitlePrefetch(material.material_id);
+          setYoutubeMessage(t("YouTube connected. Preparing subtitles now."));
+          return;
+        }
+        if (current.connection !== "connecting") {
+          setYoutubeMessage(t("YouTube connection expired. Please try again."));
+          return;
+        }
+      }
+      setYoutubeMessage(t("YouTube connection expired. Please try again."));
+    } catch (caught) {
+      setYoutubeMessage(caught instanceof Error ? caught.message : t("Could not connect YouTube."));
+    } finally {
+      setYoutubeConnecting(false);
+    }
+  };
 
   useEffect(() => {
     if (material?.learning?.cumulative_played_seconds) {
@@ -305,9 +424,10 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
     insideMarksRef.current = nextInside;
   }, [currentTime, marks, material]);
 
-  const handleVideoSelect = async (videoUrl: string) => {
-    setShowInvidiousHome(false);
-    await openUrl(videoUrl);
+  const handleVideoSelect = async (videoUrl: string): Promise<boolean> => {
+    const opened = await openUrl(videoUrl);
+    if (opened) setShowInvidiousHome(false);
+    return opened;
   };
 
   const openInvidiousRenderer = async (
@@ -317,13 +437,14 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
   ) => {
     setOpeningInvidious(true);
     setRendererMessage(t("Opening Invidious..."));
-    const fallbackUrl = invidiousFallbackUrl(invidiousPublicUrl);
+    const fallbackUrl = invidiousFallbackUrl(invidiousPublicUrl, videoId, positionSeconds);
     let target: Window | null = null;
     // Hub / iPad: stay in the current tab so a blocked popup cannot look like
-    // "no jump". Watch page: open a tab first, then replace it with the
-    // bootstrap URL after the ticket is ready.
+    // "no jump". On watch pages, keep the popup same-origin until the ticket
+    // arrives; navigating it to an external fallback first makes later window
+    // access fail under the browser's same-origin policy.
     if (!preferSameTab) {
-      target = window.open(fallbackUrl || "about:blank", "_blank");
+      target = window.open("about:blank", "_blank");
       try {
         if (target) target.opener = null;
       } catch {
@@ -347,13 +468,13 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
         return;
       }
       if (!target) throw new Error(t("Could not open Invidious."));
-      target.location.assign(launch.launch_url);
+      target.location.href = launch.launch_url;
       setRendererMessage(t("Opened Invidious. Use Phone remote & notes there when ready."));
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : t("Could not open Invidious.");
       if (target && fallbackUrl) {
         try {
-          target.location.assign(fallbackUrl);
+          target.location.href = fallbackUrl;
         } catch {
           target.close();
         }
@@ -374,11 +495,18 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
     return (
       <InvidiousHome
         onSelectVideo={handleVideoSelect}
-        onOpenInvidious={() => void openInvidiousRenderer(undefined, undefined, true)}
+        openingVideo={loading}
+        onOpenInvidious={() =>
+          void openInvidiousRenderer(material?.source?.video_id, currentTime, true)
+        }
         onClose={material ? () => setShowInvidiousHome(false) : onClose}
         openingInvidious={openingInvidious}
         openMessage={rendererMessage}
-        fallbackOpenUrl={invidiousFallbackUrl(invidiousPublicUrl)}
+        fallbackOpenUrl={invidiousFallbackUrl(
+          invidiousPublicUrl,
+          material?.source?.video_id,
+          currentTime
+        )}
       />
     );
   }
@@ -758,7 +886,7 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
               {material.transcript.cues.length > 0 && (
                 <track
                   kind="captions"
-                  src={timedMediaSubtitleUrl(material.material_id)}
+                  src={subtitleBlobUrl}
                   srcLang={material.transcript.language || "en"}
                   label={material.transcript.language || "Subtitles"}
                   onLoad={(event) => {
@@ -1027,7 +1155,34 @@ export function TimedMediaReader({ onClose }: { onClose: () => void }) {
                 </>
               ) : (
                 <div className="space-y-3 p-2 text-sm text-[var(--muted-foreground)]">
-                  <p>{t("No subtitles are available for this video.")}</p>
+                  {material.transcript.fetch?.status === "queued" || material.transcript.fetch?.status === "fetching" ? (
+                    <p>{t("Preparing YouTube subtitles…")}</p>
+                  ) : material.transcript.fetch?.status === "auth_required" ? (
+                    <p>{t("Connect or reconnect YouTube to retrieve subtitles.")}</p>
+                  ) : material.transcript.fetch?.status === "retry_wait" ? (
+                    <p>{t("We will retry YouTube subtitles automatically at {{time}}.", { time: material.transcript.fetch.next_retry_at ? new Date(material.transcript.fetch.next_retry_at).toLocaleString() : "" })}</p>
+                  ) : (
+                    <p>{t("No source subtitles are available for this video.")}</p>
+                  )}
+                  <button
+                    type="button"
+                    disabled={youtubeConnecting}
+                    onClick={() => void connectYouTube()}
+                    className="inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2 disabled:opacity-50"
+                  >
+                    {youtubeConnecting ? <Loader2 size={15} className="animate-spin" /> : <Globe size={15} />}
+                    {t("Connect YouTube")}
+                  </button>
+                  {material.transcript.fetch?.status === "retry_wait" && (
+                    <button
+                      type="button"
+                      className="ml-2 inline-flex items-center gap-2 rounded border border-[var(--border)] px-3 py-2"
+                      onClick={() => void requestSubtitlePrefetch(material.material_id).then(() => setYoutubeMessage(t("Subtitle retry is queued when its safety delay ends.")))}
+                    >
+                      {t("Retry later")}
+                    </button>
+                  )}
+                  {youtubeMessage && <p>{youtubeMessage}</p>}
                   <button
                     type="button"
                     disabled={Boolean(jobId)}

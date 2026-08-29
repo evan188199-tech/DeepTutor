@@ -11,6 +11,7 @@ import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
+from html import unescape
 import json
 from pathlib import Path
 import re
@@ -424,8 +425,10 @@ async def _invidious_transcript(
         pass
     captions_url = f"{base_url}/api/v1/captions/{video_id}?{query}" if query else f"{base_url}/api/v1/captions/{video_id}"
     response = await _invidious_raw_request(client, captions_url)
-    text = response.decode("utf-8", errors="replace")
-    return _parse_webvtt(text), language
+    text_content = response.decode("utf-8", errors="replace")
+    if "<?xml" in text_content or "<transcript" in text_content:
+        return _parse_xml_captions(text_content), language
+    return _parse_webvtt(text_content), language
 
 
 async def _invidious_request(client: Any, url: str) -> Any:
@@ -561,6 +564,26 @@ def _format_youtube_markdown(
         )
     metadata.extend(["", "## Transcript", "", transcript])
     return "\n".join(metadata)
+
+
+def _parse_xml_captions(text: str) -> list[dict[str, Any]]:
+    try:
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(text)
+    except Exception:
+        return []
+    rows: list[dict[str, Any]] = []
+    for elem in root.iter("text"):
+        raw_text = unescape("".join(elem.itertext())).strip()
+        if not raw_text:
+            continue
+        try:
+            start = float(elem.attrib.get("start") or 0.0)
+            dur = float(elem.attrib.get("dur") or 3.0)
+            rows.append({"start": max(0.0, start), "end": max(0.0, start + dur), "text": raw_text})
+        except (TypeError, ValueError):
+            continue
+    return rows
 
 
 def _parse_webvtt(text: str) -> list[dict[str, Any]]:

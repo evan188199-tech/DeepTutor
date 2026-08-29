@@ -531,7 +531,7 @@ async def _process_page(
     )
 
     try:
-        title, body = extract_article_markdown(html)
+        title, body = extract_article_markdown(html, base_url=final_url or url)
     except Exception:
         title, body = _extract_readable(html)
     canonical_url, document_version = _extract_html_metadata(html, final_url)

@@ -57,6 +57,11 @@ async function readError(response: Response): Promise<string> {
   try {
     const data = await response.json();
     if (typeof data?.detail === "string") return data.detail;
+    if (Array.isArray(data?.detail) && data.detail.length > 0) {
+      const first = data.detail[0];
+      if (typeof first?.msg === "string") return first.msg;
+      if (typeof first?.message === "string") return first.message;
+    }
     return JSON.stringify(data);
   } catch {
     return response.statusText || `HTTP ${response.status}`;
@@ -79,6 +84,10 @@ export async function createRendererLaunch(options?: {
   positionSeconds?: number;
   materialId?: string;
 }): Promise<RendererLaunch> {
+  const positionSeconds =
+    options?.positionSeconds != null && Number.isFinite(options.positionSeconds)
+      ? Math.max(0, Math.floor(options.positionSeconds))
+      : 0;
   const response = await apiFetch("/api/v1/video-learning/renderers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -86,7 +95,7 @@ export async function createRendererLaunch(options?: {
       device_name: options?.deviceName ?? "This device",
       device_kind: "current-device",
       video_id: options?.videoId,
-      position_seconds: options?.positionSeconds ?? 0,
+      position_seconds: positionSeconds,
       material_id: options?.materialId,
     }),
   });

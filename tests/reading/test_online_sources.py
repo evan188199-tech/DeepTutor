@@ -106,7 +106,7 @@ async def test_snapshot_images_are_cached_and_rewritten_to_local_authenticated_p
 
 
 @pytest.mark.asyncio
-async def test_snapshot_image_rejects_wrong_mime_and_does_not_hotlink(
+async def test_snapshot_image_rejects_wrong_mime_and_preserves_url(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from deeptutor.services.web_source import crawler
@@ -133,8 +133,8 @@ async def test_snapshot_image_rejects_wrong_mime_and_does_not_hotlink(
         localized = await localize_snapshot_images(source, client=client)
 
     assert localized.snapshot_assets == ()
-    assert "https://" not in localized.units[0]
-    assert "Image unavailable" in localized.units[0]
+    assert "![Figure](https://docs.example.com/private-looking-resource)" in localized.units[0]
+    assert "Image unavailable" not in localized.units[0]
 
 
 def test_stable_identity_idempotence_and_revision_history(store: ReadingStore) -> None:

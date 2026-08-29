@@ -151,6 +151,47 @@ function scrollAnchorIntoView(target: HTMLElement): void {
   container.scrollTo({ top, behavior: "smooth" });
 }
 
+function RichMarkdownImage({ src, alt, className, lineAttrs, ...props }: any) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <span
+        className="my-1.5 inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--muted)]/50 px-2.5 py-1 text-xs text-[var(--muted-foreground)]"
+        title={alt || "Image unavailable"}
+        {...lineAttrs}
+      >
+        <svg
+          className="h-3.5 w-3.5 shrink-0 opacity-70"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+        <span className="truncate max-w-[280px]">{alt || "Image"}</span>
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt || ""}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={className}
+      {...lineAttrs}
+      {...props}
+    />
+  );
+}
+
 export default function RichMarkdownRenderer({
   content,
   className = "",
@@ -649,12 +690,11 @@ export default function RichMarkdownRenderer({
       );
     },
     img: ({ node, src, alt, ...props }: any) => (
-      <img
+      <RichMarkdownImage
         src={src}
         alt={alt || ""}
-        loading="lazy"
         className={`${gap} inline-block max-w-full rounded-lg border border-[var(--border)]`}
-        {...lineAttr(node)}
+        lineAttrs={lineAttr(node)}
         {...props}
       />
     ),

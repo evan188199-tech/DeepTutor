@@ -1,4 +1,6 @@
 from pathlib import Path
+import sys
+import types
 from typing import Any
 
 import httpx
@@ -10,6 +12,7 @@ from deeptutor.video_learning.service import (
     TimedMediaStore,
     YouTubeResolver,
     build_segments,
+    download_ytdlp_subtitle,
     ensure_remote_material,
     normalize_cues,
     parse_timestamp,
@@ -181,6 +184,44 @@ async def test_invidious_is_primary_and_normalizes_public_formats(
 
 
 @pytest.mark.asyncio
+async def test_resolve_without_transcript_returns_playable_material_without_caption_wait(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base = "http://127.0.0.1:18080"
+    video_url = f"{base}/api/v1/videos/89ThCi5qq-A"
+    client = _InvidiousClient(
+        {
+            video_url: (
+                200,
+                {
+                    "title": "Fast start",
+                    "author": "Course",
+                    "lengthSeconds": "120",
+                    "captions": [{"languageCode": "en"}],
+                    "formatStreams": [{"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}],
+                },
+                {},
+            ),
+        }
+    )
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
+    monkeypatch.setattr(
+        "deeptutor.video_learning.service._optional_ytdlp_metadata",
+        lambda _url: pytest.fail("metadata fallback must not run when Invidious succeeds"),
+    )
+
+    material = await YouTubeResolver(base_url=base).resolve(
+        "https://youtu.be/89ThCi5qq-A",
+        store=TimedMediaStore(tmp_path),
+        include_transcript=False,
+    )
+
+    assert material["playback"]["formats"]
+    assert material["transcript"]["cues"] == []
+
+
+@pytest.mark.asyncio
 async def test_resolve_reuses_feed_launched_remote_material(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -332,3 +373,150 @@ async def test_resolve_honors_requested_caption_language(tmp_path: Path, monkeyp
     )
     assert material["transcript"]["language"] == "en"
     assert material["transcript"]["cues"][0]["text"] == "English caption."
+
+
+@pytest.mark.asyncio
+async def test_resolve_falls_back_when_first_ranked_caption_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    base = "http://127.0.0.1:18080"
+    video_url = f"{base}/api/v1/videos/89ThCi5qq-A"
+    zh_transcript = f"{base}/api/v1/transcripts/89ThCi5qq-A?lang=zh-CN"
+    zh_caption = f"{base}/api/v1/captions/89ThCi5qq-A?lang=zh-CN"
+    en_transcript = f"{base}/api/v1/transcripts/89ThCi5qq-A?lang=en"
+    client = _InvidiousClient(
+        {
+            video_url: (
+                200,
+                {
+                    "title": "Fallback test",
+                    "lengthSeconds": "60",
+                    "captions": [{"languageCode": "zh-CN"}, {"languageCode": "en"}],
+                    "formatStreams": [{"itag": "18", "type": "video/mp4", "url": f"{base}/video.mp4"}],
+                },
+                {},
+            ),
+            # zh-CN fails with 404
+            zh_transcript: (404, {"error": "not found"}, {}),
+            zh_caption: (404, b"Not found", {}),
+            # en succeeds
+            en_transcript: (200, [{"start": 0, "duration": 10, "text": "English fallback caption."}], {}),
+        }
+    )
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
+    monkeypatch.setattr("deeptutor.video_learning.service._optional_ytdlp_metadata", lambda _url: {})
+    material = await YouTubeResolver(base_url=base).resolve(
+        "https://youtu.be/89ThCi5qq-A",
+        store=TimedMediaStore(tmp_path),
+    )
+    assert material["metadata"]["title"] == "Fallback test"
+    assert material["transcript"]["source"] == "invidious"
+    assert material["transcript"]["cues"][0]["text"] == "English fallback caption."
+
+
+def test_normalize_cues_with_string_and_numeric_ms():
+    from deeptutor.video_learning.service import normalize_cues
+    rows = [
+        {"startMs": "1500", "durationMs": "3000", "snippet": {"text": "Line with string ms"}},
+        {"startMs": 5000, "durationMs": 2500, "snippet": {"text": "Line with int ms"}},
+        {"start": "8.0", "dur": "4.0", "text": "Line with string sec"},
+    ]
+    cues = normalize_cues(rows)
+    assert len(cues) == 3
+    assert cues[0]["start"] == 1.5
+    assert cues[0]["end"] == 4.5
+    assert cues[0]["text"] == "Line with string ms"
+    assert cues[1]["start"] == 5.0
+    assert cues[1]["end"] == 7.5
+    assert cues[2]["start"] == 8.0
+    assert cues[2]["end"] == 12.0
+
+
+@pytest.mark.asyncio
+async def test_refresh_transcript_does_not_require_playback_formats(monkeypatch: pytest.MonkeyPatch) -> None:
+    base = "http://127.0.0.1:18080"
+    video_id = "89ThCi5qq-A"
+    client = _InvidiousClient(
+        {
+            f"{base}/api/v1/videos/{video_id}": (
+                200,
+                {"captions": [{"languageCode": "en"}]},
+                {},
+            ),
+            f"{base}/api/v1/transcripts/{video_id}?lang=en": (
+                200,
+                [{"start": 34, "duration": 4, "text": "AGI in 2026."}],
+                {},
+            ),
+        }
+    )
+    monkeypatch.setattr(httpx, "AsyncClient", lambda **_kwargs: _AsyncClientFactory(client))
+
+    material = {
+        "source": {"video_id": video_id},
+        "transcript": {"language": "", "source": "", "cues": []},
+        "segments": [],
+    }
+    refreshed = await YouTubeResolver(base_url=base).refresh_transcript(material)
+
+    assert refreshed["transcript"]["source"] == "invidious"
+    assert refreshed["transcript"]["cues"][0]["start"] == 34.0
+    assert refreshed["segments"][0]["text"] == "AGI in 2026."
+
+
+def test_parse_xml_transcript_captions():
+    from deeptutor.video_learning.service import parse_xml_transcript
+    sample_xml = """<?xml version="1.0" encoding="utf-8" ?>
+<transcript>
+  <text start="0.0" dur="3.5">Welcome to the video course.</text>
+  <text start="3.8" dur="4.2">In this episode, we will cover neural networks.</text>
+</transcript>"""
+    cues = parse_xml_transcript(sample_xml)
+    assert len(cues) == 2
+    assert cues[0]["start"] == 0.0
+    assert cues[0]["end"] == 3.5
+    assert cues[0]["text"] == "Welcome to the video course."
+    assert cues[1]["start"] == 3.8
+    assert cues[1]["end"] == 8.0
+
+
+def test_parse_caption_payload_json3_events():
+    from deeptutor.video_learning.service import _parse_caption_payload
+
+    cues = _parse_caption_payload(
+        '{"events":[{"tStartMs":1200,"dDurationMs":2800,"segs":[{"utf8":"Hello "},{"utf8":"world."}]}]}',
+        "json3",
+    )
+    assert cues == [{"start": 1.2, "end": 4.0, "text": "Hello world."}]
+
+
+@pytest.mark.asyncio
+async def test_ytdlp_uses_host_chrome_without_cookiefile(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, Any] = {}
+
+    class FakeDownloader:
+        def __init__(self, options: dict[str, Any]):
+            captured.update(options)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def download(self, _urls: list[str]) -> None:
+            root = Path(captured["paths"]["home"])
+            (root / "subtitle.en.vtt").write_text(
+                "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nChrome captions\n",
+                encoding="utf-8",
+            )
+
+    monkeypatch.setitem(sys.modules, "yt_dlp", types.SimpleNamespace(YoutubeDL=FakeDownloader))
+
+    cues, language, source = await download_ytdlp_subtitle("dQw4w9WgXcQ", use_host_chrome=True)
+
+    assert captured["cookiesfrombrowser"] == ("chrome",)
+    assert "cookiefile" not in captured
+    assert captured["skip_download"] is True
+    assert captured["writesubtitles"] is True
+    assert cues == [{"start": 0.0, "end": 1.0, "text": "Chrome captions"}]
+    assert language == "en"
+    assert source == "youtube-captions"

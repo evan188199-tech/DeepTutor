@@ -483,3 +483,42 @@ def test_phone_handoff_binds_latest_controller_cookie(
         assert deleted.status_code == 200
         assert get_timed_media_store().get(material_id)["learning"]["marks"] == []
     PathService.reset_instance()
+
+
+def test_renderer_create_accepts_float_position_seconds(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path))
+    PathService.reset_instance()
+    monkeypatch.setattr(
+        video_remote_control,
+        "get_invidious_public_base_url",
+        lambda: "https://invidious.example",
+    )
+    app = FastAPI()
+    app.include_router(video_remote_control.router, prefix="/api/v1/video-learning")
+    app.dependency_overrides[require_auth] = lambda: None
+    with TestClient(app) as client:
+        created = client.post(
+            "/api/v1/video-learning/renderers",
+            json={
+                "video_id": "dQw4w9WgXcQ",
+                "position_seconds": 1.68026707532517,
+            },
+        )
+        assert created.status_code == 200
+        data = created.json()
+        ticket = data["ticket"]
+        # position_seconds=1.68 converts to 1, which does not add &t= (> 1 threshold)
+        assert data["launch_url"] == f"https://invidious.example/watch?v=dQw4w9WgXcQ#dt_bootstrap={ticket}"
+
+        # Test with float > 1, e.g. 42.85
+        created_42 = client.post(
+            "/api/v1/video-learning/renderers",
+            json={
+                "video_id": "dQw4w9WgXcQ",
+                "position_seconds": 42.85,
+            },
+        )
+        assert created_42.status_code == 200
+        ticket_42 = created_42.json()["ticket"]
+        assert created_42.json()["launch_url"] == f"https://invidious.example/watch?v=dQw4w9WgXcQ&t=42#dt_bootstrap={ticket_42}"
+    PathService.reset_instance()

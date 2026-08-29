@@ -49,6 +49,59 @@ def test_invidious_status_unconnected(client_and_store):
     assert data["invidious_public_base_url"] == "http://100.101.207.44:3000"
 
 
+def test_youtube_session_status_never_exposes_cookie_data(client_and_store, monkeypatch):
+    client, _ = client_and_store
+
+    class FakeSessionManager:
+        async def status(self, _owner):
+            return {
+                "connection": "connected",
+                "helper_available": True,
+                "last_validated_at": "2026-08-28T00:00:00+00:00",
+                "last_error_code": None,
+                "next_prefetch_at": None,
+            }
+
+    monkeypatch.setattr(video_learning, "get_youtube_login_manager", lambda: FakeSessionManager())
+    response = client.get("/api/v1/video-learning/youtube-session/status")
+
+    assert response.status_code == 200
+    assert set(response.json()) == {"connection", "helper_available", "last_validated_at", "last_error_code", "next_prefetch_at"}
+
+
+def test_video_resolve_returns_before_caption_backfill(client_and_store, monkeypatch):
+    client, _ = client_and_store
+    calls: list[dict[str, object]] = []
+
+    class FakeResolver:
+        def __init__(self, **_kwargs):
+            pass
+
+        async def resolve(self, _url, **kwargs):
+            calls.append(kwargs)
+            return {
+                "type": "timed_media",
+                "material_id": "a" * 32,
+                "source": {"provider": "youtube", "video_id": "dQw4w9WgXcQ", "url": "https://youtu.be/dQw4w9WgXcQ"},
+                "metadata": {"title": "Fast start", "author": "Course", "duration_seconds": 120, "chapters": []},
+                "transcript": {"language": "", "source": "", "cues": []},
+                "segments": [],
+                "playback": {"formats": {"18": {"format_id": "18"}}, "official_url": "https://youtu.be/dQw4w9WgXcQ"},
+                "learning": {"last_position": 0, "notes": []},
+            }
+
+    monkeypatch.setattr(video_learning, "YouTubeResolver", FakeResolver)
+    class FakePrefetch:
+        async def enqueue(self, *_args, **_kwargs):
+            return {"status": "queued", "attempts": 0, "next_retry_at": None, "updated_at": None, "error_code": None}
+
+    monkeypatch.setattr(video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch())
+    response = client.post("/api/v1/video-learning/resolve", json={"url": "https://youtu.be/dQw4w9WgXcQ"})
+
+    assert response.status_code == 200
+    assert calls == [{"language": "", "include_transcript": False}]
+
+
 def test_invidious_authorize_url(client_and_store):
     client, _ = client_and_store
     resp = client.get("/api/v1/video-learning/invidious/authorize")
@@ -98,6 +151,106 @@ def test_video_subtitles_are_served_as_webvtt(client_and_store):
         "01:01:01.050 --> 01:01:01.200\n"
         "Final line\n"
     )
+
+
+def test_empty_material_is_queued_without_upstream_fetch_on_get(client_and_store, monkeypatch):
+    client, store = client_and_store
+    material = store.create(
+        {
+            "type": "timed_media",
+            "source": {
+                "provider": "youtube",
+                "video_id": "KL9_1GbmCic",
+                "url": "https://youtu.be/KL9_1GbmCic",
+                "duration_seconds": 1421,
+            },
+            "metadata": {"title": "AGI in 2026", "author": "AI Explained", "duration_seconds": 1421, "chapters": []},
+            "transcript": {"language": "", "source": "", "cues": []},
+            "segments": [],
+            "playback": {"formats": {}, "official_url": "https://youtu.be/KL9_1GbmCic"},
+            "learning": {
+                "last_position": 45,
+                "notes": [{"note_id": "keep", "text": "Keep this", "time_seconds": 45}],
+                "marks": [{"mark_id": "mark-keep", "start_seconds": 34, "end_seconds": 38}],
+            },
+        }
+    )
+
+    calls = 0
+
+    class FakePrefetch:
+        async def enqueue(self, _owner, _material_id, **_kwargs):
+            nonlocal calls
+            calls += 1
+            return {"status": "queued"}
+
+    monkeypatch.setattr(video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch())
+    response = client.get(f"/api/v1/video-learning/materials/{material['material_id']}")
+
+    assert response.status_code == 200
+    assert response.json()["transcript"]["cues"] == []
+    assert response.json()["transcript"]["fetch"]["status"] == "not_requested"
+    assert calls == 1
+    saved = store.get(material["material_id"])
+    assert saved["learning"]["last_position"] == 45
+    assert saved["learning"]["notes"][0]["note_id"] == "keep"
+    assert saved["learning"]["marks"][0]["mark_id"] == "mark-keep"
+
+
+def test_empty_material_get_does_not_call_caption_provider(client_and_store, monkeypatch):
+    client, store = client_and_store
+    material = store.create(
+        {
+            "type": "timed_media",
+            "source": {"provider": "youtube", "video_id": "KL9_1GbmCic", "url": "https://youtu.be/KL9_1GbmCic"},
+            "metadata": {"title": "AGI in 2026", "author": "AI Explained", "duration_seconds": 1421, "chapters": []},
+            "transcript": {"language": "", "source": "", "cues": []},
+            "segments": [],
+            "playback": {"formats": {}, "official_url": "https://youtu.be/KL9_1GbmCic"},
+            "learning": {"last_position": 45, "notes": [], "marks": []},
+        }
+    )
+
+    class FakePrefetch:
+        async def enqueue(self, *_args, **_kwargs):
+            return {"status": "queued"}
+
+    monkeypatch.setattr(video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch())
+    response = client.get(f"/api/v1/video-learning/materials/{material['material_id']}")
+
+    assert response.status_code == 200
+    assert response.json()["transcript"]["cues"] == []
+    assert response.json()["transcript"]["fetch"]["status"] == "not_requested"
+
+
+def test_empty_material_get_enqueues_idempotently(client_and_store, monkeypatch):
+    client, store = client_and_store
+    material = store.create(
+        {
+            "type": "timed_media",
+            "source": {"provider": "youtube", "video_id": "KL9_1GbmCic", "url": "https://youtu.be/KL9_1GbmCic"},
+            "metadata": {"title": "AGI in 2026", "author": "AI Explained", "duration_seconds": 1421, "chapters": []},
+            "transcript": {"language": "", "source": "", "cues": []},
+            "segments": [],
+            "playback": {"formats": {}, "official_url": "https://youtu.be/KL9_1GbmCic"},
+            "learning": {"last_position": 0, "notes": [], "marks": []},
+        }
+    )
+    calls = 0
+
+    class FakePrefetch:
+        async def enqueue(self, *_args, **_kwargs):
+            nonlocal calls
+            calls += 1
+            return {"status": "queued"}
+
+    monkeypatch.setattr(video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch())
+
+    first = client.get(f"/api/v1/video-learning/materials/{material['material_id']}")
+    second = client.get(f"/api/v1/video-learning/materials/{material['material_id']}")
+
+    assert first.status_code == second.status_code == 200
+    assert calls == 2
 
 
 def test_video_note_persists_optional_subtitle_quote(client_and_store):

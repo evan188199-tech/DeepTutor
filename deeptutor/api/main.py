@@ -167,6 +167,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Failed to start web source sync: {e}")
 
+    try:
+        from deeptutor.video_learning.subtitle_prefetch import get_subtitle_prefetch_service
+
+        await get_subtitle_prefetch_service().start()
+    except Exception as e:
+        logger.warning(f"Failed to start YouTube subtitle prefetch: {e}")
+
     # Ping PocketBase if configured — logs a warning (not an error) if unreachable
     try:
         from deeptutor.services.pocketbase_client import ping_pocketbase
@@ -218,6 +225,13 @@ async def lifespan(app: FastAPI):
         await get_web_sync_service().stop()
     except Exception as e:
         logger.warning(f"Failed to stop web source sync: {e}")
+
+    try:
+        from deeptutor.video_learning.subtitle_prefetch import get_subtitle_prefetch_service
+
+        await get_subtitle_prefetch_service().stop()
+    except Exception as e:
+        logger.warning(f"Failed to stop YouTube subtitle prefetch: {e}")
 
     # Stop partners
     try:

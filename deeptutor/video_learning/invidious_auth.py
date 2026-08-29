@@ -1,6 +1,6 @@
 """Invidious account authorization, home feeds and watch history synchronization.
 
-All credentials are owner-private under ``data/system/user-secrets/<owner_id>``
+All credentials are owner-private under data/system/user-secrets/<owner_id>
 and never exposed in settings, API responses or logs.
 """
 
@@ -291,28 +291,45 @@ async def get_user_preferences(owner_id: str) -> dict[str, Any] | None:
     return None
 
 
+def _extract_raw_items(data: Any) -> list[Any]:
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict):
+        for key in ("videos", "items", "history", "playlists", "results", "contents"):
+            val = data.get(key)
+            if isinstance(val, list):
+                return val
+    return []
+
+
 async def get_user_history_ids(owner_id: str) -> set[str]:
     token = InvidiousTokenStore.get_token(owner_id)
     base_url = get_invidious_base_url()
-    if not token or not base_url:
-        return set()
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            headers = {"Authorization": f"Bearer {token}"}
-            resp = await client.get(f"{base_url}/api/v1/auth/history", headers=headers)
-            if resp.status_code == 200:
-                data = resp.json()
-                if isinstance(data, list):
-                    return {
-                        str(row.get("videoId") or row.get("video_id") or "")
-                        for row in data
-                        if isinstance(row, dict) and (row.get("videoId") or row.get("video_id"))
-                    }
-            elif resp.status_code in {401, 403}:
-                InvidiousTokenStore.delete_token(owner_id)
-    except Exception as exc:
-        logger.warning("Failed to fetch Invidious user history: %s", exc)
-    return set()
+    history_ids: set[str] = set()
+    if token and base_url:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                headers = {"Authorization": f"Bearer {token}"}
+                resp = await client.get(f"{base_url}/api/v1/auth/history", headers=headers)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    raw_items = _extract_raw_items(data)
+                    for row in raw_items:
+                        if isinstance(row, dict):
+                            vid = str(row.get("videoId") or row.get("video_id") or row.get("id") or "").strip()
+                            if vid:
+                                history_ids.add(vid)
+                        elif isinstance(row, str) and row.strip():
+                            history_ids.add(row.strip())
+                elif resp.status_code in {401, 403}:
+                    InvidiousTokenStore.delete_token(owner_id)
+        except Exception as exc:
+            logger.warning("Failed to fetch Invidious user history: %s", exc)
+    for item in _load_local_watch_history(owner_id):
+        vid = item.get("video_id")
+        if vid:
+            history_ids.add(vid)
+    return history_ids
 
 
 async def sync_watch_history(owner_id: str, video_id: str) -> tuple[bool, str]:
@@ -351,27 +368,90 @@ def _normalize_thumbnail(thumbnails: Any, video_id: str, public_base: str) -> st
     return f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg" if video_id else ""
 
 
-def _normalize_feed_item(item: dict[str, Any], history_ids: set[str], public_base: str) -> dict[str, Any] | None:
-    video_id = str(item.get("videoId") or item.get("video_id") or "").strip()
+def _normalize_feed_item(item: Any, history_ids: set[str], public_base: str) -> dict[str, Any] | None:
+    if isinstance(item, str):
+        video_id = item.strip()
+        if not video_id:
+            return None
+        return {
+            "video_id": video_id,
+            "material_id": "",
+            "title": video_id,
+            "author": "",
+            "author_id": "",
+            "duration_seconds": 0,
+            "thumbnail_url": _normalize_thumbnail(None, video_id, public_base),
+            "view_count": 0,
+            "published_text": "",
+            "watched": True,
+            "last_position_seconds": 0,
+            "notes_count": 0,
+            "marks_count": 0,
+            "updated_at": "",
+        }
+    if not isinstance(item, dict):
+        return None
+    video_id = str(item.get("videoId") or item.get("video_id") or item.get("id") or "").strip()
     if not video_id:
         return None
     title = str(item.get("title") or video_id).strip()
-    author = str(item.get("author") or item.get("authorName") or "").strip()
-    author_id = str(item.get("authorId") or "").strip()
+    author = str(
+        item.get("author")
+        or item.get("authorName")
+        or item.get("author_name")
+        or item.get("uploader")
+        or item.get("channelTitle")
+        or ""
+    ).strip()
+    author_id = str(item.get("authorId") or item.get("author_id") or item.get("channelId") or "").strip()
     duration = 0
     try:
-        duration = int(float(item.get("lengthSeconds") or item.get("duration") or 0))
+        duration = int(
+            float(
+                item.get("lengthSeconds")
+                or item.get("length_seconds")
+                or item.get("duration")
+                or item.get("duration_seconds")
+                or 0
+            )
+        )
     except (TypeError, ValueError):
         pass
     views = 0
     try:
-        views = int(item.get("viewCount") or 0)
+        views = int(item.get("viewCount") or item.get("view_count") or item.get("views") or 0)
     except (TypeError, ValueError):
         pass
-    published = str(item.get("publishedText") or "").strip()
-    thumb = _normalize_thumbnail(item.get("videoThumbnails") or item.get("thumbnails"), video_id, public_base)
+    published = str(item.get("publishedText") or item.get("published_text") or item.get("timeAgo") or "").strip()
+    thumb = _normalize_thumbnail(
+        item.get("videoThumbnails") or item.get("thumbnails") or item.get("thumbnail"),
+        video_id,
+        public_base,
+    )
+
+    last_position = 0.0
+    try:
+        last_position = float(item.get("last_position_seconds") or item.get("last_position") or 0.0)
+    except (TypeError, ValueError):
+        pass
+
+    notes_count = 0
+    try:
+        notes_count = int(item.get("notes_count") or 0)
+    except (TypeError, ValueError):
+        pass
+
+    marks_count = 0
+    try:
+        marks_count = int(item.get("marks_count") or 0)
+    except (TypeError, ValueError):
+        pass
+
+    material_id = str(item.get("material_id") or "").strip()
+
     return {
         "video_id": video_id,
+        "material_id": material_id,
         "title": title,
         "author": author,
         "author_id": author_id,
@@ -379,8 +459,97 @@ def _normalize_feed_item(item: dict[str, Any], history_ids: set[str], public_bas
         "thumbnail_url": thumb,
         "view_count": views,
         "published_text": published,
-        "watched": video_id in history_ids,
+        "watched": (video_id in history_ids) or bool(item.get("watched")),
+        "last_position_seconds": round(last_position, 1) if last_position > 0 else 0,
+        "notes_count": notes_count,
+        "marks_count": marks_count,
+        "updated_at": str(item.get("updated_at") or ""),
     }
+
+
+def _load_local_watch_history(owner_id: str = "") -> list[dict[str, Any]]:
+    try:
+        from deeptutor.video_learning.service import get_timed_media_store
+        store = get_timed_media_store()
+    except Exception:
+        return []
+
+    items: list[dict[str, Any]] = []
+    public_base = get_invidious_public_base_url()
+    try:
+        for path in store.root.glob("*.json"):
+            if path.name.startswith("job-") or path.name.startswith("."):
+                continue
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if not isinstance(data, dict) or data.get("type") != "timed_media":
+                continue
+
+            source = data.get("source") if isinstance(data.get("source"), dict) else {}
+            video_id = str(source.get("video_id") or "").strip()
+            if not video_id:
+                continue
+
+            metadata = data.get("metadata") if isinstance(data.get("metadata"), dict) else {}
+            learning = data.get("learning") if isinstance(data.get("learning"), dict) else {}
+
+            title = str(metadata.get("title") or video_id).strip()
+            author = str(metadata.get("author") or "").strip()
+            duration = 0
+            try:
+                duration = int(float(metadata.get("duration_seconds") or source.get("duration_seconds") or 0))
+            except (TypeError, ValueError):
+                pass
+
+            last_pos = 0.0
+            try:
+                last_pos = float(learning.get("last_position") or 0.0)
+            except (TypeError, ValueError):
+                pass
+
+            played_sec = 0.0
+            try:
+                played_sec = float(learning.get("cumulative_played_seconds") or 0.0)
+            except (TypeError, ValueError):
+                pass
+
+            notes = learning.get("notes") if isinstance(learning.get("notes"), list) else []
+            marks = learning.get("marks") if isinstance(learning.get("marks"), list) else []
+
+            watched = (
+                last_pos > 0
+                or played_sec > 0
+                or len(notes) > 0
+                or len(marks) > 0
+                or bool(learning.get("invidious_history_synced"))
+            )
+
+            thumb = _normalize_thumbnail(metadata.get("thumbnails"), video_id, public_base)
+            updated_at = str(data.get("updated_at") or data.get("created_at") or "")
+
+            items.append({
+                "video_id": video_id,
+                "material_id": str(data.get("material_id") or ""),
+                "title": title,
+                "author": author,
+                "author_id": str(metadata.get("author_id") or ""),
+                "duration_seconds": duration,
+                "thumbnail_url": thumb,
+                "view_count": int(metadata.get("view_count") or 0),
+                "published_text": str(metadata.get("published_text") or ""),
+                "watched": watched,
+                "last_position_seconds": round(last_pos, 1) if last_pos > 0 else 0,
+                "notes_count": len(notes),
+                "marks_count": len(marks),
+                "updated_at": updated_at,
+            })
+    except Exception as exc:
+        logger.warning("Failed to load local watch history: %s", exc)
+
+    items.sort(key=lambda x: str(x.get("updated_at") or ""), reverse=True)
+    return items
 
 
 async def get_invidious_home_feed(owner_id: str, tab: str = "") -> dict[str, Any]:
@@ -400,50 +569,87 @@ async def get_invidious_home_feed(owner_id: str, tab: str = "") -> dict[str, Any
             history_ids = await get_user_history_ids(owner_id)
         else:
             connected = False
+    else:
+        # Unconnected users still have local history IDs
+        for item in _load_local_watch_history(owner_id):
+            vid = item.get("video_id")
+            if vid:
+                history_ids.add(vid)
 
     default_home = str((prefs or {}).get("default_home") or "Popular").strip()
-    if default_home not in {"Popular", "Trending", "Subscriptions", "Playlists"}:
+    if default_home not in {"Popular", "Trending", "Subscriptions", "Playlists", "History"}:
         default_home = "Popular"
 
-    available_tabs = ["Popular", "Trending"]
-    if connected:
-        available_tabs = ["Popular", "Trending", "Subscriptions", "Playlists", "History"]
+    available_tabs = ["Popular", "Trending", "Subscriptions", "History", "Playlists"]
 
     current_tab = (tab or (default_home if default_home in available_tabs else "Popular")).strip()
     if current_tab not in available_tabs:
         current_tab = available_tabs[0]
 
     raw_items: list[Any] = []
-    async with httpx.AsyncClient(timeout=15.0) as client:
-        headers = {"Authorization": f"Bearer {token}"} if token else {}
-        try:
-            if current_tab == "Subscriptions" and connected:
-                resp = await client.get(f"{base_url}/api/v1/auth/feed", headers=headers)
-                if resp.status_code == 200:
-                    raw_items = resp.json()
-            elif current_tab == "Trending":
-                resp = await client.get(f"{base_url}/api/v1/trending")
-                if resp.status_code == 200:
-                    raw_items = resp.json()
-            elif current_tab == "Playlists" and connected:
-                resp = await client.get(f"{base_url}/api/v1/auth/playlists", headers=headers)
-                if resp.status_code == 200:
-                    raw_items = resp.json()
-            elif current_tab == "History" and connected:
-                resp = await client.get(f"{base_url}/api/v1/auth/history", headers=headers)
-                if resp.status_code == 200:
-                    raw_items = resp.json()
-            else:
-                resp = await client.get(f"{base_url}/api/v1/popular")
-                if resp.status_code == 200:
-                    raw_items = resp.json()
-        except Exception as exc:
-            logger.warning("Failed to fetch Invidious feed for tab %s: %s", current_tab, exc)
-
     items: list[dict[str, Any]] = []
-    if isinstance(raw_items, list):
-        for raw in raw_items:
-            if isinstance(raw, dict):
+
+    if current_tab == "History":
+        local_items = _load_local_watch_history(owner_id)
+        merged_by_id: dict[str, dict[str, Any]] = {}
+        for row in local_items:
+            norm = _normalize_feed_item(row, history_ids, public_base)
+            if norm:
+                norm["watched"] = True
+                merged_by_id[norm["video_id"]] = norm
+
+        if connected:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                headers = {"Authorization": f"Bearer {token}"}
+                try:
+                    resp = await client.get(f"{base_url}/api/v1/auth/history", headers=headers)
+                    if resp.status_code == 200:
+                        invidious_raw = _extract_raw_items(resp.json())
+                        for raw in invidious_raw:
+                            norm = _normalize_feed_item(raw, history_ids, public_base)
+                            if not norm:
+                                continue
+                            vid = norm["video_id"]
+                            norm["watched"] = True
+                            if vid in merged_by_id:
+                                existing = merged_by_id[vid]
+                                if not existing.get("author") and norm.get("author"):
+                                    existing["author"] = norm["author"]
+                                if (not existing.get("duration_seconds")) and norm.get("duration_seconds"):
+                                    existing["duration_seconds"] = norm["duration_seconds"]
+                            else:
+                                merged_by_id[vid] = norm
+                except Exception as exc:
+                    logger.warning("Failed to fetch Invidious history: %s", exc)
+
+        items = list(merged_by_id.values())
+        items.sort(key=lambda x: str(x.get("updated_at") or ""), reverse=True)
+
+    else:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            headers = {"Authorization": f"Bearer {token}"} if token else {}
+            try:
+                if current_tab == "Subscriptions" and connected:
+                    resp = await client.get(f"{base_url}/api/v1/auth/feed", headers=headers)
+                    if resp.status_code == 200:
+                        raw_items = _extract_raw_items(resp.json())
+                elif current_tab == "Trending":
+                    resp = await client.get(f"{base_url}/api/v1/trending")
+                    if resp.status_code == 200:
+                        raw_items = _extract_raw_items(resp.json())
+                elif current_tab == "Playlists" and connected:
+                    resp = await client.get(f"{base_url}/api/v1/auth/playlists", headers=headers)
+                    if resp.status_code == 200:
+                        raw_items = _extract_raw_items(resp.json())
+                elif current_tab == "Popular":
+                    resp = await client.get(f"{base_url}/api/v1/popular")
+                    if resp.status_code == 200:
+                        raw_items = _extract_raw_items(resp.json())
+            except Exception as exc:
+                logger.warning("Failed to fetch Invidious feed for tab %s: %s", current_tab, exc)
+
+        if isinstance(raw_items, list):
+            for raw in raw_items:
                 normalized = _normalize_feed_item(raw, history_ids, public_base)
                 if normalized:
                     items.append(normalized)

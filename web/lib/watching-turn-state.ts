@@ -5,6 +5,45 @@ const state = { materialId: null as string | null, timeSeconds: 0, locator: 0 };
 let modeActive = false;
 const modeListeners = new Set<() => void>();
 
+export interface PersistedWatchingState {
+  materialId: string;
+  timeSeconds: number;
+}
+
+export function watchingSessionStorageKey(pathname?: string): string | null {
+  const currentPath = pathname ?? (typeof window === "undefined" ? "" : window.location.pathname);
+  const match = currentPath.match(/^\/home\/([^/]+)/);
+  if (!match?.[1]) return null;
+  return `dt:watching-session:${decodeURIComponent(match[1])}`;
+}
+
+export function readPersistedWatchingState(pathname?: string): PersistedWatchingState | null {
+  const key = watchingSessionStorageKey(pathname);
+  if (!key || typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<PersistedWatchingState>;
+    if (typeof parsed.materialId !== "string" || !parsed.materialId) return null;
+    const timeSeconds = Number(parsed.timeSeconds);
+    return { materialId: parsed.materialId, timeSeconds: Number.isFinite(timeSeconds) ? Math.max(0, timeSeconds) : 0 };
+  } catch {
+    return null;
+  }
+}
+
+export function persistWatchingState(state: PersistedWatchingState, pathname?: string): void {
+  const key = watchingSessionStorageKey(pathname);
+  if (!key || typeof window === "undefined") return;
+  try { window.sessionStorage.setItem(key, JSON.stringify(state)); } catch { /* storage can be unavailable */ }
+}
+
+export function clearPersistedWatchingState(pathname?: string): void {
+  const key = watchingSessionStorageKey(pathname);
+  if (!key || typeof window === "undefined") return;
+  try { window.sessionStorage.removeItem(key); } catch { /* storage can be unavailable */ }
+}
+
 export function setWatchingModeActive(active: boolean): void {
   if (modeActive === active) return;
   modeActive = active;

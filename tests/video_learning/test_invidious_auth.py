@@ -215,3 +215,112 @@ async def test_watch_history_sync_and_home_feed(tmp_path: Path, monkeypatch):
     assert feed["items"][0]["video_id"] == "dQw4w9WgXcQ"
     assert feed["items"][0]["watched"] is True
     assert feed["items"][1]["watched"] is False
+
+
+@pytest.mark.asyncio
+async def test_subscriptions_feed_dict_format(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("deeptutor.multi_user.paths.SYSTEM_ROOT", tmp_path / "system")
+    owner = "test_user_subs"
+    InvidiousTokenStore.set_token(owner, "mock_token")
+
+    monkeypatch.setattr(
+        "deeptutor.services.config.runtime_settings.load_integrations_settings",
+        lambda: {
+            "invidious_base_url": "http://127.0.0.1:3000",
+            "invidious_public_base_url": "http://100.101.207.44:3000",
+        },
+    )
+
+    class MockTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+            url = str(request.url)
+            if "/api/v1/auth/preferences" in url:
+                return httpx.Response(200, json={"default_home": "Subscriptions"})
+            if "/api/v1/auth/history" in url:
+                return httpx.Response(200, json=[])
+            if "/api/v1/auth/feed" in url:
+                return httpx.Response(200, json={
+                    "notifications": [],
+                    "videos": [
+                        {
+                            "videoId": "subVid12345",
+                            "title": "Subscribed Channel Video",
+                            "author": "CoolChannel",
+                            "lengthSeconds": 450,
+                            "viewCount": 12000,
+                            "publishedText": "2 hours ago",
+                        }
+                    ]
+                })
+            return httpx.Response(404)
+
+    real_async_client = httpx.AsyncClient
+    monkeypatch.setattr(
+        "deeptutor.video_learning.invidious_auth.httpx.AsyncClient",
+        lambda *args, **kwargs: real_async_client(transport=MockTransport()),
+    )
+
+    feed = await get_invidious_home_feed(owner, tab="Subscriptions")
+    assert feed["connected"] is True
+    assert feed["current_tab"] == "Subscriptions"
+    assert len(feed["items"]) == 1
+    assert feed["items"][0]["video_id"] == "subVid12345"
+    assert feed["items"][0]["title"] == "Subscribed Channel Video"
+    assert feed["items"][0]["author"] == "CoolChannel"
+    assert feed["items"][0]["duration_seconds"] == 450
+
+
+@pytest.mark.asyncio
+async def test_history_merges_local_and_remote(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("deeptutor.multi_user.paths.SYSTEM_ROOT", tmp_path / "system")
+    owner = "test_user_hist_merge"
+    InvidiousTokenStore.set_token(owner, "mock_token")
+
+    from deeptutor.video_learning.service import TimedMediaStore
+    store = TimedMediaStore(root=tmp_path / "timed_media")
+    store.create({
+        "type": "timed_media",
+        "material_id": "a" * 32,
+        "source": {"provider": "youtube", "video_id": "localVid111", "duration_seconds": 300},
+        "metadata": {"title": "Local Studied Video", "author": "DeepTutor Author", "duration_seconds": 300},
+        "learning": {"last_position": 45.0, "notes": [{"text": "My note"}], "marks": []},
+        "updated_at": "2026-08-28T10:00:00Z",
+    })
+    monkeypatch.setattr("deeptutor.video_learning.service.get_timed_media_store", lambda: store)
+
+    monkeypatch.setattr(
+        "deeptutor.services.config.runtime_settings.load_integrations_settings",
+        lambda: {
+            "invidious_base_url": "http://127.0.0.1:3000",
+            "invidious_public_base_url": "http://100.101.207.44:3000",
+        },
+    )
+
+    class MockTransport(httpx.AsyncBaseTransport):
+        async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+            url = str(request.url)
+            if "/api/v1/auth/preferences" in url:
+                return httpx.Response(200, json={"default_home": "History"})
+            if "/api/v1/auth/history" in url:
+                return httpx.Response(200, json=[
+                    {"videoId": "remoteVid222", "title": "Remote Invidious Video", "author": "Remote Creator", "lengthSeconds": 200},
+                ])
+            return httpx.Response(404)
+
+    real_async_client = httpx.AsyncClient
+    monkeypatch.setattr(
+        "deeptutor.video_learning.invidious_auth.httpx.AsyncClient",
+        lambda *args, **kwargs: real_async_client(transport=MockTransport()),
+    )
+
+    feed = await get_invidious_home_feed(owner, tab="History")
+    assert feed["connected"] is True
+    assert feed["current_tab"] == "History"
+    assert len(feed["items"]) == 2
+    video_ids = {it["video_id"] for it in feed["items"]}
+    assert "localVid111" in video_ids
+    assert "remoteVid222" in video_ids
+    local_item = next(it for it in feed["items"] if it["video_id"] == "localVid111")
+    assert local_item["watched"] is True
+    assert local_item["notes_count"] == 1
+    assert local_item["last_position_seconds"] == 45.0

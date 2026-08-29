@@ -427,7 +427,11 @@ export default function ChatPage() {
   const learningPolicy = authStatus.learningPolicy;
   const { openMaterial: openReadingMaterial, setError: setReadingError } =
     useReading();
-  const { openMaterial: openWatchingMaterial } = useWatching();
+  const {
+    material: watchingMaterial,
+    openMaterial: openWatchingMaterial,
+    restoredFromSession,
+  } = useWatching();
 
   const {
     state,
@@ -794,6 +798,13 @@ export default function ChatPage() {
     // The provider exposes its active state through a small module-safe setter.
     setWatchingModeActive(isWatchingMode);
   }, [isWatchingMode]);
+
+  useEffect(() => {
+    if (!restoredFromSession || !watchingMaterial) return;
+    if (state.activeCapability !== "immersive_watching") {
+      setCapability("immersive_watching");
+    }
+  }, [restoredFromSession, setCapability, state.activeCapability, watchingMaterial]);
   const capabilityNeedsConfig = isQuizMode || isVisualizeMode || isResearchMode;
 
   useEffect(() => {

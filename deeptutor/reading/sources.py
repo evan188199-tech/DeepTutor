@@ -29,6 +29,7 @@ from deeptutor.reading.models import (
     UnitKind,
     UnitReference,
 )
+from deeptutor.tools.web_fetch import DEFAULT_USER_AGENT
 
 
 @dataclass(frozen=True, slots=True)
@@ -129,16 +130,28 @@ async def localize_snapshot_images(
         for value in (group.source_markdown, group.translation_markdown)
     ]
     urls: list[str] = []
+    url_map: dict[str, str] = {}
     for document in documents:
         for match in _IMAGE_MARKDOWN_URL.finditer(document):
-            value = match.group("url").strip("<>")
-            if urlparse(value).scheme.lower() in {"http", "https"} and value not in urls:
-                urls.append(value)
-    if not urls:
+            raw_val = match.group("url").strip("<>")
+            parsed = urlparse(raw_val)
+            if parsed.scheme.lower() in {"http", "https"}:
+                target_url = raw_val
+            elif payload.source_url:
+                target_url = urljoin(payload.source_url, raw_val)
+            else:
+                target_url = ""
+
+            if target_url and urlparse(target_url).scheme.lower() in {"http", "https"}:
+                url_map[raw_val] = target_url
+                if target_url not in urls:
+                    urls.append(target_url)
+
+    if not urls and not url_map:
         return payload
 
     owned_client = client is None
-    session = client or httpx.AsyncClient(timeout=4.0)
+    session = client or httpx.AsyncClient(timeout=10.0)
     replacements: dict[str, str] = {}
     assets: list[SnapshotAsset] = []
     try:
@@ -162,22 +175,24 @@ async def localize_snapshot_images(
                 assets.append(asset)
                 replacements[url] = f"/api/v1/reading/snapshot-assets/{asset.asset_id}"
             else:
-                replacements[url] = ""
+                # Keep resolved remote URL rather than destructively rewriting to plain text
+                replacements[url] = url
         for url in urls[MAX_SNAPSHOT_IMAGES:]:
-            replacements[url] = ""
+            replacements[url] = url
     finally:
         if owned_client:
             await session.aclose()
 
     def rewrite(markdown: str) -> str:
         def replace_image(match: re.Match[str]) -> str:
-            url = match.group("url").strip("<>")
-            replacement = replacements.get(url)
-            if replacement is None:
-                return match.group(0)
-            if not replacement:
-                alt = match.group("alt").strip() or "image"
-                return f"*Image unavailable: {alt}*"
+            raw_val = match.group("url").strip("<>")
+            target_url = url_map.get(raw_val, raw_val)
+            replacement = (
+                replacements.get(target_url)
+                or replacements.get(raw_val)
+                or target_url
+                or raw_val
+            )
             return f"![{match.group('alt')}]({replacement})"
 
         return _IMAGE_MARKDOWN_URL.sub(replace_image, markdown)
@@ -220,7 +235,10 @@ async def _download_snapshot_image(
             async with client.stream(
                 "GET",
                 current,
-                headers={"Accept": "image/png,image/jpeg,image/gif,image/webp"},
+                headers={
+                    "Accept": "image/png,image/jpeg,image/gif,image/webp,image/*;q=0.8,*/*;q=0.5",
+                    "User-Agent": DEFAULT_USER_AGENT,
+                },
                 follow_redirects=False,
             ) as response:
                 if response.is_redirect:
