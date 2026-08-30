@@ -129,7 +129,14 @@ export function reasoningEffortOptions(
       : options([], current);
   }
 
-  if (BINARY_THINKING_PROVIDERS.has(provider) || provider === "custom") {
+  if (provider === "custom") {
+    // A generic OpenAI-compatible endpoint may front any gateway or aggregator.
+    // DeepTutor cannot infer that vendor's capabilities from the model name, so
+    // expose the common wire enum and let the profile owner choose explicitly.
+    return options(["none", "low", "medium", "high"], current);
+  }
+
+  if (BINARY_THINKING_PROVIDERS.has(provider)) {
     const supported =
       provider === "minimax" ||
       includesAny(modelName, [
@@ -143,16 +150,14 @@ export function reasoningEffortOptions(
     if (supported) {
       return options(["minimal", "high"], current);
     }
-    if (BINARY_THINKING_PROVIDERS.has(provider)) {
-      // Deliberately no selector for the rest — VolcEngine/BytePlus thinking
-      // models are switched on by the backend from the spec's
-      // reasoning_model_patterns, so an explicit per-model choice here would
-      // duplicate a decision the registry already owns.
-      return options([], current);
-    }
+    // Deliberately no selector for the rest — VolcEngine/BytePlus thinking
+    // models are switched on by the backend from the spec's
+    // reasoning_model_patterns, so an explicit per-model choice here would
+    // duplicate a decision the registry already owns.
+    return options([], current);
   }
 
-  if (OPENAI_PROVIDERS.has(provider) || provider === "custom") {
+  if (OPENAI_PROVIDERS.has(provider)) {
     const isGpt5OrCodex = includesAny(modelName, ["gpt-5", "codex"]);
     if (isGpt5OrCodex) {
       return options(["minimal", "low", "medium", "high", "xhigh"], current);

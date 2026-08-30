@@ -51,6 +51,13 @@ test("provider aliases resolve to the canonical adapter", () => {
     "xhigh",
   ]);
   assert.deepEqual(values("claude", "claude-opus-5"), ["", "none", "adaptive"]);
+  assert.deepEqual(values("anthropic_compatible", "claude-sonnet-4-5"), [
+    "",
+    "none",
+    "low",
+    "medium",
+    "high",
+  ]);
 });
 
 test("effort-based Claude families offer adaptive, older ones do not", () => {
@@ -94,8 +101,28 @@ test("known reasoning families get conservative provider-specific choices", () =
   assert.deepEqual(values("dashscope", "qwen3-max"), ["", "minimal", "high"]);
   assert.deepEqual(values("custom", "deepseek-reasoner"), [
     "",
-    "minimal",
+    "none",
+    "low",
+    "medium",
     "high",
+  ]);
+});
+
+test("OpenAI-compatible gateways expose the common request levels", () => {
+  assert.deepEqual(values("openai_compatible", "idrouter/qd/lite"), [
+    "",
+    "none",
+    "low",
+    "medium",
+    "high",
+  ]);
+  assert.deepEqual(values("custom", "litellm/unknown-model", "vendor-level"), [
+    "",
+    "none",
+    "low",
+    "medium",
+    "high",
+    "vendor-level",
   ]);
 });
 
