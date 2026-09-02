@@ -159,11 +159,14 @@ test("isAuthExempt allows public static assets through the auth gate (issue #599
 test("isAuthExempt allows auth pages and Next internals", () => {
   assert.equal(isAuthExempt("/login"), true);
   assert.equal(isAuthExempt("/register"), true);
+  assert.equal(isAuthExempt("/access/device"), true);
+  assert.equal(isAuthExempt("/access/device?pairing=test1234"), true);
   assert.equal(isAuthExempt("/_next/data/build/chat.json"), true);
   assert.equal(isAuthExempt("/favicon-32x32.png"), true);
 });
 
 test("isAuthExempt does NOT exempt protected app routes", () => {
+  assert.equal(isAuthExempt("/access"), false);
   assert.equal(isAuthExempt("/chat"), false);
   assert.equal(isAuthExempt("/dashboard"), false);
   assert.equal(isAuthExempt("/space/agents"), false);

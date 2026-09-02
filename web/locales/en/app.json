@@ -4592,5 +4592,16 @@
   "access.preparing": "Preparing a secure connection…",
   "access.redirecting": "Opening the current secure address…",
   "access.securityNote": "This handoff is valid for 60 seconds and can be used once.",
-  "access.handoffFailed": "Could not prepare secure access. Sign in and try again."
+  "access.handoffFailed": "Could not prepare secure access. Sign in and try again.",
+  "access.scanWithPhone": "Scan with phone",
+  "access.scanDesc": "Make sure your phone is connected to Tailscale, then scan the QR code to sign in automatically.",
+  "access.qrExpiresIn": "Valid for {{seconds}}s",
+  "access.qrExpired": "QR code expired",
+  "access.refreshQr": "Refresh QR Code",
+  "access.openOnThisDevice": "Open on this computer",
+  "access.openingOnThisDevice": "Opening on this computer…",
+  "access.deviceTitle": "Connecting device",
+  "access.deviceAuthenticating": "Authenticating session…",
+  "access.deviceRedirecting": "Redirecting to DeepTutor…",
+  "access.deviceFailed": "Pairing link is invalid or has expired. Please scan again."
 }
