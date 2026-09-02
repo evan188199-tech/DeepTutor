@@ -1,5 +1,10 @@
 """Video-learning domain API."""
 
+from .marks import (
+    MARK_AUTHORS,
+    MARK_KINDS,
+    MarkNotFound,
+)
 from .service import (
     PROVIDER_RESOLVERS,
     ProviderResolution,
@@ -34,4 +39,7 @@ __all__ = [
     "resolve_material",
     "save_video_learning_settings",
     "test_invidious_connection",
+    "MARK_AUTHORS",
+    "MARK_KINDS",
+    "MarkNotFound",
 ]
