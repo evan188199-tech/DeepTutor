@@ -166,6 +166,9 @@ test("isCodexCallbackPath matches only the exact public callback path", () => {
 });
 
 test("retired pages cannot fall through to colliding dynamic routes", () => {
+  assert.equal(isRetiredPagePath("/kids"), true);
+  assert.equal(isRetiredPagePath("/kids/"), false);
+  assert.equal(isRetiredPagePath("/kids-admin"), false);
   assert.equal(isRetiredPagePath("/partners/groups"), true);
   assert.equal(isRetiredPagePath("/partners/groups/new"), false);
   assert.equal(isRetiredPagePath("/partners/groups/group-1"), false);
