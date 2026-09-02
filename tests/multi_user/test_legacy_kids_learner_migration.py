@@ -18,7 +18,7 @@ def _source(root: Path) -> tuple[Path, Path, Path]:
         kids / "profiles.json",
         [
             {"id": "other", "name": "Other", "birth_date": "2015-01-01"},
-            {"id": "baby", "name": "Baby", "birth_date": "2018-07-16"},
+            {"id": "baby", "name": "Baby", "birth_date": "2018-01-01"},
         ],
     )
     _write(
