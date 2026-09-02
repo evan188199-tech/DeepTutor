@@ -58,6 +58,13 @@ export interface MaterialInfo {
   source_url?: string;
   revision?: number;
   annotation_count: number;
+  reading_progress?: ReadingProgressSummary | null;
+}
+
+export interface ReadingProgressSummary {
+  last_read_at: number;
+  last_locator: number;
+  reading_percentage: number;
 }
 
 export interface OutlineRow {

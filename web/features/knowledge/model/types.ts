@@ -24,6 +24,7 @@ export type {
   PageIndexConfig,
   PreflightCheck,
   RagProviderSummary,
+  WebNavigationSource,
   WebSource,
   WebSyncResult,
   WebSyncSourceResult,

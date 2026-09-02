@@ -1,6 +1,7 @@
 export {
   createKbFolder,
   deleteKbFile,
+  getWebNavigation,
   knowledgeBaseFilePath,
   knowledgeBaseFilePreviewTextPath,
   listKnowledgeBaseFiles,
@@ -8,4 +9,8 @@ export {
   uploadKnowledgeBaseFiles,
 } from "./client";
 
-export type { KnowledgeBaseFile, KnowledgeUploadPolicy } from "../model/types";
+export type {
+  KnowledgeBaseFile,
+  KnowledgeUploadPolicy,
+  WebNavigationSource,
+} from "../model/types";

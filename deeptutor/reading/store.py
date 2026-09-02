@@ -707,6 +707,21 @@ class ReadingStore:
             row = _read_json(legacy_path) if legacy_path is not None else None
         return ReadingPosition.from_dict(row) if isinstance(row, dict) else ReadingPosition()
 
+    def stored_position(self, material_id: str) -> ReadingPosition | None:
+        """Return a saved viewport, or ``None`` for an unread material.
+
+        ``position()`` intentionally returns a useful first-page default. That
+        is right for opening a reader, but wrong for recency sorting: a default
+        timestamp would make every newly created material look recently read.
+        """
+        self.manifest(material_id)
+        state_path = self._state_path(material_id, POSITIONS_DIR)
+        row = _read_json(state_path)
+        if row is None and not state_path.exists():
+            legacy_path = self._legacy_state_path(material_id, POSITION_NAME)
+            row = _read_json(legacy_path) if legacy_path is not None else None
+        return ReadingPosition.from_dict(row) if isinstance(row, dict) else None
+
     def save_position(self, material_id: str, position: ReadingPosition) -> ReadingPosition:
         """Validate and atomically persist a material viewport."""
         manifest = self.manifest(material_id)

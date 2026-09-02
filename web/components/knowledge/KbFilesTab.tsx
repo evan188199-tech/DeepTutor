@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  getWebNavigation,
   knowledgeBaseFilePath,
   knowledgeBaseFilePreviewTextPath,
   type KnowledgeBaseFile,
+  type WebNavigationSource,
 } from "@/features/knowledge/api/files";
 import type { KnowledgeBase } from "@/lib/knowledge-helpers";
 import type { TaskState } from "@/hooks/useKnowledgeProgress";
@@ -12,6 +14,7 @@ import type { FilePreviewSource } from "@/components/chat/preview/previewerFor";
 import { useCollapsiblePanel } from "@/hooks/useCollapsiblePanel";
 import KbDocumentList from "./KbDocumentList";
 import KbFilePreview from "./KbFilePreview";
+import WebNavigationTree from "./WebNavigationTree";
 
 interface KbFilesTabProps {
   kb: KnowledgeBase;
@@ -28,6 +31,10 @@ export default function KbFilesTab({ kb, task }: KbFilesTabProps) {
   const [selectedFile, setSelectedFile] = useState<KnowledgeBaseFile | null>(
     null,
   );
+  const [navigationSources, setNavigationSources] = useState<
+    WebNavigationSource[] | null
+  >(null);
+  const [navigationLoading, setNavigationLoading] = useState(true);
   const fileListPanel = useCollapsiblePanel("knowledge-file-list");
 
   // Bump refreshKey when the active create/upload task settles so newly
@@ -36,10 +43,27 @@ export default function KbFilesTab({ kb, task }: KbFilesTabProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   useEffect(() => {
     if (!taskExecuting) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRefreshKey((n) => n + 1);
     }
   }, [taskExecuting]);
+
+  const loadNavigation = useCallback(
+    async (force = false) => {
+      try {
+        setNavigationSources(await getWebNavigation(kb.name, { force }));
+      } catch {
+        // A KB without persisted web navigation still has a usable file tree.
+        setNavigationSources([]);
+      } finally {
+        setNavigationLoading(false);
+      }
+    },
+    [kb.name],
+  );
+
+  useEffect(() => {
+    void loadNavigation(refreshKey > 0);
+  }, [loadNavigation, refreshKey]);
 
   const previewSource = useMemo<FilePreviewSource | null>(() => {
     if (!selectedFile) return null;
@@ -56,16 +80,32 @@ export default function KbFilesTab({ kb, task }: KbFilesTabProps) {
     };
   }, [kb.name, selectedFile]);
 
+  const selectNavigationFile = useCallback((filePath: string) => {
+    setSelectedFile({ name: filePath, type: "file" });
+  }, []);
+
   return (
     <div className="flex h-full min-h-0">
-      <KbDocumentList
-        kbName={kb.name}
-        refreshKey={refreshKey}
-        selectedFile={selectedFile?.name ?? null}
-        onSelect={setSelectedFile}
-        collapsed={fileListPanel.collapsed}
-        onToggleCollapsed={fileListPanel.toggle}
-      />
+      {navigationSources?.length ? (
+        <WebNavigationTree
+          sources={navigationSources}
+          loading={navigationLoading}
+          selectedFile={selectedFile?.name ?? null}
+          onSelect={selectNavigationFile}
+          collapsed={fileListPanel.collapsed}
+          onToggleCollapsed={fileListPanel.toggle}
+          onRefresh={() => void loadNavigation(true)}
+        />
+      ) : (
+        <KbDocumentList
+          kbName={kb.name}
+          refreshKey={refreshKey}
+          selectedFile={selectedFile?.name ?? null}
+          onSelect={setSelectedFile}
+          collapsed={fileListPanel.collapsed}
+          onToggleCollapsed={fileListPanel.toggle}
+        />
+      )}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <KbFilePreview
           source={previewSource}

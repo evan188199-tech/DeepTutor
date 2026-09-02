@@ -169,6 +169,12 @@ def _workspace_payload(row: Any) -> dict[str, Any]:
 # === Models ===================================================================
 
 
+class ReadingProgressSummary(BaseModel):
+    last_read_at: float
+    last_locator: int
+    reading_percentage: float
+
+
 class MaterialInfo(BaseModel):
     material_id: str
     filename: str
@@ -187,6 +193,7 @@ class MaterialInfo(BaseModel):
     source_url: str = ""
     revision: int = 1
     annotation_count: int = 0
+    reading_progress: ReadingProgressSummary | None = None
 
 
 class MaterialDetail(MaterialInfo):
@@ -882,11 +889,19 @@ async def supported_formats() -> SupportedFormats:
 async def list_materials() -> list[MaterialInfo]:
     store = _store()
     try:
-        return [
+        rows = [
             _info(store, manifest)
             for manifest in store.list_materials()
             if _material_allowed(manifest.material_id)
         ]
+        rows.sort(
+            key=lambda row: (
+                row.reading_progress.last_read_at if row.reading_progress else 0.0,
+                row.created_at,
+            ),
+            reverse=True,
+        )
+        return rows
     except Exception as exc:
         raise _http_error(exc) from exc
 
@@ -1246,8 +1261,21 @@ async def export(
 
 
 def _info(store: ReadingStore, manifest: Any) -> MaterialInfo:
+    progress = store.stored_position(manifest.material_id)
     return MaterialInfo(
-        **manifest.to_dict() | {"annotation_count": len(store.annotations(manifest.material_id))}
+        **manifest.to_dict()
+        | {
+            "annotation_count": len(store.annotations(manifest.material_id)),
+            "reading_progress": (
+                ReadingProgressSummary(
+                    last_read_at=progress.updated_at,
+                    last_locator=progress.locator,
+                    reading_percentage=progress.percentage,
+                )
+                if progress
+                else None
+            ),
+        }
     )
 
 

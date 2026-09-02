@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 // Test the tree-building logic that the frontend uses to find paths.
 // We can't import the component (it uses JSX), but the _findPathToFile
@@ -87,4 +89,16 @@ test("findPathToFile returns null for missing file", () => {
 test("findPathToFile handles empty tree", () => {
   const path = findPathToFile([], "anything.md");
   assert.equal(path, null);
+});
+
+test("knowledge files surface uses web navigation when a source has one", () => {
+  const source = readFileSync(
+    resolve(process.cwd(), "components/knowledge/KbFilesTab.tsx"),
+    "utf8",
+  );
+
+  assert.match(source, /getWebNavigation/);
+  assert.match(source, /navigationSources\?\.length/);
+  assert.match(source, /<WebNavigationTree/);
+  assert.match(source, /@\/features\/knowledge\/api\/files/);
 });
