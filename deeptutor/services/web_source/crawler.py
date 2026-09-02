@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 from collections import deque
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 import hashlib
 import logging
 from pathlib import Path
@@ -25,6 +26,7 @@ from typing import Any
 from urllib.parse import quote, unquote, urldefrag, urljoin, urlparse
 
 import httpx
+from lxml import etree
 
 from deeptutor.services.web_source.markdown import strip_leading_snapshot_provenance
 
@@ -58,6 +60,20 @@ class CrawledPage:
     markdown: str
     content_hash: str
     headings: list[dict] = field(default_factory=list)
+    requested_url: str = ""
+    canonical_url: str = ""
+    http_status: int = 200
+    status: str = "active"
+    redirect_url: str = ""
+    document_version: str = ""
+    fetched_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+@dataclass(frozen=True)
+class FetchOutcome:
+    html: str
+    final_url: str
+    status_code: int
 
 
 @dataclass
@@ -70,6 +86,14 @@ class CrawlResult:
     navigation_links: list[dict] = field(default_factory=list)
     # How navigation was obtained: "original", "inferred", or "" (none).
     navigation_kind: str = ""
+    truncated: bool = False
+    discovery_sources: list[str] = field(default_factory=list)
+    deleted_urls: list[str] = field(default_factory=list)
+    fetch_failure_count: int = 0
+
+    @property
+    def complete_coverage(self) -> bool:
+        return not self.errors and self.fetch_failure_count == 0 and not self.truncated
 
     @property
     def ok(self) -> bool:
@@ -191,7 +215,7 @@ async def _fetch_page(
     url: str,
     *,
     client: httpx.AsyncClient,
-) -> tuple[str, str] | None:
+) -> FetchOutcome | None:
     """Fetch *url*, return ``(html, final_url)`` or ``None`` on failure.
 
     Retries up to ``_MAX_RETRIES`` times on transient status codes (429,
@@ -255,7 +279,11 @@ async def _fetch_page(
                     return None
 
                 html = await _bounded_read(response, MAX_RESPONSE_BYTES)
-                return html, final_url
+                return FetchOutcome(
+                    html=html,
+                    final_url=final_url,
+                    status_code=response.status_code,
+                )
 
         except httpx.HTTPError as exc:
             if attempt < _MAX_RETRIES:
@@ -271,6 +299,37 @@ async def _fetch_page(
                 continue
             logger.debug("Crawl: network error for %s: %s (giving up)", current_url, exc)
             return None
+
+
+def _extract_html_metadata(html: str, final_url: str) -> tuple[str, str]:
+    """Return canonical URL and documentation version metadata when present."""
+    canonical = ""
+    version = ""
+    try:
+        tree = etree.fromstring(html.encode("utf-8"), parser=etree.HTMLParser())
+        canonical_nodes = tree.xpath("//link[@rel='canonical']/@href")
+        if canonical_nodes:
+            canonical = urljoin(final_url, str(canonical_nodes[0]).strip())
+        version_names = {
+            "docsearch:version",
+            "docs:version",
+            "documentation:version",
+            "product:version",
+            "version",
+        }
+        for name in tree.xpath("//meta/@name | //meta/@property"):
+            normalized = str(name).lower()
+            if normalized not in version_names:
+                continue
+            values = tree.xpath(
+                f"//meta[@name='{name}']/@content | //meta[@property='{name}']/@content"
+            )
+            if values:
+                version = str(values[0]).strip()
+                break
+    except Exception:
+        pass
+    return canonical, version
 
 
 async def _process_page(
@@ -291,8 +350,14 @@ async def _process_page(
     async with sem:
         fetched = await _fetch_page(url, client=client)
     if fetched is None:
-        return None
-    html, final_url = fetched
+        return {"requested_url": url, "error": "fetch failed", "status_code": 0}
+    if fetched.status_code >= 400:
+        return {
+            "requested_url": url,
+            "error": f"HTTP {fetched.status_code}",
+            "status_code": fetched.status_code,
+        }
+    html, final_url = fetched.html, fetched.final_url
 
     from deeptutor.services.web_source.html_extractor import (
         extract_article_markdown,
@@ -314,12 +379,19 @@ async def _process_page(
     if len(body) > DEFAULT_MAX_CHARS:
         body = body[:DEFAULT_MAX_CHARS].rstrip() + "\n…[truncated]"
 
+    canonical_url, document_version = _extract_html_metadata(html, final_url)
     page = CrawledPage(
         url=final_url,
         title=title,
         markdown=body,
         content_hash=content_hash,
         headings=page_headings,
+        requested_url=url,
+        canonical_url=canonical_url or final_url,
+        http_status=fetched.status_code,
+        status="redirect" if url != final_url else "active",
+        redirect_url=final_url if url != final_url else "",
+        document_version=document_version,
     )
 
     links: list[str] = []
@@ -332,6 +404,48 @@ async def _process_page(
     return {"page": page, "links": links, "nav": nav, "depth": depth, "final_url": final_url}
 
 
+async def _sitemap_urls(
+    base_url: str,
+    *,
+    client: httpx.AsyncClient,
+    base_host: str,
+    base_path_prefix: str,
+) -> list[str]:
+    """Discover configured-entry URLs from same-site sitemap documents."""
+    candidates = [urljoin(base_url, "/sitemap.xml"), urljoin(base_url, "/sitemap_index.xml")]
+    page_urls: list[str] = []
+    seen_sitemaps: set[str] = set()
+
+    for candidate in candidates:
+        if candidate in seen_sitemaps:
+            continue
+        seen_sitemaps.add(candidate)
+        fetched = await _fetch_page(candidate, client=client)
+        if fetched is None or fetched.status_code >= 400 or not fetched.html:
+            continue
+        try:
+            root = etree.fromstring(fetched.html.encode("utf-8"))
+        except etree.XMLSyntaxError:
+            continue
+        locations = [
+            str(value).strip() for value in root.xpath("//*[local-name()='loc']/text()")
+        ]
+        for location in locations:
+            location, _fragment = urldefrag(location)
+            if location.endswith((".xml", ".gz")):
+                if location not in seen_sitemaps and _is_internal(
+                    location, base_host, base_path_prefix
+                ):
+                    candidates.append(location)
+                continue
+            if location.startswith(("http://", "https://")) and _is_internal(
+                location, base_host, base_path_prefix
+            ):
+                page_urls.append(location)
+
+    return [base_url] + [url for url in dict.fromkeys(page_urls) if url != base_url]
+
+
 async def crawl_docs_site(
     base_url: str,
     *,
@@ -339,6 +453,7 @@ async def crawl_docs_site(
     max_pages: int = DEFAULT_MAX_PAGES,
     timeout_s: float = DEFAULT_TIMEOUT_S,
     client_factory: Any = None,
+    seed_urls: list[str] | None = None,
 ) -> CrawlResult:
     """Crawl a documentation site starting from *base_url*.
 
@@ -387,10 +502,35 @@ async def crawl_docs_site(
 
     visited: set[str] = set()
     queue: deque[tuple[str, int]] = deque([(base_url, 0)])
+    for seed_url in seed_urls or []:
+        normalized = _normalise_link(base_url, seed_url)
+        if normalized and _is_internal(normalized, base_host, base_path_prefix):
+            queue.append((normalized, 0))
+    unique_queue: deque[tuple[str, int]] = deque()
+    seen_seeds: set[str] = set()
+    for queued_url, queued_depth in queue:
+        if queued_url not in seen_seeds:
+            seen_seeds.add(queued_url)
+            unique_queue.append((queued_url, queued_depth))
+    queue = unique_queue
     concurrency = min(DEFAULT_CONCURRENCY, max_pages)
     sem = asyncio.Semaphore(concurrency)
 
     async with factory() as client:
+        discovered_urls = await _sitemap_urls(
+            base_url,
+            client=client,
+            base_host=base_host,
+            base_path_prefix=base_path_prefix,
+        )
+        queued_urls = {url for url, _depth in queue}
+        if len(discovered_urls) > 1:
+            result.discovery_sources.append("sitemap")
+            for discovered_url in discovered_urls:
+                if discovered_url not in queued_urls:
+                    queue.append((discovered_url, 0))
+                    queued_urls.add(discovered_url)
+
         while queue and len(visited) < max_pages:
             # Dequeue a batch of URLs to process concurrently.
             batch: list[tuple[str, int]] = []
@@ -419,7 +559,15 @@ async def crawl_docs_site(
             outcomes = await asyncio.gather(*tasks, return_exceptions=True)
 
             for outcome in outcomes:
-                if isinstance(outcome, BaseException) or outcome is None:
+                if isinstance(outcome, BaseException):
+                    result.fetch_failure_count += 1
+                    continue
+                if outcome.get("error"):
+                    status_code = int(outcome.get("status_code") or 0)
+                    if status_code in {404, 410}:
+                        result.deleted_urls.append(str(outcome.get("requested_url") or ""))
+                    else:
+                        result.fetch_failure_count += 1
                     continue
 
                 # Track redirect target in visited set.
@@ -439,6 +587,8 @@ async def crawl_docs_site(
                 for link in outcome["links"]:
                     if link not in visited:
                         queue.append((link, outcome["depth"] + 1))
+
+    result.truncated = bool(queue)
 
     # If no sidebar navigation was found, infer a simple hierarchy from
     # the URL paths of all crawled pages.
@@ -495,6 +645,51 @@ def _infer_navigation(pages: list[CrawledPage], base_url: str) -> list[dict]:
     return result
 
 
+def _section_paths(navigation_links: list[dict]) -> dict[str, list[str]]:
+    paths: dict[str, list[str]] = {}
+    stack: list[tuple[int, str]] = []
+    for link in navigation_links:
+        depth = int(link.get("depth") or 0)
+        title = str(link.get("title") or "").strip()
+        while stack and stack[-1][0] >= depth:
+            stack.pop()
+        current = [value for _depth, value in stack]
+        if title:
+            current.append(title)
+            stack.append((depth, title))
+        url = str(link.get("url") or "")
+        if url:
+            paths[url] = current
+    return paths
+
+
+def _build_page_manifest(
+    pages: list[CrawledPage],
+    navigation_links: list[dict],
+    *,
+    source_version: str,
+) -> dict[str, dict]:
+    section_paths = _section_paths(navigation_links)
+    manifest: dict[str, dict] = {}
+    for page in pages:
+        file_path = _to_filename(page.url, urlparse(page.url).path or "/")
+        manifest[file_path] = {
+            "file_path": file_path,
+            "canonical_url": page.canonical_url or page.url,
+            "requested_url": page.requested_url or page.url,
+            "url": page.url,
+            "title": page.title,
+            "section_path": section_paths.get(page.url, []),
+            "content_hash": page.content_hash,
+            "fetched_at": page.fetched_at,
+            "document_version": page.document_version or source_version,
+            "status": page.status,
+            "http_status": page.http_status,
+            "redirect_url": page.redirect_url,
+        }
+    return manifest
+
+
 # ── shared crawl-diff-write pipeline ─────────────────────────────────
 
 
@@ -510,12 +705,14 @@ class CrawlDiff:
     error: str = ""
     url: str = ""
     page_hashes: dict[str, str] = field(default_factory=dict)
+    page_manifest: dict[str, dict] = field(default_factory=dict)
     page_files: list[str] = field(default_factory=list)
     page_urls: dict[str, str] = field(default_factory=dict)
     pages_added: list[str] = field(default_factory=list)
     pages_updated: list[str] = field(default_factory=list)
     pages_unchanged: list[str] = field(default_factory=list)
     pages_removed: list[str] = field(default_factory=list)
+    pages_unresolved: list[str] = field(default_factory=list)
     changed_paths: list[str] = field(default_factory=list)
     navigation: dict = field(default_factory=dict)
 
@@ -554,11 +751,23 @@ async def crawl_and_diff(
     depth = max_depth if max_depth is not None else source.get("max_depth", DEFAULT_MAX_DEPTH)
     pages = max_pages if max_pages is not None else source.get("max_pages", DEFAULT_MAX_PAGES)
     old_hashes: dict[str, str] = source.get("page_hashes", {})
+    old_manifest: dict[str, dict] = source.get("page_manifest", {})
     base_path_prefix = urlparse(url).path or "/"
 
     # 1. Crawl
     try:
-        result = await crawl_docs_site(url, max_depth=depth, max_pages=pages)
+        seed_urls: list[str] = []
+        for entry in old_manifest.values():
+            for key in ("requested_url", "canonical_url", "url"):
+                value = str(entry.get(key) or "")
+                if value and value not in seed_urls:
+                    seed_urls.append(value)
+        result = await crawl_docs_site(
+            url,
+            max_depth=depth,
+            max_pages=pages,
+            seed_urls=seed_urls,
+        )
     except Exception as exc:
         logger.exception("Crawl failed for %s", url)
         return CrawlDiff(ok=False, error=str(exc), url=url)
@@ -582,11 +791,19 @@ async def crawl_and_diff(
         page_urls[fname] = page.url
         page_files.append(fname)
 
+    page_manifest = _build_page_manifest(
+        result.pages,
+        result.navigation_links,
+        source_version=str(source.get("document_version") or ""),
+    )
+
     # 3. Compute changes
     added: list[str] = []
     updated: list[str] = []
     unchanged: list[str] = []
     removed: list[str] = []
+    unresolved: list[str] = []
+    explicit_deleted = set(result.deleted_urls)
 
     for fname, chash in current.items():
         old = old_hashes.get(fname)
@@ -605,7 +822,23 @@ async def crawl_and_diff(
 
     for fname in old_hashes:
         if fname not in current:
-            removed.append(fname)
+            previous = old_manifest.get(fname, {})
+            known_urls = {
+                str(previous.get(key) or "") for key in ("requested_url", "canonical_url", "url")
+            }
+            explicitly_deleted = any(url in explicit_deleted for url in known_urls if url)
+            if result.complete_coverage or explicitly_deleted:
+                removed.append(fname)
+                page_manifest[fname] = {
+                    **previous,
+                    "file_path": fname,
+                    "content_hash": previous.get("content_hash") or old_hashes.get(fname, ""),
+                    "status": "deleted",
+                    "fetched_at": datetime.now(timezone.utc).isoformat(),
+                }
+            else:
+                unresolved.append(fname)
+                page_manifest[fname] = {**previous, "file_path": fname, "status": "unknown"}
 
     # 4. Write new/changed pages
     changed_paths: list[str] = []
@@ -631,12 +864,14 @@ async def crawl_and_diff(
         ok=True,
         url=url,
         page_hashes=current,
+        page_manifest=page_manifest,
         page_files=page_files,
         page_urls=page_urls,
         pages_added=added,
         pages_updated=updated,
         pages_unchanged=unchanged,
         pages_removed=removed,
+        pages_unresolved=unresolved,
         changed_paths=changed_paths,
         navigation=nav_manifest,
     )

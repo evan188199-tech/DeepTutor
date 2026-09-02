@@ -72,6 +72,124 @@ def test_to_filename_contains_traversal_and_distinguishes_queries():
 
 
 @pytest.mark.asyncio
+async def test_crawl_and_diff_persists_page_manifest(tmp_path: Path) -> None:
+    page = CrawledPage(
+        url="https://example.com/docs/intro/",
+        title="Introduction",
+        markdown="# Introduction",
+        content_hash="hash-1",
+        requested_url="https://example.com/docs/intro",
+        canonical_url="https://example.com/docs/intro/",
+        document_version="v2",
+    )
+    result = CrawlResult(
+        pages=[page],
+        navigation_links=[
+            {"title": "Docs", "url": "https://example.com/docs/", "depth": 0},
+            {"title": "Introduction", "url": "https://example.com/docs/intro/", "depth": 1},
+        ],
+        navigation_kind="original",
+    )
+    source = {
+        "url": "https://example.com/docs/",
+        "document_version": "v2",
+        "page_hashes": {},
+        "page_manifest": {},
+    }
+
+    async def fake_crawl(*_args, **_kwargs):
+        return result
+
+    with patch("deeptutor.services.web_source.crawler.crawl_docs_site", new=fake_crawl):
+        diff = await crawl_and_diff(source, tmp_path)
+
+    entry = diff.page_manifest["docs/intro.md"]
+    assert entry["canonical_url"] == "https://example.com/docs/intro/"
+    assert entry["section_path"] == ["Docs", "Introduction"]
+    assert entry["document_version"] == "v2"
+    assert entry["status"] == "active"
+
+
+@pytest.mark.asyncio
+async def test_incomplete_crawl_does_not_delete_missing_page(tmp_path: Path) -> None:
+    old_file = tmp_path / "docs" / "old.md"
+    old_file.parent.mkdir(parents=True)
+    old_file.write_text("old", encoding="utf-8")
+    source = {
+        "url": "https://example.com/docs/",
+        "page_hashes": {"docs/old.md": "old-hash"},
+        "page_manifest": {
+            "docs/old.md": {
+                "file_path": "docs/old.md",
+                "canonical_url": "https://example.com/docs/old",
+                "content_hash": "old-hash",
+                "status": "active",
+            }
+        },
+    }
+    result = CrawlResult(
+        pages=[
+            CrawledPage(
+                url="https://example.com/docs/",
+                title="Home",
+                markdown="# Home",
+                content_hash="home-hash",
+            )
+        ],
+        truncated=True,
+    )
+
+    async def fake_crawl(*_args, **_kwargs):
+        return result
+
+    with patch("deeptutor.services.web_source.crawler.crawl_docs_site", new=fake_crawl):
+        diff = await crawl_and_diff(source, tmp_path)
+
+    assert diff.pages_removed == []
+    assert diff.pages_unresolved == ["docs/old.md"]
+    assert old_file.exists()
+    assert diff.page_manifest["docs/old.md"]["status"] == "unknown"
+
+
+@pytest.mark.asyncio
+async def test_complete_crawl_marks_missing_page_deleted(tmp_path: Path) -> None:
+    old_file = tmp_path / "docs" / "old.md"
+    old_file.parent.mkdir(parents=True)
+    old_file.write_text("old", encoding="utf-8")
+    source = {
+        "url": "https://example.com/docs/",
+        "page_hashes": {"docs/old.md": "old-hash"},
+        "page_manifest": {
+            "docs/old.md": {
+                "file_path": "docs/old.md",
+                "content_hash": "old-hash",
+                "status": "active",
+            }
+        },
+    }
+    result = CrawlResult(
+        pages=[
+            CrawledPage(
+                url="https://example.com/docs/",
+                title="Home",
+                markdown="# Home",
+                content_hash="home-hash",
+            )
+        ]
+    )
+
+    async def fake_crawl(*_args, **_kwargs):
+        return result
+
+    with patch("deeptutor.services.web_source.crawler.crawl_docs_site", new=fake_crawl):
+        diff = await crawl_and_diff(source, tmp_path)
+
+    assert diff.pages_removed == ["docs/old.md"]
+    assert old_file.exists()
+    assert diff.page_manifest["docs/old.md"]["status"] == "deleted"
+
+
+@pytest.mark.asyncio
 async def test_fetch_page_blocks_private_redirect_before_request():
     requested: list[str] = []
 

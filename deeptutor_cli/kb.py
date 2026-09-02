@@ -356,6 +356,17 @@ def register(app: typer.Typer) -> None:
         url: str = typer.Option(..., "--url", "-u", help="Documentation site base URL."),
         max_depth: int = typer.Option(3, "--max-depth", help="Crawl depth."),
         max_pages: int = typer.Option(200, "--max-pages", help="Max pages to crawl."),
+        language: str = typer.Option("auto", "--language", help="Source language: auto, en, zh."),
+        paired_url: str = typer.Option("", "--paired-url", help="Counterpart documentation URL."),
+        document_version: str = typer.Option(
+            "", "--document-version", help="Document/product version."
+        ),
+        validation_query: list[str] = typer.Option(
+            [], "--validation-query", help="Representative query used to validate an index."
+        ),
+        sync_interval_hours: int = typer.Option(
+            24, "--sync-interval-hours", help="Scheduled sync interval in hours."
+        ),
     ) -> None:
         """Add a documentation site URL as a source for a KB."""
         mgr = _get_kb_manager()
@@ -363,7 +374,17 @@ def register(app: typer.Typer) -> None:
             console.print(f"[red]Knowledge base '{name}' not found.[/]")
             raise typer.Exit(code=1)
         try:
-            info = mgr.add_web_source(name, url, max_depth, max_pages)
+            info = mgr.add_web_source(
+                name,
+                url,
+                max_depth,
+                max_pages,
+                language=language,
+                paired_url=paired_url,
+                document_version=document_version,
+                validation_queries=list(validation_query),
+                sync_interval_hours=sync_interval_hours,
+            )
         except Exception as exc:
             console.print(f"[red]Failed: {exc}[/]")
             raise typer.Exit(code=1) from exc

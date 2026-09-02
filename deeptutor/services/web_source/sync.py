@@ -180,6 +180,8 @@ async def sync_source(
         kb_name=kb_name,
         source_id=source["id"],
         page_hashes=diff.page_hashes,
+        page_manifest=diff.page_manifest,
+        pages_unresolved=len(diff.pages_unresolved),
         page_count=diff.page_count,
         last_synced_at=_utcnow_iso(),
         last_sync_status="success",

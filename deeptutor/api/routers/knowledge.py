@@ -28,7 +28,7 @@ from fastapi import (
     WebSocket,
     WebSocketDisconnect,
 )
-from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from deeptutor.api.routers.auth import require_admin
@@ -81,6 +81,13 @@ from deeptutor.services.rag.pipelines.ima.config import (
     ImaConfig,
     ImaCredentials,
     get_account_credentials,
+)
+from deeptutor.services.web_source.jobs import WebSyncConflictError, submit_web_sync
+from deeptutor.services.web_source.jobs import (
+    cancel_web_sync_job as cancel_web_sync_job_service,
+)
+from deeptutor.services.web_source.jobs import (
+    get_web_sync_job as get_web_sync_job_service,
 )
 from deeptutor.utils.document_extractor import (
     MAX_EXTRACTED_CHARS_PER_DOC,
@@ -3746,6 +3753,11 @@ class AddWebSourceRequest(BaseModel):
     url: str = Field(min_length=1, max_length=2048)
     max_depth: int = Field(default=3, ge=1, le=5)
     max_pages: int = Field(default=200, ge=1, le=200)
+    language: str = Field(default="auto", pattern="^(auto|en|zh)$")
+    paired_url: str = Field(default="", max_length=2048)
+    document_version: str = Field(default="", max_length=128)
+    validation_queries: list[str] = Field(default_factory=list, max_length=10)
+    sync_interval_hours: int = Field(default=24, ge=1, le=720)
 
 
 class WebSourceInfo(BaseModel):
@@ -3760,6 +3772,57 @@ class WebSourceInfo(BaseModel):
     last_sync_error: str | None = None
     added_at: str = ""
     navigation: dict | None = None
+    language: str = ""
+    pairing_key: str = ""
+    pair_key: str = ""
+    pair_status: str = ""
+    paired_source_id: str = ""
+    paired_url: str = ""
+    coverage: float | None = None
+    latest_sync_job: str = ""
+    document_version: str = ""
+    validation_queries: list[str] = Field(default_factory=list)
+    sync_interval_hours: int = 24
+    next_sync_at: str = ""
+
+
+class WebSyncJobInfo(BaseModel):
+    job_id: str
+    kb_name: str
+    trigger: str = "manual"
+    status: str
+    progress: int = 0
+    message: str = ""
+    result: dict | None = None
+    error: str | None = None
+    created_at: str = ""
+    started_at: str = ""
+    finished_at: str = ""
+
+
+class WebNavNode(BaseModel):
+    id: str = ""
+    title: str = ""
+    url: str = ""
+    file_path: str = ""
+    children: list["WebNavNode"] = Field(default_factory=list)
+    title_zh: str = ""
+    file_path_zh: str = ""
+    page_class: str = ""
+    pair_key: str = ""
+
+
+WebNavNode.model_rebuild()
+
+
+class WebNavigationSource(BaseModel):
+    source_id: str = ""
+    source_url: str = ""
+    kind: str = ""
+    nodes: list[WebNavNode] = Field(default_factory=list)
+    language: str = ""
+    pair_key: str = ""
+    pair_status: str = ""
 
 
 @router.post("/knowledge-bases/{kb_name}/github-source", response_model=GitHubSourceInfo)
@@ -3848,7 +3911,15 @@ async def add_web_source(kb_name: str, request: AddWebSourceRequest):
     try:
         manager, resolved_name, _ = _writable_kb(kb_name)
         info = manager.add_web_source(
-            resolved_name, request.url, request.max_depth, request.max_pages
+            resolved_name,
+            request.url,
+            request.max_depth,
+            request.max_pages,
+            language=request.language,
+            paired_url=request.paired_url,
+            document_version=request.document_version,
+            validation_queries=request.validation_queries,
+            sync_interval_hours=request.sync_interval_hours,
         )
         return WebSourceInfo(**info)
     except HTTPException:
@@ -3891,54 +3962,139 @@ async def remove_web_source(kb_name: str, source_id: str):
 
 @router.post("/knowledge-bases/{kb_name}/sync-web")
 async def sync_web_sources(kb_name: str):
-    """Run one bounded crawl-and-sync pass for every enabled web source."""
+    """Queue one bounded bilingual sync pass and return a durable job handle."""
     try:
         manager, resolved_name, kb_base_dir = _writable_kb(kb_name)
         sources = manager.get_web_sources(resolved_name)
-        if not sources:
-            return {"message": "No web sources", "results": []}
-        from deeptutor.services.web_source.sync import sync_source
-
-        enabled = [s for s in sources if s.get("enabled", True)]
-        if not enabled:
-            return {"message": "No enabled web sources", "results": []}
-
-        results = []
-        for source in enabled:
-            result = await sync_source(
-                kb_name=resolved_name,
-                source=source,
-                base_dir=str(kb_base_dir),
-                max_depth=source.get("max_depth"),
-                max_pages=source.get("max_pages"),
-            )
-            refreshed = manager.get_web_sources(resolved_name)
-            page_count = next(
-                (
-                    item.get("page_count", 0)
-                    for item in refreshed
-                    if item.get("id") == source.get("id")
+        job = submit_web_sync(
+            kb_name=resolved_name,
+            sources=sources,
+            kb_base_dir=kb_base_dir,
+            trigger="manual",
+        )
+        return JSONResponse(
+            status_code=202,
+            content={
+                **job,
+                "status_url": (
+                    f"/api/knowledge-bases/{resolved_name}/web-sync-jobs/{job['job_id']}"
                 ),
-                source.get("page_count", 0),
-            )
-            results.append(
-                {
-                    "source_id": source.get("id"),
-                    "url": source.get("url"),
-                    "ok": result.ok,
-                    "page_count": page_count,
-                    "pages_added": result.pages_added,
-                    "pages_updated": result.pages_updated,
-                    "pages_removed": result.pages_removed,
-                    "pages_unchanged": result.pages_unchanged,
-                    "error": result.error or None,
-                }
-            )
+            },
+        )
+    except WebSyncConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "A web source sync is already running",
+                "job_id": exc.job.get("job_id"),
+            },
+        ) from exc
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.get(
+    "/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}",
+    response_model=WebSyncJobInfo,
+)
+async def get_web_sync_job(kb_name: str, job_id: str):
+    try:
+        _, resolved_name, kb_base_dir = _writable_kb(kb_name)
+        job = get_web_sync_job_service(kb_base_dir, resolved_name, job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail=f"Web sync job '{job_id}' not found")
+        return WebSyncJobInfo(**job)
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post(
+    "/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}/cancel",
+    response_model=WebSyncJobInfo,
+)
+async def cancel_web_sync_job(kb_name: str, job_id: str):
+    try:
+        _, resolved_name, kb_base_dir = _writable_kb(kb_name)
+        job = await cancel_web_sync_job_service(kb_base_dir, resolved_name, job_id)
+        return WebSyncJobInfo(**job)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Web sync job '{job_id}' not found") from exc
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/knowledge-bases/{kb_name}/web-navigation",
+    response_model=list[WebNavigationSource],
+)
+async def get_web_navigation(kb_name: str):
+    """Return merged bilingual navigation, falling back to per-source manifests."""
+    try:
+        manager, resolved_name, _ = _writable_kb(kb_name)
+        from deeptutor.services.web_source import bilingual_store
+
+        kb_dir = Path(manager.base_dir) / resolved_name
+        merged: list[dict] = []
+        for pair_key in bilingual_store.list_pair_keys(kb_dir):
+            index = bilingual_store.load_pair_index(kb_dir, pair_key) or {}
+            navigation = index.get("navigation", {})
+            if navigation.get("nodes"):
+                merged.append(
+                    {
+                        "source_id": pair_key,
+                        "source_url": index.get("origin", ""),
+                        "kind": navigation.get("kind", "inferred"),
+                        "nodes": navigation["nodes"],
+                        "language": "en+zh" if index.get("status") == "bilingual" else "en",
+                        "pair_key": pair_key,
+                        "pair_status": index.get("status", ""),
+                    }
+                )
+        if merged:
+            return [WebNavigationSource(**item) for item in merged]
+        return [WebNavigationSource(**item) for item in manager.get_web_navigation(resolved_name)]
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/knowledge-bases/{kb_name}/bilingual-page")
+async def get_bilingual_page(kb_name: str, file_path: str):
+    """Return one page alignment, or an empty alignment for a regular raw file."""
+    try:
+        manager, resolved_name, _ = _writable_kb(kb_name)
+        from deeptutor.services.web_source import bilingual_store
+
+        kb_dir = Path(manager.base_dir) / resolved_name
+        alignment = bilingual_store.load_alignment_for_any_pair(kb_dir, file_path)
+        if alignment is not None:
+            return alignment
+
+        raw_dir = (kb_dir / "raw").resolve()
+        candidate = (raw_dir / file_path).resolve()
+        if not candidate.is_relative_to(raw_dir) or not candidate.is_file():
+            raise HTTPException(status_code=404, detail=f"File '{file_path}' not found")
         return {
-            "message": f"Synced {len(results)} source(s)",
-            "ok": all(result["ok"] for result in results),
-            "results": results,
+            "page_class": "en_only",
+            "groups": [],
+            "review_count": 0,
+            "file_path": file_path,
+            "note": "No bilingual alignment for this file.",
         }
     except HTTPException:
         raise
