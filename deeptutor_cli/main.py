@@ -17,6 +17,7 @@ from .doctor import register as register_doctor
 from .init_cmd import register as register_init
 from .kb import register as register_kb
 from .memory import register as register_memory
+from .migrate import register as register_migrate
 from .notebook import register as register_notebook
 from .partner import register as register_partner
 from .plugin import register as register_plugin
@@ -72,6 +73,7 @@ register_provider(provider_app)
 register_book(book_app)
 register_doctor(app)
 register_init(app)
+register_migrate(app)
 
 
 @app.command("run")
