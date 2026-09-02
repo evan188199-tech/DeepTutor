@@ -4586,5 +4586,11 @@
   "Configure Redis before enabling multiple workers.": "Configure Redis before enabling multiple workers.",
   "Development reload and multiple workers cannot run together.": "Development reload and multiple workers cannot run together.",
   "Lease TTL must be between 5 and 300 seconds.": "Lease TTL must be between 5 and 300 seconds.",
-  "Recovery interval must be between 1 and 60 seconds.": "Recovery interval must be between 1 and 60 seconds."
+  "Recovery interval must be between 1 and 60 seconds.": "Recovery interval must be between 1 and 60 seconds.",
+  "registration.closed": "Registration is closed. Ask an administrator to create an account.",
+  "access.title": "Temporary access",
+  "access.preparing": "Preparing a secure connection…",
+  "access.redirecting": "Opening the current secure address…",
+  "access.securityNote": "This handoff is valid for 60 seconds and can be used once.",
+  "access.handoffFailed": "Could not prepare secure access. Sign in and try again."
 }
