@@ -14,9 +14,10 @@ from urllib.parse import urlsplit
 
 from deeptutor.services.auth import TokenPayload
 
-_TICKET_TTL_SECONDS = 60
-_PAIRING_TTL_SECONDS = 120
+TICKET_TTL_SECONDS = 180
+PAIRING_TTL_SECONDS = 300
 _TUNNEL_SUFFIX = ".trycloudflare.com"
+_FORBIDDEN_COOKIE_NAMES = frozenset({"dt_token"})
 _tickets: dict[str, "_Ticket"] = {}
 _tickets_lock = threading.Lock()
 _pairings: dict[str, "_Pairing"] = {}
@@ -29,12 +30,28 @@ class TunnelState:
     host: str
 
 
+@dataclass(frozen=True)
+class HandoffCookie:
+    name: str
+    value: str
+    path: str = "/"
+    max_age: int = 0
+
+
+@dataclass(frozen=True)
+class SessionHandoff:
+    redirect_path: str = "/"
+    cookies: tuple[HandoffCookie, ...] = ()
+    clear_cookie_names: tuple[str, ...] = ()
+
+
 @dataclass
 class _Ticket:
     code_digest: str
     payload: TokenPayload
     target_host: str
     expires_at: float
+    handoff: SessionHandoff = SessionHandoff()
     used: bool = False
 
 
@@ -42,6 +59,7 @@ class _Ticket:
 class _Pairing:
     payload: TokenPayload
     expires_at: float
+    handoff: SessionHandoff = SessionHandoff()
 
 
 def _tunnel_file() -> Path:
@@ -58,6 +76,79 @@ def _valid_tunnel_host(host: str | None) -> bool:
         and host == host.lower()
         and all(part and part.isalnum() for part in host[: -len(_TUNNEL_SUFFIX)].split("-"))
     )
+
+
+def _valid_redirect_path(redirect_path: str) -> bool:
+    if (
+        not redirect_path.startswith("/")
+        or redirect_path.startswith("//")
+        or redirect_path.startswith(r"/\\")
+        or "\\" in redirect_path
+    ):
+        return False
+    if len(redirect_path) > 2048 or any(
+        ord(character) < 0x21 or ord(character) > 0x7E for character in redirect_path
+    ):
+        return False
+    lower = redirect_path.lower()
+    if "%5c" in lower:
+        return False
+    parsed = urlsplit(redirect_path)
+    return not parsed.scheme and not parsed.netloc and not parsed.fragment
+
+
+def _valid_cookie_name(name: str) -> bool:
+    forbidden = {'(', ')', '<', '>', '@', ',', ';', ':', '"', '/', '[', ']', '?', '=', '{', '}', '\\'}
+    return (
+        0 < len(name) <= 128
+        and name.lower() not in _FORBIDDEN_COOKIE_NAMES
+        and all(0x21 <= ord(character) <= 0x7E for character in name)
+        and not any(character in forbidden for character in name)
+    )
+
+
+def _valid_cookie_value(value: str) -> bool:
+    forbidden = {';', '"', '\\'}
+    return (
+        0 < len(value) <= 1024
+        and all(0x21 <= ord(character) <= 0x7E for character in value)
+        and not any(character in forbidden for character in value)
+    )
+
+
+def _valid_cookie_path(path: str) -> bool:
+    forbidden = {';', ',', '"', '?', '#', '\\'}
+    return (
+        path.startswith('/')
+        and len(path) <= 512
+        and all(0x21 <= ord(character) <= 0x7E for character in path)
+        and not any(character in forbidden for character in path)
+    )
+
+
+def _valid_handoff(handoff: SessionHandoff) -> bool:
+    if not _valid_redirect_path(handoff.redirect_path):
+        return False
+    if len(handoff.cookies) > 8 or len(handoff.clear_cookie_names) > 8:
+        return False
+    if any(not _valid_cookie_name(name) for name in handoff.clear_cookie_names):
+        return False
+    cookie_names: set[str] = set()
+    for cookie in handoff.cookies:
+        if not _valid_cookie_name(cookie.name):
+            return False
+        if cookie.name in cookie_names:
+            return False
+        cookie_names.add(cookie.name)
+        if not _valid_cookie_value(cookie.value):
+            return False
+        if not _valid_cookie_path(cookie.path):
+            return False
+        if not (0 < cookie.max_age <= 30 * 24 * 60 * 60):
+            return False
+    if cookie_names.intersection(set(handoff.clear_cookie_names)):
+        return False
+    return True
 
 
 def load_tunnel_state() -> TunnelState | None:
@@ -90,8 +181,16 @@ def _prune(now: float) -> None:
         _tickets.pop(key, None)
 
 
-def create_ticket(payload: TokenPayload, now: float | None = None) -> tuple[str, TunnelState]:
+def create_ticket(
+    payload: TokenPayload,
+    now: float | None = None,
+    *,
+    handoff: SessionHandoff | None = None,
+) -> tuple[str, TunnelState]:
     """Create a single-use ticket and return (plaintext code, target tunnel)."""
+    ticket_handoff = SessionHandoff() if handoff is None else handoff
+    if not _valid_handoff(ticket_handoff):
+        raise ValueError("Invalid session handoff payload")
     state = load_tunnel_state()
     if state is None:
         raise ValueError("No active DeepTutor tunnel is configured")
@@ -105,13 +204,22 @@ def create_ticket(payload: TokenPayload, now: float | None = None) -> tuple[str,
             code_digest=digest,
             payload=payload,
             target_host=state.host,
-            expires_at=current + _TICKET_TTL_SECONDS,
+            expires_at=current + TICKET_TTL_SECONDS,
+            handoff=ticket_handoff,
         )
     return code, state
 
 
-def create_pairing(payload: TokenPayload, now: float | None = None) -> tuple[str, int]:
+def create_pairing(
+    payload: TokenPayload,
+    now: float | None = None,
+    *,
+    handoff: SessionHandoff | None = None,
+) -> tuple[str, int]:
     """Create a one-time phone pairing capability without exposing a login code."""
+    pairing_handoff = SessionHandoff() if handoff is None else handoff
+    if not _valid_handoff(pairing_handoff):
+        raise ValueError("Invalid session handoff payload")
     current = time.time() if now is None else now
     pairing_id = secrets.token_urlsafe(32)
     digest = hashlib.sha256(pairing_id.encode("utf-8")).hexdigest()
@@ -121,12 +229,16 @@ def create_pairing(payload: TokenPayload, now: float | None = None) -> tuple[str
             _pairings.pop(key, None)
         _pairings[digest] = _Pairing(
             payload=payload,
-            expires_at=current + _PAIRING_TTL_SECONDS,
+            expires_at=current + PAIRING_TTL_SECONDS,
+            handoff=pairing_handoff,
         )
-    return pairing_id, _PAIRING_TTL_SECONDS
+    return pairing_id, PAIRING_TTL_SECONDS
 
 
-def exchange_pairing(pairing_id: str, now: float | None = None) -> TokenPayload | None:
+def exchange_pairing_details(
+    pairing_id: str,
+    now: float | None = None,
+) -> tuple[TokenPayload, SessionHandoff] | None:
     """Atomically exchange a pairing capability for its authenticated payload."""
     if not pairing_id:
         return None
@@ -138,7 +250,12 @@ def exchange_pairing(pairing_id: str, now: float | None = None) -> TokenPayload 
             _pairings.pop(digest, None)
             return None
         _pairings.pop(digest, None)
-        return pairing.payload
+        return pairing.payload, pairing.handoff
+
+
+def exchange_pairing(pairing_id: str, now: float | None = None) -> TokenPayload | None:
+    exchanged = exchange_pairing_details(pairing_id, now)
+    return exchanged[0] if exchanged else None
 
 
 def consume_ticket(
@@ -146,6 +263,15 @@ def consume_ticket(
     target_host: str | None,
     now: float | None = None,
 ) -> TokenPayload | None:
+    consumed = consume_ticket_details(code, target_host, now)
+    return consumed[0] if consumed else None
+
+
+def consume_ticket_details(
+    code: str,
+    target_host: str | None,
+    now: float | None = None,
+) -> tuple[TokenPayload, SessionHandoff] | None:
     """Atomically consume a ticket for exactly its intended tunnel host."""
     if not code or not target_host:
         return None
@@ -165,11 +291,11 @@ def consume_ticket(
             return None
         ticket.used = True
         _tickets.pop(digest, None)
-        return ticket.payload
+        return ticket.payload, ticket.handoff
 
 
 def clear_tickets() -> None:
-    """Test helper; production state naturally expires in 60 seconds."""
+    """Test helper; production state naturally expires after the ticket TTL."""
     with _tickets_lock:
         _tickets.clear()
 

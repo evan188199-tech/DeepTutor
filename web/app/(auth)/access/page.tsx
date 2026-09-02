@@ -20,6 +20,8 @@ interface PairingResponse {
 export default function AccessPage() {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
+  const handoffSubmittedRef = useRef(false);
+  const directRequestStartedRef = useRef(false);
   const [pairing, setPairing] = useState<PairingResponse | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [loadingPairing, setLoadingPairing] = useState(true);
@@ -32,7 +34,7 @@ export default function AccessPage() {
 
   useEffect(() => {
     let cancelled = false;
-    apiFetch("/api/v1/auth/handoff/pairing", { method: "POST" })
+    apiFetch("/api/auth/handoff/pairing", { method: "POST" })
       .then(async (res) => {
         if (!res.ok) throw new Error("pairing request failed");
         const data = (await res.json()) as PairingResponse;
@@ -68,10 +70,11 @@ export default function AccessPage() {
   }, [timeLeft]);
 
   const handleDirectAccess = () => {
-    if (directLoading) return;
+    if (directLoading || directRequestStartedRef.current) return;
+    directRequestStartedRef.current = true;
     setDirectLoading(true);
     setDirectError("");
-    apiFetch("/api/v1/auth/handoff", { method: "POST" })
+    apiFetch("/api/auth/handoff", { method: "POST" })
       .then(async (res) => {
         if (!res.ok) throw new Error("handoff failed");
         const payload = (await res.json()) as HandoffResponse;
@@ -80,11 +83,15 @@ export default function AccessPage() {
       .catch(() => {
         setDirectError(t("access.handoffFailed"));
         setDirectLoading(false);
+        directRequestStartedRef.current = false;
       });
   };
 
   useEffect(() => {
-    if (handoff) formRef.current?.submit();
+    if (handoff && !handoffSubmittedRef.current) {
+      handoffSubmittedRef.current = true;
+      formRef.current?.submit();
+    }
   }, [handoff]);
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
@@ -192,7 +199,7 @@ export default function AccessPage() {
         <form
           ref={formRef}
           method="POST"
-          action={`${handoff.tunnel_url}/api/v1/auth/handoff/consume`}
+          action={`${handoff.tunnel_url}/api/auth/handoff/consume`}
           className="hidden"
         >
           <input type="hidden" name="code" value={handoff.code} />

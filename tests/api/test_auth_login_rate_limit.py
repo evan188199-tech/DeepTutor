@@ -27,7 +27,7 @@ def login_client(mu_isolated_root, monkeypatch):
 
     app = FastAPI()
     app.include_router(auth_router.router, prefix="/api/v1/auth")
-    return TestClient(app)
+    return TestClient(app, base_url="http://localhost")
 
 
 def test_sixth_failed_login_from_one_ip_is_rejected(login_client):

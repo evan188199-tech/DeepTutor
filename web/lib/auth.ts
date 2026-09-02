@@ -143,7 +143,7 @@ export interface RegistrationStatus {
 
 export async function fetchRegistrationStatus(): Promise<RegistrationStatus | null> {
   try {
-    const res = await apiFetch(apiUrl("/api/v1/auth/is_first_user"));
+    const res = await apiFetch(apiUrl("/api/auth/is_first_user"));
     if (!res.ok) return null;
     return (await res.json()) as RegistrationStatus;
   } catch {

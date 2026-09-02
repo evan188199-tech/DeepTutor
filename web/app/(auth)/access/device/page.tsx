@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Loader2, Smartphone } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 interface HandoffResponse {
   tunnel_url: string;
@@ -16,14 +17,17 @@ function DeviceAccessContent() {
   const searchParams = useSearchParams();
   const pairingId = searchParams.get("pairing");
   const formRef = useRef<HTMLFormElement>(null);
+  const exchangedPairingRef = useRef<string | null>(null);
+  const handoffSubmittedRef = useRef(false);
   const [handoff, setHandoff] = useState<HandoffResponse | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!pairingId) return;
+    if (!pairingId || exchangedPairingRef.current === pairingId) return;
+    exchangedPairingRef.current = pairingId;
 
     let cancelled = false;
-    fetch(`/api/v1/auth/handoff/pairing/${encodeURIComponent(pairingId)}`, {
+    apiFetch(`/api/auth/handoff/pairing/${encodeURIComponent(pairingId)}`, {
       method: "GET",
       headers: { "Cache-Control": "no-store" },
     })
@@ -33,7 +37,10 @@ function DeviceAccessContent() {
         if (!cancelled) setHandoff(data);
       })
       .catch(() => {
-        if (!cancelled) setError(t("access.deviceFailed"));
+        if (!cancelled) {
+          exchangedPairingRef.current = null;
+          setError(t("access.deviceFailed"));
+        }
       });
 
     return () => {
@@ -42,7 +49,10 @@ function DeviceAccessContent() {
   }, [pairingId, t]);
 
   useEffect(() => {
-    if (handoff) formRef.current?.submit();
+    if (handoff && !handoffSubmittedRef.current) {
+      handoffSubmittedRef.current = true;
+      formRef.current?.submit();
+    }
   }, [handoff]);
 
   const displayError = !pairingId ? t("access.deviceFailed") : error;
@@ -81,7 +91,7 @@ function DeviceAccessContent() {
         <form
           ref={formRef}
           method="POST"
-          action={`${handoff.tunnel_url}/api/v1/auth/handoff/consume`}
+          action={`${handoff.tunnel_url}/api/auth/handoff/consume`}
           className="hidden"
         >
           <input type="hidden" name="code" value={handoff.code} />
