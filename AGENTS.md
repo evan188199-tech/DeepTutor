@@ -1,5 +1,8 @@
 # DeepTutor — Agent-Native Architecture
 
+For feature development, bug fixes, branching, isolated worktrees, ports, and
+local product deployment, follow `DEVELOPMENT_WORKFLOW.md` in this repository.
+
 ## Overview
 
 DeepTutor is an **agent-native** intelligent learning companion organized
@@ -10,7 +13,7 @@ through three entry points: CLI, WebSocket API, and Python SDK.
 ## Architecture
 
 ```
-Entry Points:  CLI (Typer)  |  WebSocket /ws  |  Python SDK
+Entry Points:  CLI (Typer)  |  WebSocket /api/v1/ws  |  Python SDK
                     ↓                   ↓                   ↓
               ┌─────────────────────────────────────────────────┐
               │              ChatOrchestrator                    │
