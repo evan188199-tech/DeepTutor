@@ -172,6 +172,86 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/auth/handoff": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Create Tunnel Handoff
+     * @description Create a short-lived, single-use cross-origin session handoff.
+     */
+    readonly post: operations["create_tunnel_handoff_api_auth_handoff_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/auth/handoff/consume": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Consume Tunnel Handoff
+     * @description Exchange a valid one-time code for a cookie scoped to the tunnel host.
+     */
+    readonly post: operations["consume_tunnel_handoff_api_auth_handoff_consume_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/auth/handoff/pairing": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Create Tunnel Handoff Pairing
+     * @description Create a QR pairing capability without putting a login code in its URL.
+     */
+    readonly post: operations["create_tunnel_handoff_pairing_api_auth_handoff_pairing_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/auth/handoff/pairing/{pairing_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Exchange Tunnel Handoff Pairing
+     * @description Exchange a scanned pairing capability for a fresh one-time handoff.
+     */
+    readonly get: operations["exchange_tunnel_handoff_pairing_api_auth_handoff_pairing__pairing_id__get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/auth/is_first_user": {
     readonly parameters: {
       readonly query?: never;
@@ -833,6 +913,26 @@ export interface paths {
     readonly put?: never;
     /** Set Page Chat Session */
     readonly post: operations["set_page_chat_session_api_books_page_chat_session_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/books/pause": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Pause Book
+     * @description Persist a manual pause, cancel in-flight work, and keep completed output.
+     */
+    readonly post: operations["pause_book_api_books_pause_post"];
     readonly delete?: never;
     readonly options?: never;
     readonly head?: never;
@@ -1532,6 +1632,26 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/knowledge-bases/{kb_name}/bilingual-page": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Get Bilingual Page
+     * @description Return one page alignment, or an empty alignment for a regular raw file.
+     */
+    readonly get: operations["get_bilingual_page_api_knowledge_bases__kb_name__bilingual_page_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/knowledge-bases/{kb_name}/config": {
     readonly parameters: {
       readonly query?: never;
@@ -1933,7 +2053,7 @@ export interface paths {
     readonly put?: never;
     /**
      * Sync Web Sources
-     * @description Run one bounded crawl-and-sync pass for every enabled web source.
+     * @description Queue one bounded bilingual sync pass and return a durable job handle.
      */
     readonly post: operations["sync_web_sources_api_knowledge_bases__kb_name__sync_web_post"];
     readonly delete?: never;
@@ -1962,6 +2082,26 @@ export interface paths {
      *     belongs instead of piling every batch at the root (#866).
      */
     readonly post: operations["upload_files_api_knowledge_bases__kb_name__upload_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/knowledge-bases/{kb_name}/web-navigation": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Get Web Navigation
+     * @description Return merged bilingual navigation, falling back to per-source manifests.
+     */
+    readonly get: operations["get_web_navigation_api_knowledge_bases__kb_name__web_navigation_get"];
+    readonly put?: never;
+    readonly post?: never;
     readonly delete?: never;
     readonly options?: never;
     readonly head?: never;
@@ -2013,6 +2153,40 @@ export interface paths {
     readonly get: operations["get_web_sources_api_knowledge_bases__kb_name__web_sources_get"];
     readonly put?: never;
     readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** Get Web Sync Job */
+    readonly get: operations["get_web_sync_job_api_knowledge_bases__kb_name__web_sync_jobs__job_id__get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}/cancel": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Cancel Web Sync Job */
+    readonly post: operations["cancel_web_sync_job_api_knowledge_bases__kb_name__web_sync_jobs__job_id__cancel_post"];
     readonly delete?: never;
     readonly options?: never;
     readonly head?: never;
@@ -3490,11 +3664,11 @@ export interface paths {
     };
     /**
      * Stream Run Events
-     * @description SSE-replay events from ``since`` (exclusive) until the run ends.
+     * @description SSE-replay events from the next sequence cursor until the run ends.
      *
-     *     Reconnecting after a refresh: pass the largest ``seq`` previously
-     *     observed. The manager replays the buffered tail, then blocks on
-     *     new events until the run reaches a terminal state.
+     *     Reconnecting after a refresh: pass ``last_seen_seq + 1``. The manager
+     *     replays the buffered tail, then blocks on new events until the run reaches
+     *     a terminal state.
      */
     readonly get: operations["stream_run_events_api_memory_runs__run_id__events_get"];
     readonly put?: never;
@@ -8091,6 +8265,74 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/video-learning/devices": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** List Devices */
+    readonly get: operations["list_devices_api_video_learning_devices_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/devices/{device_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    readonly post?: never;
+    /** Revoke Device */
+    readonly delete: operations["revoke_device_api_video_learning_devices__device_id__delete"];
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/devices/{device_id}/commands": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Create Device Command */
+    readonly post: operations["create_device_command_api_video_learning_devices__device_id__commands_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/devices/{device_id}/commands/{command_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** Get Device Command */
+    readonly get: operations["get_device_command_api_video_learning_devices__device_id__commands__command_id__get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/video-learning/materials/{material_id}": {
     readonly parameters: {
       readonly query?: never;
@@ -8106,6 +8348,58 @@ export interface paths {
     readonly options?: never;
     readonly head?: never;
     readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/materials/{material_id}/mark-suggestions": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Suggest Video Marks */
+    readonly post: operations["suggest_video_marks_api_video_learning_materials__material_id__mark_suggestions_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/materials/{material_id}/marks": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Create Video Mark */
+    readonly post: operations["create_video_mark_api_video_learning_materials__material_id__marks_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/materials/{material_id}/marks/{mark_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    readonly post?: never;
+    /** Delete Video Mark */
+    readonly delete: operations["delete_video_mark_api_video_learning_materials__material_id__marks__mark_id__delete"];
+    readonly options?: never;
+    readonly head?: never;
+    /** Update Video Mark */
+    readonly patch: operations["update_video_mark_api_video_learning_materials__material_id__marks__mark_id__patch"];
     readonly trace?: never;
   };
   readonly "/api/video-learning/materials/{material_id}/notes": {
@@ -8224,6 +8518,212 @@ export interface paths {
     readonly put?: never;
     /** Resolve Video */
     readonly post: operations["resolve_video_api_video_learning_materials_resolve_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/player/commands/{command_id}/ack": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Ack Player Command */
+    readonly post: operations["ack_player_command_api_video_learning_player_commands__command_id__ack_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/player/device-commands/{command_id}/ack": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Ack Device Command */
+    readonly post: operations["ack_device_command_api_video_learning_player_device_commands__command_id__ack_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/player/phone-handoff": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Create Player Phone Handoff */
+    readonly post: operations["create_player_phone_handoff_api_video_learning_player_phone_handoff_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/player/presence": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Player Presence */
+    readonly post: operations["player_presence_api_video_learning_player_presence_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/player/sync": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Player Sync */
+    readonly post: operations["player_sync_api_video_learning_player_sync_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/renderers": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Create Renderer */
+    readonly post: operations["create_renderer_api_video_learning_renderers_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/renderers/bootstrap": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Bootstrap Renderer */
+    readonly post: operations["bootstrap_renderer_api_video_learning_renderers_bootstrap_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/sessions": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** List Sessions */
+    readonly get: operations["list_sessions_api_video_learning_sessions_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/sessions/{session_id}/annotations": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** List Session Annotations */
+    readonly get: operations["list_session_annotations_api_video_learning_sessions__session_id__annotations_get"];
+    readonly put?: never;
+    /** Create Session Annotation */
+    readonly post: operations["create_session_annotation_api_video_learning_sessions__session_id__annotations_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/sessions/{session_id}/annotations/{mark_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    readonly post?: never;
+    /** Delete Session Annotation */
+    readonly delete: operations["delete_session_annotation_api_video_learning_sessions__session_id__annotations__mark_id__delete"];
+    readonly options?: never;
+    readonly head?: never;
+    /** Update Session Annotation */
+    readonly patch: operations["update_session_annotation_api_video_learning_sessions__session_id__annotations__mark_id__patch"];
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/sessions/{session_id}/commands": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Create Session Command */
+    readonly post: operations["create_session_command_api_video_learning_sessions__session_id__commands_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/sessions/{session_id}/commands/{command_id}": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** Get Session Command */
+    readonly get: operations["get_session_command_api_video_learning_sessions__session_id__commands__command_id__get"];
+    readonly put?: never;
+    readonly post?: never;
     readonly delete?: never;
     readonly options?: never;
     readonly head?: never;
@@ -8570,6 +9070,16 @@ export interface components {
     /** AddWebSourceRequest */
     readonly AddWebSourceRequest: {
       /**
+       * Document Version
+       * @default
+       */
+      readonly document_version: string;
+      /**
+       * Language
+       * @default auto
+       */
+      readonly language: string;
+      /**
        * Max Depth
        * @default 3
        */
@@ -8579,8 +9089,20 @@ export interface components {
        * @default 200
        */
       readonly max_pages: number;
+      /**
+       * Paired Url
+       * @default
+       */
+      readonly paired_url: string;
+      /**
+       * Sync Interval Hours
+       * @default 24
+       */
+      readonly sync_interval_hours: number;
       /** Url */
       readonly url: string;
+      /** Validation Queries */
+      readonly validation_queries?: readonly string[];
     };
     /**
      * AdminCreateUserRequest
@@ -8599,6 +9121,19 @@ export interface components {
       readonly preset: "standard" | "learner" | "custom";
       /** Username */
       readonly username: string;
+    };
+    /** AnnotationCreateRequest */
+    readonly AnnotationCreateRequest: {
+      /**
+       * Kind
+       * @default key_point
+       */
+      readonly kind: string;
+      /**
+       * Note
+       * @default
+       */
+      readonly note: string;
     };
     /** AnnotationInfo */
     readonly AnnotationInfo: {
@@ -8687,6 +9222,16 @@ export interface components {
        * @default
        */
       readonly source_anchor: string;
+    };
+    /** AnnotationUpdateRequest */
+    readonly AnnotationUpdateRequest: {
+      /**
+       * Note
+       * @default
+       */
+      readonly note: string;
+      /** Reviewed */
+      readonly reviewed?: boolean | null;
     };
     /**
      * AnswerImageItem
@@ -8845,6 +9390,11 @@ export interface components {
       readonly marked_text: string;
       /** Operation Id */
       readonly operation_id: string;
+    };
+    /** Body_consume_tunnel_handoff_api_auth_handoff_consume_post */
+    readonly Body_consume_tunnel_handoff_api_auth_handoff_consume_post: {
+      /** Code */
+      readonly code: string;
     };
     /** Body_create_knowledge_base_api_knowledge_bases_post */
     readonly Body_create_knowledge_base_api_knowledge_bases_post: {
@@ -9195,6 +9745,33 @@ export interface components {
       readonly model: string;
       /** Reasoning Effort */
       readonly reasoning_effort?: string | null;
+    };
+    /** CommandAckRequest */
+    readonly CommandAckRequest: {
+      /** Error */
+      readonly error?: string | null;
+      /**
+       * Ok
+       * @default true
+       */
+      readonly ok: boolean;
+    };
+    /** CommandRequest */
+    readonly CommandRequest: {
+      /** Command Id */
+      readonly command_id?: string | null;
+      /** Delta Ms */
+      readonly delta_ms?: number | null;
+      /** Muted */
+      readonly muted?: boolean | null;
+      /** Playback Rate */
+      readonly playback_rate?: number | null;
+      /** Position Ms */
+      readonly position_ms?: number | null;
+      /** Type */
+      readonly type: string;
+      /** Volume */
+      readonly volume?: number | null;
     };
     /** CompilePageRequest */
     readonly CompilePageRequest: {
@@ -9678,6 +10255,13 @@ export interface components {
       readonly expected_revision?: number | null;
       /** Page Id */
       readonly page_id: string;
+    };
+    /** DeviceCommandRequest */
+    readonly DeviceCommandRequest: {
+      /** Type */
+      readonly type: string;
+      /** Video Id */
+      readonly video_id: string;
     };
     /**
      * DeviceCredentialCreateRequest
@@ -10492,6 +11076,80 @@ export interface components {
        */
       readonly confirmation: "update-and-restart";
     };
+    /** MarkCreateRequest */
+    readonly MarkCreateRequest: {
+      /**
+       * Author
+       * @default user
+       */
+      readonly author: string;
+      /**
+       * End Locator
+       * @default 0
+       */
+      readonly end_locator: number;
+      /** End Seconds */
+      readonly end_seconds: number;
+      /** Kind */
+      readonly kind: string;
+      /** Metadata */
+      readonly metadata?: {
+        readonly [key: string]: unknown;
+      };
+      /**
+       * Note
+       * @default
+       */
+      readonly note: string;
+      /**
+       * Quote
+       * @default
+       */
+      readonly quote: string;
+      /**
+       * Source
+       * @default immersive
+       */
+      readonly source: string;
+      /**
+       * Start Locator
+       * @default 0
+       */
+      readonly start_locator: number;
+      /** Start Seconds */
+      readonly start_seconds: number;
+    };
+    /** MarkPatchRequest */
+    readonly MarkPatchRequest: {
+      /** End Locator */
+      readonly end_locator?: number | null;
+      /** End Seconds */
+      readonly end_seconds?: number | null;
+      /** Kind */
+      readonly kind?: string | null;
+      /** Metadata */
+      readonly metadata?: {
+        readonly [key: string]: unknown;
+      } | null;
+      /** Note */
+      readonly note?: string | null;
+      /** Quote */
+      readonly quote?: string | null;
+      /** Reviewed */
+      readonly reviewed?: boolean | null;
+      /** Start Locator */
+      readonly start_locator?: number | null;
+      /** Start Seconds */
+      readonly start_seconds?: number | null;
+    };
+    /** MarkSuggestionRequest */
+    readonly MarkSuggestionRequest: {
+      /**
+       * Time Seconds
+       * @default 0
+       */
+      readonly time_seconds: number;
+    };
     /** MaterialDetail */
     readonly MaterialDetail: {
       /**
@@ -10548,6 +11206,8 @@ export interface components {
        * @default
        */
       readonly outline_text: string;
+      readonly reading_progress?:
+        components["schemas"]["ReadingProgressSummary"] | null;
       /**
        * Render Mode
        * @default text
@@ -10630,6 +11290,8 @@ export interface components {
        * @default
        */
       readonly mime: string;
+      readonly reading_progress?:
+        components["schemas"]["ReadingProgressSummary"] | null;
       /**
        * Render Mode
        * @default text
@@ -11143,6 +11805,50 @@ export interface components {
       /** Session Key */
       readonly session_key: string;
     };
+    /** PauseBookRequest */
+    readonly PauseBookRequest: {
+      /** Book Id */
+      readonly book_id: string;
+      /** Expected Revision */
+      readonly expected_revision?: number | null;
+    };
+    /** PlayerSyncRequest */
+    readonly PlayerSyncRequest: {
+      /**
+       * Duration Ms
+       * @default 0
+       */
+      readonly duration_ms: number;
+      /**
+       * Playback Rate
+       * @default 1
+       */
+      readonly playback_rate: number;
+      /**
+       * Playback State
+       * @default unknown
+       */
+      readonly playback_state: string;
+      /**
+       * Position Ms
+       * @default 0
+       */
+      readonly position_ms: number;
+      /**
+       * Renderer Origin
+       * @default
+       */
+      readonly renderer_origin: string;
+      /** Session Id */
+      readonly session_id?: string | null;
+      /**
+       * Title
+       * @default
+       */
+      readonly title: string;
+      /** Video Id */
+      readonly video_id: string;
+    };
     /** PositionInfo */
     readonly PositionInfo: {
       /** Locator */
@@ -11383,6 +12089,15 @@ export interface components {
        */
       readonly tools_used: readonly string[];
     };
+    /** ReadingProgressSummary */
+    readonly ReadingProgressSummary: {
+      /** Last Locator */
+      readonly last_locator: number;
+      /** Last Read At */
+      readonly last_read_at: number;
+      /** Reading Percentage */
+      readonly reading_percentage: number;
+    };
     /** ReadingReference */
     readonly ReadingReference: {
       /** Locators */
@@ -11480,6 +12195,35 @@ export interface components {
     readonly RenameTagRequest: {
       /** Rename To */
       readonly rename_to: string;
+    };
+    /** RendererBootstrapRequest */
+    readonly RendererBootstrapRequest: {
+      /** Ticket */
+      readonly ticket: string;
+    };
+    /** RendererCreateRequest */
+    readonly RendererCreateRequest: {
+      /**
+       * Device Kind
+       * @default renderer
+       */
+      readonly device_kind: string;
+      /**
+       * Device Name
+       * @default Renderer
+       */
+      readonly device_name: string;
+      /** Material Id */
+      readonly material_id?: string | null;
+      /**
+       * Position Seconds
+       * @default 0
+       */
+      readonly position_seconds: number;
+      /** Renderer Origin */
+      readonly renderer_origin?: string | null;
+      /** Video Id */
+      readonly video_id?: string | null;
     };
     /** ResolveRequest */
     readonly ResolveRequest: {
@@ -12135,6 +12879,22 @@ export interface components {
       /** Voice */
       readonly voice?: string | null;
     };
+    /** TunnelHandoffPairingResponse */
+    readonly TunnelHandoffPairingResponse: {
+      /** Expires In */
+      readonly expires_in: number;
+      /** Pairing Id */
+      readonly pairing_id: string;
+    };
+    /** TunnelHandoffResponse */
+    readonly TunnelHandoffResponse: {
+      /** Code */
+      readonly code: string;
+      /** Expires In */
+      readonly expires_in: number;
+      /** Tunnel Url */
+      readonly tunnel_url: string;
+    };
     /**
      * TurnFailureCode
      * @enum {string}
@@ -12758,6 +13518,86 @@ export interface components {
       /** Voice Autoplay */
       readonly voice_autoplay: boolean;
     };
+    /** WebNavigationSource */
+    readonly WebNavigationSource: {
+      /**
+       * Kind
+       * @default
+       */
+      readonly kind: string;
+      /**
+       * Language
+       * @default
+       */
+      readonly language: string;
+      /** Nodes */
+      readonly nodes?: readonly components["schemas"]["WebNavNode"][];
+      /**
+       * Pair Key
+       * @default
+       */
+      readonly pair_key: string;
+      /**
+       * Pair Status
+       * @default
+       */
+      readonly pair_status: string;
+      /**
+       * Source Id
+       * @default
+       */
+      readonly source_id: string;
+      /**
+       * Source Url
+       * @default
+       */
+      readonly source_url: string;
+    };
+    /** WebNavNode */
+    readonly WebNavNode: {
+      /** Children */
+      readonly children?: readonly components["schemas"]["WebNavNode"][];
+      /**
+       * File Path
+       * @default
+       */
+      readonly file_path: string;
+      /**
+       * File Path Zh
+       * @default
+       */
+      readonly file_path_zh: string;
+      /**
+       * Id
+       * @default
+       */
+      readonly id: string;
+      /**
+       * Page Class
+       * @default
+       */
+      readonly page_class: string;
+      /**
+       * Pair Key
+       * @default
+       */
+      readonly pair_key: string;
+      /**
+       * Title
+       * @default
+       */
+      readonly title: string;
+      /**
+       * Title Zh
+       * @default
+       */
+      readonly title_zh: string;
+      /**
+       * Url
+       * @default
+       */
+      readonly url: string;
+    };
     /** WebSourceInfo */
     readonly WebSourceInfo: {
       /**
@@ -12765,6 +13605,13 @@ export interface components {
        * @default
        */
       readonly added_at: string;
+      /** Coverage */
+      readonly coverage?: number | null;
+      /**
+       * Document Version
+       * @default
+       */
+      readonly document_version: string;
       /**
        * Enabled
        * @default true
@@ -12772,6 +13619,11 @@ export interface components {
       readonly enabled: boolean;
       /** Id */
       readonly id: string;
+      /**
+       * Language
+       * @default
+       */
+      readonly language: string;
       /** Last Sync Error */
       readonly last_sync_error?: string | null;
       /**
@@ -12784,6 +13636,11 @@ export interface components {
        * @default
        */
       readonly last_synced_at: string;
+      /**
+       * Latest Sync Job
+       * @default
+       */
+      readonly latest_sync_job: string;
       /**
        * Max Depth
        * @default 3
@@ -12799,12 +13656,94 @@ export interface components {
         readonly [key: string]: unknown;
       } | null;
       /**
+       * Next Sync At
+       * @default
+       */
+      readonly next_sync_at: string;
+      /**
        * Page Count
        * @default 0
        */
       readonly page_count: number;
+      /**
+       * Pair Key
+       * @default
+       */
+      readonly pair_key: string;
+      /**
+       * Pair Status
+       * @default
+       */
+      readonly pair_status: string;
+      /**
+       * Paired Source Id
+       * @default
+       */
+      readonly paired_source_id: string;
+      /**
+       * Paired Url
+       * @default
+       */
+      readonly paired_url: string;
+      /**
+       * Pairing Key
+       * @default
+       */
+      readonly pairing_key: string;
+      /**
+       * Sync Interval Hours
+       * @default 24
+       */
+      readonly sync_interval_hours: number;
       /** Url */
       readonly url: string;
+      /** Validation Queries */
+      readonly validation_queries?: readonly string[];
+    };
+    /** WebSyncJobInfo */
+    readonly WebSyncJobInfo: {
+      /**
+       * Created At
+       * @default
+       */
+      readonly created_at: string;
+      /** Error */
+      readonly error?: string | null;
+      /**
+       * Finished At
+       * @default
+       */
+      readonly finished_at: string;
+      /** Job Id */
+      readonly job_id: string;
+      /** Kb Name */
+      readonly kb_name: string;
+      /**
+       * Message
+       * @default
+       */
+      readonly message: string;
+      /**
+       * Progress
+       * @default 0
+       */
+      readonly progress: number;
+      /** Result */
+      readonly result?: {
+        readonly [key: string]: unknown;
+      } | null;
+      /**
+       * Started At
+       * @default
+       */
+      readonly started_at: string;
+      /** Status */
+      readonly status: string;
+      /**
+       * Trigger
+       * @default manual
+       */
+      readonly trigger: string;
     };
     /** WhiteboardPinRequest */
     readonly WhiteboardPinRequest: {
@@ -12873,9 +13812,13 @@ export type SchemaAddWebSourceRequest =
   components["schemas"]["AddWebSourceRequest"];
 export type SchemaAdminCreateUserRequest =
   components["schemas"]["AdminCreateUserRequest"];
+export type SchemaAnnotationCreateRequest =
+  components["schemas"]["AnnotationCreateRequest"];
 export type SchemaAnnotationInfo = components["schemas"]["AnnotationInfo"];
 export type SchemaAnnotationPayload =
   components["schemas"]["AnnotationPayload"];
+export type SchemaAnnotationUpdateRequest =
+  components["schemas"]["AnnotationUpdateRequest"];
 export type SchemaAnswerImageItem = components["schemas"]["AnswerImageItem"];
 export type SchemaAnswerImageUpload =
   components["schemas"]["AnswerImageUpload"];
@@ -12889,6 +13832,8 @@ export type SchemaAuthStatusResponse =
   components["schemas"]["AuthStatusResponse"];
 export type SchemaAutoMarkRequest = components["schemas"]["AutoMarkRequest"];
 export type SchemaAutoMarkResponse = components["schemas"]["AutoMarkResponse"];
+export type SchemaBodyConsumeTunnelHandoffApiAuthHandoffConsumePost =
+  components["schemas"]["Body_consume_tunnel_handoff_api_auth_handoff_consume_post"];
 export type SchemaBodyCreateKnowledgeBaseApiKnowledgeBasesPost =
   components["schemas"]["Body_create_knowledge_base_api_knowledge_bases_post"];
 export type SchemaBodyImportDocxApiDocumentsImportDocxPost =
@@ -12939,6 +13884,9 @@ export type SchemaChatStarterSettingsUpdate =
   components["schemas"]["ChatStarterSettingsUpdate"];
 export type SchemaCodexReasoningEffortUpdate =
   components["schemas"]["CodexReasoningEffortUpdate"];
+export type SchemaCommandAckRequest =
+  components["schemas"]["CommandAckRequest"];
+export type SchemaCommandRequest = components["schemas"]["CommandRequest"];
 export type SchemaCompilePageRequest =
   components["schemas"]["CompilePageRequest"];
 export type SchemaConfirmPartnerDraftRequest =
@@ -12994,6 +13942,8 @@ export type SchemaDeeptutorApiRoutersVideoLearningProgressRequest =
   components["schemas"]["deeptutor__api__routers__video_learning__ProgressRequest"];
 export type SchemaDeleteBlockRequest =
   components["schemas"]["DeleteBlockRequest"];
+export type SchemaDeviceCommandRequest =
+  components["schemas"]["DeviceCommandRequest"];
 export type SchemaDeviceCredentialCreateRequest =
   components["schemas"]["DeviceCredentialCreateRequest"];
 export type SchemaDeviceInfo = components["schemas"]["DeviceInfo"];
@@ -13097,6 +14047,11 @@ export type SchemaLlmSelectionPayload =
 export type SchemaLoginRequest = components["schemas"]["LoginRequest"];
 export type SchemaManagedUpdateRequest =
   components["schemas"]["ManagedUpdateRequest"];
+export type SchemaMarkCreateRequest =
+  components["schemas"]["MarkCreateRequest"];
+export type SchemaMarkPatchRequest = components["schemas"]["MarkPatchRequest"];
+export type SchemaMarkSuggestionRequest =
+  components["schemas"]["MarkSuggestionRequest"];
 export type SchemaMaterialDetail = components["schemas"]["MaterialDetail"];
 export type SchemaMaterialInfo = components["schemas"]["MaterialInfo"];
 export type SchemaMcpServerConfig = components["schemas"]["MCPServerConfig"];
@@ -13138,6 +14093,9 @@ export type SchemaPartnerInvocationActionRequest =
   components["schemas"]["PartnerInvocationActionRequest"];
 export type SchemaPartnerSeatRetryRequest =
   components["schemas"]["PartnerSeatRetryRequest"];
+export type SchemaPauseBookRequest = components["schemas"]["PauseBookRequest"];
+export type SchemaPlayerSyncRequest =
+  components["schemas"]["PlayerSyncRequest"];
 export type SchemaPositionInfo = components["schemas"]["PositionInfo"];
 export type SchemaPositionPayload = components["schemas"]["PositionPayload"];
 export type SchemaProbeFolderRequest =
@@ -13161,6 +14119,8 @@ export type SchemaQuizResultsRequest =
 export type SchemaReactEditRequest = components["schemas"]["ReactEditRequest"];
 export type SchemaReactEditResponse =
   components["schemas"]["ReactEditResponse"];
+export type SchemaReadingProgressSummary =
+  components["schemas"]["ReadingProgressSummary"];
 export type SchemaReadingReference = components["schemas"]["ReadingReference"];
 export type SchemaReadingSessionCreateRequest =
   components["schemas"]["ReadingSessionCreateRequest"];
@@ -13177,6 +14137,10 @@ export type SchemaRegisterRequest = components["schemas"]["RegisterRequest"];
 export type SchemaRenamePathRequest =
   components["schemas"]["RenamePathRequest"];
 export type SchemaRenameTagRequest = components["schemas"]["RenameTagRequest"];
+export type SchemaRendererBootstrapRequest =
+  components["schemas"]["RendererBootstrapRequest"];
+export type SchemaRendererCreateRequest =
+  components["schemas"]["RendererCreateRequest"];
 export type SchemaResolveRequest = components["schemas"]["ResolveRequest"];
 export type SchemaResumeBookRequest =
   components["schemas"]["ResumeBookRequest"];
@@ -13247,6 +14211,10 @@ export type SchemaTopicSourceRequest =
 export type SchemaTourCompletePayload =
   components["schemas"]["TourCompletePayload"];
 export type SchemaTtsRequest = components["schemas"]["TTSRequest"];
+export type SchemaTunnelHandoffPairingResponse =
+  components["schemas"]["TunnelHandoffPairingResponse"];
+export type SchemaTunnelHandoffResponse =
+  components["schemas"]["TunnelHandoffResponse"];
 export type SchemaTurnFailureCode = components["schemas"]["TurnFailureCode"];
 export type SchemaTurnQueryState = components["schemas"]["TurnQueryState"];
 export type SchemaTurnRequest = components["schemas"]["TurnRequest"];
@@ -13290,7 +14258,11 @@ export type SchemaVideoLearningSettingsRequest =
   components["schemas"]["VideoLearningSettingsRequest"];
 export type SchemaVoiceAutoplayUpdate =
   components["schemas"]["VoiceAutoplayUpdate"];
+export type SchemaWebNavigationSource =
+  components["schemas"]["WebNavigationSource"];
+export type SchemaWebNavNode = components["schemas"]["WebNavNode"];
 export type SchemaWebSourceInfo = components["schemas"]["WebSourceInfo"];
+export type SchemaWebSyncJobInfo = components["schemas"]["WebSyncJobInfo"];
 export type SchemaWhiteboardPinRequest =
   components["schemas"]["WhiteboardPinRequest"];
 export type SchemaWorkspaceCreateRequest =
@@ -13598,6 +14570,136 @@ export interface operations {
           readonly "application/json": {
             readonly [key: string]: unknown;
           };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_tunnel_handoff_api_auth_handoff_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["TunnelHandoffResponse"];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly consume_tunnel_handoff_api_auth_handoff_consume_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/x-www-form-urlencoded": components["schemas"]["Body_consume_tunnel_handoff_api_auth_handoff_consume_post"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_tunnel_handoff_pairing_api_auth_handoff_pairing_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["TunnelHandoffPairingResponse"];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly exchange_tunnel_handoff_pairing_api_auth_handoff_pairing__pairing_id__get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path: {
+        readonly pairing_id: string;
+      };
+      readonly cookie?: never;
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["TunnelHandoffResponse"];
         };
       };
       /** @description Validation Error */
@@ -15096,6 +16198,45 @@ export interface operations {
     readonly requestBody: {
       readonly content: {
         readonly "application/json": components["schemas"]["PageChatSessionRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly pause_book_api_books_pause_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["PauseBookRequest"];
       };
     };
     readonly responses: {
@@ -16796,6 +17937,43 @@ export interface operations {
       };
     };
   };
+  readonly get_bilingual_page_api_knowledge_bases__kb_name__bilingual_page_get: {
+    readonly parameters: {
+      readonly query: {
+        readonly file_path: string;
+      };
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly kb_name: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly get_kb_config_api_knowledge_bases__kb_name__config_get: {
     readonly parameters: {
       readonly query?: never;
@@ -17598,6 +18776,41 @@ export interface operations {
       };
     };
   };
+  readonly get_web_navigation_api_knowledge_bases__kb_name__web_navigation_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly kb_name: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": readonly components["schemas"]["WebNavigationSource"][];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly add_web_source_api_knowledge_bases__kb_name__web_source_post: {
     readonly parameters: {
       readonly query?: never;
@@ -17695,6 +18908,78 @@ export interface operations {
         };
         content: {
           readonly "application/json": readonly components["schemas"]["WebSourceInfo"][];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_web_sync_job_api_knowledge_bases__kb_name__web_sync_jobs__job_id__get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly job_id: string;
+        readonly kb_name: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["WebSyncJobInfo"];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly cancel_web_sync_job_api_knowledge_bases__kb_name__web_sync_jobs__job_id__cancel_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly job_id: string;
+        readonly kb_name: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["WebSyncJobInfo"];
         };
       };
       /** @description Validation Error */
@@ -31494,6 +32779,157 @@ export interface operations {
       };
     };
   };
+  readonly list_devices_api_video_learning_devices_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": readonly {
+            readonly [key: string]: unknown;
+          }[];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly revoke_device_api_video_learning_devices__device_id__delete: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly device_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: string;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_device_command_api_video_learning_devices__device_id__commands_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly device_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["DeviceCommandRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_device_command_api_video_learning_devices__device_id__commands__command_id__get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly command_id: string;
+        readonly device_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly get_video_material_api_video_learning_materials__material_id__get: {
     readonly parameters: {
       readonly query?: never;
@@ -31508,6 +32944,168 @@ export interface operations {
       };
     };
     readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly suggest_video_marks_api_video_learning_materials__material_id__mark_suggestions_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["MarkSuggestionRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_video_mark_api_video_learning_materials__material_id__marks_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["MarkCreateRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 201: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly delete_video_mark_api_video_learning_materials__material_id__marks__mark_id__delete: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly mark_id: string;
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: boolean;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly update_video_mark_api_video_learning_materials__material_id__marks__mark_id__patch: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly mark_id: string;
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["MarkPatchRequest"];
+      };
+    };
     readonly responses: {
       /** @description Successful Response */
       readonly 200: {
@@ -31890,6 +33488,538 @@ export interface operations {
         readonly "application/json": components["schemas"]["ResolveRequest"];
       };
     };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly ack_player_command_api_video_learning_player_commands__command_id__ack_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly command_id: string;
+      };
+      readonly cookie?: never;
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["CommandAckRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly ack_device_command_api_video_learning_player_device_commands__command_id__ack_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly command_id: string;
+      };
+      readonly cookie?: never;
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["CommandAckRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_player_phone_handoff_api_video_learning_player_phone_handoff_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly player_presence_api_video_learning_player_presence_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly player_sync_api_video_learning_player_sync_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["PlayerSyncRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_renderer_api_video_learning_renderers_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["RendererCreateRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly bootstrap_renderer_api_video_learning_renderers_bootstrap_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["RendererBootstrapRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly list_sessions_api_video_learning_sessions_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly list_session_annotations_api_video_learning_sessions__session_id__annotations_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+        readonly dt_video_controller?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_session_annotation_api_video_learning_sessions__session_id__annotations_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+        readonly dt_video_controller?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["AnnotationCreateRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 201: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly delete_session_annotation_api_video_learning_sessions__session_id__annotations__mark_id__delete: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly mark_id: string;
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+        readonly dt_video_controller?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: boolean;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly update_session_annotation_api_video_learning_sessions__session_id__annotations__mark_id__patch: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly mark_id: string;
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+        readonly dt_video_controller?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["AnnotationUpdateRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly create_session_command_api_video_learning_sessions__session_id__commands_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+        readonly dt_video_controller?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["CommandRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_session_command_api_video_learning_sessions__session_id__commands__command_id__get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly command_id: string;
+        readonly session_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
     readonly responses: {
       /** @description Successful Response */
       readonly 200: {

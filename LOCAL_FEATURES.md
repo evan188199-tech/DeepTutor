@@ -19,6 +19,10 @@ tests intact.
     native Range playback, explicit audio-only ASR preprocessing, and private
     subtitle-range key-point marks. Optional yt-dlp and youtube-transcript-api
     adapters remain opt-in.
+  - External renderer bootstrap and phone remote control through one-time
+    device credentials, owner-scoped command queues, rotating controller
+    cookies, and rebinding to a fresh timed material when the renderer changes
+    videos without modifying marks on the previous material.
 - `upstream-v1.5.16`
   - MarginNote 4 connected knowledge base type.
   - Device pairing, one-time device tokens, incremental sync, heartbeat, and revoke.
@@ -144,7 +148,7 @@ pairing and simulated device sync are covered by tests.
 2. **后端状态机与路由（独立模块）**：
    - `deeptutor/services/tunnel_handoff.py`：单文件状态机，管理 120 秒一次性配对码 (`Pairing`)、60 秒一次性凭证 (`Ticket`)、隧道 Host 绑定校验，以及通用的 `SessionHandoff`（安全站内 redirect 与受限附加 Cookie，禁止注入/覆盖 `dt_token`、禁止重复或冲突 Cookie 名称，严格过滤路径注入与反斜杠跳转）。
    - `deeptutor/api/routers/auth.py`：挂载 `/handoff`、`/handoff/pairing`、`/handoff/pairing/{pairing_id}`、`/handoff/consume` 接口；全量密码入口（`/login`、`/register`、`/activate-learning`）严格按私网 Host 白名单（`auth.json` 中的 `private_login_hosts` / `AUTH_PRIVATE_LOGIN_HOSTS`，隐式包含 `localhost`/`127.0.0.1`/`::1`）Fail-Closed 防护；普通账号交接默认清理旧 `dt_video_controller`。
-   - `deeptutor/api/routers/video_remote_control.py`：作为本地扩展调用方声明自己的 `dt_video_controller` Cookie 与 `/video-learning` redirect；认证核心不依赖视频学习模块。
+   - `deeptutor/api/routers/video_remote_control.py`：作为本地扩展调用方声明自己的 `dt_video_controller` Cookie 与 Watching v2 redirect；认证核心不依赖视频学习模块。
 3. **前端页面与代理策略（独立路由）**：
    - `web/app/(auth)/access/page.tsx`：Mac 已登录展示页，生成 120 秒动态二维码（`qrcode.react`）及「在此电脑上打开」直连入口。
    - `web/app/(auth)/access/device/page.tsx`：手机扫码落地页，免认证（`isAuthExempt`）获取一次性 Ticket 并自动 POST 提交至消费端。

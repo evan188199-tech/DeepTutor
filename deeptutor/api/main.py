@@ -519,6 +519,7 @@ from deeptutor.api.routers import (
     system,
     unified_ws,
     video_learning,
+    video_remote_control,
     visualizers,
     voice,
 )
@@ -660,6 +661,11 @@ app.include_router(
     prefix="/api/video-learning",
     tags=["video-learning"],
     dependencies=_auth,
+)
+app.include_router(
+    video_remote_control.router,
+    prefix="/api/video-learning",
+    tags=["video-learning-remote"],
 )
 app.include_router(
     visualizers.router,

@@ -43,6 +43,7 @@ import {
 } from "@/lib/video-learning-marks";
 import { WatchingMarksPanel } from "./WatchingMarksPanel";
 import { WatchingPlayer } from "./WatchingPlayer";
+import { WatchingRemoteLaunch } from "./WatchingRemoteLaunch";
 
 export const WATCHING_ASK_EVENT = "dt:watching-ask";
 
@@ -569,6 +570,11 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
             </a>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <WatchingRemoteLaunch
+              materialId={material.material_id}
+              videoId={material.source.video_id}
+              positionSeconds={time}
+            />
             <div
               className="mb-3 grid w-full max-w-64 grid-cols-3 rounded-lg bg-[var(--muted)] p-1"
               role="tablist"
