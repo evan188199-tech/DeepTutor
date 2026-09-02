@@ -10518,6 +10518,18 @@
         "title": "WorkspaceUpdateRequest",
         "type": "object"
       },
+      "YouTubeConnectRequest": {
+        "properties": {
+          "material_id": {
+            "default": "",
+            "maxLength": 64,
+            "title": "Material Id",
+            "type": "string"
+          }
+        },
+        "title": "YouTubeConnectRequest",
+        "type": "object"
+      },
       "YouTubeSettings": {
         "properties": {
           "transcript_provider": {
@@ -50379,6 +50391,82 @@
         ]
       }
     },
+    "/api/video-learning/materials/{material_id}/subtitle-prefetch": {
+      "post": {
+        "operationId": "request_subtitle_prefetch_api_video_learning_materials__material_id__subtitle_prefetch_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Request Subtitle Prefetch Api Video Learning Materials  Material Id  Subtitle Prefetch Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request Subtitle Prefetch",
+        "tags": [
+          "video-learning"
+        ]
+      }
+    },
     "/api/video-learning/materials/{material_id}/subtitles.vtt": {
       "get": {
         "operationId": "get_video_subtitles_api_video_learning_materials__material_id__subtitles_vtt_get",
@@ -51605,6 +51693,219 @@
         "summary": "Get Session Command",
         "tags": [
           "video-learning-remote"
+        ]
+      }
+    },
+    "/api/video-learning/youtube-session": {
+      "delete": {
+        "operationId": "disconnect_youtube_session_api_video_learning_youtube_session_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "title": "Response Disconnect Youtube Session Api Video Learning Youtube Session Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Disconnect Youtube Session",
+        "tags": [
+          "video-learning"
+        ]
+      }
+    },
+    "/api/video-learning/youtube-session/connect": {
+      "post": {
+        "operationId": "connect_youtube_session_api_video_learning_youtube_session_connect_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeConnectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Connect Youtube Session Api Video Learning Youtube Session Connect Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Connect Youtube Session",
+        "tags": [
+          "video-learning"
+        ]
+      }
+    },
+    "/api/video-learning/youtube-session/status": {
+      "get": {
+        "operationId": "get_youtube_session_status_api_video_learning_youtube_session_status_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Youtube Session Status Api Video Learning Youtube Session Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Youtube Session Status",
+        "tags": [
+          "video-learning"
         ]
       }
     },

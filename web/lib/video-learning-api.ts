@@ -8,6 +8,32 @@ export interface TranscriptCue {
   text: string;
 }
 
+export type SubtitleFetchStatus =
+  | "not_requested"
+  | "queued"
+  | "fetching"
+  | "ready"
+  | "retry_wait"
+  | "auth_required"
+  | "unavailable"
+  | "error";
+
+export interface SubtitleFetchState {
+  status: SubtitleFetchStatus;
+  updated_at: string;
+  error_code: string | null;
+  attempts: number;
+  next_retry_at: string | null;
+}
+
+export interface YouTubeSessionStatus {
+  connection: "connected" | "disconnected" | "error";
+  helper_available: boolean;
+  last_validated_at: string | null;
+  last_error_code: string | null;
+  next_prefetch_at: string | null;
+}
+
 export interface TimedSegment extends TranscriptCue {
   locator: number;
 }
@@ -51,6 +77,7 @@ export interface TimedMediaMaterial {
     language: string;
     source: string;
     cues: TranscriptCue[];
+    fetch?: SubtitleFetchState;
   };
   segments: TimedSegment[];
   learning: { last_position: number; marks?: VideoLearningMark[] };
@@ -216,6 +243,49 @@ export async function getVideoMaterial(
       },
     ),
   );
+}
+
+export async function getYouTubeSessionStatus(): Promise<YouTubeSessionStatus> {
+  return unwrap(
+    await apiFetch(
+      apiUrl("/api/video-learning/youtube-session/status"),
+      { cache: "no-store" },
+    ),
+  );
+}
+
+export async function connectYouTubeSession(
+  materialId = "",
+): Promise<YouTubeSessionStatus> {
+  return unwrap(
+    await apiFetch(apiUrl("/api/video-learning/youtube-session/connect"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ material_id: materialId }),
+    }),
+  );
+}
+
+export async function disconnectYouTubeSession(): Promise<void> {
+  await unwrap(
+    await apiFetch(apiUrl("/api/video-learning/youtube-session"), {
+      method: "DELETE",
+    }),
+  );
+}
+
+export async function requestSubtitlePrefetch(
+  materialId: string,
+): Promise<SubtitleFetchState> {
+  const payload = await unwrap<{ fetch: SubtitleFetchState }>(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/subtitle-prefetch`,
+      ),
+      { method: "POST" },
+    ),
+  );
+  return payload.fetch;
 }
 
 export async function refreshInvidiousTranscript(

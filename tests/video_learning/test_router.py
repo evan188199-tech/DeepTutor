@@ -113,6 +113,68 @@ def test_progress_clamps_to_duration_and_unknown_material_is_404(client: TestCli
     assert missing.status_code == 404
 
 
+def test_youtube_host_chrome_session_and_manual_subtitle_retry(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class FakeStore:
+        @staticmethod
+        def metadata(owner_id: str):
+            return {"enabled": True, "enabled_at": "2026-09-02T00:00:00Z"}
+
+        @staticmethod
+        def enable(owner_id: str) -> None:
+            return None
+
+        @staticmethod
+        def delete(owner_id: str) -> None:
+            return None
+
+    requests: list[tuple[str, bool]] = []
+
+    class FakePrefetch:
+        async def enqueue(self, owner_id, material_id, store, *, manual=False):
+            requests.append((material_id, manual))
+            return {
+                "status": "queued",
+                "updated_at": "2026-09-02T00:00:00Z",
+                "error_code": None,
+                "attempts": 0,
+                "next_retry_at": None,
+            }
+
+    monkeypatch.setattr(video_learning, "HostChromeSessionStore", FakeStore)
+    monkeypatch.setattr(video_learning, "chrome_available", lambda: True)
+    monkeypatch.setattr(
+        video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch()
+    )
+    material = _material()
+    material["transcript"] = {
+        "status": "unavailable",
+        "reason": "unavailable",
+        "cues": [],
+    }
+    service.get_timed_media_store().save(material)
+    material_id = str(material["material_id"])
+
+    status = client.get("/api/video-learning/youtube-session/status")
+    assert status.status_code == 200
+    assert status.json()["connection"] == "connected"
+    connected = client.post(
+        "/api/video-learning/youtube-session/connect",
+        json={"material_id": material_id},
+    )
+    assert connected.status_code == 202
+    assert connected.json()["mode"] == "host_chrome"
+    material_response = client.get(f"/api/video-learning/materials/{material_id}")
+    assert material_response.status_code == 200
+    retry = client.post(
+        f"/api/video-learning/materials/{material_id}/subtitle-prefetch"
+    )
+    assert retry.status_code == 202
+    assert retry.json()["fetch"]["status"] == "queued"
+    assert requests == [(material_id, False), (material_id, True)]
+
+
 def test_video_notes_use_notebook_storage_and_stay_material_scoped(
     client: TestClient,
     notebook_manager: NotebookManager,

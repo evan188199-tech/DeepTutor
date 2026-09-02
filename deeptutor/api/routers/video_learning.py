@@ -12,6 +12,7 @@ import httpx
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
+from deeptutor.multi_user.paths import current_owner_id
 from deeptutor.services.notebook.service import NotebookCorruptedError
 from deeptutor.video_learning import (
     TimedMediaError,
@@ -31,6 +32,11 @@ from deeptutor.video_learning.marks import (
     suggest_marks,
     update_mark,
 )
+from deeptutor.video_learning.subtitle_prefetch import get_subtitle_prefetch_service
+from deeptutor.video_learning.youtube_session import (
+    HostChromeSessionStore,
+    chrome_available,
+)
 
 router = APIRouter()
 settings_router = APIRouter()
@@ -43,6 +49,10 @@ class ResolveRequest(BaseModel):
     url: str = Field(min_length=1, max_length=2048)
     language: str = Field(default="", max_length=32)
     provider_override: str | None = Field(default=None, max_length=32)
+
+
+class YouTubeConnectRequest(BaseModel):
+    material_id: str = Field(default="", max_length=64)
 
 
 class ProgressRequest(BaseModel):
@@ -151,11 +161,21 @@ async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
     try:
         if payload.provider_override not in {None, "youtube", "invidious"}:
             raise TimedMediaError("Unsupported provider override.")
-        return await resolve_material(
+        material = await resolve_material(
             payload.url,
             payload.language,
             provider_override=payload.provider_override,
         )
+        if not (material.get("transcript") or {}).get("cues"):
+            fetch = await get_subtitle_prefetch_service().enqueue(
+                current_owner_id(),
+                str(material.get("material_id") or ""),
+                get_timed_media_store(),
+            )
+            transcript = material.setdefault("transcript", {})
+            if isinstance(transcript, dict):
+                transcript["fetch"] = fetch
+        return material
     except Exception as exc:
         raise _http_error(exc) from exc
 
@@ -163,7 +183,68 @@ async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
 @router.get("/materials/{material_id}")
 async def get_video_material(material_id: str) -> dict[str, Any]:
     try:
+        material = get_timed_media_store().get(material_id)
+        if not (material.get("transcript") or {}).get("cues"):
+            await get_subtitle_prefetch_service().enqueue(
+                current_owner_id(), material_id, get_timed_media_store()
+            )
+            material = get_timed_media_store().get(material_id)
         return await material_with_playback(material_id)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/youtube-session/status")
+async def get_youtube_session_status() -> dict[str, Any]:
+    metadata = HostChromeSessionStore.metadata(current_owner_id())
+    helper_available = chrome_available()
+    return {
+        "connection": "connected"
+        if metadata and helper_available
+        else ("error" if metadata else "disconnected"),
+        "helper_available": helper_available,
+        "last_validated_at": str((metadata or {}).get("enabled_at") or "") or None,
+        "last_error_code": "chrome_unavailable"
+        if metadata and not helper_available
+        else None,
+        "next_prefetch_at": None,
+    }
+
+
+@router.post("/youtube-session/connect", status_code=202)
+async def connect_youtube_session(payload: YouTubeConnectRequest) -> dict[str, Any]:
+    try:
+        if payload.material_id:
+            get_timed_media_store().get(payload.material_id)
+        owner_id = current_owner_id()
+        HostChromeSessionStore.enable(owner_id)
+        helper_available = chrome_available()
+        return {
+            "connection": "connected" if helper_available else "error",
+            "helper_available": helper_available,
+            "last_error_code": None if helper_available else "chrome_unavailable",
+            "mode": "host_chrome",
+        }
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.delete("/youtube-session")
+async def disconnect_youtube_session() -> dict[str, bool]:
+    HostChromeSessionStore.delete(current_owner_id())
+    return {"ok": True}
+
+
+@router.post("/materials/{material_id}/subtitle-prefetch", status_code=202)
+async def request_subtitle_prefetch(material_id: str) -> dict[str, Any]:
+    try:
+        fetch = await get_subtitle_prefetch_service().enqueue(
+            current_owner_id(),
+            material_id,
+            get_timed_media_store(),
+            manual=True,
+        )
+        return {"fetch": fetch}
     except Exception as exc:
         raise _http_error(exc) from exc
 

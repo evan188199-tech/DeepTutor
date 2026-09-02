@@ -6,6 +6,7 @@ import {
   BookmarkPlus,
   Check,
   Captions,
+  Chrome,
   ExternalLink,
   Loader2,
   Pencil,
@@ -14,6 +15,7 @@ import {
   Sparkles,
   StickyNote,
   Trash2,
+  Unplug,
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -26,12 +28,17 @@ import {
   createVideoMark,
   deleteVideoNote,
   deleteVideoMark,
+  disconnectYouTubeSession,
+  getYouTubeSessionStatus,
+  connectYouTubeSession,
   listVideoNotes,
+  requestSubtitlePrefetch,
   saveVideoProgress,
   suggestVideoMarks,
   updateVideoMark,
   updateVideoNote,
   type VideoMarkKind,
+  type YouTubeSessionStatus,
   type VideoMarkSuggestion,
   type VideoNote,
 } from "@/lib/video-learning-api";
@@ -87,6 +94,10 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     end_seconds: number;
     quote: string;
   } | null>(null);
+  const [youtubeSession, setYouTubeSession] =
+    useState<YouTubeSessionStatus | null>(null);
+  const [subtitleBusy, setSubtitleBusy] = useState(false);
+  const [subtitleError, setSubtitleError] = useState<string | null>(null);
   const controllerRef = useRef<PlayerController | null>(null);
   const transcriptRootRef = useRef<HTMLDivElement | null>(null);
   const activeMaterialIdRef = useRef(materialId);
@@ -168,6 +179,36 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       ),
     [material, time],
   );
+  const transcriptMissing = Boolean(
+    material && material.transcript.status !== "ready",
+  );
+
+  useEffect(() => {
+    if (!materialId || !transcriptMissing) return;
+    let cancelled = false;
+    setYouTubeSession(null);
+    void getYouTubeSessionStatus()
+      .then((status) => {
+        if (!cancelled) setYouTubeSession(status);
+      })
+      .catch(() => {
+        if (!cancelled) setYouTubeSession(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [materialId, transcriptMissing]);
+
+  const subtitleFetchStatus = material?.transcript.fetch?.status;
+  useEffect(() => {
+    if (subtitleFetchStatus !== "queued" && subtitleFetchStatus !== "fetching") {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      void refresh();
+    }, 5_000);
+    return () => window.clearInterval(timer);
+  }, [refresh, subtitleFetchStatus]);
 
   const saveMark = async (
     kind: VideoMarkKind,
@@ -426,12 +467,74 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     await refreshTranscript();
   }, [refreshTranscript]);
 
+  const connectChromeCaptions = useCallback(async () => {
+    if (!materialId || subtitleBusy) return;
+    setSubtitleBusy(true);
+    setSubtitleError(null);
+    try {
+      const status = await connectYouTubeSession(materialId);
+      setYouTubeSession(status);
+      if (!status.helper_available) {
+        throw new Error(t("Chrome is unavailable on this computer."));
+      }
+      await requestSubtitlePrefetch(materialId);
+      await refresh();
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error
+          ? caught.message
+          : t("Chrome captions could not be connected."),
+      );
+    } finally {
+      setSubtitleBusy(false);
+    }
+  }, [materialId, refresh, subtitleBusy, t]);
+
+  const retryChromeCaptions = useCallback(async () => {
+    if (!materialId || subtitleBusy) return;
+    setSubtitleBusy(true);
+    setSubtitleError(null);
+    try {
+      await requestSubtitlePrefetch(materialId);
+      await refresh();
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error
+          ? caught.message
+          : t("Captions could not be retried."),
+      );
+    } finally {
+      setSubtitleBusy(false);
+    }
+  }, [materialId, refresh, subtitleBusy, t]);
+
+  const disconnectChromeCaptions = useCallback(async () => {
+    if (subtitleBusy) return;
+    setSubtitleBusy(true);
+    setSubtitleError(null);
+    try {
+      await disconnectYouTubeSession();
+      setYouTubeSession(await getYouTubeSessionStatus());
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error
+          ? caught.message
+          : t("Chrome captions could not be disconnected."),
+      );
+    } finally {
+      setSubtitleBusy(false);
+    }
+  }, [subtitleBusy, t]);
+
   const handleController = useCallback(
     (controller: PlayerController | null) => {
       controllerRef.current = controller;
     },
     [],
   );
+  const chromeConnected = youtubeSession?.connection === "connected";
+  const subtitleActive =
+    subtitleFetchStatus === "queued" || subtitleFetchStatus === "fetching";
   return (
     <section className="flex h-full min-w-0 flex-col border-r border-[var(--border)] bg-[var(--background)]">
       <header className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-3">
@@ -633,6 +736,64 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                       {t("Retry captions")}
                     </button>
                   )}
+                  <div className="mt-3 space-y-2 border-t border-[var(--border)] pt-3">
+                    {subtitleError && (
+                      <p role="alert" className="text-[var(--destructive)]">
+                        {subtitleError}
+                      </p>
+                    )}
+                    {subtitleActive ? (
+                      <p className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {t("Preparing Chrome captions…")}
+                      </p>
+                    ) : (
+                      <p>
+                        {chromeConnected
+                          ? t("Chrome captions connected.")
+                          : t(
+                              "Use this computer's Chrome session for captions.",
+                            )}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {chromeConnected ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => void retryChromeCaptions()}
+                            disabled={loading || subtitleBusy}
+                            className="inline-flex items-center gap-1.5 rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            {t("Retry captions")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void disconnectChromeCaptions()}
+                            disabled={subtitleBusy}
+                            className="inline-flex items-center gap-1.5 rounded px-2 py-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
+                          >
+                            <Unplug className="h-3.5 w-3.5" />
+                            {t("Disconnect Chrome captions")}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void connectChromeCaptions()}
+                            disabled={loading || subtitleBusy}
+                          className="inline-flex items-center gap-1.5 rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
+                        >
+                          <Chrome className="h-3.5 w-3.5" />
+                          {subtitleBusy ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : null}
+                          {t("Use Chrome captions")}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>

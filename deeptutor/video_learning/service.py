@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import tempfile
 from typing import Any, Awaitable, Callable, Literal
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
@@ -386,6 +387,84 @@ async def _youtube_transcript(
     except Exception:
         return [], "", "unavailable"
     return cues, resolved_language, "youtube_transcript_api" if cues else "unavailable"
+
+
+async def download_ytdlp_subtitle(
+    video_id: str, *, preferred_language: str = ""
+) -> tuple[list[dict[str, Any]], str, str]:
+    """Fetch captions only through an owner-authorized host Chrome session."""
+    if not VIDEO_ID_RE.fullmatch(video_id or ""):
+        return [], "", "invalid_video_id"
+    languages = [preferred_language] if preferred_language else []
+    languages.extend(
+        language
+        for language in ("en-orig", "en", "zh-Hans", "zh-CN", "zh")
+        if language not in languages
+    )
+
+    def fetch() -> tuple[list[dict[str, Any]], str, str]:
+        try:
+            import yt_dlp
+        except ImportError:
+            return [], "", "dependency_unavailable"
+        with tempfile.TemporaryDirectory(prefix="deeptutor-youtube-subs-") as directory:
+            root = Path(directory)
+            options = {
+                "quiet": True,
+                "no_warnings": True,
+                "socket_timeout": 20,
+                "retries": 1,
+                "fragment_retries": 1,
+                "extractor_retries": 1,
+                "skip_download": True,
+                "noplaylist": True,
+                "ignoreconfig": True,
+                "cachedir": False,
+                "writesubtitles": True,
+                "writeautomaticsub": True,
+                "subtitleslangs": languages,
+                "subtitlesformat": "vtt",
+                "outtmpl": str(root / "subtitle.%(ext)s"),
+                "paths": {"home": str(root)},
+                "cookiesfrombrowser": ("chrome",),
+            }
+            try:
+                with yt_dlp.YoutubeDL(options) as downloader:
+                    downloader.download(
+                        [f"https://www.youtube.com/watch?v={video_id}"]
+                    )
+            except Exception as exc:
+                message = str(exc).lower()
+                if any(
+                    marker in message
+                    for marker in ("429", "too many requests", "rate limit")
+                ):
+                    return [], "", "rate_limited"
+                if any(
+                    marker in message
+                    for marker in ("sign in", "cookies", "login", "authentication")
+                ):
+                    return [], "", "auth_required"
+                return [], "", "unavailable"
+            for candidate in sorted(root.glob("subtitle.*.vtt")):
+                try:
+                    if candidate.stat().st_size > MAX_TRANSCRIPT_BYTES:
+                        continue
+                    cues = normalize_cues(
+                        parse_webvtt(
+                            candidate.read_text(encoding="utf-8", errors="replace")
+                        )
+                    )
+                except OSError:
+                    continue
+                if cues:
+                    return cues, candidate.stem.rsplit(".", 1)[-1], "youtube-chrome"
+            return [], "", "unavailable"
+
+    try:
+        return await asyncio.wait_for(asyncio.to_thread(fetch), timeout=45)
+    except asyncio.TimeoutError:
+        return [], "", "temporary_error"
 
 
 async def _youtube_metadata(request: YouTubeRequest) -> dict[str, Any]:

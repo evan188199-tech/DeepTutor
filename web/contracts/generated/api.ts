@@ -8473,6 +8473,23 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/video-learning/materials/{material_id}/subtitle-prefetch": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Request Subtitle Prefetch */
+    readonly post: operations["request_subtitle_prefetch_api_video_learning_materials__material_id__subtitle_prefetch_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/video-learning/materials/{material_id}/subtitles.vtt": {
     readonly parameters: {
       readonly query?: never;
@@ -8722,6 +8739,57 @@ export interface paths {
     };
     /** Get Session Command */
     readonly get: operations["get_session_command_api_video_learning_sessions__session_id__commands__command_id__get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/youtube-session": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    readonly post?: never;
+    /** Disconnect Youtube Session */
+    readonly delete: operations["disconnect_youtube_session_api_video_learning_youtube_session_delete"];
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/youtube-session/connect": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /** Connect Youtube Session */
+    readonly post: operations["connect_youtube_session_api_video_learning_youtube_session_connect_post"];
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/video-learning/youtube-session/status": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** Get Youtube Session Status */
+    readonly get: operations["get_youtube_session_status_api_video_learning_youtube_session_status_get"];
     readonly put?: never;
     readonly post?: never;
     readonly delete?: never;
@@ -13787,6 +13855,14 @@ export interface components {
       /** Title */
       readonly title?: string | null;
     };
+    /** YouTubeConnectRequest */
+    readonly YouTubeConnectRequest: {
+      /**
+       * Material Id
+       * @default
+       */
+      readonly material_id: string;
+    };
     /** YouTubeSettings */
     readonly YouTubeSettings: {
       /**
@@ -14273,6 +14349,8 @@ export type SchemaWorkspaceReorderRequest =
   components["schemas"]["WorkspaceReorderRequest"];
 export type SchemaWorkspaceUpdateRequest =
   components["schemas"]["WorkspaceUpdateRequest"];
+export type SchemaYouTubeConnectRequest =
+  components["schemas"]["YouTubeConnectRequest"];
 export type SchemaYouTubeSettings = components["schemas"]["YouTubeSettings"];
 export type $defs = Record<string, never>;
 export interface operations {
@@ -33400,6 +33478,43 @@ export interface operations {
       };
     };
   };
+  readonly request_subtitle_prefetch_api_video_learning_materials__material_id__subtitle_prefetch_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 202: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly get_video_subtitles_api_video_learning_materials__material_id__subtitles_vtt_get: {
     readonly parameters: {
       readonly query?: never;
@@ -34015,6 +34130,115 @@ export interface operations {
         readonly command_id: string;
         readonly session_id: string;
       };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly disconnect_youtube_session_api_video_learning_youtube_session_delete: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: boolean;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly connect_youtube_session_api_video_learning_youtube_session_connect_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["YouTubeConnectRequest"];
+      };
+    };
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 202: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_youtube_session_status_api_video_learning_youtube_session_status_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
       readonly cookie?: {
         readonly dt_token?: string | null;
       };
