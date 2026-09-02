@@ -18,7 +18,9 @@ tests intact.
     user-scoped timed-media materials, transcript cues, timestamp context,
     native Range playback, explicit audio-only ASR preprocessing, and private
     subtitle-range key-point marks. Optional yt-dlp and youtube-transcript-api
-    adapters remain opt-in.
+    adapters remain opt-in; host-Chrome caption prefetch additionally requires
+    explicit owner consent, stores no Chrome cookies or profile data, and uses
+    bounded retry backoff.
   - External renderer bootstrap and phone remote control through one-time
     device credentials, owner-scoped command queues, rotating controller
     cookies, and rebinding to a fresh timed material when the renderer changes
@@ -94,7 +96,7 @@ Run these before releasing or merging upstream changes into this fork:
 .venv/bin/python -m pytest \
   tests/test_local_feature_contract.py \
   tests/reading/test_extensions.py \
-  tests/cli/test_plugin_cli.py \
+  tests/plugins/test_loader.py \
   tests/api/test_partners_router.py \
   tests/services/partners/test_channel_onboarding.py \
   tests/services/partners/test_feishu_domain_initialization.py \
