@@ -1551,6 +1551,24 @@ export async function cancelWebSync(
   return (await res.json()) as WebSyncJob;
 }
 
+export async function syncWebSources(kbName: string): Promise<WebSyncResult> {
+  let job = await startWebSync(kbName);
+  const deadline = Date.now() + 30 * 60 * 1000;
+  const terminal = new Set(["succeeded", "failed", "cancelled", "interrupted"]);
+  while (!terminal.has(job.status)) {
+    if (Date.now() > deadline) {
+      throw new Error("Web sync timed out");
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    job = await getWebSyncJob(kbName, job.job_id);
+  }
+  if (job.status !== "succeeded" || !job.result) {
+    throw new Error(job.error || job.message || `Web sync ${job.status}`);
+  }
+  invalidateKnowledgeCaches();
+  return job.result;
+}
+
 
 export interface WebNavNode {
   id: string;

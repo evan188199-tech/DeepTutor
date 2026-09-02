@@ -3,6 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
+import { syncWebSources } from "../features/knowledge/api/client";
+
 const root = process.cwd();
 const sourceRoots = ["app", "components", "features", "hooks", "lib", "tests"];
 
@@ -45,6 +47,64 @@ test("knowledge resources expose narrow public entry points", () => {
     const source = fs.readFileSync(path.join(apiRoot, filename), "utf8");
     for (const name of exports)
       assert.match(source, new RegExp(`\\b${name}\\b`));
+  }
+});
+
+test("legacy web sync client resolves durable jobs to their result", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalSetTimeout = globalThis.setTimeout;
+  const calls: string[] = [];
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const method = init?.method ?? "GET";
+    calls.push(`${method} ${String(input)}`);
+    if (method === "POST") {
+      return Response.json({
+        job_id: "job-1",
+        kb_name: "docs",
+        status: "running",
+        progress: 10,
+        message: "Syncing",
+        result: null,
+        error: null,
+        created_at: "",
+        started_at: "",
+        finished_at: "",
+      });
+    }
+    return Response.json({
+      job_id: "job-1",
+      kb_name: "docs",
+      status: "succeeded",
+      progress: 100,
+      message: "Sync complete",
+      result: {
+        ok: true,
+        pair_results: [],
+        index_rebuilt: true,
+        index_error: null,
+        total_pages: 3,
+        message: "Sync complete",
+      },
+      error: null,
+      created_at: "",
+      started_at: "",
+      finished_at: "",
+    });
+  }) as typeof fetch;
+  globalThis.setTimeout = ((callback: TimerHandler) =>
+    originalSetTimeout(callback, 0)) as typeof setTimeout;
+
+  try {
+    const result = await syncWebSources("docs");
+    assert.equal(result.ok, true);
+    assert.equal(result.total_pages, 3);
+    assert.deepEqual(calls, [
+      "POST /api/knowledge-bases/docs/sync-web",
+      "GET /api/knowledge-bases/docs/web-sync-jobs/job-1",
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    globalThis.setTimeout = originalSetTimeout;
   }
 });
 
