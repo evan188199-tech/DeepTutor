@@ -237,6 +237,7 @@ $RECYCLE.BIN/
 *.temp
 *.bak
 *.backup
+/backups/
 *.swp
 *.swo
 
