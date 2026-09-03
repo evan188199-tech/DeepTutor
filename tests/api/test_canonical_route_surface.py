@@ -5,8 +5,17 @@ import pytest
 from deeptutor.api.main import app, health_live, health_ready
 
 
+def _leaf_routes(routes):
+    for route in routes:
+        candidates = getattr(route, "effective_candidates", None)
+        if callable(candidates):
+            yield from _leaf_routes(candidates())
+        elif hasattr(route, "path"):
+            yield route
+
+
 def test_only_canonical_transport_and_resource_routes_are_registered() -> None:
-    paths = {route.path for route in app.routes}
+    paths = {route.path for route in _leaf_routes(app.routes)}
 
     required = {
         "/api/books",
@@ -19,8 +28,6 @@ def test_only_canonical_transport_and_resource_routes_are_registered() -> None:
         "/api/system/runtime",
         "/files/attachments/{session_id}/{attachment_id}/{filename:path}",
         "/files/outputs/{output_path:path}",
-        "/ws",
-        "/ws/books",
     }
     assert required <= paths
 

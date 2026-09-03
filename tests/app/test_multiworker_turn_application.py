@@ -149,7 +149,9 @@ async def test_remote_worker_reply_reaches_owner_waiter(monkeypatch, tmp_path) -
     events = [event async for event in app_b.subscribe_turn(turn["id"])]
 
     assert any(event.get("content") == "reply:yes" for event in events)
-    assert events[-1]["type"] == "done"
+    # Completion is terminal for turn content, but a later session_meta event
+    # may publish an asynchronously generated title.
+    assert any(event["type"] == "done" for event in events)
     assert [event["seq"] for event in events] == list(range(1, len(events) + 1))
     await runtime_a.close()
     await runtime_b.close()
