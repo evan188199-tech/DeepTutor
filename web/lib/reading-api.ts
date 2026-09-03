@@ -9,7 +9,7 @@ import { apiFetch, apiUrl } from '@/lib/api'
 // "chapter 3" without ever branching on the file type itself.
 
 export type UnitKind = 'page' | 'chapter' | 'slide' | 'section' | 'segment'
-export type AnnotationKind = 'highlight' | 'underline' | 'note' | 'citation'
+export type AnnotationKind = "highlight" | "underline" | "note" | "citation"
 export type ExportFormat = 'auto' | 'pdf' | 'markdown'
 export type RenderMode = 'text' | 'pdf' | 'epub' | 'video' | 'audio'
 export type ContentFormat = 'plain_text' | 'web_markdown'

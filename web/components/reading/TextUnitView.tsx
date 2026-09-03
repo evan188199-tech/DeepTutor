@@ -117,7 +117,7 @@ export function TextUnitView({
   const [serif, setSerif] = useState(true)
   const [readerTheme, setReaderTheme] = useState<ReaderTheme>('auto')
   const [bilingualEnabled, setBilingualEnabled] = useState(false)
-  const isWebMarkdown = contentFormat === 'web_markdown'
+  const isWebMarkdown = contentFormat === "web_markdown"
 
   useEffect(() => {
     try {

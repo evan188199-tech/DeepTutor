@@ -13,7 +13,7 @@ const nextBin = path.join(webRoot, 'node_modules', 'next', 'dist', 'bin', 'next'
 // Next 16 rewrites these checked-in generated inputs when it type-checks. The
 // launcher used to repair them only after `npm run build` returned; moving the
 // restore here also protects direct `npm run build` invocations.
-const generatedPaths = [path.join(webRoot, 'next-env.d.ts'), path.join(webRoot, 'tsconfig.json')]
+const generatedPaths = [path.join(webRoot, "next-env.d.ts"), path.join(webRoot, "tsconfig.json")]
 
 function snapshot(path) {
   return readFileSync(path, 'utf8')
@@ -42,9 +42,9 @@ function completeStandaloneBundle() {
   // path self-contained, and mirror assets under a custom distDir for launchers
   // that resolve /_next from their configured dist directory.
   const runtimeDistDir = path.relative(webRoot, distDir)
-  const staticTargets = [path.join(standaloneDir, '.next', 'static')]
+  const staticTargets = [path.join(standaloneDir, ".next", "static")]
   if (runtimeDistDir !== '.next') {
-    staticTargets.push(path.join(standaloneDir, runtimeDistDir, 'static'))
+    staticTargets.push(path.join(standaloneDir, runtimeDistDir, "static"))
   }
   for (const target of staticTargets) {
     rmSync(target, { recursive: true, force: true })
@@ -53,7 +53,7 @@ function completeStandaloneBundle() {
   }
 
   const publicDir = path.join(webRoot, 'public')
-  const publicTarget = path.join(standaloneDir, 'public')
+  const publicTarget = path.join(standaloneDir, "public")
   rmSync(publicTarget, { recursive: true, force: true })
   cpSync(publicDir, publicTarget, { recursive: true, force: true })
 }
@@ -85,10 +85,10 @@ if (isEntry) {
       // Next.js 16 defaults to Turbopack, which does not emit the standalone
       // server bundle expected by `deeptutor start`. The production launcher
       // needs the Webpack output at `.next-deeptutor/standalone/server.js`.
-      [nextBin, 'build', '--webpack', ...process.argv.slice(2)],
+      [nextBin, "build", "--webpack", ...process.argv.slice(2)],
       {
         cwd: webRoot,
-        stdio: 'inherit',
+        stdio: "inherit",
         env: {
           ...process.env,
           ...(buildTsconfigPath

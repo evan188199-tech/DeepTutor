@@ -797,7 +797,7 @@ export function ReaderPane({
           onHighlight={color => commitSelection('highlight', color)}
           onUnderline={color => commitSelection('underline', color)}
           onNote={(note, color) => commitSelection('note', color, note)}
-          onCitation={color => commitSelection('citation', color)}
+          onCitation={color => commitSelection("citation", color)}
           onAsk={askAboutSelection}
           onDismiss={() => setSelection(null)}
         />
