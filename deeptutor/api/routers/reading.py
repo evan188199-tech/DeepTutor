@@ -193,6 +193,9 @@ class MaterialInfo(BaseModel):
     source_url: str = ""
     revision: int = 1
     annotation_count: int = 0
+    bilingual_available: bool = False
+    bilingual_languages: list[str] = Field(default_factory=list)
+    bilingual_pairing_ids: list[str] = Field(default_factory=list)
     reading_progress: ReadingProgressSummary | None = None
 
 
@@ -206,6 +209,11 @@ class UnitText(BaseModel):
     locator: int
     unit: str
     text: str
+
+
+class BilingualUnit(BaseModel):
+    locator: int
+    groups: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class TextQuoteSelectorPayload(BaseModel):
@@ -1077,6 +1085,20 @@ async def get_unit(material_id: str, locator: int) -> UnitText:
             locator=locator,
             unit=manifest.unit,
             text=store.unit_text(material_id, locator),
+        )
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/materials/{material_id}/units/{locator}/bilingual", response_model=BilingualUnit)
+async def get_bilingual_unit(material_id: str, locator: int) -> BilingualUnit:
+    """Aligned source/translation groups, without generating new text."""
+    store = _store()
+    try:
+        assert_learning_material(material_id)
+        return BilingualUnit(
+            locator=locator,
+            groups=[row.to_dict() for row in store.bilingual_groups(material_id, locator)],
         )
     except Exception as exc:
         raise _http_error(exc) from exc

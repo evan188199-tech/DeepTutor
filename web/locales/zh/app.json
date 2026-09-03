@@ -3633,6 +3633,8 @@
   "Use serif font": "使用衬线字体",
   "Change line width": "切换行宽",
   "Change reading theme": "切换阅读主题",
+  "Enable bilingual assistance": "启用双语辅助",
+  "Disable bilingual assistance": "关闭双语辅助",
   "That annotation could not be saved.": "这条标注保存失败。",
   "That annotation could not be removed.": "这条标注删除失败。",
   "Explain this passage": "解释这段内容",
