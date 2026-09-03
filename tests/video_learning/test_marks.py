@@ -64,7 +64,12 @@ def _material(store: service.TimedMediaStore, *, duration: float = 120) -> dict:
                 "end": 30,
                 "text": "Gradient descent finds a local minimum. Why does the learning rate matter?",
             },
-            {"locator": 2, "start": 40, "end": 55, "text": "This example is worth reviewing later."},
+            {
+                "locator": 2,
+                "start": 40,
+                "end": 55,
+                "text": "This example is worth reviewing later.",
+            },
         ],
         "learning": {"last_position": 0},
     }
@@ -167,9 +172,7 @@ def test_router_mark_crud_and_isolation(client_and_store) -> None:
     )
     assert missing.status_code == 404
 
-    deleted = client.delete(
-        f"/api/video-learning/materials/{material_id}/marks/{mark_id}"
-    )
+    deleted = client.delete(f"/api/video-learning/materials/{material_id}/marks/{mark_id}")
     assert deleted.status_code == 200
     assert store.get(material_id)["learning"]["marks"] == []
 

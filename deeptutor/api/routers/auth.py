@@ -338,10 +338,7 @@ def _reject_public_tunnel_credentials(request: Request) -> None:
     if not _is_private_login_host(host):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=(
-                "Password sign-in and registration "
-                "are available only on the private network."
-            ),
+            detail=("Password sign-in and registration are available only on the private network."),
         )
 
 
@@ -935,18 +932,18 @@ async def consume_tunnel_handoff(
 
         if "text/html" in request.headers.get("accept", "").lower():
             response = HTMLResponse(
-                "<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\">"
-                "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+                '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width,initial-scale=1">'
                 "<title>登录链接已失效</title>"
-                "<body style=\"font-family:system-ui,-apple-system,sans-serif;margin:0;"
-                "min-height:100vh;display:grid;place-items:center;background:#f8fafc;color:#0f172a\">"
-                "<main style=\"max-width:28rem;margin:1.5rem;padding:2rem;border-radius:1rem;"
-                "background:#fff;box-shadow:0 8px 24px #0f172a14;text-align:center\">"
-                "<h1 style=\"font-size:1.25rem\">登录链接已失效</h1>"
-                "<p style=\"line-height:1.6;color:#475569\">此登录交接已使用或已过期。"
+                '<body style="font-family:system-ui,-apple-system,sans-serif;margin:0;'
+                'min-height:100vh;display:grid;place-items:center;background:#f8fafc;color:#0f172a">'
+                '<main style="max-width:28rem;margin:1.5rem;padding:2rem;border-radius:1rem;'
+                'background:#fff;box-shadow:0 8px 24px #0f172a14;text-align:center">'
+                '<h1 style="font-size:1.25rem">登录链接已失效</h1>'
+                '<p style="line-height:1.6;color:#475569">此登录交接已使用或已过期。'
                 "请回到显示二维码的设备，刷新二维码后重新扫码。</p>"
-                "<a href=\"/login\" style=\"display:inline-block;padding:.7rem 1rem;border-radius:.5rem;"
-                "background:#0f766e;color:#fff;text-decoration:none\">返回登录</a>"
+                '<a href="/login" style="display:inline-block;padding:.7rem 1rem;border-radius:.5rem;'
+                'background:#0f766e;color:#fff;text-decoration:none">返回登录</a>'
                 "</main></body></html>",
                 status_code=status.HTTP_400_BAD_REQUEST,
             )

@@ -2082,9 +2082,8 @@ class KnowledgeBaseManager:
                 matches_forward = existing_pair == canonical_url
                 if matches_reverse or matches_forward:
                     other_url = existing_url if matches_reverse else existing_pair
-                    pairing_key = (
-                        existing.get("pairing_key")
-                        or self._manual_pairing_key(other_url, canonical_url)
+                    pairing_key = existing.get("pairing_key") or self._manual_pairing_key(
+                        other_url, canonical_url
                     )
                     existing.setdefault("pairing_key", pairing_key)
                     existing.setdefault(

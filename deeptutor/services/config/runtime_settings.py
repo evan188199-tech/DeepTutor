@@ -401,11 +401,7 @@ def _coerce_origins(value: Any) -> list[str]:
 def _coerce_private_hosts(value: Any) -> list[str]:
     raw_list: list[str] = []
     if isinstance(value, str):
-        raw_list = [
-            part.strip()
-            for part in value.replace("\n", ",").split(",")
-            if part.strip()
-        ]
+        raw_list = [part.strip() for part in value.replace("\n", ",").split(",") if part.strip()]
     elif isinstance(value, (list, tuple, set)):
         raw_list = [str(part).strip() for part in value if str(part).strip()]
     result: list[str] = []
@@ -414,9 +410,7 @@ def _coerce_private_hosts(value: Any) -> list[str]:
         host = item.strip().lower()
         if not host:
             continue
-        parsed = urlsplit(
-            "//" + host if not host.startswith(("http://", "https://")) else host
-        )
+        parsed = urlsplit("//" + host if not host.startswith(("http://", "https://")) else host)
         normalized = (parsed.hostname or host).strip().lower()
         if normalized and normalized not in seen:
             seen.add(normalized)
@@ -1223,9 +1217,7 @@ class RuntimeSettingsService:
             "token_expire_hours": max(1, _coerce_int(settings.get("token_expire_hours"), 24)),
             "cookie_secure": _coerce_bool(settings.get("cookie_secure"), False),
             "allow_registration": _coerce_bool(settings.get("allow_registration"), False),
-            "private_login_hosts": _coerce_private_hosts(
-                settings.get("private_login_hosts")
-            ),
+            "private_login_hosts": _coerce_private_hosts(settings.get("private_login_hosts")),
         }
 
     def _normalize_integrations(self, settings: dict[str, Any]) -> dict[str, Any]:

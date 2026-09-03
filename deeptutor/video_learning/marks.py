@@ -69,9 +69,7 @@ def _cues(material: dict[str, Any]) -> list[dict[str, Any]]:
     return [row for row in rows if isinstance(row, dict)] if isinstance(rows, list) else []
 
 
-def locators_for_range(
-    material: dict[str, Any], start: float, end: float
-) -> tuple[int, int]:
+def locators_for_range(material: dict[str, Any], start: float, end: float) -> tuple[int, int]:
     overlapping = [
         row
         for row in _segments(material)
@@ -99,9 +97,7 @@ def nearby_cues(
     material: dict[str, Any], time_seconds: float, window: float = NEARBY_WINDOW_SECONDS
 ) -> list[dict[str, Any]]:
     return [
-        row
-        for row in _cues(material)
-        if abs(float(row.get("start") or 0) - time_seconds) <= window
+        row for row in _cues(material) if abs(float(row.get("start") or 0) - time_seconds) <= window
     ]
 
 
@@ -142,10 +138,14 @@ def normalize_mark(
     if kind not in MARK_KINDS:
         raise TimedMediaError("Mark kind must be key_point, question, or review.")
     start = _as_seconds(
-        payload["start_seconds"] if "start_seconds" in payload else (existing or {}).get("start_seconds", 0)
+        payload["start_seconds"]
+        if "start_seconds" in payload
+        else (existing or {}).get("start_seconds", 0)
     )
     end = _as_seconds(
-        payload["end_seconds"] if "end_seconds" in payload else (existing or {}).get("end_seconds", start)
+        payload["end_seconds"]
+        if "end_seconds" in payload
+        else (existing or {}).get("end_seconds", start)
     )
     if end < start:
         raise TimedMediaError("Mark end must be at or after the start time.")
@@ -156,7 +156,9 @@ def normalize_mark(
         end = min(end, duration)
 
     derived_start, derived_end = locators_for_range(material, start, end)
-    start_locator = payload.get("start_locator", (existing or {}).get("start_locator", derived_start))
+    start_locator = payload.get(
+        "start_locator", (existing or {}).get("start_locator", derived_start)
+    )
     end_locator = payload.get("end_locator", (existing or {}).get("end_locator", derived_end))
     try:
         start_locator = max(0, int(start_locator or 0))
@@ -231,9 +233,7 @@ def create_mark(material: dict[str, Any], payload: dict[str, Any]) -> dict[str, 
     return mark
 
 
-def update_mark(
-    material: dict[str, Any], mark_id: str, payload: dict[str, Any]
-) -> dict[str, Any]:
+def update_mark(material: dict[str, Any], mark_id: str, payload: dict[str, Any]) -> dict[str, Any]:
     if not payload:
         raise TimedMediaError("No mark fields to update.")
     current = get_mark(material, mark_id)
@@ -267,9 +267,7 @@ def _parse_json_array(text: str) -> list[Any]:
     return payload if isinstance(payload, list) else []
 
 
-def _public_suggestion(
-    material: dict[str, Any], payload: dict[str, Any]
-) -> dict[str, Any] | None:
+def _public_suggestion(material: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any] | None:
     try:
         mark = normalize_mark(material, {**payload, "author": "assistant"})
     except TimedMediaError:
@@ -281,9 +279,7 @@ def _public_suggestion(
     return mark
 
 
-def heuristic_suggestions(
-    material: dict[str, Any], time_seconds: float
-) -> list[dict[str, Any]]:
+def heuristic_suggestions(material: dict[str, Any], time_seconds: float) -> list[dict[str, Any]]:
     segment = current_segment(material, time_seconds)
     if segment is None:
         nearby = nearby_cues(material, time_seconds)
@@ -325,9 +321,7 @@ def heuristic_suggestions(
     ]
 
 
-async def suggest_marks(
-    material: dict[str, Any], time_seconds: float
-) -> list[dict[str, Any]]:
+async def suggest_marks(material: dict[str, Any], time_seconds: float) -> list[dict[str, Any]]:
     """Generate candidate marks without writing any of them."""
     segment = current_segment(material, time_seconds)
     nearby = nearby_cues(material, time_seconds)

@@ -6,7 +6,12 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import pytest
 
-pytest_plugins = ["tests.multi_user.conftest"]
+from tests.multi_user.conftest import mu_isolated_root as _multi_user_isolated_root
+
+
+@pytest.fixture(name="mu_isolated_root")
+def _mu_isolated_root_fixture(_fixture=_multi_user_isolated_root):
+    return _fixture
 
 
 @pytest.fixture

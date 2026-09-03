@@ -172,6 +172,9 @@ jobs:
           - python-version: "3.14"
             os: windows-latest
 
+    # Windows runners default to cp1252, while the import probes print Unicode markers.
+    env:
+      PYTHONIOENCODING: utf-8
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

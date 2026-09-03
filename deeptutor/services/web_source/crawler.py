@@ -427,9 +427,7 @@ async def _sitemap_urls(
             root = etree.fromstring(fetched.html.encode("utf-8"))
         except etree.XMLSyntaxError:
             continue
-        locations = [
-            str(value).strip() for value in root.xpath("//*[local-name()='loc']/text()")
-        ]
+        locations = [str(value).strip() for value in root.xpath("//*[local-name()='loc']/text()")]
         for location in locations:
             location, _fragment = urldefrag(location)
             if location.endswith((".xml", ".gz")):

@@ -141,12 +141,8 @@ async def test_ytdlp_uses_chrome_and_downloads_subtitles_only(
                 encoding="utf-8",
             )
 
-    monkeypatch.setitem(
-        sys.modules, "yt_dlp", SimpleNamespace(YoutubeDL=FakeDownloader)
-    )
-    cues, language, source = await service.download_ytdlp_subtitle(
-        "dQw4w9WgXcQ"
-    )
+    monkeypatch.setitem(sys.modules, "yt_dlp", SimpleNamespace(YoutubeDL=FakeDownloader))
+    cues, language, source = await service.download_ytdlp_subtitle("dQw4w9WgXcQ")
 
     assert captured["cookiesfrombrowser"] == ("chrome",)
     assert captured["skip_download"] is True
@@ -187,13 +183,9 @@ async def test_subtitle_prefetch_preserves_rate_limit_backoff_and_is_idempotent(
         calls += 1
         return [], "", "rate_limited"
 
-    monkeypatch.setattr(
-        subtitle_prefetch, "download_ytdlp_subtitle", rate_limited
-    )
+    monkeypatch.setattr(subtitle_prefetch, "download_ytdlp_subtitle", rate_limited)
     prefetch = SubtitlePrefetchService()
-    queued = await prefetch.enqueue(
-        "evan", material_id, store, manual=True
-    )
+    queued = await prefetch.enqueue("evan", material_id, store, manual=True)
     assert queued["status"] == "queued"
     for _ in range(30):
         await asyncio.sleep(0.01)
