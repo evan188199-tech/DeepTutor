@@ -134,7 +134,7 @@ test("book arrows read the current chapter before turning chapters", async ({
   // A hidden reader (for example when the mobile chapter sidebar is expanded)
   // must not turn the page and skip unread content.
   await page.keyboard.press("ArrowRight");
-  await expect(page).toHaveURL(/page=page-2/);
+  await expect(page).toHaveURL(/\/books\/sequential-fixture\/pages\/page-2$/);
 
   await page.getByRole("button", { name: "Collapse chapters" }).click();
   await expect(
