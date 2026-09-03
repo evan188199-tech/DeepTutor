@@ -1,9 +1,12 @@
 """Video-learning domain API."""
 
-from .marks import (
-    MARK_AUTHORS,
-    MARK_KINDS,
-    MarkNotFound,
+from .marks import MARK_AUTHORS, MARK_KINDS, MarkNotFound
+from .invidious_account import (
+    begin_invidious_account_authorization,
+    complete_invidious_account_authorization,
+    disconnect_invidious_account,
+    invidious_account_status,
+    invidious_redirect_uri,
 )
 from .service import (
     PROVIDER_RESOLVERS,
@@ -32,7 +35,12 @@ __all__ = [
     "TimedMediaStore",
     "build_segments",
     "download_ytdlp_subtitle",
+    "begin_invidious_account_authorization",
+    "complete_invidious_account_authorization",
+    "disconnect_invidious_account",
     "get_timed_media_store",
+    "invidious_account_status",
+    "invidious_redirect_uri",
     "load_video_learning_settings",
     "material_with_playback",
     "normalize_cues",
