@@ -627,9 +627,7 @@ def test_auth_private_login_hosts_normalization_and_overrides(
 
     env_service = RuntimeSettingsService(
         tmp_path / "settings_env",
-        process_env={
-            "AUTH_PRIVATE_LOGIN_HOSTS": "100.101.207.44, 10.0.0.2\n10.0.0.3"
-        },
+        process_env={"AUTH_PRIVATE_LOGIN_HOSTS": "100.101.207.44, 10.0.0.2\n10.0.0.3"},
     )
     env_loaded = env_service.load_auth()
     assert env_loaded["private_login_hosts"] == [

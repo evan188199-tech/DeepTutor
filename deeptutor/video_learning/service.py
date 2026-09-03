@@ -430,15 +430,10 @@ async def download_ytdlp_subtitle(
             }
             try:
                 with yt_dlp.YoutubeDL(options) as downloader:
-                    downloader.download(
-                        [f"https://www.youtube.com/watch?v={video_id}"]
-                    )
+                    downloader.download([f"https://www.youtube.com/watch?v={video_id}"])
             except Exception as exc:
                 message = str(exc).lower()
-                if any(
-                    marker in message
-                    for marker in ("429", "too many requests", "rate limit")
-                ):
+                if any(marker in message for marker in ("429", "too many requests", "rate limit")):
                     return [], "", "rate_limited"
                 if any(
                     marker in message
@@ -451,9 +446,7 @@ async def download_ytdlp_subtitle(
                     if candidate.stat().st_size > MAX_TRANSCRIPT_BYTES:
                         continue
                     cues = normalize_cues(
-                        parse_webvtt(
-                            candidate.read_text(encoding="utf-8", errors="replace")
-                        )
+                        parse_webvtt(candidate.read_text(encoding="utf-8", errors="replace"))
                     )
                 except OSError:
                     continue

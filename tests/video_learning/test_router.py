@@ -144,9 +144,7 @@ def test_youtube_host_chrome_session_and_manual_subtitle_retry(
 
     monkeypatch.setattr(video_learning, "HostChromeSessionStore", FakeStore)
     monkeypatch.setattr(video_learning, "chrome_available", lambda: True)
-    monkeypatch.setattr(
-        video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch()
-    )
+    monkeypatch.setattr(video_learning, "get_subtitle_prefetch_service", lambda: FakePrefetch())
     material = _material()
     material["transcript"] = {
         "status": "unavailable",
@@ -167,9 +165,7 @@ def test_youtube_host_chrome_session_and_manual_subtitle_retry(
     assert connected.json()["mode"] == "host_chrome"
     material_response = client.get(f"/api/video-learning/materials/{material_id}")
     assert material_response.status_code == 200
-    retry = client.post(
-        f"/api/video-learning/materials/{material_id}/subtitle-prefetch"
-    )
+    retry = client.post(f"/api/video-learning/materials/{material_id}/subtitle-prefetch")
     assert retry.status_code == 202
     assert retry.json()["fetch"]["status"] == "queued"
     assert requests == [(material_id, False), (material_id, True)]

@@ -5,9 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-CommandType = Literal[
-    "pause", "play", "seek", "volume", "mute", "playback_rate", "fullscreen"
-]
+CommandType = Literal["pause", "play", "seek", "volume", "mute", "playback_rate", "fullscreen"]
 CommandStatus = Literal["pending", "acked", "failed", "expired"]
 PlaybackState = Literal["playing", "paused", "buffering", "ended", "unknown"]
 
