@@ -133,6 +133,11 @@ async def test_remote_worker_reply_reaches_owner_waiter(monkeypatch, tmp_path) -
     runtime_b = TurnRuntimeManager(
         store_b, coordinator=coordinator, owner_id="worker-b", turn_engine=Engine()
     )
+
+    async def _noop_title(**_kwargs):
+        return None
+
+    monkeypatch.setattr(runtime_a, "_maybe_generate_session_title", _noop_title)
     app_a = _application(store_a, runtime_a, coordinator)
     app_b = _application(store_b, runtime_b, coordinator)
 

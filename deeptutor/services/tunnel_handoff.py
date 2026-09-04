@@ -98,7 +98,25 @@ def _valid_redirect_path(redirect_path: str) -> bool:
 
 
 def _valid_cookie_name(name: str) -> bool:
-    forbidden = {'(', ')', '<', '>', '@', ',', ';', ':', '"', '/', '[', ']', '?', '=', '{', '}', '\\'}
+    forbidden = {
+        "(",
+        ")",
+        "<",
+        ">",
+        "@",
+        ",",
+        ";",
+        ":",
+        '"',
+        "/",
+        "[",
+        "]",
+        "?",
+        "=",
+        "{",
+        "}",
+        "\\",
+    }
     return (
         0 < len(name) <= 128
         and name.lower() not in _FORBIDDEN_COOKIE_NAMES
@@ -108,7 +126,7 @@ def _valid_cookie_name(name: str) -> bool:
 
 
 def _valid_cookie_value(value: str) -> bool:
-    forbidden = {';', '"', '\\'}
+    forbidden = {";", '"', "\\"}
     return (
         0 < len(value) <= 1024
         and all(0x21 <= ord(character) <= 0x7E for character in value)
@@ -117,9 +135,9 @@ def _valid_cookie_value(value: str) -> bool:
 
 
 def _valid_cookie_path(path: str) -> bool:
-    forbidden = {';', ',', '"', '?', '#', '\\'}
+    forbidden = {";", ",", '"', "?", "#", "\\"}
     return (
-        path.startswith('/')
+        path.startswith("/")
         and len(path) <= 512
         and all(0x21 <= ord(character) <= 0x7E for character in path)
         and not any(character in forbidden for character in path)

@@ -141,9 +141,7 @@ class SubtitlePrefetchService:
                     )
                     store.save(material)
                     video_id = str((material.get("source") or {}).get("video_id") or "")
-                    preferred = str(
-                        (material.get("transcript") or {}).get("language") or ""
-                    )
+                    preferred = str((material.get("transcript") or {}).get("language") or "")
                 cues, language, code = await download_ytdlp_subtitle(
                     video_id, preferred_language=preferred
                 )
@@ -152,9 +150,7 @@ class SubtitlePrefetchService:
                     if (latest.get("transcript") or {}).get("cues"):
                         return
                     if cues:
-                        fetch = _set_fetch(
-                            latest, "ready", attempts=attempts, next_retry_at=None
-                        )
+                        fetch = _set_fetch(latest, "ready", attempts=attempts, next_retry_at=None)
                         latest["transcript"] = {
                             "status": "ready",
                             "reason": "",
@@ -165,12 +161,8 @@ class SubtitlePrefetchService:
                         }
                         latest["segments"] = build_segments(cues)
                     elif code in {"rate_limited", "temporary_error"}:
-                        delay = RETRY_DELAYS[
-                            min(max(attempts - 1, 0), len(RETRY_DELAYS) - 1)
-                        ]
-                        retry_at = (
-                            datetime.now(timezone.utc) + delay
-                        ).isoformat()
+                        delay = RETRY_DELAYS[min(max(attempts - 1, 0), len(RETRY_DELAYS) - 1)]
+                        retry_at = (datetime.now(timezone.utc) + delay).isoformat()
                         _set_fetch(
                             latest,
                             "retry_wait",
@@ -181,9 +173,7 @@ class SubtitlePrefetchService:
                     else:
                         _set_fetch(
                             latest,
-                            "auth_required"
-                            if code == "auth_required"
-                            else "unavailable",
+                            "auth_required" if code == "auth_required" else "unavailable",
                             error_code=code,
                             attempts=attempts,
                             next_retry_at=None,

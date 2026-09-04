@@ -40,6 +40,12 @@ const INSERTABLE_TYPES: BlockType[] = [
   "user_note",
 ];
 
+const pendingScrollPlacements = new Map<string, ChapterScrollPlacement>();
+
+function scrollPlacementKey(page: Pick<Page, "book_id" | "id">): string {
+  return `${page.book_id}:${page.id}`;
+}
+
 export interface PageReaderProps {
   page: Page | null;
   onRegenerateBlock?: (block: Block) => void;
@@ -112,8 +118,6 @@ export default function PageReader({
   );
   const [readingPercent, setReadingPercent] = useState(0);
   const [chapterHasScroll, setChapterHasScroll] = useState(false);
-  const pendingScrollPlacementRef = useRef<ChapterScrollPlacement>("start");
-  const pendingScrollPlacementPageIdRef = useRef<string | null>(null);
   const lastSeenPageIdRef = useRef<string | null>(null);
 
   // ── Collapsible header ──────────────────────────────────────────────
@@ -157,20 +161,14 @@ export default function PageReader({
     if (!scrollContainer || !page) return;
 
     const isNewPage = lastSeenPageIdRef.current !== page.id;
+    const placementKey = scrollPlacementKey(page);
+    const hasPendingPlacement = pendingScrollPlacements.has(placementKey);
+    const placement = pendingScrollPlacements.get(placementKey) ?? "start";
     lastSeenPageIdRef.current = page.id;
-    const requestedPageId = pendingScrollPlacementPageIdRef.current;
-    const pendingMatchesPage = requestedPageId === page.id;
-    const placement = pendingMatchesPage
-      ? pendingScrollPlacementRef.current
-      : "start";
-    if (!pendingMatchesPage) {
-      pendingScrollPlacementRef.current = "start";
-      pendingScrollPlacementPageIdRef.current = null;
-    }
 
     // Content refreshes for the current chapter must never move an active
     // reader. Only a page transition or an explicit pending placement may.
-    if (!isNewPage && !pendingMatchesPage) return;
+    if (!isNewPage && !hasPendingPlacement) return;
 
     const waitingForContent =
       page.blocks.length === 0 && (loading || (page.block_count ?? 0) > 0);
@@ -178,8 +176,6 @@ export default function PageReader({
     // from surviving into the hydrated chapter. "End" must wait for content.
     if (waitingForContent && placement === "end") return;
 
-    pendingScrollPlacementRef.current = "start";
-    pendingScrollPlacementPageIdRef.current = null;
     const pendingFrames: number[] = [];
     pendingFrames.push(
       window.requestAnimationFrame(() => {
@@ -187,6 +183,7 @@ export default function PageReader({
           window.requestAnimationFrame(() => {
             scrollContainer.scrollTop =
               placement === "end" ? scrollContainer.scrollHeight : 0;
+            pendingScrollPlacements.delete(placementKey);
             updateReadingProgress();
           }),
         );
@@ -306,14 +303,12 @@ export default function PageReader({
       }
 
       if (direction === "previous" && previousPage) {
-        pendingScrollPlacementRef.current = "end";
-        pendingScrollPlacementPageIdRef.current = previousPage.id;
+        pendingScrollPlacements.set(scrollPlacementKey(previousPage), "end");
         onNavigate?.(previousPage.id);
         return true;
       }
       if (direction === "next" && nextPage) {
-        pendingScrollPlacementRef.current = "start";
-        pendingScrollPlacementPageIdRef.current = nextPage.id;
+        pendingScrollPlacements.set(scrollPlacementKey(nextPage), "start");
         onNavigate?.(nextPage.id);
         return true;
       }

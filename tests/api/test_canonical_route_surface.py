@@ -3,10 +3,11 @@ from types import SimpleNamespace
 import pytest
 
 from deeptutor.api.main import app, health_live, health_ready
+from tests.api.route_surface import effective_route_surfaces
 
 
 def test_only_canonical_transport_and_resource_routes_are_registered() -> None:
-    paths = {route.path for route in app.routes}
+    paths = {path for path, _route in effective_route_surfaces(app.routes)}
 
     required = {
         "/api/books",

@@ -337,9 +337,9 @@ class RemoteControlStore:
             ).fetchone()
         if row is None:
             return None
-        return self._device(row) if secrets.compare_digest(
-            row["token_hash"], _hash(token)
-        ) else None
+        return (
+            self._device(row) if secrets.compare_digest(row["token_hash"], _hash(token)) else None
+        )
 
     def touch_device(self, device_id: str) -> None:
         with self._connect() as conn:
