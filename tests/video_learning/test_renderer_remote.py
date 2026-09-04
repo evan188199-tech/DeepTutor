@@ -28,7 +28,9 @@ class _Paths:
 def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     db_path = tmp_path / "data" / "user" / "video_learning" / "remote.db"
     monkeypatch.setattr(video_remote_control, "_db_path", lambda: db_path)
-    monkeypatch.setattr(service, "get_current_path_service", lambda: _Paths(tmp_path / "data" / "user"))
+    monkeypatch.setattr(
+        service, "get_current_path_service", lambda: _Paths(tmp_path / "data" / "user")
+    )
     monkeypatch.setattr(
         video_remote_control.service,
         "load_video_learning_settings",
@@ -56,14 +58,10 @@ def _renderer(client: TestClient, **payload: object) -> dict:
 
 
 def _device(client: TestClient, ticket: str) -> tuple[dict, dict[str, str]]:
-    redeemed = client.post(
-        "/api/video-learning/renderers/bootstrap", json={"ticket": ticket}
-    )
+    redeemed = client.post("/api/video-learning/renderers/bootstrap", json={"ticket": ticket})
     assert redeemed.status_code == 200
     data = redeemed.json()
-    return data, {
-        "Authorization": f"VideoLearning {data['device_id']}:{data['token']}"
-    }
+    return data, {"Authorization": f"VideoLearning {data['device_id']}:{data['token']}"}
 
 
 def test_renderer_bootstrap_is_single_use_and_rejects_bad_tokens(client: TestClient):
@@ -78,10 +76,13 @@ def test_renderer_bootstrap_is_single_use_and_rejects_bad_tokens(client: TestCli
         "/api/video-learning/renderers/bootstrap", json={"ticket": created["ticket"]}
     )
     assert replay.status_code == 404
-    assert client.post(
-        "/api/video-learning/player/presence",
-        headers={"Authorization": f"VideoLearning {device['device_id']}:wrong"},
-    ).status_code == 403
+    assert (
+        client.post(
+            "/api/video-learning/player/presence",
+            headers={"Authorization": f"VideoLearning {device['device_id']}:wrong"},
+        ).status_code
+        == 403
+    )
     assert client.post("/api/video-learning/player/presence", headers=headers).status_code == 200
 
 
@@ -187,9 +188,12 @@ def test_phone_controller_replacement_and_remote_annotation(client: TestClient, 
 
     replaced = client.post("/api/video-learning/player/phone-handoff", headers=headers)
     assert replaced.status_code == 200
-    assert client.post(
-        f"/api/video-learning/sessions/{session_id}/commands", json={"type": "pause"}
-    ).status_code == 403
+    assert (
+        client.post(
+            f"/api/video-learning/sessions/{session_id}/commands", json={"type": "pause"}
+        ).status_code
+        == 403
+    )
     assert client.get(annotation_url).status_code == 403
     cookie_headers = {"Cookie": f"dt_video_controller={captured[1]}"}
     updated = client.patch(
@@ -199,9 +203,12 @@ def test_phone_controller_replacement_and_remote_annotation(client: TestClient, 
     )
     assert updated.status_code == 200
     assert updated.json()["reviewed_at"]
-    assert client.delete(
-        f"{annotation_url}/{annotation['mark_id']}", headers=cookie_headers
-    ).status_code == 200
+    assert (
+        client.delete(
+            f"{annotation_url}/{annotation['mark_id']}", headers=cookie_headers
+        ).status_code
+        == 200
+    )
     assert service.get_timed_media_store().get(material_id)["learning"]["marks"] == []
 
 
@@ -254,9 +261,7 @@ def test_player_sync_rebinds_material_when_video_changes(client: TestClient):
 
     store = service.get_timed_media_store()
     assert store.get(second_session["material_id"])["learning"].get("marks", []) == []
-    assert store.get(first_session["material_id"])["learning"]["marks"] == [
-        first_mark
-    ]
+    assert store.get(first_session["material_id"])["learning"]["marks"] == [first_mark]
 
 
 def test_device_commands_are_owner_scoped_and_expire(client: TestClient, tmp_path: Path):

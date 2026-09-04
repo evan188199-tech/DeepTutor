@@ -177,7 +177,13 @@ def _ensure_material(
                     "author": "",
                     "duration_seconds": max(0.0, duration_ms / 1000),
                 },
-                "transcript": {"status": "unavailable", "reason": "remote_renderer", "language": "", "source": "", "cues": []},
+                "transcript": {
+                    "status": "unavailable",
+                    "reason": "remote_renderer",
+                    "language": "",
+                    "source": "",
+                    "cues": [],
+                },
                 "segments": [],
                 "learning": {"last_position": 0},
             }
@@ -198,29 +204,41 @@ def _controller_session(
     if session.controller_token_hash and not store.verify_controller(
         current_owner_id(), session_id, controller_cookie
     ):
-        raise HTTPException(status_code=403, detail="This phone is not bound to the current player session.")
+        raise HTTPException(
+            status_code=403, detail="This phone is not bound to the current player session."
+        )
     if required and not session.controller_token_hash:
-        raise HTTPException(status_code=403, detail="Create a phone handoff before using this endpoint.")
+        raise HTTPException(
+            status_code=403, detail="Create a phone handoff before using this endpoint."
+        )
     return session
 
 
 def _session_material(store: RemoteControlStore, session: PlayerSession) -> dict[str, Any]:
     if not session.material_id:
-        raise HTTPException(status_code=409, detail="The renderer has not bound a learning material yet.")
+        raise HTTPException(
+            status_code=409, detail="The renderer has not bound a learning material yet."
+        )
     timed_store = _timed_media_store_for(store, store.workspace_for_device(session.device_id))
     try:
         material = timed_store.get(session.material_id)
     except service.TimedMediaNotFound as exc:
-        raise HTTPException(status_code=404, detail="The bound learning material is unavailable.") from exc
+        raise HTTPException(
+            status_code=404, detail="The bound learning material is unavailable."
+        ) from exc
     source = material.get("source") if isinstance(material.get("source"), dict) else {}
     if str(source.get("video_id") or "") != session.video_id:
-        raise HTTPException(status_code=409, detail="The renderer changed videos. Refresh the phone handoff.")
+        raise HTTPException(
+            status_code=409, detail="The renderer changed videos. Refresh the phone handoff."
+        )
     return material
 
 
 @router.post("/renderers", dependencies=_auth)
 async def create_renderer(
-    payload: RendererCreateRequest, response: Response, account: TokenPayload | None = Depends(require_learning_surface)
+    payload: RendererCreateRequest,
+    response: Response,
+    account: TokenPayload | None = Depends(require_learning_surface),
 ) -> dict[str, Any]:
     settings = service.load_video_learning_settings()
     configured = settings["invidious"]["public_base_url"] or settings["invidious"]["api_base_url"]
@@ -273,7 +291,9 @@ async def create_renderer(
 
 
 @router.post("/renderers/bootstrap")
-async def bootstrap_renderer(payload: RendererBootstrapRequest, response: Response) -> dict[str, Any]:
+async def bootstrap_renderer(
+    payload: RendererBootstrapRequest, response: Response
+) -> dict[str, Any]:
     store = RemoteControlStore.open_existing(_db_path())
     if store is None:
         raise HTTPException(status_code=404, detail="Renderer bootstrap was not found.")
@@ -348,7 +368,9 @@ async def player_presence(auth=Depends(_auth_device)) -> dict[str, Any]:
     return {
         "device_id": device.device_id,
         "online": True,
-        "commands": [asdict(command) for command in store.pending_device_commands(device.device_id)],
+        "commands": [
+            asdict(command) for command in store.pending_device_commands(device.device_id)
+        ],
     }
 
 
@@ -358,9 +380,7 @@ async def ack_device_command(
 ) -> dict[str, Any]:
     device, store = auth
     try:
-        command = store.ack_device_command(
-            device.device_id, command_id, payload.ok, payload.error
-        )
+        command = store.ack_device_command(device.device_id, command_id, payload.ok, payload.error)
     except RemoteControlError as exc:
         raise _http_error(exc) from exc
     return asdict(command)
@@ -397,7 +417,10 @@ async def player_sync(payload: PlayerSyncRequest, auth=Depends(_auth_device)) ->
         raise _http_error(exc) from exc
     return {
         "session": {**asdict(session), "online": True},
-        "commands": [asdict(command) for command in store.pending_commands(device.device_id, session.session_id)],
+        "commands": [
+            asdict(command)
+            for command in store.pending_commands(device.device_id, session.session_id)
+        ],
     }
 
 
@@ -420,7 +443,9 @@ async def create_player_phone_handoff(
     device, store = auth
     session = store.latest_session(device.device_id)
     if session is None or not store.session_is_online(session):
-        raise HTTPException(status_code=409, detail="Start playing a video before creating a phone handoff.")
+        raise HTTPException(
+            status_code=409, detail="Start playing a video before creating a phone handoff."
+        )
     controller_secret = secrets.token_urlsafe(32)
     session = store.issue_controller(device.owner_id, session.session_id, controller_secret)
     if session is None:

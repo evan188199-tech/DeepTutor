@@ -20,8 +20,7 @@ def test_required_local_and_upstream_route_families_are_installed() -> None:
     assert "/api/auth/handoff/pairing/{pairing_id}" in paths
     assert "/api/auth/handoff/consume" in paths
     assert any(
-        path.startswith("/api/partners/")
-        and path.endswith("/channel-onboarding/start")
+        path.startswith("/api/partners/") and path.endswith("/channel-onboarding/start")
         for path in paths
     )
     assert "/api/reading/extensions" in paths
@@ -57,14 +56,8 @@ def test_retired_kids_product_surface_stays_out_of_the_repository() -> None:
     assert not [path for path in retired_files if path.exists()]
 
     web_app = Path("web/app")
-    assert not [
-        path for path in web_app.rglob("*") if path.name.lower() == "kids"
-    ]
-    assert not [
-        path
-        for path in Path("web/tests").rglob("*")
-        if "kids" in path.name.lower()
-    ]
+    assert not [path for path in web_app.rglob("*") if path.name.lower() == "kids"]
+    assert not [path for path in Path("web/tests").rglob("*") if "kids" in path.name.lower()]
 
     packaged_sources = (
         Path("pyproject.toml").read_text(encoding="utf-8"),

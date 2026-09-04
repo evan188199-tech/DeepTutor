@@ -204,9 +204,7 @@ async def get_youtube_session_status() -> dict[str, Any]:
         else ("error" if metadata else "disconnected"),
         "helper_available": helper_available,
         "last_validated_at": str((metadata or {}).get("enabled_at") or "") or None,
-        "last_error_code": "chrome_unavailable"
-        if metadata and not helper_available
-        else None,
+        "last_error_code": "chrome_unavailable" if metadata and not helper_available else None,
         "next_prefetch_at": None,
     }
 
@@ -318,9 +316,7 @@ async def delete_video_note(material_id: str, note_id: str) -> dict[str, str]:
 
 
 @router.post("/materials/{material_id}/marks", status_code=201)
-async def create_video_mark(
-    material_id: str, payload: MarkCreateRequest
-) -> dict[str, Any]:
+async def create_video_mark(material_id: str, payload: MarkCreateRequest) -> dict[str, Any]:
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
@@ -362,9 +358,7 @@ async def delete_video_mark(material_id: str, mark_id: str) -> dict[str, bool]:
 
 
 @router.post("/materials/{material_id}/mark-suggestions")
-async def suggest_video_marks(
-    material_id: str, payload: MarkSuggestionRequest
-) -> dict[str, Any]:
+async def suggest_video_marks(material_id: str, payload: MarkSuggestionRequest) -> dict[str, Any]:
     try:
         material = get_timed_media_store().get(material_id)
         suggestions = await suggest_marks(material, payload.time_seconds)

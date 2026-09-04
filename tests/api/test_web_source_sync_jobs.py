@@ -37,9 +37,7 @@ def _client(router_module) -> TestClient:
 
 def _wait_for_terminal(client: TestClient, job_id: str) -> dict:
     for _ in range(30):
-        response = client.get(
-            f"/api/v1/knowledge/knowledge-bases/kb/web-sync-jobs/{job_id}"
-        )
+        response = client.get(f"/api/v1/knowledge/knowledge-bases/kb/web-sync-jobs/{job_id}")
         assert response.status_code == 200
         job = response.json()
         if job["status"] not in {"queued", "running", "cancelling"}:
