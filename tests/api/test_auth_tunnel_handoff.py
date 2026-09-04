@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 import pytest
 
-pytest_plugins = ["tests.multi_user.conftest"]
+pytest_plugins = ["tests.multi_user.plugin"]
 
 
 @pytest.fixture
