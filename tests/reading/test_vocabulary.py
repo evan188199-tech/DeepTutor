@@ -103,6 +103,32 @@ async def test_vocabulary_bounds_long_context(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_vocabulary_tolerates_punctuation_and_drops_ungrounded_terms(monkeypatch):
+    async def complete(**_kwargs):
+        return json.dumps(
+            {
+                "terms": [
+                    {
+                        "term": "verified phrase.",
+                        "meaning": "The passage presents this phrase as checked evidence.",
+                        "usage": "It identifies the evidence used by the passage.",
+                    },
+                    {
+                        "term": "outside.",
+                        "meaning": "This term is absent from the selected passage.",
+                        "usage": "The passage never uses this term.",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr("deeptutor.reading.vocabulary.complete", complete)
+    result = await VocabularyExtension().run_action("explain", _context())
+
+    assert [term["term"] for term in result.payload["terms"]] == ["verified phrase."]
+
+
+@pytest.mark.asyncio
 async def test_missing_selection_fails_before_an_llm_call(monkeypatch):
     async def complete(**_kwargs):
         pytest.fail("missing selection must not invoke the model")
@@ -187,6 +213,12 @@ def _client(monkeypatch) -> TestClient:
 
 
 def test_vocabulary_crosses_the_api_boundary_with_verified_text(monkeypatch, tmp_path):
+    from deeptutor.services.llm.config import LLMConfig
+
+    monkeypatch.setattr(
+        "deeptutor.services.model_selection.runtime.resolve_llm_config_for_selection",
+        lambda _: LLMConfig(model="test-model", api_key="test"),
+    )
     monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path))
     PathService.reset_instance()
     source = tmp_path / "source.txt"
