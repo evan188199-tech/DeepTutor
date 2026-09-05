@@ -168,6 +168,51 @@ class UnitReference:
 
 
 @dataclass(frozen=True, slots=True)
+class BilingualGroup:
+    """One source/translation alignment attached to a material locator."""
+
+    group_id: str
+    locator: int
+    source_markdown: str
+    translation_markdown: str = ""
+    source_language: str = "en"
+    target_language: str = "zh"
+    confidence: float = 1.0
+    low_confidence: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "group_id": self.group_id,
+            "locator": self.locator,
+            "source_markdown": self.source_markdown,
+            "translation_markdown": self.translation_markdown,
+            "source_language": self.source_language,
+            "target_language": self.target_language,
+            "confidence": self.confidence,
+            "low_confidence": self.low_confidence,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "BilingualGroup":
+        try:
+            confidence = float(data.get("confidence") or 0.0)
+        except (TypeError, ValueError):
+            confidence = 0.0
+        return cls(
+            group_id=str(data.get("group_id") or ""),
+            locator=max(1, int(data.get("locator") or 1)),
+            source_markdown=str(data.get("source_markdown") or data.get("en_content") or ""),
+            translation_markdown=str(
+                data.get("translation_markdown") or data.get("zh_content") or ""
+            ),
+            source_language=str(data.get("source_language") or "en"),
+            target_language=str(data.get("target_language") or "zh"),
+            confidence=confidence,
+            low_confidence=bool(data.get("low_confidence")),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class SearchHit:
     """One search match, addressed by locator with surrounding context."""
 
@@ -212,6 +257,9 @@ class MaterialManifest:
     content_format: ContentFormat = "plain_text"
     source_type: str = "upload"
     source_url: str = ""
+    bilingual_available: bool = False
+    bilingual_languages: tuple[str, ...] = ()
+    bilingual_pairing_ids: tuple[str, ...] = ()
     revision: int = 1
 
     def to_dict(self) -> dict[str, Any]:
@@ -232,6 +280,9 @@ class MaterialManifest:
             "content_format": self.content_format,
             "source_type": self.source_type,
             "source_url": self.source_url,
+            "bilingual_available": self.bilingual_available,
+            "bilingual_languages": list(self.bilingual_languages),
+            "bilingual_pairing_ids": list(self.bilingual_pairing_ids),
             "revision": self.revision,
         }
 
@@ -261,6 +312,17 @@ class MaterialManifest:
             content_format=content_format,  # type: ignore[arg-type]
             source_type=str(data.get("source_type") or "upload"),
             source_url=str(data.get("source_url") or ""),
+            bilingual_available=bool(data.get("bilingual_available")),
+            bilingual_languages=tuple(
+                str(value)
+                for value in (data.get("bilingual_languages") or [])
+                if isinstance(value, str) and value
+            ),
+            bilingual_pairing_ids=tuple(
+                str(value)
+                for value in (data.get("bilingual_pairing_ids") or [])
+                if isinstance(value, str) and value
+            ),
             revision=max(1, int(data.get("revision") or 1)),
         )
 
@@ -438,6 +500,7 @@ __all__ = [
     "ANNOTATION_COLORS",
     "DEFAULT_ANNOTATION_COLOR",
     "Annotation",
+    "BilingualGroup",
     "AnnotationKind",
     "ContentFormat",
     "MaterialManifest",

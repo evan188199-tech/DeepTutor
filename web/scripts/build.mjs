@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -38,6 +45,42 @@ function restore(path, contents) {
 
 function restoreAll(snapshots) {
   for (const [path, contents] of snapshots) restore(path, contents);
+}
+
+function completeStandaloneBundle() {
+  const distDir = path.resolve(
+    webRoot,
+    process.env.DEEPTUTOR_NEXT_DIST_DIR || ".next",
+  );
+  const standaloneDir = path.join(distDir, "standalone");
+  const staticDir = path.join(distDir, "static");
+  if (!existsSync(path.join(standaloneDir, "server.js"))) {
+    throw new Error(
+      `Next build did not create ${path.join(standaloneDir, "server.js")}`,
+    );
+  }
+  if (!existsSync(staticDir)) {
+    throw new Error(`Next build did not create ${staticDir}`);
+  }
+
+  // Standalone server bundles omit browser assets. Keep the default /_next
+  // path self-contained, and mirror assets under a custom distDir for launchers
+  // that resolve /_next from their configured dist directory.
+  const runtimeDistDir = path.relative(webRoot, distDir);
+  const staticTargets = [path.join(standaloneDir, ".next", "static")];
+  if (runtimeDistDir !== ".next") {
+    staticTargets.push(path.join(standaloneDir, runtimeDistDir, "static"));
+  }
+  for (const target of staticTargets) {
+    rmSync(target, { recursive: true, force: true });
+    mkdirSync(path.dirname(target), { recursive: true });
+    cpSync(staticDir, target, { recursive: true, force: true });
+  }
+
+  const publicDir = path.join(webRoot, "public");
+  const publicTarget = path.join(standaloneDir, "public");
+  rmSync(publicTarget, { recursive: true, force: true });
+  cpSync(publicDir, publicTarget, { recursive: true, force: true });
 }
 
 function prepareBuildTsconfig(snapshots, distDir) {
@@ -91,5 +134,7 @@ if (isEntry) {
     console.error(result.error);
     process.exit(1);
   }
-  process.exit(result.status ?? 1);
+  const status = result.status ?? 1;
+  if (status === 0) completeStandaloneBundle();
+  process.exit(status);
 }
