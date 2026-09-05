@@ -4653,5 +4653,7 @@
   "access.deviceTitle": "设备连接",
   "access.deviceAuthenticating": "正在验证身份…",
   "access.deviceRedirecting": "正在跳转至 DeepTutor…",
-  "access.deviceFailed": "配对链接无效或已过期，请重新扫码。"
+  "access.deviceFailed": "配对链接无效或已过期，请重新扫码。",
+  "Watch videos with a grounded AI companion.": "与有出处依据的 AI 伙伴一起观看视频。",
+  "Conversation": "对话"
 }
