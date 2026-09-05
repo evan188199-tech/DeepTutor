@@ -3708,11 +3708,9 @@
   "How do I configure authentication?": "How do I configure authentication?",
   "Scheduled sync interval (hours)": "Scheduled sync interval (hours)",
   "Scheduled": "Scheduled",
-  "Manual": "Manual",
   "Version": "Version",
   "Every": "Every",
   "Next sync": "Next sync",
-  "Validation": "Validation",
   "https://example.com/docs/": "https://example.com/docs/",
   "e.g. HKUDS/DeepTutor": "e.g. HKUDS/DeepTutor",
   "main": "main",
@@ -4455,7 +4453,6 @@
   "Copy launch URL": "Copy launch URL",
   "Open renderer": "Open renderer",
   "Renderer launch could not be created.": "Renderer launch could not be created.",
-  "Copied": "Copied",
   "Refresh provider": "Refresh provider",
   "Close video learning": "Close video learning",
   "Open a YouTube learning video": "Open a YouTube learning video",
@@ -4705,5 +4702,12 @@
   "Has captions": "Has captions",
   "Captions ready": "Captions ready",
   "With captions only": "With captions only",
-  "Search transcript": "Search transcript"
+  "Search transcript": "Search transcript",
+  "Captions below video": "Captions below video",
+  "Video options": "Video options",
+  "Learn from this moment": "Learn from this moment",
+  "Ask about the video, or select a subtitle to explore it together.": "Ask about the video, or select a subtitle to explore it together.",
+  "More options": "More options",
+  "Ask about this video…": "Ask about this video…",
+  "Follow playback": "Follow playback"
 }

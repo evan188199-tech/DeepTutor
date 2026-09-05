@@ -3708,11 +3708,9 @@
   "How do I configure authentication?": "如何配置身份验证？",
   "Scheduled sync interval (hours)": "定时同步间隔（小时）",
   "Scheduled": "定时",
-  "Manual": "手动",
   "Version": "版本",
   "Every": "每",
   "Next sync": "下次同步",
-  "Validation": "验证",
   "https://example.com/docs/": "https://example.com/docs/",
   "e.g. HKUDS/DeepTutor": "例如 HKUDS/DeepTutor",
   "main": "main",
@@ -4455,7 +4453,6 @@
   "Copy launch URL": "复制启动链接",
   "Open renderer": "打开渲染器",
   "Renderer launch could not be created.": "无法创建渲染器启动码。",
-  "Copied": "已复制",
   "Refresh provider": "刷新播放提供方",
   "Close video learning": "关闭视频学习",
   "Open a YouTube learning video": "打开 YouTube 学习视频",
@@ -4705,5 +4702,12 @@
   "Has captions": "有字幕",
   "Captions ready": "字幕已就绪",
   "With captions only": "仅显示有字幕的视频",
-  "Search transcript": "搜索字幕"
+  "Search transcript": "搜索字幕",
+  "Captions below video": "字幕显示在视频下方",
+  "Video options": "视频选项",
+  "Learn from this moment": "从这一刻开始学习",
+  "Ask about the video, or select a subtitle to explore it together.": "围绕视频提问，或选择一句字幕一起深入理解。",
+  "More options": "更多选项",
+  "Ask about this video…": "围绕这个视频提问…",
+  "Follow playback": "跟随播放"
 }
