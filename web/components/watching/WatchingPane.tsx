@@ -965,6 +965,7 @@ export function WatchingPane({
                   )}
                   <details className="watching-transcript-list" open={!learning || transcriptExpanded || undefined}>
                     <summary>{t("Transcript")}</summary>
+                    <div className="watching-transcript-tools">
                     <button type="button" className="watching-follow-captions" aria-pressed={followCaptions} onClick={() => setFollowCaptions(value => !value)}>{t("Follow playback")}</button>
                     <input
                       aria-label={t("Search transcript")}
@@ -975,6 +976,7 @@ export function WatchingPane({
                       }
                       className="mb-2 w-full rounded border bg-transparent p-2"
                     />
+                    </div>
                   <div className="space-y-1" ref={transcriptRootRef}>
                     {material.transcript.cues.map((row, index) => {
                       if (!row.text.toLocaleLowerCase().includes(transcriptQuery.toLocaleLowerCase())) return null;
