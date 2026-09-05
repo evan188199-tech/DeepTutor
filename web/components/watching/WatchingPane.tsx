@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   BookmarkPlus,
@@ -51,6 +51,7 @@ import {
 import { WatchingMarksPanel } from "./WatchingMarksPanel";
 import { useTranscriptFollow } from "./useTranscriptFollow";
 import { WatchingCaptions } from "./WatchingCaptions";
+import { WatchingMarkEditor } from "./WatchingMarkEditor";
 import { WatchingPlayer } from "./WatchingPlayer";
 import { WatchingRemoteLaunch } from "./WatchingRemoteLaunch";
 
@@ -90,7 +91,7 @@ export function WatchingPane({
   useEffect(() => {
     const change = (event: Event) =>
       setTab(
-        (event as CustomEvent).detail === "notes" ? "notes" : "transcript",
+        (event as CustomEvent).detail === "marks" ? "marks" : (event as CustomEvent).detail === "notes" ? "notes" : "transcript",
       );
     window.addEventListener("dt:watching-panel", change);
     return () => window.removeEventListener("dt:watching-panel", change);
@@ -110,6 +111,16 @@ export function WatchingPane({
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const [noteTime, setNoteTime] = useState<number | null>(null);
+  const [noteStatus, setNoteStatus] = useState("");
+  const [notesReload, setNotesReload] = useState(0);
+  const noteRequestRef = useRef(false);
+  const noteScopeRef = useRef({ id: materialId, version: 0 });
+  if (noteScopeRef.current.id !== materialId) {
+    noteScopeRef.current = { id: materialId, version: noteScopeRef.current.version + 1 };
+    noteRequestRef.current = false;
+  }
+  const notesRevisionRef = useRef(0);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState("");
   const [noteBusy, setNoteBusy] = useState(false);
@@ -118,6 +129,14 @@ export function WatchingPane({
   const [markSuggestions, setMarkSuggestions] = useState<VideoMarkSuggestion[]>([]);
   const [markError, setMarkError] = useState<string | null>(null);
   const [markBusy, setMarkBusy] = useState(false);
+  const markRequestRef = useRef(false);
+  const [markAnnotation, setMarkAnnotation] = useState("");
+  const marksMaterialRef = useRef<string | null>(null);
+  const [markStatus, setMarkStatus] = useState("");
+  const showPanel = (panel: WatchTab) => {
+    setTab(panel);
+    window.dispatchEvent(new CustomEvent("dt:watching-panel-request", { detail: panel }));
+  };
   const [markDraft, setMarkDraft] = useState<{
     start_seconds: number;
     end_seconds: number;
@@ -135,10 +154,16 @@ export function WatchingPane({
   activeMaterialIdRef.current = materialId;
 
   useEffect(() => {
+    if (marksMaterialRef.current === materialId) return;
+    marksMaterialRef.current = materialId;
+    setMarkDraft(null);
+    setMarkBusy(false);
+    markRequestRef.current = false;
+    setMarkStatus("");
     setMarks(material?.learning.marks ?? []);
     setMarkSuggestions([]);
     setMarkError(null);
-  }, [material?.learning.marks, material?.material_id]);
+  }, [materialId, material?.learning.marks]);
 
   useEffect(() => {
     setActive(true);
@@ -241,10 +266,12 @@ export function WatchingPane({
 
   const saveMark = async (
     kind: VideoMarkKind,
-    payload: { start_seconds: number; end_seconds: number; quote?: string },
+    payload: { start_seconds: number; end_seconds: number; quote?: string; note?: string },
     author: "user" | "assistant" = "user",
   ) => {
-    if (!material || markBusy) return;
+    if (!material || markRequestRef.current) return false;
+    markRequestRef.current = true;
+    const requestedScope = noteScopeRef.current.version;
     const requestedMaterialId = material.material_id;
     setMarkBusy(true);
     setMarkError(null);
@@ -259,24 +286,33 @@ export function WatchingPane({
           payload.end_seconds,
         ),
       });
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return false;
       setMarks((current) => [...current, saved]);
       setMarkDraft(null);
-      setTab("marks");
+      setMarkStatus(t("Mark saved."));
       window.getSelection()?.removeAllRanges();
+      return true;
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return false;
       setMarkError(
         caught instanceof Error ? caught.message : t("Mark was not saved."),
       );
+      return false;
     } finally {
-      setMarkBusy(false);
+      if (noteScopeRef.current.version === requestedScope) {
+        markRequestRef.current = false;
+        setMarkBusy(false);
+      }
     }
   };
 
   const markCue = (index: number) => {
     const selected = material?.transcript.cues[index];
     if (!selected) return;
+    setMarkError(null);
+    setMarkAnnotation("");
+    setMarkStatus("");
+    setFollowCaptions(false);
     setMarkDraft({
       start_seconds: selected.start,
       end_seconds: selected.end,
@@ -290,10 +326,14 @@ export function WatchingPane({
       material.transcript.cues,
       cueIndexesFromSelection(transcriptRootRef.current, window.getSelection()),
     );
-    if (range) setMarkDraft(range);
+    if (range) { setMarkAnnotation(""); setMarkStatus(""); setMarkError(null); setFollowCaptions(false); setMarkDraft(range); }
   };
 
   const markCurrentTime = () => {
+    setMarkError(null);
+    setMarkAnnotation("");
+    setMarkStatus("");
+    setFollowCaptions(false);
     setMarkDraft({
       start_seconds: time,
       end_seconds: time,
@@ -326,7 +366,7 @@ export function WatchingPane({
   useTranscriptFollow(
     detailRef,
     cue?.start,
-    transcriptActive && followCaptions && !transcriptQuery,
+    transcriptActive && followCaptions && !transcriptQuery && !markDraft,
   );
 
   const submit = async (providerOverride?: "youtube") => {
@@ -363,13 +403,19 @@ export function WatchingPane({
   }, [material, cue, time]);
 
   useEffect(() => {
-    let cancelled = false;
+    setNoteBusy(false);
     setNotes([]);
     setNotesError(null);
     setNoteDraft("");
+    setNoteTime(null);
+    setNoteStatus("");
     setEditingNoteId(null);
     setEditingDraft("");
     setPendingDeleteId(null);
+  }, [materialId]);
+
+  useEffect(() => {
+    let cancelled = false;
     if (!materialId) {
       setNotesLoading(false);
       return () => {
@@ -377,10 +423,14 @@ export function WatchingPane({
       };
     }
     setNotesLoading(true);
+    const revision = notesRevisionRef.current;
     void (async () => {
       try {
         const loaded = await listVideoNotes(materialId);
-        if (!cancelled) setNotes(loaded);
+        if (!cancelled && revision === notesRevisionRef.current) {
+          setNotes(loaded);
+          setNotesError(null);
+        }
       } catch (caught) {
         if (!cancelled) {
           setNotesError(
@@ -396,7 +446,7 @@ export function WatchingPane({
     return () => {
       cancelled = true;
     };
-  }, [materialId, t]);
+  }, [materialId, t, notesReload]);
 
   const sortNotes = (rows: VideoNote[]) =>
     [...rows].sort(
@@ -407,34 +457,47 @@ export function WatchingPane({
     );
 
   const addNote = async () => {
-    if (!material || !noteDraft.trim() || noteBusy) return;
+    if (!material || !noteDraft.trim() || noteRequestRef.current || notesLoading) return;
     const requestedMaterialId = material.material_id;
+    const requestedScope = noteScopeRef.current.version;
+    noteRequestRef.current = true;
+    notesRevisionRef.current += 1;
     setNoteBusy(true);
+    setNoteStatus("");
     setNotesError(null);
     try {
       const saved = await createVideoNote(
         requestedMaterialId,
         noteDraft.trim(),
-        time,
+        noteTime ?? time,
       );
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotes((current) => sortNotes([...current, saved]));
       setNoteDraft("");
+      setNoteTime(null);
+      setNoteStatus(t("Note saved."));
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotesError(
         caught instanceof Error ? caught.message : t("Note was not saved."),
       );
     } finally {
-      setNoteBusy(false);
+      if (noteScopeRef.current.version === requestedScope) {
+        noteRequestRef.current = false;
+        setNoteBusy(false);
+      }
     }
   };
 
   const saveEditedNote = async () => {
-    if (!material || !editingNoteId || !editingDraft.trim() || noteBusy)
+    if (!material || !editingNoteId || !editingDraft.trim() || noteRequestRef.current)
       return;
     const requestedMaterialId = material.material_id;
+    const requestedScope = noteScopeRef.current.version;
+    noteRequestRef.current = true;
+    notesRevisionRef.current += 1;
     setNoteBusy(true);
+    setNoteStatus("");
     setNotesError(null);
     try {
       const saved = await updateVideoNote(
@@ -442,7 +505,7 @@ export function WatchingPane({
         editingNoteId,
         editingDraft.trim(),
       );
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotes((current) =>
         sortNotes(
           current.map((note) =>
@@ -452,24 +515,32 @@ export function WatchingPane({
       );
       setEditingNoteId(null);
       setEditingDraft("");
+      setNoteStatus(t("Note saved."));
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotesError(
         caught instanceof Error ? caught.message : t("Note was not saved."),
       );
     } finally {
-      setNoteBusy(false);
+      if (noteScopeRef.current.version === requestedScope) {
+        noteRequestRef.current = false;
+        setNoteBusy(false);
+      }
     }
   };
 
   const confirmDelete = async () => {
-    if (!material || !pendingDeleteId || noteBusy) return;
+    if (!material || !pendingDeleteId || noteRequestRef.current) return;
     const requestedMaterialId = material.material_id;
+    const requestedScope = noteScopeRef.current.version;
+    noteRequestRef.current = true;
+    notesRevisionRef.current += 1;
     setNoteBusy(true);
+    setNoteStatus("");
     setNotesError(null);
     try {
       await deleteVideoNote(requestedMaterialId, pendingDeleteId);
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotes((current) =>
         current.filter((note) => note.note_id !== pendingDeleteId),
       );
@@ -478,15 +549,19 @@ export function WatchingPane({
         setEditingDraft("");
       }
       setPendingDeleteId(null);
+      setNoteStatus(t("Note deleted."));
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
+      if (activeMaterialIdRef.current !== requestedMaterialId || noteScopeRef.current.version !== requestedScope) return;
       setNotesError(
         caught instanceof Error
           ? caught.message
           : t("Note was not deleted."),
       );
     } finally {
-      setNoteBusy(false);
+      if (noteScopeRef.current.version === requestedScope) {
+        noteRequestRef.current = false;
+        setNoteBusy(false);
+      }
     }
   };
 
@@ -586,6 +661,40 @@ export function WatchingPane({
   const chromeConnected = youtubeSession?.connection === "connected";
   const subtitleActive =
     subtitleFetchStatus === "queued" || subtitleFetchStatus === "fetching";
+  const markAnchorIndex = material && markDraft
+    ? (() => {
+        const index = material.transcript.cues.findIndex(row => row.end >= markDraft.end_seconds);
+        return index < 0 ? material.transcript.cues.length - 1 : index;
+      })()
+    : -1;
+  const markEditor = markDraft ? (
+        <WatchingMarkEditor
+          key={`${materialId}:${markDraft.start_seconds}:${markDraft.end_seconds}`}
+          note={markAnnotation}
+          onChange={setMarkAnnotation}
+          timestamp={`${formatTime(markDraft.start_seconds)} – ${formatTime(markDraft.end_seconds)}`}
+          busy={markBusy || noteBusy}
+          error={markError}
+          onSave={(kind, note) => void saveMark(kind, { ...markDraft, note })}
+          onNote={(body) => {
+            if (!noteDraft.trim()) {
+              setNoteDraft(body || markDraft.quote);
+              setNoteTime(markDraft.start_seconds);
+              setNoteStatus("");
+            } else {
+              setNoteStatus(t("Your existing draft is preserved. Save it before starting another note."));
+            }
+            setMarkDraft(null);
+            showPanel("notes");
+            requestAnimationFrame(() => {
+              detailRef.current?.scrollTo({top:0, behavior:"instant"});
+              detailRef.current?.querySelector<HTMLTextAreaElement>("textarea")?.focus({preventScroll:true});
+            });
+          }}
+          onClose={() => setMarkDraft(null)}
+        />
+      ) : null;
+
   return (
     <section className="watching-pane flex h-full min-w-0 flex-col border-r border-[var(--border)] bg-[var(--background)]">
       <header className="watching-pane-header flex items-center gap-2 border-b border-[var(--border)] px-4 py-3">
@@ -785,6 +894,7 @@ export function WatchingPane({
             role="tabpanel"
             className="watching-detail-panel min-h-0 flex-1 overflow-y-auto p-4"
             data-notes={tab === "notes"}
+            data-watch-tab={tab}
           >
 
             <div
@@ -919,6 +1029,7 @@ export function WatchingPane({
                     <button
                       type="button"
                       onClick={markCurrentTime}
+                      disabled={Boolean(markDraft)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
                     >
                       <BookmarkPlus className="h-4 w-4" />
@@ -927,47 +1038,16 @@ export function WatchingPane({
                     <button
                       type="button"
                       onClick={captureSelection}
+                      disabled={Boolean(markDraft)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
                     >
                       {t("Use selection")}
                     </button>
                   </div>
-                  {markDraft && (
-                    <div className="mb-3 rounded-lg border border-[var(--border)] bg-[var(--muted)]/50 p-3">
-                      <p className="font-mono text-xs text-blue-600">
-                        {formatTime(markDraft.start_seconds)}
-                        {markDraft.end_seconds > markDraft.start_seconds
-                          ? ` - ${formatTime(markDraft.end_seconds)}`
-                          : ""}
-                      </p>
-                      {markDraft.quote && (
-                        <p className="mt-1 line-clamp-2 text-sm">{markDraft.quote}</p>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {(["key_point", "question", "review"] as const).map((kind) => (
-                          <button
-                            key={kind}
-                            type="button"
-                            disabled={markBusy}
-                            onClick={() => void saveMark(kind, markDraft)}
-                            className="rounded-md bg-[var(--background)] px-2.5 py-1.5 text-xs font-medium shadow-sm disabled:opacity-50"
-                          >
-                            {markLabel(kind, t)}
-                          </button>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() => setMarkDraft(null)}
-                          className="rounded-md px-2.5 py-1.5 text-xs"
-                        >
-                          {t("Cancel")}
-                        </button>
-                      </div>
-                    </div>
-                  )}
                   <details className="watching-transcript-list" open={!learning || transcriptExpanded || undefined}>
                     <summary>{t("Transcript")}</summary>
                     <div className="watching-transcript-tools">
+                    {markStatus && <p role="status" className="text-xs text-[var(--muted-foreground)]">{markStatus}</p>}
                     <button type="button" className="watching-follow-captions" aria-pressed={followCaptions} onClick={() => setFollowCaptions(value => !value)}>{t("Follow playback")}</button>
                     <input
                       aria-label={t("Search transcript")}
@@ -981,7 +1061,7 @@ export function WatchingPane({
                     </div>
                   <div className="space-y-1" ref={transcriptRootRef}>
                     {material.transcript.cues.map((row, index) => {
-                      if (!row.text.toLocaleLowerCase().includes(transcriptQuery.toLocaleLowerCase())) return null;
+                      if (index !== markAnchorIndex && !row.text.toLocaleLowerCase().includes(transcriptQuery.toLocaleLowerCase())) return null;
                       const active = row === cue;
                       const marked = marks.some(
                         (mark) =>
@@ -989,10 +1069,11 @@ export function WatchingPane({
                           mark.start_seconds <= row.end,
                       );
                       return (
+                        <Fragment key={`${row.start}-${index}`}>
                         <div
-                          key={`${row.start}-${index}`}
                               data-cue-start={row.start}
                           data-cue-index={index}
+                          data-active={active || undefined}
                           className={`flex w-full gap-3 rounded-md px-2 py-1.5 text-left text-sm ${active ? "bg-blue-500/15 ring-1 ring-blue-500/30" : "hover:bg-[var(--muted)]"} ${marked ? "ring-1 ring-amber-600/40" : ""}`}
                         >
                           <button
@@ -1006,13 +1087,18 @@ export function WatchingPane({
                           <button
                             type="button"
                             onClick={() => markCue(index)}
+                            disabled={markBusy || Boolean(markDraft)}
+                            aria-expanded={Boolean(markDraft && index === markAnchorIndex)}
+                            aria-pressed={marked}
                             aria-label={t("Mark this subtitle")}
                             title={t("Mark this subtitle")}
                             className="shrink-0 rounded-md p-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
                           >
-                            <BookmarkPlus className="h-4 w-4" />
+                            <BookmarkPlus className={`h-4 w-4 ${marked ? "fill-amber-500/25 text-amber-600" : ""}`} />
                           </button>
                         </div>
+                        {index === markAnchorIndex && markEditor}
+                        </Fragment>
                       );
                     })}
                   </div>
@@ -1030,15 +1116,23 @@ export function WatchingPane({
                 >
                   <textarea
                     value={noteDraft}
-                    onChange={(event) => setNoteDraft(event.target.value)}
+                    disabled={noteBusy}
+                    aria-label={t("Video note")}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      if (!noteDraft && value) setNoteTime(time);
+                      if (!value) setNoteTime(null);
+                      setNoteDraft(value);
+                      setNoteStatus("");
+                    }}
                     placeholder={t("Note at {{time}}", {
-                      time: formatTime(time),
+                      time: formatTime(noteTime ?? time),
                     })}
                     className="min-h-20 w-full resize-y rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm"
                   />
                   <button
                     type="submit"
-                    disabled={noteBusy || !noteDraft.trim()}
+                    disabled={noteBusy || notesLoading || !noteDraft.trim()}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-sm text-[var(--primary-foreground)] disabled:opacity-50"
                   >
                     {noteBusy ? (
@@ -1050,12 +1144,19 @@ export function WatchingPane({
                   </button>
                 </form>
 
+                {noteTime !== null && (
+                  <p className="text-xs text-[var(--muted-foreground)]">
+                    {t("Note timestamp: {{time}}", { time: formatTime(noteTime) })}
+                  </p>
+                )}
+                {noteStatus && <p role="status" className="text-sm text-[var(--muted-foreground)]">{noteStatus}</p>}
                 {notesError && (
                   <p
                     role="alert"
                     className="rounded-lg border border-[var(--border)] bg-[var(--muted)] px-3 py-2 text-sm text-[var(--destructive)]"
                   >
                     {notesError}
+                    <button type="button" disabled={notesLoading || noteBusy} onClick={() => setNotesReload(value => value + 1)} className="ml-2 underline">{t("Reload notes")}</button>
                   </p>
                 )}
 
@@ -1083,6 +1184,7 @@ export function WatchingPane({
                         <div className="min-w-0 flex-1">
                           {editingNoteId === note.note_id ? (
                             <textarea
+                              disabled={noteBusy}
                               value={editingDraft}
                               onChange={(event) =>
                                 setEditingDraft(event.target.value)
@@ -1177,6 +1279,7 @@ export function WatchingPane({
                   )}
                   {t("Suggest marks")}
                 </button>
+                {markStatus && <p role="status" className="text-sm">{markStatus}</p>}
                 <WatchingMarksPanel
                   marks={marks}
                   suggestions={markSuggestions}
@@ -1241,7 +1344,8 @@ export function WatchingPane({
                         quote: suggestion.quote,
                       },
                       "assistant",
-                    ).then(() => {
+                    ).then((saved) => {
+                      if (!saved) return;
                       setMarkSuggestions((current) =>
                         current.filter((row) => row !== suggestion),
                       );
@@ -1264,6 +1368,7 @@ export function WatchingPane({
         onCancel={() => setPendingDeleteId(null)}
       >
         {t("This note will be removed from Video Learning.")}
+        {notesError && <p role="alert" className="mt-2 text-[var(--destructive)]">{notesError}</p>}
       </ConfirmDialog>
     </section>
   );

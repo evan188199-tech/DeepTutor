@@ -16,6 +16,8 @@ for (const mobile of [false, true]) {
     let savedPosition = 0;
     let nativeResolveCount = 0;
     let nextNoteId = 1;
+    let markOffline = true;
+    const marks: Record<string, unknown>[] = [];
     const notes: Array<{
       notebook_id: string;
       note_id: string;
@@ -51,7 +53,9 @@ for (const mobile of [false, true]) {
             source: selected,
             cues: [
               { start: 7, end: 12, text: "The first grounded concept." },
+              ...Array.from({ length: 55 }, (_, index) => ({ start: 13 + index, end: 14 + index, text: `Context sentence ${index}.` })),
               { start: 70, end: 75, text: "The second grounded concept." },
+              ...Array.from({ length: 30 }, (_, index) => ({ start: 76 + index, end: 77 + index, text: `Later sentence ${index}.` })),
             ],
           }
         : {
@@ -62,7 +66,7 @@ for (const mobile of [false, true]) {
             cues: [],
           },
       segments: [],
-      learning: { last_position: savedPosition },
+      learning: { last_position: savedPosition, marks },
       playback:
         selected === "youtube"
           ? {
@@ -279,6 +283,16 @@ for (const mobile of [false, true]) {
         savedPosition = body.time_seconds;
         return json({ time_seconds: savedPosition, duration_seconds: 120 });
       }
+      if (path.endsWith("/marks") && request.method() === "POST") {
+        if (markOffline) return json({detail:"Mark service offline"}, 503);
+        const mark = {...request.postDataJSON(),mark_id:"mark-1",created_at:new Date().toISOString()};
+        marks.push(mark);
+        return json(mark);
+      }
+      if (path.endsWith("/marks/mark-1") && request.method() === "DELETE") {
+        marks.splice(0);
+        return json({status:"deleted"});
+      }
       if (path.endsWith("/notes") && request.method() === "GET") {
         return json(notes);
       }
@@ -428,6 +442,79 @@ for (const mobile of [false, true]) {
         "480px",
       );
     }
+    await page.getByRole("tab", {name: "Transcript", exact: true}).click();
+    await page.evaluate(() => {
+      const player = (window as typeof window & {__fakePlayers: Array<{current: number}>}).__fakePlayers.at(-1);
+      if (player) player.current = 35.5;
+    });
+    const rail = page.locator(".watching-detail-panel");
+    const alignmentError = () => rail.evaluate(panel => {
+      const active = panel.querySelector('[data-cue-start="35"]')!.getBoundingClientRect();
+      const tools = panel.querySelector('.watching-transcript-tools')!.getBoundingClientRect();
+      const bounds = panel.getBoundingClientRect();
+      const usableTop = bounds.top + panel.clientTop + tools.height;
+      const height = panel.clientHeight - tools.height;
+      const captions = document.querySelector('.watching-live-captions')!.getBoundingClientRect();
+      const desired = window.innerWidth >= 900 ? Math.max(usableTop + height * .25, Math.min(usableTop + height * .75, captions.top + captions.height / 2)) : usableTop + height / 2;
+      return Math.abs(active.top + active.height / 2 - desired);
+    });
+    await expect.poll(alignmentError).toBeLessThan(4);
+    const beforeManual = await rail.evaluate(panel => panel.scrollTop);
+    await rail.hover();
+    await page.mouse.wheel(0, -120);
+    await expect(page.getByRole("button", {name: "Follow playback", exact: true})).toHaveAttribute("aria-pressed", "false");
+    await expect.poll(() => rail.evaluate(panel => panel.scrollTop)).toBeLessThan(beforeManual);
+    await page.getByLabel("Search transcript", {exact: true}).fill("Context sentence 22");
+    await expect(rail.locator('[data-cue-start]')).toHaveCount(1);
+    await page.getByLabel("Search transcript", {exact: true}).fill("");
+    await page.getByRole("button", {name: "Follow playback", exact: true}).click();
+    await expect.poll(alignmentError).toBeLessThan(4);
+    // A bookmark expands immediately below its cue, inside the transcript rail.
+    await rail.locator('[data-cue-start="35"]').getByRole("button", {name:"Mark this subtitle"}).click();
+    const markDialog = page.getByRole("region", {name:"Save a learning mark"});
+    await expect(markDialog).toBeVisible();
+    await expect(page.getByRole("dialog", {name:"Save a learning mark"})).toHaveCount(0);
+    const dialogBounds = await markDialog.boundingBox();
+    const cueBounds = await rail.locator('[data-cue-start="35"]').boundingBox();
+    const railBounds = await rail.boundingBox();
+    expect(dialogBounds!.y).toBeGreaterThanOrEqual(cueBounds!.y + cueBounds!.height);
+    expect(dialogBounds!.x).toBeGreaterThanOrEqual(railBounds!.x);
+    expect(dialogBounds!.x + dialogBounds!.width).toBeLessThanOrEqual(railBounds!.x + railBounds!.width);
+    expect(dialogBounds!.y).toBeGreaterThanOrEqual(0);
+    expect(dialogBounds!.y + dialogBounds!.height).toBeLessThanOrEqual(mobile ? 844 : 1000);
+    await markDialog.getByLabel("Optional annotation").fill("Remember this explanation");
+    await page.getByRole("tab", {name:"Video notes",exact:true}).click();
+    await page.getByRole("tab", {name:"Transcript",exact:true}).click();
+    await expect(markDialog.getByLabel("Optional annotation")).toHaveValue("Remember this explanation");
+    await markDialog.getByRole("button", {name:"Key point",exact:true}).click();
+    await expect(markDialog.getByRole("alert")).toContainText("Mark service offline");
+    await expect(markDialog.getByLabel("Optional annotation")).toHaveValue("Remember this explanation");
+    markOffline = false;
+    await markDialog.getByRole("button", {name:"Key point",exact:true}).click();
+    await expect(page.getByRole("tab", {name:"Transcript",exact:true})).toHaveAttribute("aria-selected","true");
+    await page.getByRole("tab", {name:"Marks",exact:true}).click();
+    await expect(page.getByText("Mark saved.")).toBeVisible();
+    await expect(page.getByText("Remember this explanation")).toBeVisible();
+    await page.getByRole("tab", {name:"Transcript",exact:true}).click();
+    await page.getByRole("tab", {name:"Marks",exact:true}).click();
+    await expect(page.getByText("Remember this explanation")).toBeVisible();
+    await page.getByRole("button",{name:"Delete mark",exact:true}).click();
+    await expect(page.getByText("No marks yet.")).toBeVisible();
+    await page.getByRole("tab", {name:"Transcript",exact:true}).click();
+    await rail.locator('[data-cue-start="35"]').getByRole("button",{name:"Mark this subtitle"}).click();
+    await markDialog.getByLabel("Optional annotation").fill("Note from selected caption");
+    await markDialog.getByRole("button",{name:"Write a video note instead"}).click();
+    await expect(page.getByRole("textbox",{name:"Video note",exact:true})).toHaveValue("Note from selected caption");
+    await expect(page.getByText("Note timestamp: 0:35")).toBeVisible();
+    await page.evaluate(()=> { const player=(window as typeof window & {__fakePlayers:Array<{current:number}>}).__fakePlayers.at(-1); if(player) player.current=55; });
+    await page.getByRole("button",{name:"Add video note",exact:true}).click();
+    await expect(page.getByText("Note saved.")).toBeVisible();
+    expect(notes.at(-1)?.time_seconds).toBe(35);
+    await page.getByRole("button",{name:"Delete note at 0:35",exact:true}).click();
+    await page.getByRole("button",{name:"Delete",exact:true}).click();
+    await expect(page.getByText("Note deleted.")).toBeVisible();
+    // Refresh creates a new player; subsequent mount checks use this current instance.
+    await page.getByRole("tab", {name: "Conversation", exact: true}).click();
     const bounds = await page
       .locator("[data-watching-workspace]")
       .boundingBox();
@@ -507,8 +594,10 @@ for (const mobile of [false, true]) {
       "first",
     );
 
+    await page.getByRole("button", { name: "Fullscreen learning", exact: true }).click();
     await page.goto("/watching/watching-test");
     await page.reload();
+    await expect(page.locator("[data-watching-workspace]")).toHaveAttribute("data-learning", "true");
     await expect(
       page.getByRole("heading", {
         name: "Timestamped lesson",
@@ -569,7 +658,7 @@ for (const mobile of [false, true]) {
       link.id = "fake-assistant-timestamp";
       link.href = "#dt-video-time-70";
       link.textContent = "[01:10]";
-      document.body.appendChild(link);
+      document.querySelector("[data-chat-column]")!.appendChild(link);
     });
     await page.locator("#fake-assistant-timestamp").click();
     await expect
