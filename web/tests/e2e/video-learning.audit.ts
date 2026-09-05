@@ -469,20 +469,30 @@ for (const mobile of [false, true]) {
     await page.getByLabel("Search transcript", {exact: true}).fill("");
     await page.getByRole("button", {name: "Follow playback", exact: true}).click();
     await expect.poll(alignmentError).toBeLessThan(4);
-    // A bookmark opened far down the transcript must be visible without scrolling to the top.
+    // A bookmark expands immediately below its cue, inside the transcript rail.
     await rail.locator('[data-cue-start="35"]').getByRole("button", {name:"Mark this subtitle"}).click();
-    const markDialog = page.getByRole("dialog", {name:"Save a learning mark"});
+    const markDialog = page.getByRole("region", {name:"Save a learning mark"});
     await expect(markDialog).toBeVisible();
+    await expect(page.getByRole("dialog", {name:"Save a learning mark"})).toHaveCount(0);
     const dialogBounds = await markDialog.boundingBox();
+    const cueBounds = await rail.locator('[data-cue-start="35"]').boundingBox();
+    const railBounds = await rail.boundingBox();
+    expect(dialogBounds!.y).toBeGreaterThanOrEqual(cueBounds!.y + cueBounds!.height);
+    expect(dialogBounds!.x).toBeGreaterThanOrEqual(railBounds!.x);
+    expect(dialogBounds!.x + dialogBounds!.width).toBeLessThanOrEqual(railBounds!.x + railBounds!.width);
     expect(dialogBounds!.y).toBeGreaterThanOrEqual(0);
     expect(dialogBounds!.y + dialogBounds!.height).toBeLessThanOrEqual(mobile ? 844 : 1000);
     await markDialog.getByLabel("Optional annotation").fill("Remember this explanation");
+    await page.getByRole("tab", {name:"Video notes",exact:true}).click();
+    await page.getByRole("tab", {name:"Transcript",exact:true}).click();
+    await expect(markDialog.getByLabel("Optional annotation")).toHaveValue("Remember this explanation");
     await markDialog.getByRole("button", {name:"Key point",exact:true}).click();
     await expect(markDialog.getByRole("alert")).toContainText("Mark service offline");
     await expect(markDialog.getByLabel("Optional annotation")).toHaveValue("Remember this explanation");
     markOffline = false;
     await markDialog.getByRole("button", {name:"Key point",exact:true}).click();
-    await expect(page.getByRole("tab", {name:"Marks",exact:true})).toHaveAttribute("aria-selected","true");
+    await expect(page.getByRole("tab", {name:"Transcript",exact:true})).toHaveAttribute("aria-selected","true");
+    await page.getByRole("tab", {name:"Marks",exact:true}).click();
     await expect(page.getByText("Mark saved.")).toBeVisible();
     await expect(page.getByText("Remember this explanation")).toBeVisible();
     await page.getByRole("tab", {name:"Transcript",exact:true}).click();
