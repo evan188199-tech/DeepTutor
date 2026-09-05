@@ -49,6 +49,7 @@ import {
   rangeFromCues,
 } from "@/lib/video-learning-marks";
 import { WatchingMarksPanel } from "./WatchingMarksPanel";
+import { useTranscriptFollow } from "./useTranscriptFollow";
 import { WatchingCaptions } from "./WatchingCaptions";
 import { WatchingPlayer } from "./WatchingPlayer";
 import { WatchingRemoteLaunch } from "./WatchingRemoteLaunch";
@@ -322,10 +323,11 @@ export function WatchingPane({
     }
   };
 
-  useEffect(() => {
-    if (!transcriptActive || !followCaptions || transcriptQuery || !cue) return;
-    detailRef.current?.querySelector<HTMLElement>(`[data-cue-start="${cue.start}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [cue, transcriptActive, followCaptions, transcriptQuery]);
+  useTranscriptFollow(
+    detailRef,
+    cue?.start,
+    transcriptActive && followCaptions && !transcriptQuery,
+  );
 
   const submit = async (providerOverride?: "youtube") => {
     const url = (providerOverride ? lastUrl || input : input).trim();
