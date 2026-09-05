@@ -71,12 +71,7 @@ import {
 } from "@/lib/reading-references";
 
 type SessionRuntimeStatus =
-  | "idle"
-  | "running"
-  | "completed"
-  | "failed"
-  | "cancelled"
-  | "rejected";
+  "idle" | "running" | "completed" | "failed" | "cancelled" | "rejected";
 
 interface OutgoingAttachment {
   type: string;
@@ -116,6 +111,7 @@ export interface ChatState {
   activeCapability: string | null;
   /** Stable product surface; per-turn capability selection is orthogonal. */
   workspaceMode: WorkspaceMode | null;
+  timedMediaId: string | null;
   knowledgeBases: string[];
   llmSelection: LLMSelection | null;
   /** Persistent mastery state associated with this conversation. */
@@ -139,6 +135,7 @@ export interface ChatState {
 export interface SessionConfiguration {
   capability?: string | null;
   workspaceMode?: WorkspaceMode | null;
+  timedMediaId?: string | null;
   knowledgeBases?: string[];
   masteryPathId?: string | null;
   courseId?: string;
@@ -238,6 +235,7 @@ interface SessionSnapshot {
   tools?: string[];
   capability?: string | null;
   workspaceMode?: WorkspaceMode | null;
+  timedMediaId?: string | null;
   knowledgeBases?: string[];
   llmSelection?: LLMSelection | null;
   masteryPathId?: string | null;
@@ -332,6 +330,7 @@ function createSessionEntry(
     enabledTools: [],
     activeCapability: null,
     workspaceMode: null,
+    timedMediaId: null,
     knowledgeBases: [],
     llmSelection: null,
     masteryPathId: null,
@@ -385,6 +384,10 @@ function applySessionConfiguration(
       configuration.capability !== undefined
         ? configuration.capability
         : session.activeCapability,
+    timedMediaId:
+      configuration.timedMediaId !== undefined
+        ? configuration.timedMediaId
+        : session.timedMediaId,
     workspaceMode:
       configuration.workspaceMode !== undefined
         ? configuration.workspaceMode
@@ -771,6 +774,10 @@ function reducer(state: ProviderState, action: Action): ProviderState {
               action.capability !== undefined
                 ? action.capability
                 : existing.activeCapability,
+            timedMediaId:
+              action.timedMediaId !== undefined
+                ? action.timedMediaId
+                : existing.timedMediaId,
             workspaceMode:
               action.workspaceMode !== undefined
                 ? action.workspaceMode
@@ -1331,8 +1338,7 @@ export function ChatStateAdapterProvider({
         // so applying it here only catches the open client up to what a
         // reload would already show.
         const meta = event.metadata as
-          | { title?: string; mastery_path_id?: string }
-          | undefined;
+          { title?: string; mastery_path_id?: string } | undefined;
         // The tutor can move a conversation between mastery paths mid-turn;
         // without this the composer would keep naming the path it started on.
         if (typeof meta?.mastery_path_id === "string") {
@@ -1605,10 +1611,18 @@ export function ChatStateAdapterProvider({
         // promoted to a workspace mode, that value means the default Chat
         // action rather than a hidden legacy entry in the action picker.
         capability:
-          session.preferences?.capability === loadedWorkspaceMode
+          session.preferences?.capability === loadedWorkspaceMode &&
+          loadedWorkspaceMode !== "immersive_watching"
             ? null
             : session.preferences?.capability || null,
         workspaceMode: loadedWorkspaceMode,
+        timedMediaId:
+          session.preferences?.timed_media_id ||
+          [...messages]
+            .reverse()
+            .find((message) => message.requestSnapshot?.timedMediaId)
+            ?.requestSnapshot?.timedMediaId ||
+          null,
         knowledgeBases: Array.isArray(session.preferences?.knowledge_bases)
           ? session.preferences.knowledge_bases
           : [],
@@ -2126,6 +2140,7 @@ export function ChatStateAdapterProvider({
       enabledTools: current.enabledTools,
       activeCapability: current.activeCapability,
       workspaceMode: current.workspaceMode,
+      timedMediaId: current.timedMediaId,
       knowledgeBases: current.knowledgeBases,
       llmSelection: current.llmSelection,
       masteryPathId: current.masteryPathId,

@@ -43,7 +43,8 @@ export interface StartTurnMessage {
   content: string;
   tools?: string[];
   capability?: string | null;
-  workspace_mode?: "immersive_reading" | "mastery_path" | "";
+  workspace_mode?:
+    "immersive_reading" | "mastery_path" | "immersive_watching" | "";
   knowledge_bases?: string[];
   session_id?: string | null;
   attachments?: Array<{

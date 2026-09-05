@@ -4655,5 +4655,7 @@
   "access.deviceTitle": "Connecting device",
   "access.deviceAuthenticating": "Authenticating session…",
   "access.deviceRedirecting": "Redirecting to DeepTutor…",
-  "access.deviceFailed": "Pairing link is invalid or has expired. Please scan again."
+  "access.deviceFailed": "Pairing link is invalid or has expired. Please scan again.",
+  "Watch videos with a grounded AI companion.": "Watch videos with a grounded AI companion.",
+  "Conversation": "Conversation"
 }
