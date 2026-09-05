@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  BookmarkPlus,
   ArrowLeft,
   Captions,
   Expand,
@@ -74,7 +75,7 @@ export function WatchingSessionBridge({
   return null;
 }
 
-export type WatchingPanel = "chat" | "transcript" | "notes" | "activity";
+export type WatchingPanel = "chat" | "transcript" | "notes" | "marks" | "activity";
 
 /** Presentation only; the player and shared conversation stay mounted across layouts. */
 export function WatchingSurface({
@@ -168,7 +169,7 @@ export function WatchingSurface({
       if (
         event.key === "Escape" &&
         !document.fullscreenElement &&
-        !Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]')).some(dialog => dialog.getBoundingClientRect().width > 0 && getComputedStyle(dialog).visibility !== "hidden" && dialog.getAttribute("aria-hidden") !== "true")
+        !Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"],[role="alertdialog"]')).some(dialog => dialog.getBoundingClientRect().width > 0 && getComputedStyle(dialog).visibility !== "hidden" && dialog.getAttribute("aria-hidden") !== "true")
       )
         setLearning(false);
     };
@@ -184,6 +185,14 @@ export function WatchingSurface({
     const showChat = () => onPanelChange("chat");
     window.addEventListener(WATCHING_ASK_EVENT, showChat);
     return () => window.removeEventListener(WATCHING_ASK_EVENT, showChat);
+  }, [onPanelChange]);
+  useEffect(() => {
+    const selectPanel = (event: Event) => {
+      const panel = (event as CustomEvent).detail;
+      if (panel === "marks" || panel === "notes" || panel === "transcript") onPanelChange(panel);
+    };
+    window.addEventListener("dt:watching-panel-request", selectPanel);
+    return () => window.removeEventListener("dt:watching-panel-request", selectPanel);
   }, [onPanelChange]);
   const systemFullscreen = async () => {
     const root = surfaceRef.current?.closest<HTMLElement>(
@@ -306,6 +315,7 @@ export function WatchingSurface({
                 ["chat", "Conversation", MessageSquare],
                 ["transcript", "Transcript", Captions],
                 ["notes", "Video notes", StickyNote],
+                ["marks", "Marks", BookmarkPlus],
               ] as const
             ).map(([name, label, Icon]) => (
               <button

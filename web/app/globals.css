@@ -1502,7 +1502,8 @@ a[href^="#dt-locator-"]:hover {
 }
 [data-learning-panel="transcript"]
   .watching-detail-panel[data-notes="false"],
-[data-learning-panel="notes"] .watching-detail-panel[data-notes="true"] {
+[data-learning-panel="notes"] .watching-detail-panel[data-notes="true"],
+[data-learning-panel="marks"] .watching-detail-panel[data-watch-tab="marks"] {
   visibility: visible;
 }
 .watching-transcript-list input {
@@ -1526,7 +1527,8 @@ a[href^="#dt-locator-"]:hover {
   transition: none;
 }
 [data-learning-panel="transcript"] > .chat-preview-shell,
-[data-learning-panel="notes"] > .chat-preview-shell {
+[data-learning-panel="notes"] > .chat-preview-shell,
+[data-learning-panel="marks"] > .chat-preview-shell {
   visibility: hidden;
   pointer-events: none;
 }
