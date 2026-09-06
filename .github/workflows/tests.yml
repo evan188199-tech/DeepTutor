@@ -210,6 +210,8 @@ jobs:
           python -c "from deeptutor.logging import configure_logging, bind_log_context, capture_process_logs, ProcessLogEvent; print('✅ Logging imports OK')"
         env:
           PYTHONPATH: ${{ github.workspace }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: "1"
 
       - name: Check lazy startup and isolated worker protocol
         run: |
@@ -217,6 +219,8 @@ jobs:
           python -c "from deeptutor.runtime.isolated_worker import run_in_isolated_process_sync; assert run_in_isolated_process_sync('operator:add', 20, 22, timeout=15) == 42; print('✅ Isolated worker protocol OK')"
         env:
           PYTHONPATH: ${{ github.workspace }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUTF8: "1"
 
   python-tests:
     name: Python Tests (Python ${{ matrix.python-version }})
