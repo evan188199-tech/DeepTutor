@@ -150,11 +150,24 @@ async def test_remote_worker_reply_reaches_owner_waiter(monkeypatch, tmp_path) -
         await asyncio.sleep(0.01)
     assert active is not None
     assert active["status"] == "waiting_input"
-    assert await app_b.submit_user_reply(turn["id"], "yes", command_id="reply-from-b") is True
-    events = [event async for event in app_b.subscribe_turn(turn["id"])]
 
-    assert any(event.get("content") == "reply:yes" for event in events)
-    assert events[-1]["type"] == "done"
-    assert [event["seq"] for event in events] == list(range(1, len(events) + 1))
+    received: list[dict] = []
+
+    async def collect() -> None:
+        async for event in app_b.subscribe_turn(turn["id"]):
+            received.append(event)
+
+    subscriber = asyncio.create_task(collect())
+    for _ in range(100):
+        if any(event["type"] == "wait_for_input" for event in received):
+            break
+        await asyncio.sleep(0.01)
+    assert any(event["type"] == "wait_for_input" for event in received)
+    assert await app_b.submit_user_reply(turn["id"], "yes", command_id="reply-from-b") is True
+    await asyncio.wait_for(subscriber, timeout=3)
+
+    assert any(event.get("content") == "reply:yes" for event in received)
+    assert received[-1]["type"] == "done"
+    assert [event["seq"] for event in received] == list(range(1, len(received) + 1))
     await runtime_a.close()
     await runtime_b.close()
