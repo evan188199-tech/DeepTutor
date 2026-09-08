@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("learning policy redacts denied surfaces without losing chat history", async ({
   page,
 }) => {
+  const savedPreferences: unknown[] = [];
   await page.addInitScript(() => {
     localStorage.setItem("deeptutor-language", "en");
   });
@@ -43,6 +44,10 @@ test("learning policy redacts denied surfaces without losing chat history", asyn
       );
     }
     if (path === "/api/settings/ui") {
+      if (request.method() === "PUT") {
+        savedPreferences.push(request.postDataJSON());
+        return json(request.postDataJSON());
+      }
       return json({
         theme: "snow",
         language: "en",
@@ -124,6 +129,9 @@ test("learning policy redacts denied surfaces without losing chat history", asyn
   }
 
   await expect(page.getByRole("link", { name: "Appearance" })).toBeVisible();
+  await page.getByRole("link", { name: "Appearance" }).click();
+  await page.getByRole("button", { name: "Cream", exact: true }).click();
+  await expect.poll(() => savedPreferences).toContainEqual({ theme: "light" });
   await expect(page.getByRole("link", { name: "Learner profile" })).toBeVisible();
   await page.getByRole("link", { name: "Learner profile" }).click();
   await expect(page.getByRole("heading", { name: "Assigned models" })).toBeVisible();
