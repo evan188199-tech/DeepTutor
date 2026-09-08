@@ -6,7 +6,15 @@ from deeptutor.api.main import app, health_live, health_ready
 
 
 def test_only_canonical_transport_and_resource_routes_are_registered() -> None:
-    paths = {route.path for route in app.routes}
+    paths = set()
+    for route in app.routes:
+        contexts = getattr(route, "effective_route_contexts", None)
+        if contexts is None:
+            paths.add(route.path)
+        else:
+            paths.update(context.path for context in contexts())
+            prefix = route.include_context.prefix
+            paths.update(prefix + route.path for route in route.original_router.routes)
 
     required = {
         "/api/books",
@@ -15,6 +23,8 @@ def test_only_canonical_transport_and_resource_routes_are_registered() -> None:
         "/api/mastery-paths/topics",
         "/api/notebooks",
         "/api/personas",
+        "/api/plugins/extensions",
+        "/api/plugins/{plugin_id}/{plugin_path:path}",
         "/api/sessions",
         "/api/system/runtime",
         "/files/attachments/{session_id}/{attachment_id}/{filename:path}",
