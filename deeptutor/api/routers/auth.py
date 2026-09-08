@@ -427,6 +427,12 @@ async def require_learning_surface(
     """Second-stage default-deny guard for configured learning accounts."""
     from deeptutor.multi_user.learning_access import assert_learning_surface
 
+    # The typed UISettingsUpdate body only changes the caller's presentation
+    # preferences. Keep appearance usable even for reading-only accounts,
+    # without opening any model, tool, or deployment configuration routes.
+    if request.method == "PUT" and request.url.path == "/api/settings/ui":
+        return
+
     try:
         assert_learning_surface(_learning_surface_for_path(request.url.path))
     except PermissionError as exc:
