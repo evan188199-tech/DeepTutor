@@ -98,6 +98,42 @@ def test_agentic_kwargs_preserve_legacy_shape_without_binding() -> None:
     assert kwargs == {"temperature": 0.2, "max_tokens": 256}
 
 
+def test_agentic_kwargs_omit_the_output_budget_for_provider_default_recovery() -> None:
+    """``None`` means "no caller cap", not "fall back to the adapter default"."""
+    kwargs = build_completion_kwargs(
+        temperature=0.2,
+        model="deepseek-v4-flash",
+        max_tokens=None,
+        binding="deepseek",
+    )
+
+    assert kwargs == {"temperature": 0.2}
+    assert "max_tokens" not in kwargs
+    assert "max_completion_tokens" not in kwargs
+
+
+@pytest.mark.asyncio
+async def test_provider_adapter_preserves_a_missing_output_budget() -> None:
+    """A recovered loop must not have 4096 silently reinserted."""
+
+    class FakeProvider:
+        async def chat_stream(self, **kwargs):
+            self.seen = kwargs
+            return LLMResponse(content="acting now", finish_reason="stop")
+
+    provider = FakeProvider()
+    adapter = _ProviderOpenAIAdapter(provider)
+    stream = await adapter.chat.completions.create(
+        messages=[{"role": "user", "content": "act"}],
+        model="deepseek-v4-flash",
+        stream=True,
+        temperature=0.2,
+    )
+    [chunk async for chunk in stream]
+
+    assert provider.seen["max_tokens"] is None
+
+
 @pytest.mark.asyncio
 async def test_provider_stream_exposes_final_reasoning_content() -> None:
     class FakeProvider:

@@ -1126,6 +1126,43 @@ async def test_truncated_pure_reasoning_round_is_told_to_act_not_continue(
 
 
 @pytest.mark.asyncio
+async def test_reasoning_only_truncation_retries_once_with_provider_default_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The recovery call must not repeat the exact cap that starved output.
+
+    A reasoning model can consume the configured completion budget before
+    writing text or invoking a tool. The nudge tells it to act, but leaving
+    ``max_tokens`` unchanged gives reasoning the same room to consume the
+    recovery attempt too. Omitting the caller's cap lets the provider apply
+    its own default, while the loop's round budget remains the outer guard.
+    """
+    client = _ScriptedChatClient(
+        [
+            [
+                _llm_chunk(
+                    reasoning_content="planning without acting",
+                    finish_reason="length",
+                )
+            ],
+            [_llm_chunk(content="Acting now: the answer is 42.")],
+        ]
+    )
+    pipeline = AgenticChatPipeline(language="en")
+    pipeline.registry = _Registry()
+    monkeypatch.setattr(pipeline, "_compose_enabled_tools", lambda _context: [])
+    monkeypatch.setattr(pipeline, "_build_openai_client", lambda: client)
+
+    events = await _run(pipeline, UnifiedContext(session_id="s1", user_message="Act"))
+
+    assert client.call_count == 2
+    assert client.calls[0]["max_tokens"] == pipeline.loop_max_tokens
+    assert "max_tokens" not in client.calls[1]
+    assert "max_completion_tokens" not in client.calls[1]
+    assert _answer_text(events) == "Acting now: the answer is 42."
+
+
+@pytest.mark.asyncio
 async def test_truncated_round_with_visible_text_still_continues(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -1145,6 +1182,8 @@ async def test_truncated_round_with_visible_text_still_continues(
 
     instruction = str(client.calls[1]["messages"][-1]["content"])
     assert "从中断处继续" in instruction
+    assert client.calls[0]["max_tokens"] == pipeline.loop_max_tokens
+    assert client.calls[1]["max_tokens"] == pipeline.loop_max_tokens
     assert _answer_text(events) == "答案的前半段和后半段。"
 
 

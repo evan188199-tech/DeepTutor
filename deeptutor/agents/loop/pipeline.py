@@ -1645,7 +1645,7 @@ class AgenticLoopPipeline:
     def _build_openai_client(self):
         return build_openai_client(self._client_config)
 
-    def _completion_kwargs(self, max_tokens: int) -> dict[str, Any]:
+    def _completion_kwargs(self, max_tokens: int | None) -> dict[str, Any]:
         return build_completion_kwargs(
             temperature=self._chat_temperature,
             model=self.model,

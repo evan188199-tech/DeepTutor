@@ -398,7 +398,7 @@ class OpenAICompatProvider(LLMProvider):
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None,
         model: str | None,
-        max_tokens: int,
+        max_tokens: int | None,
         temperature: float,
         reasoning_effort: str | None,
         tool_choice: str | dict[str, Any] | None,
@@ -423,10 +423,11 @@ class OpenAICompatProvider(LLMProvider):
         if self._supports_temperature(model_name, reasoning_effort):
             kwargs["temperature"] = temperature
 
-        if spec and getattr(spec, "supports_max_completion_tokens", False):
-            kwargs["max_completion_tokens"] = max(1, max_tokens)
-        else:
-            kwargs["max_tokens"] = max(1, max_tokens)
+        if max_tokens is not None:
+            if spec and getattr(spec, "supports_max_completion_tokens", False):
+                kwargs["max_completion_tokens"] = max(1, max_tokens)
+            else:
+                kwargs["max_tokens"] = max(1, max_tokens)
 
         for key, value in model_overrides_for(model_name, spec).items():
             # None means "drop this parameter" — e.g. Kimi models reject any
@@ -709,7 +710,7 @@ class OpenAICompatProvider(LLMProvider):
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None,
         model: str | None,
-        max_tokens: int,
+        max_tokens: int | None,
         temperature: float,
         reasoning_effort: str | None,
         tool_choice: str | dict[str, Any] | None,
@@ -727,7 +728,7 @@ class OpenAICompatProvider(LLMProvider):
             "model": model_name,
             "instructions": instructions or None,
             "input": input_items,
-            "max_output_tokens": max(1, max_tokens),
+            **({"max_output_tokens": max(1, max_tokens)} if max_tokens is not None else {}),
             "store": False,
             "stream": False,
         }
@@ -973,7 +974,7 @@ class OpenAICompatProvider(LLMProvider):
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
         model: str | None = None,
-        max_tokens: int = 4096,
+        max_tokens: int | None = 4096,
         temperature: float = 0.7,
         reasoning_effort: str | None = None,
         tool_choice: str | dict[str, Any] | None = None,
@@ -1068,7 +1069,7 @@ class OpenAICompatProvider(LLMProvider):
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
         model: str | None = None,
-        max_tokens: int = 4096,
+        max_tokens: int | None = 4096,
         temperature: float = 0.7,
         reasoning_effort: str | None = None,
         tool_choice: str | dict[str, Any] | None = None,

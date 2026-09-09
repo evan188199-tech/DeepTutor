@@ -80,6 +80,47 @@ def _build_services_kwargs(
     )
 
 
+def _provider_with_model(provider_name: str, model: str):
+    provider = ServicesOpenAICompatProvider.__new__(ServicesOpenAICompatProvider)
+    provider.default_model = model
+    provider._spec = find_service_provider(provider_name)
+    return provider
+
+
+def test_output_budget_none_omits_chat_completions_token_kwargs() -> None:
+    """Recovery rounds may use the provider's own output budget."""
+    provider = _provider_with_model("deepseek", "deepseek-v4-flash")
+
+    kwargs = provider._build_kwargs(
+        messages=[{"role": "user", "content": "act"}],
+        tools=None,
+        model="deepseek-v4-flash",
+        max_tokens=None,
+        temperature=0.2,
+        reasoning_effort=None,
+        tool_choice=None,
+    )
+
+    assert "max_tokens" not in kwargs
+    assert "max_completion_tokens" not in kwargs
+
+
+def test_output_budget_none_omits_responses_output_token_kwargs() -> None:
+    provider = _provider_with_model("openai", "gpt-5")
+
+    body = provider._build_responses_body(
+        messages=[{"role": "user", "content": "act"}],
+        tools=None,
+        model="gpt-5",
+        max_tokens=None,
+        temperature=0.2,
+        reasoning_effort=None,
+        tool_choice=None,
+    )
+
+    assert "max_output_tokens" not in body
+
+
 def test_services_provider_minimal_reasoning_uses_extra_body_only() -> None:
     kwargs = _build_services_kwargs("deepseek", "minimal")
 

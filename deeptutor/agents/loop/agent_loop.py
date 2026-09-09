@@ -91,6 +91,22 @@ def _finish_was_truncated(reason: str | None) -> bool:
     return str(reason or "").strip().lower() in _TRUNCATED_FINISH_REASONS
 
 
+def _reasoning_only_truncation(result: LLMCallResult) -> bool:
+    """Whether a truncated round consumed its budget without acting.
+
+    The model may carry that reasoning either through a native reasoning
+    channel or as inline thinking in the content channel. In both shapes, a
+    successful recovery must ask for action *and* give the provider enough
+    completion budget to emit the action after it has already reasoned.
+    """
+    return bool(
+        _finish_was_truncated(result.finish_reason)
+        and not result.tool_calls
+        and not result.visible_text
+        and (result.text.strip() or result.reasoning_content.strip() or result.thinking_blocks)
+    )
+
+
 def _join_answer_parts(parts: list[str], final_text: str) -> str:
     """Build the canonical answer returned by RESULT across continuations."""
     return "".join([*parts, final_text])
@@ -105,6 +121,10 @@ class AgentLoopState:
     settlement_rounds: int = 0
     tool_steps: int = 0
     sources: list[dict[str, Any]] = field(default_factory=list)
+    # A reasoning-only truncation is a budget failure, not a prompt failure.
+    # Release the caller's explicit cap exactly once, then keep the ordinary
+    # round budget as the guard against an unbounded recovery.
+    provider_default_budget_used: bool = False
 
 
 @dataclass(slots=True)
@@ -314,7 +334,11 @@ class AgentLoop:
                     label=settlement_label if settling else explore_label,
                     call_kind="agent_loop_round",
                     trace_role="response" if settling else "explore",
-                    max_tokens=self.pipeline.loop_max_tokens,
+                    max_tokens=(
+                        None
+                        if state.provider_default_budget_used
+                        else self.pipeline.loop_max_tokens
+                    ),
                     tool_schemas=self.tool_schemas,
                     defer_visible_output=self.pipeline._capability_buffers_visible_output(
                         self.context
@@ -405,6 +429,15 @@ class AgentLoop:
                             ),
                         )
                     self._append_loop_instruction(messages, instruction)
+                    if not state.provider_default_budget_used and _reasoning_only_truncation(
+                        result
+                    ):
+                        state.provider_default_budget_used = True
+                        logger.warning(
+                            "agent loop round %d used its output budget on reasoning only; "
+                            "retrying once with the provider default output budget",
+                            state.rounds,
+                        )
                     continue
                 if not final_text and not nudged_empty_finish:
                     # The round produced only internal reasoning (e.g. the
@@ -772,7 +805,7 @@ class AgentLoop:
         label: str,
         call_kind: str,
         trace_role: str,
-        max_tokens: int,
+        max_tokens: int | None,
         tool_schemas: list[dict[str, Any]] | None = None,
         defer_visible_output: bool = False,
         tool_choice: str | None = None,
