@@ -48,6 +48,16 @@ def _mastery_chat_payload(session_id: str, path_id: str) -> dict:
     }
 
 
+@pytest.fixture(autouse=True)
+def _workspace_root(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    """Keep runtime turns away from the developer's active workspace."""
+
+    root = tmp_path / "workspace"
+    root.mkdir()
+    monkeypatch.setenv("DEEPTUTOR_WORKSPACE_ROOT", str(root))
+    monkeypatch.delenv("DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS", raising=False)
+
+
 def test_terminal_error_marks_turn_failed() -> None:
     error_message = "provider authentication failed"
     status, error = _resolve_turn_outcome(

@@ -1166,6 +1166,7 @@ class TurnExecutor:
             # that finds the queue gone will return ``False`` rather than
             # accumulating on a dead turn.
             self._reply_queues.pop(turn_id, None)
+            self._delivered_reply_command_ids.pop(turn_id, None)
             if bool(payload.get("mastery_path_lease_managed")):
                 from deeptutor.learning.storage import LearningStore
 

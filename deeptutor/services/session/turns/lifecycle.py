@@ -66,8 +66,9 @@ class TurnLifecycle:
         # frontend sends the v2 ``ask_user`` shape.
         self._reply_queues: dict[str, asyncio.Queue[dict[str, Any] | None]] = {}
         # Idempotent delivery of ``submit_user_reply`` command ids so a
-        # retried ACK does not enqueue a second payload on the waiter.
-        self._delivered_reply_command_ids: set[str] = set()
+        # retried ACK does not enqueue a second payload on the waiter. IDs are
+        # keyed by turn and discarded with its queue.
+        self._delivered_reply_command_ids: dict[str, set[str]] = {}
 
     async def close(self, *, drain_timeout_seconds: float = 0.0) -> None:
         """Stop accepting work and deterministically release runtime resources."""
@@ -76,6 +77,7 @@ class TurnLifecycle:
             executions = list(self._executions.values())
             reply_queues = list(self._reply_queues.values())
             self._reply_queues.clear()
+            self._delivered_reply_command_ids.clear()
 
         tasks: list[asyncio.Task[Any]] = []
         for execution in executions:
@@ -200,9 +202,7 @@ class TurnLifecycle:
         failure_code: str = "",
         retryable: bool = False,
     ) -> bool:
-        fencing_token = (
-            execution.lease.fencing_token if execution.lease is not None else None
-        )
+        fencing_token = execution.lease.fencing_token if execution.lease is not None else None
         # A turn parked on ``ask_user`` is ``waiting_input``. Terminal CAS
         # used to require ``running`` only, so a waiter that never restored
         # that status left the row active forever and blocked the next turn.
@@ -326,7 +326,7 @@ class TurnLifecycle:
         ``role=tool`` message.
         """
         delivered_id = str(command_id or "").strip()
-        if delivered_id and delivered_id in self._delivered_reply_command_ids:
+        if delivered_id and delivered_id in self._delivered_reply_command_ids.get(turn_id, set()):
             return True
         queue = self._reply_queues.get(turn_id)
         if queue is None:
@@ -334,7 +334,7 @@ class TurnLifecycle:
         payload: dict[str, Any] = {"text": text or "", "answers": answers}
         await queue.put(payload)
         if delivered_id:
-            self._delivered_reply_command_ids.add(delivered_id)
+            self._delivered_reply_command_ids.setdefault(turn_id, set()).add(delivered_id)
         return True
 
     async def subscribe_turn(

@@ -46,6 +46,14 @@ def _payload() -> dict:
     }
 
 
+@pytest.fixture(autouse=True)
+def _workspace_root(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    root = tmp_path / "workspace"
+    root.mkdir()
+    monkeypatch.setenv("DEEPTUTOR_WORKSPACE_ROOT", str(root))
+    monkeypatch.delenv("DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS", raising=False)
+
+
 @pytest.mark.asyncio
 async def test_remote_worker_subscribes_and_cancels_owner_turn(monkeypatch, tmp_path) -> None:
     hold = asyncio.Event()
@@ -146,6 +154,14 @@ async def test_remote_worker_reply_reaches_owner_waiter(monkeypatch, tmp_path) -
     assert active is not None
     assert active["status"] == "waiting_input"
     assert await app_b.submit_user_reply(turn["id"], "yes", command_id="reply-from-b") is True
+    row = await store_b.get_turn(turn["id"])
+    for _ in range(500):
+        row = await store_b.get_turn(turn["id"])
+        if row is not None and row["status"] != "waiting_input":
+            break
+        await asyncio.sleep(0.01)
+    assert row is not None
+    assert row["status"] == "completed"
     events = [event async for event in app_b.subscribe_turn(turn["id"])]
 
     assert any(event.get("content") == "reply:yes" for event in events)
