@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator
+import contextlib
 import time
 from typing import Any
 
-from deeptutor.runtime.coordination import RuntimeCoordinator, TurnFailureCode
+from deeptutor.runtime.coordination import RuntimeCoordinator
 from deeptutor.services.session.protocol import SessionStoreProtocol
 from deeptutor.services.session.turn_runtime import TurnRuntimeManager
 
@@ -203,29 +204,6 @@ class TurnApplicationService:
             "owner_id": lease.owner_id if lease else str(turn.get("owner_id") or ""),
         }
 
-    async def _fail_orphaned_waiting_input(self, turn_id: str) -> bool:
-        """Close a ``waiting_input`` row whose owner lease is gone.
-
-        Without this, SQLite still treats the turn as active and every later
-        ``start_turn`` is rejected — the chat window looks dead until reload,
-        and reload cannot age ``waiting_input`` the way it ages ``running``.
-        """
-        if await self.coordinator.get_lease(turn_id) is not None:
-            return False
-        store, _runtime = self._resolve()
-        turn = await store.get_turn(turn_id)
-        if turn is None or str(turn.get("status") or "") != "waiting_input":
-            return False
-        return await store.transition_turn(
-            turn_id,
-            "failed",
-            expected_status="waiting_input",
-            fencing_token=int(turn.get("fencing_token") or 0),
-            error="This question is no longer waiting for a reply",
-            failure_code=TurnFailureCode.WORKER_LOST.value,
-            retryable=True,
-        )
-
     async def cancel_turn(self, turn_id: str, *, command_id: str | None = None) -> bool:
         store, _runtime = self._resolve()
         turn = await store.get_turn(turn_id)
@@ -236,7 +214,7 @@ class TurnApplicationService:
         }:
             return False
         if await self.coordinator.get_lease(turn_id) is None:
-            return await self._fail_orphaned_waiting_input(turn_id)
+            return await self._reap_unowned_waiting_turn(turn_id)
         await self.coordinator.submit_command(turn_id, "cancel", {}, command_id=command_id)
         # A duplicate command ID means the mutation was already accepted. The
         # WebSocket adapter must acknowledge that retry as success so a client
@@ -260,7 +238,14 @@ class TurnApplicationService:
         ):
             return True
         if await self.coordinator.get_lease(turn_id) is None:
-            await self._fail_orphaned_waiting_input(turn_id)
+            # Nobody owns the turn: a queued command would never be read. If
+            # the durable row still says ``waiting_input`` it is a zombie —
+            # the worker that owned the waiter is gone, and without this the
+            # session is blocked forever while the card sits on screen
+            # (#1297). Reap it synchronously (the background recovery pass
+            # would only sweep it on its next tick) so the client's ack
+            # rejection comes with a terminal state to recover from.
+            await self._reap_unowned_waiting_turn(turn_id)
             return False
         await self.coordinator.submit_command(
             turn_id,
@@ -268,6 +253,69 @@ class TurnApplicationService:
             {"text": text or "", "answers": answers},
             command_id=command_id,
         )
+        return True
+
+    async def _reap_unowned_waiting_turn(self, turn_id: str) -> bool:
+        """Fail a persisted ``waiting_input`` turn that has no live lease.
+
+        Mirrors :class:`TurnRecoveryService`'s terminal write (CAS on status
+        with the fencing token, ``worker_lost`` failure code, error+done
+        events) so whatever raced us wins cleanly and subscribed clients
+        stop deterministically. Returns ``True`` when a zombie was reaped.
+        """
+        store, _runtime = self._resolve()
+        try:
+            turn = await store.get_turn(turn_id)
+        except Exception:
+            return False
+        if turn is None or turn.get("status") != "waiting_input":
+            return False
+        error = "The worker executing this turn was lost; resend your answer as a new message"
+        metadata = {
+            "turn_terminal": True,
+            "status": "failed",
+            "error_code": "worker_lost",
+            "retryable": True,
+        }
+        reap_event: dict[str, Any] = {
+            "type": "error",
+            "source": "turn_recovery",
+            "stage": "recovery",
+            "content": error,
+            "metadata": metadata,
+            "session_id": turn.get("session_id", ""),
+        }
+        done_event: dict[str, Any] = {
+            "type": "done",
+            "source": "turn_recovery",
+            "stage": "recovery",
+            "content": "",
+            "metadata": {"status": "failed", "error_code": "worker_lost", "retryable": True},
+            "session_id": turn.get("session_id", ""),
+        }
+        try:
+            transitioned = await store.transition_turn(
+                turn_id,
+                "failed",
+                expected_status=str(turn["status"]),
+                fencing_token=int(turn.get("fencing_token") or 0),
+                error=error,
+                failure_code="worker_lost",
+                retryable=True,
+            )
+            if not transitioned:
+                # A recovery pass or a late executor write beat us to it.
+                return False
+            await store.append_events(
+                turn_id,
+                [reap_event, done_event],
+                fencing_token=int(turn.get("fencing_token") or 0),
+            )
+        except Exception:
+            return False
+        for event in (reap_event, done_event):
+            with contextlib.suppress(Exception):
+                await self.coordinator.publish_event(turn_id, event)
         return True
 
     async def submit_user_input(
