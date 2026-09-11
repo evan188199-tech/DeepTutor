@@ -12,8 +12,9 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from deeptutor.api.routers.media_auth import require_media_auth, require_scope
 from deeptutor.media.access import MEDIA_SCOPES, MediaAccessStore
-from deeptutor.media.auth import MediaRequestPrincipal, require_media_auth, require_scope
+from deeptutor.media.auth import MediaRequestPrincipal
 from deeptutor.media.models import (
     ImportApplyRequest,
     ImportPreviewRequest,
