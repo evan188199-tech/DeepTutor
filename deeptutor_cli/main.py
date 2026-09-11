@@ -17,6 +17,7 @@ from .doctor import register as register_doctor
 from .init_cmd import register as register_init
 from .kb import register as register_kb
 from .memory import register as register_memory
+from .media import register as register_media
 from .migrate import register as register_migrate
 from .notebook import register as register_notebook
 from .partner import register as register_partner
@@ -48,6 +49,7 @@ notebook_app = typer.Typer(help="Manage notebooks and imported markdown records.
 provider_app = typer.Typer(help="Manage provider OAuth login.")
 book_app = typer.Typer(help="Manage interactive Books (BookEngine).")
 workspace_app = typer.Typer(help="Manage the user content workspace.")
+media_app = typer.Typer(help="Search, import and organize LinguaWave media.")
 
 app.add_typer(partner_app, name="partner")
 app.add_typer(chat_app, name="chat")
@@ -62,6 +64,7 @@ app.add_typer(notebook_app, name="notebook")
 app.add_typer(provider_app, name="provider")
 app.add_typer(book_app, name="book")
 app.add_typer(workspace_app, name="workspace")
+app.add_typer(media_app, name="media")
 
 register_partner(partner_app)
 register_chat(chat_app)
@@ -75,6 +78,7 @@ register_notebook(notebook_app)
 register_provider(provider_app)
 register_book(book_app)
 register_workspace(workspace_app)
+register_media(media_app)
 register_doctor(app)
 register_init(app)
 register_migrate(app)

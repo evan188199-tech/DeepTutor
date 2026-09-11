@@ -500,6 +500,7 @@ from deeptutor.api.routers import (
     knowledge,
     marginnote4,
     mastery_path,
+    media,
     mcp_settings,
     memory,
     notebook,
@@ -534,6 +535,9 @@ from deeptutor.api.routers.multi_user import router as multi_user_router  # noqa
 # Auth router is public — login/logout/register/status require no token
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(outputs.router, prefix="/files/outputs", tags=["outputs"])
+# A phone has no browser cookie during first-run pairing, so creation and
+# exchange are public; confirmation remains protected by the account session.
+app.include_router(media.public_router, prefix="/api/media", tags=["media"])
 app.include_router(
     workspace.files_router,
     prefix="/files/workspace-items",
@@ -681,6 +685,7 @@ app.include_router(
     prefix="/api/video-learning",
     tags=["video-learning-remote"],
 )
+app.include_router(media.router, prefix="/api/media", tags=["media"])
 app.include_router(
     visualizers.router,
     prefix="/api/visualizers",
@@ -722,6 +727,12 @@ app.include_router(
     prefix="/api/marginnote4",
     tags=["marginnote4"],
 )
+
+# Streamable HTTP MCP deliberately lives outside `/api`: its scoped PAT
+# verifier owns authentication and browser session middleware must not apply.
+from deeptutor.media.mcp_server import get_media_mcp_app  # noqa: E402
+
+app.mount("/mcp", get_media_mcp_app())
 
 # Unified WebSocket endpoint — auth is checked inside the handler (WebSockets
 # cannot use FastAPI dependencies in the standard way)
