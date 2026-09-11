@@ -1,16 +1,16 @@
 """Video-learning domain API."""
 
-from .marks import (
-    MARK_AUTHORS,
-    MARK_KINDS,
-    MarkNotFound,
-)
 from .invidious_account import (
     begin_invidious_account_authorization,
     complete_invidious_account_authorization,
     disconnect_invidious_account,
     invidious_account_status,
     invidious_redirect_uri,
+)
+from .marks import (
+    MARK_AUTHORS,
+    MARK_KINDS,
+    MarkNotFound,
 )
 from .service import (
     PROVIDER_RESOLVERS,
