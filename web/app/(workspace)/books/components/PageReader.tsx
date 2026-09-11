@@ -112,6 +112,9 @@ export default function PageReader({
 }: PageReaderProps) {
   const { t } = useTranslation();
   const [showInsertMenu, setShowInsertMenu] = useState(false);
+  // The outline remounts on page changes, so keep its preference here rather
+  // than letting a chapter turn unexpectedly cover the reader's prose again.
+  const [outlineCollapsed, setOutlineCollapsed] = useState(true);
   const [inserting, setInserting] = useState(false);
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(
     null,
@@ -656,6 +659,8 @@ export default function PageReader({
         blocks={page.blocks}
         scrollContainer={scrollContainer}
         language={bookLanguage}
+        collapsed={outlineCollapsed}
+        onCollapsedChange={setOutlineCollapsed}
       />
     </div>
   );
