@@ -1,4 +1,4 @@
-"""Contract for fork-local features on the upstream v1.6.3 baseline."""
+"""Contract for fork-local features on the upstream v1.6.7 baseline."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ def test_required_local_and_upstream_route_families_are_installed() -> None:
     assert "/api/marginnote4/pair" in paths
     assert "/api/video-learning/renderers" in paths
     assert "/api/video-learning/youtube-session/status" in paths
-    assert __version__ == "1.6.3"
+    assert __version__ == "1.6.7"
 
 
 def test_retired_kids_product_surface_stays_out_of_the_repository() -> None:

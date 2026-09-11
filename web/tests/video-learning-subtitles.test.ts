@@ -87,6 +87,6 @@ test("the watching panel polls active caption fetches and keeps consent controls
   assert.match(source, /connectYouTubeSession/);
   assert.match(source, /requestSubtitlePrefetch/);
   assert.match(source, /disconnectYouTubeSession/);
-  assert.match(source, /setInterval\(\(\) => \{\s*void refresh\(\);/);
+  assert.match(source, /setInterval\(\(\) => \{\s*void refresh\(\);?/);
   assert.match(source, /transcript\.fetch\?\.status/);
 });

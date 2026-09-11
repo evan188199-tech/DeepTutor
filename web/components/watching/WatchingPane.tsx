@@ -1,67 +1,56 @@
-"use client";
+'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertTriangle,
-  BookmarkPlus,
+  ChevronDown,
+  ChevronUp,
+  ChevronsDown,
   Check,
   Captions,
-  Chrome,
+  Copy,
   ExternalLink,
   Loader2,
   Pencil,
   Play,
   RotateCcw,
-  Sparkles,
+  Search,
   StickyNote,
   Trash2,
-  Unplug,
   X,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
+} from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-import { useWatching } from "@/context/WatchingContext";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { useWatching } from '@/context/WatchingContext'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import {
   DEFAULT_PLAYBACK_RATE,
   WATCHING_PLAYBACK_RATES,
   type PlayerController,
-} from "@/lib/video-player-controller";
+} from '@/lib/video-player-controller'
 import {
   createVideoNote,
-  createVideoMark,
   deleteVideoNote,
-  deleteVideoMark,
   disconnectYouTubeSession,
-  getYouTubeSessionStatus,
-  connectYouTubeSession,
+  exportVideoNotes,
   listVideoNotes,
+  connectYouTubeSession,
   requestSubtitlePrefetch,
   saveVideoProgress,
-  suggestVideoMarks,
-  updateVideoMark,
   updateVideoNote,
-  type VideoMarkKind,
-  type YouTubeSessionStatus,
-  type VideoMarkSuggestion,
   type VideoNote,
-} from "@/lib/video-learning-api";
-import { videoTimeFromHref } from "@/lib/watching-citations";
-import {
-  cueIndexesFromSelection,
-  locatorsForRange,
-  rangeFromCues,
-} from "@/lib/video-learning-marks";
-import { WatchingMarksPanel } from "./WatchingMarksPanel";
-import { WatchingPlayer } from "./WatchingPlayer";
-import { WatchingRemoteLaunch } from "./WatchingRemoteLaunch";
+} from '@/lib/video-learning-api'
+import { stepTranscriptMatch, transcriptMatchIndexes } from '@/lib/transcript-search'
+import { videoTimeFromHref } from '@/lib/watching-citations'
+import { WatchingPlayer } from './WatchingPlayer'
+import { transcriptFollowScrollTop } from '@/lib/transcript-follow'
 
-export const WATCHING_ASK_EVENT = "dt:watching-ask";
+export const WATCHING_ASK_EVENT = 'dt:watching-ask'
 
-type WatchTab = "transcript" | "notes" | "marks";
+type WatchTab = 'transcript' | 'notes'
 
 export function WatchingPane({ onClose }: { onClose(): void }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const {
     material,
     loading,
@@ -74,494 +63,400 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     reportTime,
     clearError,
     setActive,
-  } = useWatching();
-  const materialId = material?.material_id ?? null;
-  const [input, setInput] = useState("");
-  const [playerError, setPlayerError] = useState<string | null>(null);
-  const [tab, setTab] = useState<WatchTab>("transcript");
-  const [time, setTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [notes, setNotes] = useState<VideoNote[]>([]);
-  const [notesLoading, setNotesLoading] = useState(false);
-  const [notesError, setNotesError] = useState<string | null>(null);
-  const [noteDraft, setNoteDraft] = useState("");
-  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
-  const [editingDraft, setEditingDraft] = useState("");
-  const [noteBusy, setNoteBusy] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [marks, setMarks] = useState(material?.learning.marks ?? []);
-  const [markSuggestions, setMarkSuggestions] = useState<VideoMarkSuggestion[]>([]);
-  const [markError, setMarkError] = useState<string | null>(null);
-  const [markBusy, setMarkBusy] = useState(false);
-  const [markDraft, setMarkDraft] = useState<{
-    start_seconds: number;
-    end_seconds: number;
-    quote: string;
-  } | null>(null);
-  const [youtubeSession, setYouTubeSession] =
-    useState<YouTubeSessionStatus | null>(null);
-  const [subtitleBusy, setSubtitleBusy] = useState(false);
-  const [subtitleError, setSubtitleError] = useState<string | null>(null);
-  const [playbackRate, setPlaybackRate] = useState(DEFAULT_PLAYBACK_RATE);
-  const [controllerReady, setControllerReady] = useState(false);
-  const controllerRef = useRef<PlayerController | null>(null);
-  const playbackRateRef = useRef(DEFAULT_PLAYBACK_RATE);
-  const transcriptRootRef = useRef<HTMLDivElement | null>(null);
-  const activeMaterialIdRef = useRef(materialId);
-  const lastSavedRef = useRef(0);
-  const stateRef = useRef({ time: 0, duration: 0 });
-  activeMaterialIdRef.current = materialId;
+  } = useWatching()
+  const materialId = material?.material_id ?? null
+  const [input, setInput] = useState('')
+  const [playerError, setPlayerError] = useState<string | null>(null)
+  const [tab, setTab] = useState<WatchTab>('transcript')
+  const [time, setTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const [notes, setNotes] = useState<VideoNote[]>([])
+  const [notesLoading, setNotesLoading] = useState(false)
+  const [notesError, setNotesError] = useState<string | null>(null)
+  const [noteDraft, setNoteDraft] = useState('')
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [editingDraft, setEditingDraft] = useState('')
+  const [noteBusy, setNoteBusy] = useState(false)
+  const [notesExportBusy, setNotesExportBusy] = useState(false)
+  const [notesCopied, setNotesCopied] = useState(false)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [subtitleBusy, setSubtitleBusy] = useState(false)
+  const [subtitleError, setSubtitleError] = useState<string | null>(null)
+  const notesExportRequestRef = useRef(0)
+  const [followTranscript, setFollowTranscript] = useState(true)
+  const [transcriptQuery, setTranscriptQuery] = useState('')
+  const [selectedTranscriptMatch, setSelectedTranscriptMatch] = useState(-1)
+  const [playbackRate, setPlaybackRate] = useState(DEFAULT_PLAYBACK_RATE)
+  const [controllerReady, setControllerReady] = useState(false)
+  const controllerRef = useRef<PlayerController | null>(null)
+  const playbackRateRef = useRef(DEFAULT_PLAYBACK_RATE)
+  const transcriptListRef = useRef<HTMLDivElement | null>(null)
+  const activeMaterialIdRef = useRef(materialId)
+  const lastSavedRef = useRef(0)
+  const stateRef = useRef({ time: 0, duration: 0 })
+  activeMaterialIdRef.current = materialId
 
   useEffect(() => {
-    setMarks(material?.learning.marks ?? []);
-    setMarkSuggestions([]);
-    setMarkError(null);
-  }, [material?.learning.marks, material?.material_id]);
-
-  useEffect(() => {
-    playbackRateRef.current = DEFAULT_PLAYBACK_RATE;
-    setPlaybackRate(DEFAULT_PLAYBACK_RATE);
-    controllerRef.current?.setPlaybackRate(DEFAULT_PLAYBACK_RATE);
-  }, [materialId]);
-
-  useEffect(() => {
-    setActive(true);
-    return () => setActive(false);
-  }, [setActive]);
+    setActive(true)
+    return () => setActive(false)
+  }, [setActive])
 
   const persist = useCallback(() => {
-    if (!material) return;
-    const current = stateRef.current;
-    if (current.time <= 0) return;
-    void saveVideoProgress(
-      material.material_id,
-      current.time,
-      current.duration,
-    ).catch(() => undefined);
-    lastSavedRef.current = current.time;
-  }, [material]);
+    if (!material) return
+    const current = stateRef.current
+    if (current.time <= 0) return
+    void saveVideoProgress(material.material_id, current.time, current.duration).catch(
+      () => undefined
+    )
+    lastSavedRef.current = current.time
+  }, [material])
 
   const handleTime = useCallback(
     (nextTime: number, nextDuration: number) => {
-      stateRef.current = { time: nextTime, duration: nextDuration };
-      setTime(nextTime);
-      setDuration(nextDuration);
-      reportTime(nextTime);
-      if (Math.abs(nextTime - lastSavedRef.current) >= 5) persist();
+      stateRef.current = { time: nextTime, duration: nextDuration }
+      setTime(nextTime)
+      setDuration(nextDuration)
+      reportTime(nextTime)
+      if (Math.abs(nextTime - lastSavedRef.current) >= 5) persist()
     },
-    [persist, reportTime],
-  );
+    [persist, reportTime]
+  )
 
   useEffect(() => {
     const onVisibility = () => {
-      if (document.visibilityState === "hidden") persist();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
+      if (document.visibilityState === 'hidden') persist()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
     return () => {
-      document.removeEventListener("visibilitychange", onVisibility);
-      persist();
-    };
-  }, [persist]);
+      document.removeEventListener('visibilitychange', onVisibility)
+      persist()
+    }
+  }, [persist])
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
-      if (
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      )
-        return;
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+        return
       const anchor = (event.target as HTMLElement | null)?.closest?.(
-        "a[href]",
-      ) as HTMLAnchorElement | null;
-      const seconds = videoTimeFromHref(anchor?.getAttribute("href"));
-      if (seconds === null) return;
-      event.preventDefault();
-      controllerRef.current?.seek(seconds);
-    };
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, []);
+        'a[href]'
+      ) as HTMLAnchorElement | null
+      const seconds = videoTimeFromHref(anchor?.getAttribute('href'))
+      if (seconds === null) return
+      event.preventDefault()
+      controllerRef.current?.seek(seconds)
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [])
 
   const cue = useMemo(
-    () =>
-      material?.transcript.cues.find(
-        (row) => time >= row.start && time <= row.end,
-      ),
-    [material, time],
-  );
-  const transcriptMissing = Boolean(
-    material && material.transcript.status !== "ready",
-  );
+    () => material?.transcript.cues.find(row => time >= row.start && time <= row.end),
+    [material, time]
+  )
+  const normalizedTranscriptQuery = transcriptQuery.trim()
+  const transcriptMatches = useMemo(
+    () => transcriptMatchIndexes(material?.transcript.cues ?? [], normalizedTranscriptQuery),
+    [material, normalizedTranscriptQuery]
+  )
 
   useEffect(() => {
-    if (!materialId || !transcriptMissing) return;
-    let cancelled = false;
-    setYouTubeSession(null);
-    void getYouTubeSessionStatus()
-      .then((status) => {
-        if (!cancelled) setYouTubeSession(status);
-      })
-      .catch(() => {
-        if (!cancelled) setYouTubeSession(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [materialId, transcriptMissing]);
+    setFollowTranscript(true)
+    setTranscriptQuery('')
+    setSelectedTranscriptMatch(-1)
+  }, [materialId])
 
-  const subtitleFetchStatus = material?.transcript.fetch?.status;
+  const subtitleFetchStatus = material?.transcript.fetch?.status
   useEffect(() => {
-    if (subtitleFetchStatus !== "queued" && subtitleFetchStatus !== "fetching") {
-      return;
-    }
+    if (subtitleFetchStatus !== 'queued' && subtitleFetchStatus !== 'fetching') return
     const timer = window.setInterval(() => {
-      void refresh();
-    }, 5_000);
-    return () => window.clearInterval(timer);
-  }, [refresh, subtitleFetchStatus]);
+      void refresh()
+    }, 5_000)
+    return () => window.clearInterval(timer)
+  }, [refresh, subtitleFetchStatus])
 
-  const saveMark = async (
-    kind: VideoMarkKind,
-    payload: { start_seconds: number; end_seconds: number; quote?: string },
-    author: "user" | "assistant" = "user",
-  ) => {
-    if (!material || markBusy) return;
-    const requestedMaterialId = material.material_id;
-    setMarkBusy(true);
-    setMarkError(null);
-    try {
-      const saved = await createVideoMark(requestedMaterialId, {
-        kind,
-        ...payload,
-        author,
-        ...locatorsForRange(
-          material.segments,
-          payload.start_seconds,
-          payload.end_seconds,
-        ),
-      });
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setMarks((current) => [...current, saved]);
-      setMarkDraft(null);
-      setTab("marks");
-      window.getSelection()?.removeAllRanges();
-    } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setMarkError(
-        caught instanceof Error ? caught.message : t("Mark was not saved."),
-      );
-    } finally {
-      setMarkBusy(false);
+  useEffect(() => {
+    if (!normalizedTranscriptQuery || transcriptMatches.length === 0) {
+      setSelectedTranscriptMatch(-1)
+      return
     }
-  };
+    setSelectedTranscriptMatch(current =>
+      current >= 0 && current < transcriptMatches.length ? current : -1
+    )
+  }, [normalizedTranscriptQuery, transcriptMatches.length])
 
-  const markCue = (index: number) => {
-    const selected = material?.transcript.cues[index];
-    if (!selected) return;
-    setMarkDraft({
-      start_seconds: selected.start,
-      end_seconds: selected.end,
-      quote: selected.text,
-    });
-  };
+  useEffect(() => {
+    playbackRateRef.current = DEFAULT_PLAYBACK_RATE
+    setPlaybackRate(DEFAULT_PLAYBACK_RATE)
+    controllerRef.current?.setPlaybackRate(DEFAULT_PLAYBACK_RATE)
+  }, [materialId])
 
-  const captureSelection = () => {
-    if (!material) return;
-    const range = rangeFromCues(
-      material.transcript.cues,
-      cueIndexesFromSelection(transcriptRootRef.current, window.getSelection()),
-    );
-    if (range) setMarkDraft(range);
-  };
+  useEffect(() => {
+    if (!followTranscript || tab !== 'transcript' || !cue) return
+    const list = transcriptListRef.current
+    const activeRow = list?.querySelector<HTMLButtonElement>('[data-active-cue="true"]')
+    if (!list || !activeRow) return
+    const targetTop = transcriptFollowScrollTop({
+      rowOffset:
+        activeRow.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop,
+      rowHeight: activeRow.clientHeight,
+      viewportHeight: list.clientHeight,
+      contentHeight: list.scrollHeight,
+      currentScrollTop: list.scrollTop,
+    })
+    // Already inside the band: leave the list where the reader put it.
+    if (Math.abs(targetTop - list.scrollTop) < 1) return
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    list.scrollTo({
+      top: targetTop,
+      behavior: prefersReducedMotion ? 'instant' : 'smooth',
+    })
+  }, [cue, followTranscript, tab])
 
-  const markCurrentTime = () => {
-    setMarkDraft({
-      start_seconds: time,
-      end_seconds: time,
-      quote: cue?.text ?? "",
-    });
-  };
-
-  const requestSuggestions = async () => {
-    if (!material || markBusy) return;
-    const requestedMaterialId = material.material_id;
-    setMarkBusy(true);
-    setMarkError(null);
+  const submit = async (providerOverride?: 'youtube') => {
+    const url = (providerOverride ? lastUrl || input : input).trim()
+    if (!url) return
+    setPlayerError(null)
     try {
-      const suggestions = await suggestVideoMarks(requestedMaterialId, time);
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setMarkSuggestions(suggestions);
-      setTab("marks");
-    } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setMarkError(
-        caught instanceof Error
-          ? caught.message
-          : t("Suggestions could not be loaded."),
-      );
-    } finally {
-      setMarkBusy(false);
-    }
-  };
-
-  const submit = async (providerOverride?: "youtube") => {
-    const url = (providerOverride ? lastUrl || input : input).trim();
-    if (!url) return;
-    setPlayerError(null);
-    try {
-      await openUrl(url, "", providerOverride);
+      await openUrl(url, '', providerOverride)
     } catch {
       // The context owns the user-facing error.
     }
-  };
+  }
+
+  const connectChromeCaptions = async () => {
+    if (!materialId || subtitleBusy) return
+    setSubtitleBusy(true)
+    setSubtitleError(null)
+    try {
+      await connectYouTubeSession(materialId)
+      await requestSubtitlePrefetch(materialId)
+      await refresh()
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error ? caught.message : t('Captions could not be connected.')
+      )
+    } finally {
+      setSubtitleBusy(false)
+    }
+  }
+
+  const disconnectChromeCaptions = async () => {
+    if (subtitleBusy) return
+    setSubtitleBusy(true)
+    setSubtitleError(null)
+    try {
+      await disconnectYouTubeSession()
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error ? caught.message : t('Captions could not be disconnected.')
+      )
+    } finally {
+      setSubtitleBusy(false)
+    }
+  }
 
   const askHere = () => {
-    if (!material || !cue) return;
+    if (!material || !cue) return
     window.dispatchEvent(
       new CustomEvent(WATCHING_ASK_EVENT, {
         detail: { timeSeconds: time, text: cue.text },
-      }),
-    );
-  };
+      })
+    )
+  }
 
   useEffect(() => {
-    let cancelled = false;
-    setNotes([]);
-    setNotesError(null);
-    setNoteDraft("");
-    setEditingNoteId(null);
-    setEditingDraft("");
-    setPendingDeleteId(null);
+    let cancelled = false
+    setNotes([])
+    setNotesError(null)
+    setNoteDraft('')
+    setEditingNoteId(null)
+    setEditingDraft('')
+    setPendingDeleteId(null)
+    notesExportRequestRef.current += 1
+    setNotesExportBusy(false)
+    setNotesCopied(false)
     if (!materialId) {
-      setNotesLoading(false);
+      setNotesLoading(false)
       return () => {
-        cancelled = true;
-      };
+        cancelled = true
+      }
     }
-    setNotesLoading(true);
+    setNotesLoading(true)
     void (async () => {
       try {
-        const loaded = await listVideoNotes(materialId);
-        if (!cancelled) setNotes(loaded);
+        const loaded = await listVideoNotes(materialId)
+        if (!cancelled) setNotes(loaded)
       } catch (caught) {
         if (!cancelled) {
-          setNotesError(
-            caught instanceof Error
-              ? caught.message
-              : t("Notes could not be loaded."),
-          );
+          setNotesError(caught instanceof Error ? caught.message : t('Notes could not be loaded.'))
         }
       } finally {
-        if (!cancelled) setNotesLoading(false);
+        if (!cancelled) setNotesLoading(false)
       }
-    })();
+    })()
     return () => {
-      cancelled = true;
-    };
-  }, [materialId, t]);
+      cancelled = true
+    }
+  }, [materialId, t])
 
   const sortNotes = (rows: VideoNote[]) =>
     [...rows].sort(
       (left, right) =>
         left.time_seconds - right.time_seconds ||
         left.created_at - right.created_at ||
-        left.note_id.localeCompare(right.note_id),
-    );
+        left.note_id.localeCompare(right.note_id)
+    )
 
   const addNote = async () => {
-    if (!material || !noteDraft.trim() || noteBusy) return;
-    const requestedMaterialId = material.material_id;
-    setNoteBusy(true);
-    setNotesError(null);
+    if (!material || !noteDraft.trim() || noteBusy) return
+    const requestedMaterialId = material.material_id
+    setNoteBusy(true)
+    setNotesError(null)
     try {
-      const saved = await createVideoNote(
-        requestedMaterialId,
-        noteDraft.trim(),
-        time,
-      );
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotes((current) => sortNotes([...current, saved]));
-      setNoteDraft("");
+      const saved = await createVideoNote(requestedMaterialId, noteDraft.trim(), time)
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotes(current => sortNotes([...current, saved]))
+      setNoteDraft('')
+      setNotesCopied(false)
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotesError(
-        caught instanceof Error ? caught.message : t("Note was not saved."),
-      );
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotesError(caught instanceof Error ? caught.message : t('Note was not saved.'))
     } finally {
-      setNoteBusy(false);
+      setNoteBusy(false)
     }
-  };
+  }
 
   const saveEditedNote = async () => {
-    if (!material || !editingNoteId || !editingDraft.trim() || noteBusy) return;
-    const requestedMaterialId = material.material_id;
-    setNoteBusy(true);
-    setNotesError(null);
+    if (!material || !editingNoteId || !editingDraft.trim() || noteBusy) return
+    const requestedMaterialId = material.material_id
+    setNoteBusy(true)
+    setNotesError(null)
     try {
-      const saved = await updateVideoNote(
-        requestedMaterialId,
-        editingNoteId,
-        editingDraft.trim(),
-      );
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotes((current) =>
-        sortNotes(
-          current.map((note) =>
-            note.note_id === saved.note_id ? saved : note,
-          ),
-        ),
-      );
-      setEditingNoteId(null);
-      setEditingDraft("");
+      const saved = await updateVideoNote(requestedMaterialId, editingNoteId, editingDraft.trim())
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotes(current =>
+        sortNotes(current.map(note => (note.note_id === saved.note_id ? saved : note)))
+      )
+      setEditingNoteId(null)
+      setEditingDraft('')
+      setNotesCopied(false)
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotesError(
-        caught instanceof Error ? caught.message : t("Note was not saved."),
-      );
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotesError(caught instanceof Error ? caught.message : t('Note was not saved.'))
     } finally {
-      setNoteBusy(false);
+      setNoteBusy(false)
     }
-  };
+  }
 
   const confirmDelete = async () => {
-    if (!material || !pendingDeleteId || noteBusy) return;
-    const requestedMaterialId = material.material_id;
-    setNoteBusy(true);
-    setNotesError(null);
+    if (!material || !pendingDeleteId || noteBusy) return
+    const requestedMaterialId = material.material_id
+    setNoteBusy(true)
+    setNotesError(null)
     try {
-      await deleteVideoNote(requestedMaterialId, pendingDeleteId);
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotes((current) =>
-        current.filter((note) => note.note_id !== pendingDeleteId),
-      );
+      await deleteVideoNote(requestedMaterialId, pendingDeleteId)
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotes(current => current.filter(note => note.note_id !== pendingDeleteId))
       if (editingNoteId === pendingDeleteId) {
-        setEditingNoteId(null);
-        setEditingDraft("");
+        setEditingNoteId(null)
+        setEditingDraft('')
       }
-      setPendingDeleteId(null);
+      setPendingDeleteId(null)
+      setNotesCopied(false)
     } catch (caught) {
-      if (activeMaterialIdRef.current !== requestedMaterialId) return;
-      setNotesError(
-        caught instanceof Error ? caught.message : t("Note was not deleted."),
-      );
+      if (activeMaterialIdRef.current !== requestedMaterialId) return
+      setNotesError(caught instanceof Error ? caught.message : t('Note was not deleted.'))
     } finally {
-      setNoteBusy(false);
+      setNoteBusy(false)
     }
-  };
+  }
+
+  const copyNotes = async () => {
+    if (!material || !notes.length || notesExportBusy) return
+    const requestedMaterialId = material.material_id
+    const requestId = ++notesExportRequestRef.current
+    setNotesExportBusy(true)
+    setNotesCopied(false)
+    try {
+      const markdown = await exportVideoNotes(requestedMaterialId)
+      await navigator.clipboard.writeText(markdown)
+      if (notesExportRequestRef.current !== requestId) return
+      setNotesCopied(true)
+    } catch (caught) {
+      if (notesExportRequestRef.current !== requestId) return
+      setNotesError(caught instanceof Error ? caught.message : t('Notes could not be copied.'))
+    } finally {
+      if (notesExportRequestRef.current === requestId) {
+        setNotesExportBusy(false)
+      }
+    }
+  }
 
   const closePane = () => {
-    persist();
-    close();
-    onClose();
-  };
+    persist()
+    close()
+    onClose()
+  }
 
-  const effectiveError = error || playerError;
+  const effectiveError = error || playerError
   const openNativeYouTube = useCallback(async () => {
-    if (!material) return;
-    setPlayerError(null);
-    clearError();
+    if (!material) return
+    setPlayerError(null)
+    clearError()
     try {
-      await openUrl(material.source.url, "", "youtube");
+      await openUrl(material.source.url, '', 'youtube')
     } catch {
       // The context owns the user-facing error.
     }
-  }, [clearError, material, openUrl]);
+  }, [clearError, material, openUrl])
 
   const refreshProvider = useCallback(async () => {
-    setPlayerError(null);
-    await refresh();
-  }, [refresh]);
+    setPlayerError(null)
+    await refresh()
+  }, [refresh])
 
   const retryTranscript = useCallback(async () => {
-    setPlayerError(null);
-    await refreshTranscript();
-  }, [refreshTranscript]);
+    setPlayerError(null)
+    await refreshTranscript()
+  }, [refreshTranscript])
 
-  const connectChromeCaptions = useCallback(async () => {
-    if (!materialId || subtitleBusy) return;
-    setSubtitleBusy(true);
-    setSubtitleError(null);
-    try {
-      const status = await connectYouTubeSession(materialId);
-      setYouTubeSession(status);
-      if (!status.helper_available) {
-        throw new Error(t("Chrome is unavailable on this computer."));
-      }
-      await requestSubtitlePrefetch(materialId);
-      await refresh();
-    } catch (caught) {
-      setSubtitleError(
-        caught instanceof Error
-          ? caught.message
-          : t("Chrome captions could not be connected."),
-      );
-    } finally {
-      setSubtitleBusy(false);
-    }
-  }, [materialId, refresh, subtitleBusy, t]);
+  const handleController = useCallback((controller: PlayerController | null) => {
+    controllerRef.current = controller
+    setControllerReady(Boolean(controller))
+    controller?.setPlaybackRate(playbackRateRef.current)
+  }, [])
 
-  const retryChromeCaptions = useCallback(async () => {
-    if (!materialId || subtitleBusy) return;
-    setSubtitleBusy(true);
-    setSubtitleError(null);
-    try {
-      await requestSubtitlePrefetch(materialId);
-      await refresh();
-    } catch (caught) {
-      setSubtitleError(
-        caught instanceof Error
-          ? caught.message
-          : t("Captions could not be retried."),
-      );
-    } finally {
-      setSubtitleBusy(false);
-    }
-  }, [materialId, refresh, subtitleBusy, t]);
-
-  const disconnectChromeCaptions = useCallback(async () => {
-    if (subtitleBusy) return;
-    setSubtitleBusy(true);
-    setSubtitleError(null);
-    try {
-      await disconnectYouTubeSession();
-      setYouTubeSession(await getYouTubeSessionStatus());
-    } catch (caught) {
-      setSubtitleError(
-        caught instanceof Error
-          ? caught.message
-          : t("Chrome captions could not be disconnected."),
-      );
-    } finally {
-      setSubtitleBusy(false);
-    }
-  }, [subtitleBusy, t]);
-
-  const handleController = useCallback(
-    (controller: PlayerController | null) => {
-      controllerRef.current = controller;
-      setControllerReady(Boolean(controller));
-      controller?.setPlaybackRate(playbackRateRef.current);
-    },
-    [],
-  );
   const selectPlaybackRate = useCallback((rate: number) => {
-    playbackRateRef.current = rate;
-    setPlaybackRate(rate);
-    controllerRef.current?.setPlaybackRate(rate);
-  }, []);
-  const chromeConnected = youtubeSession?.connection === "connected";
-  const subtitleActive =
-    subtitleFetchStatus === "queued" || subtitleFetchStatus === "fetching";
+    playbackRateRef.current = rate
+    setPlaybackRate(rate)
+    controllerRef.current?.setPlaybackRate(rate)
+  }, [])
+
+  const moveTranscriptMatch = useCallback(
+    (direction: 1 | -1) => {
+      if (!material || transcriptMatches.length === 0) return
+      const next = stepTranscriptMatch(selectedTranscriptMatch, transcriptMatches.length, direction)
+      const cueIndex = transcriptMatches[next]
+      const match = material.transcript.cues[cueIndex]
+      if (!match) return
+      setFollowTranscript(false)
+      setSelectedTranscriptMatch(next)
+      controllerRef.current?.seek(match.start)
+      window.requestAnimationFrame(() => {
+        transcriptListRef.current
+          ?.querySelector<HTMLElement>(`[data-transcript-cue="${cueIndex}"]`)
+          ?.scrollIntoView({ block: 'center' })
+      })
+    },
+    [material, selectedTranscriptMatch, transcriptMatches]
+  )
   return (
     <section className="flex h-full min-w-0 flex-col border-r border-[var(--border)] bg-[var(--background)]">
       <header className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-3">
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-semibold">{t("Immersive Watching")}</h2>
+          <h2 className="truncate font-semibold">{t('Immersive Watching')}</h2>
           <p className="truncate text-xs text-[var(--muted-foreground)]">
-            {material?.metadata.title || t("Native YouTube learning")}
+            {material?.metadata.title || t('Native YouTube learning')}
           </p>
         </div>
         <button
@@ -569,7 +464,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
           onClick={() => void refreshProvider()}
           disabled={!material || loading}
           className="rounded-md p-2 hover:bg-[var(--muted)]"
-          aria-label={t("Refresh provider")}
+          aria-label={t('Refresh provider')}
         >
           <RotateCcw className="h-4 w-4" />
         </button>
@@ -577,7 +472,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
           type="button"
           onClick={closePane}
           className="rounded-md p-2 hover:bg-[var(--muted)]"
-          aria-label={t("Close video learning")}
+          aria-label={t('Close video learning')}
         >
           <X className="h-4 w-4" />
         </button>
@@ -587,24 +482,22 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
         <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
           <Play className="h-10 w-10 text-red-500" />
           <div>
-            <h3 className="font-medium">
-              {t("Open a YouTube learning video")}
-            </h3>
+            <h3 className="font-medium">{t('Open a YouTube learning video')}</h3>
             <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-              {t("Paste a watch, Shorts, Live, Embed, or youtu.be link.")}
+              {t('Paste a watch, Shorts, Live, Embed, or youtu.be link.')}
             </p>
           </div>
           <form
             className="flex w-full max-w-xl gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void submit();
+            onSubmit={event => {
+              event.preventDefault()
+              void submit()
             }}
           >
             <input
               value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder={t("YouTube URL")}
+              onChange={event => setInput(event.target.value)}
+              placeholder={t('YouTube URL')}
               className="min-w-0 flex-1 rounded-lg border border-[var(--border)] bg-transparent px-3 py-2"
             />
             <button
@@ -612,11 +505,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
               disabled={loading || !input.trim()}
               className="rounded-lg bg-red-600 px-4 py-2 text-white disabled:opacity-50"
             >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                t("Open")
-              )}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('Open')}
             </button>
           </form>
           {effectiveError && (
@@ -632,12 +521,12 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                 <button
                   type="button"
                   onClick={() => {
-                    clearError();
-                    void submit("youtube");
+                    clearError()
+                    void submit('youtube')
                   }}
                   className="mt-3 rounded-md border border-[var(--border)] px-3 py-1.5 font-medium"
                 >
-                  {t("Use native YouTube for this video")}
+                  {t('Use native YouTube for this video')}
                 </button>
               )}
             </div>
@@ -650,7 +539,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
           <WatchingPlayer
             key={`${material.material_id}:${material.playback.provider}`}
             playback={material.playback}
-            transcriptLanguage={material.transcript.language || "en"}
+            transcriptLanguage={material.transcript.language || 'en'}
             onController={handleController}
             onTime={handleTime}
             onPersist={persist}
@@ -662,26 +551,23 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
               className="m-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm"
             >
               {effectiveError}
-              {material.playback.provider === "invidious" && (
+              {material.playback.provider === 'invidious' && (
                 <button
                   type="button"
                   onClick={() => void openNativeYouTube()}
                   className="ml-3 rounded border border-[var(--border)] px-2 py-1"
                 >
-                  {t("Use native YouTube")}
+                  {t('Use native YouTube')}
                 </button>
               )}
             </div>
           )}
           <div className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3 text-sm">
             <span className="tabular-nums">
-              {formatTime(time)} /{" "}
-              {formatTime(duration || material.metadata.duration_seconds)}
+              {formatTime(time)} / {formatTime(duration || material.metadata.duration_seconds)}
             </span>
             <span className="rounded-full bg-[var(--muted)] px-2 py-0.5 text-xs">
-              {material.playback.provider === "youtube"
-                ? "YouTube"
-                : "Invidious"}
+              {material.playback.provider === 'youtube' ? 'YouTube' : 'Invidious'}
             </span>
             <a
               href={`https://youtu.be/${material.source.video_id}?t=${Math.floor(time)}`}
@@ -689,269 +575,282 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
               rel="noreferrer"
               className="ml-auto inline-flex items-center gap-1 text-xs text-blue-600"
             >
-              {t("Open official")} <ExternalLink className="h-3 w-3" />
+              {t('Open official')} <ExternalLink className="h-3 w-3" />
             </a>
           </div>
           <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2">
             <span className="mr-1 text-xs text-[var(--muted-foreground)]">
-              {t("Playback speed")}
+              {t('Playback speed')}
             </span>
-            <div role="group" aria-label={t("Playback speed")} className="flex flex-wrap gap-1">
-              {WATCHING_PLAYBACK_RATES.map((rate) => {
-                const label = `${rate}x`;
+            <div role="group" aria-label={t('Playback speed')} className="flex flex-wrap gap-1">
+              {WATCHING_PLAYBACK_RATES.map(rate => {
+                const label = `${rate}x`
                 return (
                   <button
                     key={rate}
                     type="button"
                     disabled={!controllerReady}
                     aria-pressed={playbackRate === rate}
-                    aria-label={t("Set playback speed to {{rate}}", { rate: label })}
+                    aria-label={t('Set playback speed to {{rate}}', { rate: label })}
                     onClick={() => selectPlaybackRate(rate)}
                     className={`rounded-md border px-2 py-1 text-xs tabular-nums transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
                       playbackRate === rate
-                        ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
-                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                        ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
+                        : 'border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
                     }`}
                   >
                     {label}
                   </button>
-                );
+                )
               })}
             </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            <WatchingRemoteLaunch
-              materialId={material.material_id}
-              videoId={material.source.video_id}
-              positionSeconds={time}
-            />
+          <div
+            ref={transcriptListRef}
+            data-testid="video-transcript-list"
+            className="min-h-0 flex-1 overflow-y-auto p-4"
+            onWheel={event => {
+              if (tab !== 'transcript') return
+              setFollowTranscript(false)
+            }}
+            onTouchMove={() => {
+              if (tab === 'transcript') setFollowTranscript(false)
+            }}
+            onPointerDown={event => {
+              // Native scrollbar drags target the scroll container itself.
+              // Pointer events from cue/control buttons bubble through here
+              // and must keep their own click semantics.
+              if (tab === 'transcript' && event.target === event.currentTarget) {
+                setFollowTranscript(false)
+              }
+            }}
+            onKeyDown={event => {
+              if (
+                tab === 'transcript' &&
+                ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End'].includes(event.key)
+              ) {
+                setFollowTranscript(false)
+              }
+            }}
+          >
             <div
-              className="mb-3 grid w-full max-w-64 grid-cols-3 rounded-lg bg-[var(--muted)] p-1"
+              className="mb-3 grid w-full max-w-56 grid-cols-2 rounded-lg bg-[var(--muted)] p-1"
               role="tablist"
-              aria-label={t("Video learning panels")}
+              aria-label={t('Video learning panels')}
             >
-              {(["transcript", "notes"] as const).map((item) => (
+              {(['transcript', 'notes'] as const).map(item => (
                 <button
                   key={item}
                   type="button"
                   role="tab"
                   aria-selected={tab === item}
                   onClick={() => {
-                    setTab(item);
-                    setEditingNoteId(null);
+                    setTab(item)
+                    setEditingNoteId(null)
                   }}
-                  className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium ${tab === item ? "bg-[var(--background)] shadow-sm" : "text-[var(--muted-foreground)]"}`}
+                  className={`flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium ${tab === item ? 'bg-[var(--background)] shadow-sm' : 'text-[var(--muted-foreground)]'}`}
                 >
-                  {item === "transcript" ? (
+                  {item === 'transcript' ? (
                     <>
                       <Captions className="h-3.5 w-3.5" />
-                      {t("Transcript")}
-                    </>
-                  ) : item === "notes" ? (
-                    <>
-                      <StickyNote className="h-3.5 w-3.5" />
-                      {t("Video notes")}
+                      {t('Transcript')}
                     </>
                   ) : (
                     <>
-                      <BookmarkPlus className="h-3.5 w-3.5" />
-                      {t("Marks")}
+                      <StickyNote className="h-3.5 w-3.5" />
+                      {t('Video notes')}
                     </>
                   )}
                 </button>
               ))}
             </div>
 
-            {tab === "transcript" ? (
-              material.transcript.status !== "ready" ? (
+            {tab === 'transcript' ? (
+              material.transcript.status !== 'ready' ? (
                 <div className="rounded-lg border border-[var(--border)] p-4 text-sm text-[var(--muted-foreground)]">
                   <p>
                     {t(
-                      "Transcript learning is unavailable ({{reason}}). Playback still works, but Explain here is disabled.",
+                      'Transcript learning is unavailable ({{reason}}). Playback still works, but Explain here is disabled.',
                       {
-                        reason: material.transcript.reason || t("no captions"),
-                      },
+                        reason: material.transcript.reason || t('no captions'),
+                      }
                     )}
                   </p>
-                  {material.playback.provider === "invidious" && (
+                  {material.playback.provider === 'invidious' && (
                     <button
                       type="button"
                       onClick={() => void retryTranscript()}
                       disabled={loading}
                       className="mt-3 rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
                     >
-                      {t("Retry captions")}
+                      {t('Retry captions')}
                     </button>
                   )}
-                  <div className="mt-3 space-y-2 border-t border-[var(--border)] pt-3">
-                    {subtitleError && (
-                      <p role="alert" className="text-[var(--destructive)]">
-                        {subtitleError}
-                      </p>
-                    )}
-                    {subtitleActive ? (
-                      <p className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {t("Preparing Chrome captions…")}
-                      </p>
-                    ) : (
-                      <p>
-                        {chromeConnected
-                          ? t("Chrome captions connected.")
-                          : t(
-                              "Use this computer's Chrome session for captions.",
-                            )}
-                      </p>
-                    )}
-                    <div className="flex flex-wrap gap-2">
-                      {chromeConnected ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => void retryChromeCaptions()}
-                            disabled={loading || subtitleBusy}
-                            className="inline-flex items-center gap-1.5 rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
-                          >
-                            <RotateCcw className="h-3.5 w-3.5" />
-                            {t("Retry captions")}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => void disconnectChromeCaptions()}
-                            disabled={subtitleBusy}
-                            className="inline-flex items-center gap-1.5 rounded px-2 py-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
-                          >
-                            <Unplug className="h-3.5 w-3.5" />
-                            {t("Disconnect Chrome captions")}
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => void connectChromeCaptions()}
-                            disabled={loading || subtitleBusy}
-                          className="inline-flex items-center gap-1.5 rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
-                        >
-                          <Chrome className="h-3.5 w-3.5" />
-                          {subtitleBusy ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : null}
-                          {t("Use Chrome captions")}
-                        </button>
-                      )}
+                  {material.playback.provider === 'youtube' && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void connectChromeCaptions()}
+                        disabled={subtitleBusy}
+                        className="rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
+                      >
+                        {t('Connect Chrome captions')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void disconnectChromeCaptions()}
+                        disabled={subtitleBusy}
+                        className="rounded border border-[var(--border)] px-2 py-1 text-[var(--muted-foreground)] disabled:opacity-50"
+                      >
+                        {t('Disconnect Chrome captions')}
+                      </button>
                     </div>
-                  </div>
+                  )}
+                  {subtitleError && (
+                    <p className="mt-2 text-xs text-[var(--destructive)]">{subtitleError}</p>
+                  )}
                 </div>
               ) : (
                 <>
-                  <div className="mb-3 flex flex-wrap gap-2">
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <label className="relative min-w-48 flex-1">
+                      <span className="sr-only">{t('Search transcript')}</span>
+                      <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                      <input
+                        type="search"
+                        value={transcriptQuery}
+                        aria-label={t('Search transcript')}
+                        placeholder={t('Search transcript')}
+                        onChange={event => {
+                          const next = event.target.value
+                          setTranscriptQuery(next)
+                          setSelectedTranscriptMatch(-1)
+                          if (next.trim()) setFollowTranscript(false)
+                        }}
+                        onKeyDown={event => {
+                          if (event.key === 'Escape') {
+                            event.preventDefault()
+                            setTranscriptQuery('')
+                            setSelectedTranscriptMatch(-1)
+                            return
+                          }
+                          if (event.key === 'Enter') {
+                            event.preventDefault()
+                            moveTranscriptMatch(event.shiftKey ? -1 : 1)
+                          }
+                        }}
+                        className="w-full rounded-lg border border-[var(--border)] bg-transparent py-2 pl-9 pr-3 text-sm"
+                      />
+                    </label>
+                    {normalizedTranscriptQuery && (
+                      <span
+                        aria-live="polite"
+                        className="text-xs tabular-nums text-[var(--muted-foreground)]"
+                      >
+                        {t('{{count}} transcript matches', {
+                          count: transcriptMatches.length,
+                        })}
+                      </span>
+                    )}
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        disabled={!transcriptMatches.length}
+                        aria-label={t('Previous transcript match')}
+                        onClick={() => moveTranscriptMatch(-1)}
+                        className="rounded-md border border-[var(--border)] p-2 disabled:opacity-40"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!transcriptMatches.length}
+                        aria-label={t('Next transcript match')}
+                        onClick={() => moveTranscriptMatch(1)}
+                        className="rounded-md border border-[var(--border)] p-2 disabled:opacity-40"
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
                     <button
                       type="button"
                       onClick={askHere}
                       disabled={!cue}
                       className="rounded-lg bg-[var(--primary)] px-3 py-2 text-sm text-[var(--primary-foreground)] disabled:opacity-50"
                     >
-                      {t("Explain here")}
+                      {t('Explain here')}
                     </button>
                     <button
                       type="button"
-                      onClick={markCurrentTime}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
+                      onClick={() => setFollowTranscript(current => !current)}
+                      disabled={Boolean(normalizedTranscriptQuery)}
+                      aria-pressed={followTranscript}
+                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${followTranscript ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-[var(--border)] text-[var(--muted-foreground)]'}`}
                     >
-                      <BookmarkPlus className="h-4 w-4" />
-                      {t("Mark here")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={captureSelection}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
-                    >
-                      {t("Use selection")}
+                      <ChevronsDown className="h-4 w-4" />
+                      {t('Follow playback')}
                     </button>
                   </div>
-                  {markDraft && (
-                    <div className="mb-3 rounded-lg border border-[var(--border)] bg-[var(--muted)]/50 p-3">
-                      <p className="font-mono text-xs text-blue-600">
-                        {formatTime(markDraft.start_seconds)}
-                        {markDraft.end_seconds > markDraft.start_seconds
-                          ? ` - ${formatTime(markDraft.end_seconds)}`
-                          : ""}
-                      </p>
-                      {markDraft.quote && (
-                        <p className="mt-1 line-clamp-2 text-sm">{markDraft.quote}</p>
-                      )}
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {(["key_point", "question", "review"] as const).map((kind) => (
+                  {normalizedTranscriptQuery && transcriptMatches.length === 0 ? (
+                    <p className="rounded-lg border border-[var(--border)] p-4 text-sm text-[var(--muted-foreground)]">
+                      {t('No transcript matches.')}
+                    </p>
+                  ) : material.transcript.cues.length === 0 ? (
+                    <p className="rounded-lg border border-[var(--border)] p-4 text-sm text-[var(--muted-foreground)]">
+                      {t('No transcript cues available.')}
+                    </p>
+                  ) : (
+                    <div className="space-y-1">
+                      {(normalizedTranscriptQuery
+                        ? transcriptMatches
+                        : material.transcript.cues.map((_, index) => index)
+                      ).map(index => {
+                        const row = material.transcript.cues[index]
+                        const active = row === cue
+                        const selectedMatch =
+                          Boolean(normalizedTranscriptQuery) &&
+                          transcriptMatches[selectedTranscriptMatch] === index
+                        return (
                           <button
-                            key={kind}
+                            key={`${row.start}-${index}`}
                             type="button"
-                            disabled={markBusy}
-                            onClick={() => void saveMark(kind, markDraft)}
-                            className="rounded-md bg-[var(--background)] px-2.5 py-1.5 text-xs font-medium shadow-sm disabled:opacity-50"
+                            data-active-cue={active ? 'true' : undefined}
+                            data-transcript-cue={index}
+                            onClick={() => controllerRef.current?.seek(row.start)}
+                            className={`flex w-full gap-3 rounded-md px-2 py-1.5 text-left text-sm ${
+                              active
+                                ? 'bg-blue-500/15 ring-1 ring-blue-500/30'
+                                : selectedMatch
+                                  ? 'bg-violet-500/10 ring-1 ring-violet-500/30'
+                                  : 'hover:bg-[var(--muted)]'
+                            }`}
                           >
-                            {markLabel(kind, t)}
+                            <span className="shrink-0 tabular-nums text-blue-600">
+                              {formatTime(row.start)}
+                            </span>
+                            <span>{row.text}</span>
                           </button>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() => setMarkDraft(null)}
-                          className="rounded-md px-2.5 py-1.5 text-xs"
-                        >
-                          {t("Cancel")}
-                        </button>
-                      </div>
+                        )
+                      })}
                     </div>
                   )}
-                  <div className="space-y-1" ref={transcriptRootRef}>
-                    {material.transcript.cues.map((row, index) => {
-                      const active = row === cue;
-                      const marked = marks.some(
-                        (mark) =>
-                          mark.end_seconds >= row.start &&
-                          mark.start_seconds <= row.end,
-                      );
-                      return (
-                        <div
-                          key={`${row.start}-${index}`}
-                          data-cue-index={index}
-                          className={`flex w-full gap-3 rounded-md px-2 py-1.5 text-left text-sm ${active ? "bg-blue-500/15 ring-1 ring-blue-500/30" : "hover:bg-[var(--muted)]"} ${marked ? "ring-1 ring-amber-600/40" : ""}`}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => controllerRef.current?.seek(row.start)}
-                            className="shrink-0 tabular-nums text-blue-600"
-                          >
-                            {formatTime(row.start)}
-                          </button>
-                          <span className="min-w-0 flex-1 select-text">{row.text}</span>
-                          <button
-                            type="button"
-                            onClick={() => markCue(index)}
-                            aria-label={t("Mark this subtitle")}
-                            title={t("Mark this subtitle")}
-                            className="shrink-0 rounded-md p-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)]"
-                          >
-                            <BookmarkPlus className="h-4 w-4" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
                 </>
               )
-            ) : tab === "notes" ? (
+            ) : (
               <div className="space-y-3">
                 <form
                   className="space-y-2"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void addNote();
+                  onSubmit={event => {
+                    event.preventDefault()
+                    void addNote()
                   }}
                 >
                   <textarea
                     value={noteDraft}
-                    onChange={(event) => setNoteDraft(event.target.value)}
-                    placeholder={t("Note at {{time}}", {
+                    onChange={event => setNoteDraft(event.target.value)}
+                    placeholder={t('Note at {{time}}', {
                       time: formatTime(time),
                     })}
                     className="min-h-20 w-full resize-y rounded-lg border border-[var(--border)] bg-transparent px-3 py-2 text-sm"
@@ -966,7 +865,22 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                     ) : (
                       <Check className="h-4 w-4" />
                     )}
-                    {t("Add video note")}
+                    {t('Add video note')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void copyNotes()}
+                    disabled={notesExportBusy || !notes.length}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm disabled:opacity-50"
+                  >
+                    {notesExportBusy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : notesCopied ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    {notesCopied ? t('Notes copied') : t('Copy notes')}
                   </button>
                 </form>
 
@@ -982,10 +896,10 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                 {notesLoading ? (
                   <p className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    {t("Loading notes.")}
+                    {t('Loading notes.')}
                   </p>
                 ) : notes.length ? (
-                  notes.map((note) => (
+                  notes.map(note => (
                     <article
                       key={`${note.notebook_id}:${note.note_id}`}
                       className="rounded-lg border border-[var(--border)] p-3"
@@ -993,9 +907,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                       <div className="flex items-start gap-2">
                         <button
                           type="button"
-                          onClick={() =>
-                            controllerRef.current?.seek(note.time_seconds)
-                          }
+                          onClick={() => controllerRef.current?.seek(note.time_seconds)}
                           className="shrink-0 rounded px-1.5 py-0.5 font-mono text-xs tabular-nums text-blue-600 hover:bg-blue-500/10"
                         >
                           {formatTime(note.time_seconds)}
@@ -1004,18 +916,14 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                           {editingNoteId === note.note_id ? (
                             <textarea
                               value={editingDraft}
-                              onChange={(event) =>
-                                setEditingDraft(event.target.value)
-                              }
-                              aria-label={t("Edit note at {{time}}", {
+                              onChange={event => setEditingDraft(event.target.value)}
+                              aria-label={t('Edit note at {{time}}', {
                                 time: formatTime(note.time_seconds),
                               })}
                               className="min-h-20 w-full resize-y rounded-lg border border-[var(--border)] bg-transparent px-2 py-1.5 text-sm"
                             />
                           ) : (
-                            <p className="whitespace-pre-wrap text-sm">
-                              {note.body}
-                            </p>
+                            <p className="whitespace-pre-wrap text-sm">{note.body}</p>
                           )}
                           {note.quote && (
                             <blockquote className="mt-2 border-l-2 border-[var(--border)] pl-2 text-xs text-[var(--muted-foreground)]">
@@ -1031,7 +939,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                                 onClick={() => void saveEditedNote()}
                                 disabled={noteBusy || !editingDraft.trim()}
                                 className="rounded-md p-1.5 hover:bg-[var(--muted)] disabled:opacity-50"
-                                aria-label={t("Save video note")}
+                                aria-label={t('Save video note')}
                               >
                                 <Check className="h-4 w-4" />
                               </button>
@@ -1040,7 +948,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                                 onClick={() => setEditingNoteId(null)}
                                 disabled={noteBusy}
                                 className="rounded-md p-1.5 hover:bg-[var(--muted)] disabled:opacity-50"
-                                aria-label={t("Cancel")}
+                                aria-label={t('Cancel')}
                               >
                                 <X className="h-4 w-4" />
                               </button>
@@ -1049,12 +957,12 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                             <button
                               type="button"
                               onClick={() => {
-                                setEditingNoteId(note.note_id);
-                                setEditingDraft(note.body);
+                                setEditingNoteId(note.note_id)
+                                setEditingDraft(note.body)
                               }}
                               disabled={noteBusy}
                               className="rounded-md p-1.5 hover:bg-[var(--muted)] disabled:opacity-50"
-                              aria-label={t("Edit note at {{time}}", {
+                              aria-label={t('Edit note at {{time}}', {
                                 time: formatTime(note.time_seconds),
                               })}
                             >
@@ -1066,7 +974,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                             onClick={() => setPendingDeleteId(note.note_id)}
                             disabled={noteBusy}
                             className="rounded-md p-1.5 text-[var(--destructive)] hover:bg-[var(--destructive)]/10 disabled:opacity-50"
-                            aria-label={t("Delete note at {{time}}", {
+                            aria-label={t('Delete note at {{time}}', {
                               time: formatTime(note.time_seconds),
                             })}
                           >
@@ -1077,95 +985,8 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                     </article>
                   ))
                 ) : (
-                  !notesError && <p className="text-sm">{t("No notes yet.")}</p>
+                  !notesError && <p className="text-sm">{t('No notes yet.')}</p>
                 )}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={() => void requestSuggestions()}
-                  disabled={markBusy}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm disabled:opacity-50"
-                >
-                  {markBusy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-4 w-4" />
-                  )}
-                  {t("Suggest marks")}
-                </button>
-                <WatchingMarksPanel
-                  marks={marks}
-                  suggestions={markSuggestions}
-                  currentTime={time}
-                  error={markError}
-                  busy={markBusy}
-                  onSeek={(seconds) => controllerRef.current?.seek(seconds)}
-                  onDelete={(markId) => {
-                    if (!material || markBusy) return;
-                    const requestedMaterialId = material.material_id;
-                    setMarkBusy(true);
-                    setMarkError(null);
-                    void deleteVideoMark(requestedMaterialId, markId)
-                      .then(() => {
-                        if (activeMaterialIdRef.current !== requestedMaterialId) return;
-                        setMarks((current) =>
-                          current.filter((mark) => mark.mark_id !== markId),
-                        );
-                      })
-                      .catch((caught) => {
-                        if (activeMaterialIdRef.current !== requestedMaterialId) return;
-                        setMarkError(
-                          caught instanceof Error
-                            ? caught.message
-                            : t("Mark was not deleted."),
-                        );
-                      })
-                      .finally(() => setMarkBusy(false));
-                  }}
-                  onReview={(mark) => {
-                    if (!material || markBusy) return;
-                    const requestedMaterialId = material.material_id;
-                    setMarkBusy(true);
-                    setMarkError(null);
-                    void updateVideoMark(requestedMaterialId, mark.mark_id, {
-                      reviewed: true,
-                    })
-                      .then((saved) => {
-                        if (activeMaterialIdRef.current !== requestedMaterialId) return;
-                        setMarks((current) =>
-                          current.map((row) =>
-                            row.mark_id === saved.mark_id ? saved : row,
-                          ),
-                        );
-                      })
-                      .catch((caught) => {
-                        if (activeMaterialIdRef.current !== requestedMaterialId) return;
-                        setMarkError(
-                          caught instanceof Error
-                            ? caught.message
-                            : t("Mark was not saved."),
-                        );
-                      })
-                      .finally(() => setMarkBusy(false));
-                  }}
-                  onSaveSuggestion={(suggestion) => {
-                    void saveMark(
-                      suggestion.kind,
-                      {
-                        start_seconds: suggestion.start_seconds,
-                        end_seconds: suggestion.end_seconds,
-                        quote: suggestion.quote,
-                      },
-                      "assistant",
-                    ).then(() => {
-                      setMarkSuggestions((current) =>
-                        current.filter((row) => row !== suggestion),
-                      );
-                    });
-                  }}
-                />
               </div>
             )}
           </div>
@@ -1174,34 +995,25 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
 
       <ConfirmDialog
         open={Boolean(pendingDeleteId)}
-        title={t("Delete this note?")}
-        confirmLabel={t("Delete")}
+        title={t('Delete this note?')}
+        confirmLabel={t('Delete')}
         tone="danger"
         busy={noteBusy}
         onConfirm={() => void confirmDelete()}
         onCancel={() => setPendingDeleteId(null)}
       >
-        {t("This note will be removed from Video Learning.")}
+        {t('This note will be removed from Video Learning.')}
       </ConfirmDialog>
     </section>
-  );
+  )
 }
 
 function formatTime(value: number): string {
-  const total = Math.max(0, Math.floor(Number(value) || 0));
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const seconds = total % 60;
+  const total = Math.max(0, Math.floor(Number(value) || 0))
+  const hours = Math.floor(total / 3600)
+  const minutes = Math.floor((total % 3600) / 60)
+  const seconds = total % 60
   return hours
-    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-    : `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
-
-function markLabel(
-  kind: VideoMarkKind,
-  t: (key: string) => string,
-): string {
-  if (kind === "question") return t("Question");
-  if (kind === "review") return t("Review later");
-  return t("Key point");
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    : `${minutes}:${String(seconds).padStart(2, '0')}`
 }
