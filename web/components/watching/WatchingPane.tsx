@@ -22,7 +22,11 @@ import { useTranslation } from "react-i18next";
 
 import { useWatching } from "@/context/WatchingContext";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import type { PlayerController } from "@/lib/video-player-controller";
+import {
+  DEFAULT_PLAYBACK_RATE,
+  WATCHING_PLAYBACK_RATES,
+  type PlayerController,
+} from "@/lib/video-player-controller";
 import {
   createVideoNote,
   createVideoMark,
@@ -98,7 +102,10 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     useState<YouTubeSessionStatus | null>(null);
   const [subtitleBusy, setSubtitleBusy] = useState(false);
   const [subtitleError, setSubtitleError] = useState<string | null>(null);
+  const [playbackRate, setPlaybackRate] = useState(DEFAULT_PLAYBACK_RATE);
+  const [controllerReady, setControllerReady] = useState(false);
   const controllerRef = useRef<PlayerController | null>(null);
+  const playbackRateRef = useRef(DEFAULT_PLAYBACK_RATE);
   const transcriptRootRef = useRef<HTMLDivElement | null>(null);
   const activeMaterialIdRef = useRef(materialId);
   const lastSavedRef = useRef(0);
@@ -110,6 +117,12 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     setMarkSuggestions([]);
     setMarkError(null);
   }, [material?.learning.marks, material?.material_id]);
+
+  useEffect(() => {
+    playbackRateRef.current = DEFAULT_PLAYBACK_RATE;
+    setPlaybackRate(DEFAULT_PLAYBACK_RATE);
+    controllerRef.current?.setPlaybackRate(DEFAULT_PLAYBACK_RATE);
+  }, [materialId]);
 
   useEffect(() => {
     setActive(true);
@@ -529,9 +542,16 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
   const handleController = useCallback(
     (controller: PlayerController | null) => {
       controllerRef.current = controller;
+      setControllerReady(Boolean(controller));
+      controller?.setPlaybackRate(playbackRateRef.current);
     },
     [],
   );
+  const selectPlaybackRate = useCallback((rate: number) => {
+    playbackRateRef.current = rate;
+    setPlaybackRate(rate);
+    controllerRef.current?.setPlaybackRate(rate);
+  }, []);
   const chromeConnected = youtubeSession?.connection === "connected";
   const subtitleActive =
     subtitleFetchStatus === "queued" || subtitleFetchStatus === "fetching";
@@ -671,6 +691,33 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
             >
               {t("Open official")} <ExternalLink className="h-3 w-3" />
             </a>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-4 py-2">
+            <span className="mr-1 text-xs text-[var(--muted-foreground)]">
+              {t("Playback speed")}
+            </span>
+            <div role="group" aria-label={t("Playback speed")} className="flex flex-wrap gap-1">
+              {WATCHING_PLAYBACK_RATES.map((rate) => {
+                const label = `${rate}x`;
+                return (
+                  <button
+                    key={rate}
+                    type="button"
+                    disabled={!controllerReady}
+                    aria-pressed={playbackRate === rate}
+                    aria-label={t("Set playback speed to {{rate}}", { rate: label })}
+                    onClick={() => selectPlaybackRate(rate)}
+                    className={`rounded-md border px-2 py-1 text-xs tabular-nums transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                      playbackRate === rate
+                        ? "border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]"
+                        : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-4">
             <WatchingRemoteLaunch
