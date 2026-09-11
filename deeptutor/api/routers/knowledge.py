@@ -29,7 +29,7 @@ from fastapi import (
     WebSocket,
     WebSocketDisconnect,
 )
-from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from deeptutor.api.routers.auth import require_admin
@@ -87,6 +87,13 @@ from deeptutor.services.rag.pipelines.ima.config import (
     ImaConfig,
     ImaCredentials,
     get_account_credentials,
+)
+from deeptutor.services.web_source.jobs import WebSyncConflictError, submit_web_sync
+from deeptutor.services.web_source.jobs import (
+    cancel_web_sync_job as cancel_web_sync_job_service,
+)
+from deeptutor.services.web_source.jobs import (
+    get_web_sync_job as get_web_sync_job_service,
 )
 from deeptutor.utils.document_extractor import (
     MAX_EXTRACTED_CHARS_PER_DOC,
@@ -4050,6 +4057,20 @@ class WebSourceInfo(BaseModel):
     navigation: dict | None = None
 
 
+class WebSyncJobInfo(BaseModel):
+    job_id: str
+    kb_name: str
+    trigger: str = "manual"
+    status: str
+    progress: int = 0
+    message: str = ""
+    result: dict | None = None
+    error: str | None = None
+    created_at: str = ""
+    started_at: str = ""
+    finished_at: str = ""
+
+
 @contextmanager
 def _knowledge_source_errors(kb_name: str, *, validation_status: int = 404):
     """Translate source-service failures without duplicating route ladders."""
@@ -4153,52 +4174,74 @@ async def remove_web_source(kb_name: str, source_id: str):
 
 @router.post("/knowledge-bases/{kb_name}/sync-web")
 async def sync_web_sources(kb_name: str):
-    """Run one bounded crawl-and-sync pass for every enabled web source."""
-    with _knowledge_source_errors(kb_name):
+    """Queue one bounded web-source sync and return its durable job handle."""
+    try:
         manager, resolved_name, kb_base_dir = _writable_kb(kb_name)
         sources = manager.get_web_sources(resolved_name)
-        if not sources:
-            return {"message": "No web sources", "results": []}
-        from deeptutor.services.web_source.sync import sync_source
-
-        enabled = [s for s in sources if s.get("enabled", True)]
-        if not enabled:
-            return {"message": "No enabled web sources", "results": []}
-
-        results = []
-        for source in enabled:
-            result = await sync_source(
-                kb_name=resolved_name,
-                source=source,
-                base_dir=str(kb_base_dir),
-                max_depth=source.get("max_depth"),
-                max_pages=source.get("max_pages"),
-            )
-            refreshed = manager.get_web_sources(resolved_name)
-            page_count = next(
-                (
-                    item.get("page_count", 0)
-                    for item in refreshed
-                    if item.get("id") == source.get("id")
+        job = submit_web_sync(
+            kb_name=resolved_name,
+            sources=sources,
+            kb_base_dir=kb_base_dir,
+            trigger="manual",
+        )
+        return JSONResponse(
+            status_code=202,
+            content={
+                **job,
+                "status_url": (
+                    f"/api/knowledge-bases/{resolved_name}/web-sync-jobs/{job['job_id']}"
                 ),
-                source.get("page_count", 0),
-            )
-            results.append(
-                {
-                    "source_id": source.get("id"),
-                    "url": source.get("url"),
-                    "ok": result.ok,
-                    "page_count": page_count,
-                    "pages_added": result.pages_added,
-                    "pages_updated": result.pages_updated,
-                    "pages_removed": result.pages_removed,
-                    "pages_unchanged": result.pages_unchanged,
-                    "error": result.error or None,
-                }
-            )
+            },
+        )
+    except WebSyncConflictError as exc:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "A web source sync is already running",
+                "job_id": exc.job.get("job_id"),
+            },
+        ) from exc
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-        return {
-            "message": f"Synced {len(results)} source(s)",
-            "ok": all(result["ok"] for result in results),
-            "results": results,
-        }
+
+@router.get(
+    "/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}",
+    response_model=WebSyncJobInfo,
+)
+async def get_web_sync_job(kb_name: str, job_id: str):
+    try:
+        _, resolved_name, kb_base_dir = _writable_kb(kb_name)
+        job = get_web_sync_job_service(kb_base_dir, resolved_name, job_id)
+        if not job:
+            raise HTTPException(status_code=404, detail=f"Web sync job '{job_id}' not found")
+        return WebSyncJobInfo(**job)
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.post(
+    "/knowledge-bases/{kb_name}/web-sync-jobs/{job_id}/cancel",
+    response_model=WebSyncJobInfo,
+)
+async def cancel_web_sync_job(kb_name: str, job_id: str):
+    try:
+        _, resolved_name, kb_base_dir = _writable_kb(kb_name)
+        job = await cancel_web_sync_job_service(kb_base_dir, resolved_name, job_id)
+        return WebSyncJobInfo(**job)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Web sync job '{job_id}' not found") from exc
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(status_code=404, detail=f"KB '{kb_name}' not found")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
