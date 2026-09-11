@@ -85,6 +85,9 @@ class _CallResult:
     text: str = ""
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     output_chars: int = 0
+    # Streamed to the trace and also kept: a thinking model's provider needs
+    # it echoed on the assistant turn that issued the tool calls.
+    reasoning_content: str = ""
 
 
 class ContextExplorer:
@@ -111,6 +114,7 @@ class ContextExplorer:
             extra_headers=self.extra_headers or None,
             reasoning_effort=self.reasoning_effort,
             wire_api=getattr(cfg, "wire_api", None) or "auto",
+            api_format=getattr(cfg, "api_format", None) or "auto",
         )
 
     async def investigate(
@@ -223,7 +227,13 @@ class ContextExplorer:
                 if not result.tool_calls:
                     investigation = result.text
                     break
-                messages.append(assistant_message_with_tool_calls(result.text, result.tool_calls))
+                messages.append(
+                    assistant_message_with_tool_calls(
+                        result.text,
+                        result.tool_calls,
+                        reasoning_content=result.reasoning_content or None,
+                    )
+                )
                 dispatch = await dispatch_tool_calls(
                     tool_calls=result.tool_calls,
                     context=context,
@@ -280,6 +290,7 @@ class ContextExplorer:
             kwargs["tool_choice"] = "auto"
 
         text_parts: list[str] = []
+        reasoning_parts: list[str] = []
         tool_acc = ToolCallAccumulator()
         output_chars = 0
         response_stream = await client.chat.completions.create(**kwargs)
@@ -295,6 +306,7 @@ class ContextExplorer:
                     delta, "reasoning", None
                 )
                 if reasoning:
+                    reasoning_parts.append(str(reasoning))
                     output_chars += len(reasoning)
                     await stream.thinking(
                         reasoning, source=EXPLORE_SOURCE, stage=EXPLORE_STAGE, metadata=chunk_meta
@@ -316,7 +328,10 @@ class ContextExplorer:
 
         tool_calls = tool_acc.collected()
         return _CallResult(
-            text="".join(text_parts), tool_calls=tool_calls, output_chars=output_chars
+            text="".join(text_parts),
+            tool_calls=tool_calls,
+            output_chars=output_chars,
+            reasoning_content="".join(reasoning_parts),
         )
 
     def _read_source_schemas(self, source_index: dict[str, str]) -> list[dict[str, Any]]:

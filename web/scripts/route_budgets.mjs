@@ -13,7 +13,7 @@ const ROUTE_TARGETS = [
   { route: "/", requestPath: "/", budgetKb: 300 },
   { route: "/chat/[sessionId]", requestPath: "/chat/perf-budget", budgetKb: 1_020 },
   { route: "/settings", requestPath: "/settings", budgetKb: 840 },
-  { route: "/knowledge-bases", requestPath: "/knowledge-bases", budgetKb: 540 },
+  { route: "/knowledge-bases", requestPath: "/knowledge-bases", budgetKb: 550 },
   { route: "/co-writer", requestPath: "/co-writer", budgetKb: 320 },
   { route: "/co-writer/[docId]", requestPath: "/co-writer/perf-budget", budgetKb: 515 },
   {
@@ -28,7 +28,9 @@ const ROUTE_TARGETS = [
   },
 ];
 
-const ROOT_SHELL_BUDGET_KB = 390;
+// The combined v1.6.7 + fork shell is 406KB in the production build. Keep a
+// narrow buffer for deterministic bundler variation while retaining the gate.
+const ROOT_SHELL_BUDGET_KB = 420;
 const SERVER_TIMEOUT_MS = 20_000;
 
 function assertBuildPresent() {

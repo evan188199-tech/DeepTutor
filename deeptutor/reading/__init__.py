@@ -47,6 +47,7 @@ from deeptutor.reading.models import (
     MaterialManifest,
     MaterialNotFound,
     OutlineEntry,
+    ReadingBookmark,
     ReadingError,
     ReadingPosition,
     ReadingUpgradeConflict,
@@ -68,6 +69,7 @@ from deeptutor.reading.service import (
     render_outline,
     render_units,
     search_material,
+    unit_timestamps,
     verify_quote,
 )
 from deeptutor.reading.store import ReadingStore, content_hash
@@ -87,6 +89,7 @@ __all__ = [
     "QuoteCheck",
     "ReadingError",
     "ReadingCatalogStore",
+    "ReadingBookmark",
     "ReadingPosition",
     "ReadingSessionRecord",
     "ReadingUpgradeConflict",
@@ -115,6 +118,7 @@ __all__ = [
     "render_outline",
     "recommend_epub_candidates",
     "render_units",
+    "unit_timestamps",
     "search_material",
     "search_units",
     "verify_quote",

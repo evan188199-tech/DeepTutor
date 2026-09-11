@@ -16,6 +16,8 @@ import { useTranslation } from "react-i18next";
 import { SessionAvatar } from "@/components/sidebar/SessionAvatar";
 import { type NotebookSummary, listNotebooks } from "@/lib/notebook-api";
 import { formatRelativeTime } from "@/lib/relative-time";
+import { copyText } from "@/lib/clipboard";
+import { notify } from "@/lib/notifications";
 import {
   type OrganizedReadingNotes,
   type ReadingConversation,
@@ -113,7 +115,7 @@ export function ConversationMenu({
         <button
           type="button"
           onClick={onNew}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-[var(--primary)] transition hover:bg-[var(--primary)]/10"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold text-[var(--primary)] transition hover:bg-[color-mix(in_srgb,var(--primary)_10%,transparent)]"
         >
           <Plus size={10} /> {t("New")}
         </button>
@@ -125,7 +127,7 @@ export function ConversationMenu({
             <div
               key={row.session_id}
               className={`group/row relative flex w-full items-center gap-1 overflow-hidden rounded-xl transition-colors ${
-                active ? "bg-[var(--primary)]/10" : "hover:bg-[var(--muted)]"
+                active ? "bg-[color-mix(in_srgb,var(--primary)_10%,transparent)]" : "hover:bg-[var(--muted)]"
               }`}
             >
               {active && (
@@ -389,7 +391,13 @@ export function OrganizedNotesDialog({
         </span>
         <button
           type="button"
-          onClick={() => void navigator.clipboard.writeText(notes.markdown)}
+          onClick={() =>
+            void copyText(notes.markdown).catch(() =>
+              notify(t("The clipboard is not available in this browser."), {
+                tone: "error",
+              }),
+            )
+          }
           className="flex items-center gap-1.5 rounded-lg px-2 py-1 hover:bg-[var(--muted)]"
         >
           <Copy size={11} /> {t("Copy Markdown")}

@@ -296,14 +296,16 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"PocketBase startup check failed: {e}")
 
-    # Migrate any v1 memory files (PROFILE.md / SUMMARY.md) into a
+    # Migrate any v1 memory files (PROFILE.md / SOUL.md / SUMMARY.md) into a
     # backup folder so the v2 three-layer subsystem starts clean.
     try:
         from deeptutor.services.memory import (
             migrate_partner_surface_if_needed,
             migrate_v1_if_needed,
         )
+        from deeptutor.services.path_service import get_path_service
 
+        get_path_service().migrate_legacy_memory_markdown()
         backup = migrate_v1_if_needed()
         if backup is not None:
             logger.info("v1 memory archived to %s", backup)
@@ -522,6 +524,7 @@ from deeptutor.api.routers import (
     video_remote_control,
     visualizers,
     voice,
+    workspace,
 )
 from deeptutor.api.routers import (
     tools as tools_router,
@@ -531,6 +534,11 @@ from deeptutor.api.routers.multi_user import router as multi_user_router  # noqa
 # Auth router is public — login/logout/register/status require no token
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(outputs.router, prefix="/files/outputs", tags=["outputs"])
+app.include_router(
+    workspace.files_router,
+    prefix="/files/workspace-items",
+    tags=["workspace"],
+)
 
 # All other routers require a valid session when AUTH_ENABLED=true.
 # require_auth is a no-op when AUTH_ENABLED=false, so this is safe for local use.
@@ -616,6 +624,12 @@ app.include_router(
     tags=["settings"],
 )
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"], dependencies=_auth)
+app.include_router(
+    workspace.settings_router,
+    prefix="/api/settings/workspace",
+    tags=["workspace-settings"],
+    dependencies=_auth,
+)
 app.include_router(
     video_learning.settings_router,
     prefix="/api/settings/video-learning",

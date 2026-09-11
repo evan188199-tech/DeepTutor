@@ -56,7 +56,12 @@ function toStreamEvent(event: ServerEvent): StreamEvent | null {
   };
 }
 
-function command(message: ChatMessage): ClientCommand {
+type OutboundTurnCommand = ChatMessage | ClientCommand;
+
+function command(message: OutboundTurnCommand): ClientCommand {
+  if ("protocol_version" in message && message.protocol_version === "2.0") {
+    return message as ClientCommand;
+  }
   return { ...message, protocol_version: "2.0" } as ClientCommand;
 }
 
@@ -95,8 +100,13 @@ export class UnifiedTurnClient {
     this.runtime.connect();
   }
 
-  send(message: ChatMessage): void {
+  send(message: OutboundTurnCommand): void {
     this.runtime.send(command(message));
+  }
+
+  /** Send, and resolve with whether the server accepted the command. */
+  sendAwaitingAck(message: OutboundTurnCommand): Promise<boolean> {
+    return this.runtime.sendAwaitingAck(command(message));
   }
 
   disconnect(): void {

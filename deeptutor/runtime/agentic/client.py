@@ -19,20 +19,32 @@ import threading
 from types import SimpleNamespace
 from typing import Any
 
-import httpx
 from openai import AsyncAzureOpenAI, AsyncOpenAI
 
 from deeptutor.services.config import load_system_settings
 from deeptutor.services.keypool import KeyPool, primary_api_key
 from deeptutor.services.llm import get_token_limit_kwargs, supports_tools
-from deeptutor.services.llm.openai_http_client import sanitize_invalid_ssl_env
+from deeptutor.services.llm.capabilities import catalog_capability_override
+from deeptutor.services.llm.exceptions import (
+    LLMProviderError,
+    LLMProviderTransportError,
+)
+from deeptutor.services.llm.openai_http_client import (
+    openai_sdk_client_kwargs,
+    sanitize_invalid_ssl_env,
+)
 from deeptutor.services.llm.reasoning_params import (
     build_openai_compatible_reasoning_kwargs,
 )
 from deeptutor.services.provider_registry import (
+    api_format_for_provider,
+    api_format_from_legacy,
+    effective_backend,
     find_by_name,
     model_overrides_for,
+    normalize_api_format,
     wire_api_for_provider,
+    wire_api_from_api_format,
 )
 
 # Providers that don't reliably support OpenAI function-calling. The loop
@@ -66,13 +78,24 @@ class LLMClientConfig:
     extra_headers: dict[str, str] | None = None
     reasoning_effort: str | None = None
     wire_api: str = "auto"
+    api_format: str = "auto"
 
     def __post_init__(self) -> None:
-        object.__setattr__(
-            self,
-            "wire_api",
-            wire_api_for_provider(self.wire_api, self.binding),
-        )
+        # Same rule as LLMConfig: an explicit ``api_format`` decides
+        # ``wire_api``; a caller that only knows ``wire_api`` gets the format
+        # derived from it. The two fields never disagree.
+        spec = find_by_name(self.binding)
+        if normalize_api_format(self.api_format) == "auto":
+            object.__setattr__(self, "api_format", api_format_from_legacy(spec, self.wire_api))
+            object.__setattr__(self, "wire_api", wire_api_for_provider(self.wire_api, spec))
+        else:
+            api_format = api_format_for_provider(self.api_format, spec)
+            object.__setattr__(self, "api_format", api_format)
+            object.__setattr__(
+                self,
+                "wire_api",
+                wire_api_for_provider(wire_api_from_api_format(api_format), spec),
+            )
 
 
 def _client_cache_key(
@@ -92,6 +115,7 @@ def _client_cache_key(
         config.api_version or "",
         headers,
         config.wire_api,
+        config.api_format,
         disable_ssl_verify,
     )
 
@@ -117,8 +141,8 @@ def _build_openai_client(
             for key in keys
         }
         return _KeyRotatingClient(KeyPool(keys), clients)
-    default_headers = config.extra_headers or None
     spec = find_by_name(config.binding)
+    backend = effective_backend(spec, config.api_format)
     wire_api = wire_api_for_provider(config.wire_api, spec)
     if wire_api == "responses":
         from deeptutor.services.llm.provider_core import OpenAICompatProvider
@@ -134,31 +158,28 @@ def _build_openai_client(
         )
         return _ProviderOpenAIAdapter(responses_provider)
     if spec and wire_api != "chat_completions":
-        native_adapter = _build_native_provider_adapter(config, spec)
+        native_adapter = _build_native_provider_adapter(config, spec, backend)
         if native_adapter is not None:
             return native_adapter
 
-    http_client = None
-    if disable_ssl_verify:
-        http_client = httpx.AsyncClient(verify=False)  # nosec B501
-    if config.binding == "azure_openai" or (config.binding == "openai" and config.api_version):
-        retry_kwargs = {"max_retries": sdk_max_retries} if sdk_max_retries is not None else {}
-        return AsyncAzureOpenAI(
-            api_key=config.api_key or "sk-no-key-required",
-            azure_endpoint=config.base_url,
-            api_version=config.api_version,
-            http_client=http_client,
-            default_headers=default_headers,
-            **retry_kwargs,
-        )
-    retry_kwargs = {"max_retries": sdk_max_retries} if sdk_max_retries is not None else {}
-    return AsyncOpenAI(
+    # Same constructor recipe as the services-layer provider, so headers, the
+    # SDK retry budget and the TLS bypass cannot drift between the two paths.
+    sdk_kwargs = openai_sdk_client_kwargs(
         api_key=config.api_key or "sk-no-key-required",
         base_url=config.base_url or None,
-        http_client=http_client,
-        default_headers=default_headers,
-        **retry_kwargs,
+        extra_headers=config.extra_headers,
+        spec=spec,
+        disable_ssl_verify=disable_ssl_verify,
+        sdk_max_retries=sdk_max_retries,
     )
+    if config.binding == "azure_openai" or (config.binding == "openai" and config.api_version):
+        sdk_kwargs.pop("base_url", None)
+        return AsyncAzureOpenAI(
+            azure_endpoint=config.base_url,
+            api_version=config.api_version,
+            **sdk_kwargs,
+        )
+    return AsyncOpenAI(**sdk_kwargs)
 
 
 class _KeyRotatingCompletions:
@@ -272,7 +293,7 @@ def _build_anthropic_adapter(config: LLMClientConfig, spec: Any) -> Any:
 
     anthropic_provider = AnthropicProvider(
         api_key=primary_api_key(config.api_key),
-        api_base=config.base_url or spec.default_api_base or None,
+        api_base=config.base_url or spec.default_api_base_for(config.api_format) or None,
         default_model=config.model or "claude-sonnet-4-20250514",
         extra_headers=config.extra_headers,
         supports_prompt_caching=spec.supports_prompt_caching,
@@ -334,7 +355,9 @@ _NATIVE_ADAPTER_BUILDERS: dict[str, Callable[[LLMClientConfig, Any], Any]] = {
 }
 
 
-def _build_native_provider_adapter(config: LLMClientConfig, spec: Any) -> Any | None:
+def _build_native_provider_adapter(
+    config: LLMClientConfig, spec: Any, backend: str | None = None
+) -> Any | None:
     endpoint = (config.base_url or spec.default_api_base or "").lower()
     model = (config.model or "").lower()
     if (
@@ -356,7 +379,7 @@ def _build_native_provider_adapter(config: LLMClientConfig, spec: Any) -> Any | 
         # the supported model through the provider adapter; sibling models
         # stay on the ordinary Chat Completions client.
         return _build_direct_openai_adapter(config, spec)
-    builder = _NATIVE_ADAPTER_BUILDERS.get(spec.backend)
+    builder = _NATIVE_ADAPTER_BUILDERS.get(backend or spec.backend)
     return builder(config, spec) if builder else None
 
 
@@ -428,6 +451,25 @@ class _ProviderOpenAIAdapter:
         )
 
 
+def _provider_streams_tool_args(provider: Any) -> bool:
+    """Whether *provider* declares the live tool-argument callback.
+
+    Probed rather than passed unconditionally: every provider in this family
+    forwards its unknown keyword arguments into the request body, so handing
+    the callback to one that does not name it would serialise a function into
+    an API call. A provider that has not opted in simply keeps the old
+    behaviour — its tool calls arrive whole.
+    """
+    chat_stream = getattr(provider, "chat_stream", None)
+    if not callable(chat_stream):
+        return False
+    try:
+        parameters = inspect.signature(chat_stream).parameters
+    except (TypeError, ValueError):
+        return False
+    return "on_tool_args_delta" in parameters
+
+
 class _ProviderOpenAIStream:
     def __init__(
         self,
@@ -454,6 +496,7 @@ class _ProviderOpenAIStream:
         self._queue: asyncio.Queue[Any] | None = None
         self._task: asyncio.Task[None] | None = None
         self._emitted_content = False
+        self._emitted_reasoning = False
 
     def __aiter__(self) -> "_ProviderOpenAIStream":
         if self._queue is None:
@@ -476,6 +519,39 @@ class _ProviderOpenAIStream:
         if self._task and not self._task.done():
             self._task.cancel()
 
+    def _raise_for_error_response(self, response: Any) -> None:
+        """Turn an error-shaped response back into the exception it describes.
+
+        Providers in this family do not raise; they *return* ``finish_reason ==
+        "error"`` with an operator-facing string in ``content`` (see
+        ``LLMProvider._handle_error`` and the stream-stall branch of
+        ``AnthropicProvider.chat_stream``). Forwarded as an ordinary chunk,
+        that string streams into the reply as if the model had written it —
+        "Error calling LLM: stream stalled for more than 90 seconds" arriving
+        as the tutor's answer — and because nothing was raised, neither the
+        provider's own retry nor the loop's transport retry ever ran.
+
+        Retrying is left to the caller rather than done here: the loop already
+        knows whether this round put text on the wire, and replaying a stream
+        that half-succeeded would splice a second attempt onto the visible
+        first one.
+        """
+        if str(getattr(response, "finish_reason", "") or "") != "error":
+            return
+        message = str(getattr(response, "content", "") or "").strip()
+        detail = message or "The model provider returned an error."
+        # A provider may narrow the marker list; fall back to the shared one
+        # rather than treating an unclassifiable failure as permanent, which
+        # would skip a retry that the base policy would have granted.
+        is_transient = getattr(self._provider, "_is_transient_error", None)
+        if not callable(is_transient):
+            from deeptutor.services.llm.provider_core.base import LLMProvider
+
+            is_transient = LLMProvider._is_transient_error
+        if is_transient(message):
+            raise LLMProviderTransportError(detail, partial_response=self._emitted_content)
+        raise LLMProviderError(detail)
+
     async def _run(self) -> None:
         assert self._queue is not None
 
@@ -483,6 +559,32 @@ class _ProviderOpenAIStream:
             if text:
                 self._emitted_content = True
                 await self._queue.put(_openai_stream_chunk(content=text))
+
+        async def _on_reasoning_delta(text: str) -> None:
+            if text:
+                self._emitted_reasoning = True
+                await self._queue.put(_openai_stream_chunk(reasoning_content=text))
+
+        async def _on_tool_args_delta(call_id: str, name: str, arguments: str) -> None:
+            # A side channel, not the call itself: the finished tool call is
+            # still queued whole below. Consumers that do not know the field
+            # see an ordinary chunk with an empty delta and skip it, so this
+            # cannot double-count arguments in a tool-call accumulator.
+            await self._queue.put(
+                _openai_stream_chunk(
+                    provider_specific_fields={
+                        "tool_args_preview": {
+                            "id": call_id,
+                            "name": name,
+                            "arguments": arguments,
+                        }
+                    }
+                )
+            )
+
+        extra_call_kwargs: dict[str, Any] = {}
+        if _provider_streams_tool_args(self._provider):
+            extra_call_kwargs["on_tool_args_delta"] = _on_tool_args_delta
 
         try:
             response = await self._provider.chat_stream(
@@ -494,8 +596,17 @@ class _ProviderOpenAIStream:
                 reasoning_effort=self._reasoning_effort,
                 tool_choice=self._tool_choice,
                 on_content_delta=_on_content_delta,
+                on_reasoning_delta=_on_reasoning_delta,
+                **extra_call_kwargs,
                 **self._extra_kwargs,
             )
+            self._raise_for_error_response(response)
+            # A provider that reports reasoning only on the finished message
+            # still gets it onto the thinking channel, once.
+            if response.reasoning_content and not self._emitted_reasoning:
+                await self._queue.put(
+                    _openai_stream_chunk(reasoning_content=response.reasoning_content)
+                )
             if response.content and not self._emitted_content:
                 await self._queue.put(_openai_stream_chunk(content=response.content))
             for index, tool_call in enumerate(response.tool_calls or []):
@@ -503,6 +614,12 @@ class _ProviderOpenAIStream:
             provider_fields = dict(response.provider_specific_fields or {})
             if response.reasoning_content:
                 provider_fields["reasoning_content"] = response.reasoning_content
+            if response.thinking_blocks:
+                # Anthropic requires the *signed* thinking blocks of a turn to
+                # be replayed verbatim on the next request. The provider parsed
+                # them out, but nothing carried them back, so the loop had no
+                # way to return them and every round dropped its signature.
+                provider_fields["thinking_blocks"] = response.thinking_blocks
             await self._queue.put(
                 _openai_stream_chunk(
                     finish_reason=(
@@ -538,6 +655,7 @@ def _openai_tool_call(tool_call: Any, *, index: int) -> Any:
 def _openai_stream_chunk(
     *,
     content: str | None = None,
+    reasoning_content: str | None = None,
     tool_call: Any | None = None,
     index: int = 0,
     finish_reason: str | None = None,
@@ -547,10 +665,16 @@ def _openai_stream_chunk(
     tool_calls = None
     if tool_call is not None:
         tool_calls = [_openai_tool_call(tool_call, index=index)]
+    # ``reasoning_content`` is read off the delta by the agent loop, the same
+    # way an OpenAI-compatible reasoning model reports it. Only set the
+    # attribute when there is one, so a plain chunk stays plain.
+    delta_fields: dict[str, Any] = {"content": content, "tool_calls": tool_calls}
+    if reasoning_content is not None:
+        delta_fields["reasoning_content"] = reasoning_content
     return SimpleNamespace(
         choices=[
             SimpleNamespace(
-                delta=SimpleNamespace(content=content, tool_calls=tool_calls),
+                delta=SimpleNamespace(**delta_fields),
                 finish_reason=finish_reason,
                 provider_specific_fields=provider_specific_fields,
             )
@@ -611,11 +735,15 @@ def build_provider_extra_kwargs(
     )
 
 
-def can_use_native_tool_calling(*, binding: str, model: str | None) -> bool:
+def can_use_native_tool_calling(
+    *, binding: str, model: str | None, api_format: str = "auto"
+) -> bool:
     """Whether the current provider supports OpenAI-style function calling.
 
     Resolution order:
 
+    0. A capability the user declared on the model in Settings wins outright —
+       that is the whole point of letting them declare it.
     1. Native provider adapters backed by Anthropic or OpenAI Codex support tools.
     2. Local OpenAI-compatible servers (Ollama, vLLM, LM Studio, llama.cpp,
        Lemonade, OVMS, …) and anything in ``_NATIVE_TOOL_BLOCKED_BINDINGS`` are
@@ -631,11 +759,15 @@ def can_use_native_tool_calling(*, binding: str, model: str | None) -> bool:
        To opt a cloud provider out, add its binding to
        ``_NATIVE_TOOL_BLOCKED_BINDINGS``.
     """
+    declared = catalog_capability_override(binding, model, "supports_tools")
+    if declared is not None:
+        return declared
     spec = find_by_name(binding)
-    if spec and spec.backend in _NATIVE_TOOL_BACKENDS:
+    backend = effective_backend(spec, api_format)
+    if spec and backend in _NATIVE_TOOL_BACKENDS:
         return True
     if binding in _NATIVE_TOOL_BLOCKED_BINDINGS or (spec and spec.is_local):
         return False
     if supports_tools(binding, model):
         return True
-    return bool(spec and spec.backend == "openai_compat")
+    return bool(spec and backend == "openai_compat")
