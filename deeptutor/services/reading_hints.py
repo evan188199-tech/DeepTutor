@@ -15,6 +15,9 @@ import re
 import time
 from typing import Any
 
+from deeptutor.services.prompt.language import is_chinese as _is_zh
+from deeptutor.services.singleflight_cache import AsyncSingleFlightTTLCache
+
 logger = logging.getLogger(__name__)
 
 _MAX_HINT_CHARS = {"zh": 44, "en": 110}
@@ -44,8 +47,13 @@ class AskHint:
         }
 
 
-_cache: dict[str, AskHint] = {}
-_inflight: dict[str, asyncio.Task[AskHint]] = {}
+_hint_cache = AsyncSingleFlightTTLCache[str, AskHint](
+    limit=_CACHE_LIMIT,
+    ttl_seconds=_CACHE_TTL_SECONDS,
+    value_timestamp=lambda value: value.generated_at,
+)
+_cache = _hint_cache.values
+_inflight = _hint_cache.inflight
 
 
 def _locator_bucket(locator: int | None) -> str:
@@ -64,23 +72,6 @@ def _cache_key(
 ) -> str:
     """Key a hint to the learner's current reading and conversation position."""
     return f"{workspace_id}\0{material_id}\0{_locator_bucket(locator)}\0{transcript_length}"
-
-
-def _remember(key: str, value: AskHint) -> None:
-    _cache[key] = value
-    if len(_cache) > _CACHE_LIMIT:
-        for stale in list(_cache)[: len(_cache) - _CACHE_LIMIT]:
-            _cache.pop(stale, None)
-
-
-def _recall(key: str) -> AskHint | None:
-    value = _cache.get(key)
-    if value is None:
-        return None
-    if time.time() - value.generated_at > _CACHE_TTL_SECONDS:
-        _cache.pop(key, None)
-        return None
-    return value
 
 
 # -- Material -----------------------------------------------------------------
@@ -239,10 +230,6 @@ _SYSTEM_ZH = """你要写出学习者在阅读时此刻会问导师的**一个�
 差：“你可以试着问这两个定义为什么不同？”
 差：“这两个定义不同，因为前者范围更大。”
 差：“这两个定义为什么不同？”（不是第一人称）"""
-
-
-def _is_zh(language: str) -> bool:
-    return str(language or "en").lower().startswith("zh")
 
 
 def _render(material: _Material, zh: bool) -> str:
@@ -499,27 +486,17 @@ async def get_ask_hint(
         material.locator,
         material.transcript_length,
     )
-    cached = _recall(key)
-    if cached is not None:
-        return cached.to_dict()
-
-    pending = _inflight.get(key)
-    if pending is None or pending.done():
-        pending = asyncio.ensure_future(_generate(material))
-        _inflight[key] = pending
     try:
-        value = await pending
+        value = await _hint_cache.get_or_create(
+            key,
+            lambda: _generate(material),
+            cache_when=lambda item: bool(item.hint),
+        )
     except Exception:
         logger.debug("reading ask-hint generation failed", exc_info=True)
         return AskHint(
             hint="", material_id=material.material_id, generated_at=time.time()
         ).to_dict()
-    finally:
-        if _inflight.get(key) is pending:
-            _inflight.pop(key, None)
-
-    if value.hint:
-        _remember(key, value)
     return value.to_dict()
 
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -13,8 +14,6 @@ import {
 import { useAppShell } from "@/context/AppShellContext";
 import { BookText, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { BrandGlyph } from "@/components/common/BrandIcon";
-import OrganizedSessionList from "@/components/courses/OrganizedSessionList";
 import SessionList from "@/components/SessionList";
 import { useSidebarDrawer } from "@/components/layout/AppShell";
 import { useDevice } from "@/hooks/useDevice";
@@ -25,7 +24,6 @@ import type {
 } from "@/lib/session-api";
 import type { MasteryTopicLabel } from "@/lib/learning-api";
 import type { ReadingCollectionLabel } from "@/lib/reading-workspace-api";
-import { masteryPathIdOf, readingWorkspaceIdOf } from "@/lib/mastery-session";
 import type { StudyCourse } from "@/lib/courses-api";
 import { SidebarNav } from "@/components/sidebar/SidebarNav";
 import { SECONDARY_NAV, isNavActive } from "@/components/sidebar/nav-entries";
@@ -38,9 +36,70 @@ import {
 const GITHUB_REPO_URL = "https://github.com/HKUDS/DeepTutor";
 const DOCS_URL = "https://deeptutor.info/";
 
+// The GitHub octocat mark (CC0 path from `simple-icons`, identical to the
+// `github` entry in `lib/brand-icons.generated.ts`). Kept inline instead of
+// going through <BrandGlyph/> so the whole generated brand-icon table — every
+// store logo, ~95KB — does not ride along in the app-shell chunk that every
+// route shares, for the sake of one footer link. Store surfaces that actually
+// render brand rows still import the table through BrandIcon directly.
+const GITHUB_MARK_PATH =
+  "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12";
+
+function GitHubMarkLink({
+  className = "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--muted-foreground)]/55 transition-colors hover:bg-[var(--background)]/50 hover:text-[var(--muted-foreground)]",
+  size = 15,
+}: {
+  className?: string;
+  size?: number;
+}) {
+  return (
+    <a
+      href={GITHUB_REPO_URL}
+      target="_blank"
+      rel="noreferrer noopener"
+      title="GitHub"
+      aria-label="GitHub"
+      className={className}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width={size}
+        height={size}
+        fill="currentColor"
+        role="presentation"
+        aria-hidden
+        className="text-[#181717] dark:text-white"
+      >
+        <path d={GITHUB_MARK_PATH} />
+      </svg>
+    </a>
+  );
+}
+
+// Session data arrives after mount; defer its organization UI with it so
+// every workspace route does not download it as part of the initial shell.
+const OrganizedSessionList = dynamic(
+  () => import("@/components/courses/OrganizedSessionList"),
+  {
+    ssr: false,
+    loading: () => (
+      <div aria-busy="true" className="space-y-1.5 px-2 py-1">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-4 w-3/4 animate-pulse rounded bg-[var(--muted)]/40"
+          />
+        ))}
+      </div>
+    ),
+  },
+);
+
 interface SidebarShellProps {
   sessions?: SessionSummary[];
   activeSessionId?: string | null;
+  /** Conversations the caller is streaming right now; they sort to the top. */
+  liveSessionIds?: ReadonlySet<string>;
   loadingSessions?: boolean;
   showSessions?: boolean;
   /** Clicking the Chat nav item resets to a fresh session via this handler. */
@@ -68,6 +127,7 @@ interface SidebarShellProps {
 export function SidebarShell({
   sessions = [],
   activeSessionId = null,
+  liveSessionIds,
   loadingSessions = false,
   showSessions = false,
   onNewChat,
@@ -101,8 +161,10 @@ export function SidebarShell({
 
   const renderedFooter =
     typeof footerSlot === "function" ? footerSlot(collapsed) : footerSlot;
-  // The order the learner dragged the chat history into. Like the collapse
-  // preference above it is a per-machine view state, hydrated after mount.
+  // The order the learner dragged the history region into — conversation ids
+  // and group ids in one list, since the two are peers there. Like the
+  // collapse preference above it is per-machine view state, hydrated after
+  // mount.
   const [sessionOrder, setSessionOrder] = useState<string[]>([]);
   const sessionOrderRef = useRef<string[]>([]);
 
@@ -113,8 +175,8 @@ export function SidebarShell({
     setSessionOrder(stored);
   }, []);
 
-  // A drag only ever speaks for the rows on screen, so it is merged into the
-  // stored order rather than replacing it.
+  // A drag only ever speaks for the entries on screen, so it is merged into
+  // the stored order rather than replacing it.
   const handleReorderSessions = useCallback((nextIds: string[]) => {
     const merged = mergeManualOrder(sessionOrderRef.current, nextIds);
     sessionOrderRef.current = merged;
@@ -140,27 +202,18 @@ export function SidebarShell({
     router.push("/chat");
   };
 
-  // The Chat group shows the last 8 home conversations. Grouped ones are
-  // exempt from that cut: a topic heading that says "4" while listing two of
-  // them is worse than a slightly longer list, and the groups collapse anyway.
+  // Everything the learner has, minus the archived and minus the tutor threads
+  // that render nested under the conversation that spawned them.
+  //
+  // No recents window any more. The region used to cut the home conversations
+  // at eight, which was survivable only because the "Chat" heading above them
+  // printed the real count; with the conversations listed directly there is
+  // nothing on screen to say that older ones exist, and a sidebar that quietly
+  // drops your conversation from yesterday is worse than one you scroll.
   const visibleSessions = sessions.filter(
     (session) =>
       !session.preferences?.archived && !session.preferences?.parent_session_id,
   );
-  // Which conversations make the window is recency's call; the hand-arranged
-  // order (applied inside the list) decides how the ones that made it are
-  // stacked. Ordering before the cut instead would let an old arrangement keep
-  // newer chats out of the sidebar entirely.
-  // Grouped conversations are exempt from the cut — a heading that says "4"
-  // while listing two of them is worse than a slightly longer list, and the
-  // groups collapse anyway. Reading conversations group the same way study
-  // ones do, so they are exempt on the same terms.
-  const isGrouped = (session: SessionSummary) =>
-    Boolean(masteryPathIdOf(session)) || Boolean(readingWorkspaceIdOf(session));
-  const recentSessions = [
-    ...visibleSessions.filter((session) => !isGrouped(session)).slice(0, 8),
-    ...visibleSessions.filter(isGrouped),
-  ];
 
   /* ---- Collapsed state ---- */
   if (collapsed) {
@@ -234,21 +287,7 @@ export function SidebarShell({
               className="text-blue-600 dark:text-blue-400"
             />
           </a>
-          <a
-            href={GITHUB_REPO_URL}
-            target="_blank"
-            rel="noreferrer noopener"
-            title="GitHub"
-            aria-label="GitHub"
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--muted-foreground)]/70 transition-colors hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]"
-          >
-            <BrandGlyph
-              namespace="mcp"
-              id="github"
-              size={15}
-              className="text-[#181717] dark:text-white"
-            />
-          </a>
+          <GitHubMarkLink className="flex h-9 w-9 items-center justify-center rounded-xl text-[var(--muted-foreground)]/70 transition-colors hover:bg-[var(--background)]/50 hover:text-[var(--foreground)]" />
           <VersionBadge collapsed />
         </div>
       </aside>
@@ -314,7 +353,7 @@ export function SidebarShell({
               />
             ) : onOrganizeSession ? (
               <OrganizedSessionList
-                sessions={recentSessions}
+                sessions={visibleSessions}
                 // Course grouping temporarily hidden pending further product
                 // work; passing [] keeps the list flat without touching the
                 // course data callers still fetch.
@@ -322,6 +361,7 @@ export function SidebarShell({
                 masteryTopics={masteryTopics}
                 readingCollections={readingCollections}
                 activeSessionId={activeSessionId}
+                liveSessionIds={liveSessionIds}
                 manualOrder={sessionOrder}
                 onReorder={handleReorderSessions}
                 onResetOrder={handleResetSessionOrder}
@@ -336,7 +376,7 @@ export function SidebarShell({
               />
             ) : (
               <SessionList
-                sessions={recentSessions}
+                sessions={visibleSessions}
                 activeSessionId={activeSessionId}
                 onSelect={(sessionId) => {
                   drawer?.close();
@@ -394,21 +434,7 @@ export function SidebarShell({
               className="text-blue-600 dark:text-blue-400"
             />
           </a>
-          <a
-            href={GITHUB_REPO_URL}
-            target="_blank"
-            rel="noreferrer noopener"
-            title="GitHub"
-            aria-label="GitHub"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--muted-foreground)]/55 transition-colors hover:bg-[var(--background)]/50 hover:text-[var(--muted-foreground)]"
-          >
-            <BrandGlyph
-              namespace="mcp"
-              id="github"
-              size={15}
-              className="text-[#181717] dark:text-white"
-            />
-          </a>
+          <GitHubMarkLink />
         </div>
       </div>
     </aside>

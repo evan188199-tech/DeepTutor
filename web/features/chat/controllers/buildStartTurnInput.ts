@@ -67,7 +67,7 @@ export function buildStartTurnInput(input: StartTurnInput): StartTurnCommand {
 
   return buildStartTurn({
     content: input.content,
-    capability: input.capability ?? "chat",
+    capability: input.capability === undefined ? "chat" : input.capability,
     session_id: input.sessionId ?? null,
     tools: input.tools ?? null,
     knowledge_bases: input.knowledgeBases ?? [],
@@ -86,14 +86,19 @@ export function buildStartTurnInput(input: StartTurnInput): StartTurnCommand {
     llm_selection: input.llmSelection ?? null,
     workspace_mode: input.workspaceMode ?? null,
     mastery_path_id: input.masteryPathId ?? null,
+    mastery_session_mode: input.masterySessionMode ?? null,
     mastery_path_lease_managed: input.masteryPathLeaseManaged ?? false,
+    mastery_answer: input.masteryAnswer ?? null,
+    mastery_skip: input.masterySkip ?? null,
     reading_material_id: input.readingMaterialId ?? null,
     reading_material_revision: input.readingMaterialRevision ?? null,
     reading_workspace_id: input.readingWorkspaceId ?? null,
     reading_viewport: input.readingViewport ?? null,
     timed_media_id: input.timedMediaId ?? null,
     timed_media_viewport: input.timedMediaViewport ?? null,
-    parent_message_id: input.parentMessageId ?? null,
+    ...(input.parentMessageId !== undefined
+      ? { parent_message_id: input.parentMessageId }
+      : {}),
     course_id: input.courseId ?? null,
     persist_user_message: input.persistUserMessage ?? true,
     regenerate: input.regenerate ?? false,

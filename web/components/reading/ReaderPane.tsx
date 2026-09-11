@@ -6,6 +6,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Bookmark,
+  BookmarkCheck,
   Crosshair,
   Download,
   FileText,
@@ -26,9 +28,12 @@ import { citationTargetFromHref } from "@/lib/reading-citations";
 import {
   fetchExport,
   getMaterial,
+  getReadingPosition,
+  saveReadingPosition,
   type AnnotationColor,
   type AnnotationItem,
   type MaterialDetail,
+  type ReadingBookmark,
 } from "@/lib/reading-api";
 import { AnnotationList } from "./AnnotationList";
 import { AnnotationPopover } from "./AnnotationPopover";
@@ -93,6 +98,13 @@ export interface ReaderPaneProps {
     locator?: number;
     sourceHref?: string;
   } | null;
+  /**
+   * Kept places in this material. Owned by the workspace because the outline
+   * panel lists them and this toolbar only needs to answer "is the page I am
+   * on one of them?" — see `useReadingWorkspace`.
+   */
+  bookmarks?: ReadingBookmark[];
+  onToggleBookmark?: (locator: number, label?: string) => void;
 }
 
 /**
@@ -121,6 +133,8 @@ export function ReaderPane({
   onHeadingsChange,
   onActiveHeadingChange,
   headingJump = null,
+  bookmarks = [],
+  onToggleBookmark,
 }: ReaderPaneProps) {
   const { t } = useTranslation();
   // Document + annotations live in the provider (workspace layout), so they
@@ -144,6 +158,28 @@ export function ReaderPane({
     null,
   );
   const [selection, setSelection] = useState<SelectionPayload | null>(null);
+  // Whether the annotation popover is showing, kept apart from whether there
+  // IS a selection. They used to be the same flag, and the popover dismisses
+  // itself on a document-level, capture-phase `pointerdown` — so pressing a
+  // toolbar button cleared `selection` before the click could land, React
+  // re-rendered the button as `disabled` (all four selection-gated actions
+  // declare `requires: ["selection"]`), and the browser then refused to
+  // dispatch the rest of the activation sequence to a disabled control. No
+  // fetch, no spinner, no error: 引导我 / 翻译成英文 / 翻译成中文 / 解释词汇
+  // have been unreachable by pointer since the toolbar shipped.
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  /** One place to open a selection, so the popover cannot drift out of step. */
+  const openSelection = useCallback((payload: SelectionPayload | null) => {
+    setSelection(payload);
+    setPopoverOpen(payload !== null);
+  }, []);
+
+  /** Drop the selection entirely — it is stale, not merely unfocused. */
+  const clearSelection = useCallback(() => {
+    setSelection(null);
+    setPopoverOpen(false);
+  }, []);
   const [jump, setJump] = useState<JumpRequest | null>(null);
   // `null` = follow the document: show the panel once there is something in it.
   // An empty panel is a whole column of nothing next to the page, which reads as
@@ -175,6 +211,9 @@ export function ReaderPane({
     sessionId: string | null;
   } | null>(null);
   const externalJumpNonceRef = useRef(0);
+  const positionSaveTimerRef = useRef<number | null>(null);
+  /** Materials whose stored position has already been honoured. */
+  const resumedMaterialRef = useRef("");
   const headingJumpNonceRef = useRef(0);
   const historyReady = historySessionId === (sessionId ?? null);
 
@@ -207,6 +246,27 @@ export function ReaderPane({
     (locator: number) => {
       setCurrentLocator(locator);
       reportViewport({ locator });
+      // Remember where the reader got to, so opening this material again
+      // starts here instead of at page 1. EPUB writes its own position — a
+      // CFI it needs to land inside a reflowed page — so leaving that alone
+      // is the difference between resuming a paragraph and resuming a
+      // chapter; the media stage does the same with a timestamp.
+      if (material && material.render_mode !== "epub") {
+        const materialId = material.material_id;
+        const total = material.unit_count;
+        if (positionSaveTimerRef.current) {
+          clearTimeout(positionSaveTimerRef.current);
+        }
+        positionSaveTimerRef.current = window.setTimeout(() => {
+          void saveReadingPosition(materialId, {
+            locator,
+            source_anchor: "",
+            percentage: total > 0 ? locator / total : 0,
+          }).catch(() => {
+            // Reading continues when a background progress write fails.
+          });
+        }, 400);
+      }
       if (material && historyReady) {
         const pending = pendingNavigationRef.current;
         if (
@@ -369,6 +429,48 @@ export function ReaderPane({
       pushReadingLocation(current, locationEntry(material, 1)),
     );
   }, [historyReady, material]);
+
+  // -- resume where the reader left off ------------------------------------
+  //
+  // The effect above lands every newly-opened material on page 1. For a
+  // 74-page document that a learner is halfway through, page 1 is the one
+  // place they are certainly not trying to be — so the stored position, if
+  // there is one, decides instead. Only once per material: after that the
+  // reader is in charge, and re-running this would drag them back.
+  //
+  // EPUB and the media stage resume themselves (a CFI, a timestamp), and a
+  // navigation already in flight — a citation, a history entry — is a
+  // destination the learner asked for and outranks where they last stopped.
+  useEffect(() => {
+    const materialId = material?.material_id;
+    if (!materialId || material?.render_mode === "epub") return;
+    if (resumedMaterialRef.current === materialId) return;
+    if (pendingNavigationRef.current) return;
+    // Claimed before awaiting: this render is not the last one before the
+    // request comes back.
+    resumedMaterialRef.current = materialId;
+    let cancelled = false;
+    void getReadingPosition(materialId)
+      .then((position) => {
+        if (cancelled || position.locator <= 1) return;
+        requestJump(position.locator);
+      })
+      .catch(() => {
+        // Never opened before, or the read failed: page 1 is a fine start.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [material?.material_id, material?.render_mode, requestJump]);
+
+  useEffect(
+    () => () => {
+      if (positionSaveTimerRef.current) {
+        clearTimeout(positionSaveTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const navigateCitation = useCallback(
     async (href: string | null | undefined) => {
@@ -565,10 +667,10 @@ export function ReaderPane({
           updated_at: now,
         },
       );
-      setSelection(null);
+      clearSelection();
       window.getSelection()?.removeAllRanges();
     },
-    [selection, material, saveMark],
+    [selection, material, saveMark, clearSelection],
   );
 
   const askAboutSelection = useCallback(() => {
@@ -582,9 +684,9 @@ export function ReaderPane({
         },
       }),
     );
-    setSelection(null);
+    clearSelection();
     window.getSelection()?.removeAllRanges();
-  }, [selection, material]);
+  }, [selection, material, clearSelection]);
 
   // -- export --------------------------------------------------------------
 
@@ -615,6 +717,9 @@ export function ReaderPane({
 
   const showAnnotations = annotationPanel ?? annotations.length > 0;
   const unitWord = material ? t(unitLabel(material.unit)) : "";
+  const bookmarkedHere = bookmarks.some(
+    (row) => row.locator === currentLocator,
+  );
   const materialJump =
     material && jumpMaterialIdRef.current === material.material_id
       ? jump
@@ -627,11 +732,17 @@ export function ReaderPane({
           size={14}
           className="shrink-0 text-[var(--muted-foreground)]"
         />
+        {/* The title, not the filename. A material saved from the web is
+            stored under its content hash, so this line read
+            "65228f9f372d6e9b.md" for every page the learner opened — the one
+            place in the reader that names what they are reading, spelling it
+            as a checksum. The filename is worth keeping for uploads, where it
+            is what the learner recognises, so it stays as the tooltip. */}
         <span
           className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-[var(--foreground)]"
-          title={material?.filename}
+          title={material?.filename || material?.title}
         >
-          {material?.filename ?? t("Immersive reading")}
+          {material?.title || material?.filename || t("Immersive reading")}
         </span>
 
         {locationHistory.entries.length > 0 && (
@@ -662,9 +773,32 @@ export function ReaderPane({
 
         {material && (
           <>
-            <span className="shrink-0 font-mono text-[10.5px] tabular-nums text-[var(--muted-foreground)]">
-              {unitWord} {currentLocator}/{material.unit_count}
+            {/* The one place the reader's position is stated. Monospace is for
+                code, not for a line of UI copy; tabular figures alone stop the
+                number from jittering as the learner scrolls. */}
+            <span className="shrink-0 whitespace-nowrap text-[10.5px] tabular-nums text-[var(--muted-foreground)]">
+              {t("{{unit}} {{n}} / {{total}}", {
+                unit: unitWord,
+                n: currentLocator,
+                total: material.unit_count,
+              })}
             </span>
+            {onToggleBookmark && (
+              <HeaderButton
+                icon={bookmarkedHere ? BookmarkCheck : Bookmark}
+                label={
+                  bookmarkedHere
+                    ? t("Remove the bookmark on this {{unit}}", {
+                        unit: unitWord.toLocaleLowerCase(),
+                      })
+                    : t("Bookmark this {{unit}}", {
+                        unit: unitWord.toLocaleLowerCase(),
+                      })
+                }
+                active={bookmarkedHere}
+                onClick={() => onToggleBookmark(currentLocator)}
+              />
+            )}
             <HeaderButton
               icon={Crosshair}
               label={
@@ -714,7 +848,7 @@ export function ReaderPane({
                   onClick={() => selectHistoryEntry(index)}
                   className={`flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left transition hover:bg-[var(--muted)] ${
                     index === locationHistory.index
-                      ? "bg-[var(--primary)]/10 text-[var(--primary)]"
+                      ? "bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-[var(--primary)]"
                       : "text-[var(--foreground)]"
                   }`}
                 >
@@ -737,7 +871,7 @@ export function ReaderPane({
       {notice && (
         <div
           role="alert"
-          className="flex items-start gap-2 border-b border-[var(--destructive)]/25 bg-[var(--destructive)]/[0.06] px-3 py-2"
+          className="flex items-start gap-2 border-b border-[color-mix(in_srgb,var(--destructive)_25%,transparent)] bg-[var(--destructive)]/[0.06] px-3 py-2"
         >
           <p className="flex-1 text-[11.5px] leading-relaxed text-[var(--destructive)]">
             {notice}
@@ -745,7 +879,7 @@ export function ReaderPane({
           <button
             type="button"
             onClick={dismissError}
-            className="text-[var(--destructive)]/70 transition hover:text-[var(--destructive)]"
+            className="text-[color-mix(in_srgb,var(--destructive)_70%,transparent)] transition hover:text-[var(--destructive)]"
             aria-label={t("Dismiss")}
           >
             <X size={12} />
@@ -757,6 +891,7 @@ export function ReaderPane({
         <ReadingExtensionBar
           materialId={material.material_id}
           locator={currentLocator}
+          selectionLocator={selection?.locator}
           selection={selection?.quote}
           onError={setError}
         />
@@ -791,7 +926,7 @@ export function ReaderPane({
               annotations={annotations}
               jump={materialJump}
               highlightedAnnotationId={activeAnnotationId}
-              onSelection={setSelection}
+              onSelection={openSelection}
               onAnnotationClick={(annotation) =>
                 setActiveAnnotationId(annotation.annotation_id)
               }
@@ -808,7 +943,7 @@ export function ReaderPane({
               annotations={annotations}
               jump={materialJump}
               highlightedAnnotationId={activeAnnotationId}
-              onSelection={setSelection}
+              onSelection={openSelection}
               onAnnotationClick={(annotation) =>
                 setActiveAnnotationId(annotation.annotation_id)
               }
@@ -824,7 +959,7 @@ export function ReaderPane({
               annotations={annotations}
               jump={materialJump}
               highlightedAnnotationId={activeAnnotationId}
-              onSelection={setSelection}
+              onSelection={openSelection}
               onAnnotationClick={(annotation) =>
                 setActiveAnnotationId(annotation.annotation_id)
               }
@@ -852,7 +987,10 @@ export function ReaderPane({
         )}
       </div>
 
-      {selection && material && (
+      {/* `popoverOpen` and not just `selection`: dismissal now leaves the
+          selection in place for the toolbar, so gating the mount on the
+          selection alone would make Escape and outside-click stop working. */}
+      {popoverOpen && selection && material && (
         <AnnotationPopover
           anchor={selection.anchor}
           quote={selection.quote}
@@ -861,7 +999,9 @@ export function ReaderPane({
           onNote={(note, color) => commitSelection("note", color, note)}
           onCitation={(color) => commitSelection("citation", color)}
           onAsk={askAboutSelection}
-          onDismiss={() => setSelection(null)}
+          // Closes the popover WITHOUT dropping the selection, so the
+          // toolbar's selection-gated actions stay reachable.
+          onDismiss={() => setPopoverOpen(false)}
         />
       )}
     </div>
@@ -897,7 +1037,7 @@ function HeaderButton({
         className || "inline-flex"
       } ${
         active
-          ? "bg-[var(--primary)]/12 text-[var(--primary)]"
+          ? "bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] text-[var(--primary)]"
           : "text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--foreground)] disabled:opacity-35 disabled:hover:bg-transparent"
       }`}
     >

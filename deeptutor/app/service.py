@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator
+import contextlib
 import time
 from typing import Any
 
@@ -57,6 +58,37 @@ class TurnApplicationService:
         _store, runtime = self._resolve()
         return await runtime.regenerate_last_turn(session_id, overrides=overrides)
 
+    # How long to keep reading after DONE before closing the stream.
+    #
+    # DONE is not a turn's last event. The runtime deliberately publishes
+    # post-turn metadata after it — notably the LLM-written session title,
+    # which ``SessionTitleService`` emits once the answer is saved so the
+    # composer and the duration clock stop immediately rather than waiting on
+    # the title model. Both loops below used to ``return`` the instant they
+    # saw DONE, so every post-DONE event was dropped: the title landed in
+    # ``turn_events`` and in the database while no subscriber ever received
+    # it, which is why a finished conversation could sit on "New conversation"
+    # indefinitely. The frontend even holds its socket open for 15s waiting
+    # for that frame; it never had a chance to arrive.
+    #
+    # End of stream is the turn's lease disappearing, not a timeout.
+    #
+    # The turn task releases its lease in its own ``finally``, which runs after
+    # every post-turn event has been published. So "lease gone" is an honest
+    # end-of-stream signal and needs no guessing about how long a title model
+    # might take — an idle timeout would have to exceed that model's own 20s
+    # ceiling to be safe, and would then hold every finished stream open for
+    # 20s whenever no title was written at all.
+    #
+    # The cap below exists only for a leaked lease; it is not the normal path.
+    _POST_DONE_MAX_SECONDS = 30.0
+
+    @staticmethod
+    def _done_has_tail(event: dict[str, Any]) -> bool:
+        """Can more events follow this DONE?"""
+        status = str((event.get("metadata") or {}).get("status") or "completed")
+        return status == "completed"
+
     async def subscribe_turn(
         self,
         turn_id: str,
@@ -65,6 +97,7 @@ class TurnApplicationService:
         store, _runtime = self._resolve()
         last_seq = max(0, int(after_seq))
         done = False
+        tail_possible = False
 
         # Durable replay covers a process/Redis restart. Shared-stream replay
         # then fills the live tail owned by any worker.
@@ -73,11 +106,21 @@ class TurnApplicationService:
             if seq <= last_seq:
                 continue
             last_seq = seq
-            done = done or str(event.get("type") or "") == "done"
+            if str(event.get("type") or "") == "done":
+                done = True
+                tail_possible = self._done_has_tail(event)
             yield event
         if done:
-            return
+            # The turn had already finished before this subscription opened, so
+            # the durable replay above carried its post-DONE events too. Only
+            # bail out once the terminal row confirms that; a turn still marked
+            # running with a DONE in its journal is mid-teardown and its title
+            # may not be written yet.
+            turn = await store.get_turn(turn_id)
+            if not tail_possible or turn is None or str(turn.get("status") or "") != "running":
+                return
 
+        first_done_at: float | None = time.monotonic() if done else None
         while True:
             emitted = False
             for event in await self.coordinator.read_events(turn_id, last_seq):
@@ -86,10 +129,27 @@ class TurnApplicationService:
                     continue
                 emitted = True
                 last_seq = seq
-                done = done or str(event.get("type") or "") == "done"
+                if str(event.get("type") or "") == "done":
+                    done = True
+                    tail_possible = self._done_has_tail(event)
+                    if first_done_at is None:
+                        first_done_at = time.monotonic()
                 yield event
-            if done:
+            if done and not tail_possible:
                 return
+            if done:
+                now = time.monotonic()
+                if first_done_at is None:
+                    first_done_at = now
+                # The turn task publishes its post-turn events before releasing
+                # the lease, so once the lease is gone the tail is complete.
+                if await self.coordinator.get_lease(turn_id) is None:
+                    return
+                if now - first_done_at >= self._POST_DONE_MAX_SECONDS:
+                    return
+                if not emitted:
+                    await asyncio.sleep(0.1)
+                continue
             turn = await store.get_turn(turn_id)
             if turn is None:
                 return
@@ -154,7 +214,12 @@ class TurnApplicationService:
         }:
             return False
         if await self.coordinator.get_lease(turn_id) is None:
-            return False
+            # Nobody owns it, so a queued cancel would never be read. Stopping
+            # a turn nothing is executing is what the learner asked for, and
+            # the row is what blocks the session — reap it here for the same
+            # reason ``submit_user_reply`` does, and report the stop as done
+            # rather than as a refusal the UI cannot act on.
+            return await self._reap_unowned_live_turn(turn_id)
         await self.coordinator.submit_command(turn_id, "cancel", {}, command_id=command_id)
         # A duplicate command ID means the mutation was already accepted. The
         # WebSocket adapter must acknowledge that retry as success so a client
@@ -170,6 +235,14 @@ class TurnApplicationService:
         command_id: str | None = None,
     ) -> bool:
         if await self.coordinator.get_lease(turn_id) is None:
+            # Nobody owns the turn: a queued command would never be read. If
+            # the durable row still says ``waiting_input`` it is a zombie —
+            # the worker that owned the waiter is gone, and without this the
+            # session is blocked forever while the card sits on screen
+            # (#1297). Reap it synchronously (the background recovery pass
+            # would only sweep it on its next tick) so the client's ack
+            # rejection comes with a terminal state to recover from.
+            await self._reap_unowned_live_turn(turn_id)
             return False
         await self.coordinator.submit_command(
             turn_id,
@@ -177,6 +250,77 @@ class TurnApplicationService:
             {"text": text or "", "answers": answers},
             command_id=command_id,
         )
+        return True
+
+    async def _reap_unowned_live_turn(self, turn_id: str) -> bool:
+        """Fail a persisted live turn that has no live lease.
+
+        ``queued``, ``running`` and ``waiting_input`` are all rows
+        ``_begin_turn_sync`` counts as active, so any of them left behind by a
+        lost worker blocks the whole session, not just the card on screen.
+
+        Mirrors :class:`TurnRecoveryService`'s terminal write (CAS on status
+        with the fencing token, ``worker_lost`` failure code, error+done
+        events) so whatever raced us wins cleanly and subscribed clients
+        stop deterministically. Returns ``True`` when a zombie was reaped.
+        """
+        store, _runtime = self._resolve()
+        try:
+            turn = await store.get_turn(turn_id)
+        except Exception:
+            return False
+        if turn is None or str(turn.get("status") or "") not in {
+            "queued",
+            "running",
+            "waiting_input",
+        }:
+            return False
+        error = "The worker executing this turn was lost; resend your answer as a new message"
+        metadata = {
+            "turn_terminal": True,
+            "status": "failed",
+            "error_code": "worker_lost",
+            "retryable": True,
+        }
+        reap_event: dict[str, Any] = {
+            "type": "error",
+            "source": "turn_recovery",
+            "stage": "recovery",
+            "content": error,
+            "metadata": metadata,
+            "session_id": turn.get("session_id", ""),
+        }
+        done_event: dict[str, Any] = {
+            "type": "done",
+            "source": "turn_recovery",
+            "stage": "recovery",
+            "content": "",
+            "metadata": {"status": "failed", "error_code": "worker_lost", "retryable": True},
+            "session_id": turn.get("session_id", ""),
+        }
+        try:
+            transitioned = await store.transition_turn(
+                turn_id,
+                "failed",
+                expected_status=str(turn["status"]),
+                fencing_token=int(turn.get("fencing_token") or 0),
+                error=error,
+                failure_code="worker_lost",
+                retryable=True,
+            )
+            if not transitioned:
+                # A recovery pass or a late executor write beat us to it.
+                return False
+            await store.append_events(
+                turn_id,
+                [reap_event, done_event],
+                fencing_token=int(turn.get("fencing_token") or 0),
+            )
+        except Exception:
+            return False
+        for event in (reap_event, done_event):
+            with contextlib.suppress(Exception):
+                await self.coordinator.publish_event(turn_id, event)
         return True
 
     async def submit_user_input(

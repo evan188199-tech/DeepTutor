@@ -22,7 +22,6 @@ import type { SelectedRecord } from "@/lib/notebook-selection-types";
 import type { SelectedHistorySession } from "@/components/chat/HistorySessionPicker";
 import type { SelectedQuestionEntry } from "@/components/chat/QuestionBankPicker";
 import ChatComposer from "@/components/chat/home/ChatComposer";
-import type { ContextBudget } from "@/components/chat/home/ContextBudgetChip";
 import { ChatMessageList } from "@/features/chat/messages";
 import { TurnNavigator } from "@/components/chat/home/TurnNavigator";
 import SessionLoadingView from "@/components/chat/home/SessionLoadingView";
@@ -66,11 +65,22 @@ import {
   extractBase64FromDataUrl,
   readFileAsDataUrl,
 } from "@/lib/file-attachments";
-import { classifyFile, isSvgFilename } from "@/lib/doc-attachments";
+import {
+  fileToPendingAttachment,
+  selectAttachmentFiles,
+  type PendingAttachment,
+} from "@/features/chat/controllers/pending-attachments";
 import { readChatLaunchIntent } from "@/lib/chat-launch-intent";
 import { useAttachmentLimits } from "@/lib/attachment-limits";
-import { hasPendingAskUser } from "@/lib/ask-user-state";
+import {
+  hasPendingAskUser,
+  hasPendingUserCard,
+  REPLY_SENT_AS_NEW_MESSAGE,
+} from "@/lib/ask-user-state";
+import { notify } from "@/lib/notifications";
+import { copyText } from "@/lib/clipboard";
 import { useChatAutoScroll } from "@/hooks/useChatAutoScroll";
+import { useContextBudget } from "@/hooks/useContextBudget";
 import { useMeasuredHeight } from "@/hooks/useMeasuredHeight";
 import { useSetupSync } from "@/hooks/useSetupSync";
 import { listCourses, type StudyCourse } from "@/lib/courses-api";
@@ -111,7 +121,8 @@ import {
 import { useCapabilityCatalog } from "@/features/capabilities/useCapabilityCatalog";
 import { browserStorage } from "@/shared/storage";
 import { downloadChatMarkdown } from "@/lib/chat-export";
-import { buildChatOutline } from "@/lib/chat-outline";
+import { buildChatOutline, scrollToChatTurn } from "@/lib/chat-outline";
+import { buildConversationNotebookSave } from "@/lib/conversation-notebook-save";
 import { isPlaceholderSessionTitle } from "@/lib/session-title";
 import type { SpaceMemoryFile } from "@/lib/space-items";
 import {
@@ -219,46 +230,10 @@ interface KnowledgeBase {
   };
 }
 
-interface PendingAttachment {
-  type: string;
-  filename: string;
-  base64?: string;
-  previewUrl?: string;
-  size?: number;
-  mimeType?: string;
-}
-
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
 
-/**
- * Read the context-window measurement a finished turn attached to its
- * `result` event. Scanned newest-first because one turn can emit several
- * results (a consulted subagent emits its own) and only the chat loop's
- * closing one carries the budget; older backends emit none at all, and the
- * measurement is allowed to degrade to "absent" rather than fail a turn.
- */
-function readContextBudget(
-  events: StreamEvent[] | undefined,
-): ContextBudget | null {
-  if (!events) return null;
-  for (let i = events.length - 1; i >= 0; i -= 1) {
-    const ev = events[i];
-    if (ev.type !== "result") continue;
-    const meta = ev.metadata?.metadata as Record<string, unknown> | undefined;
-    const budget = meta?.context_budget as ContextBudget | undefined;
-    if (
-      budget &&
-      typeof budget.window === "number" &&
-      typeof budget.used_tokens === "number" &&
-      Array.isArray(budget.segments)
-    ) {
-      return budget;
-    }
-  }
-  return null;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Chat page                                                         */
@@ -291,6 +266,8 @@ export default function ChatWorkspace() {
     newSession,
     loadSession,
     showCachedSession,
+    loadMessageTrace,
+    releaseMessageTrace,
     renameSessionTitle,
     setCourseId,
   } = useChatStateAdapter();
@@ -936,39 +913,23 @@ export default function ChatWorkspace() {
     () => [...selectedMemoryFiles],
     [selectedMemoryFiles],
   );
-  const chatSaveMessages = useMemo(
-    () =>
-      state.messages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-        capability: msg.capability,
-      })),
-    [state.messages],
-  );
-  const chatSavePayload = useMemo(() => {
-    if (!state.messages.length) return null;
-    const title =
-      state.messages
-        .find((msg) => msg.role === "user")
-        ?.content.trim()
-        .slice(0, 80) || "Chat Session";
-    return {
-      recordType: "chat" as const,
-      title,
-      // The actual transcript / userQuery are rebuilt inside SaveToNotebookModal
-      // from the user's selected subset of messages. We still provide a
-      // sensible fallback for non-selection callers.
-      userQuery: "",
-      output: "",
-      metadata: {
-        source: "chat",
-        capability: state.activeCapability || "chat",
-        ui_language: state.language,
-        session_id: state.sessionId,
-        total_message_count: state.messages.length,
-      },
-    };
-  }, [state.activeCapability, state.language, state.messages, state.sessionId]);
+  const { modalMessages: chatSaveMessages, payload: chatSavePayload } =
+    useMemo(
+      () =>
+        buildConversationNotebookSave(state.messages, {
+          source: "chat",
+          fallbackTitle: "Chat Session",
+          activeCapability: state.activeCapability,
+          language: state.language,
+          sessionId: state.sessionId,
+        }),
+      [
+        state.activeCapability,
+        state.language,
+        state.messages,
+        state.sessionId,
+      ],
+    );
   const lastMessage = state.messages[state.messages.length - 1];
   const {
     containerRef: messagesContainerRef,
@@ -998,31 +959,13 @@ export default function ChatWorkspace() {
   const jumpToTurn = useCallback(
     (key: string) => {
       const container = messagesContainerRef.current;
-      const target = container?.querySelector<HTMLElement>(
-        `[data-turn-key="${key}"]`,
-      );
-      if (!container || !target) return;
-      // Release the streaming pin first: without this, a jump made while
-      // a turn is generating would be snapped straight back to the bottom
-      // by ``useChatAutoScroll``'s next content-growth pin.
-      shouldAutoScrollRef.current = false;
-      const offset =
-        target.getBoundingClientRect().top -
-        container.getBoundingClientRect().top;
       // 56 px clears the scrollport's top fade so the bubble lands fully
       // opaque rather than half-dissolved under the mask.
-      container.scrollTo({
-        top: container.scrollTop + offset - 56,
-        behavior: "smooth",
-      });
-      const bubble =
-        target.querySelector<HTMLElement>("[data-turn-bubble]") ?? target;
-      bubble.classList.remove("turn-flash");
-      // Force a reflow so clicking the same tick twice replays the flash
-      // instead of silently re-adding a class that is already settled.
-      void bubble.offsetWidth;
-      bubble.classList.add("turn-flash");
-      window.setTimeout(() => bubble.classList.remove("turn-flash"), 1300);
+      if (scrollToChatTurn(container, key, { topOffset: 56, flash: true })) {
+        // Release the streaming pin: otherwise the next content delta snaps
+        // the reader straight back to the bottom they just left.
+        shouldAutoScrollRef.current = false;
+      }
     },
     [messagesContainerRef, shouldAutoScrollRef],
   );
@@ -1037,28 +980,32 @@ export default function ChatWorkspace() {
      precedes it normally scrolls up, which releases the streaming pin — so a
      quiz card would appear below the fold, under the composer, and the
      conversation looked stalled. Re-arm the pin and land on the card. */
+  /* Two questions, and a mastery card answers them differently. It must be on
+     screen — it is the learner's move — but it did not pause its turn, so
+     their next message is a new turn, not a reply into a finished one. Hence
+     the wider predicate for the pin and the pause-only one for routing. */
+  const awaitingUserCard = hasPendingUserCard(lastMessage?.events);
   const awaitingUserReply = hasPendingAskUser(lastMessage?.events);
   // Read inside ``handleSend`` without adding a dependency that would rebuild
   // the callback (and so the composer) on every streamed event.
   const awaitingUserReplyRef = useRef(awaitingUserReply);
   awaitingUserReplyRef.current = awaitingUserReply;
   useEffect(() => {
-    if (!awaitingUserReply) return;
+    if (!awaitingUserCard) return;
     shouldAutoScrollRef.current = true;
     // One frame later: the card has to be laid out before the bottom it
     // defines exists.
     const frame = requestAnimationFrame(() => scrollToBottom("instant"));
     return () => cancelAnimationFrame(frame);
-  }, [awaitingUserReply, scrollToBottom, shouldAutoScrollRef]);
+  }, [awaitingUserCard, scrollToBottom, shouldAutoScrollRef]);
 
-  const copyAssistantMessage = useCallback(async (content: string) => {
-    if (!content.trim()) return;
-    try {
-      await navigator.clipboard.writeText(content);
-    } catch (error) {
-      console.error("Failed to copy assistant message:", error);
-    }
-  }, []);
+  // Deliberately does not catch. `CopyActionButton` renders 已复制 off this
+  // promise resolving, so swallowing the failure here is what made the button
+  // announce a success that never happened — to screen readers included.
+  const copyAssistantMessage = useCallback(
+    (content: string) => copyText(content),
+    [],
+  );
   /* ---- URL-driven session loading ---- */
 
   const navigateToHome = useCallback(() => {
@@ -1441,30 +1388,7 @@ export default function ChatWorkspace() {
     [capabilities, setCapability, setTools, userEnabledTools],
   );
 
-  const fileToAttachment = useCallback(
-    (f: File): Promise<PendingAttachment> =>
-      new Promise((resolve, reject) => {
-        readFileAsDataUrl(f)
-          .then((raw) => {
-            // SVG: treat as file (text extraction on server, vision models
-            // reject SVG) but keep the data URL so the chip can render a
-            // thumbnail via a raw <img> tag.
-            const svg = isSvgFilename(f.name) || f.type === "image/svg+xml";
-            const isImage = !svg && f.type.startsWith("image/");
-            const b64 = extractBase64FromDataUrl(raw);
-            resolve({
-              type: isImage ? "image" : "file",
-              filename: f.name,
-              base64: b64,
-              previewUrl: isImage || svg ? raw : undefined,
-              size: f.size,
-              mimeType: f.type || undefined,
-            });
-          })
-          .catch(reject);
-      }),
-    [],
-  );
+  const fileToAttachment = fileToPendingAttachment;
 
   const showAttachmentError = useCallback((message: string) => {
     setAttachmentError(message);
@@ -1479,29 +1403,11 @@ export default function ChatWorkspace() {
 
   const filterAndReportFiles = useCallback(
     (files: File[]): File[] => {
-      let runningTotal = attachments.reduce((s, a) => s + (a.size ?? 0), 0);
-      const accepted: File[] = [];
-      const rejected: {
-        name: string;
-        reason: "unsupported" | "too_large" | "quota";
-      }[] = [];
-      for (const f of files) {
-        const kind = classifyFile(f);
-        if (!kind) {
-          rejected.push({ name: f.name, reason: "unsupported" });
-          continue;
-        }
-        if (f.size > attachmentLimits.maxFileBytes) {
-          rejected.push({ name: f.name, reason: "too_large" });
-          continue;
-        }
-        if (runningTotal + f.size > attachmentLimits.maxTotalBytes) {
-          rejected.push({ name: f.name, reason: "quota" });
-          break;
-        }
-        runningTotal += f.size;
-        accepted.push(f);
-      }
+      const { accepted, rejected } = selectAttachmentFiles(
+        files,
+        attachments.reduce((total, item) => total + (item.size ?? 0), 0),
+        attachmentLimits,
+      );
       if (rejected.length) {
         const first = rejected[0];
         let msg: string;
@@ -1569,15 +1475,7 @@ export default function ChatWorkspace() {
   // while a new turn streams — the in-flight assistant message has no result
   // event yet, so the walk falls through to the last completed turn and the
   // chip flips exactly once, when the new measurement lands.
-  const contextBudget = useMemo(() => {
-    for (let i = state.messages.length - 1; i >= 0; i -= 1) {
-      const msg = state.messages[i];
-      if (msg.role !== "assistant") continue;
-      const budget = readContextBudget(msg.events);
-      if (budget) return budget;
-    }
-    return null;
-  }, [state.messages]);
+  const contextBudget = useContextBudget(state.messages);
 
   /**
    * Capability-config card rendered at the bottom of the Activity panel.
@@ -1874,8 +1772,14 @@ export default function ChatWorkspace() {
       // not the only one — and a card that never rendered no longer strands
       // the learner with a turn they can only cancel.
       if (awaitingUserReplyRef.current) {
-        if (content.trim()) submitUserReply({ text: content });
-        return;
+        if (!content.trim()) return;
+        if (await submitUserReply({ text: content })) return;
+        // Refused: the turn that asked is gone. Do NOT stop here. The
+        // composer has already cleared the box, so returning discarded what
+        // they typed — while the error told them to "send a new message",
+        // which is exactly what this branch was preventing them from doing.
+        // Fall through and send it as one.
+        notify(t(REPLY_SENT_AS_NEW_MESSAGE));
       }
       if (
         (!content &&
@@ -2081,6 +1985,54 @@ export default function ChatWorkspace() {
       shouldAutoScrollRef.current = true;
     },
     [researchConfig, sendMessage, shouldAutoScrollRef],
+  );
+
+  // Answering a mastery card starts the next turn rather than resuming a
+  // paused one: posing the question ended its turn. The learner's pick is the
+  // message (a bare "C" reads fine directly under the card that offered it),
+  // and ``masteryAnswer`` tells the backend which question it settles so the
+  // engine has the answer committed before the tutor reads anything.
+  const answerMasteryQuestion = useCallback(
+    (answer: { questionId: string; text: string }) => {
+      const text = answer.text.trim();
+      // One live turn per path: submitting into a running one is refused, and
+      // ``false`` reopens the card rather than surfacing that refusal.
+      if (!text || state.isStreaming) return false;
+      sendMessage(
+        text,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+          masteryAnswer: { question_id: answer.questionId, text },
+        },
+      );
+      shouldAutoScrollRef.current = true;
+      return true;
+    },
+    [sendMessage, shouldAutoScrollRef, state.isStreaming],
+  );
+
+  // Declining one is the same kind of move, and has to be a turn for the same
+  // reason: the engine holds one open question per path, so a question left
+  // open is the one the tutor's next ``mastery_quiz`` re-presents. The message
+  // says out loud what the learner did, so the transcript still reads.
+  const skipMasteryQuestion = useCallback(
+    (questionId: string) => {
+      if (!questionId || state.isStreaming) return false;
+      sendMessage(
+        t("Let's skip this question."),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { masterySkip: { question_id: questionId } },
+      );
+      shouldAutoScrollRef.current = true;
+      return true;
+    },
+    [sendMessage, shouldAutoScrollRef, state.isStreaming, t],
   );
 
   const handleRegenerateMessage = useCallback(() => {
@@ -2485,6 +2437,18 @@ export default function ChatWorkspace() {
                         onEditMessage={editMessage}
                         onSwitchBranch={switchBranch}
                         onSubmitUserReply={submitUserReply}
+                        onAnswerMasteryQuestion={answerMasteryQuestion}
+                        onSkipMasteryQuestion={skipMasteryQuestion}
+                        onLoadMessageTrace={(messageId) =>
+                          state.sessionId
+                            ? loadMessageTrace(state.sessionId, messageId)
+                            : Promise.resolve()
+                        }
+                        onReleaseMessageTrace={(messageId) => {
+                          if (state.sessionId) {
+                            releaseMessageTrace(state.sessionId, messageId);
+                          }
+                        }}
                         availableKbNames={
                           knowledgeBasesLoaded ? availableKbNames : undefined
                         }

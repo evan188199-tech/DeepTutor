@@ -235,6 +235,44 @@
       "title": "LLMSelection",
       "type": "object"
     },
+    "MasteryCardAnswer": {
+      "additionalProperties": false,
+      "description": "An answer submitted from a mastery question card.\n\nThe card outlives the turn that posed it — posing a question ends that\nturn — so the answer arrives as the next turn's message. This says which\nquestion the message is answering, letting the runtime commit it to the\nengine before the tutor's first token instead of asking the model to\nrecover the pairing from prose.",
+      "properties": {
+        "question_id": {
+          "minLength": 1,
+          "title": "Question Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question_id",
+        "text"
+      ],
+      "title": "MasteryCardAnswer",
+      "type": "object"
+    },
+    "MasteryCardSkip": {
+      "additionalProperties": false,
+      "description": "A question the learner dropped instead of answering.\n\nThe same shape of problem as :class:`MasteryCardAnswer`: the card outlives\nthe turn that posed it, so \"not this one\" also arrives as the next turn's\nmessage. Naming the question is what keeps the runtime from abandoning\nwhatever happens to be open by the time the turn starts.",
+      "properties": {
+        "question_id": {
+          "minLength": 1,
+          "title": "Question Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question_id"
+      ],
+      "title": "MasteryCardSkip",
+      "type": "object"
+    },
     "NotebookReference": {
       "additionalProperties": false,
       "properties": {
@@ -872,6 +910,17 @@
           ],
           "default": null
         },
+        "mastery_answer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MasteryCardAnswer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "mastery_path_id": {
           "anyOf": [
             {
@@ -888,6 +937,29 @@
           "default": false,
           "title": "Mastery Path Lease Managed",
           "type": "boolean"
+        },
+        "mastery_session_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mastery Session Mode"
+        },
+        "mastery_skip": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MasteryCardSkip"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "memory_references": {
           "items": {

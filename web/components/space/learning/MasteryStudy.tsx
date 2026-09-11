@@ -2,9 +2,12 @@
 
 import { browserStorage } from "@/shared/storage";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   ArrowLeft,
+  ArrowRight,
+  BookmarkPlus,
   Compass,
   Flag,
   Loader2,
@@ -13,27 +16,45 @@ import {
   PanelRight,
   Sparkles,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ChatMessageList } from "@/features/chat/messages";
 import { ChatViewerBridges } from "@/components/chat/home/ChatViewerBridges";
 import { buildSessionActivity } from "@/components/chat/home/SessionActivityPanel";
+import { TurnNavigator } from "@/components/chat/home/TurnNavigator";
 import SessionViewerPanel, {
   type SessionViewerPanelHandle,
 } from "@/components/chat/home/SessionViewerPanel";
-import { useChatStateAdapter } from "@/features/chat/ChatStateAdapter";
-import { TurnStatusBar } from "@/features/chat/components/turn";
-import { turnViewState } from "@/features/chat/model/turn-state";
+import {
+  type MessageAttachment,
+  useChatStateAdapter,
+} from "@/features/chat/ChatStateAdapter";
 import { useChatAutoScroll } from "@/hooks/useChatAutoScroll";
 import { useMasteryStudySession } from "@/hooks/useMasteryStudySession";
 import { useMeasuredHeight } from "@/hooks/useMeasuredHeight";
 import { useResearchOutlineContinuation } from "@/hooks/useResearchOutlineContinuation";
-import { fetchMasteryAskHint, type MasteryTopic } from "@/lib/learning-api";
+import {
+  fetchMasteryAskHint,
+  setMasterySessionMode as setMasterySessionMode_api,
+  type MasteryTopic,
+} from "@/lib/learning-api";
+import { notify } from "@/lib/notifications";
+import { copyText } from "@/lib/clipboard";
 import { consumePendingPrompt } from "@/lib/pending-prompt";
-import { hasPendingAskUser } from "@/lib/ask-user-state";
+import { buildChatOutline, scrollToChatTurn } from "@/lib/chat-outline";
+import { buildConversationNotebookSave } from "@/lib/conversation-notebook-save";
+import {
+  MASTERY_OPENING_SCOPE,
+  masteryOpeningMessage,
+  masterySessionRoute,
+  type MasteryMode,
+} from "@/lib/mastery-mode";
 import { workspaceActionNeedsConfiguration } from "@/lib/workspace-mode";
 
+import { ActivityHeader } from "@/components/activity";
+
+import { ModeSwitch } from "./ModeSwitch";
 import { topicDisplayName, type Translate } from "./format";
 import { LevelUpCelebration } from "./LevelUpCelebration";
 import { MasteryComposer } from "./MasteryComposer";
@@ -42,11 +63,75 @@ import { StudyOutline } from "./StudyOutline";
 
 const OUTLINE_STORAGE_KEY = "dt.mastery.outline";
 
-const STARTERS = [
-  { icon: Compass, key: "Start with a quick check of what I already know" },
-  { icon: Sparkles, key: "Teach me from intuition and one concrete example" },
-  { icon: Flag, key: "Give me a challenging question right away" },
-] as const;
+/**
+ * How each kind of session presents itself, and what it opens with.
+ *
+ * ``autoOpen`` is the message the screen sends on the learner's behalf. Only
+ * the outline session has one, and it has one for a reason: arriving there is
+ * not a choice the learner made from a menu — they pressed "design the outline
+ * with the tutor" and were moved to a screen that, left alone, would sit empty
+ * waiting for them to work out what to type. The work is already agreed; the
+ * session should be doing it.
+ */
+const MODE_PRESENTATION: Record<
+  MasteryMode,
+  {
+    /** One line under the header: what this mode is and is not. */
+    noteKey: string;
+    /** The empty conversation's heading and the line under it. */
+    emptyTitleKey: string;
+    emptyBodyKey: string;
+  }
+> = {
+  outline: {
+    noteKey: "Nothing is being taught yet — this mode agrees on what you will learn.",
+    emptyTitleKey: "Design your outline",
+    emptyBodyKey:
+      "The tutor reads the materials you chose, asks what you already know, and proposes a route you can change.",
+  },
+  study: {
+    noteKey: "",
+    // Study's heading is the waypoint itself; these are only its body and
+    // are never read for the title.
+    emptyTitleKey: "",
+    emptyBodyKey:
+      "Your tutor adapts to your answers. Begin with a quick check, an intuitive explanation, or a challenge.",
+  },
+  review: {
+    noteKey:
+      "This mode re-tests what you have already learned. It will not teach anything new.",
+    emptyTitleKey: "Go back over what you know",
+    emptyBodyKey:
+      "Review re-tests what you have already mastered. Due items come first, but you can revisit anything.",
+  },
+};
+
+const SaveToNotebookModal = dynamic(
+  () => import("@/components/notebook/SaveToNotebookModal"),
+  { ssr: false },
+);
+
+/** Ways in, per mode. What "start" means is not the same in all three. */
+const STARTERS: Record<
+  MasteryMode,
+  readonly { icon: typeof Compass; key: string }[]
+> = {
+  outline: [
+    { icon: Compass, key: "Draft an outline from the materials I chose" },
+    { icon: Sparkles, key: "Ask me a few things first, then propose an outline" },
+    { icon: Flag, key: "I want to talk about how far I need to get" },
+  ],
+  study: [
+    { icon: Compass, key: "Start with a quick check of what I already know" },
+    { icon: Sparkles, key: "Teach me from intuition and one concrete example" },
+    { icon: Flag, key: "Give me a challenging question right away" },
+  ],
+  review: [
+    { icon: Compass, key: "Review what is due today" },
+    { icon: Sparkles, key: "Go back over what I found hardest" },
+    { icon: Flag, key: "Test me on everything I have mastered" },
+  ],
+};
 
 /**
  * Where the tutor is. The id matters as much as the name: the outline
@@ -76,29 +161,57 @@ export function MasteryStudy({
   pathId,
   routeSessionId,
   courseId = "",
+  requestedMode = "study",
 }: {
   pathId: string;
   routeSessionId?: string;
   courseId?: string;
+  /** What a conversation opened here is for; ignored for an existing one. */
+  requestedMode?: MasteryMode;
 }) {
   const { t } = useTranslation();
   const {
     state,
     sendMessage,
     submitUserReply,
-    cancelStreamingTurn,
     regenerateLastMessage,
     deleteTurn,
     editMessage,
     switchBranch,
+    loadMessageTrace,
+    releaseMessageTrace,
+    setMasterySessionMode,
   } = useChatStateAdapter();
   const confirmResearchOutline = useResearchOutlineContinuation();
-  const { topic, topicError, knowledgeBases, sessionError, sessionLoading } =
-    useMasteryStudySession(pathId, routeSessionId, courseId);
+  const {
+    topic,
+    topicError,
+    knowledgeBases,
+    sessionError,
+    sessionLoading,
+    sessionMode,
+  } = useMasteryStudySession(
+    pathId,
+    routeSessionId,
+    courseId,
+    requestedMode,
+  );
   const hasMessages = state.messages.length > 0;
   const prefillInputRef = useRef<((text: string) => void) | null>(null);
   const viewerPanelRef = useRef<SessionViewerPanelHandle | null>(null);
+
+  // Attachment cards were rendered without a click handler here, so a
+  // generated file or image in the transcript simply did nothing when
+  // clicked. The viewer panel below is already mounted; this opens the
+  // attachment in it, the same way chat does.
+  const handlePreviewMessageAttachment = useCallback(
+    (attachment: MessageAttachment) => {
+      viewerPanelRef.current?.openFileTab(attachment);
+    },
+    [],
+  );
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const sessionActivity = buildSessionActivity(state.messages);
   /* ── Transcript scrolling ────────────────────────────────────────────
      Was a bare `scrollIntoView` keyed on message count — no notion of the
@@ -107,18 +220,11 @@ export function MasteryStudy({
   const { ref: composerBoxRef, height: composerHeight } =
     useMeasuredHeight<HTMLDivElement>();
   const lastMessage = state.messages[state.messages.length - 1];
-  const awaitingUserReply = hasPendingAskUser(lastMessage?.events);
-  const activeTurnViewState = turnViewState({
-    status: awaitingUserReply
-      ? "waiting_input"
-      : state.isStreaming
-        ? "running"
-        : undefined,
-  });
   const {
     containerRef: messagesContainerRef,
     endRef: messagesEndRef,
     shouldAutoScrollRef,
+    scrollToBottom,
     handleScroll: handleMessagesScroll,
   } = useChatAutoScroll({
     hasMessages,
@@ -128,6 +234,49 @@ export function MasteryStudy({
     lastMessageContent: lastMessage?.content,
     lastEventCount: lastMessage?.events?.length,
   });
+  const chatOutline = useMemo(
+    () => buildChatOutline(state.messages, state.selectedBranches),
+    [state.messages, state.selectedBranches],
+  );
+  const jumpToTurn = useCallback(
+    (key: string) => {
+      if (
+        scrollToChatTurn(messagesContainerRef.current, key, {
+          topOffset: 56,
+          flash: true,
+        })
+      ) {
+        shouldAutoScrollRef.current = false;
+      }
+    },
+    [messagesContainerRef, shouldAutoScrollRef],
+  );
+  const resumeFollowingLatest = useCallback(() => {
+    shouldAutoScrollRef.current = true;
+    scrollToBottom("instant");
+  }, [scrollToBottom, shouldAutoScrollRef]);
+
+  const notebookFallbackTitle = topic
+    ? topicDisplayName(topic, t)
+    : t("Mastery Path");
+  const { modalMessages: notebookSaveMessages, payload: notebookSavePayload } =
+    useMemo(
+      () =>
+        buildConversationNotebookSave(state.messages, {
+          source: "mastery_path",
+          fallbackTitle: notebookFallbackTitle,
+          activeCapability: state.activeCapability,
+          language: state.language,
+          sessionId: state.sessionId,
+        }),
+      [
+        notebookFallbackTitle,
+        state.activeCapability,
+        state.language,
+        state.messages,
+        state.sessionId,
+      ],
+    );
   // A new turn is the clearest possible "show me the answer" — re-arm the
   // pin even if a previous turn's browsing had released it.
   useEffect(() => {
@@ -250,10 +399,65 @@ export function MasteryStudy({
     (value: string) => {
       const content = value.trim();
       if (!content || state.isStreaming || sessionLoading || sessionError)
-        return;
+        return false;
       sendMessage(content);
+      return true;
     },
     [sendMessage, sessionError, sessionLoading, state.isStreaming],
+  );
+
+  // Answering a question card starts the next turn: posing the question ended
+  // the one that asked. Gated exactly like the composer, because a path admits
+  // one live turn at a time — submitting into a running one is refused by the
+  // backend, and returning ``false`` here reopens the card instead of showing
+  // the learner that refusal.
+  const answerMasteryQuestion = useCallback(
+    (answer: { questionId: string; text: string }) => {
+      const text = answer.text.trim();
+      if (!text || state.isStreaming || sessionLoading || sessionError) {
+        return false;
+      }
+      sendMessage(text, undefined, undefined, undefined, undefined, {
+        masteryAnswer: { question_id: answer.questionId, text },
+      });
+      shouldAutoScrollRef.current = true;
+      return true;
+    },
+    [
+      sendMessage,
+      sessionError,
+      sessionLoading,
+      shouldAutoScrollRef,
+      state.isStreaming,
+    ],
+  );
+
+  // Declining a question is a turn too: the engine holds one open question per
+  // path, so a question left open is the one the tutor poses again next round.
+  const skipMasteryQuestion = useCallback(
+    (questionId: string) => {
+      if (!questionId || state.isStreaming || sessionLoading || sessionError) {
+        return false;
+      }
+      sendMessage(
+        t("Let's skip this question."),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        { masterySkip: { question_id: questionId } },
+      );
+      shouldAutoScrollRef.current = true;
+      return true;
+    },
+    [
+      sendMessage,
+      sessionError,
+      sessionLoading,
+      shouldAutoScrollRef,
+      state.isStreaming,
+      t,
+    ],
   );
 
   const startFromPrompt = useCallback(
@@ -267,9 +471,76 @@ export function MasteryStudy({
     [state.activeCapability, submit],
   );
 
-  const copyAssistantMessage = useCallback(async (content: string) => {
-    if (content.trim()) await navigator.clipboard.writeText(content);
-  }, []);
+  // A conversation that opens with nothing to say says the thing it was
+  // opened to say.
+  //
+  // Derived from the mode rather than handed across the navigation. The
+  // hand-off channel that used to carry it reads *destructively*, so a send
+  // refused for any reason (a turn still settling, a session still resolving)
+  // consumed the message and left the screen insisting work was under way
+  // forever — the same dead end twice, in two different places. There is no
+  // channel to lose now: an empty outline conversation always knows what it
+  // is for. The hand-off is still read, but only to *enrich* the opening (the
+  // review card names what is due), never to supply it.
+  const openingSentRef = useRef("");
+  useEffect(() => {
+    if (!topic || hasMessages || sessionLoading || sessionError) return;
+    if (state.isStreaming || openingSentRef.current === pathId) return;
+    const opening =
+      consumePendingPrompt(MASTERY_OPENING_SCOPE).trim() ||
+      masteryOpeningMessage(sessionMode, t as Translate);
+    // A study conversation opens with nothing on purpose: "start learning"
+    // does not say what to start with, so the screen offers ways in instead.
+    if (!opening) return;
+    // Latch on the send, never before it: ``submit`` refuses silently while a
+    // turn is live or the session is still resolving, and the next render
+    // tries again.
+    if (submit(opening)) openingSentRef.current = pathId;
+  }, [
+    hasMessages,
+    pathId,
+    sessionError,
+    sessionLoading,
+    sessionMode,
+    state.isStreaming,
+    submit,
+    t,
+    topic,
+  ]);
+
+  // The learner pressing one of the three modes above the transcript. The same
+  // move the tutor makes with ``mastery_mode``, through the same admission
+  // rule — so a refusal reads the same whoever asked for it.
+  const [modeBusy, setModeBusy] = useState(false);
+  const changeMode = useCallback(
+    (next: MasteryMode) => {
+      const sessionId = state.sessionId;
+      if (!sessionId) {
+        // Nothing has been said yet, so there is no conversation to record it
+        // on. Keeping it locally is enough: the first turn carries it.
+        setMasterySessionMode(next);
+        return;
+      }
+      setModeBusy(true);
+      void setMasterySessionMode_api(pathId, sessionId, next)
+        .then(() => setMasterySessionMode(next))
+        .catch((reason: unknown) => {
+          notify(
+            reason instanceof Error
+              ? reason.message
+              : t("The mode could not be changed"),
+            { tone: "error" },
+          );
+        })
+        .finally(() => setModeBusy(false));
+    },
+    [pathId, setMasterySessionMode, state.sessionId, t],
+  );
+
+  const copyAssistantMessage = useCallback(
+    (content: string) => copyText(content),
+    [],
+  );
 
   if (!topic && !topicError) {
     return (
@@ -330,12 +601,35 @@ export function MasteryStudy({
           >
             /
           </span>
-          <span className="hidden min-w-0 truncate text-[12.5px] text-[var(--muted-foreground)] sm:inline">
-            {waypoint.name}
-          </span>
+          {sessionMode === "study" ? (
+            <span className="hidden min-w-0 truncate text-[12.5px] text-[var(--muted-foreground)] sm:inline">
+              {waypoint.name}
+            </span>
+          ) : null}
         </div>
 
+        {/* All three modes, with the live one marked. The mode decides which
+            tools the tutor may use, so it is the answer to "why can't it just
+            fix that for me" — and that question can only be asked by someone
+            who can see the other two exist. */}
+        <ModeSwitch
+          mode={sessionMode}
+          onSelect={changeMode}
+          disabled={state.isStreaming || modeBusy || sessionLoading}
+          className="hidden shrink-0 sm:flex"
+        />
+
         <div className="flex shrink-0 items-center gap-1.5 pl-2">
+          <button
+            type="button"
+            onClick={() => setShowSaveModal(true)}
+            disabled={!notebookSavePayload}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)]/60 hover:text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-40"
+            title={t("Save to Notebook")}
+            aria-label={t("Save to Notebook")}
+          >
+            <BookmarkPlus className="h-4 w-4" />
+          </button>
           <button
             type="button"
             onClick={() => setViewerOpen((open) => !open)}
@@ -373,109 +667,177 @@ export function MasteryStudy({
         </aside>
 
         <section className="flex min-w-0 flex-1 flex-col bg-[var(--background)]">
-          <div
-            ref={messagesContainerRef}
-            // Opts this scrollport into the global `overflow-anchor: none`
-            // rule; without it the browser's own scroll anchoring fights
-            // the pin every time a code block or KaTeX span reflows.
-            data-chat-scroll-root="true"
-            onScroll={() => {
-              const container = messagesContainerRef.current;
-              if (!container) return;
-              const distanceFromBottom =
-                container.scrollHeight -
-                container.scrollTop -
-                container.clientHeight;
-              // Arm-only while streaming: position alone should never
-              // RELEASE the pin mid-turn (a gesture already does that,
-              // unconditionally, inside the hook) — only ever confirm the
-              // user scrolled back down to resume following.
-              if (distanceFromBottom < 80) {
-                shouldAutoScrollRef.current = true;
-              } else if (!state.isStreaming) {
-                handleMessagesScroll();
-              }
-            }}
-            className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]"
-          >
-            <div className="mx-auto w-full max-w-[900px] px-4 pb-8 pt-7 sm:px-7">
-              {sessionLoading ? (
-                <div className="flex min-h-[45vh] flex-col items-center justify-center text-sm text-[var(--muted-foreground)]">
-                  <Loader2 className="mb-3 h-5 w-5 animate-spin" />
-                  {t("Reopening this session…")}
-                </div>
-              ) : sessionError ? (
-                <div className="mx-auto mt-20 max-w-md rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
-                  <MessageCircle className="mx-auto h-8 w-8 text-red-500/60" />
-                  <h2 className="mt-3 text-sm font-semibold">
-                    {t("The session did not open")}
-                  </h2>
-                  <p className="mt-2 text-xs leading-5 text-[var(--muted-foreground)]">
-                    {sessionError}
+          <div className="relative min-h-0 flex-1">
+            <div
+              ref={messagesContainerRef}
+              // Opts this scrollport into the global `overflow-anchor: none`
+              // rule; without it the browser's own scroll anchoring fights
+              // the pin every time a code block or KaTeX span reflows.
+              data-chat-scroll-root="true"
+              onScroll={() => {
+                const container = messagesContainerRef.current;
+                if (!container) return;
+                const distanceFromBottom =
+                  container.scrollHeight -
+                  container.scrollTop -
+                  container.clientHeight;
+                // Arm-only while streaming: position alone should never
+                // RELEASE the pin mid-turn (a gesture already does that,
+                // unconditionally, inside the hook) — only ever confirm the
+                // user scrolled back down to resume following.
+                if (distanceFromBottom < 80) {
+                  shouldAutoScrollRef.current = true;
+                } else if (!state.isStreaming) {
+                  handleMessagesScroll();
+                }
+              }}
+              className="h-full overflow-y-auto [scrollbar-gutter:stable]"
+            >
+              <div
+                data-chat-column="true"
+                className="mx-auto w-full max-w-[900px] px-4 pb-8 pt-7 sm:px-7"
+              >
+                {/* What this sitting is not. It stays visible for the whole
+                    conversation rather than only on the empty state: the
+                    question "have we started learning yet?" is asked by
+                    someone scrolled halfway down, not by someone looking at a
+                    blank screen. */}
+                {MODE_PRESENTATION[sessionMode].noteKey && (
+                  <p className="mb-6 rounded-lg border border-[var(--border)] bg-[var(--secondary)] px-3.5 py-2.5 text-[12px] leading-5 text-[var(--muted-foreground)]">
+                    {t(MODE_PRESENTATION[sessionMode].noteKey)}
                   </p>
-                  <Link
-                    href={`/mastery/${encodeURIComponent(pathId)}/sessions`}
-                    className="mt-4 inline-flex rounded-xl bg-[var(--primary)] px-3 py-2 text-xs font-medium text-[var(--primary-foreground)]"
-                  >
-                    {t("Start a new session")}
-                  </Link>
-                </div>
-              ) : !hasMessages ? (
-                <div className="mx-auto flex min-h-[54vh] max-w-2xl flex-col items-center justify-center text-center">
-                  <div className="text-[12px] text-[var(--muted-foreground)]">
-                    {t("Next up")}
+                )}
+                {sessionLoading ? (
+                  <div className="flex min-h-[45vh] flex-col items-center justify-center text-sm text-[var(--muted-foreground)]">
+                    <Loader2 className="mb-3 h-5 w-5 animate-spin" />
+                    {t("Reopening this session…")}
                   </div>
-                  <h2 className="mt-1.5 font-serif text-[20px] font-semibold tracking-[-0.01em] text-[var(--foreground)]">
-                    {waypoint.name}
-                  </h2>
-                  <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted-foreground)]">
-                    {t(
-                      "Your tutor adapts to your answers. Begin with a quick check, an intuitive explanation, or a challenge.",
-                    )}
-                  </p>
-                  <div className="mt-7 grid w-full gap-2 sm:grid-cols-3">
-                    {STARTERS.map((starter) => {
-                      const Icon = starter.icon;
-                      const label = t(starter.key);
-                      return (
-                        <button
-                          key={starter.key}
-                          type="button"
-                          onClick={() => startFromPrompt(label)}
-                          disabled={state.isStreaming || sessionLoading}
-                          className="group rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 text-left transition hover:-translate-y-0.5 hover:border-[var(--primary)]/35 disabled:opacity-50"
+                ) : sessionError ? (
+                  <div className="mx-auto mt-20 max-w-md rounded-xl border border-red-500/20 bg-red-500/5 p-6 text-center">
+                    <MessageCircle className="mx-auto h-8 w-8 text-red-500/60" />
+                    <h2 className="mt-3 text-sm font-semibold">
+                      {t("The session did not open")}
+                    </h2>
+                    <p className="mt-2 text-xs leading-5 text-[var(--muted-foreground)]">
+                      {sessionError}
+                    </p>
+                    <Link
+                      href={`/mastery/${encodeURIComponent(pathId)}/sessions`}
+                      className="mt-4 inline-flex rounded-xl bg-[var(--primary)] px-3 py-2 text-xs font-medium text-[var(--primary-foreground)]"
+                    >
+                      {t("Start a new session")}
+                    </Link>
+                  </div>
+                ) : !hasMessages ? (
+                  // Reached only when nothing was sent for the learner — a
+                  // study conversation, or an opening the send refused. It
+                  // therefore has to offer a way in rather than describing
+                  // work that is not happening: a screen that claims the tutor
+                  // is reading while nothing runs is the one state this
+                  // surface must never reach, and it reached it twice.
+                  <div className="mx-auto flex min-h-[54vh] max-w-2xl flex-col items-center justify-center text-center">
+                    <div className="text-[12px] text-[var(--muted-foreground)]">
+                      {sessionMode === "study" ? t("Next up") : t("Start here")}
+                    </div>
+                    <h2 className="mt-1.5 font-serif text-[20px] font-semibold tracking-[-0.01em] text-[var(--foreground)]">
+                      {sessionMode === "study"
+                        ? waypoint.name
+                        : t(MODE_PRESENTATION[sessionMode].emptyTitleKey)}
+                    </h2>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted-foreground)]">
+                      {t(MODE_PRESENTATION[sessionMode].emptyBodyKey)}
+                    </p>
+                    <div className="mt-7 grid w-full gap-2 sm:grid-cols-3">
+                      {STARTERS[sessionMode].map((starter) => {
+                        const Icon = starter.icon;
+                        const label = t(starter.key);
+                        return (
+                          <button
+                            key={starter.key}
+                            type="button"
+                            onClick={() => startFromPrompt(label)}
+                            disabled={state.isStreaming || sessionLoading}
+                            className="group rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 text-left transition hover:-translate-y-0.5 hover:border-[var(--primary)]/35 disabled:opacity-50"
+                          >
+                            <Icon className="h-4 w-4 text-[var(--primary)]" />
+                            <span className="mt-3 block text-xs font-medium leading-5 text-[var(--foreground)]">
+                              {label}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-9">
+                    {sessionMode === "outline" && total > 0 && (
+                      // The outline exists, so this sitting has produced what
+                      // it was opened for. Learning happens in a different
+                      // kind of session, and nothing on this screen would
+                      // otherwise tell the learner that — they would keep
+                      // typing here and wonder why they were never taught.
+                      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--primary)]/25 bg-[var(--primary)]/[0.06] px-4 py-3">
+                        <div className="min-w-0">
+                          <p className="text-[13px] font-medium text-[var(--foreground)]">
+                            {t("Your outline is ready — {{count}} knowledge points", {
+                              count: total,
+                            })}
+                          </p>
+                          <p className="mt-0.5 text-[12px] leading-5 text-[var(--muted-foreground)]">
+                            {t(
+                              "Keep refining it here, or open a learning session to start working through it.",
+                            )}
+                          </p>
+                        </div>
+                        <Link
+                          href={masterySessionRoute(pathId, "study", courseId)}
+                          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3.5 text-[13px] font-medium text-[var(--primary-foreground)] transition hover:opacity-90"
                         >
-                          <Icon className="h-4 w-4 text-[var(--primary)]" />
-                          <span className="mt-3 block text-xs font-medium leading-5 text-[var(--foreground)]">
-                            {label}
-                          </span>
-                        </button>
-                      );
-                    })}
+                          {t("Start learning")}
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
+                    )}
+                    <ChatMessageList
+                      messages={state.messages}
+                      isStreaming={state.isStreaming}
+                      sessionId={state.sessionId}
+                      language={state.language}
+                      onCopyAssistantMessage={copyAssistantMessage}
+                      onRegenerateMessage={regenerateLastMessage}
+                      onDeleteTurn={deleteTurn}
+                      selectedBranches={state.selectedBranches}
+                      onEditMessage={editMessage}
+                      onSwitchBranch={switchBranch}
+                      onSubmitUserReply={submitUserReply}
+                      onAnswerMasteryQuestion={answerMasteryQuestion}
+                      onSkipMasteryQuestion={skipMasteryQuestion}
+                      onPreviewAttachment={handlePreviewMessageAttachment}
+                      onConfirmOutline={confirmResearchOutline}
+                      onLoadMessageTrace={(messageId) =>
+                        state.sessionId
+                          ? loadMessageTrace(state.sessionId, messageId)
+                          : Promise.resolve()
+                      }
+                      onReleaseMessageTrace={(messageId) => {
+                        if (state.sessionId) {
+                          releaseMessageTrace(state.sessionId, messageId);
+                        }
+                      }}
+                      availableKbNames={new Set(knowledgeBases)}
+                      showModeBadge={false}
+                    />
                   </div>
-                </div>
-              ) : (
-                <div className="space-y-9">
-                  <ChatMessageList
-                    messages={state.messages}
-                    isStreaming={state.isStreaming}
-                    sessionId={state.sessionId}
-                    language={state.language}
-                    onCopyAssistantMessage={copyAssistantMessage}
-                    onRegenerateMessage={regenerateLastMessage}
-                    onDeleteTurn={deleteTurn}
-                    selectedBranches={state.selectedBranches}
-                    onEditMessage={editMessage}
-                    onSwitchBranch={switchBranch}
-                    onSubmitUserReply={submitUserReply}
-                    onConfirmOutline={confirmResearchOutline}
-                    availableKbNames={new Set(knowledgeBases)}
-                    showModeBadge={false}
-                  />
-                </div>
-              )}
-              <div ref={messagesEndRef} className="h-px" />
+                )}
+                <div ref={messagesEndRef} className="h-px" />
+              </div>
             </div>
+            <TurnNavigator
+              entries={chatOutline}
+              scrollRootRef={messagesContainerRef}
+              onJump={jumpToTurn}
+              onJumpToBottom={resumeFollowingLatest}
+            />
           </div>
 
           {!sessionError && (
@@ -483,13 +845,6 @@ export function MasteryStudy({
               ref={composerBoxRef}
               className="shrink-0 bg-[var(--background)]"
             >
-              <TurnStatusBar
-                state={activeTurnViewState}
-                stage={state.currentStage || undefined}
-                onCancel={cancelStreamingTurn}
-                onAnswer={() => prefillInputRef.current?.("")}
-                className="mx-4 mb-2"
-              />
               <MasteryComposer
                 placeholder={t("Ask your tutor about “{{waypoint}}”…", {
                   waypoint: waypoint.name,
@@ -509,6 +864,12 @@ export function MasteryStudy({
           onDone={() => setCelebration(null)}
         />
       )}
+      <SaveToNotebookModal
+        open={showSaveModal}
+        payload={notebookSavePayload}
+        messages={notebookSaveMessages}
+        onClose={() => setShowSaveModal(false)}
+      />
       <SessionViewerPanel
         ref={viewerPanelRef}
         open={viewerOpen}

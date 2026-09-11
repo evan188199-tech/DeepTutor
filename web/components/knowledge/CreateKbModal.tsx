@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import { useImaConnection } from "@/hooks/useImaConnection";
+import { useLLMOptions } from "@/hooks/useLLMOptions";
 import {
   getGraphRagConfig,
   getLightRagConfig,
@@ -29,6 +30,7 @@ import {
   probeLinkedFolder,
   probeWeKnora,
   type KnowledgeUploadPolicy,
+  type IndexingLLMSelection,
   type LinkedFolderProbe,
   type RagProviderSummary,
   type WeKnoraProbe,
@@ -42,9 +44,13 @@ import {
   uploadPolicyForProvider,
   validateFiles,
 } from "@/lib/knowledge-helpers";
+import { forbiddenKbNameChars, isValidKbName } from "@/lib/kb-name";
 import FileDropZone from "./FileDropZone";
 import ImaConnectionFields from "./ImaConnectionFields";
 import KnowledgeEngineIcon from "./KnowledgeEngineIcon";
+import IndexingModelSelector, {
+  selectionFromLightRagDefault,
+} from "./IndexingModelSelector";
 
 const OBSIDIAN_SOURCE = "obsidian";
 const MARGINNOTE4_SOURCE = "marginnote4";
@@ -67,6 +73,7 @@ interface CreateKbModalProps {
     files: File[];
     pageindexMode?: "flash" | "standard";
     searchMode?: string;
+    indexingLLM?: IndexingLLMSelection;
   }) => Promise<void>;
   /** Link a pre-built engine index folder in place (no copy, no re-index). */
   onConnectLinkedFolder: (params: {
@@ -158,6 +165,14 @@ export default function CreateKbModal({
   const [weKnoraProbe, setWeKnoraProbe] = useState<WeKnoraProbe | null>(null);
   const [weKnoraProbing, setWeKnoraProbing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [indexingLLM, setIndexingLLM] = useState<IndexingLLMSelection | null>(
+    null,
+  );
+  const [lightRagConfig, setLightRagConfig] = useState<Awaited<
+    ReturnType<typeof getLightRagConfig>
+  > | null>(null);
+  const [lightRagConfigLoaded, setLightRagConfigLoaded] = useState(false);
+  const [lightRagConfigError, setLightRagConfigError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const linkIsObsidian = linkSource === OBSIDIAN_SOURCE;
   const linkIsMarginNote = linkSource === MARGINNOTE4_SOURCE;
@@ -168,6 +183,7 @@ export default function CreateKbModal({
     onError: setError,
     active: linkIsIma,
   });
+  const llmCatalog = useLLMOptions();
 
   const firstLinkable = providers.find((p) => p.linkable)?.id;
 
@@ -218,7 +234,40 @@ export default function CreateKbModal({
     setWeKnoraKnowledgeBaseId("");
     setWeKnoraProbe(null);
     setWeKnoraProbing(false);
+    setIndexingLLM(null);
+    setLightRagConfig(null);
+    setLightRagConfigLoaded(false);
+    setLightRagConfigError(false);
   }, [isOpen, providers, firstLinkable, initialMode, initialSource]);
+
+  useEffect(() => {
+    if (
+      !isOpen ||
+      mode !== "new" ||
+      provider !== "lightrag" ||
+      indexingLLM ||
+      !lightRagConfigLoaded ||
+      !lightRagConfig
+    ) {
+      return;
+    }
+    setIndexingLLM(
+      selectionFromLightRagDefault(
+        llmCatalog.options,
+        lightRagConfig,
+        llmCatalog.activeDefault,
+      ),
+    );
+  }, [
+    indexingLLM,
+    isOpen,
+    llmCatalog.activeDefault,
+    llmCatalog.options,
+    lightRagConfig,
+    lightRagConfigLoaded,
+    mode,
+    provider,
+  ]);
 
   useEffect(() => {
     if (!isOpen || mode !== "new") return;
@@ -242,6 +291,11 @@ export default function CreateKbModal({
           ];
         } else if (provider === "lightrag") {
           const config = await getLightRagConfig();
+          if (!cancelled) {
+            setLightRagConfig(config);
+            setLightRagConfigLoaded(true);
+            setLightRagConfigError(false);
+          }
           summary = [
             `${t("Results per query")}: ${config.top_k}`,
             `${t("Files in parallel")}: ${config.max_concurrent_files}`,
@@ -267,7 +321,13 @@ export default function CreateKbModal({
         }
         if (!cancelled) setEngineDefaultSummary(summary);
       } catch {
-        if (!cancelled) setEngineDefaultSummary([]);
+        if (!cancelled) {
+          setEngineDefaultSummary([]);
+          if (provider === "lightrag") {
+            setLightRagConfigLoaded(true);
+            setLightRagConfigError(true);
+          }
+        }
       }
     };
 
@@ -315,9 +375,15 @@ export default function CreateKbModal({
 
   const trimmedServerUrl = serverUrl.trim();
 
+  // Mirrors the backend rule so the name is rejected under the field rather
+  // than as an English 400 after Create. The connect-* paths give no error at
+  // all today, which is how a "/" name got registered in the first place.
+  const nameProblems = forbiddenKbNameChars(trimmed);
+
   const canSubmit = (() => {
     if (submitting) return false;
     if (!trimmed) return false;
+    if (!isValidKbName(trimmed)) return false;
     if (mode === "new") {
       if (isLightRagServer) {
         // The connection must pass the test before a KB is bound to it.
@@ -331,6 +397,7 @@ export default function CreateKbModal({
           !!weKnoraProbe?.ok
         );
       }
+      if (provider === "lightrag" && !indexingLLM) return false;
       return !providerUnavailable;
     }
     if (linkIsIma) return imaConnection.canSubmit;
@@ -432,6 +499,8 @@ export default function CreateKbModal({
             pageindexMode:
               isPageIndexOSS && pageIndexMode ? pageIndexMode : undefined,
             searchMode: retrievalMode || undefined,
+            indexingLLM:
+              provider === "lightrag" ? indexingLLM || undefined : undefined,
           });
         }
       } else if (linkIsIma) {
@@ -527,8 +596,17 @@ export default function CreateKbModal({
             autoFocus
             disabled={submitting}
             placeholder={t("e.g. project-papers")}
+            aria-invalid={nameProblems.length > 0}
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-[13px] text-[var(--foreground)] outline-none transition-colors focus:border-[var(--foreground)]/25 disabled:opacity-50"
           />
+          {nameProblems.length > 0 && (
+            <p className="mt-1 text-[11px] text-[var(--destructive)]">
+              {t(
+                "A knowledge base name cannot contain {{chars}} — these separate paths and URLs.",
+                { chars: nameProblems.join(" ") },
+              )}
+            </p>
+          )}
         </div>
 
         {mode === "new" ? (
@@ -552,6 +630,27 @@ export default function CreateKbModal({
             files={files}
             setFiles={setFiles}
             policyForProvider={policyForProvider}
+            indexingModelField={
+              provider === "lightrag" ? (
+                <IndexingModelSelector
+                  options={llmCatalog.options}
+                  selection={indexingLLM}
+                  loading={llmCatalog.loading}
+                  error={llmCatalog.error}
+                  defaultUnavailable={
+                    lightRagConfigLoaded &&
+                    !!(
+                      lightRagConfig?.llm_profile_id ||
+                      lightRagConfig?.llm_model_id
+                    ) &&
+                    !indexingLLM
+                  }
+                  defaultLoadError={lightRagConfigError}
+                  disabled={submitting}
+                  onChange={setIndexingLLM}
+                />
+              ) : null
+            }
             connectionForm={
               isLightRagServer ? (
                 <LightRagServerFields
@@ -712,6 +811,7 @@ function NewModeFields({
   files,
   setFiles,
   policyForProvider,
+  indexingModelField,
   connectionForm,
   t,
 }: {
@@ -734,6 +834,7 @@ function NewModeFields({
   files: File[];
   setFiles: (files: File[]) => void;
   policyForProvider: KnowledgeUploadPolicy;
+  indexingModelField?: ReactNode;
   /** When set, replaces the upload step (e.g. a server connection form). */
   connectionForm?: ReactNode;
   t: TFn;
@@ -865,6 +966,12 @@ function NewModeFields({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {indexingModelField && (
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--muted)]/20 p-3">
+          {indexingModelField}
         </div>
       )}
 
