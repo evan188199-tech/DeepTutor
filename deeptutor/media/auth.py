@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 from fastapi import Cookie, Header, HTTPException, status
 
-from deeptutor.api.routers.auth import _install_current_user, _extract_token, require_auth
+from deeptutor.api.routers.auth import _extract_token, _install_current_user, require_auth
 from deeptutor.multi_user.paths import local_admin_user
 
 from .access import MediaAccessStore, MediaPrincipal
@@ -68,7 +68,9 @@ async def require_media_auth(
             )
         except Exception:
             # A revoked/deleted identity cannot use the token for data access.
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Account is unavailable")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Account is unavailable"
+            )
         return MediaRequestPrincipal(principal=principal, scopes=principal.scopes)
     await require_auth(authorization=authorization, dt_token=dt_token)
     return MediaRequestPrincipal(principal=None, scopes=_SESSION_SCOPES)

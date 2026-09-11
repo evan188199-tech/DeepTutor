@@ -16,8 +16,8 @@ from .config_cmd import register as register_config
 from .doctor import register as register_doctor
 from .init_cmd import register as register_init
 from .kb import register as register_kb
-from .memory import register as register_memory
 from .media import register as register_media
+from .memory import register as register_memory
 from .migrate import register as register_migrate
 from .notebook import register as register_notebook
 from .partner import register as register_partner

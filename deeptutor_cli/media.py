@@ -48,23 +48,40 @@ def register(app: typer.Typer) -> None:
             console.print(f"[red]Invalid smart-playlist JSON:[/] {exc}")
             raise typer.Exit(code=2) from exc
         try:
-            _print(MediaService().create_playlist({"name": name, "description": description, "kind": "smart" if smart else "manual", "rule": rule}))
+            _print(
+                MediaService().create_playlist(
+                    {
+                        "name": name,
+                        "description": description,
+                        "kind": "smart" if smart else "manual",
+                        "rule": rule,
+                    }
+                )
+            )
         except MediaStoreError as exc:
             console.print(f"[red]{exc}[/]")
             raise typer.Exit(code=1) from exc
 
     @app.command("import")
     def import_media(
-        source: list[str] = typer.Argument(..., help="URL, MusicBrainz id, RSS, OPML/M3U path contents, or title - artist."),
-        preview: bool = typer.Option(False, "--preview", help="Only parse and display the preview."),
+        source: list[str] = typer.Argument(
+            ..., help="URL, MusicBrainz id, RSS, OPML/M3U path contents, or title - artist."
+        ),
+        preview: bool = typer.Option(
+            False, "--preview", help="Only parse and display the preview."
+        ),
         playlist: str = typer.Option("", "--playlist", help="Existing playlist id."),
-        playlist_name: str = typer.Option("", "--playlist-name", help="Name when a new imported playlist is needed."),
+        playlist_name: str = typer.Option(
+            "", "--playlist-name", help="Name when a new imported playlist is needed."
+        ),
         candidate: list[str] = typer.Option([], "--candidate", help="Candidate id(s) to confirm."),
     ) -> None:
         """Preview an import, or apply a newly generated preview in one local command."""
         service = MediaService()
         try:
-            result = service.preview_import(source, target_playlist_id=playlist or None, playlist_name=playlist_name)
+            result = service.preview_import(
+                source, target_playlist_id=playlist or None, playlist_name=playlist_name
+            )
             if preview:
                 _print(result)
                 return
@@ -79,4 +96,3 @@ def register(app: typer.Typer) -> None:
         except MediaStoreError as exc:
             console.print(f"[red]{exc}[/]")
             raise typer.Exit(code=1) from exc
-

@@ -331,4 +331,3 @@ class PublicAccessToken(BaseModel):
     scopes: list[str]
     created_at: str
     last_used_at: str = ""
-

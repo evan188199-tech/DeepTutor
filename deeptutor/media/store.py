@@ -455,11 +455,17 @@ class MediaStore(_SQLiteStore):
         self, item_id: str, *, position_seconds: float, duration_seconds: float, completed: bool
     ) -> MediaItem:
         with self._lock, self._connect() as conn:
-            existing = conn.execute("SELECT item_id FROM media_items WHERE item_id = ?", (item_id,)).fetchone()
+            existing = conn.execute(
+                "SELECT item_id FROM media_items WHERE item_id = ?", (item_id,)
+            ).fetchone()
             if existing is None:
                 raise MediaNotFound("Media item was not found.")
             duration = max(0.0, duration_seconds)
-            position = max(0.0, min(position_seconds, duration)) if duration else max(0.0, position_seconds)
+            position = (
+                max(0.0, min(position_seconds, duration))
+                if duration
+                else max(0.0, position_seconds)
+            )
             conn.execute(
                 """UPDATE media_items SET playback_position_seconds = ?, playback_duration_seconds = ?,
                    playback_completed = ?, updated_at = ? WHERE item_id = ?""",
@@ -469,7 +475,9 @@ class MediaStore(_SQLiteStore):
         assert row is not None
         return self._media_from_row(row)
 
-    def set_favorite_or_download(self, item_id: str, *, favorite: bool | None = None, downloaded: bool | None = None) -> MediaItem:
+    def set_favorite_or_download(
+        self, item_id: str, *, favorite: bool | None = None, downloaded: bool | None = None
+    ) -> MediaItem:
         assignments: list[str] = []
         values: list[object] = []
         if favorite is not None:
@@ -501,7 +509,11 @@ class MediaStore(_SQLiteStore):
             ("recently_added", "最近添加", SmartPlaylistRule()),
             ("recently_played", "最近播放", SmartPlaylistRule(playback_state="played")),
             ("continue_listening", "继续收听", SmartPlaylistRule(playback_state="in_progress")),
-            ("new_podcast_episodes", "新播客单集", SmartPlaylistRule(media_types=[MediaType.EPISODE])),
+            (
+                "new_podcast_episodes",
+                "新播客单集",
+                SmartPlaylistRule(media_types=[MediaType.EPISODE]),
+            ),
             ("to_learn", "待学习", SmartPlaylistRule(learning_state="not_started")),
             ("downloaded", "已下载", SmartPlaylistRule(downloaded=True)),
             ("weekly_deep_listening", "本周精听", SmartPlaylistRule(learning_state="in_progress")),
@@ -514,7 +526,14 @@ class MediaStore(_SQLiteStore):
                     """INSERT OR IGNORE INTO playlists(
                         playlist_id, name, kind, rule_json, created_at, updated_at
                     ) VALUES (?, ?, ?, ?, ?, ?)""",
-                    (playlist_id, name, PlaylistKind.SYSTEM.value, _json(rule.model_dump(mode="json")), now, now),
+                    (
+                        playlist_id,
+                        name,
+                        PlaylistKind.SYSTEM.value,
+                        _json(rule.model_dump(mode="json")),
+                        now,
+                        now,
+                    ),
                 )
 
     def create_playlist(
@@ -685,7 +704,9 @@ class MediaStore(_SQLiteStore):
             raise MediaStoreError("Only manual playlists hold stored items.")
         with self._lock, self._connect() as conn:
             rows = [
-                conn.execute("SELECT item_id FROM media_items WHERE canonical_id = ?", (canonical_id,)).fetchone()
+                conn.execute(
+                    "SELECT item_id FROM media_items WHERE canonical_id = ?", (canonical_id,)
+                ).fetchone()
                 for canonical_id in canonical_ids
             ]
             if any(row is None for row in rows):
@@ -704,13 +725,25 @@ class MediaStore(_SQLiteStore):
                         """INSERT INTO playlist_items(
                             playlist_item_id, playlist_id, item_id, position, added_at, added_from, note
                         ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                        (new_id("playlist_item"), playlist_id, str(row["item_id"]), position, now, added_from, note),
+                        (
+                            new_id("playlist_item"),
+                            playlist_id,
+                            str(row["item_id"]),
+                            position,
+                            now,
+                            added_from,
+                            note,
+                        ),
                     )
                     position += 1
                 except sqlite3.IntegrityError:
                     continue
-            conn.execute("UPDATE playlists SET updated_at = ? WHERE playlist_id = ?", (now, playlist_id))
-        self._record_mutation("playlist", playlist_id, "upsert", {"items_added": len(canonical_ids)})
+            conn.execute(
+                "UPDATE playlists SET updated_at = ? WHERE playlist_id = ?", (now, playlist_id)
+            )
+        self._record_mutation(
+            "playlist", playlist_id, "upsert", {"items_added": len(canonical_ids)}
+        )
         return self.get_playlist_items(playlist_id)
 
     def remove_playlist_item(self, playlist_id: str, playlist_item_id: str) -> bool:
@@ -724,12 +757,19 @@ class MediaStore(_SQLiteStore):
             ).rowcount
             if deleted:
                 self._normalize_positions(conn, playlist_id)
-                conn.execute("UPDATE playlists SET updated_at = ? WHERE playlist_id = ?", (utc_now(), playlist_id))
+                conn.execute(
+                    "UPDATE playlists SET updated_at = ? WHERE playlist_id = ?",
+                    (utc_now(), playlist_id),
+                )
         if deleted:
-            self._record_mutation("playlist_item", playlist_item_id, "delete", {"playlist_id": playlist_id})
+            self._record_mutation(
+                "playlist_item", playlist_item_id, "delete", {"playlist_id": playlist_id}
+            )
         return bool(deleted)
 
-    def reorder_playlist_items(self, playlist_id: str, item_ids: Sequence[str]) -> list[dict[str, Any]]:
+    def reorder_playlist_items(
+        self, playlist_id: str, item_ids: Sequence[str]
+    ) -> list[dict[str, Any]]:
         playlist = self.get_playlist_row(playlist_id)
         if playlist["kind"] not in {PlaylistKind.MANUAL.value, PlaylistKind.EXTERNAL_IMPORT.value}:
             raise MediaStoreError("Smart playlists cannot be reordered.")
@@ -753,14 +793,18 @@ class MediaStore(_SQLiteStore):
                     "UPDATE playlist_items SET position = ? WHERE playlist_id = ? AND playlist_item_id = ?",
                     (position, playlist_id, item_id),
                 )
-            conn.execute("UPDATE playlists SET updated_at = ? WHERE playlist_id = ?", (utc_now(), playlist_id))
+            conn.execute(
+                "UPDATE playlists SET updated_at = ? WHERE playlist_id = ?",
+                (utc_now(), playlist_id),
+            )
         self._record_mutation("playlist", playlist_id, "upsert", {"reordered": True})
         return self.get_playlist_items(playlist_id)
 
     @staticmethod
     def _normalize_positions(conn: sqlite3.Connection, playlist_id: str) -> None:
         rows = conn.execute(
-            "SELECT playlist_item_id FROM playlist_items WHERE playlist_id = ? ORDER BY position", (playlist_id,)
+            "SELECT playlist_item_id FROM playlist_items WHERE playlist_id = ? ORDER BY position",
+            (playlist_id,),
         ).fetchall()
         for position, row in enumerate(rows):
             conn.execute(
@@ -768,7 +812,9 @@ class MediaStore(_SQLiteStore):
                 (position, str(row["playlist_item_id"])),
             )
 
-    def materialize_smart_playlist(self, rule: SmartPlaylistRule, limit: int = 200) -> list[MediaItem]:
+    def materialize_smart_playlist(
+        self, rule: SmartPlaylistRule, limit: int = 200
+    ) -> list[MediaItem]:
         clauses: list[str] = []
         values: list[object] = []
         if rule.media_types:
@@ -808,7 +854,9 @@ class MediaStore(_SQLiteStore):
             clauses.append("published_at >= ?")
             values.append(rule.published_after)
         if rule.subscribed_only:
-            clauses.append("EXISTS (SELECT 1 FROM subscriptions s WHERE s.feed_id = media_items.canonical_id OR media_items.source_url LIKE s.source_url || '%')")
+            clauses.append(
+                "EXISTS (SELECT 1 FROM subscriptions s WHERE s.feed_id = media_items.canonical_id OR media_items.source_url LIKE s.source_url || '%')"
+            )
         where = " WHERE " + " AND ".join(clauses) if clauses else ""
         with self._lock, self._connect() as conn:
             rows = conn.execute(
@@ -819,7 +867,9 @@ class MediaStore(_SQLiteStore):
 
     # -- subscriptions, sources and learning ---------------------------
 
-    def upsert_subscription(self, feed_id: str, *, title: str, source_url: str, language: str) -> dict[str, Any]:
+    def upsert_subscription(
+        self, feed_id: str, *, title: str, source_url: str, language: str
+    ) -> dict[str, Any]:
         now = utc_now()
         with self._lock, self._connect() as conn:
             conn.execute(
@@ -834,7 +884,9 @@ class MediaStore(_SQLiteStore):
 
     def remove_subscription(self, feed_id: str) -> bool:
         with self._lock, self._connect() as conn:
-            deleted = conn.execute("DELETE FROM subscriptions WHERE feed_id = ?", (feed_id,)).rowcount
+            deleted = conn.execute(
+                "DELETE FROM subscriptions WHERE feed_id = ?", (feed_id,)
+            ).rowcount
         if deleted:
             self._record_mutation("subscription", feed_id, "delete", {})
         return bool(deleted)
@@ -845,22 +897,44 @@ class MediaStore(_SQLiteStore):
         return [dict(row) for row in rows]
 
     def put_source_mapping(
-        self, canonical_id: str, *, provider: str, source_id: str, source_url: str, confirmed: bool, preferred: bool
+        self,
+        canonical_id: str,
+        *,
+        provider: str,
+        source_id: str,
+        source_url: str,
+        confirmed: bool,
+        preferred: bool,
     ) -> dict[str, Any]:
         now = utc_now()
         with self._lock, self._connect() as conn:
             if preferred:
-                conn.execute("UPDATE source_mappings SET preferred = 0 WHERE canonical_id = ?", (canonical_id,))
+                conn.execute(
+                    "UPDATE source_mappings SET preferred = 0 WHERE canonical_id = ?",
+                    (canonical_id,),
+                )
             conn.execute(
                 """INSERT INTO source_mappings(canonical_id, provider, source_id, source_url, confirmed, preferred, updated_at)
                    VALUES (?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(canonical_id, provider, source_id) DO UPDATE SET source_url=excluded.source_url,
                        confirmed=excluded.confirmed, preferred=excluded.preferred, updated_at=excluded.updated_at""",
-                (canonical_id, provider, source_id, source_url, int(confirmed), int(preferred), now),
+                (
+                    canonical_id,
+                    provider,
+                    source_id,
+                    source_url,
+                    int(confirmed),
+                    int(preferred),
+                    now,
+                ),
             )
         return {
-            "canonical_id": canonical_id, "provider": provider, "source_id": source_id,
-            "source_url": source_url, "confirmed": confirmed, "preferred": preferred,
+            "canonical_id": canonical_id,
+            "provider": provider,
+            "source_id": source_id,
+            "source_url": source_url,
+            "confirmed": confirmed,
+            "preferred": preferred,
         }
 
     def list_source_mappings(self, canonical_id: str) -> list[dict[str, Any]]:
@@ -871,29 +945,48 @@ class MediaStore(_SQLiteStore):
             ).fetchall()
         return [
             {
-                "canonical_id": str(row["canonical_id"]), "provider": str(row["provider"]),
-                "source_id": str(row["source_id"]), "source_url": str(row["source_url"]),
-                "confirmed": bool(row["confirmed"]), "preferred": bool(row["preferred"]),
+                "canonical_id": str(row["canonical_id"]),
+                "provider": str(row["provider"]),
+                "source_id": str(row["source_id"]),
+                "source_url": str(row["source_url"]),
+                "confirmed": bool(row["confirmed"]),
+                "preferred": bool(row["preferred"]),
             }
             for row in rows
         ]
 
     def delete_preferred_source(self, canonical_id: str) -> bool:
         with self._lock, self._connect() as conn:
-            return bool(conn.execute("UPDATE source_mappings SET preferred = 0 WHERE canonical_id = ?", (canonical_id,)).rowcount)
+            return bool(
+                conn.execute(
+                    "UPDATE source_mappings SET preferred = 0 WHERE canonical_id = ?",
+                    (canonical_id,),
+                ).rowcount
+            )
 
     def get_timed_text(self, item_id: str) -> dict[str, Any]:
         self.get_media(item_id)
         with self._lock, self._connect() as conn:
             row = conn.execute("SELECT * FROM timed_text WHERE item_id = ?", (item_id,)).fetchone()
         if not row:
-            return {"item_id": item_id, "status": "unavailable", "language": "", "source": "", "cues": []}
+            return {
+                "item_id": item_id,
+                "status": "unavailable",
+                "language": "",
+                "source": "",
+                "cues": [],
+            }
         return {
-            "item_id": item_id, "status": str(row["status"]), "language": str(row["language"]),
-            "source": str(row["source"]), "cues": _loads(row["cues_json"], []),
+            "item_id": item_id,
+            "status": str(row["status"]),
+            "language": str(row["language"]),
+            "source": str(row["source"]),
+            "cues": _loads(row["cues_json"], []),
         }
 
-    def create_learning_artifact(self, item_id: str, segment_id: str, *, completed: bool, note: str) -> dict[str, Any]:
+    def create_learning_artifact(
+        self, item_id: str, segment_id: str, *, completed: bool, note: str
+    ) -> dict[str, Any]:
         self.get_media(item_id)
         now = utc_now()
         artifact_id = new_id("learning")
@@ -912,15 +1005,30 @@ class MediaStore(_SQLiteStore):
                 (artifact_id, item_id, segment_id, int(completed), note, now),
             )
             progress = conn.execute(
-                "SELECT AVG(completed) AS value FROM learning_artifacts WHERE item_id = ?", (item_id,)
+                "SELECT AVG(completed) AS value FROM learning_artifacts WHERE item_id = ?",
+                (item_id,),
             ).fetchone()["value"]
-            conn.execute("UPDATE media_items SET learning_progress = ?, updated_at = ? WHERE item_id = ?", (float(progress or 0), now, item_id))
-        return {"artifact_id": artifact_id, "item_id": item_id, "segment_id": segment_id, "status": "ready", "completed": completed, "note": note}
+            conn.execute(
+                "UPDATE media_items SET learning_progress = ?, updated_at = ? WHERE item_id = ?",
+                (float(progress or 0), now, item_id),
+            )
+        return {
+            "artifact_id": artifact_id,
+            "item_id": item_id,
+            "segment_id": segment_id,
+            "status": "ready",
+            "completed": completed,
+            "note": note,
+        }
 
     # -- import and sync bookkeeping -----------------------------------
 
     def save_import_preview(
-        self, *, candidates: list[dict[str, Any]], target_playlist_id: str | None, suggested_playlist_name: str
+        self,
+        *,
+        candidates: list[dict[str, Any]],
+        target_playlist_id: str | None,
+        suggested_playlist_name: str,
     ) -> dict[str, Any]:
         token = secrets.token_urlsafe(32)
         expires_at = (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat()
@@ -929,17 +1037,31 @@ class MediaStore(_SQLiteStore):
             conn.execute(
                 """INSERT INTO import_previews(preview_token, payload_json, target_playlist_id, suggested_playlist_name, item_count, expires_at)
                    VALUES (?, ?, ?, ?, ?, ?)""",
-                (token, _json(payload), target_playlist_id, suggested_playlist_name, len(candidates), expires_at),
+                (
+                    token,
+                    _json(payload),
+                    target_playlist_id,
+                    suggested_playlist_name,
+                    len(candidates),
+                    expires_at,
+                ),
             )
         return {
-            "preview_token": token, "expires_at": expires_at, "candidates": candidates,
-            "target_playlist_id": target_playlist_id, "suggested_playlist_name": suggested_playlist_name,
+            "preview_token": token,
+            "expires_at": expires_at,
+            "candidates": candidates,
+            "target_playlist_id": target_playlist_id,
+            "suggested_playlist_name": suggested_playlist_name,
             "item_count": len(candidates),
         }
 
-    def get_import_preview(self, preview_token: str, *, allow_consumed: bool = False) -> dict[str, Any]:
+    def get_import_preview(
+        self, preview_token: str, *, allow_consumed: bool = False
+    ) -> dict[str, Any]:
         with self._lock, self._connect() as conn:
-            row = conn.execute("SELECT * FROM import_previews WHERE preview_token = ?", (preview_token,)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM import_previews WHERE preview_token = ?", (preview_token,)
+            ).fetchone()
         if row is None:
             raise ImportPreviewNotFound("Import preview was not found.")
         if str(row["expires_at"]) <= utc_now():
@@ -948,10 +1070,14 @@ class MediaStore(_SQLiteStore):
             raise MediaStoreError("Import preview has already been applied.")
         payload = _loads(row["payload_json"], {"candidates": []})
         return {
-            "preview_token": str(row["preview_token"]), "expires_at": str(row["expires_at"]),
+            "preview_token": str(row["preview_token"]),
+            "expires_at": str(row["expires_at"]),
             "candidates": payload.get("candidates", []),
-            "target_playlist_id": str(row["target_playlist_id"]) if row["target_playlist_id"] else None,
-            "suggested_playlist_name": str(row["suggested_playlist_name"]), "item_count": int(row["item_count"]),
+            "target_playlist_id": str(row["target_playlist_id"])
+            if row["target_playlist_id"]
+            else None,
+            "suggested_playlist_name": str(row["suggested_playlist_name"]),
+            "item_count": int(row["item_count"]),
             "consumed_at": str(row["consumed_at"]),
         }
 
@@ -975,7 +1101,16 @@ class MediaStore(_SQLiteStore):
             )
         return self.get_import_job(job_id)
 
-    def update_import_job(self, job_id: str, *, status: ImportJobStatus, playlist_id: str | None = None, imported: int = 0, failed: int = 0, error: str = "") -> dict[str, Any]:
+    def update_import_job(
+        self,
+        job_id: str,
+        *,
+        status: ImportJobStatus,
+        playlist_id: str | None = None,
+        imported: int = 0,
+        failed: int = 0,
+        error: str = "",
+    ) -> dict[str, Any]:
         with self._lock, self._connect() as conn:
             conn.execute(
                 """UPDATE import_jobs SET status=?, playlist_id=COALESCE(?, playlist_id),
@@ -990,10 +1125,15 @@ class MediaStore(_SQLiteStore):
         if not row:
             raise MediaNotFound("Import job was not found.")
         return {
-            "job_id": str(row["job_id"]), "status": str(row["status"]),
-            "preview_token": str(row["preview_token"]), "playlist_id": str(row["playlist_id"]) if row["playlist_id"] else None,
-            "imported_item_count": int(row["imported_item_count"]), "failed_item_count": int(row["failed_item_count"]),
-            "created_at": str(row["created_at"]), "updated_at": str(row["updated_at"]), "error": str(row["error"]),
+            "job_id": str(row["job_id"]),
+            "status": str(row["status"]),
+            "preview_token": str(row["preview_token"]),
+            "playlist_id": str(row["playlist_id"]) if row["playlist_id"] else None,
+            "imported_item_count": int(row["imported_item_count"]),
+            "failed_item_count": int(row["failed_item_count"]),
+            "created_at": str(row["created_at"]),
+            "updated_at": str(row["updated_at"]),
+            "error": str(row["error"]),
         }
 
     def get_idempotent_response(self, key: str, operation: str) -> dict[str, Any] | None:
@@ -1012,7 +1152,9 @@ class MediaStore(_SQLiteStore):
                 (key, operation, _json(response), utc_now()),
             )
 
-    def _record_mutation(self, entity_type: str, entity_id: str, operation: str, payload: dict[str, Any]) -> None:
+    def _record_mutation(
+        self, entity_type: str, entity_id: str, operation: str, payload: dict[str, Any]
+    ) -> None:
         with self._lock, self._connect() as conn:
             conn.execute(
                 """INSERT OR IGNORE INTO sync_mutations(mutation_id, entity_type, entity_id, operation, payload_json, occurred_at)
@@ -1027,11 +1169,17 @@ class MediaStore(_SQLiteStore):
                     """INSERT OR IGNORE INTO sync_mutations(mutation_id, entity_type, entity_id, operation, payload_json, occurred_at)
                        VALUES (?, ?, ?, ?, ?, ?)""",
                     (
-                        mutation["mutation_id"], mutation["entity_type"], mutation["entity_id"],
-                        mutation["operation"], _json(mutation.get("payload") or {}), mutation.get("occurred_at") or utc_now(),
+                        mutation["mutation_id"],
+                        mutation["entity_type"],
+                        mutation["entity_id"],
+                        mutation["operation"],
+                        _json(mutation.get("payload") or {}),
+                        mutation.get("occurred_at") or utc_now(),
                     ),
                 )
-            cursor = conn.execute("SELECT COALESCE(MAX(sequence), 0) AS cursor FROM sync_mutations").fetchone()["cursor"]
+            cursor = conn.execute(
+                "SELECT COALESCE(MAX(sequence), 0) AS cursor FROM sync_mutations"
+            ).fetchone()["cursor"]
         return str(cursor)
 
     def pull_mutations(self, cursor: str, limit: int = 500) -> dict[str, Any]:
@@ -1049,9 +1197,12 @@ class MediaStore(_SQLiteStore):
             "cursor": next_cursor,
             "mutations": [
                 {
-                    "mutation_id": str(row["mutation_id"]), "entity_type": str(row["entity_type"]),
-                    "entity_id": str(row["entity_id"]), "operation": str(row["operation"]),
-                    "payload": _loads(row["payload_json"], {}), "occurred_at": str(row["occurred_at"]),
+                    "mutation_id": str(row["mutation_id"]),
+                    "entity_type": str(row["entity_type"]),
+                    "entity_id": str(row["entity_id"]),
+                    "operation": str(row["operation"]),
+                    "payload": _loads(row["payload_json"], {}),
+                    "occurred_at": str(row["occurred_at"]),
                 }
                 for row in rows
             ],
@@ -1059,6 +1210,13 @@ class MediaStore(_SQLiteStore):
 
 
 __all__ = [
-    "CatalogStore", "ImportPreviewNotFound", "MediaNotFound", "MediaStore", "MediaStoreError",
-    "PlaylistNotFound", "media_id_for", "new_id", "utc_now",
+    "CatalogStore",
+    "ImportPreviewNotFound",
+    "MediaNotFound",
+    "MediaStore",
+    "MediaStoreError",
+    "PlaylistNotFound",
+    "media_id_for",
+    "new_id",
+    "utc_now",
 ]

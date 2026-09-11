@@ -11,8 +11,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from mcp.server.auth.provider import AccessToken
 from mcp.server.auth.middleware.auth_context import get_access_token
+from mcp.server.auth.provider import AccessToken
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.fastmcp import FastMCP
 from mcp.types import ToolAnnotations
@@ -25,7 +25,6 @@ from deeptutor.multi_user.paths import local_admin_user, user_context
 from .access import MediaAccessStore
 from .models import PlaylistKind
 from .service import MediaService
-
 
 T = TypeVar("T")
 
@@ -71,8 +70,12 @@ def _with_service(required_scope: str, action: Callable[[MediaService], T]) -> T
 
 
 _read = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
-_write = ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)
-_delete = ToolAnnotations(readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False)
+_write = ToolAnnotations(
+    readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False
+)
+_delete = ToolAnnotations(
+    readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False
+)
 
 
 def create_media_mcp_server() -> FastMCP:
@@ -97,34 +100,66 @@ def create_media_mcp_server() -> FastMCP:
         stateless_http=True,
     )
 
-    @server.tool(description="Search the user's library and cached public catalog.", annotations=_read)
+    @server.tool(
+        description="Search the user's library and cached public catalog.", annotations=_read
+    )
     def search_media(query: str, limit: int = 20) -> dict[str, Any]:
-        return _with_service("media:read", lambda service: {"items": service.search(query, limit=max(1, min(limit, 100)))})
+        return _with_service(
+            "media:read",
+            lambda service: {"items": service.search(query, limit=max(1, min(limit, 100)))},
+        )
 
-    @server.tool(description="Resolve a MusicBrainz Recording MBID without changing the user's library.", annotations=_read)
+    @server.tool(
+        description="Resolve a MusicBrainz Recording MBID without changing the user's library.",
+        annotations=_read,
+    )
     def resolve_media(recording_mbid: str) -> dict[str, Any]:
-        return _with_service("media:read", lambda service: service.resolve_recording(recording_mbid, persist=False))
+        return _with_service(
+            "media:read", lambda service: service.resolve_recording(recording_mbid, persist=False)
+        )
 
-    @server.tool(description="List manual, imported, smart and system playlists.", annotations=_read)
+    @server.tool(
+        description="List manual, imported, smart and system playlists.", annotations=_read
+    )
     def list_playlists() -> dict[str, Any]:
-        return _with_service("playlist:read", lambda service: {"playlists": service.store.list_playlists()})
+        return _with_service(
+            "playlist:read", lambda service: {"playlists": service.store.list_playlists()}
+        )
 
     @server.tool(description="Get a playlist and its resolved items.", annotations=_read)
     def get_playlist(playlist_id: str) -> dict[str, Any]:
         return _with_service("playlist:read", lambda service: service.playlist_detail(playlist_id))
 
     @server.tool(description="Create a manual or rule-backed smart playlist.", annotations=_write)
-    def create_playlist(name: str, description: str = "", smart_rule: dict[str, Any] | None = None) -> dict[str, Any]:
+    def create_playlist(
+        name: str, description: str = "", smart_rule: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         def action(service: MediaService) -> dict[str, Any]:
             kind = PlaylistKind.SMART.value if smart_rule is not None else PlaylistKind.MANUAL.value
-            return service.create_playlist({"name": name, "description": description, "kind": kind, "rule": smart_rule or {}})
+            return service.create_playlist(
+                {"name": name, "description": description, "kind": kind, "rule": smart_rule or {}}
+            )
+
         return _with_service("playlist:write", action)
 
-    @server.tool(description="Parse an import and return matches, duplicates and failures without adding anything.", annotations=_write)
-    def preview_playlist_import(sources: list[str], playlist_id: str | None = None, playlist_name: str = "") -> dict[str, Any]:
-        return _with_service("import:write", lambda service: service.preview_import(sources, target_playlist_id=playlist_id, playlist_name=playlist_name))
+    @server.tool(
+        description="Parse an import and return matches, duplicates and failures without adding anything.",
+        annotations=_write,
+    )
+    def preview_playlist_import(
+        sources: list[str], playlist_id: str | None = None, playlist_name: str = ""
+    ) -> dict[str, Any]:
+        return _with_service(
+            "import:write",
+            lambda service: service.preview_import(
+                sources, target_playlist_id=playlist_id, playlist_name=playlist_name
+            ),
+        )
 
-    @server.tool(description="Apply a previously reviewed import preview exactly once when given a new idempotency key.", annotations=_write)
+    @server.tool(
+        description="Apply a previously reviewed import preview exactly once when given a new idempotency key.",
+        annotations=_write,
+    )
     def apply_playlist_import(
         preview_token: str,
         idempotency_key: str,
@@ -134,28 +169,56 @@ def create_media_mcp_server() -> FastMCP:
     ) -> dict[str, Any]:
         def action(service: MediaService) -> dict[str, Any]:
             result = service.apply_import(
-                preview_token=preview_token, selected_candidate_ids=selected_candidate_ids,
-                target_playlist_id=playlist_id, playlist_name=playlist_name,
+                preview_token=preview_token,
+                selected_candidate_ids=selected_candidate_ids,
+                target_playlist_id=playlist_id,
+                playlist_name=playlist_name,
                 idempotency_key=idempotency_key,
             )
             return result.payload
+
         return _with_service("import:write", action)
 
-    @server.tool(description="Add existing canonical media ids to a manual playlist.", annotations=_write)
+    @server.tool(
+        description="Add existing canonical media ids to a manual playlist.", annotations=_write
+    )
     def add_playlist_items(playlist_id: str, canonical_ids: list[str]) -> dict[str, Any]:
-        return _with_service("playlist:write", lambda service: {"items": service.add_playlist_items(playlist_id, canonical_ids, added_from="mcp")})
+        return _with_service(
+            "playlist:write",
+            lambda service: {
+                "items": service.add_playlist_items(playlist_id, canonical_ids, added_from="mcp")
+            },
+        )
 
     @server.tool(description="Remove one stored item from a manual playlist.", annotations=_delete)
     def remove_playlist_items(playlist_id: str, item_id: str) -> dict[str, Any]:
-        return _with_service("playlist:write", lambda service: {"removed": service.store.remove_playlist_item(playlist_id, item_id)})
+        return _with_service(
+            "playlist:write",
+            lambda service: {"removed": service.store.remove_playlist_item(playlist_id, item_id)},
+        )
 
-    @server.tool(description="Set the complete item ordering of a manual playlist.", annotations=_write)
+    @server.tool(
+        description="Set the complete item ordering of a manual playlist.", annotations=_write
+    )
     def reorder_playlist_items(playlist_id: str, item_ids: list[str]) -> dict[str, Any]:
-        return _with_service("playlist:write", lambda service: {"items": service.store.reorder_playlist_items(playlist_id, item_ids)})
+        return _with_service(
+            "playlist:write",
+            lambda service: {"items": service.store.reorder_playlist_items(playlist_id, item_ids)},
+        )
 
-    @server.tool(description="Subscribe to a podcast RSS feed after it has been resolved or confirmed.", annotations=_write)
-    def subscribe_podcast(feed_id: str, title: str = "", source_url: str = "", language: str = "") -> dict[str, Any]:
-        return _with_service("subscription:write", lambda service: service.store.upsert_subscription(feed_id, title=title, source_url=source_url, language=language))
+    @server.tool(
+        description="Subscribe to a podcast RSS feed after it has been resolved or confirmed.",
+        annotations=_write,
+    )
+    def subscribe_podcast(
+        feed_id: str, title: str = "", source_url: str = "", language: str = ""
+    ) -> dict[str, Any]:
+        return _with_service(
+            "subscription:write",
+            lambda service: service.store.upsert_subscription(
+                feed_id, title=title, source_url=source_url, language=language
+            ),
+        )
 
     @server.tool(description="Read the status of an import job.", annotations=_read)
     def get_import_job(job_id: str) -> dict[str, Any]:

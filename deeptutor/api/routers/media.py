@@ -12,9 +12,6 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from deeptutor.multi_user.audit import log_usage
-from deeptutor.multi_user.context import get_current_user
-
 from deeptutor.media.access import MEDIA_SCOPES, MediaAccessStore
 from deeptutor.media.auth import MediaRequestPrincipal, require_media_auth, require_scope
 from deeptutor.media.models import (
@@ -31,8 +28,15 @@ from deeptutor.media.models import (
     TokenCreate,
 )
 from deeptutor.media.service import MediaService
-from deeptutor.media.store import ImportPreviewNotFound, MediaNotFound, MediaStoreError, PlaylistNotFound, new_id
-
+from deeptutor.media.store import (
+    ImportPreviewNotFound,
+    MediaNotFound,
+    MediaStoreError,
+    PlaylistNotFound,
+    new_id,
+)
+from deeptutor.multi_user.audit import log_usage
+from deeptutor.multi_user.context import get_current_user
 
 router = APIRouter()
 public_router = APIRouter()
@@ -91,7 +95,9 @@ def _audit(action: str, resource_id: str) -> None:
 
 
 @router.get("/bootstrap")
-async def media_bootstrap(principal: MediaRequestPrincipal = Depends(require_media_auth)) -> dict[str, Any]:
+async def media_bootstrap(
+    principal: MediaRequestPrincipal = Depends(require_media_auth),
+) -> dict[str, Any]:
     _require(principal, "media:read")
     return _service().bootstrap()
 
@@ -132,7 +138,9 @@ async def media_search(
 
 
 @router.get("/library")
-async def media_library(principal: MediaRequestPrincipal = Depends(require_media_auth)) -> dict[str, Any]:
+async def media_library(
+    principal: MediaRequestPrincipal = Depends(require_media_auth),
+) -> dict[str, Any]:
     _require(principal, "media:read")
     return _service().library()
 
@@ -190,7 +198,9 @@ async def unsubscribe_podcast(
 
 
 @router.get("/playlists")
-async def list_playlists(principal: MediaRequestPrincipal = Depends(require_media_auth)) -> dict[str, Any]:
+async def list_playlists(
+    principal: MediaRequestPrincipal = Depends(require_media_auth),
+) -> dict[str, Any]:
     _require(principal, "playlist:read")
     return {"playlists": _service().store.list_playlists()}
 
@@ -229,7 +239,9 @@ async def update_playlist(
 ) -> dict[str, Any]:
     _require(principal, "playlist:write")
     try:
-        result = _service().update_playlist(playlist_id, payload.model_dump(exclude_unset=True, mode="json"))
+        result = _service().update_playlist(
+            playlist_id, payload.model_dump(exclude_unset=True, mode="json")
+        )
         _audit("playlist_updated", playlist_id)
         return result
     except Exception as exc:
@@ -258,7 +270,9 @@ async def add_playlist_items(
 ) -> dict[str, Any]:
     _require(principal, "playlist:write")
     try:
-        items = _service().add_playlist_items(playlist_id, payload.canonical_ids, added_from=payload.added_from, note=payload.note)
+        items = _service().add_playlist_items(
+            playlist_id, payload.canonical_ids, added_from=payload.added_from, note=payload.note
+        )
         _audit("playlist_items_added", playlist_id)
         return {"items": items}
     except Exception as exc:
@@ -301,7 +315,11 @@ async def preview_media_import(
 ) -> dict[str, Any]:
     _require(principal, "import:write")
     try:
-        return _service().preview_import(payload.raw_inputs(), target_playlist_id=payload.target_playlist_id, playlist_name=payload.playlist_name)
+        return _service().preview_import(
+            payload.raw_inputs(),
+            target_playlist_id=payload.target_playlist_id,
+            playlist_name=payload.playlist_name,
+        )
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -380,7 +398,14 @@ async def set_preferred_source(
 ) -> dict[str, Any]:
     _require(principal, "playlist:write")
     try:
-        return _service().store.put_source_mapping(f"mbid:recording:{mbid.lower()}", provider=payload.provider, source_id=payload.source_id, source_url=payload.source_url, confirmed=payload.confirmed, preferred=True)
+        return _service().store.put_source_mapping(
+            f"mbid:recording:{mbid.lower()}",
+            provider=payload.provider,
+            source_id=payload.source_id,
+            source_url=payload.source_url,
+            confirmed=payload.confirmed,
+            preferred=True,
+        )
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -403,7 +428,12 @@ async def save_playback_progress(
 ) -> dict[str, Any]:
     _require(principal, "media:read")
     try:
-        item = _service().store.set_playback(item_id, position_seconds=payload.position_seconds, duration_seconds=payload.duration_seconds, completed=payload.completed)
+        item = _service().store.set_playback(
+            item_id,
+            position_seconds=payload.position_seconds,
+            duration_seconds=payload.duration_seconds,
+            completed=payload.completed,
+        )
         return {"item": item}
     except Exception as exc:
         raise _error(exc) from exc
@@ -441,7 +471,12 @@ async def request_transcription(
     _require(principal, "playlist:write")
     try:
         _service().store.get_media(item_id)
-        return {"job_id": new_id("transcription"), "item_id": item_id, "status": "queued", "provider": "server_asr"}
+        return {
+            "job_id": new_id("transcription"),
+            "item_id": item_id,
+            "status": "queued",
+            "provider": "server_asr",
+        }
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -455,7 +490,12 @@ async def save_learning_artifact(
 ) -> dict[str, Any]:
     _require(principal, "playlist:write")
     try:
-        return _service().store.create_learning_artifact(item_id, segment_id, completed=bool(payload.get("completed")), note=str(payload.get("note") or "")[:2_000])
+        return _service().store.create_learning_artifact(
+            item_id,
+            segment_id,
+            completed=bool(payload.get("completed")),
+            note=str(payload.get("note") or "")[:2_000],
+        )
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -467,7 +507,11 @@ async def push_sync_mutations(
 ) -> dict[str, Any]:
     _require(principal, "playlist:write")
     try:
-        return {"cursor": _service().store.push_mutations([mutation.model_dump() for mutation in payload.mutations])}
+        return {
+            "cursor": _service().store.push_mutations(
+                [mutation.model_dump() for mutation in payload.mutations]
+            )
+        }
     except Exception as exc:
         raise _error(exc) from exc
 
@@ -492,16 +536,23 @@ async def create_media_token(
 ) -> dict[str, Any]:
     _session_only(principal)
     try:
-        public, token = MediaAccessStore().issue_token(owner_id=get_current_user().id, name=payload.name, scopes=payload.scopes, kind="mcp")
+        public, token = MediaAccessStore().issue_token(
+            owner_id=get_current_user().id, name=payload.name, scopes=payload.scopes, kind="mcp"
+        )
         return {"token": token, "access_token": public}
     except Exception as exc:
         raise _error(exc) from exc
 
 
 @router.get("/tokens")
-async def list_media_tokens(principal: MediaRequestPrincipal = Depends(require_media_auth)) -> dict[str, Any]:
+async def list_media_tokens(
+    principal: MediaRequestPrincipal = Depends(require_media_auth),
+) -> dict[str, Any]:
     _session_only(principal)
-    return {"tokens": MediaAccessStore().list_tokens(get_current_user().id, kind="mcp"), "available_scopes": sorted(MEDIA_SCOPES)}
+    return {
+        "tokens": MediaAccessStore().list_tokens(get_current_user().id, kind="mcp"),
+        "available_scopes": sorted(MEDIA_SCOPES),
+    }
 
 
 @router.delete("/tokens/{token_id}")
@@ -510,7 +561,11 @@ async def revoke_media_token(
     principal: MediaRequestPrincipal = Depends(require_media_auth),
 ) -> dict[str, str]:
     _session_only(principal)
-    return {"status": "revoked" if MediaAccessStore().revoke_token(get_current_user().id, token_id) else "missing"}
+    return {
+        "status": "revoked"
+        if MediaAccessStore().revoke_token(get_current_user().id, token_id)
+        else "missing"
+    }
 
 
 @public_router.post("/pairing/sessions", status_code=status.HTTP_201_CREATED)
@@ -526,16 +581,19 @@ async def confirm_pairing_session(
 ) -> dict[str, str]:
     _session_only(principal)
     try:
-        return MediaAccessStore().confirm_pairing(pairing_id, payload.pairing_code, owner_id=get_current_user().id)
+        return MediaAccessStore().confirm_pairing(
+            pairing_id, payload.pairing_code, owner_id=get_current_user().id
+        )
     except Exception as exc:
         raise _error(exc) from exc
 
 
 @public_router.post("/pairing/sessions/{pairing_id}/exchange")
-async def exchange_pairing_session(pairing_id: str, payload: PairingExchangeRequest) -> dict[str, Any]:
+async def exchange_pairing_session(
+    pairing_id: str, payload: PairingExchangeRequest
+) -> dict[str, Any]:
     try:
         public, token = MediaAccessStore().exchange_pairing(pairing_id, payload.pairing_code)
         return {"mobile_token": token, "access_token": public}
     except Exception as exc:
         raise _error(exc) from exc
-

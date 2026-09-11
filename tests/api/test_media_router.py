@@ -38,13 +38,19 @@ def test_playlist_import_preview_and_replay(client: TestClient) -> None:
 
     preview = client.post(
         "/api/media/imports/preview",
-        json={"sources": ["Artist - First", "this is unrecognized"], "target_playlist_id": playlist_id},
+        json={
+            "sources": ["Artist - First", "this is unrecognized"],
+            "target_playlist_id": playlist_id,
+        },
     )
     assert preview.status_code == 200
     candidate = preview.json()["candidates"][0]
     assert candidate["status"] == "needs_confirmation"
 
-    body = {"preview_token": preview.json()["preview_token"], "selected_candidate_ids": [candidate["candidate_id"]]}
+    body = {
+        "preview_token": preview.json()["preview_token"],
+        "selected_candidate_ids": [candidate["candidate_id"]],
+    }
     headers = {"Idempotency-Key": "router-import-key"}
     first = client.post("/api/media/imports", json=body, headers=headers)
     replay = client.post("/api/media/imports", json=body, headers=headers)
@@ -70,5 +76,8 @@ def test_pairing_creates_separate_mobile_credential(client: TestClient) -> None:
     )
     assert exchange.status_code == 200
     assert exchange.json()["mobile_token"].startswith("lw_mobile_")
-    mobile = client.get("/api/media/bootstrap", headers={"Authorization": f"Bearer {exchange.json()['mobile_token']}"})
+    mobile = client.get(
+        "/api/media/bootstrap",
+        headers={"Authorization": f"Bearer {exchange.json()['mobile_token']}"},
+    )
     assert mobile.status_code == 200

@@ -26,13 +26,24 @@ def test_manual_and_smart_playlists_keep_distinct_storage_models(tmp_path: Path)
     second = store.upsert_media(_item("rss:two", MediaType.EPISODE))
     store.set_favorite_or_download(first.item_id, favorite=True)
 
-    manual = store.create_playlist(name="Mixed", description="", kind=__import__("deeptutor.media.models", fromlist=["PlaylistKind"]).PlaylistKind.MANUAL)
-    store.add_playlist_items(manual["playlist_id"], [first.canonical_id, second.canonical_id], added_from="test", note="")
+    manual = store.create_playlist(
+        name="Mixed",
+        description="",
+        kind=__import__("deeptutor.media.models", fromlist=["PlaylistKind"]).PlaylistKind.MANUAL,
+    )
+    store.add_playlist_items(
+        manual["playlist_id"], [first.canonical_id, second.canonical_id], added_from="test", note=""
+    )
     items = store.get_playlist_items(manual["playlist_id"])
     assert [row["media"]["media_type"] for row in items] == ["music", "episode"]
 
-    reordered = store.reorder_playlist_items(manual["playlist_id"], [items[1]["item_id"], items[0]["item_id"]])
-    assert [row["media"]["canonical_id"] for row in reordered] == [second.canonical_id, first.canonical_id]
+    reordered = store.reorder_playlist_items(
+        manual["playlist_id"], [items[1]["item_id"], items[0]["item_id"]]
+    )
+    assert [row["media"]["canonical_id"] for row in reordered] == [
+        second.canonical_id,
+        first.canonical_id,
+    ]
 
     smart = store.create_playlist(
         name="Liked",
@@ -40,13 +51,21 @@ def test_manual_and_smart_playlists_keep_distinct_storage_models(tmp_path: Path)
         kind=__import__("deeptutor.media.models", fromlist=["PlaylistKind"]).PlaylistKind.SMART,
         rule=SmartPlaylistRule(favorite=True),
     )
-    assert store.get_playlist_items(smart["playlist_id"])[0]["media"]["canonical_id"] == first.canonical_id
+    assert (
+        store.get_playlist_items(smart["playlist_id"])[0]["media"]["canonical_id"]
+        == first.canonical_id
+    )
     with pytest.raises(MediaStoreError, match="cannot be reordered"):
         store.reorder_playlist_items(smart["playlist_id"], ["anything"])
 
 
 def test_import_preview_is_lossless_and_idempotent(tmp_path: Path) -> None:
-    service = MediaService(store=MediaStore(tmp_path), catalog=__import__("deeptutor.media.store", fromlist=["CatalogStore"]).CatalogStore(tmp_path / "catalog.sqlite3"))
+    service = MediaService(
+        store=MediaStore(tmp_path),
+        catalog=__import__("deeptutor.media.store", fromlist=["CatalogStore"]).CatalogStore(
+            tmp_path / "catalog.sqlite3"
+        ),
+    )
     preview = service.preview_import(
         [
             "https://musicbrainz.org/recording/12345678-1234-1234-1234-123456789012",
@@ -82,7 +101,12 @@ def test_home_promotes_downloads_when_offline_and_keeps_section_ids_unique(tmp_p
     store = MediaStore(tmp_path)
     downloaded = store.upsert_media(_item("mbid:recording:offline"))
     store.set_favorite_or_download(downloaded.item_id, downloaded=True)
-    service = MediaService(store=store, catalog=__import__("deeptutor.media.store", fromlist=["CatalogStore"]).CatalogStore(tmp_path / "catalog.sqlite3"))
+    service = MediaService(
+        store=store,
+        catalog=__import__("deeptutor.media.store", fromlist=["CatalogStore"]).CatalogStore(
+            tmp_path / "catalog.sqlite3"
+        ),
+    )
 
     sections = service.home(offline=True)
     assert sections[0].kind.value == "offline"

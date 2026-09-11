@@ -18,7 +18,6 @@ from deeptutor.multi_user import paths as user_paths
 
 from .store import MediaStoreError, new_id, utc_now
 
-
 MEDIA_SCOPES = frozenset(
     {"media:read", "playlist:read", "playlist:write", "subscription:write", "import:write"}
 )
@@ -126,12 +125,26 @@ class MediaAccessStore:
                     token_id, owner_id, name, token_hash, token_prefix, token_kind,
                     scopes_json, created_at, expires_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (token_id, owner_id, name.strip(), self._hash(raw_token), prefix, kind, json.dumps(safe_scopes), created_at, expires_at),
+                (
+                    token_id,
+                    owner_id,
+                    name.strip(),
+                    self._hash(raw_token),
+                    prefix,
+                    kind,
+                    json.dumps(safe_scopes),
+                    created_at,
+                    expires_at,
+                ),
             )
         return (
             {
-                "token_id": token_id, "name": name.strip(), "prefix": prefix,
-                "scopes": safe_scopes, "created_at": created_at, "last_used_at": "",
+                "token_id": token_id,
+                "name": name.strip(),
+                "prefix": prefix,
+                "scopes": safe_scopes,
+                "created_at": created_at,
+                "last_used_at": "",
             },
             raw_token,
         )
@@ -144,13 +157,17 @@ class MediaAccessStore:
             values.append(kind)
         with self._lock, self._connect() as conn:
             rows = conn.execute(
-                f"SELECT * FROM media_access_tokens WHERE {' AND '.join(clauses)} ORDER BY created_at DESC", values
+                f"SELECT * FROM media_access_tokens WHERE {' AND '.join(clauses)} ORDER BY created_at DESC",
+                values,
             ).fetchall()
         return [
             {
-                "token_id": str(row["token_id"]), "name": str(row["name"]),
-                "prefix": str(row["token_prefix"]), "scopes": json.loads(str(row["scopes_json"])),
-                "created_at": str(row["created_at"]), "last_used_at": str(row["last_used_at"]),
+                "token_id": str(row["token_id"]),
+                "name": str(row["name"]),
+                "prefix": str(row["token_prefix"]),
+                "scopes": json.loads(str(row["scopes_json"])),
+                "created_at": str(row["created_at"]),
+                "last_used_at": str(row["last_used_at"]),
                 "kind": str(row["token_kind"]),
             }
             for row in rows
@@ -165,7 +182,9 @@ class MediaAccessStore:
                 ).rowcount
             )
 
-    def verify(self, raw_token: str, *, allowed_kinds: set[str] | None = None) -> MediaPrincipal | None:
+    def verify(
+        self, raw_token: str, *, allowed_kinds: set[str] | None = None
+    ) -> MediaPrincipal | None:
         if not raw_token.startswith("lw_"):
             return None
         with self._lock, self._connect() as conn:
@@ -184,10 +203,15 @@ class MediaAccessStore:
             expires_at = str(row["expires_at"])
             if expires_at and expires_at <= utc_now():
                 return None
-            conn.execute("UPDATE media_access_tokens SET last_used_at = ? WHERE token_id = ?", (utc_now(), str(row["token_id"])))
+            conn.execute(
+                "UPDATE media_access_tokens SET last_used_at = ? WHERE token_id = ?",
+                (utc_now(), str(row["token_id"])),
+            )
         return MediaPrincipal(
-            token_id=str(row["token_id"]), owner_id=str(row["owner_id"]),
-            scopes=frozenset(json.loads(str(row["scopes_json"]))), kind=kind,
+            token_id=str(row["token_id"]),
+            owner_id=str(row["owner_id"]),
+            scopes=frozenset(json.loads(str(row["scopes_json"]))),
+            kind=kind,
         )
 
     def create_pairing_session(self, *, device_name: str = "LinguaWave") -> dict[str, str]:
@@ -197,13 +221,22 @@ class MediaAccessStore:
         with self._lock, self._connect() as conn:
             conn.execute(
                 "INSERT INTO media_pairing_sessions(pairing_id, code_hash, device_name, expires_at) VALUES (?, ?, ?, ?)",
-                (pairing_id, self._hash(code), device_name.strip()[:80] or "LinguaWave", expires_at),
+                (
+                    pairing_id,
+                    self._hash(code),
+                    device_name.strip()[:80] or "LinguaWave",
+                    expires_at,
+                ),
             )
         return {"pairing_id": pairing_id, "pairing_code": code, "expires_at": expires_at}
 
-    def confirm_pairing(self, pairing_id: str, pairing_code: str, *, owner_id: str) -> dict[str, str]:
+    def confirm_pairing(
+        self, pairing_id: str, pairing_code: str, *, owner_id: str
+    ) -> dict[str, str]:
         with self._lock, self._connect() as conn:
-            row = conn.execute("SELECT * FROM media_pairing_sessions WHERE pairing_id = ?", (pairing_id,)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM media_pairing_sessions WHERE pairing_id = ?", (pairing_id,)
+            ).fetchone()
             if row is None or str(row["expires_at"]) <= utc_now():
                 raise MediaStoreError("Pairing session is missing or expired.")
             if not hmac.compare_digest(str(row["code_hash"]), self._hash(pairing_code)):
@@ -218,7 +251,9 @@ class MediaAccessStore:
 
     def exchange_pairing(self, pairing_id: str, pairing_code: str) -> tuple[dict[str, object], str]:
         with self._lock, self._connect() as conn:
-            row = conn.execute("SELECT * FROM media_pairing_sessions WHERE pairing_id = ?", (pairing_id,)).fetchone()
+            row = conn.execute(
+                "SELECT * FROM media_pairing_sessions WHERE pairing_id = ?", (pairing_id,)
+            ).fetchone()
             if row is None or str(row["expires_at"]) <= utc_now():
                 raise MediaStoreError("Pairing session is missing or expired.")
             if not hmac.compare_digest(str(row["code_hash"]), self._hash(pairing_code)):
@@ -229,12 +264,21 @@ class MediaAccessStore:
                 raise MediaStoreError("Pairing code has already been exchanged.")
             owner_id = str(row["owner_id"])
             device_name = str(row["device_name"])
-            conn.execute("UPDATE media_pairing_sessions SET exchanged_at = ? WHERE pairing_id = ?", (utc_now(), pairing_id))
+            conn.execute(
+                "UPDATE media_pairing_sessions SET exchanged_at = ? WHERE pairing_id = ?",
+                (utc_now(), pairing_id),
+            )
         return self.issue_token(
             owner_id=owner_id,
             name=device_name,
             kind="mobile",
-            scopes=["media:read", "playlist:read", "playlist:write", "subscription:write", "import:write"],
+            scopes=[
+                "media:read",
+                "playlist:read",
+                "playlist:write",
+                "subscription:write",
+                "import:write",
+            ],
             expires_in_days=365,
         )
 
