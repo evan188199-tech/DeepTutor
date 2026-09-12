@@ -14223,10 +14223,10 @@ export type SchemaQuizResultsRequest =
 export type SchemaReactEditRequest = components["schemas"]["ReactEditRequest"];
 export type SchemaReactEditResponse =
   components["schemas"]["ReactEditResponse"];
-export type SchemaReadingProgressSummary =
-  components["schemas"]["ReadingProgressSummary"];
 export type SchemaReadingModelSelection =
   components["schemas"]["ReadingModelSelection"];
+export type SchemaReadingProgressSummary =
+  components["schemas"]["ReadingProgressSummary"];
 export type SchemaReadingReference = components["schemas"]["ReadingReference"];
 export type SchemaReadingSessionCreateRequest =
   components["schemas"]["ReadingSessionCreateRequest"];
