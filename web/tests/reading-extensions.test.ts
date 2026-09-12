@@ -3,6 +3,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
+import {
+  inferSpeechLocale,
+  selectSpeechVoice,
+} from "../lib/read-aloud-speech";
+
 const component = readFileSync(
   path.resolve(process.cwd(), "components/reading/ReadingExtensionBar.tsx"),
   "utf8",
@@ -47,17 +52,41 @@ test("a malformed extension catalog cannot crash the whole reader", () => {
   );
 });
 
-test("browser speech is stoppable and cannot continue after navigation", () => {
+test("read aloud prefers configured server TTS and falls back to browser speech", () => {
+  assert.match(component, /apiUrl\("\/api\/voice\/tts"\)/);
+  assert.match(component, /await playServerSpeech\(text, token\)/);
+  assert.match(component, /speakBrowserSpeech\(text, locale, token\)/);
   assert.match(
     component,
     /const \[speaking, setSpeaking\] = useState\(false\)/,
   );
-  assert.match(component, /function stopSpeaking\(\)/);
+  assert.match(component, /const stopSpeaking = useCallback\(\(\) =>/);
   assert.match(component, /window\.speechSynthesis\?\.cancel\(\)/);
-  assert.match(component, /utterance\.onend = \(\) => setSpeaking\(false\)/);
-  assert.match(component, /utterance\.onerror = \(\) => setSpeaking\(false\)/);
-  assert.match(component, /\}, \[locator, materialId\]\);/);
+  assert.match(component, /audio\?\.pause\(\)/);
+  assert.match(component, /URL\.revokeObjectURL\(url\)/);
+  assert.match(component, /utterance\.onend = \(\)/);
+  assert.match(component, /utterance\.onerror = \(\)/);
+  assert.match(component, /\}, \[locator, materialId, stopSpeaking\]\);/);
   assert.match(component, /aria-label=\{t\("Stop reading aloud"\)\}/);
+});
+
+test("read aloud infers the spoken language from material text", () => {
+  assert.equal(inferSpeechLocale("Hello world", "zh-CN"), "en-US");
+  assert.equal(inferSpeechLocale("你好，世界", "en-US"), "zh-CN");
+  assert.equal(inferSpeechLocale("こんにちは", "zh-CN"), "ja-JP");
+  assert.equal(inferSpeechLocale("안녕하세요", "zh-CN"), "ko-KR");
+});
+
+test("read aloud selects a matching enhanced browser voice", () => {
+  const voices = [
+    { lang: "en-US", name: "Compact" },
+    { lang: "zh-CN", name: "Tingting Premium" },
+    { lang: "en-US", name: "Ava Premium" },
+  ];
+
+  assert.equal(selectSpeechVoice(voices, "en-US")?.name, "Ava Premium");
+  assert.equal(selectSpeechVoice(voices, "zh-CN")?.name, "Tingting Premium");
+  assert.equal(selectSpeechVoice(voices, "fr-FR"), undefined);
 });
 
 test("the built-in read-aloud action is localized", () => {
