@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, Sparkles, Square, Volume2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { apiFetch, apiUrl } from "@/lib/api";
 import {
   listReadingExtensions,
   runReadingExtension,
@@ -54,9 +55,27 @@ export function ReadingExtensionBar({
   const [busy, setBusy] = useState("");
   const [result, setResult] = useState<ReadingExtensionResult | null>(null);
   const [speaking, setSpeaking] = useState(false);
+  const [speechLoading, setSpeechLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
+  const speechEpochRef = useRef(0);
+
+  function clearServerAudio() {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+  }
 
   function stopSpeaking() {
+    speechEpochRef.current += 1;
     window.speechSynthesis?.cancel();
+    clearServerAudio();
+    setSpeechLoading(false);
     setSpeaking(false);
   }
 
@@ -87,7 +106,17 @@ export function ReadingExtensionBar({
   // away from the passage being read aloud — so this one keeps both keys.
   useEffect(() => {
     return () => {
+      speechEpochRef.current += 1;
       window.speechSynthesis?.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
+      }
+      setSpeechLoading(false);
       setSpeaking(false);
     };
   }, [locator, materialId]);
@@ -99,6 +128,61 @@ export function ReadingExtensionBar({
       ),
     [extensions],
   );
+
+  async function playServerTts(
+    text: string,
+    epoch: number,
+  ): Promise<boolean> {
+    const resp = await apiFetch(apiUrl("/api/voice/tts"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (epoch !== speechEpochRef.current) return true;
+    if (!resp.ok) return false;
+    const blob = await resp.blob();
+    if (epoch !== speechEpochRef.current) return true;
+    clearServerAudio();
+    const url = URL.createObjectURL(blob);
+    audioUrlRef.current = url;
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    audio.onended = () => {
+      clearServerAudio();
+      setSpeaking(false);
+    };
+    audio.onerror = () => {
+      clearServerAudio();
+      setSpeaking(false);
+    };
+    await audio.play();
+    if (epoch !== speechEpochRef.current) {
+      clearServerAudio();
+      return true;
+    }
+    setSpeaking(true);
+    return true;
+  }
+
+  function playBrowserSpeech(
+    text: string,
+    locale: string,
+    epoch: number,
+  ): boolean {
+    if (epoch !== speechEpochRef.current) return true;
+    if (!("speechSynthesis" in window)) return false;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = locale;
+    const voice = pickSpeechVoice(window.speechSynthesis.getVoices(), locale);
+    if (voice) utterance.voice = voice;
+    utterance.rate = 0.95;
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+    setSpeaking(true);
+    return true;
+  }
 
   async function run(
     extension: ReadingExtensionManifest,
@@ -119,18 +203,37 @@ export function ReadingExtensionBar({
       );
       setResult(next);
       if (next.type === "browser_speech") {
-        const text = String(next.payload.text || "");
-        if (!("speechSynthesis" in window) || !text) {
+        const text = String(next.payload.text || "").trim();
+        const locale = String(next.payload.locale || i18n.language);
+        if (!text) {
           onError(t("No speech voice is available in this browser."));
           return;
         }
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = String(next.payload.locale || i18n.language);
-        utterance.onend = () => setSpeaking(false);
-        utterance.onerror = () => setSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-        setSpeaking(true);
+        stopSpeaking();
+        const epoch = speechEpochRef.current;
+        setSpeechLoading(true);
+        try {
+          const played = await playServerTts(text, epoch);
+          if (epoch !== speechEpochRef.current) return;
+          if (!played && !playBrowserSpeech(text, locale, epoch)) {
+            onError(
+              t(
+                "Speech is unavailable. Configure TTS in Settings → Voice, or use a browser with speech support.",
+              ),
+            );
+          }
+        } catch {
+          if (epoch !== speechEpochRef.current) return;
+          if (!playBrowserSpeech(text, locale, epoch)) {
+            onError(
+              t(
+                "Speech is unavailable. Configure TTS in Settings → Voice, or use a browser with speech support.",
+              ),
+            );
+          }
+        } finally {
+          if (epoch === speechEpochRef.current) setSpeechLoading(false);
+        }
       }
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
@@ -177,13 +280,19 @@ export function ReadingExtensionBar({
           );
         })}
       </div>
-      {speaking ? (
+      {speaking || speechLoading ? (
         <div
           role="status"
           className="flex shrink-0 items-center gap-2 border-b border-[var(--border)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--muted-foreground)]"
         >
-          <Volume2 size={14} />
-          <span>{t("Reading aloud")}</span>
+          {speechLoading ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Volume2 size={14} />
+          )}
+          <span>
+            {speechLoading ? t("Preparing speech") : t("Reading aloud")}
+          </span>
           <button
             type="button"
             aria-label={t("Stop reading aloud")}
@@ -204,6 +313,37 @@ export function ReadingExtensionBar({
       ) : null}
     </>
   );
+}
+
+function pickSpeechVoice(
+  voices: SpeechSynthesisVoice[],
+  locale: string,
+): SpeechSynthesisVoice | null {
+  if (!voices.length) return null;
+  const normalized = locale.toLowerCase().replace("_", "-");
+  const language = normalized.split("-")[0] || normalized;
+  const exact =
+    voices.find((voice) => voice.lang.toLowerCase().replace("_", "-") === normalized) ||
+    null;
+  if (exact) return exact;
+  const sameLanguage = voices.filter((voice) =>
+    voice.lang.toLowerCase().replace("_", "-").startsWith(`${language}-`) ||
+    voice.lang.toLowerCase().replace("_", "-") === language,
+  );
+  if (!sameLanguage.length) return null;
+  const preferred = sameLanguage.find((voice) => {
+    const name = voice.name.toLowerCase();
+    return (
+      name.includes("premium") ||
+      name.includes("enhanced") ||
+      name.includes("neural") ||
+      name.includes("natural") ||
+      name.includes("tingting") ||
+      name.includes("meijia") ||
+      name.includes("xiaoxiao")
+    );
+  });
+  return preferred || sameLanguage[0] || null;
 }
 
 function builtInActionLabel(extensionId: string, actionId: string) {

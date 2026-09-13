@@ -361,6 +361,8 @@
   "View": "查看",
   "Close": "关闭",
   "No speech voice is available in this browser.": "此浏览器没有可用的语音。",
+  "Speech is unavailable. Configure TTS in Settings → Voice, or use a browser with speech support.": "语音不可用。请在「设置 → 语音」配置 TTS，或使用支持朗读的浏览器。",
+  "Preparing speech": "正在准备语音",
   "Explain vocabulary": "解释词汇",
   "Quiz me": "测一测",
   "Translate to English": "翻译成英文",

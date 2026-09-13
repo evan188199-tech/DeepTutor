@@ -60,6 +60,31 @@ test("browser speech is stoppable and cannot continue after navigation", () => {
   assert.match(component, /aria-label=\{t\("Stop reading aloud"\)\}/);
 });
 
+test("read aloud prefers server TTS and falls back to browser speech", () => {
+  assert.match(component, /apiUrl\("\/api\/voice\/tts"\)/);
+  assert.match(component, /async function playServerTts/);
+  assert.match(component, /function playBrowserSpeech/);
+  assert.match(component, /function pickSpeechVoice/);
+  assert.match(component, /const played = await playServerTts\(text, epoch\)/);
+  assert.match(
+    component,
+    /!played && !playBrowserSpeech\(text, locale, epoch\)/,
+  );
+  assert.match(component, /speechEpochRef/);
+  assert.match(component, /URL\.revokeObjectURL/);
+  assert.match(component, /speechLoading/);
+  assert.match(english, /"Preparing speech": "Preparing speech"/);
+  assert.match(chinese, /"Preparing speech": "正在准备语音"/);
+  assert.match(
+    english,
+    /"Speech is unavailable\. Configure TTS in Settings → Voice, or use a browser with speech support\."/,
+  );
+  assert.match(
+    chinese,
+    /"Speech is unavailable\. Configure TTS in Settings → Voice, or use a browser with speech support\.": "语音不可用/,
+  );
+});
+
 test("the built-in read-aloud action is localized", () => {
   assert.match(
     component,
