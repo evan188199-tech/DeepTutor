@@ -6,6 +6,33 @@ aloud, study guidance, vocabulary, quiz, and explicit-target translation
 extensions in this group; when no extension is installed, the Reader does not
 render an extension toolbar.
 
+## Independent installation
+
+Reading extensions are regular Python packages. They do not need to be merged
+into the DeepTutor repository or listed in its dependency set. Any package
+that registers a valid entry point in the `deeptutor.reading_extensions`
+group is discovered automatically when DeepTutor starts.
+
+Install a third-party extension the same way you install any Python package:
+
+```bash
+pip install your-reading-plugin.whl
+```
+
+Or from source:
+
+```bash
+pip install path/to/your-reading-plugin
+```
+
+After installation, restart DeepTutor. The extension's toolbar buttons appear
+in the Reader based on its declared actions. Uninstalling the package removes
+the extension on the next restart.
+
+For working examples that you can install directly, see the public
+[deeptutor-reading-plugins](https://github.com/evan188199-tech/deeptutor-reading-plugins)
+repository.
+
 An entry point resolves to an object or class with a validated `manifest` and a
 `run_action(action, context)` method. The current protocol version is `1`.
 
