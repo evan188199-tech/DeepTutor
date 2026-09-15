@@ -108,6 +108,20 @@ export interface SessionSummary {
   preferences?: SessionPreferences;
 }
 
+export interface SessionSearchResult extends SessionSummary {
+  match_excerpt: string;
+  match_role?: "user" | "assistant" | null;
+  match_message_id?: number | string | null;
+  match_created_at?: number | null;
+}
+
+export interface SessionSearchPage {
+  sessions: SessionSearchResult[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export interface ActiveTurnSummary {
   id: string;
   turn_id: string;
@@ -199,6 +213,24 @@ export async function listAllSessions(options?: {
     sessions.push(...page);
     if (page.length < pageSize) return sessions;
   }
+}
+
+export async function searchSessions(
+  query: string,
+  limit = 50,
+  offset = 0,
+  signal?: AbortSignal,
+): Promise<SessionSearchPage> {
+  const qs = new URLSearchParams({
+    q: query,
+    limit: String(limit),
+    offset: String(offset),
+  });
+  const response = await apiFetch(apiUrl(`/api/sessions/search?${qs}`), {
+    cache: "no-store",
+    signal,
+  });
+  return expectJson<SessionSearchPage>(response);
 }
 
 export async function getSession(
@@ -296,6 +328,35 @@ export async function deleteSession(sessionId: string): Promise<void> {
     method: "DELETE",
   });
   await expectJson<{ deleted: boolean }>(response);
+  invalidateClientCache("sessions:");
+}
+
+export async function listRecycleBin(
+  limit = 50,
+  offset = 0,
+): Promise<SessionSummary[]> {
+  const response = await apiFetch(
+    apiUrl(`/api/sessions/recycle-bin?limit=${limit}&offset=${offset}`),
+  );
+  const data = await expectJson<{ sessions: SessionSummary[] }>(response);
+  return data.sessions ?? [];
+}
+
+export async function restoreSession(sessionId: string): Promise<void> {
+  const response = await apiFetch(
+    apiUrl(`/api/sessions/${sessionId}/restore`),
+    { method: "POST" },
+  );
+  await expectJson<{ restored: boolean }>(response);
+  invalidateClientCache("sessions:");
+}
+
+export async function purgeSession(sessionId: string): Promise<void> {
+  const response = await apiFetch(
+    apiUrl(`/api/sessions/${sessionId}/purge`),
+    { method: "DELETE" },
+  );
+  await expectJson<{ purged: boolean }>(response);
   invalidateClientCache("sessions:");
 }
 

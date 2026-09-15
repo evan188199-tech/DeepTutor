@@ -209,8 +209,8 @@ def serve(
         reload=reload,
         workers=backend_workers,
         reload_excludes=["web/*", "data/*"] if reload else None,
-        # Next sanitizes proxy headers; disable Uvicorn's generic XFF trust so
-        # request.client still identifies the actual backend peer.
+        # Keep request.client tied to the actual peer; XFF is client-controlled
+        # unless the deployment explicitly provides a trusted proxy.
         proxy_headers=False,
         ws_max_size=get_ws_max_size(),
         timeout_keep_alive=HTTP_KEEP_ALIVE_TIMEOUT,

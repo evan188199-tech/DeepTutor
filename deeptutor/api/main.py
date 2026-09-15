@@ -540,6 +540,7 @@ from deeptutor.api.routers import (
 from deeptutor.api.routers import (
     tools as tools_router,
 )
+from deeptutor.api.routers.file_library import router as file_library_router  # noqa: E402
 from deeptutor.api.routers.multi_user import router as multi_user_router  # noqa: E402
 
 # Auth router is public — login/logout/register/status require no token
@@ -570,7 +571,6 @@ app.include_router(
     tags=["multi-user"],
     dependencies=_auth,
 )
-
 app.include_router(question.router, prefix="/api/question", tags=["question"], dependencies=_auth)
 app.include_router(knowledge.router, prefix="/api", tags=["knowledge-bases"], dependencies=_auth)
 app.include_router(imports.router, prefix="/api/imports", tags=["imports"], dependencies=_auth)
@@ -581,6 +581,12 @@ app.include_router(
     mastery_path.router,
     prefix="/api/mastery-paths",
     tags=["mastery-path"],
+    dependencies=_auth,
+)
+app.include_router(
+    file_library_router,
+    prefix="/files/library",
+    tags=["library"],
     dependencies=_auth,
 )
 # WebSocket handlers authenticate inside the connection before ``accept``.
