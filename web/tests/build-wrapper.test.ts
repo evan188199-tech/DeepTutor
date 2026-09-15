@@ -94,6 +94,21 @@ test("the build wrapper restores every generated checked-in input", () => {
     /finally\s*{\s*if \(buildTsconfigPath\) rmSync/,
     "generated inputs must be restored even when the build fails",
   );
+  assert.match(
+    source,
+    /function copyStandaloneRuntimeAssets\(distDir\)/,
+    "standalone releases must carry their client asset trees",
+  );
+  assert.match(
+    source,
+    /path\.join\(webRoot, "public"\)/,
+    "standalone releases must include public assets",
+  );
+  assert.match(
+    source,
+    /path\.join\(webRoot, distDir, "static"\)/,
+    "standalone releases must include Next static assets",
+  );
 });
 
 test("the standalone bundle is rooted where the Python launcher expects it", () => {

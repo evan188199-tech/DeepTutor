@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -53,6 +59,31 @@ function prepareBuildTsconfig(snapshots, distDir) {
   return buildTsconfigPath;
 }
 
+/**
+ * Next's output tracing deliberately excludes public files and the client
+ * static tree. A standalone server needs both alongside server.js; without
+ * them it can return HTML while every script and stylesheet is a 404.
+ */
+function copyStandaloneRuntimeAssets(distDir) {
+  const standaloneDir = path.join(webRoot, distDir, "standalone");
+  if (!existsSync(standaloneDir)) {
+    throw new Error(`Missing standalone output at ${standaloneDir}.`);
+  }
+
+  for (const [source, target] of [
+    [path.join(webRoot, "public"), path.join(standaloneDir, "public")],
+    [
+      path.join(webRoot, distDir, "static"),
+      path.join(standaloneDir, distDir, "static"),
+    ],
+  ]) {
+    if (!existsSync(source)) {
+      throw new Error(`Missing runtime asset tree at ${source}.`);
+    }
+    cpSync(source, target, { recursive: true });
+  }
+}
+
 const snapshots = generatedPaths
   .filter((path) => process.env.DEEPTUTOR_BUILD_SKIP_MISSING !== "1")
   .map((path) => [path, snapshot(path)]);
@@ -99,5 +130,7 @@ if (isEntry) {
     console.error(result.error);
     process.exit(1);
   }
-  process.exit(result.status ?? 1);
+  const status = result.status ?? 1;
+  if (status === 0) copyStandaloneRuntimeAssets(distDir);
+  process.exit(status);
 }
