@@ -45,6 +45,7 @@ from deeptutor.reading.extract import extract_material, synthesise_outline
 from deeptutor.reading.models import (
     MAX_TEXT_SELECTOR_CHARS,
     Annotation,
+    BilingualGroup,
     MaterialManifest,
     MaterialNotFound,
     OutlineEntry,
@@ -72,6 +73,7 @@ BOOKMARKS_DIR = "bookmarks"
 # scans, and the file is rewritten whole on every change.
 MAX_BOOKMARKS = 200
 UNIT_REFS_NAME = "unit_refs.json"
+BILINGUAL_UNITS_NAME = "bilingual_units.json"
 UNITS_DIR = "units"
 RAW_DIR = "raw"
 ASSETS_DIR = "assets"
@@ -719,6 +721,20 @@ class ReadingStore:
             return [UnitReference(locator=index) for index in range(1, manifest.unit_count + 1)]
         refs = [UnitReference.from_dict(row) for row in rows if isinstance(row, dict)]
         return [row for row in refs if 1 <= row.locator <= manifest.unit_count]
+
+    def bilingual_groups(self, material_id: str, locator: int) -> list[BilingualGroup]:
+        """Return saved source/translation pairs for one material unit."""
+        manifest = self.manifest(material_id)
+        if not 1 <= locator <= manifest.unit_count:
+            raise ReadingError(
+                f"{manifest.unit} {locator} is out of range — "
+                f"this material has {manifest.unit_count}."
+            )
+        rows = _read_json(self._dir(material_id) / BILINGUAL_UNITS_NAME)
+        if not isinstance(rows, list):
+            return []
+        parsed = [BilingualGroup.from_dict(row) for row in rows if isinstance(row, dict)]
+        return [row for row in parsed if row.locator == locator and row.source_markdown.strip()]
 
     def position(self, material_id: str) -> ReadingPosition:
         """Return the last viewport, defaulting to the first locator."""

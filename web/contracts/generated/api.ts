@@ -5939,6 +5939,26 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/reading/materials/{material_id}/units/{locator}/bilingual": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Get Bilingual Unit
+     * @description Saved source/translation groups, without generating new text.
+     */
+    readonly get: operations["get_bilingual_unit_api_reading_materials__material_id__units__locator__bilingual_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/reading/supported-formats": {
     readonly parameters: {
       readonly query?: never;
@@ -9498,6 +9518,32 @@ export interface components {
       /** Operation Id */
       readonly operation_id: string;
     };
+    /** BilingualGroupPayload */
+    readonly BilingualGroupPayload: {
+      /** Confidence */
+      readonly confidence: number;
+      /** Group Id */
+      readonly group_id: string;
+      /** Locator */
+      readonly locator: number;
+      /** Low Confidence */
+      readonly low_confidence: boolean;
+      /** Source Language */
+      readonly source_language: string;
+      /** Source Markdown */
+      readonly source_markdown: string;
+      /** Target Language */
+      readonly target_language: string;
+      /** Translation Markdown */
+      readonly translation_markdown: string;
+    };
+    /** BilingualUnit */
+    readonly BilingualUnit: {
+      /** Groups */
+      readonly groups?: readonly components["schemas"]["BilingualGroupPayload"][];
+      /** Locator */
+      readonly locator: number;
+    };
     /** Body_consume_tunnel_handoff_api_auth_handoff_consume_post */
     readonly Body_consume_tunnel_handoff_api_auth_handoff_consume_post: {
       /** Code */
@@ -11357,6 +11403,15 @@ export interface components {
        * @default 0
        */
       readonly annotation_count: number;
+      /**
+       * Bilingual Available
+       * @default false
+       */
+      readonly bilingual_available: boolean;
+      /** Bilingual Languages */
+      readonly bilingual_languages?: readonly string[];
+      /** Bilingual Pairing Ids */
+      readonly bilingual_pairing_ids?: readonly string[];
       /**
        * Byte Size
        * @default 0
@@ -13956,6 +14011,9 @@ export type SchemaAuthStatusResponse =
   components["schemas"]["AuthStatusResponse"];
 export type SchemaAutoMarkRequest = components["schemas"]["AutoMarkRequest"];
 export type SchemaAutoMarkResponse = components["schemas"]["AutoMarkResponse"];
+export type SchemaBilingualGroupPayload =
+  components["schemas"]["BilingualGroupPayload"];
+export type SchemaBilingualUnit = components["schemas"]["BilingualUnit"];
 export type SchemaBodyConsumeTunnelHandoffApiAuthHandoffConsumePost =
   components["schemas"]["Body_consume_tunnel_handoff_api_auth_handoff_consume_post"];
 export type SchemaBodyCreateKnowledgeBaseApiKnowledgeBasesPost =
@@ -27670,6 +27728,42 @@ export interface operations {
         };
         content: {
           readonly "application/json": components["schemas"]["UnitText"];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_bilingual_unit_api_reading_materials__material_id__units__locator__bilingual_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly locator: number;
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["BilingualUnit"];
         };
       };
       /** @description Validation Error */

@@ -58,6 +58,10 @@ export interface MaterialInfo {
   source_url?: string;
   revision?: number;
   annotation_count: number;
+  /** Saved per-locator source/translation data is available. */
+  bilingual_available?: boolean;
+  bilingual_languages?: string[];
+  bilingual_pairing_ids?: string[];
   reading_progress?: ReadingProgressSummary | null;
 }
 
@@ -281,6 +285,29 @@ export async function getUnitText(
     await apiFetch(apiUrl(`${BASE}/materials/${materialId}/units/${locator}`), {
       cache: "no-store",
     }),
+  );
+}
+
+export interface BilingualGroup {
+  group_id: string;
+  locator: number;
+  source_markdown: string;
+  translation_markdown: string;
+  source_language: string;
+  target_language: string;
+  confidence: number;
+  low_confidence: boolean;
+}
+
+export async function getBilingualUnit(
+  materialId: string,
+  locator: number,
+): Promise<{ locator: number; groups: BilingualGroup[] }> {
+  return unwrap(
+    await apiFetch(
+      apiUrl(`${BASE}/materials/${materialId}/units/${locator}/bilingual`),
+      { cache: "no-store" },
+    ),
   );
 }
 

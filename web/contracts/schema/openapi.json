@@ -757,6 +757,74 @@
         "title": "AutoMarkResponse",
         "type": "object"
       },
+      "BilingualGroupPayload": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "group_id": {
+            "title": "Group Id",
+            "type": "string"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "integer"
+          },
+          "low_confidence": {
+            "title": "Low Confidence",
+            "type": "boolean"
+          },
+          "source_language": {
+            "title": "Source Language",
+            "type": "string"
+          },
+          "source_markdown": {
+            "title": "Source Markdown",
+            "type": "string"
+          },
+          "target_language": {
+            "title": "Target Language",
+            "type": "string"
+          },
+          "translation_markdown": {
+            "title": "Translation Markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_id",
+          "locator",
+          "source_markdown",
+          "translation_markdown",
+          "source_language",
+          "target_language",
+          "confidence",
+          "low_confidence"
+        ],
+        "title": "BilingualGroupPayload",
+        "type": "object"
+      },
+      "BilingualUnit": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/BilingualGroupPayload"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "locator"
+        ],
+        "title": "BilingualUnit",
+        "type": "object"
+      },
       "Body_consume_tunnel_handoff_api_auth_handoff_consume_post": {
         "properties": {
           "code": {
@@ -5193,6 +5261,25 @@
             "default": 0,
             "title": "Annotation Count",
             "type": "integer"
+          },
+          "bilingual_available": {
+            "default": false,
+            "title": "Bilingual Available",
+            "type": "boolean"
+          },
+          "bilingual_languages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Bilingual Languages",
+            "type": "array"
+          },
+          "bilingual_pairing_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Bilingual Pairing Ids",
+            "type": "array"
           },
           "byte_size": {
             "default": 0,
@@ -38326,6 +38413,90 @@
           }
         },
         "summary": "Get Unit",
+        "tags": [
+          "reading"
+        ]
+      }
+    },
+    "/api/reading/materials/{material_id}/units/{locator}/bilingual": {
+      "get": {
+        "description": "Saved source/translation groups, without generating new text.",
+        "operationId": "get_bilingual_unit_api_reading_materials__material_id__units__locator__bilingual_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "locator",
+            "required": true,
+            "schema": {
+              "title": "Locator",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BilingualUnit"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Bilingual Unit",
         "tags": [
           "reading"
         ]
