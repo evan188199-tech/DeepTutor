@@ -12,9 +12,12 @@ import {
 } from "react";
 import {
   ALargeSmall,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Loader2,
+  Languages,
   Minus,
   Plus,
   RotateCcw,
@@ -23,8 +26,12 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import RichMarkdownRenderer from "@/components/common/RichMarkdownRenderer";
-import type { AnnotationItem, UnitKind } from "@/lib/reading-api";
-import { getUnitText } from "@/lib/reading-api";
+import type {
+  AnnotationItem,
+  BilingualGroup,
+  UnitKind,
+} from "@/lib/reading-api";
+import { getBilingualUnit, getUnitText } from "@/lib/reading-api";
 import {
   DEFAULT_FONT_SIZE,
   DEFAULT_LINE_WIDTH,
@@ -64,6 +71,7 @@ export interface TextUnitViewProps {
   unit: UnitKind;
   unitCount: number;
   contentFormat?: "plain_text" | "web_markdown";
+  bilingualAvailable?: boolean;
   annotations: AnnotationItem[];
   jump: JumpRequest | null;
   highlightedAnnotationId?: string | null;
@@ -89,6 +97,7 @@ export function TextUnitView({
   unit,
   unitCount,
   contentFormat = "plain_text",
+  bilingualAvailable = false,
   annotations,
   jump,
   highlightedAnnotationId,
@@ -115,12 +124,15 @@ export function TextUnitView({
   } | null>(null);
   const [locator, setLocator] = useState(1);
   const [text, setText] = useState("");
+  const [bilingualGroups, setBilingualGroups] = useState<BilingualGroup[]>([]);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fontSize, setFontSize] = useState(DEFAULT_FONT_SIZE);
   const [lineWidth, setLineWidth] = useState(DEFAULT_LINE_WIDTH);
   const [serif, setSerif] = useState(true);
   const [readerTheme, setReaderTheme] = useState<ReaderTheme>("auto");
+  const [bilingualEnabled, setBilingualEnabled] = useState(false);
   const isWebMarkdown = contentFormat === "web_markdown";
   // Sepia and Night are whole-surface paper: a sheet drawn on top of them
   // would be a second, differently coloured page inside the first.
@@ -135,6 +147,7 @@ export function TextUnitView({
       setLineWidth(value.lineWidth);
       setSerif(value.serif);
       setReaderTheme(value.readerTheme);
+      setBilingualEnabled(value.bilingual);
     } catch {
       // Invalid or unavailable local storage falls back to readable defaults.
     }
@@ -147,13 +160,22 @@ export function TextUnitView({
         lineWidth: number;
         serif: boolean;
         readerTheme: ReaderTheme;
+        bilingual: boolean;
       }>,
     ) => {
-      const merged = { fontSize, lineWidth, serif, readerTheme, ...next };
+      const merged = {
+        fontSize,
+        lineWidth,
+        serif,
+        readerTheme,
+        bilingual: bilingualEnabled,
+        ...next,
+      };
       setFontSize(merged.fontSize);
       setLineWidth(merged.lineWidth);
       setSerif(merged.serif);
       setReaderTheme(merged.readerTheme);
+      setBilingualEnabled(merged.bilingual);
       try {
         browserStorage.writeRaw(
           "local",
@@ -164,7 +186,7 @@ export function TextUnitView({
         // Preferences still apply for the current session.
       }
     },
-    [fontSize, lineWidth, readerTheme, serif],
+    [bilingualEnabled, fontSize, lineWidth, readerTheme, serif],
   );
 
   const changeFontSize = useCallback(
@@ -220,11 +242,18 @@ export function TextUnitView({
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setBilingualGroups([]);
+    setExpandedGroups(new Set());
     (async () => {
-      try {
-        const unitText = await getUnitText(materialId, locator);
-        if (!cancelled) setText(unitText.text);
-      } catch (loadError) {
+      const [unitResult, bilingualResult] = await Promise.allSettled([
+        getUnitText(materialId, locator),
+        bilingualAvailable && bilingualEnabled
+          ? getBilingualUnit(materialId, locator)
+          : Promise.resolve({ locator, groups: [] as BilingualGroup[] }),
+      ]);
+
+      if (unitResult.status === "rejected") {
+        const loadError = unitResult.reason;
         if (!cancelled) {
           setError(
             loadError instanceof Error
@@ -232,14 +261,24 @@ export function TextUnitView({
               : t("Could not load this section."),
           );
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
+      if (!cancelled && unitResult.status === "fulfilled") {
+        setText(unitResult.value.text);
+      }
+      if (
+        !cancelled &&
+        bilingualResult.status === "fulfilled" &&
+        bilingualAvailable &&
+        bilingualEnabled
+      ) {
+        setBilingualGroups(bilingualResult.value.groups);
+      }
+      if (!cancelled) setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [materialId, locator, t]);
+  }, [bilingualAvailable, bilingualEnabled, materialId, locator, t]);
 
   useEffect(() => {
     onVisibleLocatorChange?.(locator);
@@ -530,6 +569,21 @@ export function TextUnitView({
               })
             }
           />
+          {bilingualAvailable ? (
+            <PreferenceButton
+              label={
+                bilingualEnabled
+                  ? t("Disable bilingual assistance")
+                  : t("Enable bilingual assistance")
+              }
+              icon={Languages}
+              active={bilingualEnabled}
+              onClick={() => {
+                if (bilingualEnabled) setExpandedGroups(new Set());
+                updatePreferences({ bilingual: !bilingualEnabled });
+              }}
+            />
+          ) : null}
           <PreferenceButton
             label={t("Reset reading display")}
             icon={RotateCcw}
@@ -604,6 +658,19 @@ export function TextUnitView({
               <span className="text-[var(--muted-foreground)]">
                 {t("This section has no extractable text.")}
               </span>
+            ) : bilingualEnabled && bilingualGroups.length ? (
+              <BilingualText
+                groups={bilingualGroups}
+                expandedGroups={expandedGroups}
+                onToggle={(groupId) =>
+                  setExpandedGroups((current) => {
+                    const next = new Set(current);
+                    if (next.has(groupId)) next.delete(groupId);
+                    else next.add(groupId);
+                    return next;
+                  })
+                }
+              />
             ) : isWebMarkdown ? (
               <RichMarkdownRenderer
                 content={text}
@@ -653,6 +720,72 @@ function PreferenceButton({
     >
       <Icon size={15} />
     </button>
+  );
+}
+
+function BilingualText({
+  groups,
+  expandedGroups,
+  onToggle,
+}: {
+  groups: BilingualGroup[];
+  expandedGroups: Set<string>;
+  onToggle: (groupId: string) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className="space-y-5">
+      {groups.map((group, index) => {
+        const canReveal = group.translation_markdown.trim().length > 0;
+        const expanded = expandedGroups.has(group.group_id);
+        return (
+          <section
+            key={group.group_id || `${group.locator}-${index}`}
+            data-bilingual-group={group.group_id}
+          >
+            <RichMarkdownRenderer
+              content={group.source_markdown}
+              allowHtml={false}
+              enableMath
+              enableCode
+              enableMermaid={false}
+              enableImages
+              variant="prose"
+            />
+            {canReveal && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => onToggle(group.group_id)}
+                  aria-expanded={expanded}
+                  className="inline-flex h-7 items-center gap-1 rounded-md border border-[var(--border)] px-2 text-[11px] text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+                >
+                  <span>{expanded ? t("Hide Chinese") : t("Show Chinese")}</span>
+                  {expanded ? (
+                    <ChevronUp size={13} />
+                  ) : (
+                    <ChevronDown size={13} />
+                  )}
+                </button>
+                {expanded && (
+                  <div className="mt-2 border-l-2 border-[color-mix(in_srgb,var(--primary)_40%,transparent)] pl-3 text-[var(--muted-foreground)]">
+                    <RichMarkdownRenderer
+                      content={group.translation_markdown}
+                      allowHtml={false}
+                      enableMath
+                      enableCode
+                      enableMermaid={false}
+                      enableImages
+                      variant="prose"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        );
+      })}
+    </div>
   );
 }
 

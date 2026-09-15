@@ -5,6 +5,8 @@ export interface ReaderDisplayPreferences {
   lineWidth: number;
   serif: boolean;
   readerTheme: ReaderTheme;
+  /** Opt-in: only bilingual materials expose their saved translations. */
+  bilingual: boolean;
 }
 
 export const DEFAULT_FONT_SIZE = 17;
@@ -18,6 +20,7 @@ export const DEFAULT_READER_DISPLAY_PREFERENCES: ReaderDisplayPreferences = {
   lineWidth: DEFAULT_LINE_WIDTH,
   serif: true,
   readerTheme: "auto",
+  bilingual: false,
 };
 
 function bounded(
@@ -61,6 +64,10 @@ export function normaliseReaderDisplayPreferences(
         ? row.serif
         : DEFAULT_READER_DISPLAY_PREFERENCES.serif,
     readerTheme,
+    bilingual:
+      typeof row.bilingual === "boolean"
+        ? row.bilingual
+        : DEFAULT_READER_DISPLAY_PREFERENCES.bilingual,
   };
 }
 

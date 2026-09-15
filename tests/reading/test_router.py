@@ -7,6 +7,7 @@ boot every other router; the routes themselves are the real ones.
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 import zipfile
 
@@ -459,6 +460,76 @@ def test_unit_text_out_of_range_is_a_400_with_the_real_range(client: TestClient)
     material = _upload(client)
 
     response = client.get(f"/api/reading/materials/{material['material_id']}/units/99")
+
+    assert response.status_code == 400
+    assert "2" in response.json()["detail"]
+
+
+def test_bilingual_unit_reads_saved_alignment_groups(client: TestClient) -> None:
+    material = _upload(client)
+    material_id = material["material_id"]
+    material_dir = reading._store().root / material_id
+    manifest_path = material_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest.update(
+        {
+            "bilingual_available": True,
+            "bilingual_languages": ["en", "zh"],
+            "bilingual_pairing_ids": ["docs.example.com"],
+        }
+    )
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    (material_dir / "bilingual_units.json").write_text(
+        json.dumps(
+            [
+                {
+                    "group_id": "page-one",
+                    "locator": 1,
+                    "en_content": "Chapter one.",
+                    "zh_content": "第一章。",
+                },
+                {
+                    "group_id": "page-two",
+                    "locator": 2,
+                    "source_markdown": "Chapter two.",
+                    "translation_markdown": "第二章。",
+                    "source_language": "en",
+                    "target_language": "zh",
+                    "confidence": 0.9,
+                    "low_confidence": False,
+                },
+                "",
+            ],
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    detail = client.get(f"/api/reading/materials/{material_id}").json()
+    body = client.get(f"/api/reading/materials/{material_id}/units/2/bilingual").json()
+
+    assert detail["bilingual_available"] is True
+    assert detail["bilingual_languages"] == ["en", "zh"]
+    assert detail["bilingual_pairing_ids"] == ["docs.example.com"]
+    assert body["locator"] == 2
+    assert body["groups"] == [
+        {
+            "group_id": "page-two",
+            "locator": 2,
+            "source_markdown": "Chapter two.",
+            "translation_markdown": "第二章。",
+            "source_language": "en",
+            "target_language": "zh",
+            "confidence": 0.9,
+            "low_confidence": False,
+        }
+    ]
+
+
+def test_bilingual_unit_out_of_range_keeps_unit_error(client: TestClient) -> None:
+    material = _upload(client)
+
+    response = client.get(f"/api/reading/materials/{material['material_id']}/units/99/bilingual")
 
     assert response.status_code == 400
     assert "2" in response.json()["detail"]

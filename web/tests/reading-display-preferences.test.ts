@@ -36,6 +36,7 @@ test("reset includes typography and theme preferences", () => {
     lineWidth: 84,
     serif: true,
     readerTheme: "auto",
+    bilingual: false,
   });
   assert.match(
     reader,
@@ -51,7 +52,13 @@ test("stored preferences are bounded and malformed values fall back", () => {
       serif: false,
       readerTheme: "night",
     }),
-    { fontSize: 28, lineWidth: 48, serif: false, readerTheme: "night" },
+    {
+      fontSize: 28,
+      lineWidth: 48,
+      serif: false,
+      readerTheme: "night",
+      bilingual: false,
+    },
   );
   assert.deepEqual(
     normaliseReaderDisplayPreferences({ readerTheme: "invalid" }),
@@ -60,8 +67,23 @@ test("stored preferences are bounded and malformed values fall back", () => {
       lineWidth: 84,
       serif: true,
       readerTheme: "auto",
+      bilingual: false,
     },
   );
+});
+
+test("bilingual assistance is opt-in and material-gated", () => {
+  assert.equal(
+    normaliseReaderDisplayPreferences({ bilingual: true }).bilingual,
+    true,
+  );
+  assert.equal(
+    normaliseReaderDisplayPreferences({ bilingual: "yes" }).bilingual,
+    false,
+  );
+  assert.match(reader, /bilingualAvailable = false/);
+  assert.match(reader, /bilingualAvailable && bilingualEnabled/);
+  assert.match(reader, /getBilingualUnit\(materialId, locator\)/);
 });
 
 test("keyboard zoom is handled only while the reader is active", () => {
@@ -102,6 +124,10 @@ test("reader display copy is translated", () => {
     "Use serif font",
     "Change line width ({{width}} characters)",
     "Change reading theme",
+    "Enable bilingual assistance",
+    "Disable bilingual assistance",
+    "Show Chinese",
+    "Hide Chinese",
   ]) {
     const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     assert.match(en, new RegExp(`"${escaped}": "`));
