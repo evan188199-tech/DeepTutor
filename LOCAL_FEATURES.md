@@ -122,6 +122,17 @@ Playwright golden paths, and the upstream v1.5.16 gateway test set.
 5. Continue MN4 write-back as a separate Phase 2 chain; do not mix it with a
    release upgrade or read-only bridge fixes.
 
+## Active upstream watch
+
+Check GitHub notifications once daily. If an item's state is unchanged, take no
+action and leave its discussion thread quiet.
+
+| Item | Watch state and action |
+| --- | --- |
+| [PR #1385](https://github.com/HKUDS/DeepTutor/pull/1385) | As of 2026-09-14, it is open, mergeable, and CI-green. Act only on merge, review feedback, CI failure, closure, or rejection. Once merged, update issue #902's body to mark durable scheduling handled by #1385, then prepare `feat(web-source): add bilingual source pairing (#902)` from the refreshed `origin/dev`. |
+| [Issue #902](https://github.com/HKUDS/DeepTutor/issues/902) | Treat the issue body as the source of current scope and preserve its historical comments. Add a comment only for a new scope declaration, a related PR, a material scope change, or a closing summary. |
+| [PR #1430](https://github.com/HKUDS/DeepTutor/pull/1430) | Track crawler policy separately. After it merges, remove the corresponding remaining-scope bullet from #902 or mark it handled by #1430. |
+
 ## MarginNote 4 v1.5.16 usage
 
 The upstream release includes the server bridge and web management UI, not the
