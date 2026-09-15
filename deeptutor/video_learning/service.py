@@ -345,10 +345,12 @@ class TimedMediaStore:
                     changed = True
         return changed
 
-    def get(self, material_id: str) -> dict[str, Any]:
+    def get(self, material_id: str, *, lock_held: bool = False) -> dict[str, Any]:
         payload = self._load(material_id)
         if not self._repair_transcript_text(payload):
             return payload
+        if lock_held:
+            return self.save(payload)
         # Re-read while holding the material lock so a stale repair cannot
         # overwrite progress, notes, or marks written by another request.
         with self.lock(material_id):
