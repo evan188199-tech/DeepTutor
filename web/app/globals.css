@@ -1150,8 +1150,61 @@ a[href^="#dt-locator-"]:hover {
   background: var(--muted);
   font-weight: 600;
 }
+.watching-learning-position {
+  position: absolute;
+  right: 352px;
+  top: 8px;
+  z-index: 44;
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+}
+.watching-learning-position button {
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.watching-learning-position button[aria-checked="true"] {
+  background: var(--muted);
+  font-weight: 600;
+}
+/* The panel remains one mounted component while it moves. Its transcript
+   search, current cue, and note draft therefore survive a position switch. */
+.watching-material-layout {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.watching-player-column {
+  min-width: 0;
+}
+.watching-learning-panel {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+@media (min-width: 1024px) {
+  .watching-material-layout[data-learning-panel-position="right"] {
+    flex-direction: row;
+  }
+  .watching-material-layout[data-learning-panel-position="right"] .watching-player-column {
+    flex: 1 1 auto;
+  }
+  .watching-material-layout[data-learning-panel-position="right"] .watching-learning-panel {
+    flex: 0 0 clamp(360px, 38vw, 480px);
+    border-left: 1px solid var(--border);
+  }
+}
 @media (max-width: 1023px) {
   .watching-workspace-switcher {
+    display: none;
+  }
+  .watching-learning-position {
     display: none;
   }
   .watching-mobile-tabs {

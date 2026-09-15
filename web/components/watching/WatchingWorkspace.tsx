@@ -8,14 +8,24 @@ import { useTranslation } from "react-i18next";
 import { useWatching } from "@/context/WatchingContext";
 import type { SessionConfiguration } from "@/features/chat/ChatStateAdapter";
 import { WatchingPane, WATCHING_ASK_EVENT } from "./WatchingPane";
+import { browserStorage } from "@/shared/storage";
 import {
+  DEFAULT_WATCHING_LEARNING_PANEL_POSITION,
   DEFAULT_WATCHING_WORKSPACE_PANE,
+  effectiveWatchingLearningPanelPosition,
+  isWatchingLearningPanelPosition,
+  type WatchingLearningPanelPosition,
   type WatchingWorkspacePane,
 } from "@/lib/watching-layout";
 
 /** The desktop panes are mutually exclusive: focus protects the learning
  * surface, while conversation and activity each own the companion column. */
-export type { WatchingWorkspacePane } from "@/lib/watching-layout";
+export type {
+  WatchingLearningPanelPosition,
+  WatchingWorkspacePane,
+} from "@/lib/watching-layout";
+
+const LEARNING_PANEL_POSITION_KEY = "dt:watching:learning-panel-position";
 
 /** Bind the existing player to the selected conversation, never browser-global history. */
 export function WatchingSessionBridge({
@@ -90,6 +100,32 @@ export function WatchingSurface({
       window.history.replaceState(null, "", "/watching");
   }, [params]);
   const showBrowser = browsing && !params.get("video");
+  // Start below on both server and first client paint, then restore the
+  // learner's preference after mount so this never creates a hydration shift.
+  const [learningPanelPosition, setLearningPanelPosition] =
+    useState<WatchingLearningPanelPosition>(
+      DEFAULT_WATCHING_LEARNING_PANEL_POSITION,
+    );
+  useEffect(() => {
+    const stored = browserStorage.readRaw(
+      "local",
+      LEARNING_PANEL_POSITION_KEY,
+    );
+    if (!isWatchingLearningPanelPosition(stored)) return;
+    // Yield first so the server/default-below markup hydrates unchanged.
+    const frame = window.requestAnimationFrame(() =>
+      setLearningPanelPosition(stored),
+    );
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  const selectLearningPanelPosition = (
+    position: WatchingLearningPanelPosition,
+  ) => {
+    setLearningPanelPosition(position);
+    browserStorage.writeRaw("local", LEARNING_PANEL_POSITION_KEY, position);
+  };
+  const effectiveLearningPanelPosition =
+    effectiveWatchingLearningPanelPosition(learningPanelPosition, pane);
   useEffect(() => {
     const showChat = () => onPaneChange("conversation");
     window.addEventListener(WATCHING_ASK_EVENT, showChat);
@@ -160,6 +196,30 @@ export function WatchingSurface({
           {t("Activity")}
         </button>
       </div>
+      {pane === "focus" && !showBrowser && (
+        <div
+          className="watching-learning-position"
+          role="radiogroup"
+          aria-label={t("Learning panel position")}
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={learningPanelPosition === "below"}
+            onClick={() => selectLearningPanelPosition("below")}
+          >
+            {t("Below video")}
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={learningPanelPosition === "right"}
+            onClick={() => selectLearningPanelPosition("right")}
+          >
+            {t("Right of video")}
+          </button>
+        </div>
+      )}
       <div
         className="watching-mobile-tabs"
         role="group"
@@ -188,7 +248,10 @@ export function WatchingSurface({
         </button>
       </div>
       <div className="dt-watching-shell" data-watching-open="true">
-        <WatchingPane onClose={() => onPaneChange("conversation")} />
+        <WatchingPane
+          learningPanelPosition={effectiveLearningPanelPosition}
+          onClose={() => onPaneChange("conversation")}
+        />
       </div>
     </div>
   );

@@ -44,12 +44,24 @@ import { stepTranscriptMatch, transcriptMatchIndexes } from '@/lib/transcript-se
 import { videoTimeFromHref } from '@/lib/watching-citations'
 import { WatchingPlayer } from './WatchingPlayer'
 import { transcriptFollowScrollTop } from '@/lib/transcript-follow'
+import type { WatchingLearningPanelPosition } from '@/lib/watching-layout'
+import {
+  notifyWatchingNotesChanged,
+  openWatchingNotesInInspector,
+  WATCHING_SEEK_EVENT,
+} from '@/lib/watching-notes-events'
 
 export const WATCHING_ASK_EVENT = 'dt:watching-ask'
 
 type WatchTab = 'transcript' | 'notes'
 
-export function WatchingPane({ onClose }: { onClose(): void }) {
+export function WatchingPane({
+  learningPanelPosition = 'below',
+  onClose,
+}: {
+  learningPanelPosition?: WatchingLearningPanelPosition
+  onClose(): void
+}) {
   const { t } = useTranslation()
   const {
     material,
@@ -152,6 +164,15 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     }
     document.addEventListener('click', onClick)
     return () => document.removeEventListener('click', onClick)
+  }, [])
+
+  useEffect(() => {
+    const onSeek = (event: Event) => {
+      const seconds = (event as CustomEvent<{ seconds?: number }>).detail?.seconds
+      if (typeof seconds === 'number') controllerRef.current?.seek(seconds)
+    }
+    window.addEventListener(WATCHING_SEEK_EVENT, onSeek)
+    return () => window.removeEventListener(WATCHING_SEEK_EVENT, onSeek)
   }, [])
 
   const cue = useMemo(
@@ -327,6 +348,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       if (activeMaterialIdRef.current !== requestedMaterialId) return
       notesLoadRequestRef.current += 1
       setNotes(current => sortNotes([...current, saved]))
+      notifyWatchingNotesChanged(requestedMaterialId)
       setNoteDraft('')
       setNoteAnchorTime(null)
       setNotesCopied(false)
@@ -351,6 +373,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       setNotes(current =>
         sortNotes(current.map(note => (note.note_id === saved.note_id ? saved : note)))
       )
+      notifyWatchingNotesChanged(requestedMaterialId)
       setEditingNoteId(null)
       setEditingDraft('')
       setNotesCopied(false)
@@ -372,6 +395,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       await deleteVideoNote(requestedMaterialId, pendingDeleteId)
       if (activeMaterialIdRef.current !== requestedMaterialId) return
       setNotes(current => current.filter(note => note.note_id !== pendingDeleteId))
+      notifyWatchingNotesChanged(requestedMaterialId)
       if (editingNoteId === pendingDeleteId) {
         setEditingNoteId(null)
         setEditingDraft('')
@@ -550,7 +574,11 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       )}
 
       {material && (
-        <div className="flex min-h-0 flex-1 flex-col">
+        <div
+          className="watching-material-layout"
+          data-learning-panel-position={learningPanelPosition}
+        >
+          <div className="watching-player-column">
           <WatchingPlayer
             key={`${material.material_id}:${material.playback.provider}`}
             playback={material.playback}
@@ -620,10 +648,11 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
               })}
             </div>
           </div>
+          </div>
           <div
             ref={transcriptListRef}
             data-testid="video-transcript-list"
-            className="min-h-0 flex-1 overflow-y-auto p-4"
+            className="watching-learning-panel"
             onWheel={event => {
               if (tab !== 'transcript') return
               setFollowTranscript(false)
@@ -902,6 +931,14 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                       <Copy className="h-4 w-4" />
                     )}
                     {notesCopied ? t('Notes copied') : t('Copy notes')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => materialId && openWatchingNotesInInspector(materialId)}
+                    disabled={!materialId}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-2 text-sm disabled:opacity-50"
+                  >
+                    {t('View notes in Activity')}
                   </button>
                 </form>
 

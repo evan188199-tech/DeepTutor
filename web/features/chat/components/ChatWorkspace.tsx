@@ -5,6 +5,9 @@ import {
   WatchingSurface,
   type WatchingWorkspacePane,
 } from "@/components/watching/WatchingWorkspace";
+import WatchingNotesInspectorTab from "@/components/watching/WatchingNotesInspectorTab";
+import { WATCHING_OPEN_NOTES_EVENT } from "@/lib/watching-notes-events";
+import { useWatching } from "@/context/WatchingContext";
 import {
   DEFAULT_WATCHING_WORKSPACE_PANE,
   inspectorOpenForWatchingPane,
@@ -253,6 +256,7 @@ export default function ChatWorkspace({
 }: {
   watching?: boolean;
 }) {
+  const { material: watchingMaterial } = useWatching();
   const { router, sessionId: sessionIdParam } = useChatRouteSession();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
@@ -638,6 +642,16 @@ export default function ChatWorkspace({
     window.addEventListener(WATCHING_ASK_EVENT, onWatchingAsk);
     return () => window.removeEventListener(WATCHING_ASK_EVENT, onWatchingAsk);
   }, [handlePrefillComposer, setWatchingWorkspacePane, t]);
+  useEffect(() => {
+    const openVideoNotes = (event: Event) => {
+      const materialId = (event as CustomEvent<{ materialId?: string }>).detail?.materialId;
+      if (!materialId) return;
+      setWatchingWorkspacePane("activity");
+      viewerPanelRef.current?.openVideoNotesTab(materialId);
+    };
+    window.addEventListener(WATCHING_OPEN_NOTES_EVENT, openVideoNotes);
+    return () => window.removeEventListener(WATCHING_OPEN_NOTES_EVENT, openVideoNotes);
+  }, [setWatchingWorkspacePane]);
 
   const activeCap = useMemo(
     () =>
@@ -2751,6 +2765,10 @@ export default function ChatWorkspace({
                 sessionId={state.sessionId}
                 activity={sessionActivity}
                 configSection={capabilityConfigSection}
+                renderVideoNotes={materialId => (
+                  <WatchingNotesInspectorTab materialId={materialId} />
+                )}
+                videoNotesMaterialId={watchingMaterial?.material_id ?? null}
                 onClose={() => {
                   if (watching) setWatchingWorkspacePane("focus");
                   else setViewerOpen(false);

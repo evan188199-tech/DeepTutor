@@ -146,6 +146,7 @@ type ViewerTab =
   | { kind: "file"; id: string; label: string; source: FilePreviewSource }
   | { kind: "web"; id: string; label: string; url: string }
   | { kind: "markdown-note"; id: string; label: string }
+  | { kind: "video-notes"; id: string; label: string; materialId: string }
   | {
       kind: "quiz-followup";
       id: string;
@@ -177,6 +178,8 @@ export interface SessionViewerPanelHandle {
   openWebTab(url: string): void;
   /** Opens the session-scoped inline Markdown editor tab. */
   openMarkdownNoteTab(): void;
+  /** Opens a read-only, timestamp-linked view of the active video's notes. */
+  openVideoNotesTab(materialId: string): void;
   /** Opens (or focuses) the follow-up chat tab for a quiz question. */
   openQuizFollowupTab(context: QuizFollowupTabContext): void;
   /** Opens an independent Little Tutor thread grounded in selected chat text. */
@@ -202,6 +205,10 @@ interface SessionViewerPanelProps {
   activity: SessionActivity;
   /** Optional capability-config card appended below the activity sections. */
   configSection?: ReactNode;
+  /** Optional workspace-specific body for the Video notes tab. */
+  renderVideoNotes?: (materialId: string) => ReactNode;
+  /** The current video material; changing it invalidates an old notes tab. */
+  videoNotesMaterialId?: string | null;
 }
 
 function fileTabIdFor(a: MessageAttachment, fallback: number): string {
@@ -262,6 +269,8 @@ function SessionViewerPanelInner(
     onAutoOpen,
     activity,
     configSection,
+    renderVideoNotes,
+    videoNotesMaterialId = null,
   }: SessionViewerPanelProps,
   ref: React.Ref<SessionViewerPanelHandle>,
 ) {
@@ -333,6 +342,15 @@ function SessionViewerPanelInner(
     setTabs([]);
     setActiveTabId(null);
   }
+  const [trackedVideoNotesMaterialId, setTrackedVideoNotesMaterialId] =
+    useState<string | null>(videoNotesMaterialId);
+  if (trackedVideoNotesMaterialId !== videoNotesMaterialId) {
+    setTrackedVideoNotesMaterialId(videoNotesMaterialId);
+    setTabs((current) => current.filter((tab) => tab.kind !== "video-notes"));
+    setActiveTabId((current) =>
+      current?.startsWith("video-notes:") ? null : current,
+    );
+  }
 
   const openFileTab = useCallback(
     (a: MessageAttachment) => {
@@ -398,6 +416,23 @@ function SessionViewerPanelInner(
     });
     onAutoOpen();
   }, [onAutoOpen, t]);
+
+  const openVideoNotesTab = useCallback(
+    (materialId: string) => {
+      const id = `video-notes:${materialId}`;
+      setTabs((prev) => {
+        const existing = prev.findIndex((tab) => tab.id === id);
+        if (existing >= 0) {
+          setActiveTabId(id);
+          return prev;
+        }
+        setActiveTabId(id);
+        return [...prev, { kind: "video-notes", id, label: t("Video notes"), materialId }];
+      });
+      onAutoOpen();
+    },
+    [onAutoOpen, t],
+  );
 
   const openQuizFollowupTab = useCallback(
     (context: QuizFollowupTabContext) => {
@@ -565,6 +600,7 @@ function SessionViewerPanelInner(
       openFileTab,
       openWebTab,
       openMarkdownNoteTab,
+      openVideoNotesTab,
       openQuizFollowupTab,
       openSelectionTutorTab,
       openGeogebraTab,
@@ -575,6 +611,7 @@ function SessionViewerPanelInner(
       openFileTab,
       openWebTab,
       openMarkdownNoteTab,
+      openVideoNotesTab,
       openQuizFollowupTab,
       openSelectionTutorTab,
       openGeogebraTab,
@@ -692,6 +729,8 @@ function SessionViewerPanelInner(
             key={`${activeTab.id}:${sessionId ?? "pending"}`}
             sessionId={sessionId}
           />
+        ) : activeTab?.kind === "video-notes" ? (
+          renderVideoNotes?.(activeTab.materialId) ?? null
         ) : activeTab?.kind === "quiz-followup" ? (
           <QuizFollowupTabBody
             key={activeTab.context.questionKey}
@@ -783,6 +822,8 @@ function TabBar({
               ? Globe
               : tab.kind === "markdown-note"
                 ? NotebookPen
+                : tab.kind === "video-notes"
+                  ? NotebookPen
                 : tab.kind === "selection-tutor"
                   ? GraduationCap
                   : tab.kind === "quiz-followup"
