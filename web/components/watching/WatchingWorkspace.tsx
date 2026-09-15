@@ -8,6 +8,14 @@ import { useTranslation } from "react-i18next";
 import { useWatching } from "@/context/WatchingContext";
 import type { SessionConfiguration } from "@/features/chat/ChatStateAdapter";
 import { WatchingPane, WATCHING_ASK_EVENT } from "./WatchingPane";
+import {
+  DEFAULT_WATCHING_WORKSPACE_PANE,
+  type WatchingWorkspacePane,
+} from "@/lib/watching-layout";
+
+/** The desktop panes are mutually exclusive: focus protects the learning
+ * surface, while conversation and activity each own the companion column. */
+export type { WatchingWorkspacePane } from "@/lib/watching-layout";
 
 /** Bind the existing player to the selected conversation, never browser-global history. */
 export function WatchingSessionBridge({
@@ -61,7 +69,13 @@ export function WatchingSessionBridge({
 }
 
 /** Responsive presentation only; ChatWorkspace continues to own the single chat runtime. */
-export function WatchingSurface() {
+export function WatchingSurface({
+  pane = DEFAULT_WATCHING_WORKSPACE_PANE,
+  onPaneChange = () => {},
+}: {
+  pane?: WatchingWorkspacePane;
+  onPaneChange?: (pane: WatchingWorkspacePane) => void;
+}) {
   const { t } = useTranslation();
   const { material } = useWatching();
   const params = useSearchParams();
@@ -76,16 +90,15 @@ export function WatchingSurface() {
       window.history.replaceState(null, "", "/watching");
   }, [params]);
   const showBrowser = browsing && !params.get("video");
-  const [view, setView] = useState<"video" | "chat">("video");
   useEffect(() => {
-    const showChat = () => setView("chat");
+    const showChat = () => onPaneChange("conversation");
     window.addEventListener(WATCHING_ASK_EVENT, showChat);
     return () => window.removeEventListener(WATCHING_ASK_EVENT, showChat);
-  }, []);
+  }, [onPaneChange]);
   return (
     <div
       className="watching-surface"
-      data-mobile-view={view}
+      data-watching-pane={pane}
       data-browsing={showBrowser || undefined}
     >
       {accountMessage && showBrowser && (
@@ -121,27 +134,61 @@ export function WatchingSurface() {
         </button>
       )}
       <div
+        className="watching-workspace-switcher"
+        role="group"
+        aria-label={t("Learning workspace")}
+      >
+        <button
+          type="button"
+          aria-pressed={pane === "focus"}
+          onClick={() => onPaneChange("focus")}
+        >
+          {t("Focus")}
+        </button>
+        <button
+          type="button"
+          aria-pressed={pane === "conversation"}
+          onClick={() => onPaneChange("conversation")}
+        >
+          {t("Discuss")}
+        </button>
+        <button
+          type="button"
+          aria-pressed={pane === "activity"}
+          onClick={() => onPaneChange("activity")}
+        >
+          {t("Activity")}
+        </button>
+      </div>
+      <div
         className="watching-mobile-tabs"
         role="group"
         aria-label={t("Immersive Watching")}
       >
         <button
           type="button"
-          aria-pressed={view === "video"}
-          onClick={() => setView("video")}
+          aria-pressed={pane === "focus"}
+          onClick={() => onPaneChange("focus")}
         >
           {t("Video")}
         </button>
         <button
           type="button"
-          aria-pressed={view === "chat"}
-          onClick={() => setView("chat")}
+          aria-pressed={pane === "conversation"}
+          onClick={() => onPaneChange("conversation")}
         >
           {t("Conversation")}
         </button>
+        <button
+          type="button"
+          aria-pressed={pane === "activity"}
+          onClick={() => onPaneChange("activity")}
+        >
+          {t("Activity")}
+        </button>
       </div>
       <div className="dt-watching-shell" data-watching-open="true">
-        <WatchingPane onClose={() => setView("chat")} />
+        <WatchingPane onClose={() => onPaneChange("conversation")} />
       </div>
     </div>
   );

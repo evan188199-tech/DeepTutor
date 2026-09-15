@@ -3,7 +3,13 @@
 import {
   WatchingSessionBridge,
   WatchingSurface,
+  type WatchingWorkspacePane,
 } from "@/components/watching/WatchingWorkspace";
+import {
+  DEFAULT_WATCHING_WORKSPACE_PANE,
+  inspectorOpenForWatchingPane,
+  toggleWatchingActivity,
+} from "@/lib/watching-layout";
 
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -42,9 +48,9 @@ import StarterSuggestions from "@/components/chat/home/StarterSuggestions";
 import FilePreviewDrawer from "@/components/chat/preview/FilePreviewDrawer";
 import { buildSessionActivity } from "@/components/chat/home/SessionActivityPanel";
 import Tooltip from "@/components/common/Tooltip";
-import SessionViewerPanel, {
-  type SessionViewerPanelHandle,
-} from "@/components/chat/home/SessionViewerPanel";
+import WorkspaceInspector, {
+  type WorkspaceInspectorHandle,
+} from "@/components/inspector/WorkspaceInspector";
 import {
   QuizFollowupProvider,
   useQuizFollowupController,
@@ -321,7 +327,7 @@ export default function ChatWorkspace({
       // No courses to offer is a legitimate answer, and the pill degrades to
       // an empty menu with a link to make one.
       .catch(() => setCourses([]));
-  }, []);
+  }, [watching]);
   const agentPreselectDoneRef = useRef(false);
   const {
     options: llmOptions,
@@ -353,6 +359,10 @@ export default function ChatWorkspace({
   // Single right-side panel: the Activity/Viewer. Its home view is the
   // session activity; files and web pages open as tabs alongside it.
   const [viewerPanelOpen, setViewerPanelOpen] = useState(false);
+  // Watching starts as a learning surface, not a permanent three-column
+  // desktop. Conversation and Activity take turns in its companion column.
+  const [watchingPane, setWatchingPane] =
+    useState<WatchingWorkspacePane>(DEFAULT_WATCHING_WORKSPACE_PANE);
   const [selectionTutorPrompt, setSelectionTutorPrompt] = useState<{
     text: string;
     sourceMessageId: number;
@@ -363,21 +373,39 @@ export default function ChatWorkspace({
   } | null>(null);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (browserStorage.readRaw("local", "dt:chat:viewer-panel") === "1") {
+    if (
+      !watching &&
+      browserStorage.readRaw("local", "dt:chat:viewer-panel") === "1"
+    ) {
       setViewerPanelOpen(true);
     }
-  }, []);
+  }, [watching]);
   const setViewerOpen = useCallback((next: boolean) => {
     setViewerPanelOpen(next);
-    if (typeof window !== "undefined") {
+    if (!watching && typeof window !== "undefined") {
       browserStorage.writeRaw(
         "local",
         "dt:chat:viewer-panel",
         next ? "1" : "0",
       );
     }
-  }, []);
+  }, [watching]);
+  const setWatchingWorkspacePane = useCallback(
+    (next: WatchingWorkspacePane) => {
+      setWatchingPane(next);
+      // Watching's companion column has one owner. Do not leave a hidden
+      // Inspector open behind the conversation, where it could revive as a
+      // third squeezed column on the next render.
+      setViewerOpen(inspectorOpenForWatchingPane(next));
+    },
+    [setViewerOpen],
+  );
   const toggleViewerPanel = useCallback(() => {
+    if (watching) {
+      const next = toggleWatchingActivity(watchingPane);
+      setWatchingWorkspacePane(next);
+      return;
+    }
     setViewerPanelOpen((prev) => {
       const next = !prev;
       if (typeof window !== "undefined") {
@@ -389,7 +417,7 @@ export default function ChatWorkspace({
       }
       return next;
     });
-  }, []);
+  }, [setWatchingWorkspacePane, watching, watchingPane]);
   /**
    * Force the panel open on its Activity home. Used by the send-gate when the
    * user tries to send while the active capability still needs its config
@@ -397,11 +425,12 @@ export default function ChatWorkspace({
    * panel and switch to it. Also used by the capability-switch auto-open
    * effect below.
    */
-  const viewerPanelRef = useRef<SessionViewerPanelHandle | null>(null);
+  const viewerPanelRef = useRef<WorkspaceInspectorHandle | null>(null);
   const ensureActivityPanelOpen = useCallback(() => {
-    setViewerOpen(true);
+    if (watching) setWatchingWorkspacePane("activity");
+    else setViewerOpen(true);
     viewerPanelRef.current?.focusActivityHome();
-  }, [setViewerOpen]);
+  }, [setViewerOpen, setWatchingWorkspacePane, watching]);
   const attachmentErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -594,6 +623,7 @@ export default function ChatWorkspace({
       ).detail;
       const text = (detail?.text || "").trim();
       if (!text) return;
+      setWatchingWorkspacePane("conversation");
       const total = Math.max(0, Math.floor(Number(detail?.timeSeconds) || 0));
       const hours = Math.floor(total / 3600);
       const minutes = Math.floor((total % 3600) / 60);
@@ -607,7 +637,7 @@ export default function ChatWorkspace({
     };
     window.addEventListener(WATCHING_ASK_EVENT, onWatchingAsk);
     return () => window.removeEventListener(WATCHING_ASK_EVENT, onWatchingAsk);
-  }, [handlePrefillComposer, t]);
+  }, [handlePrefillComposer, setWatchingWorkspacePane, t]);
 
   const activeCap = useMemo(
     () =>
@@ -2298,6 +2328,7 @@ export default function ChatWorkspace({
         <div
           className="relative h-full overflow-hidden"
           data-watching-workspace={watching ? "true" : undefined}
+          data-watching-pane={watching ? watchingPane : undefined}
         >
           {watching &&
             state.workspaceMode === "immersive_watching" &&
@@ -2309,7 +2340,12 @@ export default function ChatWorkspace({
                 onMaterial={configureSession}
               />
             )}
-          {watching && <WatchingSurface />}
+          {watching && (
+            <WatchingSurface
+              pane={watchingPane}
+              onPaneChange={setWatchingWorkspacePane}
+            />
+          )}
           <div
             // When the preview drawer is open AND the viewport is wide enough,
             // push the chat content to the left by the drawer's width so the two
@@ -2319,8 +2355,13 @@ export default function ChatWorkspace({
             // transition lives in `chat-preview-shell` (globals.css) so we can
             // hand-tune it without fighting Tailwind's arbitrary-value parser.
             data-preview-open={previewSource ? "true" : "false"}
-            data-viewer-open={viewerPanelOpen ? "true" : "false"}
+            data-viewer-open={
+              viewerPanelOpen && (!watching || watchingPane === "activity")
+                ? "true"
+                : "false"
+            }
             data-watching-open={isWatchingMode ? "true" : "false"}
+            data-watching-pane={watching ? watchingPane : undefined}
             className="chat-preview-shell flex h-full flex-col overflow-hidden bg-[var(--background)]"
           >
             <div className="mx-auto flex w-full max-w-[960px] flex-wrap items-center justify-between gap-x-3 gap-y-1.5 px-6 pt-3 pb-0">
@@ -2699,15 +2740,27 @@ export default function ChatWorkspace({
               source={previewSource}
               onClose={handleClosePreview}
             />
-            <SessionViewerPanel
-              ref={viewerPanelRef}
-              open={viewerPanelOpen && previewSource === null}
-              sessionId={state.sessionId}
-              activity={sessionActivity}
-              configSection={capabilityConfigSection}
-              onClose={() => setViewerOpen(false)}
-              onAutoOpen={() => setViewerOpen(true)}
-            />
+            <div data-inspector-host>
+              <WorkspaceInspector
+                ref={viewerPanelRef}
+                open={
+                  viewerPanelOpen &&
+                  previewSource === null &&
+                  (!watching || watchingPane === "activity")
+                }
+                sessionId={state.sessionId}
+                activity={sessionActivity}
+                configSection={capabilityConfigSection}
+                onClose={() => {
+                  if (watching) setWatchingWorkspacePane("focus");
+                  else setViewerOpen(false);
+                }}
+                onAutoOpen={() => {
+                  if (watching) setWatchingWorkspacePane("activity");
+                  else setViewerOpen(true);
+                }}
+              />
+            </div>
           </div>
         </div>
       </GeogebraTabProvider>
@@ -2716,7 +2769,7 @@ export default function ChatWorkspace({
 }
 
 /**
- * Bridges the SessionViewerPanel's imperative ``openQuizFollowupTab`` into
+ * Bridges the WorkspaceInspector's imperative ``openQuizFollowupTab`` into
  * the QuizFollowupController so descendants (QuizViewer) can call
  * ``controller.openFollowupTab(...)`` without prop-drilling the panel ref
  * through several layers of components.
@@ -2724,7 +2777,7 @@ export default function ChatWorkspace({
 function QuizFollowupBridge({
   viewerPanelRef,
 }: {
-  viewerPanelRef: React.MutableRefObject<SessionViewerPanelHandle | null>;
+  viewerPanelRef: React.MutableRefObject<WorkspaceInspectorHandle | null>;
 }) {
   const controller = useQuizFollowupController();
   useEffect(() => {
@@ -2744,7 +2797,7 @@ function QuizFollowupBridge({
 function GeogebraTabBridge({
   viewerPanelRef,
 }: {
-  viewerPanelRef: React.MutableRefObject<SessionViewerPanelHandle | null>;
+  viewerPanelRef: React.MutableRefObject<WorkspaceInspectorHandle | null>;
 }) {
   const controller = useGeogebraTabOpener();
   useEffect(() => {
@@ -2769,7 +2822,7 @@ function SubagentTabWatcher({
   viewerPanelRef,
 }: {
   messages: { events?: StreamEvent[] }[];
-  viewerPanelRef: React.MutableRefObject<SessionViewerPanelHandle | null>;
+  viewerPanelRef: React.MutableRefObject<WorkspaceInspectorHandle | null>;
 }) {
   useEffect(() => {
     // Group by turn so all of one turn's consults (DeepTutor may ask the agent

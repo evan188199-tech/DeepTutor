@@ -865,11 +865,29 @@ body[data-picker-open] .dt-breathing-text {
   min-width: 0;
 }
 @media (min-width: 1024px) {
-  .dt-watching-shell {
+  /* Focus is the default: learning owns the full workspace. The companion
+     column exists only when the learner explicitly opens discussion or the
+     Inspector. This prevents the Inspector from turning Watching into an
+     unusable three-column layout. */
+  [data-watching-workspace="true"] .dt-watching-shell {
+    width: 100%;
+  }
+  [data-watching-workspace="true"][data-watching-pane="conversation"] .dt-watching-shell,
+  [data-watching-workspace="true"][data-watching-pane="activity"] .dt-watching-shell {
     width: 64%;
   }
-  .chat-preview-shell[data-watching-open="true"] {
+  [data-watching-workspace="true"] > .chat-preview-shell[data-watching-pane="conversation"] {
     padding-left: 64%;
+  }
+  [data-watching-workspace="true"] > .chat-preview-shell[data-watching-pane="focus"] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* The Activity Inspector replaces the conversation pane. Keep its fixed
+     host visible while suppressing the chat chrome beneath it. */
+  [data-watching-workspace="true"] > .chat-preview-shell[data-watching-pane="activity"] > :not([data-inspector-host]) {
+    visibility: hidden;
+    pointer-events: none;
   }
 }
 
@@ -1111,7 +1129,31 @@ a[href^="#dt-locator-"]:hover {
 .watching-mobile-tabs {
   display: none;
 }
+.watching-workspace-switcher {
+  position: absolute;
+  right: 144px;
+  top: 8px;
+  z-index: 44;
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+}
+.watching-workspace-switcher button {
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.watching-workspace-switcher button[aria-pressed="true"] {
+  background: var(--muted);
+  font-weight: 600;
+}
 @media (max-width: 1023px) {
+  .watching-workspace-switcher {
+    display: none;
+  }
   .watching-mobile-tabs {
     display: flex;
     height: 44px;
@@ -1134,14 +1176,19 @@ a[href^="#dt-locator-"]:hover {
   .watching-surface .dt-watching-shell {
     top: 44px;
   }
-  .watching-surface[data-mobile-view="chat"] .dt-watching-shell {
+  .watching-surface[data-watching-pane="conversation"] .dt-watching-shell,
+  .watching-surface[data-watching-pane="activity"] .dt-watching-shell {
     visibility: hidden;
     pointer-events: none;
   }
   [data-watching-workspace="true"] > .chat-preview-shell {
     padding-top: 44px;
   }
-  .watching-surface[data-mobile-view="video"] ~ .chat-preview-shell {
+  .watching-surface[data-watching-pane="focus"] ~ .chat-preview-shell {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .watching-surface[data-watching-pane="activity"] ~ .chat-preview-shell > :not([data-inspector-host]) {
     visibility: hidden;
     pointer-events: none;
   }

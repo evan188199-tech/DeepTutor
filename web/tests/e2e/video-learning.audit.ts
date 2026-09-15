@@ -363,6 +363,30 @@ for (const mobile of [false, true]) {
     await page.getByRole('button', { name: /Browse lesson/ }).click()
 
     await expect(page.getByText('Timestamped lesson')).toBeVisible()
+    if (!mobile) {
+      const workspace = page.getByRole('group', { name: 'Learning workspace' })
+      await expect(workspace.getByRole('button', { name: 'Focus' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+      await expect(page.locator('textarea')).toBeHidden()
+
+      // Activity takes the companion-column slot, rather than leaving the
+      // conversation mounted as a third squeezed column. Escape returns to
+      // the full-width learning surface.
+      await workspace.getByRole('button', { name: 'Activity' }).click()
+      await expect(workspace.getByRole('button', { name: 'Activity' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+      await expect(page.getByRole('dialog')).toBeVisible()
+      await page.keyboard.press('Escape')
+      await expect(workspace.getByRole('button', { name: 'Focus' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+      await expect(page.getByRole('dialog')).toBeHidden()
+    }
     await expect(page.locator('iframe[title="Fake YouTube player"]')).toHaveAttribute(
       'src',
       /youtube-nocookie\.com\/embed\/dQw4w9WgXcQ/
@@ -474,7 +498,14 @@ for (const mobile of [false, true]) {
       .poll(() => transcriptList.evaluate(element => element.scrollTop))
       .toBeGreaterThan(pausedScrollTop)
 
-    if (mobile) await page.getByRole('button', { name: 'Conversation', exact: true }).click()
+    if (mobile) {
+      await page.getByRole('button', { name: 'Conversation', exact: true }).click()
+    } else {
+      await page
+        .getByRole('group', { name: 'Learning workspace' })
+        .getByRole('button', { name: 'Discuss' })
+        .click()
+    }
     await page.locator('textarea').fill('Explain the video')
     await page.locator('textarea').press('Enter')
     await expect(page).toHaveURL(/\/watching\/watching-test$/)
@@ -483,7 +514,14 @@ for (const mobile of [false, true]) {
       workspace_mode: 'immersive_watching',
       timed_media_id: MATERIAL_ID,
     })
-    if (mobile) await page.getByRole('button', { name: 'Video', exact: true }).click()
+    if (mobile) {
+      await page.getByRole('button', { name: 'Video', exact: true }).click()
+    } else {
+      await page
+        .getByRole('group', { name: 'Learning workspace' })
+        .getByRole('button', { name: 'Focus' })
+        .click()
+    }
     await page.evaluate(() => {
       const player = (
         window as typeof window & { __fakePlayers: Array<{ current: number }> }
@@ -552,6 +590,7 @@ for (const mobile of [false, true]) {
 
     await page.getByRole('button', { name: 'Explain here' }).click()
     await expect(page.locator('textarea')).toHaveValue(/\[0:08\] The first grounded concept\./)
+    await expect(page.locator('textarea')).toBeFocused()
 
     if (mobile) await page.getByRole('button', { name: 'Video', exact: true }).click()
     await page.evaluate(() => {
