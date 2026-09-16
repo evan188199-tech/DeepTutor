@@ -377,9 +377,13 @@ def test_runner_server_validates_request_shape() -> None:
 def test_runner_server_executes_and_truncates_output() -> None:
     from deeptutor.services.sandbox.runner import server
 
+    script = "print('x' * 200)"
     result = server.execute(
         {
-            "command": "python -c \"print('x' * 200)\"",
+            # The runner must execute the active interpreter, rather than
+            # assuming a platform-specific ``python`` executable is on PATH.
+            "command": f"{shlex.quote(sys.executable)} -c {shlex.quote(script)}",
+            "argv": [sys.executable, "-c", script],
             "limits": {"timeout_s": 5, "max_output_chars": 40},
         }
     )
