@@ -324,7 +324,7 @@ async def save_video_progress(material_id: str, payload: ProgressRequest) -> dic
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             known_duration = float(material.get("metadata", {}).get("duration_seconds") or 0)
             duration = known_duration or float(payload.duration_seconds or 0)
             position = min(payload.time_seconds, duration) if duration > 0 else payload.time_seconds
@@ -400,7 +400,7 @@ async def create_video_mark(material_id: str, payload: MarkCreateRequest) -> dic
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             mark = create_mark(material, payload.model_dump())
             store.save(material)
         return mark
@@ -416,7 +416,7 @@ async def update_video_mark(
         store = get_timed_media_store()
         fields = payload.model_dump(exclude_unset=True)
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             mark = update_mark(material, mark_id, fields)
             store.save(material)
         return mark
@@ -429,7 +429,7 @@ async def delete_video_mark(material_id: str, mark_id: str) -> dict[str, bool]:
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             delete_mark(material, mark_id)
             store.save(material)
         return {"ok": True}
