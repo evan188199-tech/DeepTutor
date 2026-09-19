@@ -84,6 +84,8 @@ export function trustedCloudflareClientIp(
 export function isBackendPath(pathname: string): boolean {
   return (
     pathname.startsWith("/api/") ||
+    pathname === "/mcp" ||
+    pathname.startsWith("/mcp/") ||
     pathname === "/ws" ||
     pathname.startsWith("/ws/") ||
     pathname.startsWith("/files/")
