@@ -147,6 +147,9 @@ detect-secrets scan > .secrets.baseline
 | Update tools | `pre-commit autoupdate` |
 | Emergency skip | `git commit --no-verify -m "message"` *(not recommended)* |
 
+> [!NOTE]
+> `python3 scripts/check_repo_hygiene.py` is the repository hygiene preflight — run it before committing.
+
 ### Generated Files and Worktrees
 
 Keep build outputs out of Git. `web/.next*`, `node_modules`, test reports, and
