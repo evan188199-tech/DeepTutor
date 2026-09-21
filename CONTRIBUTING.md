@@ -138,6 +138,9 @@ detect-secrets scan > .secrets.baseline
 
 ### Common Commands
 
+> [!TIP]
+> `python3 scripts/check_workspace_hygiene.py` is the workspace hygiene preflight — run it before committing.
+
 | Task | Command |
 |---|---|
 | Check clean workspace + tracked hygiene | `python3 scripts/check_workspace_hygiene.py` |
