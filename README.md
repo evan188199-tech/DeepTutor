@@ -1051,6 +1051,7 @@ DeepTutor also stands on the shoulders of outstanding open-source projects that 
 ### 🗺️ Roadmap & Contribute
 
 We want DeepTutor to keep iterating and improving — and ultimately to become a gift we give back to the open-source community. Our [**roadmap**](https://github.com/HKUDS/DeepTutor/issues/498) is updated continuously; vote on items there or propose new ones. If you'd like to contribute, see the [**Contributing Guide**](CONTRIBUTING.md) for branching strategy, coding standards, and how to get started.
+提交 PR 前运行 `python3 scripts/check_repo_hygiene.py` 作为仓库卫生预检。
 
 <div align="center">
 
