@@ -247,3 +247,15 @@ We use automated tools (configured via `pyproject.toml` and `.pre-commit-config.
 ---
 
 Questions? Reach out on [Discord](https://discord.gg/eRsjPgMU4t). Let's build the future of AI tutoring together!
+
+---
+
+## Focused Tests
+
+Run focused tests to validate targeted changes:
+
+```bash
+python -m pytest tests/path/to/test_target.py -q
+```
+
+This focused pytest command runs before `pre-commit run --all-files`.
