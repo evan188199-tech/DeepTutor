@@ -218,6 +218,10 @@ $RECYCLE.BIN/
 *.bak
 *.backup
 
+# Local rollback and deployment-recovery artifacts. Keep these out of Git; if
+# one becomes product source, move it to a task worktree first.
+/backups/
+
 # Local scripts
 启动 DeepTutor.bat
 
