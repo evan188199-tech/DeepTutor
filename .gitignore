@@ -217,6 +217,9 @@ $RECYCLE.BIN/
 *.temp
 *.bak
 *.backup
+/backups/
+*.swp
+*.swo
 
 # Local scripts
 启动 DeepTutor.bat

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextvars import copy_context
 import inspect
 import logging
 import re
@@ -35,21 +36,34 @@ router = APIRouter()
 ACTION_TIMEOUT_S = 120
 
 
+class ReadingModelSelection(BaseModel):
+    profile_id: str = Field(min_length=1, max_length=256)
+    model_id: str = Field(min_length=1, max_length=256)
+    reasoning_effort: str | None = Field(default=None, max_length=32)
+
+
 def _unavailable_detail(
     *,
     reason: str = "",
     message: str = "This reading action is temporarily unavailable.",
+    code: str = "unavailable",
+    recoverable: bool = True,
+    request_id: str = "",
 ) -> dict[str, Any]:
     detail: dict[str, Any] = {
         "message": message,
-        "recoverable": True,
+        "recoverable": recoverable,
+        "code": code,
     }
     if reason:
         detail["reason"] = reason[:500]
+    if request_id:
+        detail["request_id"] = request_id
     return detail
 
 
 class ActionPayload(BaseModel):
+    llm_selection: ReadingModelSelection | None = None
     locator: int = Field(ge=1)
     selection: str = Field(default="", max_length=10_000)
     locale: str = Field(default="en", max_length=32)
@@ -188,6 +202,100 @@ async def run_extension_action(
             status_code=422,
             detail="This reading unit is too large for the extension protocol.",
         ) from exc
+    request_id = uuid4().hex
+
+    def failure(
+        code: str,
+        message: str,
+        *,
+        recoverable: bool = True,
+        status: int = 503,
+        reason: str = "",
+    ) -> HTTPException:
+        logger.warning("Reading action %s request=%s code=%s", extension_id, request_id, code)
+        return HTTPException(
+            status_code=status,
+            detail=_unavailable_detail(
+                reason=reason,
+                message=message,
+                code=code,
+                recoverable=recoverable,
+                request_id=request_id,
+            ),
+        )
+
+    token = None
+    if extension.manifest.requires_llm:
+        from deeptutor.multi_user.model_access import apply_allowed_llm_selection
+        from deeptutor.services.model_selection.runtime import (
+            activate_llm_selection,
+            reset_llm_selection,
+        )
+
+        try:
+            selection_config = (
+                payload.llm_selection.model_dump(exclude_none=True)
+                if payload.llm_selection
+                else None
+            )
+            selection_config = apply_allowed_llm_selection(selection_config)
+            # A shared default is still subject to the caller's model grants.
+            if selection_config is None:
+                from deeptutor.multi_user.context import get_current_user
+                from deeptutor.multi_user.model_access import redacted_model_access
+                from deeptutor.services.config.model_catalog import get_model_catalog_service
+
+                user = get_current_user()
+                if not user.is_admin:
+                    service = get_model_catalog_service().load().get("services", {}).get("llm", {})
+                    default = {
+                        "profile_id": service.get("active_profile_id"),
+                        "model_id": service.get("active_model_id"),
+                    }
+                    try:
+                        apply_allowed_llm_selection(default)
+                    except PermissionError:
+                        default = None
+                    if default is None:
+                        default = next(
+                            (
+                                {
+                                    "profile_id": item.get("profile_id"),
+                                    "model_id": item.get("model_id"),
+                                }
+                                for item in redacted_model_access(user.id).get("llm", [])
+                                if item.get("available")
+                            ),
+                            None,
+                        )
+                    if default is None or not all(default.values()):
+                        raise ValueError("No selected model")
+                    selection_config = default
+            config, token = activate_llm_selection(selection_config)
+            if not config.model:
+                raise ValueError("No selected model")
+        except PermissionError:
+            reset_llm_selection(token)
+            raise failure(
+                "model_forbidden",
+                "This model is not assigned to your account. Choose an authorized model or contact your administrator.",
+                recoverable=False,
+                status=403,
+            ) from None
+        except Exception as exc:
+            reset_llm_selection(token)
+            logger.warning(
+                "Reading action %s request=%s model configuration failed (%s)",
+                extension_id,
+                request_id,
+                type(exc).__name__,
+            )
+            raise failure(
+                "model_not_configured",
+                "Choose a model in the reading conversation before using this action. Contact your administrator if no model is available.",
+                recoverable=False,
+            ) from None
+
     # Sync plugins run on a private worker we cannot kill; a timeout must
     # open the circuit so later clicks do not queue behind the stuck call.
     # Async plugins (quiz, translation, …) are cancelled with the request,
@@ -195,10 +303,18 @@ async def run_extension_action(
     run = extension.run_action
     sync_plugin = not inspect.iscoroutinefunction(run)
     if not registry.begin_action(extension_id, circuit_break=sync_plugin):
-        raise HTTPException(
-            status_code=503,
-            detail=_unavailable_detail(reason="busy_or_circuit_open"),
-        )
+        if registry.is_timed_out(extension_id):
+            raise failure(
+                "worker_running",
+                "The previous reading action is still running. Wait for it to finish, or ask an administrator to restart the backend.",
+                recoverable=False,
+                reason="busy_or_circuit_open",
+            ) from None
+        raise failure(
+            "busy",
+            "This reading action is busy. Try again after it finishes.",
+            reason="busy_or_circuit_open",
+        ) from None
     # Only a still-running worker needs the circuit kept open (#1448).
     # Async cancellation finishes before the reservation is released, including
     # sync handlers that return an awaitable after their worker has finished.
@@ -210,27 +326,47 @@ async def run_extension_action(
                 value = await handler(action, context)
             else:
                 worker = asyncio.get_running_loop().run_in_executor(
-                    registry.executor_for(extension_id), handler, action, context
+                    registry.executor_for(extension_id),
+                    copy_context().run,
+                    handler,
+                    action,
+                    context,
                 )
                 value = await asyncio.shield(worker)
             if inspect.isawaitable(value):
                 value = await value
-        result = (
-            value
-            if isinstance(value, ReadingExtensionResult)
-            else ReadingExtensionResult.model_validate(value)
-        )
-        if result.type not in extension.manifest.result_types:
-            raise ValueError(f"Extension returned undeclared result type {result.type!r}.")
+        try:
+            result = (
+                value
+                if isinstance(value, ReadingExtensionResult)
+                else ReadingExtensionResult.model_validate(value)
+            )
+            if result.type not in extension.manifest.result_types:
+                raise ValueError("Undeclared result type")
+        except (ValueError, TypeError) as exc:
+            raise failure(
+                "invalid_output",
+                "The reading provider returned an invalid result. Please retry.",
+                reason=str(exc),
+            ) from None
         dumped = result.model_dump()
         quiz_payload = dumped.get("payload")
         if dumped.get("type") == "quiz" and isinstance(quiz_payload, dict):
             await _persist_reading_quiz_pending(material_id, payload.locator, quiz_payload)
     except TimeoutError as exc:
         logger.warning("Reading extension %s action %s timed out", extension_id, action)
-        raise HTTPException(
-            status_code=503,
-            detail=_unavailable_detail(reason="timed_out"),
+        if worker is not None and not worker.done():
+            # finally() keeps the circuit open and discards the late result.
+            raise failure(
+                "worker_running",
+                "The reading action timed out but is still running. Wait, or ask an administrator to restart the backend.",
+                recoverable=False,
+                reason="timed_out",
+            ) from exc
+        raise failure(
+            "timeout",
+            "The reading action timed out. You can try again.",
+            reason="timed_out",
         ) from exc
     except LLMError as exc:
         logger.warning(
@@ -239,24 +375,33 @@ async def run_extension_action(
             action,
             exc,
         )
-        raise HTTPException(
-            status_code=503,
-            detail=_unavailable_detail(
-                reason=str(exc),
-                message="This reading action needs a working language model.",
-            ),
+        raise failure(
+            "provider_error",
+            "This reading action needs a working language model. Check the selected model or contact your administrator.",
+            reason=str(exc),
         ) from exc
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.exception("Reading extension %s action %s failed", extension_id, action)
-        raise HTTPException(
-            status_code=503,
-            detail=_unavailable_detail(reason=str(exc)),
-        ) from exc
+        code = (
+            "invalid_output" if isinstance(exc, (ValueError, ValidationError)) else "provider_error"
+        )
+        message = (
+            "The reading provider returned an invalid result. Please retry."
+            if code == "invalid_output"
+            else "The reading provider failed. Check the selected model or contact your administrator."
+        )
+        raise failure(code, message, reason=str(exc)) from None
     finally:
         if worker is not None and not worker.done():
             registry.mark_timed_out(extension_id)
             worker.add_done_callback(_discard_late_worker_result)
         registry.finish_action(extension_id)
+        if token is not None:
+            from deeptutor.services.model_selection.runtime import reset_llm_selection
+
+            reset_llm_selection(token)
 
     try:
         await asyncio.to_thread(

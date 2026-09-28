@@ -7,6 +7,11 @@ from .invidious_account import (
     invidious_account_status,
     invidious_redirect_uri,
 )
+from .marks import (
+    MARK_AUTHORS,
+    MARK_KINDS,
+    MarkNotFound,
+)
 from .service import (
     PROVIDER_RESOLVERS,
     ProviderResolution,
@@ -14,6 +19,7 @@ from .service import (
     TimedMediaNotFound,
     TimedMediaStore,
     build_segments,
+    download_ytdlp_subtitle,
     get_timed_media_store,
     load_video_learning_settings,
     material_with_playback,
@@ -32,6 +38,7 @@ __all__ = [
     "TimedMediaNotFound",
     "TimedMediaStore",
     "build_segments",
+    "download_ytdlp_subtitle",
     "begin_invidious_account_authorization",
     "complete_invidious_account_authorization",
     "disconnect_invidious_account",
@@ -46,4 +53,7 @@ __all__ = [
     "resolve_material",
     "save_video_learning_settings",
     "test_invidious_connection",
+    "MARK_AUTHORS",
+    "MARK_KINDS",
+    "MarkNotFound",
 ]

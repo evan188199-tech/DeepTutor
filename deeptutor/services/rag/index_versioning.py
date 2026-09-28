@@ -152,7 +152,8 @@ def _entry_from_flat_version(version_dir: Path) -> dict[str, Any]:
         (version_dir / "kv_store_doc_status.json").exists()
         or (version_dir / "deeptutor_ingress").exists()
     )
-    ready = has_provider_output and not is_unpublished_lightrag_candidate
+    published = stored_meta is None or bool(stored_meta.get("published", True))
+    ready = has_provider_output and published and not is_unpublished_lightrag_candidate
     if stored_meta is not None and stored_meta.get("provider") == "lightrag":
         adapter_schema = stored_meta.get("lightrag_adapter_schema")
         if adapter_schema is not None:
@@ -305,7 +306,11 @@ def storage_dir_for_signature(kb_dir: Path, sig_hash: str) -> Path:
 
 
 def write_version_meta(
-    kb_dir: Path, signature: EmbeddingSignature, storage_dir: Path | None = None
+    kb_dir: Path,
+    signature: EmbeddingSignature,
+    storage_dir: Path | None = None,
+    *,
+    published: bool = True,
 ) -> None:
     """Persist metadata next to the LlamaIndex store."""
     target = storage_dir or resolve_storage_dir_for_write(kb_dir, signature)
@@ -315,6 +320,7 @@ def write_version_meta(
         "signature": signature.hash(),
         **asdict(signature),
         "layout": "flat" if target.parent == kb_dir else "nested_legacy",
+        "published": published,
         "created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
     }
     with open(target / META_FILENAME, "w", encoding="utf-8") as handle:

@@ -12,14 +12,18 @@ import { config as proxyConfig } from "../proxy";
 
 import {
   CODEX_CALLBACK_API_PATH,
+  backendForwardingHeaders,
   CODEX_CALLBACK_PATH,
   HANDOFF_PATH,
   classifyToken,
+  frontendForwardingHost,
   isAuthExempt,
   isBackendPath,
   isCodexCallbackPath,
+  isCloudflareTunnelHost,
   isRetiredPagePath,
   isWebSocketPath,
+  trustedCloudflareClientIp,
 } from "../lib/proxy-policy";
 import { prepareBackendForwardHeaders } from "../lib/backend-forward";
 
@@ -38,6 +42,97 @@ test("isBackendPath matches /api and /ws paths only", () => {
   assert.equal(isWebSocketPath("/ws"), true);
   assert.equal(isWebSocketPath("/ws/books"), true);
   assert.equal(isWebSocketPath("/ws-extra"), false);
+});
+
+test("backend proxy forwards the frontend host and Cloudflare client IP only", () => {
+  assert.deepEqual(
+    backendForwardingHeaders("current.trycloudflare.com", "203.0.113.10"),
+    {
+      "x-deeptutor-frontend-host": "current.trycloudflare.com",
+      "x-deeptutor-client-ip": "203.0.113.10",
+    },
+  );
+  assert.deepEqual(backendForwardingHeaders(null, null), {});
+});
+
+test("frontend forwarding host prefers the original public Host over Next URL host", () => {
+  assert.equal(
+    frontendForwardingHost(
+      "district-groundwater-chain-publisher.trycloudflare.com",
+      "127.0.0.1:3782",
+    ),
+    "district-groundwater-chain-publisher.trycloudflare.com",
+  );
+});
+
+test("frontend forwarding host falls back to the Next URL host", () => {
+  assert.equal(
+    frontendForwardingHost(null, "100.101.207.44:3782"),
+    "100.101.207.44:3782",
+  );
+  assert.equal(
+    frontendForwardingHost("", "100.101.207.44:3782"),
+    "100.101.207.44:3782",
+  );
+  assert.equal(
+    frontendForwardingHost("  ", "100.101.207.44:3782"),
+    "100.101.207.44:3782",
+  );
+  assert.equal(frontendForwardingHost(null, null), null);
+});
+
+test("isCloudflareTunnelHost matches only valid *.trycloudflare.com hostnames", () => {
+  assert.equal(
+    isCloudflareTunnelHost(
+      "district-groundwater-chain-publisher.trycloudflare.com",
+    ),
+    true,
+  );
+  assert.equal(
+    isCloudflareTunnelHost(
+      "district-groundwater-chain-publisher.trycloudflare.com:443",
+    ),
+    true,
+  );
+  assert.equal(isCloudflareTunnelHost("100.101.207.44:3782"), false);
+  assert.equal(isCloudflareTunnelHost("localhost"), false);
+  assert.equal(isCloudflareTunnelHost("evil.com"), false);
+  assert.equal(isCloudflareTunnelHost(".trycloudflare.com"), false);
+});
+
+test("Cloudflare client IP is trusted only for HTTPS tunnel hosts", () => {
+  assert.equal(
+    trustedCloudflareClientIp(
+      "https",
+      "203.0.113.10",
+      "example-deep.trycloudflare.com",
+    ),
+    "203.0.113.10",
+  );
+  assert.equal(
+    trustedCloudflareClientIp(
+      "https:",
+      "203.0.113.10",
+      "example-deep.trycloudflare.com:443",
+    ),
+    "203.0.113.10",
+  );
+  assert.equal(
+    trustedCloudflareClientIp(
+      "http",
+      "203.0.113.10",
+      "example-deep.trycloudflare.com",
+    ),
+    null,
+  );
+  assert.equal(
+    trustedCloudflareClientIp("https", "203.0.113.10", "100.101.207.44:3782"),
+    null,
+  );
+  assert.equal(
+    trustedCloudflareClientIp("https", "203.0.113.10", "attacker.com"),
+    null,
+  );
 });
 
 test("large knowledge uploads bypass the buffering proxy", () => {
@@ -77,6 +172,9 @@ test("isCodexCallbackPath matches only the exact public callback path", () => {
 });
 
 test("retired pages cannot fall through to colliding dynamic routes", () => {
+  assert.equal(isRetiredPagePath("/kids"), true);
+  assert.equal(isRetiredPagePath("/kids/"), false);
+  assert.equal(isRetiredPagePath("/kids-admin"), false);
   assert.equal(isRetiredPagePath("/partners/groups"), true);
   assert.equal(isRetiredPagePath("/partners/groups/new"), false);
   assert.equal(isRetiredPagePath("/partners/groups/group-1"), false);
@@ -96,7 +194,7 @@ test("proxy rewrites the exact callback before backend routing and auth gating",
   assert.ok(callbackBranch < authGate);
   assert.match(
     source,
-    /NextResponse\.rewrite\(\s*new URL\(\s*CODEX_CALLBACK_API_PATH \+ search,\s*API_BASE_URL,?\s*\),?\s*\)/,
+    /NextResponse\.rewrite\(\s*new URL\(\s*CODEX_CALLBACK_API_PATH \+ search,\s*API_BASE_URL,?\s*\),?\s*\{ headers: forwardingHeaders \},?\s*\)/,
   );
 });
 
@@ -114,6 +212,8 @@ test("isAuthExempt allows public static assets through the auth gate (issue #599
 test("isAuthExempt allows auth pages and Next internals", () => {
   assert.equal(isAuthExempt("/login"), true);
   assert.equal(isAuthExempt("/register"), true);
+  assert.equal(isAuthExempt("/access/device"), true);
+  assert.equal(isAuthExempt("/access/device?pairing=test1234"), true);
   assert.equal(isAuthExempt("/_next/data/build/chat.json"), true);
   assert.equal(isAuthExempt("/favicon-32x32.png"), true);
 });
@@ -195,6 +295,7 @@ test("backend forwarding preserves only a valid WebSocket upgrade on /ws", () =>
 });
 
 test("isAuthExempt does NOT exempt protected app routes", () => {
+  assert.equal(isAuthExempt("/access"), false);
   assert.equal(isAuthExempt("/chat"), false);
   assert.equal(isAuthExempt("/dashboard"), false);
   assert.equal(isAuthExempt("/space/agents"), false);

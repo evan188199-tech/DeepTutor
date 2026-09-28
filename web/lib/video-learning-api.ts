@@ -8,6 +8,32 @@ export interface TranscriptCue {
   text: string;
 }
 
+export type SubtitleFetchStatus =
+  | "not_requested"
+  | "queued"
+  | "fetching"
+  | "ready"
+  | "retry_wait"
+  | "auth_required"
+  | "unavailable"
+  | "error";
+
+export interface SubtitleFetchState {
+  status: SubtitleFetchStatus;
+  updated_at: string;
+  error_code: string | null;
+  attempts: number;
+  next_retry_at: string | null;
+}
+
+export interface YouTubeSessionStatus {
+  connection: "connected" | "disconnected" | "error";
+  helper_available: boolean;
+  last_validated_at: string | null;
+  last_error_code: string | null;
+  next_prefetch_at: string | null;
+}
+
 export interface TimedSegment extends TranscriptCue {
   locator: number;
 }
@@ -51,10 +77,43 @@ export interface TimedMediaMaterial {
     language: string;
     source: string;
     cues: TranscriptCue[];
+    fetch?: SubtitleFetchState;
   };
   segments: TimedSegment[];
-  learning: { last_position: number };
+  learning: { last_position: number; marks?: VideoLearningMark[] };
   playback: VideoPlayback;
+}
+
+export type VideoMarkKind = "key_point" | "question" | "review";
+export type VideoMarkAuthor = "user" | "assistant";
+export type VideoMarkSource = "immersive" | "remote_phone";
+
+export interface VideoLearningMark {
+  mark_id: string;
+  kind: VideoMarkKind;
+  start_seconds: number;
+  end_seconds: number;
+  start_locator: number;
+  end_locator: number;
+  quote: string;
+  note: string;
+  author: VideoMarkAuthor;
+  source?: VideoMarkSource;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  reviewed_at?: string;
+}
+
+export interface VideoMarkSuggestion {
+  kind: VideoMarkKind;
+  start_seconds: number;
+  end_seconds: number;
+  start_locator: number;
+  end_locator: number;
+  quote: string;
+  note: string;
+  author: VideoMarkAuthor;
 }
 
 export interface VideoNote {
@@ -208,6 +267,49 @@ export async function getVideoMaterial(
   );
 }
 
+export async function getYouTubeSessionStatus(): Promise<YouTubeSessionStatus> {
+  return unwrap(
+    await apiFetch(
+      apiUrl("/api/video-learning/youtube-session/status"),
+      { cache: "no-store" },
+    ),
+  );
+}
+
+export async function connectYouTubeSession(
+  materialId = "",
+): Promise<YouTubeSessionStatus> {
+  return unwrap(
+    await apiFetch(apiUrl("/api/video-learning/youtube-session/connect"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ material_id: materialId }),
+    }),
+  );
+}
+
+export async function disconnectYouTubeSession(): Promise<void> {
+  await unwrap(
+    await apiFetch(apiUrl("/api/video-learning/youtube-session"), {
+      method: "DELETE",
+    }),
+  );
+}
+
+export async function requestSubtitlePrefetch(
+  materialId: string,
+): Promise<SubtitleFetchState> {
+  const payload = await unwrap<{ fetch: SubtitleFetchState }>(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/subtitle-prefetch`,
+      ),
+      { method: "POST" },
+    ),
+  );
+  return payload.fetch;
+}
+
 export async function refreshInvidiousTranscript(
   materialId: string,
 ): Promise<TimedMediaMaterial> {
@@ -241,6 +343,83 @@ export async function saveVideoProgress(
       },
     ),
   );
+}
+
+export async function createVideoMark(
+  materialId: string,
+  payload: {
+    kind: VideoMarkKind;
+    start_seconds: number;
+    end_seconds: number;
+    start_locator?: number;
+    end_locator?: number;
+    quote?: string;
+    note?: string;
+    author?: VideoMarkAuthor;
+  },
+): Promise<VideoLearningMark> {
+  return unwrap(
+    await apiFetch(
+      apiUrl(`/api/video-learning/materials/${encodeURIComponent(materialId)}/marks`),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    ),
+  );
+}
+
+export async function updateVideoMark(
+  materialId: string,
+  markId: string,
+  payload: Partial<{ reviewed: boolean; note: string }>,
+): Promise<VideoLearningMark> {
+  return unwrap(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/marks/${encodeURIComponent(markId)}`,
+      ),
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    ),
+  );
+}
+
+export async function deleteVideoMark(
+  materialId: string,
+  markId: string,
+): Promise<void> {
+  await unwrap(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/marks/${encodeURIComponent(markId)}`,
+      ),
+      { method: "DELETE" },
+    ),
+  );
+}
+
+export async function suggestVideoMarks(
+  materialId: string,
+  timeSeconds: number,
+): Promise<VideoMarkSuggestion[]> {
+  const payload = await unwrap<{ suggestions: VideoMarkSuggestion[] }>(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/mark-suggestions`,
+      ),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ time_seconds: timeSeconds }),
+      },
+    ),
+  );
+  return payload.suggestions || [];
 }
 
 export async function getVideoLearningSettings(): Promise<VideoLearningSettings> {

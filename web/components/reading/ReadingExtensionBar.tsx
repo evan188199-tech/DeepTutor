@@ -1,10 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpenText, Loader2, PencilLine, Sparkles, Square, Volume2, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  BookOpenText,
+  Loader2,
+  PencilLine,
+  Sparkles,
+  Square,
+  Volume2,
+  X,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { apiFetch, apiUrl } from "@/lib/api";
 import { fetchAuthStatus } from "@/lib/auth";
 import { getOwnLearnerProfile } from "@/lib/profile-api";
+import {
+  inferSpeechLocale,
+  selectSpeechVoice,
+  type SpeechVoiceCandidate,
+} from "@/lib/read-aloud-speech";
 import {
   primaryReadingActionRank,
   readingActionClass,
@@ -90,11 +104,37 @@ function ExtensionToolbar({
   const [resultLocator, setResultLocator] = useState(locator);
   const [speaking, setSpeaking] = useState(false);
   const [ageMode, setAgeMode] = useState<ReadingAgeMode>("default");
+  const [speechVoices, setSpeechVoices] = useState<SpeechVoiceCandidate[]>([]);
+  const speechTokenRef = useRef(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
 
-  function stopSpeaking() {
+  function disposeAudio(audio: HTMLAudioElement | null, url: string | null) {
+    audio?.pause();
+    if (url) URL.revokeObjectURL(url);
+  }
+
+  const stopSpeaking = useCallback(() => {
+    speechTokenRef.current += 1;
+    disposeAudio(audioRef.current, audioUrlRef.current);
+    audioRef.current = null;
+    audioUrlRef.current = null;
     window.speechSynthesis?.cancel();
     setSpeaking(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    const synthesis = window.speechSynthesis;
+    if (!synthesis?.addEventListener) return;
+
+    function updateVoices() {
+      setSpeechVoices(synthesis.getVoices() ?? []);
+    }
+
+    updateVoices();
+    synthesis.addEventListener("voiceschanged", updateVoices);
+    return () => synthesis.removeEventListener("voiceschanged", updateVoices);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -145,11 +185,8 @@ function ExtensionToolbar({
   // Speech, on the other hand, must stop the moment the reader navigates
   // away from the passage being read aloud — so this one keeps both keys.
   useEffect(() => {
-    return () => {
-      window.speechSynthesis?.cancel();
-      setSpeaking(false);
-    };
-  }, [locator, materialId]);
+    return () => stopSpeaking();
+  }, [locator, materialId, stopSpeaking]);
 
   const actions = useMemo(
     () =>
@@ -162,6 +199,77 @@ function ExtensionToolbar({
         }),
     [extensions],
   );
+
+  async function playServerSpeech(text: string, token: number): Promise<boolean> {
+    let url: string | null = null;
+    let audio: HTMLAudioElement | null = null;
+    try {
+      const response = await apiFetch(apiUrl("/api/voice/tts"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!response.ok) return false;
+
+      const blob = await response.blob();
+      if (!blob.size) return false;
+      url = URL.createObjectURL(blob);
+      audio = new Audio(url);
+      const activeAudio = audio;
+      const activeUrl = url;
+      const dispose = () => {
+        disposeAudio(activeAudio, activeUrl);
+        if (audioRef.current === activeAudio) audioRef.current = null;
+        if (audioUrlRef.current === activeUrl) audioUrlRef.current = null;
+      };
+      audio.onended = () => {
+        if (speechTokenRef.current === token) {
+          dispose();
+          setSpeaking(false);
+        }
+      };
+      audio.onerror = () => {
+        if (speechTokenRef.current === token) {
+          dispose();
+          setSpeaking(false);
+        }
+      };
+      audioRef.current = audio;
+      audioUrlRef.current = url;
+      await audio.play();
+      if (speechTokenRef.current !== token) {
+        dispose();
+        return true;
+      }
+      setSpeaking(true);
+      return true;
+    } catch {
+      disposeAudio(audio, url);
+      if (audioRef.current === audio) audioRef.current = null;
+      if (audioUrlRef.current === url) audioUrlRef.current = null;
+      return false;
+    }
+  }
+
+  function speakBrowserSpeech(text: string, locale: string, token: number): boolean {
+    if (!("speechSynthesis" in window) || !text) return false;
+
+    const speechLocale = inferSpeechLocale(text, locale);
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = selectSpeechVoice(speechVoices, speechLocale);
+    if (voice) utterance.voice = voice as SpeechSynthesisVoice;
+    utterance.lang = voice?.lang || speechLocale;
+    utterance.onend = () => {
+      if (speechTokenRef.current === token) setSpeaking(false);
+    };
+    utterance.onerror = () => {
+      if (speechTokenRef.current === token) setSpeaking(false);
+    };
+    window.speechSynthesis.speak(utterance);
+    setSpeaking(true);
+    return true;
+  }
 
   async function run(
     extension: ReadingExtensionManifest,
@@ -180,17 +288,13 @@ function ExtensionToolbar({
       setResultLocator(requestedLocator);
       if (next.type === "browser_speech") {
         const text = String(next.payload.text || "");
-        if (!("speechSynthesis" in window) || !text) {
+        const locale = String(next.payload.locale || i18n.language);
+        const token = ++speechTokenRef.current;
+        if (await playServerSpeech(text, token)) return;
+        if (speechTokenRef.current !== token) return;
+        if (!speakBrowserSpeech(text, locale, token)) {
           onError(t("No speech voice is available in this browser."));
-          return;
         }
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = String(next.payload.locale || i18n.language);
-        utterance.onend = () => setSpeaking(false);
-        utterance.onerror = () => setSpeaking(false);
-        window.speechSynthesis.speak(utterance);
-        setSpeaking(true);
       }
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));

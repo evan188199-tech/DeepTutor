@@ -17,6 +17,7 @@ from .doctor import register as register_doctor
 from .init_cmd import register as register_init
 from .kb import register as register_kb
 from .memory import register as register_memory
+from .migrate import register as register_migrate
 from .notebook import register as register_notebook
 from .partner import register as register_partner
 from .plugin import register as register_plugin
@@ -76,6 +77,7 @@ register_book(book_app)
 register_workspace(workspace_app)
 register_doctor(app)
 register_init(app)
+register_migrate(app)
 
 
 @app.command("run")
@@ -211,8 +213,8 @@ def serve(
         reload=reload,
         workers=backend_workers,
         reload_excludes=["web/*", "data/*"] if reload else None,
-        # Keep request.client tied to the actual peer; XFF is client-controlled
-        # unless the deployment explicitly provides a trusted proxy.
+        # Next sanitizes proxy headers; disable Uvicorn's generic XFF trust so
+        # request.client still identifies the actual backend peer.
         proxy_headers=False,
         ws_max_size=get_ws_max_size(),
         timeout_keep_alive=HTTP_KEEP_ALIVE_TIMEOUT,

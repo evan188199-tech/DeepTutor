@@ -240,7 +240,12 @@ class LlamaIndexPipeline:
             self.logger.info(f"Index persisted to {storage_dir}")
             VisualAssetStore(kb_dir).publish(visual_candidates, prune_missing=True)
             if signature is not None:
-                write_version_meta(kb_dir, signature, storage_dir=storage_dir)
+                write_version_meta(
+                    kb_dir,
+                    signature,
+                    storage_dir=storage_dir,
+                    published=bool(kwargs.get("published", True)),
+                )
 
             indexed_file_callback = kwargs.get("indexed_file_callback")
             if indexed_file_callback is not None:

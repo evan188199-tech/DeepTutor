@@ -6,12 +6,15 @@ import {
   CODEX_CALLBACK_API_PATH,
   COOKIE_NAME,
   LOGIN_PATH,
+  backendForwardingHeaders,
   classifyToken,
+  frontendForwardingHost,
   isAuthExempt,
   isBackendPath,
   isCodexCallbackPath,
   isRetiredPagePath,
   isWebSocketPath,
+  trustedCloudflareClientIp,
 } from "./lib/proxy-policy";
 
 // Backend base URL for `/api/*` and `/ws/*` rewrites. The container entrypoint
@@ -51,9 +54,31 @@ function redirectToLogin(
 export function proxy(req: NextRequest): NextResponse {
   const { pathname, search } = req.nextUrl;
 
+  const forwardingHost = frontendForwardingHost(
+    req.headers.get("host"),
+    req.nextUrl.host,
+  );
+  const extraHeaders = backendForwardingHeaders(
+    forwardingHost,
+    trustedCloudflareClientIp(
+      req.headers.get("x-forwarded-proto"),
+      req.headers.get("cf-connecting-ip"),
+      forwardingHost,
+    ),
+  );
+  const forwardingHeaders = new Headers(req.headers);
+  // Next's internal rewrite can preserve deleted original headers, so clear
+  // client-supplied proxy values by overwrite rather than delete.
+  forwardingHeaders.set("x-deeptutor-client-ip", "untrusted-local-proxy");
+  forwardingHeaders.set("x-deeptutor-frontend-host", "untrusted-frontend-host");
+  for (const [key, value] of Object.entries(extraHeaders)) {
+    forwardingHeaders.set(key, value);
+  }
+
   if (isCodexCallbackPath(pathname)) {
     return NextResponse.rewrite(
       new URL(CODEX_CALLBACK_API_PATH + search, API_BASE_URL),
+      { headers: forwardingHeaders },
     );
   }
 
@@ -67,10 +92,15 @@ export function proxy(req: NextRequest): NextResponse {
   if (isBackendPath(pathname)) {
     return NextResponse.rewrite(new URL(pathname + search, API_BASE_URL), {
       request: {
-        headers: prepareBackendForwardHeaders(req.headers, {
-          allowWebSocketUpgrade:
-            req.method === "GET" && isWebSocketPath(pathname),
-        }),
+        headers: (() => {
+          const backendHeaders = prepareBackendForwardHeaders(req.headers, {
+            allowWebSocketUpgrade: req.method === "GET" && isWebSocketPath(pathname),
+          });
+          for (const [key, value] of Object.entries(extraHeaders)) {
+            backendHeaders.set(key, value);
+          }
+          return backendHeaders;
+        })(),
       },
     });
   }

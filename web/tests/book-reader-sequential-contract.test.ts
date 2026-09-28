@@ -33,17 +33,23 @@ test("turning backward lands at the end and forward lands at the start", () => {
   assert.ok(
     source
       .slice(previousBranch, nextBranch)
-      .includes('pendingScrollPlacementRef.current = "end"'),
+      .includes(
+        'pendingScrollPlacements.set(scrollPlacementKey(previousPage), "end")',
+      ),
   );
   assert.ok(
     source
-      .slice(previousBranch, nextBranch)
-      .includes("pendingScrollPlacementPageIdRef.current = previousPage.id"),
+      .slice(0, previousBranch)
+      .includes(
+        "const pendingScrollPlacements = new Map<string, ChapterScrollPlacement>()",
+      ),
   );
   assert.ok(
     source
       .slice(nextBranch)
-      .includes('pendingScrollPlacementRef.current = "start"'),
+      .includes(
+        'pendingScrollPlacements.set(scrollPlacementKey(nextPage), "start")',
+      ),
   );
 });
 

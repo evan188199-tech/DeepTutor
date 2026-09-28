@@ -82,6 +82,7 @@ class ReadingQuizExtension:
     """Return bounded comprehension questions grounded in the current unit."""
 
     manifest = ReadingExtensionManifest(
+        requires_llm=True,
         id="quiz",
         version="1.0.0",
         name="Reading quiz",

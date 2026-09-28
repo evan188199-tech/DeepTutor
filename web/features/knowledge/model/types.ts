@@ -32,6 +32,7 @@ export type {
   PreflightCheck,
   RagProviderSummary,
   SyncFolderResponse,
+  WebNavigationSource,
   WebSource,
   WebSourceSchedulePayload,
   WebSourceSyncJob,

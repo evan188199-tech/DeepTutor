@@ -11,7 +11,7 @@ export const HANDOFF_PATH = "/handoff";
 export const COOKIE_NAME = "dt_token";
 export const CODEX_CALLBACK_PATH = "/auth/callback";
 export const CODEX_CALLBACK_API_PATH = "/api/auth/openai-codex/callback";
-const RETIRED_PAGE_PATHS = new Set(["/partners/groups"]);
+const RETIRED_PAGE_PATHS = new Set(["/kids", "/partners/groups"]);
 
 export function isCodexCallbackPath(pathname: string): boolean {
   return pathname === CODEX_CALLBACK_PATH;
@@ -20,6 +20,62 @@ export function isCodexCallbackPath(pathname: string): boolean {
 /** Exact retired pages that would otherwise collide with a dynamic route. */
 export function isRetiredPagePath(pathname: string): boolean {
   return RETIRED_PAGE_PATHS.has(pathname);
+}
+
+export function backendForwardingHeaders(
+  host: string | null,
+  cloudflareClientIp: string | null,
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (host) headers["x-deeptutor-frontend-host"] = host;
+  // Only Cloudflare's connector value is trusted. The generic XFF header is
+  // deliberately ignored because a direct client can forge it.
+  if (cloudflareClientIp) {
+    headers["x-deeptutor-client-ip"] = cloudflareClientIp;
+  }
+  return headers;
+}
+
+export function frontendForwardingHost(
+  inboundHost: string | null,
+  nextUrlHost: string | null,
+): string | null {
+  // The public Host header is authoritative behind Cloudflare. Next's
+  // rewritten URL can instead describe the internal backend destination.
+  return inboundHost?.trim() || nextUrlHost?.trim() || null;
+}
+
+const TUNNEL_SUFFIX = ".trycloudflare.com";
+
+export function isCloudflareTunnelHost(host: string | null): boolean {
+  if (!host) return false;
+  const lower = host.trim().toLowerCase();
+  const hostname = lower.split(":")[0];
+  return (
+    hostname.endsWith(TUNNEL_SUFFIX) &&
+    hostname.length > TUNNEL_SUFFIX.length &&
+    hostname
+      .slice(0, -TUNNEL_SUFFIX.length)
+      .split("-")
+      .every((part) => part.length > 0 && /^[a-z0-9]+$/.test(part))
+  );
+}
+
+export function trustedCloudflareClientIp(
+  protocol: string | null,
+  value: string | null,
+  host?: string | null,
+): string | null {
+  // Stable Tailscale access is HTTP and does not pass through Cloudflare.
+  // Do not let a direct HTTP client forge Cloudflare's connector header and
+  // evade or target the login rate limiter.
+  const isHttps = protocol === "https" || protocol === "https:";
+  if (!isHttps || !value) return null;
+  if (host !== undefined && host !== null && !isCloudflareTunnelHost(host)) {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed || null;
 }
 
 // Paths whose responses come from the backend, not the Next app. The middleware
@@ -55,6 +111,7 @@ export function isAuthExempt(pathname: string): boolean {
     pathname.startsWith(LOGIN_PATH) ||
     pathname.startsWith("/register") ||
     pathname === HANDOFF_PATH ||
+    pathname.startsWith("/access/device") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     STATIC_ASSET.test(pathname)

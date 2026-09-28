@@ -86,8 +86,9 @@ def main() -> None:
         reload_excludes=reload_excludes if dev_reload else None,
         log_level="info",
         access_log=False,
-        # XFF is client-controlled in this deployment. Keep request.client tied
-        # to the actual backend peer for the selective access log.
+        # Next is the only production reverse proxy. It sanitizes Cloudflare
+        # values into DeepTutor-specific headers; Uvicorn's generic XFF trust
+        # would overwrite request.client and defeat that peer check.
         proxy_headers=False,
         ws_max_size=get_ws_max_size(),
         timeout_keep_alive=HTTP_KEEP_ALIVE_TIMEOUT,

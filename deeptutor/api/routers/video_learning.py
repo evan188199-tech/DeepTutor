@@ -27,6 +27,17 @@ from deeptutor.video_learning import (
     test_invidious_connection,
 )
 from deeptutor.video_learning import notes as video_notes
+from deeptutor.video_learning.marks import (
+    create_mark,
+    delete_mark,
+    suggest_marks,
+    update_mark,
+)
+from deeptutor.video_learning.subtitle_prefetch import get_subtitle_prefetch_service
+from deeptutor.video_learning.youtube_session import (
+    HostChromeSessionStore,
+    chrome_available,
+)
 
 router = APIRouter()
 settings_router = APIRouter()
@@ -41,6 +52,10 @@ class ResolveRequest(BaseModel):
     provider_override: str | None = Field(default=None, max_length=32)
 
 
+class YouTubeConnectRequest(BaseModel):
+    material_id: str = Field(default="", max_length=64)
+
+
 class ProgressRequest(BaseModel):
     time_seconds: float = Field(ge=0, le=24 * 60 * 60)
     duration_seconds: float = Field(default=0, ge=0, le=24 * 60 * 60)
@@ -53,6 +68,35 @@ class CreateVideoNoteRequest(BaseModel):
 
 class UpdateVideoNoteRequest(BaseModel):
     body: str = Field(min_length=1, max_length=20_000)
+
+
+class MarkCreateRequest(BaseModel):
+    kind: str = Field(min_length=1, max_length=32)
+    start_seconds: float = Field(ge=0, le=24 * 60 * 60)
+    end_seconds: float = Field(ge=0, le=24 * 60 * 60)
+    start_locator: int = Field(default=0, ge=0)
+    end_locator: int = Field(default=0, ge=0)
+    quote: str = Field(default="", max_length=4000)
+    note: str = Field(default="", max_length=2000)
+    author: str = Field(default="user", max_length=32)
+    source: str = Field(default="immersive", max_length=32)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class MarkPatchRequest(BaseModel):
+    kind: str | None = Field(default=None, max_length=32)
+    start_seconds: float | None = Field(default=None, ge=0, le=24 * 60 * 60)
+    end_seconds: float | None = Field(default=None, ge=0, le=24 * 60 * 60)
+    start_locator: int | None = Field(default=None, ge=0)
+    end_locator: int | None = Field(default=None, ge=0)
+    quote: str | None = Field(default=None, max_length=4000)
+    note: str | None = Field(default=None, max_length=2000)
+    reviewed: bool | None = None
+    metadata: dict[str, Any] | None = None
+
+
+class MarkSuggestionRequest(BaseModel):
+    time_seconds: float = Field(default=0.0, ge=0, le=24 * 60 * 60)
 
 
 class YouTubeSettings(BaseModel):
@@ -181,11 +225,21 @@ async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
     try:
         if payload.provider_override not in {None, "youtube", "invidious"}:
             raise TimedMediaError("Unsupported provider override.")
-        return await resolve_material(
+        material = await resolve_material(
             payload.url,
             payload.language,
             provider_override=payload.provider_override,
         )
+        if not (material.get("transcript") or {}).get("cues"):
+            fetch = await get_subtitle_prefetch_service().enqueue(
+                current_owner_id(),
+                str(material.get("material_id") or ""),
+                get_timed_media_store(),
+            )
+            transcript = material.setdefault("transcript", {})
+            if isinstance(transcript, dict):
+                transcript["fetch"] = fetch
+        return material
     except Exception as exc:
         raise _http_error(exc) from exc
 
@@ -193,7 +247,66 @@ async def resolve_video(payload: ResolveRequest) -> dict[str, Any]:
 @router.get("/materials/{material_id}")
 async def get_video_material(material_id: str) -> dict[str, Any]:
     try:
+        material = get_timed_media_store().get(material_id)
+        if not (material.get("transcript") or {}).get("cues"):
+            await get_subtitle_prefetch_service().enqueue(
+                current_owner_id(), material_id, get_timed_media_store()
+            )
+            material = get_timed_media_store().get(material_id)
         return await material_with_playback(material_id)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/youtube-session/status")
+async def get_youtube_session_status() -> dict[str, Any]:
+    metadata = HostChromeSessionStore.metadata(current_owner_id())
+    helper_available = chrome_available()
+    return {
+        "connection": "connected"
+        if metadata and helper_available
+        else ("error" if metadata else "disconnected"),
+        "helper_available": helper_available,
+        "last_validated_at": str((metadata or {}).get("enabled_at") or "") or None,
+        "last_error_code": "chrome_unavailable" if metadata and not helper_available else None,
+        "next_prefetch_at": None,
+    }
+
+
+@router.post("/youtube-session/connect", status_code=202)
+async def connect_youtube_session(payload: YouTubeConnectRequest) -> dict[str, Any]:
+    try:
+        if payload.material_id:
+            get_timed_media_store().get(payload.material_id)
+        owner_id = current_owner_id()
+        HostChromeSessionStore.enable(owner_id)
+        helper_available = chrome_available()
+        return {
+            "connection": "connected" if helper_available else "error",
+            "helper_available": helper_available,
+            "last_error_code": None if helper_available else "chrome_unavailable",
+            "mode": "host_chrome",
+        }
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.delete("/youtube-session")
+async def disconnect_youtube_session() -> dict[str, bool]:
+    HostChromeSessionStore.delete(current_owner_id())
+    return {"ok": True}
+
+
+@router.post("/materials/{material_id}/subtitle-prefetch", status_code=202)
+async def request_subtitle_prefetch(material_id: str) -> dict[str, Any]:
+    try:
+        fetch = await get_subtitle_prefetch_service().enqueue(
+            current_owner_id(),
+            material_id,
+            get_timed_media_store(),
+            manual=True,
+        )
+        return {"fetch": fetch}
     except Exception as exc:
         raise _http_error(exc) from exc
 
@@ -280,6 +393,58 @@ async def delete_video_note(material_id: str, note_id: str) -> dict[str, str]:
         return {"status": "deleted" if deleted else "missing"}
     except Exception as exc:
         raise _note_error(exc) from exc
+
+
+@router.post("/materials/{material_id}/marks", status_code=201)
+async def create_video_mark(material_id: str, payload: MarkCreateRequest) -> dict[str, Any]:
+    try:
+        store = get_timed_media_store()
+        with store.lock(material_id):
+            material = store.get(material_id)
+            mark = create_mark(material, payload.model_dump())
+            store.save(material)
+        return mark
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.patch("/materials/{material_id}/marks/{mark_id}")
+async def update_video_mark(
+    material_id: str, mark_id: str, payload: MarkPatchRequest
+) -> dict[str, Any]:
+    try:
+        store = get_timed_media_store()
+        fields = payload.model_dump(exclude_unset=True)
+        with store.lock(material_id):
+            material = store.get(material_id)
+            mark = update_mark(material, mark_id, fields)
+            store.save(material)
+        return mark
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.delete("/materials/{material_id}/marks/{mark_id}")
+async def delete_video_mark(material_id: str, mark_id: str) -> dict[str, bool]:
+    try:
+        store = get_timed_media_store()
+        with store.lock(material_id):
+            material = store.get(material_id)
+            delete_mark(material, mark_id)
+            store.save(material)
+        return {"ok": True}
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/materials/{material_id}/mark-suggestions")
+async def suggest_video_marks(material_id: str, payload: MarkSuggestionRequest) -> dict[str, Any]:
+    try:
+        material = get_timed_media_store().get(material_id)
+        suggestions = await suggest_marks(material, payload.time_seconds)
+        return {"suggestions": suggestions}
+    except Exception as exc:
+        raise _http_error(exc) from exc
 
 
 def _vtt_timestamp(value: Any) -> str:

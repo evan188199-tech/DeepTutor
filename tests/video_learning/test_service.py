@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 import sys
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
 from deeptutor.video_learning import service
+from deeptutor.video_learning.marks import create_mark
+from deeptutor.video_learning.subtitle_prefetch import SubtitlePrefetchService
 
 
 class _Paths:
@@ -187,6 +191,91 @@ def test_store_legacy_repair_does_not_decode_nested_entities_twice(isolated: Pat
     assert store.get(material_id)["segments"][0]["text"] == "Use &lt;tag&gt;"
 
 
+@pytest.mark.asyncio
+async def test_ytdlp_uses_chrome_and_downloads_subtitles_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    class FakeDownloader:
+        def __init__(self, options: dict[str, Any]):
+            captured.update(options)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: object):
+            return None
+
+        def download(self, _urls: list[str]) -> None:
+            root = Path(captured["paths"]["home"])
+            (root / "subtitle.en.vtt").write_text(
+                "WEBVTT\n\n00:00:00.000 --> 00:00:01.000\nChrome caption\n",
+                encoding="utf-8",
+            )
+
+    monkeypatch.setitem(sys.modules, "yt_dlp", SimpleNamespace(YoutubeDL=FakeDownloader))
+    cues, language, source = await service.download_ytdlp_subtitle("dQw4w9WgXcQ")
+
+    assert captured["cookiesfrombrowser"] == ("chrome",)
+    assert captured["skip_download"] is True
+    assert captured["writesubtitles"] is True
+    assert cues == [{"start": 0.0, "end": 1.0, "text": "Chrome caption"}]
+    assert language == "en"
+    assert source == "youtube-chrome"
+
+
+@pytest.mark.asyncio
+async def test_subtitle_prefetch_preserves_rate_limit_backoff_and_is_idempotent(
+    isolated: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from deeptutor.video_learning import subtitle_prefetch
+
+    store = service.get_timed_media_store()
+    material_id = service.material_id_for("dQw4w9WgXcQ")
+    store.save(
+        {
+            "version": 1,
+            "type": "timed_media",
+            "material_id": material_id,
+            "source": {"video_id": "dQw4w9WgXcQ"},
+            "metadata": {},
+            "transcript": {"status": "unavailable", "reason": "unavailable", "cues": []},
+            "learning": {"last_position": 0},
+        }
+    )
+    monkeypatch.setattr(
+        subtitle_prefetch.HostChromeSessionStore,
+        "enabled",
+        classmethod(lambda cls, _owner_id: True),
+    )
+    calls = 0
+
+    async def rate_limited(*_args: object, **_kwargs: object):
+        nonlocal calls
+        calls += 1
+        return [], "", "rate_limited"
+
+    monkeypatch.setattr(subtitle_prefetch, "download_ytdlp_subtitle", rate_limited)
+    prefetch = SubtitlePrefetchService()
+    queued = await prefetch.enqueue("evan", material_id, store, manual=True)
+    assert queued["status"] == "queued"
+    for _ in range(30):
+        await asyncio.sleep(0.01)
+        if not prefetch._pending:
+            break
+    await asyncio.sleep(0)
+
+    saved = store.get(material_id)["transcript"]["fetch"]
+    assert calls == 1
+    assert saved["status"] == "retry_wait"
+    assert saved["attempts"] == 1
+    assert saved["error_code"] == "rate_limited"
+    assert saved["next_retry_at"]
+    repeated = await prefetch.enqueue("evan", material_id, store)
+    assert repeated == saved
+
+
 def test_invidious_caption_choice_accepts_the_real_snake_case_schema() -> None:
     captions = [
         {"label": "English (auto-generated)", "language_code": "en", "auto_generated": True},
@@ -303,6 +392,10 @@ async def test_provider_switch_preserves_material_and_progress(monkeypatch, isol
     first = await service.resolve_material("https://youtu.be/dQw4w9WgXcQ")
     stored = service.get_timed_media_store().get(first["material_id"])
     stored["learning"]["last_position"] = 42
+    mark = create_mark(
+        stored,
+        {"kind": "key_point", "start_seconds": 1, "end_seconds": 12},
+    )
     service.get_timed_media_store().save(stored)
     service.save_video_learning_settings(
         {
@@ -314,6 +407,7 @@ async def test_provider_switch_preserves_material_and_progress(monkeypatch, isol
     second = await service.resolve_material("https://youtu.be/dQw4w9WgXcQ")
     assert second["material_id"] == first["material_id"]
     assert second["learning"]["last_position"] == 42
+    assert second["learning"]["marks"] == [mark]
     assert second["playback"]["provider"] == "invidious"
 
 
@@ -385,7 +479,26 @@ async def test_refresh_invidious_transcript_preserves_playback_and_progress(
             "metadata": {"title": "Retry lesson", "duration_seconds": 120},
             "transcript": {"status": "unavailable", "reason": "unavailable", "cues": []},
             "segments": [],
-            "learning": {"last_position": 42},
+            "learning": {
+                "last_position": 42,
+                "marks": [
+                    {
+                        "mark_id": "0123456789abcdef01234567",
+                        "kind": "review",
+                        "start_seconds": 1,
+                        "end_seconds": 4,
+                        "start_locator": 0,
+                        "end_locator": 0,
+                        "quote": "",
+                        "note": "",
+                        "author": "user",
+                        "source": "immersive",
+                        "metadata": {},
+                        "created_at": "2026-01-01T00:00:00Z",
+                        "updated_at": "2026-01-01T00:00:00Z",
+                    }
+                ],
+            },
             "provider_cache": {
                 "invidious_formats": [{"format_id": "18", "mime_type": "video/mp4"}]
             },
@@ -411,6 +524,7 @@ async def test_refresh_invidious_transcript_preserves_playback_and_progress(
         {"locator": 1, "start": 1, "end": 4, "text": "Recovered caption."}
     ]
     assert refreshed["learning"]["last_position"] == 42
+    assert len(refreshed["learning"]["marks"]) == 1
     assert refreshed["playback"]["format_id"] == "18"
     assert "revision=" in refreshed["playback"]["subtitles_url"]
 

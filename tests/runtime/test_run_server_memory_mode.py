@@ -40,9 +40,9 @@ def test_run_server_disables_reload_by_default(
 def test_run_server_preserves_actual_proxy_peer(
     uvicorn_kwargs: dict[str, Any],
 ) -> None:
-    """Do not replace the backend peer with client-controlled XFF values."""
+    """Next sanitizes proxy identity; Uvicorn must not rewrite request.client
+    or replace the backend peer with client-controlled XFF values."""
     run_server.main()
-
     assert uvicorn_kwargs["proxy_headers"] is False
 
 

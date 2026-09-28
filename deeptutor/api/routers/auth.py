@@ -10,12 +10,14 @@ import os
 import re
 import secrets
 import time
+from urllib.parse import urlsplit
 
 from fastapi import (
     APIRouter,
     Cookie,
     Depends,
     File,
+    Form,
     Header,
     HTTPException,
     Request,
@@ -24,7 +26,7 @@ from fastapi import (
     WebSocket,
     status,
 )
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from deeptutor.services.config import load_auth_settings
@@ -67,6 +69,7 @@ from deeptutor.multi_user.session_handoff import (
     public_origin,
 )
 from deeptutor.services.auth import (
+    AUTH_ALLOW_REGISTRATION,
     AUTH_ENABLED,
     POCKETBASE_ENABLED,
     TOKEN_EXPIRE_HOURS,
@@ -91,6 +94,16 @@ from deeptutor.services.auth import (
 )
 from deeptutor.services.codex_auth.contracts import CodexAuthError
 from deeptutor.services.codex_auth.service import deliver_codex_oauth_callback
+from deeptutor.services.login_rate_limit import LoginRateLimited, login_rate_limiter
+from deeptutor.services.tunnel_handoff import (
+    TICKET_TTL_SECONDS,
+    SessionHandoff,
+    consume_ticket_details,
+    create_pairing,
+    create_ticket,
+    exchange_pairing_details,
+    load_tunnel_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -317,6 +330,17 @@ class AuthStatusResponse(BaseModel):
     learning_policy: dict | None = None
 
 
+class TunnelHandoffResponse(BaseModel):
+    tunnel_url: str
+    code: str
+    expires_in: int
+
+
+class TunnelHandoffPairingResponse(BaseModel):
+    pairing_id: str
+    expires_in: int
+
+
 class UserInfo(BaseModel):
     """Single user record returned by the GET /users and /profile endpoints."""
 
@@ -384,6 +408,66 @@ def _bearer_token_from_header(authorization: str | None) -> str | None:
         token = parts[1].strip()
         return token or None
     return None
+
+
+_IMPLICIT_PRIVATE_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+_DEFAULT_LOGIN_HANDOFF = SessionHandoff(clear_cookie_names=("dt_video_controller",))
+
+
+def _request_client_ip(request: Request) -> str:
+    # The Next proxy sanitizes client-supplied values and copies Cloudflare's
+    # connector header only for HTTPS tunnel requests. The proxy and API run on
+    # the same host, so trust that header only for local proxy peers.
+    peer_host = request.client.host if request.client else ""
+    if peer_host in {"127.0.0.1", "::1", "::ffff:127.0.0.1"}:
+        forwarded = request.headers.get("x-deeptutor-client-ip")
+        if forwarded:
+            candidate = forwarded.split(",", 1)[0].strip()
+            try:
+                ipaddress.ip_address(candidate)
+                return candidate
+            except ValueError:
+                pass
+    return peer_host or "unknown"
+
+
+def _request_host(request: Request) -> str | None:
+    peer_host = request.client.host if request.client else ""
+    if peer_host in {"127.0.0.1", "::1", "::ffff:127.0.0.1"}:
+        forwarded = request.headers.get("x-deeptutor-frontend-host")
+        if forwarded:
+            forwarded_host = forwarded.split(",", 1)[0].strip()
+            return urlsplit("//" + forwarded_host).hostname
+    return request.url.hostname
+
+
+def _is_private_login_host(host: str | None) -> bool:
+    if not host:
+        return False
+    normalized = host.strip().lower()
+    state = load_tunnel_state()
+    if state is not None and normalized == state.host:
+        return False
+    if normalized.endswith(".trycloudflare.com"):
+        return False
+    if normalized in _IMPLICIT_PRIVATE_HOSTS:
+        return True
+    auth_settings = load_auth_settings()
+    configured_hosts = {
+        item.strip().lower()
+        for item in (auth_settings.get("private_login_hosts") or [])
+        if isinstance(item, str) and item.strip()
+    }
+    return normalized in configured_hosts
+
+
+def _reject_public_tunnel_credentials(request: Request) -> None:
+    host = _request_host(request)
+    if not _is_private_login_host(host):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=("Password sign-in and registration are available only on the private network."),
+        )
 
 
 def _extract_token(authorization: str | None, dt_token: str | None) -> str | None:
@@ -769,6 +853,17 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
     """Validate credentials and set a JWT cookie."""
     if not AUTH_ENABLED:
         return {"ok": True, "message": "Auth is disabled — no login required."}
+    _reject_public_tunnel_credentials(request)
+
+    client_ip = _request_client_ip(request)
+    try:
+        login_rate_limiter.ensure_allowed(client_ip)
+    except LoginRateLimited as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many failed login attempts. Try again later.",
+            headers={"Retry-After": str(exc.retry_after)},
+        ) from exc
 
     _require_private_frontend(request)
     _no_store(response)
@@ -778,6 +873,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
         # existing LoginRequest schema; users can pass their email as "username".
         pb_result = authenticate_pb(body.username, body.password)
         if not pb_result:
+            login_rate_limiter.register_failure(client_ip)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email or password",
@@ -796,6 +892,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
     # Standard JWT + bcrypt mode
     result = authenticate(body.username, body.password)
     if not result:
+        login_rate_limiter.register_failure(client_ip)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -803,6 +900,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
 
     token = create_token(result.username, result.role, result.user_id)
     response.set_cookie(value=token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
+    login_rate_limiter.register_success(client_ip)
 
     logger.info(f"User '{result.username}' logged in (role={result.role!r})")
     return {
@@ -1089,6 +1187,7 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Auth is disabled — registration is not available.",
         )
+    _reject_public_tunnel_credentials(request)
 
     _require_private_frontend(request)
     _no_store(response)
@@ -1117,8 +1216,8 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
             "is_admin": False,
         }
 
-    # Standard mode — only allowed before the first admin exists.
-    if not is_first_user():
+    # Standard mode — allowed before the first admin exists, or when registration is opened.
+    if not is_first_user() and not AUTH_ALLOW_REGISTRATION:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Self-registration is closed. Ask an administrator to create your account.",
@@ -1153,7 +1252,151 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
 @router.get("/is_first_user")
 async def check_is_first_user() -> dict:
     """Return whether the user store is empty (used by the register UI)."""
-    return {"is_first_user": is_first_user() if AUTH_ENABLED else False}
+    first = is_first_user() if AUTH_ENABLED else False
+    return {
+        "is_first_user": first,
+        "registration_open": bool(first or AUTH_ALLOW_REGISTRATION),
+    }
+
+
+@router.post("/handoff", response_model=TunnelHandoffResponse)
+async def create_tunnel_handoff(
+    response: Response,
+    payload: TokenPayload | None = Depends(require_auth),
+) -> TunnelHandoffResponse:
+    """Create a short-lived, single-use cross-origin session handoff."""
+    response.headers["Cache-Control"] = "no-store"
+    if not AUTH_ENABLED or payload is None:
+        raise HTTPException(status_code=400, detail="Authentication is required")
+    if POCKETBASE_ENABLED:
+        raise HTTPException(
+            status_code=501,
+            detail="Tunnel handoff is unavailable in PocketBase mode.",
+        )
+    try:
+        code, state = create_ticket(payload, handoff=_DEFAULT_LOGIN_HANDOFF)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return TunnelHandoffResponse(
+        tunnel_url=state.url,
+        code=code,
+        expires_in=TICKET_TTL_SECONDS,
+    )
+
+
+@router.post("/handoff/pairing", response_model=TunnelHandoffPairingResponse)
+async def create_tunnel_handoff_pairing(
+    response: Response,
+    payload: TokenPayload | None = Depends(require_auth),
+) -> TunnelHandoffPairingResponse:
+    """Create a QR pairing capability without putting a login code in its URL."""
+    response.headers["Cache-Control"] = "no-store"
+    if not AUTH_ENABLED or payload is None:
+        raise HTTPException(status_code=400, detail="Authentication is required")
+    if POCKETBASE_ENABLED:
+        raise HTTPException(
+            status_code=501,
+            detail="Tunnel handoff is unavailable in PocketBase mode.",
+        )
+    pairing_id, expires_in = create_pairing(payload, handoff=_DEFAULT_LOGIN_HANDOFF)
+    return TunnelHandoffPairingResponse(
+        pairing_id=pairing_id,
+        expires_in=expires_in,
+    )
+
+
+@router.get("/handoff/pairing/{pairing_id}", response_model=TunnelHandoffResponse)
+async def exchange_tunnel_handoff_pairing(
+    response: Response,
+    pairing_id: str,
+) -> TunnelHandoffResponse:
+    """Exchange a scanned pairing capability for a fresh one-time handoff."""
+    response.headers["Cache-Control"] = "no-store"
+    exchanged = exchange_pairing_details(pairing_id)
+    if exchanged is None:
+        raise HTTPException(status_code=400, detail="Phone pairing is invalid or expired")
+    payload, handoff = exchanged
+    try:
+        code, state = create_ticket(payload, handoff=handoff)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return TunnelHandoffResponse(
+        tunnel_url=state.url,
+        code=code,
+        expires_in=TICKET_TTL_SECONDS,
+    )
+
+
+@router.post("/handoff/consume")
+async def consume_tunnel_handoff(
+    request: Request,
+    code: str = Form(...),
+) -> Response:
+    """Exchange a valid one-time code for a cookie scoped to the tunnel host."""
+    target_host = _request_host(request)
+    consumed = consume_ticket_details(code, target_host)
+    if consumed is None:
+        if decode_token(request.cookies.get(_COOKIE_NAME)):
+            response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+            return response
+
+        if "text/html" in request.headers.get("accept", "").lower():
+            response = HTMLResponse(
+                '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width,initial-scale=1">'
+                "<title>登录链接已失效</title>"
+                '<body style="font-family:system-ui,-apple-system,sans-serif;margin:0;'
+                'min-height:100vh;display:grid;place-items:center;background:#f8fafc;color:#0f172a">'
+                '<main style="max-width:28rem;margin:1.5rem;padding:2rem;border-radius:1rem;'
+                'background:#fff;box-shadow:0 8px 24px #0f172a14;text-align:center">'
+                '<h1 style="font-size:1.25rem">登录链接已失效</h1>'
+                '<p style="line-height:1.6;color:#475569">此登录交接已使用或已过期。'
+                "请回到显示二维码的设备，刷新二维码后重新扫码。</p>"
+                '<a href="/login" style="display:inline-block;padding:.7rem 1rem;border-radius:.5rem;'
+                'background:#0f766e;color:#fff;text-decoration:none">返回登录</a>'
+                "</main></body></html>",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+            return response
+
+        raise HTTPException(status_code=400, detail="Login handoff is invalid or expired")
+    payload, handoff = consumed
+
+    token = create_token(payload.username, payload.role, payload.user_id)
+    response = RedirectResponse(handoff.redirect_path, status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key=_COOKIE_NAME,
+        value=token,
+        max_age=_COOKIE_MAX_AGE,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+    )
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    for cookie in handoff.cookies:
+        response.set_cookie(
+            key=cookie.name,
+            value=cookie.value,
+            max_age=cookie.max_age,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            path=cookie.path,
+        )
+    for cookie_name in handoff.clear_cookie_names:
+        response.delete_cookie(
+            key=cookie_name,
+            path="/",
+            secure=True,
+            httponly=True,
+            samesite="lax",
+        )
+    return response
 
 
 # ---------------------------------------------------------------------------

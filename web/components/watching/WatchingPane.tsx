@@ -31,8 +31,11 @@ import {
 import {
   createVideoNote,
   deleteVideoNote,
+  disconnectYouTubeSession,
   exportVideoNotes,
   listVideoNotes,
+  connectYouTubeSession,
+  requestSubtitlePrefetch,
   saveVideoProgress,
   updateVideoNote,
   type VideoNote,
@@ -80,6 +83,8 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
   const [noteSaveSuccess, setNoteSaveSuccess] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [subtitleBusy, setSubtitleBusy] = useState(false)
+  const [subtitleError, setSubtitleError] = useState<string | null>(null)
   const notesExportRequestRef = useRef(0)
   const notesLoadRequestRef = useRef(0)
   const noteSubmitGuardRef = useRef(false)
@@ -165,6 +170,15 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     setSelectedTranscriptMatch(-1)
   }, [materialId])
 
+  const subtitleFetchStatus = material?.transcript.fetch?.status
+  useEffect(() => {
+    if (subtitleFetchStatus !== 'queued' && subtitleFetchStatus !== 'fetching') return
+    const timer = window.setInterval(() => {
+      void refresh()
+    }, 5_000)
+    return () => window.clearInterval(timer)
+  }, [refresh, subtitleFetchStatus])
+
   useEffect(() => {
     if (!normalizedTranscriptQuery || transcriptMatches.length === 0) {
       setSelectedTranscriptMatch(-1)
@@ -188,9 +202,7 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
     if (!list || !activeRow) return
     const targetTop = transcriptFollowScrollTop({
       rowOffset:
-        activeRow.getBoundingClientRect().top -
-        list.getBoundingClientRect().top +
-        list.scrollTop,
+        activeRow.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop,
       rowHeight: activeRow.clientHeight,
       viewportHeight: list.clientHeight,
       contentHeight: list.scrollHeight,
@@ -213,6 +225,38 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
       await openUrl(url, '', providerOverride)
     } catch {
       // The context owns the user-facing error.
+    }
+  }
+
+  const connectChromeCaptions = async () => {
+    if (!materialId || subtitleBusy) return
+    setSubtitleBusy(true)
+    setSubtitleError(null)
+    try {
+      await connectYouTubeSession(materialId)
+      await requestSubtitlePrefetch(materialId)
+      await refresh()
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error ? caught.message : t('Captions could not be connected.')
+      )
+    } finally {
+      setSubtitleBusy(false)
+    }
+  }
+
+  const disconnectChromeCaptions = async () => {
+    if (subtitleBusy) return
+    setSubtitleBusy(true)
+    setSubtitleError(null)
+    try {
+      await disconnectYouTubeSession()
+    } catch (caught) {
+      setSubtitleError(
+        caught instanceof Error ? caught.message : t('Captions could not be disconnected.')
+      )
+    } finally {
+      setSubtitleBusy(false)
     }
   }
 
@@ -656,6 +700,29 @@ export function WatchingPane({ onClose }: { onClose(): void }) {
                     >
                       {t('Retry captions')}
                     </button>
+                  )}
+                  {material.playback.provider === 'youtube' && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void connectChromeCaptions()}
+                        disabled={subtitleBusy}
+                        className="rounded border border-[var(--border)] px-2 py-1 font-medium text-[var(--foreground)] disabled:opacity-50"
+                      >
+                        {t('Connect Chrome captions')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void disconnectChromeCaptions()}
+                        disabled={subtitleBusy}
+                        className="rounded border border-[var(--border)] px-2 py-1 text-[var(--muted-foreground)] disabled:opacity-50"
+                      >
+                        {t('Disconnect Chrome captions')}
+                      </button>
+                    </div>
+                  )}
+                  {subtitleError && (
+                    <p className="mt-2 text-xs text-[var(--destructive)]">{subtitleError}</p>
                   )}
                 </div>
               ) : (
