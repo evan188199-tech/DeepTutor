@@ -107,6 +107,34 @@ Before treating a revision as a local release candidate, also run the full
 backend ledger from `LOCAL_FEATURES.md` and `npm run build`. Report every check
 as pass, fail, or blocked; do not claim success for an unavailable check.
 
+## Multica project tracking
+
+DeepTutor development is tracked in the local Multica project
+[DeepTutor 开发](https://mac-mini.tail47dc0a.ts.net:14130/agents-plane/projects/8836b042-58f4-46c0-a441-bd760ae2b4f0).
+Use the existing local `pilot` profile; it maps to the synthetic identity
+`pilot@local.test`. Keep its credential in the Multica profile and never copy,
+print, or commit the token.
+
+The `multica` binary is not on the default `PATH` in this checkout. Use:
+
+```bash
+MULTICA=/Users/xzh/services/ai-development/multica-pilot/bin/multica
+```
+
+The `pilot` profile defaults to the `xzh` workspace, while the DeepTutor project
+lives in `agents-plane` (`8eee708c-66f8-4845-ac91-5fede2af789a`). A project
+lookup without the workspace override can therefore return `404` even when the
+credential is valid. Query it explicitly:
+
+```bash
+$MULTICA --profile pilot \
+  --workspace-id 8eee708c-66f8-4845-ac91-5fede2af789a \
+  project get 8836b042-58f4-46c0-a441-bd760ae2b4f0
+```
+
+If workspace IDs change, rederive them with `$MULTICA --profile pilot workspace
+list` and use the `agents-plane` slug.
+
 ## Ports and product deployment
 
 The product ports are fixed:
