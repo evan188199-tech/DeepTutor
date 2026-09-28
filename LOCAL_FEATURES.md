@@ -223,3 +223,39 @@ cd web && npm run test:node && npm run lint && npm run build
 launchctl kickstart -k gui/$(id -u)/com.deeptutor.web
 launchctl kickstart -k gui/$(id -u)/com.deeptutor.api
 ```
+
+## Production cutover state (2026-09-15)
+
+Point-in-time record. Refresh it only when the active release changes, and keep
+detailed verification output in the ops logs instead of this ledger.
+
+- **Active release**: `/Users/Shared/DeepTutor-releases/pr24-caption-entities-20260915-184423`
+  (base `tailscale-v1-6-8-20260914-205356`, adds fork
+  [PR #24](https://github.com/evan188199-tech/DeepTutor/pull/24) caption
+  HTML-entity decode + persisted-cue repair). The `com.deeptutor.api` /
+  `com.deeptutor.web` launchd jobs point at it.
+- **Stable env**: `DEEPTUTOR_PUBLIC_URL=https://mac-mini.tail47dc0a.ts.net`,
+  `DEEPTUTOR_HOME=/Users/Shared/DeepTutor`; launchd logs live under
+  `/Users/Shared/DeepTutor/logs/`.
+- **Cutover verification**: release-tree `tests/video_learning/test_service.py`
+  passed; API/Web health checks and the unauthenticated `/watching` redirect
+  behaved as expected. Sample video `PrSf7IOYu-I` was verified end-to-end on
+  the Watching page with entities unescaped.
+- **Rollback**:
+  ```bash
+  /Users/Shared/DeepTutor-ops/rollback-local-release \
+    /Users/Shared/DeepTutor-releases/tailscale-v1-6-8-20260914-205356
+  ```
+  or restore plist backups under
+  `~/Library/LaunchAgents/com.deeptutor.*.plist.pre-tailscale-v1-6-8-*`.
+- **Subtitle recovery (2026-09-15)**: caption fetches failed because the
+  Google-bot-blocked Invidious caption body came back while the subtitle cache
+  volume (`invidious_invidious-subtitles`) was unmounted and the cookie-sync
+  scripts were missing. Fixed by remounting the cache on
+  `local/invidious-video-learning:latest`, restoring
+  `scripts/sync_youtube_cookies.sh` + `prefetch_popular_subtitles.sh`, and
+  reseeding `PrSf7IOYu-I` from the cached VTT through the PR #24 decode.
+- **Residual risk**: uncached videos still need a working YouTube cookie
+  injection (`com.invidious.youtube-cookie-sync`) before the first caption
+  fetch. The flapping test container `deeptutor-invidious-test-invidious-1`
+  is deliberately stopped (`--restart=no`).
