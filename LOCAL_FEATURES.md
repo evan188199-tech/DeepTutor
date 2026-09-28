@@ -122,6 +122,17 @@ Playwright golden paths, and the upstream v1.5.16 gateway test set.
 5. Continue MN4 write-back as a separate Phase 2 chain; do not mix it with a
    release upgrade or read-only bridge fixes.
 
+## Rejected upstream candidates
+
+- Upstream issue #1471, "Adaptive long-term learning engine," is rejected as a
+  contribution candidate. It is inspired by forgetting-curve/FSRS-style memory
+  models, and spaced retrieval has credible qualitative support. The rejected
+  part is turning that into learner/item-specific scheduling without local
+  evidence that the quantitative model fits DeepTutor's learners, assessment
+  quality, and subject mix. Do not reread the issue, claim it, or split PRs
+  from it unless this decision is explicitly reopened with new data or a
+  concrete validation plan.
+
 ## Active upstream watch
 
 Check GitHub notifications once daily. If an item's state is unchanged, take no
