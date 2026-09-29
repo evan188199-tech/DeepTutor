@@ -49,12 +49,15 @@ const STATIC_ASSET =
   /\.(?:png|jpe?g|gif|svg|ico|webp|avif|woff2?|ttf|otf|txt|json|map|css|js|wasm)$/i;
 
 // Paths the auth gate must never block: the auth pages themselves, Next.js
-// internals, and public static assets (see STATIC_ASSET above).
+// internals, and public static assets (see STATIC_ASSET above). The phone
+// pairing landing page under /access/device is also public: it exchanges a
+// scanned one-time pairing for a tunnel ticket before any session exists.
 export function isAuthExempt(pathname: string): boolean {
   return (
     pathname.startsWith(LOGIN_PATH) ||
     pathname.startsWith("/register") ||
     pathname === HANDOFF_PATH ||
+    pathname.startsWith("/access/device") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     STATIC_ASSET.test(pathname)

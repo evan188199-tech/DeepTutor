@@ -124,6 +124,17 @@ test("public handoff page is exempt without exposing protected route prefixes", 
   assert.equal(isAuthExempt("/handoff-lookalike"), false);
 });
 
+test("phone pairing landing page is exempt without exposing the Mac access page", () => {
+  // /access/device exchanges a scanned one-time pairing before any session
+  // exists, so it must bypass the auth gate; /access itself renders the QR
+  // code and stays behind the gate.
+  assert.equal(isAuthExempt("/access/device"), true);
+  assert.equal(isAuthExempt("/access/device/extra"), true);
+  assert.equal(isAuthExempt("/access"), false);
+  assert.equal(isAuthExempt("/access/"), false);
+  assert.equal(isAuthExempt("/access-device"), false);
+});
+
 test("backend forwarding replaces client identity headers with frontend host", () => {
   const headers = prepareBackendForwardHeaders(
     new Headers({

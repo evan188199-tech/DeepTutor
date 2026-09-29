@@ -16,6 +16,7 @@ from fastapi import (
     Cookie,
     Depends,
     File,
+    Form,
     Header,
     HTTPException,
     Request,
@@ -24,7 +25,7 @@ from fastapi import (
     WebSocket,
     status,
 )
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from deeptutor.services.config import load_auth_settings
@@ -91,6 +92,14 @@ from deeptutor.services.auth import (
 )
 from deeptutor.services.codex_auth.contracts import CodexAuthError
 from deeptutor.services.codex_auth.service import deliver_codex_oauth_callback
+from deeptutor.services.tunnel_handoff import (
+    TICKET_TTL_SECONDS,
+    SessionHandoff,
+    consume_ticket_details,
+    create_pairing,
+    create_ticket,
+    exchange_pairing_details,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -180,6 +189,14 @@ def _no_store(response: Response) -> None:
     response.headers["Cache-Control"] = "no-store"
 
 
+# The generic tunnel handoff replays only the session cookie. Account
+# handoffs additionally clear a stale viewer-controller cookie so a switched
+# device cannot inherit the previous viewer's remote-control grant; feature
+# modules declare their own cookies through ``SessionHandoff`` instead of
+# extending this state machine.
+_DEFAULT_LOGIN_HANDOFF = SessionHandoff(clear_cookie_names=("dt_video_controller",))
+
+
 # ---------------------------------------------------------------------------
 # Schemas
 # ---------------------------------------------------------------------------
@@ -254,6 +271,21 @@ class SessionHandoffCompleteRequest(BaseModel):
     """Public request that trades a JWE ticket for the normal cookie."""
 
     ticket: str = Field(min_length=32, max_length=8192)
+
+
+class TunnelHandoffResponse(BaseModel):
+    """One-time ticket bound to the current operator-managed Quick Tunnel."""
+
+    tunnel_url: str
+    code: str
+    expires_in: int
+
+
+class TunnelHandoffPairingResponse(BaseModel):
+    """One-time pairing capability shown to the phone as a QR code."""
+
+    pairing_id: str
+    expires_in: int
 
 
 class SetRoleRequest(BaseModel):
@@ -1028,6 +1060,146 @@ async def complete_session_handoff(
     response.set_cookie(value=token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
     logger.info("Completed session handoff for host=%s", host)
     return {"ok": True}
+
+
+@router.post("/handoff", response_model=TunnelHandoffResponse)
+async def create_tunnel_handoff(
+    response: Response,
+    payload: TokenPayload | None = Depends(require_auth),
+) -> TunnelHandoffResponse:
+    """Create a short-lived, single-use cross-origin session handoff."""
+    _no_store(response)
+    if not AUTH_ENABLED or payload is None:
+        raise HTTPException(status_code=400, detail="Authentication is required")
+    if POCKETBASE_ENABLED:
+        raise HTTPException(
+            status_code=501,
+            detail="Tunnel handoff is unavailable in PocketBase mode.",
+        )
+    try:
+        code, state = create_ticket(payload, handoff=_DEFAULT_LOGIN_HANDOFF)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return TunnelHandoffResponse(
+        tunnel_url=state.url,
+        code=code,
+        expires_in=TICKET_TTL_SECONDS,
+    )
+
+
+@router.post("/handoff/pairing", response_model=TunnelHandoffPairingResponse)
+async def create_tunnel_handoff_pairing(
+    response: Response,
+    payload: TokenPayload | None = Depends(require_auth),
+) -> TunnelHandoffPairingResponse:
+    """Create a QR pairing capability without putting a login code in its URL."""
+    _no_store(response)
+    if not AUTH_ENABLED or payload is None:
+        raise HTTPException(status_code=400, detail="Authentication is required")
+    if POCKETBASE_ENABLED:
+        raise HTTPException(
+            status_code=501,
+            detail="Tunnel handoff is unavailable in PocketBase mode.",
+        )
+    pairing_id, expires_in = create_pairing(payload, handoff=_DEFAULT_LOGIN_HANDOFF)
+    return TunnelHandoffPairingResponse(
+        pairing_id=pairing_id,
+        expires_in=expires_in,
+    )
+
+
+@router.get("/handoff/pairing/{pairing_id}", response_model=TunnelHandoffResponse)
+async def exchange_tunnel_handoff_pairing(
+    response: Response,
+    pairing_id: str,
+) -> TunnelHandoffResponse:
+    """Exchange a scanned pairing capability for a fresh one-time handoff."""
+    _no_store(response)
+    exchanged = exchange_pairing_details(pairing_id)
+    if exchanged is None:
+        raise HTTPException(status_code=400, detail="Phone pairing is invalid or expired")
+    payload, handoff = exchanged
+    try:
+        code, state = create_ticket(payload, handoff=handoff)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return TunnelHandoffResponse(
+        tunnel_url=state.url,
+        code=code,
+        expires_in=TICKET_TTL_SECONDS,
+    )
+
+
+@router.post("/handoff/consume")
+async def consume_tunnel_handoff(
+    request: Request,
+    code: str = Form(...),
+) -> Response:
+    """Exchange a valid one-time code for a cookie scoped to the tunnel host."""
+    target_host = _request_frontend_host(request)
+    consumed = consume_ticket_details(code, target_host)
+    if consumed is None:
+        if decode_token(request.cookies.get(_COOKIE_NAME)):
+            response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+            return response
+
+        if "text/html" in request.headers.get("accept", "").lower():
+            response = HTMLResponse(
+                '<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width,initial-scale=1">'
+                "<title>登录链接已失效</title>"
+                '<body style="font-family:system-ui,-apple-system,sans-serif;margin:0;'
+                'min-height:100vh;display:grid;place-items:center;background:#f8fafc;color:#0f172a">'
+                '<main style="max-width:28rem;margin:1.5rem;padding:2rem;border-radius:1rem;'
+                'background:#fff;box-shadow:0 8px 24px #0f172a14;text-align:center">'
+                '<h1 style="font-size:1.25rem">登录链接已失效</h1>'
+                '<p style="line-height:1.6;color:#475569">此登录交接已使用或已过期。'
+                "请回到显示二维码的设备，刷新二维码后重新扫码。</p>"
+                '<a href="/login" style="display:inline-block;padding:.7rem 1rem;border-radius:.5rem;'
+                'background:#0f766e;color:#fff;text-decoration:none">返回登录</a>'
+                "</main></body></html>",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Referrer-Policy"] = "no-referrer"
+            return response
+
+        raise HTTPException(status_code=400, detail="Login handoff is invalid or expired")
+    payload, handoff = consumed
+
+    token = create_token(payload.username, payload.role, payload.user_id)
+    response = RedirectResponse(handoff.redirect_path, status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key=_COOKIE_NAME,
+        value=token,
+        max_age=_COOKIE_MAX_AGE,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+    )
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    for cookie in handoff.cookies:
+        response.set_cookie(
+            key=cookie.name,
+            value=cookie.value,
+            max_age=cookie.max_age,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            path=cookie.path,
+        )
+    for cookie_name in handoff.clear_cookie_names:
+        response.delete_cookie(
+            key=cookie_name,
+            path="/",
+            secure=True,
+            httponly=True,
+            samesite="lax",
+        )
+    return response
 
 
 @router.post("/device/heartbeat")

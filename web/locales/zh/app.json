@@ -5270,5 +5270,19 @@
   "Move this knowledge base with its documents, settings, and indexes. Existing workspace assignments are updated.": "连同文档、设置和索引一起移动此知识库。现有工作区分配会同步更新。",
   "Review move": "检查移动详情",
   "{{count}} files · {{bytes}} bytes": "{{count}} 个文件 · {{bytes}} 字节",
-  "Assignments updated: {{names}}": "将更新以下工作区的分配：{{names}}"
+  "Assignments updated: {{names}}": "将更新以下工作区的分配：{{names}}",
+  "access.title": "临时访问",
+  "access.securityNote": "此交接 1 分钟内有效，且只能使用一次。",
+  "access.handoffFailed": "无法准备安全访问。请登录后重试。",
+  "access.scanWithPhone": "手机扫码免密登录",
+  "access.scanDesc": "确保手机已连接 Tailscale，使用相机扫码即可自动完成免密登录。",
+  "access.qrExpiresIn": "有效期 {{seconds}} 秒",
+  "access.qrExpired": "二维码已过期",
+  "access.refreshQr": "刷新二维码",
+  "access.openOnThisDevice": "在此电脑上打开",
+  "access.openingOnThisDevice": "正在此电脑上打开…",
+  "access.deviceTitle": "设备连接",
+  "access.deviceAuthenticating": "正在验证身份…",
+  "access.deviceRedirecting": "正在跳转至 DeepTutor…",
+  "access.deviceFailed": "配对链接无效或已过期，请重新扫码。"
 }
