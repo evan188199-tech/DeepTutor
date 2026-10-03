@@ -39,6 +39,7 @@ from deeptutor.multi_user.paths import (
     get_admin_path_service,
     get_path_service_for_scope,
 )
+from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.partners.scope import partner_scope
 from deeptutor.services.path_service import PathService
 
@@ -276,51 +277,104 @@ def _copy_notebook(notebook_id: str, partner_id: str) -> str:
     entry = _index_entry(src_dir / "notebooks_index.json", notebook_id)
     if entry is None:
         # Fall back to a minimal entry derived from the notebook payload.
-        try:
-            payload = json.loads(src_file.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            payload = {}
-        entry = {
-            "id": notebook_id,
-            "name": str(payload.get("name") or notebook_id),
-            "description": str(payload.get("description") or ""),
-            "created_at": payload.get("created_at") or 0,
-            "updated_at": payload.get("updated_at") or 0,
-            "record_count": len(payload.get("records") or []),
-            "color": payload.get("color") or "#3B82F6",
-            "icon": payload.get("icon") or "book",
-        }
+        entry = _notebook_entry_from_file(src_file) or _minimal_notebook_entry(notebook_id)
     _merge_index_entry(dst_dir / "notebooks_index.json", entry)
     return notebook_id
 
 
-def _index_entry(index_path: Path, notebook_id: str) -> dict[str, Any] | None:
+def _minimal_notebook_entry(notebook_id: str) -> dict[str, Any]:
+    return {
+        "id": notebook_id,
+        "name": notebook_id,
+        "description": "",
+        "created_at": 0,
+        "updated_at": 0,
+        "record_count": 0,
+        "color": "#3B82F6",
+        "icon": "book",
+    }
+
+
+def _notebook_entry_from_file(path: Path) -> dict[str, Any] | None:
+    """Project a notebook file down to the fields the index carries."""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    notebook_id = str(payload.get("id") or path.stem)
+    return {
+        "id": notebook_id,
+        "name": str(payload.get("name") or notebook_id),
+        "description": str(payload.get("description") or ""),
+        "created_at": payload.get("created_at") or 0,
+        "updated_at": payload.get("updated_at") or 0,
+        "record_count": len(payload.get("records") or []),
+        "color": payload.get("color") or "#3B82F6",
+        "icon": payload.get("icon") or "book",
+    }
+
+
+def _load_index(index_path: Path) -> dict[str, Any] | None:
+    """The parsed index, or ``None`` when missing, unreadable or mis-shaped."""
     if not index_path.exists():
         return None
     try:
         data = json.loads(index_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None
-    for entry in data.get("notebooks", []) or []:
+    notebooks = data.get("notebooks") if isinstance(data, dict) else None
+    if not isinstance(notebooks, list) or not all(isinstance(n, dict) for n in notebooks):
+        return None
+    return data
+
+
+def _rebuild_index(notebook_dir: Path) -> dict[str, Any]:
+    """Reconstruct the index from the notebook files on disk.
+
+    The index is a derived cache — every entry can be rebuilt from its
+    ``<id>.json`` file — so a corrupted index costs nothing but the rebuild,
+    while starting from an empty one would hide notebooks already copied.
+    Notebook files that are themselves damaged are skipped, not adopted.
+    """
+    entries: list[dict[str, Any]] = []
+    if notebook_dir.is_dir():
+        for path in sorted(notebook_dir.glob("*.json")):
+            if path.name == "notebooks_index.json":
+                continue
+            entry = _notebook_entry_from_file(path)
+            if entry is not None:
+                entries.append(entry)
+    return {"notebooks": entries}
+
+
+def _index_entry(index_path: Path, notebook_id: str) -> dict[str, Any] | None:
+    data = _load_index(index_path)
+    if data is None:
+        return None
+    for entry in data["notebooks"]:
         if str(entry.get("id")) == notebook_id:
             return dict(entry)
     return None
 
 
 def _merge_index_entry(index_path: Path, entry: dict[str, Any]) -> None:
-    data: dict[str, Any] = {"notebooks": []}
-    if index_path.exists():
-        try:
-            loaded = json.loads(index_path.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict) and isinstance(loaded.get("notebooks"), list):
-                data = loaded
-        except (OSError, json.JSONDecodeError):
-            pass
+    data = _load_index(index_path)
+    if data is None:
+        # Corrupt or invalid index: rebuild from disk before merging so the
+        # notebooks already provisioned keep their rows instead of being
+        # wiped by the rewrite. Provisioning must not lose entries over a
+        # cache it can fully reconstruct.
+        if index_path.exists():
+            logger.warning(
+                "Notebook index at %s unreadable or invalid; rebuilding from disk", index_path
+            )
+        data = _rebuild_index(index_path.parent)
     notebooks = [n for n in data["notebooks"] if str(n.get("id")) != str(entry.get("id"))]
     notebooks.append(entry)
     data["notebooks"] = notebooks
-    index_path.parent.mkdir(parents=True, exist_ok=True)
-    index_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(index_path, data)
 
 
 # ── Asset inventory / removal (partner-side, no user context needed) ──
@@ -354,20 +408,20 @@ def list_assets(partner_id: str) -> dict[str, list[dict[str, Any]]]:
                 skills.append({"name": entry.name})
 
     notebooks: list[dict[str, Any]] = []
-    index_path = service.get_notebook_dir() / "notebooks_index.json"
-    if index_path.exists():
-        try:
-            data = json.loads(index_path.read_text(encoding="utf-8"))
-            for nb_entry in data.get("notebooks", []) or []:
-                notebooks.append(
-                    {
-                        "id": str(nb_entry.get("id", "")),
-                        "name": str(nb_entry.get("name", "")),
-                        "record_count": nb_entry.get("record_count", 0),
-                    }
-                )
-        except (OSError, json.JSONDecodeError):
-            pass
+    notebook_dir = service.get_notebook_dir()
+    data = _load_index(notebook_dir / "notebooks_index.json")
+    if data is None:
+        # Same rule as provisioning: a corrupted index is rebuilt from disk,
+        # never used to hide the notebooks that are sitting right there.
+        data = _rebuild_index(notebook_dir)
+    for nb_entry in data["notebooks"]:
+        notebooks.append(
+            {
+                "id": str(nb_entry.get("id", "")),
+                "name": str(nb_entry.get("name", "")),
+                "record_count": nb_entry.get("record_count", 0),
+            }
+        )
 
     return {"knowledge_bases": kbs, "skills": skills, "notebooks": notebooks}
 
@@ -418,19 +472,20 @@ def remove_asset(partner_id: str, asset_type: str, name: str) -> bool:
             removed = True
         index_path = notebook_dir / "notebooks_index.json"
         if index_path.exists():
-            try:
-                data = json.loads(index_path.read_text(encoding="utf-8"))
-                before = len(data.get("notebooks", []) or [])
-                data["notebooks"] = [
-                    n for n in data.get("notebooks", []) or [] if str(n.get("id")) != name
-                ]
-                if len(data["notebooks"]) != before:
-                    removed = True
-                index_path.write_text(
-                    json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+            data = _load_index(index_path)
+            if data is None:
+                # Corrupt index: rebuild from the files that remain (the
+                # removed one is already unlinked) and heal the file.
+                logger.warning(
+                    "Notebook index at %s unreadable or invalid; rebuilding from disk",
+                    index_path,
                 )
-            except (OSError, json.JSONDecodeError):
-                pass
+                data = _rebuild_index(notebook_dir)
+            before = len(data["notebooks"])
+            data["notebooks"] = [n for n in data["notebooks"] if str(n.get("id")) != name]
+            if len(data["notebooks"]) != before:
+                removed = True
+            atomic_write_json(index_path, data)
         return removed
 
     raise ValueError(f"Unknown asset type: {asset_type}")

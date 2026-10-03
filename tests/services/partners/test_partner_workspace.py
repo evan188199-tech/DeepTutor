@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -75,7 +76,7 @@ def _seed_admin_connected_kb(admin_root, name="wiki", kb_type="weknora", **field
 
 def _seed_admin_notebook(admin_root, notebook_id="nb1"):
     nb_dir = admin_root / "user" / "workspace" / "notebook"
-    nb_dir.mkdir(parents=True)
+    nb_dir.mkdir(parents=True, exist_ok=True)
     (nb_dir / f"{notebook_id}.json").write_text(
         json.dumps(
             {
@@ -267,6 +268,138 @@ class TestInventoryAndRemoval:
 
         with pytest.raises(ValueError):
             remove_asset("ada", "skill", "../escape")
+
+
+def _partner_notebook_dir(partners_root, partner_id="ada") -> Path:
+    return partners_root / partner_id / "workspace" / "user" / "workspace" / "notebook"
+
+
+def _seed_admin_notebooks(admin_root, *notebook_ids) -> None:
+    """Seed several admin notebooks and an index row for each of them."""
+    for notebook_id in notebook_ids:
+        _seed_admin_notebook(admin_root, notebook_id)
+    nb_dir = admin_root / "user" / "workspace" / "notebook"
+    (nb_dir / "notebooks_index.json").write_text(
+        json.dumps(
+            {
+                "notebooks": [
+                    {"id": notebook_id, "name": "My Notes", "record_count": 1}
+                    for notebook_id in notebook_ids
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+class TestNotebookIndexDurability:
+    """The partner index is a derived cache: corrupt → rebuild, never lose rows.
+
+    Regression per the AGEN-193 review: provisioning used to rewrite the
+    index from an empty base whenever the file was unreadable, silently
+    dropping the rows of notebooks already copied, and wrote it with plain
+    ``write_text`` — an interrupted write left a truncated file behind.
+    """
+
+    def test_corrupt_index_provision_keeps_all_notebooks(self, partners_root):
+        admin_root = partners_root.parent
+        _seed_admin_notebooks(admin_root, "nb1", "nb2")
+        provision_assets("ada", notebooks=["nb1"])
+
+        nb_dir = _partner_notebook_dir(partners_root)
+        (nb_dir / "notebooks_index.json").write_text('{"notebooks": [', encoding="utf-8")
+
+        report = provision_assets("ada", notebooks=["nb2"])
+
+        assert report["errors"] == []
+        index = json.loads((nb_dir / "notebooks_index.json").read_text(encoding="utf-8"))
+        assert {str(row["id"]) for row in index["notebooks"]} == {"nb1", "nb2"}
+        assert {n["id"] for n in list_assets("ada")["notebooks"]} == {"nb1", "nb2"}
+
+    @pytest.mark.parametrize(
+        "bad_payload",
+        [
+            "[]",  # valid JSON, wrong shape
+            '{"notebooks": "not-a-list"}',
+            '{"notebooks": [1, "junk"]}',  # rows are not dicts
+            "",  # truncated to nothing
+        ],
+    )
+    def test_invalid_index_shapes_are_rebuilt(self, partners_root, bad_payload):
+        admin_root = partners_root.parent
+        _seed_admin_notebooks(admin_root, "nb1", "nb2")
+        provision_assets("ada", notebooks=["nb1"])
+
+        nb_dir = _partner_notebook_dir(partners_root)
+        (nb_dir / "notebooks_index.json").write_text(bad_payload, encoding="utf-8")
+
+        report = provision_assets("ada", notebooks=["nb2"])
+
+        assert report["errors"] == []
+        index = json.loads((nb_dir / "notebooks_index.json").read_text(encoding="utf-8"))
+        assert {str(row["id"]) for row in index["notebooks"]} == {"nb1", "nb2"}
+
+    def test_interrupted_write_leaves_no_partial_index(self, partners_root, monkeypatch):
+        """A crash mid-write must leave the previous index fully intact.
+
+        Simulates the interruption between "temp file written" and "rename
+        over the target": the temp helper is patched to raise, so the only
+        acceptable outcome is the old bytes still in place and no stray
+        temporary files left in the notebook directory.
+        """
+        admin_root = partners_root.parent
+        _seed_admin_notebooks(admin_root, "nb1", "nb2")
+        provision_assets("ada", notebooks=["nb1"])
+
+        nb_dir = _partner_notebook_dir(partners_root)
+        index_path = nb_dir / "notebooks_index.json"
+        before = index_path.read_bytes()
+
+        import deeptutor.services.file_io as file_io
+
+        def _interrupted(src, dst):
+            raise RuntimeError("interrupted mid-write")
+
+        monkeypatch.setattr(file_io, "_atomic_replace", _interrupted)
+
+        report = provision_assets("ada", notebooks=["nb2"])
+
+        assert [e["type"] for e in report["errors"]] == ["notebook"]
+        assert index_path.read_bytes() == before
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        assert [str(row["id"]) for row in index["notebooks"]] == ["nb1"]
+        # No half-written or leftover temp files: the notebook file was
+        # copied, the index is the old complete one, nothing else exists.
+        assert sorted(p.name for p in nb_dir.iterdir()) == [
+            "nb1.json",
+            "nb2.json",
+            "notebooks_index.json",
+        ]
+
+    def test_list_assets_rebuilds_corrupt_index(self, partners_root):
+        admin_root = partners_root.parent
+        _seed_admin_notebook(admin_root)
+        provision_assets("ada", notebooks=["nb1"])
+
+        nb_dir = _partner_notebook_dir(partners_root)
+        (nb_dir / "notebooks_index.json").write_text("{ oops", encoding="utf-8")
+
+        assert [n["id"] for n in list_assets("ada")["notebooks"]] == ["nb1"]
+
+    def test_remove_heals_corrupt_index(self, partners_root):
+        admin_root = partners_root.parent
+        _seed_admin_notebooks(admin_root, "nb1", "nb2")
+        provision_assets("ada", notebooks=["nb1", "nb2"])
+
+        nb_dir = _partner_notebook_dir(partners_root)
+        (nb_dir / "notebooks_index.json").write_text("{ oops", encoding="utf-8")
+
+        assert remove_asset("ada", "notebook", "nb1") is True
+
+        index_path = nb_dir / "notebooks_index.json"
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        assert [str(row["id"]) for row in index["notebooks"]] == ["nb2"]
+        assert [n["id"] for n in list_assets("ada")["notebooks"]] == ["nb2"]
 
 
 class TestStripFrontmatter:
