@@ -107,6 +107,7 @@ export default function PartnerConfigure({
 
   // Tools
   const [toolOptions, setToolOptions] = useState<ToolOptions | null>(null);
+  const [toolsError, setToolsError] = useState(false);
   const [enabledTools, setEnabledTools] = useState<string[]>([]);
   const [builtinTools, setBuiltinTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
@@ -116,6 +117,7 @@ export default function PartnerConfigure({
 
   // Assets
   const [assets, setAssets] = useState<PartnerAssets | null>(null);
+  const [assetsError, setAssetsError] = useState(false);
   const [showAssetPicker, setShowAssetPicker] = useState(false);
   const [pendingAssets, setPendingAssets] = useState<AssetSelection>({
     knowledge_bases: [],
@@ -132,8 +134,11 @@ export default function PartnerConfigure({
       })
       .catch(() => setSoulLoaded(true));
     void getPartnerAssets(partnerId)
-      .then(setAssets)
-      .catch(() => {});
+      .then((payload) => {
+        setAssets(payload);
+        setAssetsError(false);
+      })
+      .catch(() => setAssetsError(true));
     void (async () => {
       try {
         const payload = await listLLMOptions();
@@ -160,8 +165,9 @@ export default function PartnerConfigure({
         // "all selected": the picker hands back exactly what is checked, so
         // that fallback would re-grant every configured MCP tool on save.
         setMcpTools(partner.mcp_tools ?? []);
+        setToolsError(false);
       })
-      .catch(() => {});
+      .catch(() => setToolsError(true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [partnerId]);
 
@@ -459,15 +465,23 @@ export default function PartnerConfigure({
           </button>
         }
       >
-        <ToolPicker
-          options={toolOptions}
-          enabledTools={enabledTools}
-          builtinTools={builtinTools}
-          mcpTools={mcpTools}
-          onChangeEnabledTools={setEnabledTools}
-          onChangeBuiltinTools={setBuiltinTools}
-          onChangeMcpTools={setMcpTools}
-        />
+        {toolsError ? (
+          <p role="alert" className="text-[13px] text-[var(--destructive)]">
+            {t(
+              "Could not load tool options — tool settings cannot be edited right now.",
+            )}
+          </p>
+        ) : (
+          <ToolPicker
+            options={toolOptions}
+            enabledTools={enabledTools}
+            builtinTools={builtinTools}
+            mcpTools={mcpTools}
+            onChangeEnabledTools={setEnabledTools}
+            onChangeBuiltinTools={setBuiltinTools}
+            onChangeMcpTools={setMcpTools}
+          />
+        )}
       </Section>
 
       <Section title={t("Workspace")}>
@@ -529,7 +543,13 @@ export default function PartnerConfigure({
             </div>
           )}
 
-          {assetRows.length === 0 ? (
+          {assetsError ? (
+            <p role="alert" className="text-[12.5px] text-[var(--destructive)]">
+              {t(
+                "Could not load this partner's assets — assigned items, if any, are not shown.",
+              )}
+            </p>
+          ) : assetRows.length === 0 ? (
             <p className="text-[12.5px] text-[var(--muted-foreground)]">
               {t(
                 "Nothing assigned yet — this partner only knows what you tell it.",
