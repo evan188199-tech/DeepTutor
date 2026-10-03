@@ -189,9 +189,11 @@ def _validate_persisted_embeddings(index: Any, storage_dir: Path | None = None) 
                 _validate_embedding_dict(embedding_dict, label=label)
     except ValueError as exc:
         raise ValueError(
-            "RAG index contains invalid embedding vectors. Re-index the "
-            "knowledge base with the current embedding provider/model before "
-            f"querying it again. Details: {exc}"
+            "RAG index contains invalid embedding vectors. Rebuild it with "
+            "the knowledge base's 'Re-index' action (Index Versions → "
+            "Re-index) using the current embedding provider/model; "
+            "re-uploading documents reuses the damaged store and cannot "
+            f"repair it. Details: {exc}"
         ) from exc
 
 
