@@ -1,0 +1,10 @@
+./tests/multi_user/test_task_board.py:109:    assert card["status"] == "todo"
+./deeptutor/services/task_board.py:17:TaskStatus = Literal["todo", "doing", "done"]
+./deeptutor/services/task_board.py:79:                status TEXT NOT NULL CHECK(status IN ('todo', 'doing', 'done')),
+./deeptutor/services/task_board.py:104:                "INSERT INTO cards VALUES (?, ?, ?, 'todo', 0, ?, ?)",
+./web/app/(workspace)/kanban/page.tsx:28:  { id: 'todo', title: 'kanban.todo', hint: 'kanban.todoHint', tone: 'var(--info)' },
+./web/contracts/generated/api.ts:14797:      readonly status: "todo" | "doing" | "done";
+./web/contracts/generated/api.ts:15416:      readonly status?: ("todo" | "doing" | "done") | null;
+./web/lib/task-board-api.ts:3:export type TaskStatus = 'todo' | 'doing' | 'done'
+./web/tests/task-board.spec.tsx:33:          status: 'todo',
+./web/components/chat/home/ContextReferenceTree.tsx:31: * reads as a todo checkbox). Drawn for the "up" flavor (┌: rises from

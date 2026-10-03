@@ -1,0 +1,6 @@
+deeptutor/tools/tex_downloader.py:11:Based on: TODO.md specification
+deeptutor/tools/tex_chunker.py:11:Based on: TODO.md specification
+tests/services/embedding/test_multimodal_request.py:77:                contents=[{"image": "data:image/png;base64,XXX"}],
+tests/services/embedding/test_multimodal_request.py:117:                contents=[{"image": "data:image/png;base64,XXX"}],
+tests/services/embedding/test_multimodal_request.py:147:    contents = [{"text": "hello"}, {"image": "data:image/png;base64,XXX"}]
+tests/services/embedding/test_multimodal_request.py:153:        "content": [{"type": "image_url", "image_url": {"url": "data:image/png;base64,XXX"}}]

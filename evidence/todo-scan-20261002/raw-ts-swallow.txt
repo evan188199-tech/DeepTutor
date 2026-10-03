@@ -1,0 +1,41 @@
+web/next.config.js:89:  } catch {}
+web/context/QuizFollowupContext.tsx:280:          }).catch(() => {});
+web/app/(utility)/courses/[courseId]/page.tsx:70:        getCourseState(courseId, { force: true }).catch(() => null),
+web/lib/courses-api.ts:132:  const payload = await response.json().catch(() => null);
+web/app/(workspace)/partners/new/page.tsx:113:      .catch(() => {});
+web/lib/iframe-html.ts:103:    } catch (error) {}
+web/lib/iframe-html.ts:121:    } catch (error) {}
+web/hooks/useVoiceRecorder.ts:76:          const detail = (await resp.json().catch(() => null)) as {
+web/features/chat/components/ChatWorkspace.tsx:1887:      .catch(() => undefined);
+web/features/settings/sections/ArchivedChatsSettingsSection.tsx:113:      await load().catch(() => {});
+web/features/settings/sections/DataMigrationSettingsSection.tsx:113:        .catch(() => {})
+web/features/settings/sections/DataMigrationSettingsSection.tsx:136:      .catch(() => {})
+web/lib/attachment-limits.ts:46:        const data = (await response.json().catch(() => null)) as {
+web/lib/guardian-api.ts:57:  const data: unknown = await res.json().catch(() => null);
+web/components/chat/home/StandaloneComposer.tsx:615:      .catch(() => undefined);
+web/components/watching/WatchingBrowser.tsx:279:                    .catch(() => undefined)
+web/components/chat/home/ChatComposer.tsx:545:        .catch(() => {});
+web/components/chat/home/ChatComposer.tsx:658:      void saveWorkspaceDraft({ text: "", attachments: [] }).catch(() => {});
+web/components/chat/BookReferencePicker.tsx:106:      .catch(() => undefined)
+web/components/chat/home/SessionActivityPanel.tsx:87:      .catch(() => {});
+web/components/chat/home/SessionActivityPanel.tsx:103:      .catch(() => {});
+web/components/chat/home/SessionActivityPanel.tsx:120:      .catch(() => {});
+web/components/partners/PartnerConfigure.tsx:136:      .catch(() => {});
+web/components/partners/PartnerConfigure.tsx:164:      .catch(() => {});
+web/components/partners/PartnerComposer.tsx:143:      .catch(() => {});
+web/components/knowledge/KnowledgePage.tsx:198:      .catch(() => undefined);
+web/tests/chat-reply-language.spec.tsx:56:      <button onClick={() => void setReplyLanguageOverride("de").catch(() => undefined)}>Fix German</button>
+web/tests/chat-reply-language.spec.tsx:57:      <button onClick={() => void setReplyLanguageOverride(null).catch(() => undefined)}>Use account</button>
+web/components/chat/home/ConsultationTabBody.tsx:153:    }).catch(() => {})
+web/components/memory/MemoryHub.tsx:66:            .catch(() => 0),
+web/tests/e2e/settings-navigation.audit.ts:557:    await route.fulfill({ json: { status: "connected", models: [{ id: "stale-model" }] } }).catch(() => {});
+web/components/reading/ReadingActionsProvider.tsx:80:      const profile = await getOwnLearnerProfile().catch(() => null);
+web/components/reading/EpubDocumentView.tsx:411:          getReadingPosition(materialId).catch(() => null),
+web/components/reading/ReadingExtensionBar.tsx:121:      const profile = await getOwnLearnerProfile().catch(() => null);
+web/components/reading/library/AddMaterialsDialog.tsx:714:      .catch(() => undefined)
+web/components/reading/workspace/useReadingWorkspace.ts:453:      .catch(() => {});
+web/components/reading/library/MaterialLibrary.tsx:482:                  .catch(() => undefined);
+web/components/reading/library/ReadingLibrary.tsx:512:              .catch(() => undefined)
+web/components/reading/workspace/MediaReadingStage.tsx:142:      void document.exitFullscreen().catch(() => undefined);
+web/components/reading/workspace/MediaReadingStage.tsx:240:    }).catch(() => undefined);
+web/components/reading/workspace/MediaReadingStage.tsx:328:      .catch(() => undefined);
