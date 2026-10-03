@@ -7,6 +7,7 @@ import gzip
 import json
 from pathlib import Path
 import time
+from types import SimpleNamespace
 
 import pytest
 
@@ -44,6 +45,11 @@ def _write_auth_file(tmp_path: Path, monkeypatch, **auth_overrides) -> Path:
 
 def test_load_credentials_parses_session(tmp_path, monkeypatch) -> None:
     _write_auth_file(tmp_path, monkeypatch)
+    # The fixture's expiresAt is a fixed date; pin the module clock an hour
+    # before it so is_expired() is checked against the fixture, not wall time.
+    monkeypatch.setattr(
+        codebuddy_credentials, "time", SimpleNamespace(time=lambda: 1791055241.0 - 3600)
+    )
 
     credentials = load_credentials()
 
