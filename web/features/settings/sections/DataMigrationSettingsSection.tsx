@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Download, FolderInput, RefreshCw } from 'lucide-react'
 import { apiFetch, apiUrl } from '@/lib/api'
@@ -85,6 +85,8 @@ export default function DataMigrationSettingsSection() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [historical, setHistorical] = useState(false)
+  const [syncFailed, setSyncFailed] = useState(false)
+  const syncFailures = useRef(0)
   const label = (key: string) => labels[key]?.[zh ? 1 : 0] ?? key
   const statusLabel = (key: string) => ({
     preparing: text('Preparing', '准备中'), copying: text('Copying', '复制中'),
@@ -108,9 +110,18 @@ export default function DataMigrationSettingsSection() {
     const timer = window.setInterval(() => {
       request<{ operations: Operation[] }>('/operations')
         .then(value => {
-          if (alive) setOperations(value.operations)
+          if (!alive) return
+          setOperations(value.operations)
+          if (syncFailures.current !== 0) {
+            syncFailures.current = 0
+            setSyncFailed(false)
+          }
         })
-        .catch(() => {})
+        .catch(() => {
+          if (!alive) return
+          syncFailures.current += 1
+          if (syncFailures.current >= 2) setSyncFailed(true)
+        })
     }, 5000)
     return () => {
       alive = false
@@ -131,9 +142,18 @@ export default function DataMigrationSettingsSection() {
       })
     request<{ operations: Operation[] }>('/operations')
       .then(value => {
-        if (alive) setOperations(value.operations)
+        if (!alive) return
+        setOperations(value.operations)
+        if (syncFailures.current !== 0) {
+          syncFailures.current = 0
+          setSyncFailed(false)
+        }
       })
-      .catch(() => {})
+      .catch(() => {
+        if (!alive) return
+        syncFailures.current += 1
+        if (syncFailures.current >= 2) setSyncFailed(true)
+      })
     return () => {
       alive = false
     }
@@ -357,6 +377,14 @@ export default function DataMigrationSettingsSection() {
       {error ? (
         <p role="alert" className="text-sm text-[var(--destructive)]">
           {error}
+        </p>
+      ) : null}
+      {syncFailed ? (
+        <p role="status" className="text-sm text-[var(--warning)]">
+          {text(
+            'Operation status sync is failing. Retrying automatically…',
+            '操作状态同步失败，正在自动重试…'
+          )}
         </p>
       ) : null}
       {operations.length ? (
