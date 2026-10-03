@@ -559,8 +559,11 @@ async def test_quiz_infers_choice_and_normalizes_expected_answer(
     pending = LearningStore().load(path_id).pending_question
     assert pending is not None
     assert pending.question_type == "choice"
-    assert pending.expected_answer == "B"
-    assert pending.choice_map == {"A": "red", "B": "blue"}
+    # Option order is shuffled at pose time; only the label↔body pairing the
+    # answer key rides on is stable.
+    assert set(pending.choice_map) == {"A", "B"}
+    assert set(pending.choice_map.values()) == {"red", "blue"}
+    assert pending.choice_map[pending.expected_answer] == "blue"
 
 
 @pytest.mark.asyncio
@@ -668,17 +671,15 @@ async def test_choice_quiz_accepts_ask_user_key_names(path_id):
     assert result.success is True
     pending = LearningStore().load(path_id).pending_question
     assert pending is not None
-    assert pending.choice_map == {
-        "A": "overwrite the old value",
-        "B": "concatenate both lists",
-        "C": "raise, the reducer rejects a list",
-    }
-    assert pending.expected_answer == "B"
-    assert [option["body"] for option in posed_card(result)["options"]] == [
+    assert set(pending.choice_map) == {"A", "B", "C"}
+    assert set(pending.choice_map.values()) == {
         "overwrite the old value",
         "concatenate both lists",
         "raise, the reducer rejects a list",
-    ]
+    }
+    assert pending.choice_map[pending.expected_answer] == "concatenate both lists"
+    card = posed_card(result)
+    assert {option["body"] for option in card["options"]} == set(pending.choice_map.values())
 
 
 @pytest.mark.asyncio
@@ -699,8 +700,53 @@ async def test_choice_quiz_rejoins_bare_labels_sent_with_descriptions(path_id):
     pending = LearningStore().load(path_id).pending_question
     assert pending is not None
     assert pending.question_type == "choice"
-    assert pending.choice_map == {"A": "red", "B": "blue"}
-    assert pending.expected_answer == "B"
+    assert set(pending.choice_map.values()) == {"red", "blue"}
+    assert pending.choice_map[pending.expected_answer] == "blue"
+
+
+@pytest.mark.asyncio
+async def test_choice_quiz_shuffles_the_order_the_model_sent(path_id):
+    """The card must not inherit the model's option order (#1691).
+
+    Models write the correct option first with striking regularity, and the
+    pose path used to persist that order verbatim — so the correct label was
+    whichever one the model happened to put first, and learners saw "the
+    answer is always A". The persisted order is shuffled at pose time and
+    relabelled A, B, C…, with the answer key following its body.
+    """
+    await _build_basic(path_id)
+    status = json.loads((await MasteryStatusTool().execute(_mastery_path_id=path_id)).content)
+    kp_id = status["next"]["knowledge_point_id"]
+
+    seen = set()
+    for seed in range(8):
+        result = await MasteryQuizTool().execute(
+            _mastery_path_id=path_id,
+            _choice_shuffle_seed=seed,
+            knowledge_point_id=kp_id,
+            question=f"Pick a colour #{seed}",
+            expected_answer="A",
+            question_type="choice",
+            options=["A: blue", "B: red", "C: green", "D: yellow"],
+        )
+        assert result.success is True
+        pending = LearningStore().load(path_id).pending_question
+        assert pending is not None
+        # Labels stay canonical and every body survives, whatever the order.
+        assert set(pending.choice_map) == {"A", "B", "C", "D"}
+        assert set(pending.choice_map.values()) == {"blue", "red", "green", "yellow"}
+        # The answer key follows its body to whatever label it lands on.
+        assert pending.choice_map[pending.expected_answer] == "blue"
+        # The card shows the persisted order, so it cannot leak the answer.
+        card = posed_card(result)
+        assert [(option["label"], option["body"]) for option in card["options"]] == [
+            (option.label, option.body) for option in pending.options
+        ]
+        seen.add(pending.expected_answer)
+        # Close the question without credit, so the next pose registers.
+        assert (await MasterySkipQuestionTool().execute(_mastery_path_id=path_id)).success
+
+    assert len(seen) > 1
 
 
 @pytest.mark.asyncio
@@ -764,8 +810,12 @@ async def test_choice_grade_reads_an_answer_typed_in_the_composer(path_id):
             "D: 3x² - 5x + 8 = 0",
         ],
     )
+    pending = LearningStore().load(path_id).pending_question
+    assert pending is not None
 
-    grade = await MasteryGradeTool().execute(_mastery_path_id=path_id, answer="选C")
+    grade = await MasteryGradeTool().execute(
+        _mastery_path_id=path_id, answer=f"选{pending.expected_answer}"
+    )
     assert grade.success is True
     assert json.loads(grade.content)["is_correct"] is True
 
@@ -816,6 +866,14 @@ async def test_choice_quiz_preserves_bodies_and_normalizes_answer(path_id, sessi
         ],
     )
     assert quiz.success is True
+    pending = LearningStore().load(path_id).pending_question
+    assert pending is not None
+    assert set(pending.choice_map.values()) == {
+        "Step 2 — write the first tool",
+        "Step 4 — test one call",
+        "Step 6 — add the stop condition",
+        "Step 7 — add another tool",
+    }
 
     grade = json.loads(
         (
@@ -823,7 +881,7 @@ async def test_choice_quiz_preserves_bodies_and_normalizes_answer(path_id, sessi
                 _mastery_path_id=path_id,
                 _session_id=session["id"],
                 _turn_id="turn_choice_1",
-                answer="C",
+                answer=pending.expected_answer,
             )
         ).content
     )
@@ -831,14 +889,9 @@ async def test_choice_quiz_preserves_bodies_and_normalizes_answer(path_id, sessi
 
     entries = await session_store.list_notebook_entries()
     entry = entries["items"][0]
-    assert entry["options"] == {
-        "A": "Step 2 — write the first tool",
-        "B": "Step 4 — test one call",
-        "C": "Step 6 — add the stop condition",
-        "D": "Step 7 — add another tool",
-    }
-    assert entry["correct_answer"] == "C"
-    assert entry["user_answer"] == "C"
+    assert entry["options"] == pending.choice_map
+    assert entry["correct_answer"] == pending.expected_answer
+    assert entry["user_answer"] == pending.expected_answer
     assert entry["is_correct"] is True
 
 
@@ -871,9 +924,11 @@ async def test_pending_choice_status_reuses_public_contract_without_answer(path_
     assert card["question_id"] == pending["question_id"]
     assert card["prompt"] == "Pick a colour"
     assert card["allow_free_text"] is True
-    assert card["options"] == [
-        {"label": "A", "body": "red"},
-        {"label": "B", "body": "blue"},
+    stored = LearningStore().load(path_id).pending_question
+    assert [option["label"] for option in card["options"]] == ["A", "B"]
+    assert {option["body"] for option in card["options"]} == {"red", "blue"}
+    assert [(option["label"], option["body"]) for option in card["options"]] == [
+        (option.label, option.body) for option in stored.options
     ]
     assert card["objective"]["id"] == kp_id
     assert card["attempt"] == 1
@@ -1201,6 +1256,8 @@ async def test_grade_recovers_unreadable_choice_answer(path_id):
             )
         )
     )
+    stored = LearningStore().load(path_id).pending_question
+    assert stored is not None
     from deeptutor.learning.service import LearningService
 
     # Simulate the pre-fix deadlock: clarifying prose already persisted.
@@ -1226,7 +1283,7 @@ async def test_grade_recovers_unreadable_choice_answer(path_id):
             await MasteryGradeTool().execute(
                 _mastery_path_id=path_id,
                 question_id=quiz["question_id"],
-                answer="A",
+                answer=stored.expected_answer,
             )
         ).content
     )
@@ -1234,7 +1291,7 @@ async def test_grade_recovers_unreadable_choice_answer(path_id):
     graded = LearningStore().get_interaction(path_id, quiz["question_id"])
     assert graded is not None
     assert graded.status == InteractionStatus.GRADED
-    assert graded.user_answer == "A"
+    assert graded.user_answer == stored.expected_answer
 
 
 # ── assess: the qualitative gate ─────────────────────────────────────────────

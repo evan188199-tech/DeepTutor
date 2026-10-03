@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import random
 import re
 from typing import TYPE_CHECKING, Any
 import uuid
@@ -32,6 +33,7 @@ from deeptutor.capabilities.mastery.choices import (
     recover_options_from_turn,
     resolve_answer,
     resolve_choice_submission,
+    shuffled_choice_options,
     strip_echoed_options,
 )
 from deeptutor.capabilities.mastery.mode import (
@@ -914,6 +916,20 @@ class MasteryQuizTool(BaseTool):
         question, echoed_options = strip_echoed_options(
             question, {option["label"]: option["body"] for option in options}
         )
+
+        if q_type == "choice":
+            # The card used to show exactly the option order the model sent,
+            # and models overwhelmingly put the correct answer first — so the
+            # correct label never moved and learners learned to always pick it
+            # (#1691). Shuffle once, here, before anything is persisted: the
+            # stored order is what the card, the grader, the question bank and
+            # every later re-pose read, so they all stay consistent, and the
+            # answer key follows its body to whatever label it lands on.
+            # ``_choice_shuffle_seed`` pins the permutation for tests, the way
+            # the other underscore-prefixed kwargs pin their inputs.
+            options, expected = shuffled_choice_options(
+                options, expected, random.Random(kwargs.get("_choice_shuffle_seed"))
+            )
 
         service = _new_service()
         progress = _load_path(service, path_id)

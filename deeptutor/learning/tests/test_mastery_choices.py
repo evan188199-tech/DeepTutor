@@ -7,6 +7,8 @@ tool/engine wiring that :mod:`test_mastery_tools` drives end to end."""
 
 from __future__ import annotations
 
+import random
+
 import pytest
 
 from deeptutor.capabilities.mastery.choices import (
@@ -20,6 +22,7 @@ from deeptutor.capabilities.mastery.choices import (
     recover_options_from_turn,
     resolve_answer,
     resolve_choice_submission,
+    shuffled_choice_options,
     split_label_and_body,
 )
 
@@ -276,6 +279,61 @@ def test_readable_choice_answer_requires_selection_intent_not_a_label_mention():
     assert not is_readable_choice_answer("为什么 B 不对？", options)
     assert not is_readable_choice_answer("Can you explain B", options)
     assert not is_readable_choice_answer("B or C", options)
+
+
+# ── shuffled_choice_options ──────────────────────────────────────────────────
+
+
+def _colour_options():
+    return [
+        {"label": "A", "body": "blue"},
+        {"label": "B", "body": "red"},
+        {"label": "C", "body": "green"},
+        {"label": "D", "body": "yellow"},
+    ]
+
+
+def test_shuffled_choice_options_relabels_and_keeps_the_answer_with_its_body():
+    shuffled, expected = shuffled_choice_options(_colour_options(), "A", random.Random(7))
+
+    assert [option["label"] for option in shuffled] == ["A", "B", "C", "D"]
+    assert {option["body"] for option in shuffled} == {"blue", "red", "green", "yellow"}
+    assert expected in canonical_labels(4)
+    assert dict((option["label"], option["body"]) for option in shuffled)[expected] == "blue"
+
+
+def test_shuffled_choice_options_does_not_mutate_the_input():
+    original = _colour_options()
+
+    shuffled_choice_options(original, "A", random.Random(1))
+
+    assert original == _colour_options()
+
+
+def test_shuffled_choice_options_spreads_the_answer_across_labels():
+    """The whole point (#1691): whatever order the model sent, the correct
+    answer cannot keep landing on the label the model gave it."""
+    seen = {
+        shuffled_choice_options(_colour_options(), "A", random.Random(seed))[1]
+        for seed in range(40)
+    }
+
+    assert seen == {"A", "B", "C", "D"}
+
+
+def test_shuffled_choice_options_tracks_an_answer_that_is_not_first():
+    """The key follows its body however far down the model placed it."""
+    options = [
+        {"label": "A", "body": "wrong one"},
+        {"label": "B", "body": "wrong two"},
+        {"label": "C", "body": "right"},
+        {"label": "D", "body": "wrong three"},
+    ]
+
+    for seed in range(20):
+        shuffled, expected = shuffled_choice_options(options, "C", random.Random(seed))
+
+        assert dict((option["label"], option["body"]) for option in shuffled)[expected] == "right"
 
 
 # ── recover_options_from_turn ────────────────────────────────────────────────

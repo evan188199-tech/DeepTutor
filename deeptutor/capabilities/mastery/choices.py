@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 import logging
+import random
 import re
 from typing import Any
 
@@ -157,6 +158,40 @@ def labelled_options(options: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def shuffled_choice_options(
+    options: list[dict[str, str]], expected_label: str, rng: random.Random
+) -> tuple[list[dict[str, str]], str]:
+    """A shuffled copy of *options*, relabelled positionally, answer in tow.
+
+    Models write the correct option first with striking regularity, and the
+    learner's card used to show exactly the order sent — so whichever label the
+    model gave the correct answer stayed correct on every question, and a
+    learner could score 100% by always picking it (#1691). Shuffling here,
+    once at pose time, makes the persisted order uniform whatever the model
+    produced; the expected answer is resolved back through its body, which
+    registration has already made unique, so the key follows its answer to
+    whatever label that answer lands on.
+
+    Pure: *options* is copied, never mutated, and the caller owns the *rng*
+    so tests can pin the permutation.
+    """
+    ordered = list(options)
+    rng.shuffle(ordered)
+    relabelled = [
+        {"label": positional_label(index), "body": option["body"]}
+        for index, option in enumerate(ordered)
+    ]
+    expected_body = next(
+        (option["body"] for option in options if option["label"] == expected_label),
+        "",
+    )
+    relocated = next(
+        (option["label"] for option in relabelled if option["body"] == expected_body),
+        expected_label,
+    )
+    return relabelled, relocated
+
+
 # How a restated option reads inside prose: an optional bullet, the label, a
 # separator, then the body. Built per option so the label and its own body must
 # appear together — a stem that merely reuses an option's words does not match.
@@ -268,6 +303,7 @@ __all__ = [
     "recover_options_from_turn",
     "resolve_answer",
     "resolve_choice_submission",
+    "shuffled_choice_options",
     "split_label_and_body",
     "strip_echoed_options",
 ]

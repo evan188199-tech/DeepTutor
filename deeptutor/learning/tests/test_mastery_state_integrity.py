@@ -532,13 +532,18 @@ async def test_repair_question_tool_voids_wrong_key_from_question_bank(
             ],
         )
     )
+    # Option order is shuffled at pose time, so pick a label the key did not
+    # land on rather than assuming "C" stays wrong.
+    pending = LearningStore().load(path_id).pending_question
+    assert pending is not None
+    wrong_label = next(label for label in ("A", "B", "C") if label != pending.expected_answer)
     graded = json.loads(
         (
             await MasteryGradeTool().execute(
                 _mastery_path_id=path_id,
                 _session_id=session["id"],
                 _turn_id="turn_void_1",
-                answer="C",
+                answer=wrong_label,
             )
         ).content
     )
