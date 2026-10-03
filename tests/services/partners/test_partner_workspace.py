@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 
 import pytest
 
@@ -267,6 +268,96 @@ class TestInventoryAndRemoval:
 
         with pytest.raises(ValueError):
             remove_asset("ada", "skill", "../escape")
+
+
+class TestCorruptNotebookIndex:
+    """A damaged partner ``notebooks_index.json`` must never be rebuilt empty.
+
+    Regression for the 2026-10 swallow-scan (HIGH): every index read failure
+    fell through to a fresh ``{"notebooks": []}`` and the next write wiped
+    every other notebook entry.
+    """
+
+    def _partner_index(self, partners_root, partner_id="ada"):
+        path = (
+            partners_root
+            / partner_id
+            / "workspace"
+            / "user"
+            / "workspace"
+            / "notebook"
+            / "notebooks_index.json"
+        )
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def test_provision_refuses_to_overwrite_truncated_index(self, partners_root):
+        admin_root = partners_root.parent
+        _seed_admin_notebook(admin_root, notebook_id="nb1")
+        index = self._partner_index(partners_root)
+        damaged = '{"notebooks": [{"id": "nb0", "name": "kept"}] TRUNC'
+        index.write_text(damaged, encoding="utf-8")
+
+        report = provision_assets("ada", notebooks=["nb1"])
+
+        assert report["copied"]["notebooks"] == []
+        assert len(report["errors"]) == 1
+        assert report["errors"][0]["type"] == "notebook"
+        # The damaged bytes survive untouched — no entry was wiped.
+        assert index.read_text(encoding="utf-8") == damaged
+
+    @pytest.mark.parametrize("payload", ['[{"id": "nb0"}]', '{"notebooks": "oops"}', "{}"])
+    def test_provision_refuses_to_overwrite_malformed_index(self, partners_root, payload):
+        admin_root = partners_root.parent
+        _seed_admin_notebook(admin_root, notebook_id="nb1")
+        index = self._partner_index(partners_root)
+        index.write_text(payload, encoding="utf-8")
+
+        report = provision_assets("ada", notebooks=["nb1"])
+
+        assert report["copied"]["notebooks"] == []
+        assert len(report["errors"]) == 1
+        assert index.read_text(encoding="utf-8") == payload
+
+    def test_provision_recovers_once_index_repaired(self, partners_root):
+        admin_root = partners_root.parent
+        _seed_admin_notebook(admin_root, notebook_id="nb1")
+        index = self._partner_index(partners_root)
+        index.write_text("{ broken", encoding="utf-8")
+        assert provision_assets("ada", notebooks=["nb1"])["errors"]
+
+        index.unlink()  # operator "repairs" by dropping the damaged file
+        report = provision_assets("ada", notebooks=["nb1"])
+
+        assert report["errors"] == []
+        data = json.loads(index.read_text(encoding="utf-8"))
+        assert [n["id"] for n in data["notebooks"]] == ["nb1"]
+
+    def test_list_assets_warns_instead_of_silently_hiding_notebooks(self, partners_root, caplog):
+        ensure_partner_workspace("ada")
+        index = self._partner_index(partners_root)
+        index.write_text("{ broken", encoding="utf-8")
+
+        with caplog.at_level(logging.WARNING, logger="deeptutor.services.partners.workspace"):
+            assets = list_assets("ada")
+
+        assert assets["notebooks"] == []
+        assert any("notebooks_index" in record.getMessage() for record in caplog.records)
+
+    def test_remove_asset_survives_corrupt_index_and_warns(self, partners_root, caplog):
+        ensure_partner_workspace("ada")
+        nb_dir = self._partner_index(partners_root).parent
+        (nb_dir / "nb0.json").write_text("{}", encoding="utf-8")
+        index = nb_dir / "notebooks_index.json"
+        index.write_text("{ broken", encoding="utf-8")
+
+        with caplog.at_level(logging.WARNING, logger="deeptutor.services.partners.workspace"):
+            removed = remove_asset("ada", "notebook", "nb0")
+
+        assert removed is True  # the payload file itself is gone
+        assert not (nb_dir / "nb0.json").exists()
+        assert index.read_text(encoding="utf-8") == "{ broken"  # not rebuilt empty
+        assert any("notebooks_index" in record.getMessage() for record in caplog.records)
 
 
 class TestStripFrontmatter:

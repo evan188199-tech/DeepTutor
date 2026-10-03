@@ -307,15 +307,42 @@ def _index_entry(index_path: Path, notebook_id: str) -> dict[str, Any] | None:
     return None
 
 
+def _read_notebook_index(index_path: Path) -> dict[str, Any] | None:
+    """Load ``notebooks_index.json``; ``None`` when the file is absent.
+
+    Raises ``ValueError`` when the file exists but cannot be parsed into an
+    object with a ``notebooks`` list: a caller that rebuilds from an empty
+    index in that state overwrites the file and wipes every other entry
+    (2026-10 swallow-scan HIGH), so corruption must fail loudly instead.
+    """
+    if not index_path.exists():
+        return None
+    try:
+        loaded = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Notebook index unreadable: {index_path}") from exc
+    if not isinstance(loaded, dict) or not isinstance(loaded.get("notebooks"), list):
+        raise ValueError(
+            f"Notebook index malformed (expected object with 'notebooks' list): {index_path}"
+        )
+    return loaded
+
+
 def _merge_index_entry(index_path: Path, entry: dict[str, Any]) -> None:
-    data: dict[str, Any] = {"notebooks": []}
-    if index_path.exists():
-        try:
-            loaded = json.loads(index_path.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict) and isinstance(loaded.get("notebooks"), list):
-                data = loaded
-        except (OSError, json.JSONDecodeError):
-            pass
+    try:
+        data = _read_notebook_index(index_path)
+    except ValueError:
+        # The existing entries cannot be read, so rewriting the file here
+        # would replace every notebook entry with just this one. Fail the
+        # copy and leave the damaged file intact for repair.
+        logger.error(
+            "Refusing to overwrite corrupt notebook index %s; repair or remove it first",
+            index_path,
+            exc_info=True,
+        )
+        raise
+    if data is None:
+        data = {"notebooks": []}
     notebooks = [n for n in data["notebooks"] if str(n.get("id")) != str(entry.get("id"))]
     notebooks.append(entry)
     data["notebooks"] = notebooks
@@ -355,19 +382,25 @@ def list_assets(partner_id: str) -> dict[str, list[dict[str, Any]]]:
 
     notebooks: list[dict[str, Any]] = []
     index_path = service.get_notebook_dir() / "notebooks_index.json"
-    if index_path.exists():
-        try:
-            data = json.loads(index_path.read_text(encoding="utf-8"))
-            for nb_entry in data.get("notebooks", []) or []:
-                notebooks.append(
-                    {
-                        "id": str(nb_entry.get("id", "")),
-                        "name": str(nb_entry.get("name", "")),
-                        "record_count": nb_entry.get("record_count", 0),
-                    }
-                )
-        except (OSError, json.JSONDecodeError):
-            pass
+    try:
+        data = _read_notebook_index(index_path) or {"notebooks": []}
+    except ValueError:
+        # An empty list here reads as "this partner has no notebooks"; say
+        # why it is empty instead of silently hiding existing ones.
+        logger.warning(
+            "Unreadable notebooks_index at %s; listing no notebooks until it is repaired",
+            index_path,
+            exc_info=True,
+        )
+        data = {"notebooks": []}
+    for nb_entry in data["notebooks"]:
+        notebooks.append(
+            {
+                "id": str(nb_entry.get("id", "")),
+                "name": str(nb_entry.get("name", "")),
+                "record_count": nb_entry.get("record_count", 0),
+            }
+        )
 
     return {"knowledge_bases": kbs, "skills": skills, "notebooks": notebooks}
 
@@ -417,20 +450,27 @@ def remove_asset(partner_id: str, asset_type: str, name: str) -> bool:
             target.unlink()
             removed = True
         index_path = notebook_dir / "notebooks_index.json"
-        if index_path.exists():
-            try:
-                data = json.loads(index_path.read_text(encoding="utf-8"))
-                before = len(data.get("notebooks", []) or [])
-                data["notebooks"] = [
-                    n for n in data.get("notebooks", []) or [] if str(n.get("id")) != name
-                ]
-                if len(data["notebooks"]) != before:
-                    removed = True
-                index_path.write_text(
-                    json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
-                )
-            except (OSError, json.JSONDecodeError):
-                pass
+        try:
+            data = _read_notebook_index(index_path)
+        except ValueError:
+            # The payload file is gone, but the damaged index cannot be
+            # updated, so its entry lingers as a ghost. The removal itself
+            # succeeded, so warn instead of failing — but never rewrite the
+            # file from scratch here.
+            logger.warning(
+                "Removed notebook %s but notebooks_index at %s is unreadable; "
+                "its entry may linger until the index is repaired",
+                name,
+                index_path,
+                exc_info=True,
+            )
+            return removed
+        if data is not None:
+            before = len(data["notebooks"])
+            data["notebooks"] = [n for n in data["notebooks"] if str(n.get("id")) != name]
+            if len(data["notebooks"]) != before:
+                removed = True
+            index_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         return removed
 
     raise ValueError(f"Unknown asset type: {asset_type}")
