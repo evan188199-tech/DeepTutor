@@ -118,9 +118,7 @@ class _DispatchRecorder:
 
 def _install_dispatch_recorder(monkeypatch) -> _DispatchRecorder:
     recorder = _DispatchRecorder()
-    monkeypatch.setattr(
-        knowledge_router_module, "run_upload_processing_task", recorder
-    )
+    monkeypatch.setattr(knowledge_router_module, "run_upload_processing_task", recorder)
     return recorder
 
 
@@ -154,9 +152,7 @@ def test_upload_rejects_unsupported_extension_without_side_effects(
     assert not entry.get("progress")
 
 
-def test_upload_rejects_oversize_file_without_side_effects(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_upload_rejects_oversize_file_without_side_effects(monkeypatch, tmp_path: Path) -> None:
     manager = _real_manager(monkeypatch, tmp_path)
     _seed_kb(manager, files={})
     recorder = _install_dispatch_recorder(monkeypatch)
@@ -177,9 +173,7 @@ def test_upload_rejects_oversize_file_without_side_effects(
     assert entry["status"] == "ready"
 
 
-def test_upload_rejects_duplicate_names_within_one_batch(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_upload_rejects_duplicate_names_within_one_batch(monkeypatch, tmp_path: Path) -> None:
     manager = _real_manager(monkeypatch, tmp_path)
     _seed_kb(manager, files={})
     recorder = _install_dispatch_recorder(monkeypatch)
@@ -233,9 +227,7 @@ def test_rejected_batch_member_rolls_back_earlier_writes(tmp_path: Path) -> None
     assert not any(raw.rglob("*"))  # ok.txt was written, then rolled back
 
 
-def test_mid_write_size_limit_removes_the_partial_file(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_mid_write_size_limit_removes_the_partial_file(monkeypatch, tmp_path: Path) -> None:
     """A stream whose size cannot be probed is bounded while it is written."""
 
     class _SizeOpaqueStream(io.BytesIO):
@@ -248,9 +240,7 @@ def test_mid_write_size_limit_removes_the_partial_file(
     upload = UploadFile(filename="huge.txt", file=_SizeOpaqueStream(b"x" * 100))
 
     with pytest.raises(knowledge_router_module.HTTPException) as exc_info:
-        knowledge_router_module._save_uploaded_files(
-            [upload], raw, allowed_extensions={".txt"}
-        )
+        knowledge_router_module._save_uploaded_files([upload], raw, allowed_extensions={".txt"})
 
     assert exc_info.value.status_code == 400
     assert "exceeds maximum size" in exc_info.value.detail.lower()
@@ -305,12 +295,8 @@ def test_two_uploads_dispatch_two_distinct_tasks(monkeypatch, tmp_path: Path) ->
     monkeypatch.setattr(TaskIDManager, "get_instance", classmethod(lambda cls: fresh))
 
     with TestClient(_build_app()) as client:
-        first = client.post(
-            "/api/knowledge-bases/kb/upload", files=_upload("one.txt", b"one")
-        )
-        second = client.post(
-            "/api/knowledge-bases/kb/upload", files=_upload("two.txt", b"two")
-        )
+        first = client.post("/api/knowledge-bases/kb/upload", files=_upload("one.txt", b"one"))
+        second = client.post("/api/knowledge-bases/kb/upload", files=_upload("two.txt", b"two"))
 
     assert first.status_code == 200
     assert second.status_code == 200
@@ -336,9 +322,7 @@ def test_two_uploads_dispatch_two_distinct_tasks(monkeypatch, tmp_path: Path) ->
 # ---------------------------------------------------------------------------
 
 
-def test_delete_raw_file_updates_listing_metadata_and_disk(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_delete_raw_file_updates_listing_metadata_and_disk(monkeypatch, tmp_path: Path) -> None:
     manager = _real_manager(monkeypatch, tmp_path)
     kb_dir = _seed_kb(
         manager,
@@ -396,6 +380,9 @@ def test_delete_whole_kb_updates_listing_and_disk(monkeypatch, tmp_path: Path) -
     assert listing == []
     assert not kb_dir.exists()
     assert not second_dir.exists()
-    assert json.loads((manager.base_dir / "kb_config.json").read_text(encoding="utf-8"))[
-        "knowledge_bases"
-    ] == {}
+    assert (
+        json.loads((manager.base_dir / "kb_config.json").read_text(encoding="utf-8"))[
+            "knowledge_bases"
+        ]
+        == {}
+    )
