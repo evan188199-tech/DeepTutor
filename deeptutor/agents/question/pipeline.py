@@ -611,6 +611,13 @@ class QuestionPipeline:
             plan, qa_pairs, is_mimic=is_mimic, finish_text=finish_text
         )
         await emit_capability_result(stream, result_payload, source=SOURCE, usage=self.usage)
+        # The generated quiz must reach the question bank immediately, not
+        # only when the learner answers in QuizViewer (#575). Identity
+        # matches the client's per-question upserts, so an answer updates
+        # the same row instead of duplicating it.
+        from deeptutor.agents.question.notebook_persist import persist_generated_quiz
+
+        await persist_generated_quiz(context, qa_pairs)
         return result_payload
 
     # ------------------------------------------------------------------

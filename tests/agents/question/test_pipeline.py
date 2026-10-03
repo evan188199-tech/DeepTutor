@@ -495,6 +495,216 @@ def test_history_loader_returns_empty_for_unknown_session(tmp_sqlite_store) -> N
 
 
 # ---------------------------------------------------------------------------
+# Generation-time persistence into the question bank (#575)
+# ---------------------------------------------------------------------------
+
+
+def _pipeline_with_stubbed_phases(monkeypatch, plan_json: str) -> QuestionPipeline:
+    """A pipeline whose explore/plan/quiz phases are stubbed, so a full
+    ``run()`` reaches the result envelope without any LLM call."""
+    pipeline = _make_pipeline()
+    monkeypatch.setattr(
+        "deeptutor.agents.question.pipeline.build_openai_client", lambda config: object()
+    )
+    monkeypatch.setattr(pipeline, "_prepare_pageindex_tools", AsyncMock())
+    monkeypatch.setattr(pipeline, "_explore", AsyncMock(return_value=("", "exploration")))
+    monkeypatch.setattr(
+        pipeline,
+        "_run_labeled_step",
+        AsyncMock(return_value=LabeledStepResult(label="PLAN", text=plan_json)),
+    )
+
+    async def quiz_one(*, template: QuizTemplate, **kwargs: Any) -> QuizPair:
+        return QuizPair(
+            question_id=template.question_id,
+            question=f"Question about {template.topic}",
+            question_type=template.question_type,
+            correct_answer="42",
+            explanation="A test answer.",
+            options={"A": "x", "B": "y", "C": "z", "D": "w"}
+            if template.question_type == "choice"
+            else None,
+            topic=template.topic,
+            difficulty=template.difficulty,
+        )
+
+    monkeypatch.setattr(pipeline, "_quiz_one", AsyncMock(side_effect=quiz_one))
+    return pipeline
+
+
+_PLAN_TWO_QUESTIONS = json.dumps(
+    {
+        "analysis": "",
+        "templates": [
+            {"topic": "T1", "question_type": "written", "difficulty": "easy"},
+            {"topic": "T2", "question_type": "choice", "difficulty": "medium"},
+        ],
+    }
+)
+
+
+def test_generated_quiz_persists_to_question_bank(tmp_sqlite_store, monkeypatch) -> None:
+    """#575: a quiz generated in a chat turn must land in the question bank
+    immediately (ungraded), instead of only when the learner answers."""
+    from deeptutor.core.context import UnifiedContext
+    from deeptutor.runtime.stream_bus import StreamBus
+
+    store = tmp_sqlite_store
+    pipeline = _pipeline_with_stubbed_phases(monkeypatch, _PLAN_TWO_QUESTIONS)
+    bus = StreamBus()
+    context = UnifiedContext(
+        user_message="quiz me",
+        session_id="bank-1",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    async def run() -> dict[str, Any]:
+        await store.create_session(session_id="bank-1", title="quiz session")
+        try:
+            payload = await pipeline.run(
+                context=context, user_message="quiz me", num_questions=2, stream=bus
+            )
+            return payload
+        finally:
+            await bus.close()
+
+    payload = asyncio.run(run())
+    assert payload["summary"]["success"] is True
+
+    items = asyncio.run(store.list_notebook_entries(session_id="bank-1", limit=10))["items"]
+    by_qid = {item["question_id"]: item for item in items}
+    assert set(by_qid) == {"q_1", "q_2"}
+    for qid, item in by_qid.items():
+        assert item["result"] == "ungraded"
+        assert item["user_answer"] == ""
+        assert item["is_correct"] is False
+        assert item["question"] == f"Question about {qid.replace('q_', 'T')}"
+        assert item["source"] == "deep_question"
+
+
+def test_wrong_answer_flips_bank_entry_into_mistakes(tmp_sqlite_store, monkeypatch) -> None:
+    """#575 错题 half: after generation-time persistence, the client's
+    per-question upsert must update the SAME row (no duplicate) and make
+    the wrong answer visible under ``mistakes_only``."""
+    from deeptutor.core.context import UnifiedContext
+    from deeptutor.runtime.stream_bus import StreamBus
+
+    store = tmp_sqlite_store
+    pipeline = _pipeline_with_stubbed_phases(monkeypatch, _PLAN_TWO_QUESTIONS)
+    bus = StreamBus()
+    context = UnifiedContext(
+        user_message="quiz me",
+        session_id="bank-1",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    async def run() -> None:
+        await store.create_session(session_id="bank-1", title="quiz session")
+        try:
+            await pipeline.run(context=context, user_message="quiz me", num_questions=2, stream=bus)
+            # QuizViewer's per-question upsert: same identity, graded answer,
+            # no ``result`` field (the backend derives it from is_correct).
+            await store.upsert_notebook_entries(
+                "bank-1",
+                [
+                    {
+                        "turn_id": "turn-1",
+                        "question_id": "q_1",
+                        "question": "Question about T1",
+                        "question_type": "written",
+                        "user_answer": "a wrong answer",
+                        "is_correct": False,
+                    }
+                ],
+            )
+        finally:
+            await bus.close()
+
+    asyncio.run(run())
+
+    items = asyncio.run(store.list_notebook_entries(session_id="bank-1", limit=10))["items"]
+    by_qid = {item["question_id"]: item for item in items}
+    # Same row updated — the bank must not hold a duplicate of q_1.
+    assert set(by_qid) == {"q_1", "q_2"}
+    assert by_qid["q_1"]["result"] == "incorrect"
+    assert by_qid["q_1"]["user_answer"] == "a wrong answer"
+    assert by_qid["q_2"]["result"] == "ungraded"
+
+    mistakes = asyncio.run(
+        store.list_notebook_entries(session_id="bank-1", mistakes_only=True, limit=10)
+    )["items"]
+    assert [item["question_id"] for item in mistakes] == ["q_1"]
+
+
+def test_generated_quiz_skips_persistence_without_turn_identity(
+    tmp_sqlite_store, monkeypatch
+) -> None:
+    """Without turn identity the write would land in the shared legacy
+    namespace where the next quiz's q_1..q_N collide (#677) — the pipeline
+    must skip persistence instead."""
+    from deeptutor.core.context import UnifiedContext
+    from deeptutor.runtime.stream_bus import StreamBus
+
+    store = tmp_sqlite_store
+    pipeline = _pipeline_with_stubbed_phases(monkeypatch, _PLAN_TWO_QUESTIONS)
+    bus = StreamBus()
+    context = UnifiedContext(
+        user_message="quiz me",
+        session_id="bank-1",
+        metadata={},
+    )
+
+    async def run() -> dict[str, Any]:
+        await store.create_session(session_id="bank-1", title="quiz session")
+        try:
+            payload = await pipeline.run(
+                context=context, user_message="quiz me", num_questions=2, stream=bus
+            )
+            return payload
+        finally:
+            await bus.close()
+
+    payload = asyncio.run(run())
+    assert payload["summary"]["success"] is True
+    items = asyncio.run(store.list_notebook_entries(session_id="bank-1", limit=10))["items"]
+    assert items == []
+
+
+def test_persistence_failure_does_not_fail_the_turn(tmp_sqlite_store, monkeypatch) -> None:
+    """The quiz already reached the learner; a bank write failure must be
+    logged and swallowed, not crash the turn."""
+    from deeptutor.core.context import UnifiedContext
+    from deeptutor.runtime.stream_bus import StreamBus
+
+    store = tmp_sqlite_store
+    pipeline = _pipeline_with_stubbed_phases(monkeypatch, _PLAN_TWO_QUESTIONS)
+    monkeypatch.setattr(
+        store,
+        "upsert_notebook_entries",
+        AsyncMock(side_effect=RuntimeError("db locked")),
+    )
+    bus = StreamBus()
+    context = UnifiedContext(
+        user_message="quiz me",
+        session_id="bank-1",
+        metadata={"turn_id": "turn-1"},
+    )
+
+    async def run() -> dict[str, Any]:
+        await store.create_session(session_id="bank-1", title="quiz session")
+        try:
+            payload = await pipeline.run(
+                context=context, user_message="quiz me", num_questions=2, stream=bus
+            )
+            return payload
+        finally:
+            await bus.close()
+
+    payload = asyncio.run(run())
+    assert payload["summary"]["success"] is True
+
+
+# ---------------------------------------------------------------------------
 # Tool wiring — regression for the bug where _current_context was None
 # at schema-build time, leaving the model with no native tool schemas and
 # causing it to improvise fake ``tool_calls`` JSON inside the THINK body.
