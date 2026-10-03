@@ -612,3 +612,39 @@ def test_visual_images_are_bounded_across_tool_rounds(monkeypatch):
     assert images == ["data:image/png;base64,10", "data:image/png;base64,11"]
     assert guard_estimates[2] >= 2 * IMAGE_TOKEN_GUARD_RESERVE
     assert "base64" not in str(result.messages)
+
+
+def test_collect_visual_assets_limit_is_configurable(tmp_path: Path, monkeypatch):
+    import deeptutor.services.rag.visual_assets as assets_module
+
+    kb_dir, source, image, parsed = _fixture(tmp_path)
+    for index in range(2):
+        Image.new("RGB", (3, 2), color=(index * 60, 0, 0)).save(image.parent / f"extra-{index}.png")
+
+    monkeypatch.setattr(assets_module, "MAX_ASSETS_PER_DOCUMENT", 1)
+    assert len(collect_visual_assets(parsed, source, kb_dir)) == 1
+    assert len(collect_visual_assets(parsed, source, kb_dir, max_assets=3)) == 3
+    assert collect_visual_assets(parsed, source, kb_dir, max_assets=0) == []
+
+
+def test_collect_visual_assets_warns_when_truncating(tmp_path: Path, caplog):
+    kb_dir, source, image, parsed = _fixture(tmp_path)
+    for index in range(2):
+        Image.new("RGB", (3, 2), color=(index * 60, 0, 0)).save(image.parent / f"extra-{index}.png")
+
+    with caplog.at_level("WARNING"):
+        candidates = collect_visual_assets(parsed, source, kb_dir, max_assets=2)
+
+    assert len(candidates) == 2
+    assert f"Visual asset limit reached for {source.name}" in caplog.text
+    assert "kept 2" in caplog.text
+    assert "unexamined extracted files: 1" in caplog.text
+
+
+def test_collect_visual_assets_no_warning_when_under_limit(tmp_path: Path, caplog):
+    kb_dir, source, image, parsed = _fixture(tmp_path)
+    with caplog.at_level("WARNING"):
+        candidates = collect_visual_assets(parsed, source, kb_dir)
+
+    assert len(candidates) == 1
+    assert "Visual asset limit reached" not in caplog.text

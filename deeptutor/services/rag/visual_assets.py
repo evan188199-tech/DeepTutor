@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 from io import BytesIO
 import json
+import logging
 import os
 from pathlib import Path
 import re
@@ -19,6 +20,8 @@ from typing import Any
 import warnings
 
 from deeptutor.services.parsing.types import ParsedDocument
+
+logger = logging.getLogger(__name__)
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
 MAX_ASSETS_PER_DOCUMENT = 64
@@ -173,17 +176,33 @@ class VisualAssetCandidate:
 
 
 def collect_visual_assets(
-    parsed: ParsedDocument, source: Path, kb_dir: Path
+    parsed: ParsedDocument, source: Path, kb_dir: Path, *, max_assets: int | None = None
 ) -> list[VisualAssetCandidate]:
-    """Normalize extracted PDF/EPUB images with provenance and byte identity."""
+    """Normalize extracted PDF/EPUB images with provenance and byte identity.
+
+    ``max_assets`` overrides ``MAX_ASSETS_PER_DOCUMENT`` for this document
+    (negative values are clamped to 0). When the limit truncates the asset
+    list, a warning names the source, the retained count, and how many
+    extracted files were left unexamined.
+    """
     asset_dir = parsed.asset_dir
     if asset_dir is None or asset_dir.is_symlink() or not asset_dir.is_dir():
         return []
+    limit = MAX_ASSETS_PER_DOCUMENT if max_assets is None else max(0, int(max_assets))
     source_key = source_key_for(kb_dir, source)
     source_hash = _sha256_file(source)
     candidates: list[VisualAssetCandidate] = []
-    for path in sorted(asset_dir.iterdir()):
-        if len(candidates) >= MAX_ASSETS_PER_DOCUMENT:
+    paths = sorted(asset_dir.iterdir())
+    for index, path in enumerate(paths):
+        if len(candidates) >= limit:
+            unexamined = len(paths) - index
+            logger.warning(
+                "Visual asset limit reached for %s: kept %d; unexamined extracted files: %d; "
+                "raise the per-document visual asset limit to retain more figures.",
+                source.name,
+                limit,
+                unexamined,
+            )
             break
         loaded = _image_bytes(path)
         if loaded is None:
