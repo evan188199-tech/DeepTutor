@@ -14,6 +14,8 @@
  * "is optimistic" check (`typeof id === "number" && id < 0`) is type-aware.
  */
 
+import { persistedBranchSelections } from "./message-branches";
+
 export interface ReconcilableMessage {
   id?: number;
   role: "user" | "assistant" | "system";
@@ -34,6 +36,28 @@ export interface ReconcileResult<T> {
   messages: T[];
   selectedBranches: Record<string, number>;
   changed: boolean;
+}
+
+/**
+ * Branch selections the caller should persist after a reconcile, or ``null``
+ * when the reconcile left the map untouched.
+ *
+ * ``reconcileTurnIds`` repairs only the in-memory selection map: the entry a
+ * send recorded optimistically (a negative id) is remapped to the persisted
+ * message id. Without persisting that repair, a reload rehydrates the
+ * server's stale map, and the longest-continuation default in
+ * ``buildVisiblePath`` then hides the branch the user just created at an old
+ * fork — the next send would attach to the old branch's tip, the same
+ * wrong-parent pattern as #1614. Returns the full positive-id map (the
+ * server stores it wholesale), matching how ``switchBranch`` persists.
+ */
+export function selectionsToPersistAfterReconcile(
+  before: Record<string, number>,
+  result: ReconcileResult<unknown>,
+): Record<string, number> | null {
+  if (!result.changed || result.selectedBranches === before) return null;
+  const persistable = persistedBranchSelections(result.selectedBranches);
+  return Object.keys(persistable).length > 0 ? persistable : null;
 }
 
 function isOptimisticId(id: unknown): id is number {

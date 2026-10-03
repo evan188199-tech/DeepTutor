@@ -69,7 +69,10 @@ import {
   tipMessageId,
 } from "@/lib/message-branches";
 import { nextOptimisticId, resolvePersistedMessage } from "@/lib/optimistic-id";
-import { reconcileTurnIds } from "@/lib/turn-reconcile";
+import {
+  reconcileTurnIds,
+  selectionsToPersistAfterReconcile,
+} from "@/lib/turn-reconcile";
 import { decideFailedTurnReplay, isFailedTurnVisible } from "@/lib/chat-resend";
 import {
   isRetractionMarker,
@@ -2091,6 +2094,34 @@ export function ChatStateAdapterProvider({
             userMessageId,
             assistantMessageId,
           });
+          // The reducer repairs only the in-memory selection map. Persist
+          // the repair too (fire-and-forget, like switchBranch) or a reload
+          // rehydrates the server's stale map and the longest-continuation
+          // default hides a branch the user just created at an old fork —
+          // the next send would then attach to the old branch's tip (#1614).
+          const reconcileSession = stateRef.current.sessions[effectiveKey];
+          if (reconcileSession?.sessionId) {
+            const reconcileIds = {
+              turnId: event.turn_id || null,
+              userMessageId,
+              assistantMessageId,
+            };
+            const persistable = selectionsToPersistAfterReconcile(
+              reconcileSession.selectedBranches,
+              reconcileTurnIds(
+                reconcileSession.messages,
+                reconcileSession.selectedBranches,
+                reconcileIds,
+              ),
+            );
+            if (persistable) {
+              updateBranchSelection(reconcileSession.sessionId, persistable).catch(
+                (err: unknown) => {
+                  console.warn("Failed to persist branch selection:", err);
+                },
+              );
+            }
+          }
           if (assistantMessageId != null) {
             // Compact the trace from the reducer, which sees the just-arrived
             // events that stateRef has not observed yet.
