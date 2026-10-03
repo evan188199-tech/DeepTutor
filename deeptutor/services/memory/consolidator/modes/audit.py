@@ -475,6 +475,13 @@ def _build_l2_entry_lookup() -> dict[str, Entry]:
         try:
             doc = parse(path.read_text(encoding="utf-8"))
         except Exception:
+            logger.warning(
+                "audit: excluding unreadable L2 doc for surface %s at %s from the "
+                "L3 evidence lookup; L3 entries citing it cannot be verified — "
+                "inspect or restore it manually",
+                surface,
+                path,
+            )
             continue
         for entry in doc.all_entries():
             out[entry.id] = entry
