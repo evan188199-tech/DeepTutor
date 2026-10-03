@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 from copy import deepcopy
 import json
+import logging
 from types import SimpleNamespace
 from typing import Any
 
@@ -33,6 +34,56 @@ def test_load_ui_settings_migrates_legacy_language_to_response_language(
 
     assert settings["language"] == "zh"
     assert settings["response_language"] == "zh"
+
+
+def test_load_ui_settings_backs_up_corrupt_file_and_returns_defaults(
+    monkeypatch: pytest.MonkeyPatch, tmp_path, caplog: pytest.LogCaptureFixture
+) -> None:
+    settings_file = tmp_path / "interface.json"
+    settings_file.write_text('{"theme": "snow", ', encoding="utf-8")
+    monkeypatch.setattr(settings_router, "_settings_file", lambda: settings_file)
+
+    with caplog.at_level(logging.WARNING, logger=settings_router.__name__):
+        settings = settings_router.load_ui_settings()
+
+    assert settings == settings_router.DEFAULT_UI_SETTINGS.copy()
+    assert "interface.json" in caplog.text
+    backups = list(tmp_path.glob("interface.json.corrupt-*"))
+    assert len(backups) == 1
+    assert backups[0].read_text(encoding="utf-8") == '{"theme": "snow", '
+    assert not settings_file.exists()
+
+
+def test_load_ui_settings_recovers_from_unreadable_file(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    settings_file = tmp_path / "interface.json"
+    settings_file.mkdir()
+    monkeypatch.setattr(settings_router, "_settings_file", lambda: settings_file)
+
+    settings = settings_router.load_ui_settings()
+
+    assert settings == settings_router.DEFAULT_UI_SETTINGS.copy()
+    assert not settings_file.exists()
+    assert list(tmp_path.glob("interface.json.corrupt-*"))
+
+
+def test_load_ui_settings_does_not_swallow_unexpected_errors(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    settings_file = tmp_path / "interface.json"
+    settings_file.write_text('{"theme": "snow"}', encoding="utf-8")
+    monkeypatch.setattr(settings_router, "_settings_file", lambda: settings_file)
+
+    def _boom(saved):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(settings_router, "resolve_languages", _boom)
+
+    with pytest.raises(RuntimeError, match="boom"):
+        settings_router.load_ui_settings()
+    assert settings_file.exists()
+    assert not list(tmp_path.glob("interface.json.corrupt-*"))
 
 
 def test_both_readers_of_interface_json_agree_on_a_legacy_file(

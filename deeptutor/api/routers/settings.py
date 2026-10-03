@@ -13,6 +13,7 @@ import contextlib
 from copy import deepcopy
 import json
 import logging
+from pathlib import Path
 import time
 from typing import Any, List, Literal, Optional
 
@@ -499,6 +500,28 @@ def _runtime_catalog_write() -> Iterator[None]:
     reset_embedding_client()
 
 
+def _preserve_corrupt_settings_file(settings_file: Path) -> None:
+    """Move an unreadable ``interface.json`` aside as a ``.corrupt-<timestamp>``.
+
+    Renaming rather than copying means the damaged bytes survive for manual
+    inspection while the next save starts from a clean file instead of
+    warning on every load. A backup that itself fails only logs: the caller
+    is already recovering from a read error and must still get defaults.
+    """
+    if not settings_file.exists():
+        return
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    backup = settings_file.with_name(f"{settings_file.name}.corrupt-{stamp}")
+    suffix = 1
+    while backup.exists():
+        backup = settings_file.with_name(f"{settings_file.name}.corrupt-{stamp}-{suffix}")
+        suffix += 1
+    try:
+        settings_file.rename(backup)
+    except OSError:
+        logger.warning("Could not back up corrupt UI settings file to %s", backup)
+
+
 def load_ui_settings() -> dict[str, Any]:
     settings_file = _settings_file()
     if settings_file.exists():
@@ -515,8 +538,15 @@ def load_ui_settings() -> dict[str, Any]:
                     merged.get("enabled_optional_tools")
                 )
                 return merged
-        except Exception:
-            pass
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning(
+                "UI settings file %s is unreadable (%s); falling back to "
+                "defaults and preserving the damaged file as %s.corrupt-*",
+                settings_file,
+                exc,
+                settings_file.name,
+            )
+            _preserve_corrupt_settings_file(settings_file)
     return DEFAULT_UI_SETTINGS.copy()
 
 
