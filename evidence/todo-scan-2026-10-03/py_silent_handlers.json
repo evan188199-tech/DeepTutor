@@ -1,0 +1,3522 @@
+[
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 3952,
+  "type": "Exception",
+  "body": "pass",
+  "func": "run_reindex_task",
+  "in_loop": false,
+  "try_first": "ProgressTracker(kb_name, Path(base_dir)).update(",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 4353,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_progress",
+  "in_loop": false,
+  "try_first": "age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 4402,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_progress",
+  "in_loop": false,
+  "try_first": "progress_time = datetime.fromisoformat(timestamp)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 4480,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_progress",
+  "in_loop": false,
+  "try_first": "await websocket.send_json({\"type\": \"error\", \"message\": str(e)})",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 4486,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_progress",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 4491,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_progress",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 131,
+  "type": "Exception",
+  "body": "pass",
+  "func": "write",
+  "in_loop": false,
+  "try_first": "self.original_stdout.write(message)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 323,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "await websocket.send_json({\"type\": \"error\", \"content\": error_msg})",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 567,
+  "type": "Exception",
+  "body": "pass",
+  "func": "update_kb_status",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.rag.embedding_binding import entry_signature",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 2130,
+  "type": "Exception",
+  "body": "pass",
+  "func": "update_folder_sync_state",
+  "in_loop": true,
+  "try_first": "if source_mtimes is not None:",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 1252,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_handoff_pending_update",
+  "in_loop": false,
+  "try_first": "store.mark_failed(job.id, f\"Launcher handoff failed: {exc}\")",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/runtime/update_worker.py",
+  "line": 144,
+  "type": "Exception",
+  "body": "pass",
+  "func": "run_update_worker",
+  "in_loop": false,
+  "try_first": "current = store.load()",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 204,
+  "type": "Exception",
+  "body": "pass",
+  "func": "embed",
+  "in_loop": true,
+  "try_first": "progress_callback(i + 1, total_batches)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 279,
+  "type": "Exception",
+  "body": "pass",
+  "func": "embed_contents",
+  "in_loop": true,
+  "try_first": "progress_callback(i + 1, total_batches)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 51,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_iso",
+  "in_loop": false,
+  "try_first": "datetime.fromisoformat(ts.replace(\"Z\", \"+00:00\"))",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/graphrag/provider.py",
+  "line": 119,
+  "type": "Exception",
+  "body": "pass",
+  "func": "resolve_persisted_completion_provider",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config import (",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py",
+  "line": 403,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_describe_one",
+  "in_loop": false,
+  "try_first": "image_progress_callback(completed, total)",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/services/storage/file_library.py",
+  "line": 205,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_delete_file",
+  "in_loop": false,
+  "try_first": "for parent in target.parents:",
+  "risk": "HIGH"
+ },
+ {
+  "path": "deeptutor/agents/base_agent.py",
+  "line": 333,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_track_tokens",
+  "in_loop": false,
+  "try_first": "self.token_tracker.add_usage(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/citation_manager.py",
+  "line": 186,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_restore_counters_from_citations",
+  "in_loop": true,
+  "try_first": "num = int(citation_id.replace(\"PLAN-\", \"\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/citation_manager.py",
+  "line": 199,
+  "type": "ValueError, IndexError",
+  "body": "pass",
+  "func": "_restore_counters_from_citations",
+  "in_loop": true,
+  "try_first": "parts = citation_id.replace(\"CIT-\", \"\").split(\"-\")",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 530,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_save_uploaded_files",
+  "in_loop": true,
+  "try_first": "os.unlink(file_path)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 541,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_save_uploaded_files",
+  "in_loop": true,
+  "try_first": "os.unlink(written_path)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 1193,
+  "type": "OSError",
+  "body": "pass",
+  "func": "run_upload_processing_task",
+  "in_loop": true,
+  "try_first": "source_mtimes[source_path] = datetime.fromtimestamp(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/memory.py",
+  "line": 703,
+  "type": "OSError",
+  "body": "continue",
+  "func": "clear_trace",
+  "in_loop": true,
+  "try_first": "path.unlink()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/partner_groups.py",
+  "line": 530,
+  "type": "Exception",
+  "body": "pass",
+  "func": "partner_group_ws",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/partners.py",
+  "line": 546,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_load_persona_markdown",
+  "in_loop": false,
+  "try_first": "detail = get_persona_service().get_detail(name)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/partners.py",
+  "line": 553,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_load_persona_markdown",
+  "in_loop": false,
+  "try_first": "admin_service = PersonaService(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/partners.py",
+  "line": 2019,
+  "type": "Exception",
+  "body": "pass",
+  "func": "partner_chat_ws",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 146,
+  "type": "?, RuntimeError",
+  "body": "pass",
+  "func": "write",
+  "in_loop": false,
+  "try_first": "event = ProcessLogEvent(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 153,
+  "type": "Exception",
+  "body": "pass",
+  "func": "flush",
+  "in_loop": false,
+  "try_first": "self.original_stdout.flush()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 306,
+  "type": "RuntimeError, WebSocketDisconnect",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "await websocket.send_json({\"type\": \"error\", \"content\": error_msg})",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 336,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "pusher_task.cancel()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 343,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "while not log_queue.empty():",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 349,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 355,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 385,
+  "type": "RuntimeError, WebSocketDisconnect",
+  "body": "pass",
+  "func": "websocket_question_generate",
+  "in_loop": false,
+  "try_first": "await websocket.send_json({\"type\": \"error\", \"content\": \"Requirement is required\"})",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 438,
+  "type": "Exception",
+  "body": "pass",
+  "func": "ws_callback",
+  "in_loop": false,
+  "try_first": "await log_queue.put(data)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 505,
+  "type": "RuntimeError, WebSocketDisconnect",
+  "body": "pass",
+  "func": "websocket_question_generate",
+  "in_loop": false,
+  "try_first": "await websocket.send_json(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 577,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_question_generate",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 284,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 289,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 298,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 303,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 390,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 395,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 454,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "await websocket.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/quiz_judge.py",
+  "line": 459,
+  "type": "Exception",
+  "body": "pass",
+  "func": "websocket_quiz_judge",
+  "in_loop": false,
+  "try_first": "reset_current_user(user_token)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/reading.py",
+  "line": 518,
+  "type": "Exception",
+  "body": "continue",
+  "func": "duplicate_check",
+  "in_loop": true,
+  "try_first": "material_id = url_material_id(url)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/settings.py",
+  "line": 518,
+  "type": "Exception",
+  "body": "pass",
+  "func": "load_ui_settings",
+  "in_loop": false,
+  "try_first": "with open(settings_file, encoding=\"utf-8\") as handle:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/settings.py",
+  "line": 2247,
+  "type": "Exception",
+  "body": "pass",
+  "func": "tour_status",
+  "in_loop": false,
+  "try_first": "cache = json.loads(tour_cache.read_text(encoding=\"utf-8\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/routers/workspace.py",
+  "line": 322,
+  "type": "WorkspaceError",
+  "body": "continue",
+  "func": "_resolve_partner_item",
+  "in_loop": true,
+  "try_first": "return get_content_workspace_service().resolve_published_item(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/api/utils/tool_options.py",
+  "line": 97,
+  "type": "Exception",
+  "body": "continue",
+  "func": "build_tool_options",
+  "in_loop": true,
+  "try_first": "definition = tool.get_definition()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/capabilities/course_study/capability.py",
+  "line": 291,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_durable_reading_position",
+  "in_loop": true,
+  "try_first": "workspace = catalog.get_workspace(workspace_id)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/capabilities/setup/apply.py",
+  "line": 115,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_neighbour_values",
+  "in_loop": true,
+  "try_first": "out[other.key] = (other.label, other.read())",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/capabilities/setup/binding.py",
+  "line": 135,
+  "type": "Exception",
+  "body": "pass",
+  "func": "setup_gaps",
+  "in_loop": false,
+  "try_first": "parsing = specs.get(\"document_parsing.engine\")",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/capabilities/setup/binding.py",
+  "line": 207,
+  "type": "Exception",
+  "body": "pass",
+  "func": "mark_intro_shown",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.settings.interface_settings import set_ui_setting",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/co_writer/docx_converter.py",
+  "line": 256,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_style_name",
+  "in_loop": false,
+  "try_first": "if paragraph.style is not None and paragraph.style.name:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/co_writer/docx_converter.py",
+  "line": 340,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_run_to_markdown",
+  "in_loop": false,
+  "try_first": "if run.font.strike:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/co_writer/docx_converter.py",
+  "line": 356,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_table_to_markdown",
+  "in_loop": true,
+  "try_first": "cells = [_cell_text(cell) for cell in row.cells]",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 214,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_reconcile_embedding_flags",
+  "in_loop": true,
+  "try_first": "published = bound_graph_storage_root(kb_dir, provider, published)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 1295,
+  "type": "Exception",
+  "body": "pass",
+  "func": "get_default",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config import get_kb_config_service",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 1616,
+  "type": "Exception",
+  "body": "pass",
+  "func": "get_info",
+  "in_loop": false,
+  "try_first": "raw_count = sum(1 for _ in iter_kb_documents(raw_dir)) if raw_dir else 0",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 1623,
+  "type": "Exception",
+  "body": "pass",
+  "func": "get_info",
+  "in_loop": false,
+  "try_first": "images_count = (",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/manager.py",
+  "line": 1630,
+  "type": "Exception",
+  "body": "pass",
+  "func": "get_info",
+  "in_loop": false,
+  "try_first": "content_lists_count = (",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/progress_tracker.py",
+  "line": 103,
+  "type": "RuntimeError",
+  "body": "pass",
+  "func": "_notify",
+  "in_loop": false,
+  "try_first": "loop = asyncio.get_running_loop()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/knowledge/progress_tracker.py",
+  "line": 105,
+  "type": "ImportError, Exception",
+  "body": "pass",
+  "func": "_notify",
+  "in_loop": false,
+  "try_first": "from deeptutor.knowledge.progress_events import broadcast_progress",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/email.py",
+  "line": 377,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_fetch_messages",
+  "in_loop": false,
+  "try_first": "client.logout()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/manager.py",
+  "line": 294,
+  "type": "TimeoutError",
+  "body": "continue",
+  "func": "_dispatch_outbound",
+  "in_loop": true,
+  "try_first": "if pending:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/matrix.py",
+  "line": 529,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_set_typing",
+  "in_loop": false,
+  "try_first": "response = await self.client.room_typing(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 360,
+  "type": "Exception",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._socket.disconnect()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 512,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_start_socket_client",
+  "in_loop": false,
+  "try_first": "await client.disconnect()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 172,
+  "type": "Exception",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._ws.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 178,
+  "type": "Exception",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._http.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 219,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_dispatch_frame",
+  "in_loop": false,
+  "try_first": "self._self_id = int(sid)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/qq.py",
+  "line": 134,
+  "type": "Exception",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._client.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 519,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_send_with_streaming",
+  "in_loop": false,
+  "try_first": "step = max(len(text) // 8, 40)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 173,
+  "type": "Exception",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "self._client.deregister(self._queue_id)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 858,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_typing_loop",
+  "in_loop": false,
+  "try_first": "self._client.set_typing_status(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/reading/references.py",
+  "line": 118,
+  "type": "Exception",
+  "body": "continue",
+  "func": "resolve_reading_sources",
+  "in_loop": true,
+  "try_first": "current_manifest = active_store.manifest(material_id)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/reading/references.py",
+  "line": 135,
+  "type": "Exception",
+  "body": "continue",
+  "func": "resolve_reading_sources",
+  "in_loop": true,
+  "try_first": "body = read_unit(material_id, locator).strip()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/reading/store.py",
+  "line": 1145,
+  "type": "OSError",
+  "body": "pass",
+  "func": "delete_material_state",
+  "in_loop": true,
+  "try_first": "(content_dir / state_dir).rmdir()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 146,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.path_service import PathService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 152,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config.runtime_settings import RuntimeSettingsService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 158,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config.model_catalog import ModelCatalogService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 260,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_terminate",
+  "in_loop": false,
+  "try_first": "_send_tree_signal(proc.process.pid, proc.pgid, signal.SIGTERM)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 267,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_terminate",
+  "in_loop": false,
+  "try_first": "_send_tree_signal(proc.process.pid, proc.pgid, KILL_SIGNAL)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 502,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_kill_port_listeners",
+  "in_loop": true,
+  "try_first": "_send_tree_signal(pid, None, signal.SIGTERM)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 511,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_kill_port_listeners",
+  "in_loop": true,
+  "try_first": "_send_tree_signal(pid, None, KILL_SIGNAL)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 638,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_copy_packaged_web_if_needed",
+  "in_loop": false,
+  "try_first": "if json.loads(marker.read_text(encoding=\"utf-8\")) == marker_payload:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 787,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_ensure_source_production_build",
+  "in_loop": false,
+  "try_first": "if json.loads(marker.read_text(encoding=\"utf-8\")) == payload:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 943,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_detect_existing_source_frontend",
+  "in_loop": true,
+  "try_first": "payload = json.loads(lock_path.read_text(encoding=\"utf-8\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 997,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_stop_unhealthy_source_frontend",
+  "in_loop": false,
+  "try_first": "frontend.lock_path.unlink(missing_ok=True)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 1022,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_stop_unhealthy_source_frontend",
+  "in_loop": false,
+  "try_first": "frontend.lock_path.unlink(missing_ok=True)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/runtime/memory_probe.py",
+  "line": 304,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_host_memory",
+  "in_loop": false,
+  "try_first": "vm = psutil.virtual_memory()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/codebuddy_auth.py",
+  "line": 79,
+  "type": "Exception",
+  "body": "pass",
+  "func": "cancel_login",
+  "in_loop": false,
+  "try_first": "await flow.cancel()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/codebuddy_auth.py",
+  "line": 99,
+  "type": "Exception",
+  "body": "pass",
+  "func": "logout",
+  "in_loop": false,
+  "try_first": "await flow.cancel()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/codex_auth/service.py",
+  "line": 872,
+  "type": "Exception",
+  "body": "pass",
+  "func": "logout",
+  "in_loop": false,
+  "try_first": "await self._oauth.revoke(credentials)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/codex_auth/service.py",
+  "line": 882,
+  "type": "Exception",
+  "body": "pass",
+  "func": "logout",
+  "in_loop": false,
+  "try_first": "await self._catalog.invalidate()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/config/model_catalog.py",
+  "line": 642,
+  "type": "Exception",
+  "body": "pass",
+  "func": "get_model_catalog_service",
+  "in_loop": false,
+  "try_first": "from deeptutor.multi_user.context import get_current_user",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/config/readiness.py",
+  "line": 872,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_redis_reachable",
+  "in_loop": false,
+  "try_first": "await asyncio.wait_for(coordinator.close(), timeout=1.0)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/config/settings_spec.py",
+  "line": 471,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_clear_runtime_caches",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.llm import clear_llm_config_cache",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/embedding/adapters/openai_sdk.py",
+  "line": 113,
+  "type": "Exception",
+  "body": "pass",
+  "func": "embed",
+  "in_loop": false,
+  "try_first": "await client.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 223,
+  "type": "Exception",
+  "body": "pass",
+  "func": "supports_multimodal_contents",
+  "in_loop": false,
+  "try_first": "info = self.adapter.get_model_info()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/file_io.py",
+  "line": 55,
+  "type": "OSError",
+  "body": "pass",
+  "func": "atomic_write_json",
+  "in_loop": false,
+  "try_first": "os.fsync(handle.fileno())",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/file_io.py",
+  "line": 80,
+  "type": "OSError",
+  "body": "pass",
+  "func": "atomic_write_text",
+  "in_loop": false,
+  "try_first": "os.fsync(handle.fileno())",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+  "line": 115,
+  "type": "BaseException",
+  "body": "pass",
+  "func": "_owner_loop",
+  "in_loop": false,
+  "try_first": "await client.disconnect()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+  "line": 144,
+  "type": "Exception",
+  "body": "pass",
+  "func": "close",
+  "in_loop": false,
+  "try_first": "await owner",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+  "line": 363,
+  "type": "Exception",
+  "body": "pass",
+  "func": "aclose",
+  "in_loop": true,
+  "try_first": "await session.close()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+  "line": 553,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_consume_messages",
+  "in_loop": true,
+  "try_first": "await interrupt()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/meta.py",
+  "line": 177,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_atomic_write_json",
+  "in_loop": false,
+  "try_first": "os.remove(tmp_str)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/runs.py",
+  "line": 256,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "wait_for_events",
+  "in_loop": false,
+  "try_first": "run._waiters.remove(waiter)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 56,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_iso",
+  "in_loop": false,
+  "try_first": "return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 138,
+  "type": "OSError, ?",
+  "body": "continue",
+  "func": "read_cowriter_entities",
+  "in_loop": true,
+  "try_first": "m = json.loads(manifest.read_text(encoding=\"utf-8\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/store.py",
+  "line": 112,
+  "type": "OSError",
+  "body": "pass",
+  "func": "clear_changes",
+  "in_loop": false,
+  "try_first": "path.unlink()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/notebook/service.py",
+  "line": 153,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_rebuild_index_entries",
+  "in_loop": true,
+  "try_first": "with open(path, encoding=\"utf-8\") as f:",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/parsing/engines/markitdown/formats.py",
+  "line": 76,
+  "type": "Exception",
+  "body": "continue",
+  "func": "markitdown_supported_formats",
+  "in_loop": true,
+  "try_first": "module = importlib.import_module(module_info.name)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/parsing/engines/markitdown/formats.py",
+  "line": 82,
+  "type": "Exception",
+  "body": "pass",
+  "func": "markitdown_supported_formats",
+  "in_loop": false,
+  "try_first": "converters = importlib.import_module(\"markitdown.converters\")",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/parsing/engines/mineru/local.py",
+  "line": 36,
+  "type": "FileNotFoundError",
+  "body": "pass",
+  "func": "check_mineru_installed",
+  "in_loop": false,
+  "try_first": "result = subprocess.run(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/parsing/engines/mineru/local.py",
+  "line": 50,
+  "type": "FileNotFoundError",
+  "body": "pass",
+  "func": "check_mineru_installed",
+  "in_loop": false,
+  "try_first": "result = subprocess.run(",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/parsing/engines/mineru/readiness.py",
+  "line": 74,
+  "type": "Exception",
+  "body": "continue",
+  "func": "mineru_models_ready",
+  "in_loop": true,
+  "try_first": "if not root.is_dir():",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/partners/workspace.py",
+  "line": 432,
+  "type": "OSError, ?",
+  "body": "pass",
+  "func": "remove_asset",
+  "in_loop": false,
+  "try_first": "data = json.loads(index_path.read_text(encoding=\"utf-8\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py",
+  "line": 100,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "inherit_index_cache",
+  "in_loop": true,
+  "try_first": "version = int(root.name.removeprefix(\"version-\"))",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+  "line": 250,
+  "type": "BaseException",
+  "body": "pass",
+  "func": "run_in_worker_loop",
+  "in_loop": false,
+  "try_first": "worker.result()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/modes.py",
+  "line": 37,
+  "type": "Exception",
+  "body": "pass",
+  "func": "resolve_kb_mode",
+  "in_loop": false,
+  "try_first": "cfg_path = Path(kb_base_dir) / \"kb_config.json\"",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/rag/service.py",
+  "line": 183,
+  "type": "Exception",
+  "body": "pass",
+  "func": "search",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.memory import get_memory_store",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/session/pocketbase_store.py",
+  "line": 99,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_to_float",
+  "in_loop": false,
+  "try_first": "return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).timestamp()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/session/sqlite_store.py",
+  "line": 454,
+  "type": "OperationalError",
+  "body": "pass",
+  "func": "_initialize",
+  "in_loop": false,
+  "try_first": "conn.execute(\"ALTER TABLE sessions DROP COLUMN kind\")",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/session/turns/lifecycle.py",
+  "line": 321,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "cancel_turn",
+  "in_loop": false,
+  "try_first": "await execution.task",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/storage/attachment_store.py",
+  "line": 184,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_write_sync",
+  "in_loop": false,
+  "try_first": "tmp.unlink()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/storage/file_library.py",
+  "line": 188,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_write_file",
+  "in_loop": false,
+  "try_first": "tmp.unlink()",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/subagent/claude_models.py",
+  "line": 215,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_capture_model_screen",
+  "in_loop": true,
+  "try_first": "os.write(fd, keys)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/services/subagent/opencode_family.py",
+  "line": 410,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_swallow",
+  "in_loop": false,
+  "try_first": "await awaitable",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/tools/builtin/__init__.py",
+  "line": 1711,
+  "type": "SkillNotFoundError",
+  "body": "continue",
+  "func": "execute",
+  "in_loop": true,
+  "try_first": "content = service.read_skill_file(name, rel_path)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/utils/config_manager.py",
+  "line": 96,
+  "type": "OSError",
+  "body": "pass",
+  "func": "save_config",
+  "in_loop": false,
+  "try_first": "os.remove(tmp_path)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/utils/document_images.py",
+  "line": 557,
+  "type": "Exception",
+  "body": "continue",
+  "func": "extract_pdf_images",
+  "in_loop": true,
+  "try_first": "extracted = doc.extract_image(xref)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor_cli/init_cmd.py",
+  "line": 35,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.path_service import PathService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor_cli/init_cmd.py",
+  "line": 41,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config.runtime_settings import RuntimeSettingsService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor_cli/init_cmd.py",
+  "line": 47,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_reset_runtime_singletons",
+  "in_loop": false,
+  "try_first": "from deeptutor.services.config.model_catalog import ModelCatalogService",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor_cli/provider_cmd.py",
+  "line": 150,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_login_codebuddy",
+  "in_loop": false,
+  "try_first": "webbrowser.open(auth.auth_url)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor_cli/skill_login.py",
+  "line": 123,
+  "type": "Exception",
+  "body": "pass",
+  "func": "run_login",
+  "in_loop": false,
+  "try_first": "webbrowser.open(url)",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "scripts/_cli_kit.py",
+  "line": 10,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_ensure_replace_errors",
+  "in_loop": false,
+  "try_first": "if getattr(sys.stdout, \"errors\", None) != \"replace\":",
+  "risk": "MEDIUM"
+ },
+ {
+  "path": "deeptutor/agents/_shared/json_output.py",
+  "line": 27,
+  "type": "JSONDecodeError",
+  "body": "pass",
+  "func": "extract_json_object",
+  "in_loop": false,
+  "try_first": "parsed = json.loads(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/_shared/json_output.py",
+  "line": 69,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "_decode_first_json_object",
+  "in_loop": true,
+  "try_first": "parsed, _end = decoder.raw_decode(stripped[start:])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/loop/dsml_tool_calls.py",
+  "line": 189,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_coerce_param_value",
+  "in_loop": false,
+  "try_first": "parsed = json.loads(stripped)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/math_animator/duration_utils.py",
+  "line": 27,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "parse_target_duration_seconds",
+  "in_loop": true,
+  "try_first": "candidates.append(float(match.group(\"value\")))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/math_animator/duration_utils.py",
+  "line": 32,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "parse_target_duration_seconds",
+  "in_loop": true,
+  "try_first": "candidates.append(float(match.group(\"value\")) * 60.0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/question/pipeline.py",
+  "line": 228,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_normalize_per_type_counts",
+  "in_loop": true,
+  "try_first": "count = int(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/question/pipeline.py",
+  "line": 288,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_normalize_per_type_counts",
+  "in_loop": true,
+  "try_first": "count = int(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/data_structures.py",
+  "line": 126,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_truncate_raw_answer",
+  "in_loop": false,
+  "try_first": "truncated = json.dumps(data, ensure_ascii=False)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/data_structures.py",
+  "line": 538,
+  "type": "ValueError, IndexError",
+  "body": "pass",
+  "func": "from_dict",
+  "in_loop": true,
+  "try_first": "block_num = int(block.block_id.split(\"_\")[1])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/pipeline.py",
+  "line": 2608,
+  "type": "IndexError, ValueError",
+  "body": "pass",
+  "func": "_citation_sort_key",
+  "in_loop": false,
+  "try_first": "if citation_id.startswith(\"PLAN-\"):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/citation_manager.py",
+  "line": 433,
+  "type": "?, Exception",
+  "body": "pass",
+  "func": "_extract_web_citation",
+  "in_loop": false,
+  "try_first": "answer_data = parse_json_response(raw_answer)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/citation_manager.py",
+  "line": 754,
+  "type": "ValueError, IndexError",
+  "body": "pass",
+  "func": "_extract_citation_sort_key",
+  "in_loop": false,
+  "try_first": "if citation_id.startswith(\"PLAN-\"):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/json_utils.py",
+  "line": 30,
+  "type": "JSONDecodeError",
+  "body": "pass",
+  "func": "extract_json_from_text",
+  "in_loop": false,
+  "try_first": "return json.loads(snippet)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/json_utils.py",
+  "line": 36,
+  "type": "JSONDecodeError",
+  "body": "pass",
+  "func": "extract_json_from_text",
+  "in_loop": false,
+  "try_first": "return json.loads(text)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/agents/research/utils/json_utils.py",
+  "line": 46,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "extract_json_from_text",
+  "in_loop": true,
+  "try_first": "parsed, _end = decoder.raw_decode(text[i:])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/auth.py",
+  "line": 121,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_trusted_proxy_ips",
+  "in_loop": true,
+  "try_first": "trusted.add(str(ipaddress.ip_address(item.strip())))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/book.py",
+  "line": 386,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_normalize_block_types",
+  "in_loop": true,
+  "try_first": "block_type = BlockType(value.strip().lower())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/book.py",
+  "line": 1514,
+  "type": "?, Exception",
+  "body": "pass",
+  "func": "close",
+  "in_loop": true,
+  "try_first": "await task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/book.py",
+  "line": 1812,
+  "type": "WebSocketDisconnect",
+  "body": "pass",
+  "func": "book_websocket",
+  "in_loop": false,
+  "try_first": "while not closed:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/knowledge.py",
+  "line": 3048,
+  "type": "OSError",
+  "body": "continue",
+  "func": "list_kb_raw_files",
+  "in_loop": true,
+  "try_first": "stat = entry.stat()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/memory.py",
+  "line": 116,
+  "type": "Exception",
+  "body": "continue",
+  "func": "resolve_entry",
+  "in_loop": true,
+  "try_first": "doc = parse(path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/multi_user.py",
+  "line": 172,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_admin_catalog_summary",
+  "in_loop": true,
+  "try_first": "effective = resolve_profile_provider(catalog, service, profile, model)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/partners.py",
+  "line": 1735,
+  "type": "TimeoutError",
+  "body": "continue",
+  "func": "_partner_chat_stream",
+  "in_loop": true,
+  "try_first": "item = await asyncio.wait_for(queue.get(), timeout=0.15)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/personas.py",
+  "line": 91,
+  "type": "PersonaNotFoundError",
+  "body": "pass",
+  "func": "get_persona",
+  "in_loop": false,
+  "try_first": "return service.get_detail(name).to_dict()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/personas.py",
+  "line": 102,
+  "type": "PersonaNotFoundError, InvalidPersonaNameError",
+  "body": "pass",
+  "func": "get_persona",
+  "in_loop": false,
+  "try_first": "detail = presets.get_detail(name).to_dict()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 334,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "websocket_mimic_generate",
+  "in_loop": false,
+  "try_first": "pusher_task.cancel()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/question.py",
+  "line": 564,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "websocket_question_generate",
+  "in_loop": false,
+  "try_first": "await pusher_task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/settings.py",
+  "line": 1187,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_document_parsing_payload",
+  "in_loop": true,
+  "try_first": "parser = get_parser(entry[\"id\"])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/settings.py",
+  "line": 2336,
+  "type": "WorkspaceError",
+  "body": "continue",
+  "func": "get_usage_statistics",
+  "in_loop": true,
+  "try_first": "with workspace_context(workspace_id):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/skills.py",
+  "line": 205,
+  "type": "SkillNotFoundError",
+  "body": "pass",
+  "func": "get_skill",
+  "in_loop": false,
+  "try_first": "return service.get_detail(name).to_dict()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/routers/unified_ws.py",
+  "line": 137,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop_subscription",
+  "in_loop": false,
+  "try_first": "await task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/utils/task_log_stream.py",
+  "line": 80,
+  "type": "RuntimeError",
+  "body": "continue",
+  "func": "emit",
+  "in_loop": true,
+  "try_first": "loop.call_soon_threadsafe(self._queue_event, queue, event_payload)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/api/utils/task_log_stream.py",
+  "line": 279,
+  "type": "QueueFull",
+  "body": "pass",
+  "func": "_queue_event",
+  "in_loop": false,
+  "try_first": "queue.put_nowait(payload)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/app/container.py",
+  "line": 156,
+  "type": "WorkspaceError",
+  "body": "continue",
+  "func": "recover_once",
+  "in_loop": true,
+  "try_first": "activity = acquire_activity()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/app/container.py",
+  "line": 186,
+  "type": "WorkspaceError",
+  "body": "continue",
+  "func": "_recover_user_workspaces",
+  "in_loop": true,
+  "try_first": "with workspace_context(workspace_id):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/book/agents/page_planner.py",
+  "line": 363,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "plan_blocks_async",
+  "in_loop": true,
+  "try_first": "block_type = BlockType(type_str)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/book/blocks/_llm_writer.py",
+  "line": 120,
+  "type": "?, ValueError",
+  "body": "pass",
+  "func": "_strip_thinking_preamble",
+  "in_loop": false,
+  "try_first": "json.loads(candidate)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/book/blocks/_rag_helpers.py",
+  "line": 103,
+  "type": "Exception",
+  "body": "pass",
+  "func": "optional_rag_lookup",
+  "in_loop": false,
+  "try_first": "from deeptutor.multi_user.knowledge_access import resolve_kb",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/book/compiler.py",
+  "line": 65,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_parse_allowed_block_types",
+  "in_loop": true,
+  "try_first": "parsed.add(BlockType(value.strip().lower()))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/capabilities/obsidian/vault.py",
+  "line": 183,
+  "type": "OSError",
+  "body": "continue",
+  "func": "search_notes",
+  "in_loop": true,
+  "try_first": "text = _read_text(path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/capabilities/obsidian/vault.py",
+  "line": 228,
+  "type": "OSError",
+  "body": "continue",
+  "func": "backlinks",
+  "in_loop": true,
+  "try_first": "text = _read_text(path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/capabilities/obsidian/vault.py",
+  "line": 249,
+  "type": "OSError",
+  "body": "continue",
+  "func": "collect_tags",
+  "in_loop": true,
+  "try_first": "text = _read_text(path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/capabilities/reading/media_notes.py",
+  "line": 61,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "render_media_note",
+  "in_loop": true,
+  "try_first": "locator = int(row.get(\"locator\") or 0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/capabilities/subagent/capability.py",
+  "line": 178,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_resolve_budget",
+  "in_loop": false,
+  "try_first": "return max(CONSULT_BUDGET_MIN, min(CONSULT_BUDGET_MAX, int(raw)))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/co_writer/docx_converter.py",
+  "line": 541,
+  "type": "KeyError, ValueError",
+  "body": "pass",
+  "func": "_append_markdown_table",
+  "in_loop": false,
+  "try_first": "table.style = \"Table Grid\"",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/events/event_bus.py",
+  "line": 113,
+  "type": "TimeoutError",
+  "body": "continue",
+  "func": "_process_events",
+  "in_loop": true,
+  "try_first": "event = await asyncio.wait_for(self._task_queue.get(), timeout=1.0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/events/event_bus.py",
+  "line": 182,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._processor_task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/learning/storage.py",
+  "line": 784,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_archive_legacy",
+  "in_loop": false,
+  "try_first": "path.replace(target)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/learning/storage.py",
+  "line": 1825,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "detach_session",
+  "in_loop": false,
+  "try_first": "self._import_legacy_if_needed(session_id)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/multi_user/model_access.py",
+  "line": 101,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "redacted_model_access",
+  "in_loop": true,
+  "try_first": "effective = resolve_profile_provider(catalog, \"llm\", profile, model)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/multi_user/session_handoff.py",
+  "line": 226,
+  "type": "FileNotFoundError",
+  "body": "pass",
+  "func": "_initialize",
+  "in_loop": false,
+  "try_first": "os.chmod(self.db_path, 0o600)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/matrix.py",
+  "line": 293,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._sync_task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/matrix.py",
+  "line": 544,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "loop",
+  "in_loop": false,
+  "try_first": "while self._running:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/matrix.py",
+  "line": 554,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "_stop_typing_keepalive",
+  "in_loop": false,
+  "try_first": "await task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 323,
+  "type": "JSONDecodeError",
+  "body": "pass",
+  "func": "_should_respond_in_channel",
+  "in_loop": false,
+  "try_first": "if self._bot_user_id in json.loads(mentions):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 148,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "_run_once",
+  "in_loop": true,
+  "try_first": "payload = json.loads(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 236,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "_done",
+  "in_loop": false,
+  "try_first": "done.result()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 360,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_parse_segments",
+  "in_loop": true,
+  "try_first": "reply_to = int(rid) if rid is not None else None",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 550,
+  "type": "TypeError, KeyError",
+  "body": "pass",
+  "func": "_download_image",
+  "in_loop": false,
+  "try_first": "declared_size = int(info[\"file_size\"])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/registry.py",
+  "line": 86,
+  "type": "NotAChannelModule",
+  "body": "continue",
+  "func": "discover_all_with_errors",
+  "in_loop": true,
+  "try_first": "builtin[modname] = load_channel_class(modname)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 1030,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "_typing_loop",
+  "in_loop": false,
+  "try_first": "while self._app:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 372,
+  "type": "TimeoutException",
+  "body": "continue",
+  "func": "start",
+  "in_loop": true,
+  "try_first": "await self._poll_once()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 847,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "_typing_loop",
+  "in_loop": false,
+  "try_first": "while self._running and self._client:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/partners/network.py",
+  "line": 92,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "validate_url_target",
+  "in_loop": true,
+  "try_first": "addr = ipaddress.ip_address(info[4][0])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/epub_bilingual.py",
+  "line": 99,
+  "type": "ReadingError",
+  "body": "continue",
+  "func": "recommend_epub_candidates",
+  "in_loop": true,
+  "try_first": "candidate_path = _raw_epub(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/extract.py",
+  "line": 301,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_pdf_outline",
+  "in_loop": true,
+  "try_first": "level, title, page = int(row[0]), str(row[1]).strip(), int(row[2])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/ingestion.py",
+  "line": 762,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "normalize_transcript_segments",
+  "in_loop": true,
+  "try_first": "start_value = max(0.0, float(start or 0))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/ingestion.py",
+  "line": 1053,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_segment_list_spans",
+  "in_loop": true,
+  "try_first": "start, end = float(parts[-2]), float(parts[-1])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/models.py",
+  "line": 336,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "parse_text_selectors",
+  "in_loop": true,
+  "try_first": "start = max(0, int(raw.get(\"start\") or 0))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/service.py",
+  "line": 96,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "parse_locators",
+  "in_loop": true,
+  "try_first": "raw.append(int(value))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/reading/store.py",
+  "line": 930,
+  "type": "KeyError, TypeError, ValueError",
+  "body": "continue",
+  "func": "outline",
+  "in_loop": true,
+  "try_first": "entries.append(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/background_leader.py",
+  "line": 102,
+  "type": "TimeoutError",
+  "body": "pass",
+  "func": "_run",
+  "in_loop": true,
+  "try_first": "await asyncio.wait_for(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 288,
+  "type": "ValueError, OSError",
+  "body": "continue",
+  "func": "_relax_console_encoding",
+  "in_loop": true,
+  "try_first": "reconfigure(errors=\"replace\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 358,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_port_listeners",
+  "in_loop": true,
+  "try_first": "pid = int(line[1:])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 389,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_port_listeners_windows",
+  "in_loop": true,
+  "try_first": "pid = int(parts[4])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 671,
+  "type": "UnicodeDecodeError",
+  "body": "continue",
+  "func": "_patch_packaged_web_placeholders",
+  "in_loop": true,
+  "try_first": "text = path.read_text(encoding=\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 1042,
+  "type": "OSError, ValueError",
+  "body": "pass",
+  "func": "_install_signal_handlers",
+  "in_loop": false,
+  "try_first": "signal.signal(signal.SIGINT, signal.SIG_IGN)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/launcher.py",
+  "line": 1061,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "_install_signal_handlers",
+  "in_loop": true,
+  "try_first": "signal.signal(sig, _handler)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/memory_probe.py",
+  "line": 173,
+  "type": "?, PermissionError, OSError",
+  "body": "continue",
+  "func": "_scan_psutil",
+  "in_loop": true,
+  "try_first": "with proc.oneshot():",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/runtime/stream_bus.py",
+  "line": 119,
+  "type": "RuntimeError",
+  "body": "continue",
+  "func": "mark_closed",
+  "in_loop": true,
+  "try_first": "if loop.is_running():",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/base_sync.py",
+  "line": 87,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/cli_apps/paths.py",
+  "line": 100,
+  "type": "OSError",
+  "body": "pass",
+  "func": "ensure_root",
+  "in_loop": true,
+  "try_first": "os.chmod(path, 0o700)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/cli_apps/provider.py",
+  "line": 405,
+  "type": "OSError",
+  "body": "continue",
+  "func": "_read_guide",
+  "in_loop": true,
+  "try_first": "candidates = sorted(root.glob(pattern))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/cli_apps/provider.py",
+  "line": 410,
+  "type": "OSError, UnicodeDecodeError",
+  "body": "continue",
+  "func": "_read_guide",
+  "in_loop": true,
+  "try_first": "return sanitize_provider_document(candidate.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/codebuddy_credentials.py",
+  "line": 206,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "_iter_cached_product_configs",
+  "in_loop": true,
+  "try_first": "raw = json.loads(path.read_text(encoding=\"utf-8\", errors=\"ignore\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/codebuddy_credentials.py",
+  "line": 212,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_iter_cached_product_configs",
+  "in_loop": true,
+  "try_first": "decoded = json.loads(gzip.decompress(base64.b64decode(raw)).decode(\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/codex_auth/service.py",
+  "line": 1113,
+  "type": "CodexAuthError",
+  "body": "continue",
+  "func": "_credentials_from_payload",
+  "in_loop": true,
+  "try_first": "claims = decode_codex_jwt(token)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/config/provider_runtime.py",
+  "line": 1353,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_resolve_search_max_results",
+  "in_loop": false,
+  "try_first": "value = int(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/config/provider_runtime.py",
+  "line": 1367,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_resolve_search_max_results",
+  "in_loop": false,
+  "try_first": "value = int(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/config/test_runner.py",
+  "line": 202,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_capabilities_from_adapter",
+  "in_loop": true,
+  "try_first": "supported.append(int(value))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/cron/service.py",
+  "line": 327,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._timer_task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/cron/service.py",
+  "line": 343,
+  "type": "TimeoutError",
+  "body": "pass",
+  "func": "_loop",
+  "in_loop": true,
+  "try_first": "await asyncio.wait_for(self._wake.wait(), timeout=sleep_s)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/embedding/adapters/ollama.py",
+  "line": 84,
+  "type": "HTTPError",
+  "body": "pass",
+  "func": "embed",
+  "in_loop": false,
+  "try_first": "health_check = await client.get(self._tags_url())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/llm/client.py",
+  "line": 244,
+  "type": "ImportError",
+  "body": "pass",
+  "func": "reset_llm_client",
+  "in_loop": false,
+  "try_first": "from deeptutor.runtime.agentic.client import reset_agentic_client_pool",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/base.py",
+  "line": 223,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_normalize_retry_delays",
+  "in_loop": true,
+  "try_first": "value = float(delay)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+  "line": 438,
+  "type": "TypeError",
+  "body": "continue",
+  "func": "_build_options",
+  "in_loop": true,
+  "try_first": "return options_cls(**kwargs)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+  "line": 239,
+  "type": "Exception",
+  "body": "pass",
+  "func": "_parse_tool_arguments",
+  "in_loop": false,
+  "try_first": "return _as_arguments_dict(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/llm/utils.py",
+  "line": 96,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "is_local_llm_server",
+  "in_loop": false,
+  "try_first": "ip = ipaddress.ip_address(hostname)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/mcp/network.py",
+  "line": 96,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "validate_mcp_url",
+  "in_loop": true,
+  "try_first": "addr = ipaddress.ip_address(info[4][0])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/line_doc.py",
+  "line": 392,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "parse_edits_payload",
+  "in_loop": true,
+  "try_first": "if kind == \"replace\":",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/modes/audit.py",
+  "line": 477,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_build_l2_entry_lookup",
+  "in_loop": true,
+  "try_first": "doc = parse(path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/modes/merge.py",
+  "line": 180,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_migrate_l3_legacy_refs",
+  "in_loop": true,
+  "try_first": "l2_doc = parse(l2_path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/consolidator/modes/update.py",
+  "line": 692,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_load_all_l2_docs",
+  "in_loop": true,
+  "try_first": "docs[surface] = parse(path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 87,
+  "type": "OSError, ?",
+  "body": "continue",
+  "func": "read_notebook_entities",
+  "in_loop": true,
+  "try_first": "nb_data = json.loads(nb_file.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 171,
+  "type": "OSError, ?",
+  "body": "continue",
+  "func": "read_book_entities",
+  "in_loop": true,
+  "try_first": "m = json.loads(manifest_path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 257,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "_partner_session_entity",
+  "in_loop": true,
+  "try_first": "obj = json.loads(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/snapshot/store.py",
+  "line": 95,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "iter_changes",
+  "in_loop": true,
+  "try_first": "obj = json.loads(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/store.py",
+  "line": 414,
+  "type": "OSError, ?",
+  "body": "continue",
+  "func": "migrate_partner_surface_if_needed",
+  "in_loop": true,
+  "try_first": "data = json.loads(meta_path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/trace.py",
+  "line": 106,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "iter_since",
+  "in_loop": true,
+  "try_first": "obj = json.loads(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/trace.py",
+  "line": 111,
+  "type": "OSError",
+  "body": "continue",
+  "func": "iter_since",
+  "in_loop": true,
+  "try_first": "with path.open(\"r\", encoding=\"utf-8\") as fh:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/memory/trace.py",
+  "line": 151,
+  "type": "OSError, ?",
+  "body": "continue",
+  "func": "latest_ts",
+  "in_loop": true,
+  "try_first": "last = \"\"",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/notebook/service.py",
+  "line": 676,
+  "type": "NotebookCorruptedError",
+  "body": "continue",
+  "func": "get_statistics",
+  "in_loop": true,
+  "try_first": "notebook = self._load_notebook(nb_info[\"id\"])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/office_preview.py",
+  "line": 98,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_render_sync",
+  "in_loop": false,
+  "try_first": "if 0 < cached.stat().st_size <= MAX_PREVIEW_PDF_BYTES:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/office_preview.py",
+  "line": 142,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_render_sync",
+  "in_loop": false,
+  "try_first": "process.kill()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/office_preview.py",
+  "line": 166,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_render_sync",
+  "in_loop": false,
+  "try_first": "with tempfile.NamedTemporaryFile(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/office_preview.py",
+  "line": 196,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_prune_cache",
+  "in_loop": false,
+  "try_first": "files = [entry for entry in cache_dir.iterdir() if entry.suffix == \".pdf\"]",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/parsing/service.py",
+  "line": 66,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_find_fallback_engine",
+  "in_loop": true,
+  "try_first": "parser = get_parser(name)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partner_groups/memory.py",
+  "line": 153,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "_entries_unlocked",
+  "in_loop": true,
+  "try_first": "row = json.loads(line)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partner_groups/store.py",
+  "line": 292,
+  "type": "TypeError, ValueError, ?",
+  "body": "continue",
+  "func": "_read_messages",
+  "in_loop": true,
+  "try_first": "data = json.loads(line)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/manager.py",
+  "line": 824,
+  "type": "?, ?",
+  "body": "pass",
+  "func": "stop_partner",
+  "in_loop": true,
+  "try_first": "await asyncio.wait_for(asyncio.shield(task), timeout=5.0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/manager.py",
+  "line": 930,
+  "type": "?, ?",
+  "body": "pass",
+  "func": "_teardown_channel_listeners",
+  "in_loop": true,
+  "try_first": "await asyncio.wait_for(asyncio.shield(t), timeout=5.0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/sessions.py",
+  "line": 260,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "_read_records",
+  "in_loop": true,
+  "try_first": "data = json.loads(line)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/sessions.py",
+  "line": 325,
+  "type": "JSONDecodeError",
+  "body": "continue",
+  "func": "messages_page",
+  "in_loop": true,
+  "try_first": "record = json.loads(line)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/workspace.py",
+  "line": 317,
+  "type": "OSError, ?",
+  "body": "pass",
+  "func": "_merge_index_entry",
+  "in_loop": false,
+  "try_first": "loaded = json.loads(index_path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/partners/workspace.py",
+  "line": 369,
+  "type": "OSError, ?",
+  "body": "pass",
+  "func": "list_assets",
+  "in_loop": false,
+  "try_first": "data = json.loads(index_path.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/persona/service.py",
+  "line": 169,
+  "type": "OSError",
+  "body": "continue",
+  "func": "list_personas",
+  "in_loop": true,
+  "try_first": "text = file.read_text(encoding=\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/persona/service.py",
+  "line": 289,
+  "type": "InvalidPersonaNameError",
+  "body": "continue",
+  "func": "seed_presets",
+  "in_loop": true,
+  "try_first": "name = self._validate_name(preset_dir.name)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/persona/service.py",
+  "line": 295,
+  "type": "OSError",
+  "body": "continue",
+  "func": "seed_presets",
+  "in_loop": true,
+  "try_first": "text = source_file.read_text(encoding=\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/persona/service.py",
+  "line": 326,
+  "type": "OSError",
+  "body": "continue",
+  "func": "migrate_legacy_skills",
+  "in_loop": true,
+  "try_first": "text = source_file.read_text(encoding=\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/embedding_binding.py",
+  "line": 90,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "migrate_binding",
+  "in_loop": true,
+  "try_first": "config = get_embedding_config(selection, catalog=catalog)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/file_routing.py",
+  "line": 287,
+  "type": "UnicodeDecodeError",
+  "body": "continue",
+  "func": "decode_bytes",
+  "in_loop": true,
+  "try_first": "return data.decode(encoding)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/file_routing.py",
+  "line": 299,
+  "type": "UnicodeDecodeError",
+  "body": "continue",
+  "func": "read_text_file",
+  "in_loop": true,
+  "try_first": "with open(file_path, \"r\", encoding=encoding) as f:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/linked_kb.py",
+  "line": 87,
+  "type": "OSError",
+  "body": "continue",
+  "func": "allowed_link_roots",
+  "in_loop": true,
+  "try_first": "roots.append(Path(chunk).expanduser().resolve())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/graphrag/pandas_compat.py",
+  "line": 30,
+  "type": "arrow_key_error",
+  "body": "continue",
+  "func": "_unregister_stale_extension_types",
+  "in_loop": true,
+  "try_first": "pyarrow.unregister_extension_type(name)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/ima/envelope.py",
+  "line": 87,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_first_present",
+  "in_loop": true,
+  "try_first": "return int(payload[key])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/kiwix/client.py",
+  "line": 167,
+  "type": "KiwixError",
+  "body": "continue",
+  "func": "parse_catalog_xml",
+  "in_loop": true,
+  "try_first": "name = validate_zim_name(name)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/kiwix/client.py",
+  "line": 203,
+  "type": "KiwixError",
+  "body": "continue",
+  "func": "parse_search_xml",
+  "in_loop": true,
+  "try_first": "article_path = validate_article_path(parsed.path[len(prefix) :])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/kiwix/client.py",
+  "line": 326,
+  "type": "KiwixError",
+  "body": "pass",
+  "func": "search",
+  "in_loop": true,
+  "try_first": "text = await self._read_article(client, hit.article_path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/engine.py",
+  "line": 199,
+  "type": "OSError, ValueError",
+  "body": "pass",
+  "func": "workspace_for",
+  "in_loop": false,
+  "try_first": "meta = json.loads((root / \"meta.json\").read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/sidecar.py",
+  "line": 44,
+  "type": "TypeError, ValueError",
+  "body": "pass",
+  "func": "_position",
+  "in_loop": false,
+  "try_first": "return IRPosition(type=\"bbox\", anchor=page, range=[float(value) for value in bbox[:4]])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/storage.py",
+  "line": 87,
+  "type": "OSError",
+  "body": "continue",
+  "func": "has_output",
+  "in_loop": true,
+  "try_first": "if path.is_file() and path.stat().st_size > 2:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+  "line": 100,
+  "type": "RuntimeError",
+  "body": "pass",
+  "func": "cancel",
+  "in_loop": false,
+  "try_first": "loop.call_soon_threadsafe(task.cancel)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/llamaindex/storage.py",
+  "line": 175,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_iter_file_embedding_dicts",
+  "in_loop": true,
+  "try_first": "with open(path, \"rb\") as probe:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/rag/pipelines/weknora/client.py",
+  "line": 64,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_request_json",
+  "in_loop": false,
+  "try_first": "if int(declared) > MAX_RESPONSE_BYTES:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 26,
+  "type": "OSError",
+  "body": "continue",
+  "func": "_visible_files",
+  "in_loop": true,
+  "try_first": "entries = os.scandir(directory)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 37,
+  "type": "OSError",
+  "body": "continue",
+  "func": "_visible_files",
+  "in_loop": true,
+  "try_first": "if entry.is_dir(follow_symlinks=False):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 90,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "snapshot_public_artifact_files",
+  "in_loop": true,
+  "try_first": "relative = file_path.relative_to(root)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 152,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "collect_public_artifact_batch",
+  "in_loop": true,
+  "try_first": "relative = file_path.relative_to(root)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 160,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "collect_public_artifact_batch",
+  "in_loop": true,
+  "try_first": "rel_posix = content_service.relative_path(binding, file_path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/artifacts.py",
+  "line": 171,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "collect_public_artifact_batch",
+  "in_loop": true,
+  "try_first": "rel = file_path.resolve().relative_to(public_root)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/backends.py",
+  "line": 455,
+  "type": "ProcessLookupError, PermissionError",
+  "body": "pass",
+  "func": "_terminate_process_tree",
+  "in_loop": false,
+  "try_first": "os.killpg(process.pid, signal.SIGKILL)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/backends.py",
+  "line": 515,
+  "type": "UnicodeDecodeError",
+  "body": "pass",
+  "func": "_decode_process_output",
+  "in_loop": false,
+  "try_first": "return data.decode(\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/backends.py",
+  "line": 521,
+  "type": "LookupError, UnicodeDecodeError",
+  "body": "continue",
+  "func": "_decode_process_output",
+  "in_loop": true,
+  "try_first": "return data.decode(encoding)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/runner/server.py",
+  "line": 136,
+  "type": "ValueError, OSError",
+  "body": "pass",
+  "func": "_apply",
+  "in_loop": false,
+  "try_first": "resource.setrlimit(resource.RLIMIT_AS, (mem_bytes, mem_bytes))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/runner/server.py",
+  "line": 142,
+  "type": "ValueError, OSError",
+  "body": "pass",
+  "func": "_apply",
+  "in_loop": false,
+  "try_first": "resource.setrlimit(resource.RLIMIT_CPU, (cpu_seconds, cpu_seconds))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/runner/server.py",
+  "line": 148,
+  "type": "ValueError, OSError",
+  "body": "pass",
+  "func": "_apply",
+  "in_loop": false,
+  "try_first": "resource.setrlimit(resource.RLIMIT_NOFILE, (_RLIMIT_NOFILE, _RLIMIT_NOFILE))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/sandbox/runner/server.py",
+  "line": 367,
+  "type": "KeyboardInterrupt",
+  "body": "pass",
+  "func": "main",
+  "in_loop": false,
+  "try_first": "server.serve_forever()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/session/_turn_runtime_shared.py",
+  "line": 1063,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_build_question_bank_context",
+  "in_loop": true,
+  "try_first": "entry_id = int(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/session/source_inventory.py",
+  "line": 400,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_add_fresh_questions",
+  "in_loop": true,
+  "try_first": "eid = int(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/session/source_inventory.py",
+  "line": 640,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_collect_from_user_message",
+  "in_loop": true,
+  "try_first": "eid = int(raw)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/session/sqlite_store.py",
+  "line": 264,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_migrate_legacy_db",
+  "in_loop": false,
+  "try_first": "os.replace(legacy_path, self.db_path)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/session/usage_recovery.py",
+  "line": 94,
+  "type": "OSError, ValueError, TypeError, AttributeError",
+  "body": "continue",
+  "func": "recover_summary",
+  "in_loop": true,
+  "try_first": "data = json.loads(path.read_text())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/setup/data_volume.py",
+  "line": 167,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_try_write_or_raise",
+  "in_loop": false,
+  "try_first": "probe.unlink(missing_ok=True)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/skill/service.py",
+  "line": 302,
+  "type": "InvalidTagError",
+  "body": "continue",
+  "func": "_read_tag_vocab",
+  "in_loop": true,
+  "try_first": "out.append(self._normalize_tag(item))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/skill/service.py",
+  "line": 322,
+  "type": "InvalidTagError",
+  "body": "continue",
+  "func": "_tags_from_meta",
+  "in_loop": true,
+  "try_first": "out.append(self._normalize_tag(item))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/skill/service.py",
+  "line": 525,
+  "type": "SkillNotFoundError, InvalidSkillNameError",
+  "body": "continue",
+  "func": "load_for_context",
+  "in_loop": true,
+  "try_first": "detail = self.get_detail(name)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/skill/service.py",
+  "line": 900,
+  "type": "InvalidTagError",
+  "body": "continue",
+  "func": "_validate_tag_list",
+  "in_loop": true,
+  "try_first": "cleaned.append(self._normalize_tag(raw))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/claude_models.py",
+  "line": 219,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_capture_model_screen",
+  "in_loop": false,
+  "try_first": "os.close(fd)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/claude_models.py",
+  "line": 223,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_capture_model_screen",
+  "in_loop": false,
+  "try_first": "os.kill(pid, signal.SIGTERM)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/claude_models.py",
+  "line": 227,
+  "type": "OSError",
+  "body": "pass",
+  "func": "_capture_model_screen",
+  "in_loop": false,
+  "try_first": "os.waitpid(pid, 0)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/models.py",
+  "line": 209,
+  "type": "FileNotFoundError",
+  "body": "pass",
+  "func": "_codex_options",
+  "in_loop": false,
+  "try_first": "data = json.loads(cache.read_text(encoding=\"utf-8\"))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/opencode_server.py",
+  "line": 176,
+  "type": "ProcessLookupError",
+  "body": "pass",
+  "func": "_terminate_sync",
+  "in_loop": false,
+  "try_first": "handle.process.terminate()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/opencode_server.py",
+  "line": 193,
+  "type": "ProcessLookupError",
+  "body": "pass",
+  "func": "shutdown_servers",
+  "in_loop": true,
+  "try_first": "handle.process.kill()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/subagent/process.py",
+  "line": 133,
+  "type": "TimeoutError, ?",
+  "body": "pass",
+  "func": "_terminate",
+  "in_loop": false,
+  "try_first": "await asyncio.wait_for(process.wait(), timeout=_TERMINATE_GRACE_SECONDS)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/voice/adapters/openai_compat.py",
+  "line": 469,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "_parse_cues",
+  "in_loop": true,
+  "try_first": "start = float(row.get(\"start\", 0.0))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/voice/adapters/volcengine.py",
+  "line": 199,
+  "type": "KeyError, ValueError, TypeError",
+  "body": "continue",
+  "func": "transcribe_cues",
+  "in_loop": true,
+  "try_first": "start, end = float(row[\"start_time\"]) / 1000, float(row[\"end_time\"]) / 1000",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/voice/audio.py",
+  "line": 39,
+  "type": "?, EOFError",
+  "body": "pass",
+  "func": "normalize_wav",
+  "in_loop": false,
+  "try_first": "with wave.open(io.BytesIO(audio), \"rb\") as wav:",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/voice/audio.py",
+  "line": 98,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_parse_pcm_content_type",
+  "in_loop": true,
+  "try_first": "parsed = int(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/web_source/robots.py",
+  "line": 91,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "parse_robots_txt",
+  "in_loop": true,
+  "try_first": "delay = float(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/web_source/scheduler.py",
+  "line": 99,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "stop",
+  "in_loop": false,
+  "try_first": "await self._task",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/catalog.py",
+  "line": 234,
+  "type": "WorkspaceError",
+  "body": "continue",
+  "func": "list_workspaces",
+  "in_loop": true,
+  "try_first": "legacy.append(self.binding_by_id(str(row.get(\"id\") or \"\")))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/data_migration.py",
+  "line": 789,
+  "type": "UnicodeError",
+  "body": "continue",
+  "func": "_rebind_feature_urls",
+  "in_loop": true,
+  "try_first": "original = path.read_text(encoding=\"utf-8\")",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/data_migration.py",
+  "line": 891,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "operations",
+  "in_loop": true,
+  "try_first": "rows.append(json.loads(path.read_text()))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/dependencies.py",
+  "line": 105,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "_forward_closure",
+  "in_loop": true,
+  "try_first": "book = json.loads(path.read_text())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/dependencies.py",
+  "line": 214,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "_forward_closure",
+  "in_loop": true,
+  "try_first": "document = json.loads(path.read_text())",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/dependencies.py",
+  "line": 327,
+  "type": "ValueError, TypeError",
+  "body": "continue",
+  "func": "_with_historical_references",
+  "in_loop": true,
+  "try_first": "collect(json.loads(raw), prefs[sid])",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/dependencies.py",
+  "line": 345,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_with_historical_references",
+  "in_loop": true,
+  "try_first": "value = json.loads(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/knowledge.py",
+  "line": 129,
+  "type": "WorkspaceError, OSError",
+  "body": "continue",
+  "func": "knowledge_catalog",
+  "in_loop": true,
+  "try_first": "with workspace_context(row[\"workspace_id\"]):",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 201,
+  "type": "ValueError",
+  "body": "continue",
+  "func": "_assert_allowed_root",
+  "in_loop": true,
+  "try_first": "root.relative_to(allowed)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 413,
+  "type": "OSError",
+  "body": "continue",
+  "func": "_walk_workspace",
+  "in_loop": true,
+  "try_first": "entries = os.scandir(directory)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 423,
+  "type": "OSError, ValueError",
+  "body": "continue",
+  "func": "_walk_workspace",
+  "in_loop": true,
+  "try_first": "candidate.resolve().relative_to(binding.root)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 466,
+  "type": "OSError",
+  "body": "continue",
+  "func": "list_entries_page",
+  "in_loop": true,
+  "try_first": "stat = candidate.stat()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 587,
+  "type": "OSError, WorkspaceError",
+  "body": "continue",
+  "func": "search_page",
+  "in_loop": true,
+  "try_first": "relative = self.relative_path(binding, candidate)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/services/workspace/service.py",
+  "line": 599,
+  "type": "OSError, UnicodeDecodeError",
+  "body": "pass",
+  "func": "search_page",
+  "in_loop": true,
+  "try_first": "for line_no, line in enumerate(",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/tools/brainstorm.py",
+  "line": 65,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "brainstorm",
+  "in_loop": false,
+  "try_first": "llm_cfg = get_llm_config()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/tools/reason.py",
+  "line": 77,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "reason",
+  "in_loop": false,
+  "try_first": "llm_cfg = get_llm_config()",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/tools/web_fetch.py",
+  "line": 189,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_is_disallowed_host",
+  "in_loop": false,
+  "try_first": "return _is_disallowed_ip(ipaddress.ip_address(candidate))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/utils/error_utils.py",
+  "line": 77,
+  "type": "?, AttributeError",
+  "body": "pass",
+  "func": "format_exception_message",
+  "in_loop": false,
+  "try_first": "error_data = json.loads(potential_json)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/utils/json_parser.py",
+  "line": 21,
+  "type": "ImportError",
+  "body": "pass",
+  "func": "<module>",
+  "in_loop": false,
+  "try_first": "from json_repair import repair_json as _repair_json_import",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/video_learning/notes.py",
+  "line": 80,
+  "type": "NotebookCorruptedError",
+  "body": "continue",
+  "func": "_matching_records",
+  "in_loop": true,
+  "try_first": "records = manager.get_records(notebook_id)",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/video_learning/service.py",
+  "line": 222,
+  "type": "TypeError, ValueError",
+  "body": "continue",
+  "func": "normalize_cues",
+  "in_loop": true,
+  "try_first": "start = max(0.0, float(merged.get(\"start\") or merged.get(\"from\") or 0))",
+  "risk": "LOW"
+ },
+ {
+  "path": "deeptutor/visualizers/store.py",
+  "line": 121,
+  "type": "Exception",
+  "body": "continue",
+  "func": "user_packages",
+  "in_loop": true,
+  "try_first": "if manifest_file.stat().st_size > _MAX_MANIFEST_BYTES:",
+  "risk": "LOW"
+ },
+ {
+  "path": "scripts/export_discord_history.py",
+  "line": 265,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "_request_json",
+  "in_loop": true,
+  "try_first": "self._sleep(max(float(reset_after), 0.0))",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/agents/test_failure_notices_name_the_cause.py",
+  "line": 39,
+  "type": "Exception",
+  "body": "continue",
+  "func": "_notice_definitions",
+  "in_loop": true,
+  "try_first": "data = yaml.safe_load(path.read_text(encoding=\"utf-8\")) or {}",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/conftest.py",
+  "line": 44,
+  "type": "Exception",
+  "body": "pass",
+  "func": "<module>",
+  "in_loop": false,
+  "try_first": "from deeptutor.multi_user.paths import ADMIN_WORKSPACE_ROOT as _REAL_ADMIN_ROOT",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/multi_user/test_learner_profile.py",
+  "line": 43,
+  "type": "ValueError",
+  "body": "pass",
+  "func": "test_profile_rejects_invalid_age_oversized_text_and_control_characters",
+  "in_loop": true,
+  "try_first": "normalize_profile(value)",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/services/partners/test_channel_secrets.py",
+  "line": 182,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "test_reload_lock_serialises_concurrent_calls",
+  "in_loop": false,
+  "try_first": "await sentinel",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/services/partners/test_channel_secrets.py",
+  "line": 222,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "test_reload_failure_records_last_reload_error",
+  "in_loop": false,
+  "try_first": "await sentinel",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/services/partners/test_wecom_channel.py",
+  "line": 83,
+  "type": "CancelledError",
+  "body": "pass",
+  "func": "exercise_startup",
+  "in_loop": false,
+  "try_first": "await startup",
+  "risk": "LOW"
+ },
+ {
+  "path": "tests/services/rag/test_lightrag_server_pipeline.py",
+  "line": 84,
+  "type": "LightRagServerNotConfiguredError",
+  "body": "pass",
+  "func": "test_config_from_entry_requires_server_url",
+  "in_loop": false,
+  "try_first": "config_from_entry({\"api_key\": \"k\"})",
+  "risk": "LOW"
+ }
+]
