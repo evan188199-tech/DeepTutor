@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import base64 as _b64
+from contextvars import Token
 import logging
 from typing import Any
 
@@ -223,6 +224,37 @@ def _guess_image_mime(filename: str | None) -> str:
     }.get(ext, "image/png")
 
 
+#: Attribute set on the WebSocket once its teardown has run, so ``_teardown``
+#: can be called from an error path and again from ``finally`` harmlessly.
+_TEARDOWN_DONE = "_quiz_judge_teardown_done"
+
+
+async def _teardown(websocket: WebSocket, user_token: Token[Any] | None) -> None:
+    """Best-effort cleanup shared by every exit path of the judge handler.
+
+    Closes the socket and resets the auth ContextVar, logging failures at
+    debug instead of raising — a dying connection must not mask the exit
+    path that is trying to clean up after it. Idempotent per connection:
+    the first call marks the socket and does the work; later calls are
+    no-ops.
+    """
+    if getattr(websocket, _TEARDOWN_DONE, False):
+        return
+    setattr(websocket, _TEARDOWN_DONE, True)
+    try:
+        await websocket.close()
+    except Exception:
+        logger.debug("quiz_judge: closing websocket during teardown failed", exc_info=True)
+    if user_token is None:
+        return
+    from deeptutor.multi_user.context import reset_current_user
+
+    try:
+        reset_current_user(user_token)
+    except Exception:
+        logger.debug("quiz_judge: resetting user context during teardown failed", exc_info=True)
+
+
 @router.websocket("/questions/judge")
 async def websocket_quiz_judge(websocket: WebSocket):
     """Stream an AI judgment for a single quiz answer.
@@ -258,7 +290,6 @@ async def websocket_quiz_judge(websocket: WebSocket):
         {"type": "error", "content": "..."}
     """
     from deeptutor.api.routers.auth import ws_auth_failed, ws_require_auth
-    from deeptutor.multi_user.context import reset_current_user
 
     user_token = await ws_require_auth(websocket)
     if user_token is ws_auth_failed:
@@ -279,29 +310,13 @@ async def websocket_quiz_judge(websocket: WebSocket):
         return
     except Exception as exc:
         await safe_send({"type": "error", "content": f"Invalid request: {exc}"})
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        if user_token is not None:
-            try:
-                reset_current_user(user_token)
-            except Exception:
-                pass
+        await _teardown(websocket, user_token)
         return
 
     question_text = (data.get("question") or "").strip()
     if not question_text:
         await safe_send({"type": "error", "content": "Question is required"})
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        if user_token is not None:
-            try:
-                reset_current_user(user_token)
-            except Exception:
-                pass
+        await _teardown(websocket, user_token)
         return
 
     requested_language = (data.get("language") or "").strip().lower()
@@ -385,15 +400,7 @@ async def websocket_quiz_judge(websocket: WebSocket):
                 "content": ("No answer to judge — submit a typed answer or attach an image."),
             }
         )
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        if user_token is not None:
-            try:
-                reset_current_user(user_token)
-            except Exception:
-                pass
+        await _teardown(websocket, user_token)
         return
 
     await safe_send({"type": "started"})
@@ -449,12 +456,4 @@ async def websocket_quiz_judge(websocket: WebSocket):
         logger.exception("AI judge stream failed")
         await safe_send({"type": "error", "content": format_exception_message(exc)})
     finally:
-        try:
-            await websocket.close()
-        except Exception:
-            pass
-        if user_token is not None:
-            try:
-                reset_current_user(user_token)
-            except Exception:
-                pass
+        await _teardown(websocket, user_token)
