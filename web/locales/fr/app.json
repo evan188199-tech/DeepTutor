@@ -2206,6 +2206,7 @@
   "Boundary": "Frontière",
   "Where the chunker prefers to cut.": "Endroit où le découpeur préfère couper.",
   "Paragraph": "Paragraphe",
+  "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.": "Le message envoyé n'a pas été retiré du brouillon — il pourrait réapparaître à la prochaine ouverture de cette conversation.",
   "Sentence": "Phrase",
   "Min chunk chars": "Caractères min. par fragment",
   "Max chunk chars": "Caractères max. par fragment",

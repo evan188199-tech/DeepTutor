@@ -652,10 +652,20 @@ export default memo(function ChatComposer({
     setHasContent((prev) => (prev === next ? prev : next));
   }, []);
 
+  // A failed clear leaves the sent text in storage, so the next mount
+  // restores it into the composer as if it were an unsent draft. Surfaced
+  // as a quiet status line instead of staying invisible.
+  const [draftClearFailed, setDraftClearFailed] = useState(false);
+
   const doSend = useCallback(
     (content: string) => {
       onSend(content);
-      void saveWorkspaceDraft({ text: "", attachments: [] }).catch(() => {});
+      void saveWorkspaceDraft({ text: "", attachments: [] })
+        .then(() => setDraftClearFailed(false))
+        .catch((error) => {
+          console.warn("Failed to clear the workspace draft after send:", error);
+          setDraftClearFailed(true);
+        });
       setHasContent(false);
       inputHandleRef.current?.clear();
       // Sending can move focus to the button or rerender the empty-state
@@ -1083,6 +1093,12 @@ export default memo(function ChatComposer({
           {recorder.error && (
             <div role="alert" className="px-4 pb-2 text-[11px] text-red-600">
               {recorder.error}
+            </div>
+          )}
+
+          {draftClearFailed && (
+            <div role="status" className="px-4 pb-2 text-[11px] text-red-600">
+              {t("Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.")}
             </div>
           )}
 

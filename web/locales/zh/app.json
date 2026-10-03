@@ -1701,6 +1701,7 @@
   "Boundary": "切分边界",
   "Where the chunker prefers to cut.": "分块器倾向于在哪里切。",
   "Paragraph": "段落",
+  "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.": "已发送的消息未能从输入框草稿中清除——下次打开此对话时可能会重新出现。",
   "Sentence": "句子",
   "Min chunk chars": "Chunk 最小字符数",
   "Max chunk chars": "Chunk 最大字符数",

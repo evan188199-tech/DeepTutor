@@ -1667,6 +1667,7 @@
   "Boundary": "Межа",
   "Where the chunker prefers to cut.": "Де розбивач надає перевагу розрізу.",
   "Paragraph": "Абзац",
+  "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.": "Надіслане повідомлення не вилучено з чернетки — воно може з’явитися знову під час наступного відкриття цього чату.",
   "Sentence": "Речення",
   "Min chunk chars": "Мін. символів у фрагменті",
   "Max chunk chars": "Макс. символів у фрагменті",

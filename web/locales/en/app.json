@@ -1702,6 +1702,7 @@
   "Boundary": "Boundary",
   "Where the chunker prefers to cut.": "Where the chunker prefers to cut.",
   "Paragraph": "Paragraph",
+  "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.": "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.",
   "Sentence": "Sentence",
   "Min chunk chars": "Min chunk chars",
   "Max chunk chars": "Max chunk chars",
