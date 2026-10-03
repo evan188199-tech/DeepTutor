@@ -45,9 +45,9 @@ cd web && npx vitest run --coverage \
 | 文件 | 说明 |
 |---|---|
 | `top15-gaps.md` | **主产物**：按风险排序的 Top 15 测试空白清单（模块/原因/建议测试） |
-| `backend/summary.md` / `backend/pytest.log` | 后端摘要 + 原始输出 |
+| `backend/summary.md` | 后端摘要（原始 pytest 终端输出未入库，复跑上方命令即可重现） |
 | `backend/coverage.json.gz` / `backend/coverage.xml.gz` | 后端逐行明细（gzip 压缩，`gunzip` 后为 pytest-cov 原生格式） |
-| `frontend/summary.md` / `frontend/vitest.log` | 前端摘要 + 原始输出 |
+| `frontend/summary.md` | 前端摘要（原始 vitest 终端输出未入库，复跑上方命令即可重现） |
 | `frontend/vitest/coverage-summary.json` | vitest json-summary（总计 + 每文件） |
 | `frontend/vitest/coverage-final.json.gz` | istanbul 格式逐行明细 |
 | `SHA256SUMS` | 以上全部文件的 SHA256 校验（自校验文件除外） |
