@@ -1,0 +1,6 @@
+Baseline: origin/main @ ef2d9e5c3，仅既有 test_pocketbase_isolation.py
+Name                                             Stmts   Miss   Cover
+---------------------------------------------------------------------
+deeptutor/services/session/pocketbase_store.py     820    347  57.68%
+---------------------------------------------------------------------
+TOTAL                                              820    347  57.68%
