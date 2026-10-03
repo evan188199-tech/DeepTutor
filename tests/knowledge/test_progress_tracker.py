@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 import json
+import logging
 
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 from deeptutor.knowledge.progress_tracker import ProgressStage, ProgressTracker
@@ -119,3 +121,66 @@ def test_update_keeps_an_explicit_message_verbatim(tmp_path) -> None:
 
     assert seen[-1]["message"] == "already rendered"
     assert "message_key" not in seen[-1]
+
+
+def _force_server_mode(monkeypatch) -> None:
+    from deeptutor.runtime import mode
+
+    monkeypatch.setattr(mode, "_current_mode", mode.RunMode.SERVER)
+
+
+def test_notify_logs_warning_once_when_broadcast_fails(tmp_path, monkeypatch, caplog) -> None:
+    """A failing progress broadcast must surface as one warning, not vanish.
+
+    KB rebuild/index progress is invisible otherwise: the scheduled broadcast
+    task dies with an unretrieved exception while callers keep believing the
+    frontend was updated (DT-22).
+    """
+    from deeptutor.knowledge import progress_events
+
+    async def broken_broadcast(kb_name: str, progress: dict) -> None:
+        raise RuntimeError("websocket hub unavailable")
+
+    monkeypatch.setattr(progress_events, "_broadcast", broken_broadcast)
+    monkeypatch.setattr(ProgressTracker, "_broadcast_failure_logged", False, raising=False)
+    _force_server_mode(monkeypatch)
+
+    seen: list[dict] = []
+    tracker = ProgressTracker("kb", tmp_path)
+    tracker.set_callback(seen.append)
+
+    async def scenario() -> None:
+        tracker._notify({"stage": "processing_documents"})
+        tracker._notify({"stage": "processing_documents"})
+        await asyncio.sleep(0.05)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.progress_tracker"):
+        asyncio.run(scenario())
+
+    warnings = [r for r in caplog.records if r.levelno >= logging.WARNING]
+    assert len(warnings) == 1
+    assert "Progress broadcast" in warnings[0].getMessage()
+    assert "websocket hub unavailable" in warnings[0].getMessage()
+    assert len(seen) == 2
+
+
+def test_notify_without_running_loop_stays_silent(tmp_path, monkeypatch, caplog) -> None:
+    """No running loop is an expected CLI/thread condition, not a failure."""
+    from deeptutor.knowledge import progress_events
+
+    async def broken_broadcast(kb_name: str, progress: dict) -> None:
+        raise AssertionError("must not be scheduled without a running loop")
+
+    monkeypatch.setattr(progress_events, "_broadcast", broken_broadcast)
+    monkeypatch.setattr(ProgressTracker, "_broadcast_failure_logged", False, raising=False)
+    _force_server_mode(monkeypatch)
+
+    seen: list[dict] = []
+    tracker = ProgressTracker("kb", tmp_path)
+    tracker.set_callback(seen.append)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.progress_tracker"):
+        tracker._notify({"stage": "processing_documents"})
+
+    assert not [r for r in caplog.records if r.levelno >= logging.WARNING]
+    assert len(seen) == 1

@@ -89,6 +89,8 @@ class ProgressTracker:
         if callback in self._callbacks:
             self._callbacks.remove(callback)
 
+    _broadcast_failure_logged: bool = False
+
     def _notify(self, progress: dict):
         """Notify progress update (call all callbacks)"""
         from deeptutor.runtime.mode import is_server
@@ -96,20 +98,45 @@ class ProgressTracker:
         if is_server():
             try:
                 from deeptutor.knowledge.progress_events import broadcast_progress
-
+            except ImportError as exc:
+                self._warn_broadcast_failure(exc)
+            else:
                 try:
                     loop = asyncio.get_running_loop()
-                    loop.create_task(broadcast_progress(self.kb_name, progress))
                 except RuntimeError:
+                    # No running event loop (CLI/worker thread): expected, stay silent.
                     pass
-            except (ImportError, Exception):
-                pass
+                else:
+                    try:
+                        task = loop.create_task(broadcast_progress(self.kb_name, progress))
+                    except Exception as exc:
+                        self._warn_broadcast_failure(exc)
+                    else:
+                        task.add_done_callback(self._log_broadcast_task_failure)
 
         for callback in self._callbacks:
             try:
                 callback(progress)
             except Exception as e:
                 _logger_instance().debug("Progress callback error: %s", e)
+
+    def _warn_broadcast_failure(self, exc: BaseException) -> None:
+        """Log a broadcast failure once per process; repeats stay silent."""
+        if ProgressTracker._broadcast_failure_logged:
+            return
+        ProgressTracker._broadcast_failure_logged = True
+        _logger_instance().warning(
+            "Progress broadcast for '%s' failed; further broadcast failures will not be logged: %s",
+            self.kb_name,
+            exc,
+        )
+
+    def _log_broadcast_task_failure(self, task: asyncio.Future) -> None:
+        if task.cancelled():
+            return
+        exc = task.exception()
+        if exc is not None:
+            self._warn_broadcast_failure(exc)
 
     def _save_progress(self, progress: dict):
         """Save progress to kb_config.json and local .progress.json file"""
