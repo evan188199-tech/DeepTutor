@@ -1811,16 +1811,23 @@ export const UserMessage = memo(function UserMessage({
             />
           </div>
         )}
-        {!editing && (onCopy || canEdit || siblingInfo) && msg.content && (
+        {/* Branch navigation is the only path back to pre-edit history
+            (#1410): it must stay visible without hovering the bubble —
+            hover does not exist on touch devices, and a fork the learner
+            can't see reads as "chat history lost". Copy/Edit stay
+            hover-gated; they are conveniences, not history. */}
+        {!editing && siblingInfo && siblingInfo.total > 1 && (
+          <div className="flex h-7 items-center justify-end pr-1">
+            <BranchNavigator
+              info={siblingInfo}
+              onSwitch={(childId) =>
+                onSwitchBranch?.(siblingInfo.parentId, childId)
+              }
+            />
+          </div>
+        )}
+        {!editing && (onCopy || canEdit) && msg.content && (
           <div className="flex h-7 items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-            {siblingInfo && siblingInfo.total > 1 && (
-              <BranchNavigator
-                info={siblingInfo}
-                onSwitch={(childId) =>
-                  onSwitchBranch?.(siblingInfo.parentId, childId)
-                }
-              />
-            )}
             {onCopy && (
               <CopyActionButton content={msg.content} onCopy={onCopy} />
             )}
