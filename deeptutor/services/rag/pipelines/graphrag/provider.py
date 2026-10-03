@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from deeptutor.services.llm.reasoning_params import build_openai_compatible_reasoning_kwargs
@@ -12,6 +13,8 @@ from deeptutor.services.provider_registry import (
 )
 
 from .errors import GraphRagUnsupportedProviderError
+
+logger = logging.getLogger(__name__)
 
 COMPLETION_TYPE = "deeptutor_litellm"
 
@@ -114,11 +117,16 @@ def resolve_persisted_completion_provider(model_config: Any) -> str:
                 llm_selection={"profile_id": profile_id, "model_id": model_id},
             )
             return resolve_completion_provider(resolved)
-    except GraphRagUnsupportedProviderError:
-        raise
-    except Exception:
-        # Old settings remain usable even when the catalog is unavailable.
-        pass
+    except (ImportError, OSError, ValueError) as exc:
+        # Old settings remain usable when the catalog import or directory is
+        # unavailable, or the stored selection no longer resolves (ValueError).
+        # Anything else is a real defect and must surface instead of silently
+        # swapping GraphRAG onto a different transport.
+        logger.info(
+            "GraphRAG persisted provider recovery skipped; model catalog or stored "
+            "selection unavailable: %s",
+            exc,
+        )
 
     if "api.deepseek.com" in api_base.lower():
         return "deepseek"

@@ -5,8 +5,10 @@ from __future__ import annotations
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import json
+import logging
 from pathlib import Path
 import threading
+from types import SimpleNamespace
 
 import pytest
 
@@ -530,6 +532,131 @@ def test_provider_resolution_uses_backend_contracts() -> None:
     assert resolve_completion_provider(_Cfg("model", "u", "k", binding="custom")) == "openai"
     with pytest.raises(GraphRagUnsupportedProviderError):
         resolve_completion_provider(_Cfg("gpt", "u", "k", binding="openai_codex"))
+
+
+class _CatalogServiceStub:
+    def __init__(self, catalog: dict) -> None:
+        self._catalog = catalog
+
+    def load(self) -> dict:
+        return self._catalog
+
+
+def _deepseek_catalog() -> dict:
+    return {
+        "services": {
+            "llm": {
+                "profiles": [
+                    {
+                        "id": "deepseek-profile",
+                        "base_url": "https://api.deepseek.com",
+                        "models": [{"id": "deepseek-chat", "model": "deepseek-v4-flash"}],
+                    }
+                ]
+            }
+        }
+    }
+
+
+def _persisted_cfg() -> SimpleNamespace:
+    return SimpleNamespace(
+        model_provider="openai",
+        model="deepseek-v4-flash",
+        api_base="https://api.deepseek.com",
+    )
+
+
+_PROVIDER_LOGGER = "deeptutor.services.rag.pipelines.graphrag.provider"
+
+
+def _info_records(caplog: pytest.LogCaptureFixture) -> list[str]:
+    return [
+        record.getMessage()
+        for record in caplog.records
+        if record.name == _PROVIDER_LOGGER and record.levelno == logging.INFO
+    ]
+
+
+def test_persisted_provider_resolution_uses_unique_catalog_match(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.rag.pipelines.graphrag.provider import (
+        resolve_persisted_completion_provider,
+    )
+
+    monkeypatch.setattr(
+        "deeptutor.services.config.get_model_catalog_service",
+        lambda: _CatalogServiceStub(_deepseek_catalog()),
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.config.resolve_llm_runtime_config",
+        lambda **_kwargs: _Cfg(
+            "deepseek-v4-flash", "https://api.deepseek.com", "sk-test", binding="deepseek"
+        ),
+    )
+
+    assert resolve_persisted_completion_provider(_persisted_cfg()) == "deepseek"
+
+
+def test_persisted_provider_catalog_unavailable_falls_back_with_info_log(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from deeptutor.services.rag.pipelines.graphrag.provider import (
+        resolve_persisted_completion_provider,
+    )
+
+    def _missing_catalog() -> None:
+        raise FileNotFoundError("model catalog directory is missing")
+
+    monkeypatch.setattr("deeptutor.services.config.get_model_catalog_service", _missing_catalog)
+
+    with caplog.at_level(logging.INFO, logger=_PROVIDER_LOGGER):
+        resolved = resolve_persisted_completion_provider(_persisted_cfg())
+
+    assert resolved == "deepseek"
+    messages = _info_records(caplog)
+    assert any("model catalog" in message for message in messages)
+
+
+def test_persisted_provider_stale_selection_falls_back_with_info_log(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from deeptutor.services.rag.pipelines.graphrag.provider import (
+        resolve_persisted_completion_provider,
+    )
+
+    monkeypatch.setattr(
+        "deeptutor.services.config.get_model_catalog_service",
+        lambda: _CatalogServiceStub(_deepseek_catalog()),
+    )
+
+    def _stale_selection(**_kwargs: object) -> object:
+        raise ValueError("Invalid LLM selection: selected profile/model was not found.")
+
+    monkeypatch.setattr("deeptutor.services.config.resolve_llm_runtime_config", _stale_selection)
+
+    with caplog.at_level(logging.INFO, logger=_PROVIDER_LOGGER):
+        resolved = resolve_persisted_completion_provider(_persisted_cfg())
+
+    assert resolved == "deepseek"
+    messages = _info_records(caplog)
+    assert any("model catalog" in message for message in messages)
+
+
+def test_persisted_provider_unexpected_error_propagates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.rag.pipelines.graphrag.provider import (
+        resolve_persisted_completion_provider,
+    )
+
+    def _broken_catalog() -> None:
+        raise RuntimeError("catalog service defect")
+
+    monkeypatch.setattr("deeptutor.services.config.get_model_catalog_service", _broken_catalog)
+
+    with pytest.raises(RuntimeError, match="catalog service defect"):
+        resolve_persisted_completion_provider(_persisted_cfg())
 
 
 def test_cached_fallback_is_safe_under_concurrent_sync_calls(
