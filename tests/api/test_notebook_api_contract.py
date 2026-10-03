@@ -17,9 +17,7 @@ pytest.importorskip("fastapi")
 
 FastAPI = pytest.importorskip("fastapi").FastAPI
 TestClient = pytest.importorskip("fastapi.testclient").TestClient
-notebook_router = pytest.importorskip(
-    "deeptutor.api.routers.question_notebook"
-).router
+notebook_router = pytest.importorskip("deeptutor.api.routers.question_notebook").router
 
 from deeptutor.core.assessment import ASSESSMENT_SOURCES
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
@@ -83,9 +81,7 @@ def test_assessment_source_catalog_is_pinned() -> None:
 
 
 @pytest.mark.parametrize("source", sorted(PINNED_SOURCES))
-def test_upsert_accepts_every_valid_source(
-    client, session_id: str, source: str
-) -> None:
+def test_upsert_accepts_every_valid_source(client, session_id: str, source: str) -> None:
     response = client.post(
         f"{PREFIX}/entries/upsert",
         json=_conversation_payload(session_id, question_id=f"q-{source}", source=source),
@@ -94,9 +90,7 @@ def test_upsert_accepts_every_valid_source(
     assert response.json()["source"] == source
 
 
-@pytest.mark.parametrize(
-    "source", ["wechat_chat", "partner", "Partner_Chat", "deepquest", ""]
-)
+@pytest.mark.parametrize("source", ["wechat_chat", "partner", "Partner_Chat", "deepquest", ""])
 def test_upsert_rejects_unlisted_source(
     client, store: SQLiteSessionStore, session_id: str, source: str
 ) -> None:
@@ -117,9 +111,7 @@ def test_entries_filter_rejects_unlisted_source(client) -> None:
     assert response.status_code == 422
 
 
-def test_partner_chat_entry_roundtrip_and_filter(
-    client, session_id: str
-) -> None:
+def test_partner_chat_entry_roundtrip_and_filter(client, session_id: str) -> None:
     created = client.post(
         f"{PREFIX}/entries/upsert",
         json=_conversation_payload(
@@ -148,9 +140,7 @@ def test_partner_chat_entry_roundtrip_and_filter(
     assert filtered.json()["items"][0]["id"] == entry["id"]
 
 
-def test_upsert_dedupes_identity_and_updates_content(
-    client, session_id: str
-) -> None:
+def test_upsert_dedupes_identity_and_updates_content(client, session_id: str) -> None:
     first = client.post(
         f"{PREFIX}/entries/upsert",
         json=_conversation_payload(
@@ -184,15 +174,11 @@ def test_upsert_dedupes_identity_and_updates_content(
     assert listing["total"] == 1
 
 
-def test_upsert_identity_is_turn_scoped(
-    client, session_id: str
-) -> None:
+def test_upsert_identity_is_turn_scoped(client, session_id: str) -> None:
     for turn_id in ("turn-1", "turn-2"):
         response = client.post(
             f"{PREFIX}/entries/upsert",
-            json=_conversation_payload(
-                session_id, question_id="q-turns", turn_id=turn_id
-            ),
+            json=_conversation_payload(session_id, question_id="q-turns", turn_id=turn_id),
         )
         assert response.status_code == 200
     listing = client.get(f"{PREFIX}/entries").json()
@@ -200,22 +186,16 @@ def test_upsert_identity_is_turn_scoped(
     assert {item["turn_id"] for item in listing["items"]} == {"turn-1", "turn-2"}
 
 
-def test_upsert_rejects_conversation_origin_ref_mismatch(
-    client, session_id: str
-) -> None:
+def test_upsert_rejects_conversation_origin_ref_mismatch(client, session_id: str) -> None:
     response = client.post(
         f"{PREFIX}/entries/upsert",
-        json=_conversation_payload(
-            session_id, origin_ref="not-this-session"
-        ),
+        json=_conversation_payload(session_id, origin_ref="not-this-session"),
     )
     assert response.status_code == 422
     assert client.get(f"{PREFIX}/entries").json()["total"] == 0
 
 
-def test_upsert_requires_origin_ref_for_non_conversation(
-    client, session_id: str
-) -> None:
+def test_upsert_requires_origin_ref_for_non_conversation(client, session_id: str) -> None:
     response = client.post(
         f"{PREFIX}/entries/upsert",
         json=_conversation_payload(session_id, origin_type="external_import", source="import"),
