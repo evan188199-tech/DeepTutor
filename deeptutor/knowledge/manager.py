@@ -764,7 +764,19 @@ class KnowledgeBaseManager:
         if "knowledge_bases" not in self.config:
             self.config["knowledge_bases"] = {}
 
-        self.config["knowledge_bases"][name] = {"path": name, "description": description}
+        # Re-registering an existing name is idempotent, like
+        # ``register_connected_entry``: refresh the caller-provided fields
+        # but keep the operational metadata (``status`` / ``created_at`` /
+        # ``rag_provider`` / …) a bare replacement would wipe.
+        knowledge_bases = self.config["knowledge_bases"]
+        existing_entry = knowledge_bases.get(name)
+        if isinstance(existing_entry, dict):
+            merged_entry = dict(existing_entry)
+            merged_entry["path"] = name
+            merged_entry["description"] = description
+            knowledge_bases[name] = merged_entry
+        else:
+            knowledge_bases[name] = {"path": name, "description": description}
 
         # Only set default if explicitly requested
         if set_default:
@@ -1773,10 +1785,20 @@ class KnowledgeBaseManager:
         if name in self.config.get("knowledge_bases", {}):
             del self.config["knowledge_bases"][name]
 
-        # Update default if this was the default
-        if self.config.get("default") == name:
-            remaining = [n for n in self.config.get("knowledge_bases", {}).keys() if n != name]
-            self.config["default"] = sorted(remaining)[0] if remaining else None
+        # Update the centralized default if it pointed at the deleted KB.
+        # The canonical default lives in KnowledgeBaseConfigService
+        # (``data/knowledge_bases/kb_config.json``); the legacy local
+        # ``config["default"]`` key is migrated away at load time and never
+        # written, so only the service keeps ``get_default_kb()`` from
+        # serving a deleted name. Reselect the first remaining KB, else None.
+        try:
+            from deeptutor.services.config import get_kb_config_service
+
+            if get_kb_config_service().get_default_kb() == name:
+                remaining = sorted(self.config.get("knowledge_bases", {}))
+                get_kb_config_service().set_default_kb(remaining[0] if remaining else None)
+        except Exception as e:
+            logger.warning(f"Failed to update default after deleting KB '{name}': {e}")
 
         self._save_config()
         return True
