@@ -413,6 +413,89 @@ def test_heading_splitter_falls_back_when_only_the_page_title_exists() -> None:
     assert outline == ()
 
 
+def _fenced_chat_export(sections: int = 24) -> str:
+    """A local chat/notes export shaped like the one reported in #1641.
+
+    First line an H1, ``##`` sections with ``###`` subsections, fenced code
+    that nests triple backticks inside a longer fence, an info-string fence,
+    and an inline triple-backtick line — every fence shape a hand-edited
+    export plausibly contains.
+    """
+    prose = (
+        "Discussion about the implementation with enough prose to give every "
+        "section body weight, as a real chat export would carry."
+    )
+    fences = [
+        [
+            "````markdown",
+            "# Example",
+            "",
+            "```bash",
+            "# Install dependencies",
+            "make install",
+            "```",
+            "````",
+        ],
+        ["```py", "x = 1", "```"],
+        ["```", "plain block", "```"],
+    ]
+    lines = ["# Project export", "", "Intro paragraph before any section.", ""]
+    for index in range(1, sections + 1):
+        lines.append(f"## Section {index}")
+        lines.append("")
+        lines.append(prose)
+        lines.append("")
+        if index % 5 == 0:
+            lines.append(f"### Detail {index}")
+            lines.append("")
+            lines.append(prose)
+            lines.append("")
+        lines.extend(fences[index % len(fences)])
+        lines.append("")
+        lines.append(f"user{index}: a single-line chat message")
+        lines.append(f"assistant{index}: a reply that keeps the export conversational")
+        lines.append("")
+    lines.append("Wrap up with ```inline``` backticks in prose.")
+    lines.append("")
+    lines.append("## Final section")
+    lines.append("")
+    lines.append(prose)
+    return "\n".join(lines) + "\n"
+
+
+def test_local_markdown_export_stays_fully_readable(stores, tmp_path: Path) -> None:
+    reading, _catalog = stores
+    source = tmp_path / "chat-export.md"
+    markdown = _fenced_chat_export()
+    source.write_text(markdown, encoding="utf-8", newline="\n")
+
+    manifest = reading.ingest(source)
+    outline = reading.outline(manifest.material_id)
+    titles = [row.title for row in outline]
+
+    # #1641 reported the whole document collapsing onto a single page. A
+    # multi-section export must instead ingest as many addressable units, each
+    # served on request, and must not lose text along the way.
+    assert manifest.unit_count > 1
+    assert len(outline) == manifest.unit_count
+    units = [
+        reading.unit_text(manifest.material_id, locator)
+        for locator in range(1, manifest.unit_count + 1)
+    ]
+    assert "".join(ch for ch in "".join(units) if not ch.isspace()) == "".join(
+        ch for ch in markdown if not ch.isspace()
+    )
+
+    # The outline reflects the document's own headings, on every page...
+    assert titles[0] == "Project export"
+    for expected in ("Section 1", "Section 12", "Detail 15", "Final section"):
+        assert expected in titles
+    assert any(row.level == 3 for row in outline)
+    # ...and never headings that live inside fenced code.
+    assert "Install dependencies" not in titles
+    assert "Example" not in titles
+
+
 @pytest.mark.asyncio
 async def test_failed_url_import_is_retryable(stores, caplog: pytest.LogCaptureFixture) -> None:
     _reading, catalog = stores
