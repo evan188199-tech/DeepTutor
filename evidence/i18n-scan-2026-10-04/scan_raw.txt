@@ -1,0 +1,432 @@
+== SECTION 1: en/zh key-set diff ==
+[app] en=5272 zh=5272 en_only=0 zh_only=0
+[common] en=37 zh=37 en_only=0 zh_only=0
+[common] keys duplicated in app.json: 37/37 (common ns never registered in i18n/init.ts)
+-- en/zh value-level anomalies --
+  UNTRANSLATED_ECHO LightRAG server URL placeholder
+  EMPTY_ZH s
+  PLACEHOLDER_MISMATCH “{{title}}” and its reading conversations will be deleted. The {{count}} materials in it stay in your library._one
+
+== SECTION 2: t() keys referenced but missing from en ==
+  MISSING components/courses/CourseSyllabus.tsx:164 :: 'One unit per line. Add keywords after a | so DeepTutor can tell which questions belong to it:\\n\\nProcesses and threads | context switch, scheduling\\nVirtual memory | address translation, page replacement'
+  MISSING components/partners/SoulEditor.tsx:75 :: '# Soul\\nDescribe who this partner is, how it speaks, what it values…'
+-- static t() calls checked: 5609; unresolved: 2; dynamic families: 11
+  DYN_FAMILY   3 sites :: prefix='mcp.category.' en_keys_matching=10
+  DYN_FAMILY   2 sites :: prefix='readiness.section.' en_keys_matching=7
+  DYN_FAMILY   2 sites :: prefix='mcp.tier.' en_keys_matching=2
+  DYN_FAMILY   1 sites :: prefix='settings.presets.cost.' en_keys_matching=3
+  DYN_FAMILY   1 sites :: prefix='settings.presets.prerequisite.' en_keys_matching=4
+  DYN_FAMILY   1 sites :: prefix='settings.presets.credential.' en_keys_matching=3
+  DYN_FAMILY   1 sites :: prefix='settings.presets.feature.' en_keys_matching=7
+  DYN_FAMILY   1 sites :: prefix='readiness.detail.' en_keys_matching=41
+  DYN_FAMILY   1 sites :: prefix='readiness.state.' en_keys_matching=5
+  DYN_FAMILY   1 sites :: prefix='contextBudget.segment.' en_keys_matching=15
+  DYN_FAMILY   1 sites :: prefix='updateJob.' en_keys_matching=6
+
+== SECTION 3a: hardcoded CJK strings in code ==
+  A_LANG_NAME app/(workspace)/learning/books/components/BookCreator.tsx:29 :: { code: 'zh', label: '简体中文' },
+  A_LANG_NAME app/(workspace)/learning/books/components/BookCreator.tsx:30 :: { code: 'zh-tw', label: '繁體中文' },
+  A_LANG_NAME app/(workspace)/learning/books/components/BookCreator.tsx:31 :: { code: 'ja', label: '日本語' },
+  A_LANG_NAME app/(workspace)/partners/new/page.tsx:366 :: <option value="zh">中文</option>
+  C_HARDCODED app/(workspace)/whisper/page.tsx:30 :: t.includes("房间已结束") ||
+  C_HARDCODED app/(workspace)/whisper/page.tsx:256 :: startTurn("结束");
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:14 :: "DeepTutor 模型配置工作台",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:15 :: "DeepTutor 侧边栏聊天历史重组",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:16 :: "Thinking-orbs 集成到 DeepTutor",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:17 :: "DeepTutor 模型配置集成逻辑",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:18 :: "deeptutor.info 文档审查",
+  C_HARDCODED components/settings/VoicePreviewPanel.tsx:46 :: ? '你好，我是你的学习伙伴。让我们一起探索新的知识。'
+  C_HARDCODED components/settings/ServiceConfigEditor.tsx:1329 :: ? `模型${safeIndex}`
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:203 :: zh: "通过 Grok CLI 的 rules 参数传入额外教学或委派指令。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:207 :: zh: "追加到该智能体的系统提示（--append-system-prompt）。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:211 :: zh: "Kimi CLI 没有系统提示 flag——该指令会前缀在每个新会话的第一条消息上。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:215 :: zh: "通过服务器 API 的 system 字段注入到每个新会话。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:219 :: zh: "通过服务器 API 的 system 字段注入到每个新会话。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:223 :: zh: "Hermes 没有系统提示 flag——该指令会前缀在每个新会话的第一条消息上。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:227 :: zh: "新会话（或远端会话已失效）时，通过 Hermes 网关 API 的 instructions 字段注入。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:231 :: zh: "该指令会前缀在每个新 OpenClaw session key 的第一条消息上。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:235 :: zh: "该指令会前缀在每个新 DeepSeek Harness 会话的第一条消息上。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:244 :: zh: "绕过权限 · 全自主（推荐）",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:250 :: label: { zh: "自动接受编辑", en: "Accept edits automatically" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:254 :: label: { zh: "默认 · 可能等待确认", en: "Default · may wait for prompts" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:258 :: label: { zh: "计划模式 · 只读", en: "Plan mode · read-only" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:266 :: zh: "不询问 · 拒绝需审批操作（默认）",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:272 :: label: { zh: "Plan（兼容模式）", en: "Plan (compatibility mode)" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:276 :: label: { zh: "默认权限", en: "Default permissions" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:280 :: label: { zh: "自动接受编辑", en: "Accept edits automatically" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:284 :: label: { zh: "自动评估权限", en: "Automatically evaluate permissions" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:288 :: label: { zh: "绕过权限", en: "Bypass permissions" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:299 :: { value: "read-only", label: { zh: "只读", en: "Read-only" } },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:302 :: label: { zh: "工作目录可写（推荐）", en: "Workspace write (recommended)" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:304 :: { value: "danger-full-access", label: { zh: "完全访问", en: "Full access" } },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:307 :: label: { zh: "绕过沙箱与审批", en: "Bypass sandbox & approvals" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:314 :: label: { zh: "从不询问（推荐）", en: "Never ask (recommended)" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:316 :: { value: "on-failure", label: { zh: "失败时询问", en: "On failure" } },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:317 :: { value: "on-request", label: { zh: "按需询问", en: "On request" } },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:320 :: label: { zh: "不可信命令时询问", en: "Untrusted commands" },
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:439 :: zh: "配置 DeepTutor 通过 HTTP 调用的远程 Hermes 网关、模型与运行参数。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:443 :: zh: `DeepTutor 通过 consult_subagent 调用本机 ${displayName} 时使用的模型、推理强度与运行参数。设置后即覆盖 CLI 的默认值；留空表示沿用 CLI 默认。`,
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:452 :: {tr({ zh: "加载中…", en: "Loading…" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:467 :: title={tr({ zh: "连接与同步", en: "Connection & sync" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:471 :: zh: "检查已配置网关的连通性与认证状态。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:476 :: zh: "检测后端环境中的 Grok CLI。模型和推理强度可留空使用 CLI 默认值，或手动填写。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:480 :: zh: "供应商会不定期增删模型与推理档位——随时点同步即可重新拉取最新列表。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:488 :: ? tr({ zh: "网关状态", en: "Gateway status" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:489 :: : tr({ zh: "本机状态", en: "On this machine" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:496 :: zh: "未在 PATH 上找到该 CLI。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:516 :: ? tr({ zh: "可连接", en: "Reachable" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:517 :: : tr({ zh: "已安装", en: "Installed" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:519 :: ? tr({ zh: "不可用", en: "Unavailable" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:520 :: : tr({ zh: "未检测到", en: "Not detected" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:525 :: title={tr({ zh: "模型列表", en: "Model list" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:529 :: zh: "不预设模型列表；请填写当前 Grok CLI 支持的模型名。同步仅重新检测 CLI。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:534 :: zh: `上次同步：${formatTs(options.synced_at, zh)}`,
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:539 :: zh: "远程网关当前不提供模型枚举；可以留空使用网关默认值，或手动填写模型名。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:543 :: zh: "该 CLI 无可枚举的模型接口，下方为常用别名，可自定义任意模型名。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:550 :: {tr({ zh: "网关模型由服务端提供", en: "Gateway models are server-managed" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:562 :: {tr({ zh: "同步", en: "Sync" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:571 :: title={tr({ zh: "远程网关", en: "Remote gateway" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:573 :: zh: "密钥只从环境变量读取；这里仅保存变量名，不保存密钥值。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:578 :: title={tr({ zh: "网关 URL", en: "Gateway URL" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:585 :: zh: "例如：http:
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:594 :: title={tr({ zh: "密钥环境变量", en: "API key environment variable" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:606 :: title={tr({ zh: "配置 profile", en: "Profile label" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:608 :: zh: "仅作部署标识，不会把密钥写入设置。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:622 :: title={tr({ zh: "空闲超时（秒）", en: "Idle timeout (seconds)" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:647 :: title={tr({ zh: "模型", en: "Model" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:649 :: zh: "DeepTutor 调用该智能体时使用的模型与推理强度。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:654 :: title={tr({ zh: "启用", en: "Enabled" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:656 :: zh: "关闭后，DeepTutor 不会在对话中调用该智能体。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:668 :: title={tr({ zh: "模型", en: "Model" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:672 :: aria-label={tr({ zh: "模型", en: "Model" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:680 :: ? tr({ zh: "网关默认", en: "Gateway default" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:681 :: : tr({ zh: "CLI 默认", en: "CLI default" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:690 :: {tr({ zh: "自定义…", en: "Custom…" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:696 :: aria-label={tr({ zh: "自定义模型", en: "Custom model" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:700 :: zh: "输入模型名",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:717 :: title={tr({ zh: "推理强度", en: "Reasoning effort" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:722 :: zh: "推理强度",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:728 :: zh: "留空使用 CLI 默认值",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:748 :: ? tr({ zh: "网关默认", en: "Gateway default" })
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:749 :: : tr({ zh: "CLI 默认", en: "CLI default" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:765 :: title={tr({ zh: "系统提示", en: "System prompt" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:769 :: zh: "留空则使用 DeepTutor 的默认委派提示。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:775 :: aria-label={tr({ zh: "系统提示", en: "System prompt" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:779 :: zh: "（留空使用默认委派提示）",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:793 :: title={tr({ zh: "运行参数", en: "Run parameters" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:795 :: zh: "DeepTutor 无人值守地驱动该智能体——默认值确保它不会卡在等待确认上。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:801 :: title={tr({ zh: "权限模式", en: "Permission mode" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:805 :: zh: "默认 dontAsk 会拒绝需审批的操作。其它模式遵循 Grok CLI 权限规则；无人值守运行无法回答交互审批。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:809 :: zh: "非「绕过权限」的模式可能让无人值守的运行卡住等待确认。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:815 :: aria-label={tr({ zh: "权限模式", en: "Permission mode" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:838 :: title={tr({ zh: "自动批准", en: "Auto-approve" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:840 :: zh: "自动批准该智能体的权限请求。关闭后请求将被拒绝——无人值守运行无法交互确认。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:855 :: title={tr({ zh: "思考过程", en: "Thinking" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:857 :: zh: "流式展示模型的思考过程（--thinking）。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:873 :: title={tr({ zh: "沙箱", en: "Sandbox" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:890 :: title={tr({ zh: "审批策略", en: "Approval policy" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:892 :: zh: "非「从不询问」可能让无人值守的运行卡住。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:911 :: title={tr({ zh: "命令联网", en: "Command network access" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:913 :: zh: "允许模型运行的 shell 命令访问网络（工作目录可写模式默认离线）。内置 web search 不受影响。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:925 :: title={tr({ zh: "临时会话", en: "Ephemeral session" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:927 :: zh: "不在 ~/.codex/sessions 下持久化本次会话。",
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:943 :: title={tr({ zh: "转发图片", en: "Forward images" })}
+  B_BILINGUAL_DATA components/settings/SubagentSettingsEditor.tsx:945 :: zh: "允许 DeepTutor 把本轮对话中的图片附件转发给该智能体。",
+  C_HARDCODED components/settings/ModelCards.tsx:406 :: (language === "zh" ? `模型 ${index + 1}` : `Model ${index + 1}`);
+  C_HARDCODED components/settings/SettingsNav.tsx:37 :: page.key === 'connections' ? 'API Key token base url 密钥 凭据 地址 供应商' : '',
+  B_BILINGUAL_DATA components/settings/SettingsNav.tsx:45 :: ? [{ label: { en: 'Search results', zh: '搜索结果' }, pages: matches }]
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:44 :: task: { en: "Task model", zh: "任务模型" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:45 :: embedding: { en: "Embedding", zh: "嵌入模型" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:46 :: search: { en: "Search", zh: "搜索" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:47 :: tts: { en: "Text-to-Speech", zh: "语音合成" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:48 :: stt: { en: "Speech-to-Text", zh: "语音识别" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:49 :: imagegen: { en: "Image", zh: "文生图" },
+  B_BILINGUAL_DATA components/settings/ConnectionsEditor.tsx:50 :: videogen: { en: "Video", zh: "文生视频" },
+  C_HARDCODED components/memory/MemorySection.tsx:152 :: quiz: { icon: ClipboardList, label: "题库" },
+  C_HARDCODED components/memory/MemorySection.tsx:160 :: recent: "近期总结",
+  C_HARDCODED components/memory/MemorySection.tsx:161 :: profile: "用户画像",
+  C_HARDCODED components/memory/MemorySection.tsx:162 :: scope: "知识 Scope",
+  C_HARDCODED components/memory/MemorySection.tsx:163 :: preferences: "偏好",
+  C_HARDCODED components/chat/home/SubagentRunTranscript.tsx:179 :: ? "收起"
+  C_HARDCODED components/chat/home/SubagentRunTranscript.tsx:182 :: ? `… 展开 +${hidden} 行`
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:80 :: zh: `断开「${name}」？这只会移除连接，不影响本机的智能体配置。`,
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:101 :: title={tr({ zh: "连接的智能体", en: "Connected agents" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:103 :: zh: "把本机智能体或已配置的远程 Hermes 网关接进来，在对话中选中后直接向它提问——运行过程会实时展示。",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:114 :: {tr({ zh: "连接智能体", en: "Connect agent" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:123 :: {tr({ zh: "检测可用智能体…", en: "Detecting available agents…" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:128 :: zh: "未检测到可用的本机智能体或已配置的远程 Hermes 网关。安装并登录受支持的 CLI 或配置远程网关，即可连接。",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:135 :: zh: "尚未连接任何智能体。点击「连接智能体」接入本机智能体或远程 Hermes 网关。",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:164 :: <Tooltip label={tr({ zh: "断开", en: "Disconnect" })} side="top">
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:169 :: aria-label={tr({ zh: "断开", en: "Disconnect" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:230 :: setError(tr({ zh: "请填写名称。", en: "Please enter a name." }));
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:236 :: zh: "已存在同名连接。",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:269 :: {tr({ zh: "连接智能体", en: "Connect an agent" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:275 :: aria-label={tr({ zh: "关闭", en: "Close" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:284 :: {tr({ zh: "智能体", en: "Agent" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:312 :: {tr({ zh: "名称", en: "Name" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:321 :: zh: "例如：我的代码助手",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:332 :: zh: "工作目录（可选）",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:340 :: zh: "例如：/Users/you/project —— 智能体将在此目录运行",
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:361 :: {tr({ zh: "取消", en: "Cancel" })}
+  B_BILINGUAL_DATA components/agents/ConnectedAgents.tsx:374 :: {tr({ zh: "连接", en: "Connect" })}
+  A_LANG_NAME components/partners/PartnerConfigure.tsx:358 :: <option value="zh">中文</option>
+  C_HARDCODED components/partners/group/mentions.ts:14 :: const EVERYONE_TOKENS = new Set(["all", "everyone", "所有人", "全部", "大家"]);
+  C_HARDCODED components/space/EduHubImportModal.tsx:188 :: {tr("从 EduHub 导入技能", "Import skills from EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:199 :: {tr("在 EduHub 打开", "Open EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:203 :: aria-label={tr("关闭", "Close")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:286 :: placeholder={tr("搜索技能名称或描述…", "Search skills…")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:300 :: <p>{tr("无法连接 EduHub。", "Couldn't reach EduHub.")}</p>
+  C_HARDCODED components/space/EduHubImportModal.tsx:309 :: {tr("重试", "Retry")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:315 :: ? tr("EduHub 上暂时还没有技能。", "No skills on EduHub yet.")
+  C_HARDCODED components/space/EduHubImportModal.tsx:316 :: : tr("没有匹配的技能。", "No skills match your search.")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:354 :: <Tooltip label={tr("查看详情", "View details")} as="li" side="top">
+  C_HARDCODED components/space/EduHubImportModal.tsx:358 :: aria-label={`${tr("查看详情", "View details")}: ${skill.name}`}
+  C_HARDCODED components/space/EduHubImportModal.tsx:381 :: {tr("已导入", "Installed")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:391 :: {tr("暂无描述。", "No description.")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:463 :: {tr("返回", "Back")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:473 :: {tr("在 EduHub 查看", "View on EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:498 :: {skill.downloads} {tr("次下载", "downloads")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:522 :: {tr("导入失败：", "Import failed: ")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:562 :: {tr("下载中…", "Downloading…")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:569 :: ? tr("重试", "Retry")
+  C_HARDCODED components/space/EduHubImportModal.tsx:571 :: ? tr("重新下载", "Re-download")
+  C_HARDCODED components/space/EduHubImportModal.tsx:572 :: : tr("下载", "Download");
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:91 :: label: { zh: "对话与资料", en: "Conversations & Materials" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:97 :: title: { zh: "聊天历史", en: "Chat History" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:99 :: zh: "回顾并继续此前的对话。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:102 :: unit: { zh: "段对话", en: "conversations" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:110 :: title: { zh: "笔记本", en: "Notebooks" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:112 :: zh: "整理来自对话、研究、智能写作等的产出。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:115 :: unit: { zh: "个笔记本", en: "notebooks" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:123 :: title: { zh: "题库", en: "Question Bank" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:125 :: zh: "跨会话回顾和整理测验题目。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:128 :: unit: { zh: "道题", en: "questions" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:136 :: title: { zh: "知识中心", en: "Knowledge Center" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:138 :: zh: "管理知识库与检索引擎。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:141 :: unit: { zh: "个知识库", en: "knowledge bases" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:148 :: label: { zh: "个性化", en: "Personalization" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:156 :: zh: "可在每轮对话中套用的行为预设。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:159 :: unit: { zh: "个预设", en: "personas" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:167 :: title: { zh: "技能", en: "Skills" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:169 :: zh: "模型按需读取的能力手册。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:172 :: unit: { zh: "个技能", en: "skills" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:180 :: title: { zh: "MCP 服务", en: "MCP Services" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:182 :: zh: "连接托管 MCP 服务，把它们的工具带进对话。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:185 :: unit: { zh: "个服务", en: "services" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:196 :: title: { zh: "CLI 应用", en: "CLI Apps" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:198 :: zh: "来自 CLI-Anything 目录的命令行工具，启用后对话可直接调用。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:201 :: unit: { zh: "个应用", en: "apps" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:213 :: title: { zh: "记忆", en: "Memory" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:215 :: zh: "查看与整理导师记住的偏好和学习经历。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:223 :: label: { zh: "更多项目", en: "More Projects" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:229 :: title: { zh: "密语", en: "Whisper" },
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:231 :: zh: "双席位咨询练习房间：督导只对受训者耳语。",
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:309 :: {tr({ zh: "学习空间", en: "Learning Space" })}
+  B_BILINGUAL_DATA components/space/SpaceDashboard.tsx:313 :: zh: "你的对话、智能体、笔记与题目，集中在一处 —— 从这里进入。",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:4 :: zh: "先讲解，再检查理解",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:10 :: zh: "先用一道探查题看看你是否已经掌握",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:14 :: zh: "先讲解这个知识点，再检查你是否理解",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:18 :: zh: "继续练习，直到稳定越过掌握门槛",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:22 :: zh: "用自己的话讲清楚这个概念",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:25 :: review: { zh: "复习这个记忆信标", en: "Revisit this memory beacon" },
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:27 :: zh: "完成导师正在等待的回答",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:31 :: zh: "整片疆域已经点亮",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:37 :: teach: { zh: "开始学习这个知识点", en: "Learn this knowledge point" },
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:38 :: review: { zh: "开始本次复习", en: "Start this review" },
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:40 :: zh: "回到原会话作答",
+  B_BILINGUAL_DATA components/space/learning/next-step-copy.ts:43 :: complete: { zh: "继续自由探索", en: "Keep exploring" },
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:38 :: chat: ['Conversations', '对话'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:39 :: book: ['Books', '书籍'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:40 :: learning: ['Mastery Path', '掌握路径'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:41 :: reading: ['Immersive Reading', '沉浸式阅读'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:42 :: timed_media: ['Immersive Watching', '沉浸式观看'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:43 :: notebook: ['Notebooks', '笔记本'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:44 :: 'co-writer': ['Writing', '协作写作'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:45 :: courses: ['Courses', '课程'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:46 :: files: ['File library', '文件库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:47 :: knowledge_bases: ['Knowledge bases', '知识库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:48 :: parse_cache: ['Document cache', '文档解析缓存'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:49 :: outputs: ['Generated outputs', '生成产物'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:50 :: presentations: ['Presented files', '已展示文件'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:51 :: attachments: ['Conversation attachments', '对话附件'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:52 :: historical_chat: ['Historical conversation database', '历史对话数据库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:53 :: historical_agent: ['Historical agent outputs', '历史智能体产物'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:54 :: historical_output: ['Historical output folder', '历史输出目录'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:55 :: historical_archive: ['Historical archives', '历史归档'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:90 :: preparing: text('Preparing', '准备中'), copying: text('Copying', '复制中'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:91 :: transferring: text('Transferring', '迁移中'), committed: text('Finishing', '收尾中'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:92 :: completed: text('Completed', '已完成'), exported: text('Exported', '已导出'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:93 :: recovered: text('Recovered', '已恢复'), failed: text('Failed; source retained', '失败，来源数据已保留'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:94 :: cleanup_required: text('Cleanup required', '需要完成清理'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:95 :: recovery_required: text('Recovery required', '需要恢复'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:177 :: <option value="">{text('Default workspace', '默认工作区')}</option>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:189 :: <h2 className="text-lg font-semibold">{text('Data migration', '数据迁移')}</h2>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:193 :: '查找已有学习数据，将资料和关联对话一并迁移，或下载备份。迁移后会保留经过校验的恢复副本。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:199 :: '学习数据按功能整体迁移，预览会列出关联资料和对话。目标工作区中对应功能应为空，以免覆盖已有学习记录。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:206 :: '历史数据将作为档案保存在目标工作区内，不会自动合并到当前学习记录。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:213 :: <span>{text('Source workspace', '来源工作区')}</span>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:223 :: <span>{text('Destination workspace', '目标工作区')}</span>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:236 :: {text('Searching stored data…', '正在查找已有数据…')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:258 :: ? `${row.sessions} ${text('conversations', '个对话')} · `
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:260 :: {row.files} {text('files', '个文件')} · {(row.bytes / 1024 / 1024).toFixed(1)}{' '}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:274 :: {text('Additional historical data', '其他历史数据')} ({discovery.historical.length})
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:279 :: '可在导出中包含这些历史目录，便于检查和恢复。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:293 :: {text('Include in export', '导出时包含历史目录')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:304 :: {text('Preview migration', '预览迁移')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:312 :: {text('Export selected data', '导出所选数据')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:318 :: {preview.sessions} {text('conversations', '个对话')} · {preview.files}{' '}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:319 :: {text('files', '个文件')} · {(preview.bytes / 1024 / 1024).toFixed(1)} MB
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:322 :: {text('Included features', '包含功能')}: {preview.features.map(label).join('、')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:328 :: '为保留引用，额外包含关联来源数据'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:344 :: {text('Migrate these data', '迁移以上数据')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:353 :: '正在处理。可以稍后回到此页查看结果。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:364 :: <h3 className="text-sm font-medium">{text('Recent operations', '最近操作')}</h3>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:380 :: {text('Download archive', '下载备份')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:389 :: {text('Recover migration', '恢复迁移')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:394 :: {text('Recovery copy', '恢复副本')}: {row.recovery_path}
+  B_BILINGUAL_DATA features/settings/sections/ToolsSettingsSection.tsx:74 :: solve: { zh: "深度解题", en: "Deep Solve" },
+  B_BILINGUAL_DATA features/settings/sections/ToolsSettingsSection.tsx:75 :: mastery: { zh: "精通路径", en: "Mastery Path" },
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:149 :: label: zh ? "体验增强" : "Experience Enhancement",
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:151 :: ? "用户可选；按需为 chat agent 开启或关闭。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:159 :: label: zh ? "内置工具" : "Built-in Tools",
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:161 :: ? "Chat agent 在需要时自动挂载，无需手动开关。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:170 :: label: zh ? `${label} · 能力工具` : `${label} · Capability Tools`,
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:172 :: ? "该能力的专属工具，仅在此能力运行时挂载。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:378 :: ? "敬请期待"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:406 :: ? "打开设置"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:428 :: language === "zh" ? "敬请期待" : "Coming soon"
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:121 :: label: { en: "Voice", zh: "语音" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:124 :: zh: "使用已配置的提供方管理语音合成与语音识别模型。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:132 :: label: { en: "Multimodal generation", zh: "多模态生成" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:135 :: zh: "使用已配置的提供方管理图片与视频生成模型。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:143 :: label: { zh: "提供方", en: "Providers" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:145 :: zh: "管理提供方的名称、地址、密钥并测试连接。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:154 :: label: { zh: "语言模型", en: "Language models" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:156 :: zh: "模型名称、上下文窗口、能力与连接测试。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:166 :: label: { zh: "后台任务模型", en: "Task models" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:168 :: zh: "DeepTutor 自己发起的调用使用的模型。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:177 :: label: { zh: "嵌入模型", en: "Embedding models" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:179 :: zh: "嵌入模型、维度与连接测试。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:189 :: label: { zh: "搜索", en: "Search" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:190 :: blurb: { zh: "联网搜索供应商。", en: "Web search providers." },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:198 :: label: { zh: "语音合成", en: "Text-to-Speech" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:200 :: zh: "朗读助手回复的 TTS 供应商。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:210 :: label: { zh: "语音识别", en: "Speech-to-Text" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:212 :: zh: "转写麦克风录音的 STT 供应商。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:222 :: label: { zh: "文生图", en: "Image Generation" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:224 :: zh: "chat imagegen 工具使用的文生图模型。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:234 :: label: { zh: "文生视频", en: "Video Generation" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:236 :: zh: "chat videogen 工具使用的文生视频模型。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:249 :: label: { zh: "视频学习", en: "Video Learning" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:251 :: zh: "原生 YouTube 与本地 Invidious 播放供应商。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:261 :: label: { zh: "工具", en: "Tools" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:263 :: zh: "对话智能体可调用的内置工具。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:272 :: label: { zh: "能力", en: "Capabilities" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:274 :: zh: "各能力的 LLM 参数与运行时旋钮。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:283 :: label: { zh: "起始建议", en: "Starting points" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:285 :: zh: "主页输入框下方那三行引导的素材范围。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:294 :: label: { zh: "附件", en: "Attachments" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:296 :: zh: "聊天附件的大小上限与文本提取预算。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:311 :: zh: "DeepTutor 调用本机 Claude Code 时的模型、推理强度与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:324 :: zh: "DeepTutor 调用本机 Codex 时的模型、推理强度与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:336 :: zh: "DeepTutor 调用本机 Grok CLI 时的模型、推理强度与权限模式。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:349 :: zh: "DeepTutor 调用本机 Antigravity CLI 时的模型与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:361 :: zh: "DeepTutor 调用本机 Kimi CLI 时的模型与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:373 :: zh: "DeepTutor 调用本机 opencode 时的模型、推理强度与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:385 :: zh: "DeepTutor 调用本机 MiMo Code 时的模型、推理强度与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:397 :: zh: "DeepTutor 调用本机 Hermes Agent 时的模型、推理强度与运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:407 :: label: { zh: "Hermes Agent（远程）", en: "Hermes Agent (remote)" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:409 :: zh: "通过 HTTP 网关调用远程 Hermes Agent，并按会话保持上下文。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:421 :: zh: "DeepTutor 通过 Gateway 或本地模式调用 OpenClaw 的运行参数。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:433 :: zh: "DeepTutor 通过 Python SDK 或 headless CLI 调用 DeepSeek Harness。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:445 :: label: { zh: "外观", en: "Appearance" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:446 :: blurb: { zh: "视觉主题与代码块", en: "Theme and code blocks" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:452 :: label: { zh: "网络", en: "Network" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:454 :: zh: "端口、浏览器 API 地址与 CORS",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:462 :: label: { zh: "工作区", en: "Workspace" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:464 :: zh: "系统、通用与自建工作区，根目录与存储迁移",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:472 :: label: { zh: "模型", en: "Models" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:474 :: zh: "语言、向量、搜索、语音与生成模型",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:483 :: label: { zh: "知识库", en: "Knowledge Base" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:484 :: blurb: { zh: "文档解析引擎", en: "Document parsing engine" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:490 :: label: { zh: "聊天", en: "Chat" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:492 :: zh: "工具、能力与附件",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:501 :: label: { zh: "伙伴和智能体", en: "Partners & Agents" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:503 :: zh: "配置可在对话中调用的子智能体",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:512 :: label: { zh: "学习进度", en: "Learning progress" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:513 :: blurb: { zh: "查看自己的阅读与学习记录。", en: "Review your reading and learning activity." },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:520 :: label: { zh: "学习档案", en: "Learner profile" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:522 :: zh: "调整年龄、年级与讲解偏好。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:531 :: label: { zh: "监护管理", en: "Guardian" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:533 :: zh: "查看已授权学习者与学习材料。",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:541 :: label: { zh: "记忆", en: "Memory" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:543 :: zh: "分块、预算、去重与引用策略",
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:551 :: label: { zh: "关于", en: "About" },
+  B_BILINGUAL_DATA features/settings/navigation/settings-nav.ts:553 :: zh: "版本、更新与项目资源",
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:14 :: { label: { en: 'Personal', zh: '个人' }, keys: ['general', 'workspace', 'data-migration', 'appearance', 'usage'] },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:16 :: label: { en: 'Learning & conversation', zh: '学习与对话' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:20 :: label: { en: 'Models & services', zh: '模型与服务' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:24 :: label: { en: 'Features & integrations', zh: '功能与集成' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:28 :: label: { en: 'System', zh: '系统' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:31 :: { label: { en: 'Archived', zh: '已归档' }, keys: ['archive'] },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:65 :: label: { en: 'Learning progress', zh: '学习进度' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:66 :: blurb: { en: 'Reading progress and recent learning actions', zh: '阅读进度与近期学习操作' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:73 :: label: { en: 'Data migration', zh: '数据迁移' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:74 :: blurb: { en: 'Discover, migrate and export learning data', zh: '查找、迁移和导出学习数据' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:81 :: label: { en: 'Usage statistics', zh: '用量统计' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:82 :: blurb: { en: 'Model usage and conversation activity', zh: '模型用量与对话活跃情况' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:89 :: label: { en: 'Archived chats', zh: '已归档的聊天' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:92 :: zh: '搜索、取消归档或永久删除已归档的对话',
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:100 :: label: { en: 'General', zh: '常规' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:103 :: zh: '界面语言、回复语言与配置帮助',
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:111 :: label: { en: 'Runtime status', zh: '运行状态' },
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:114 :: zh: '服务就绪情况、诊断与内存占用',
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:134 :: if (key === 'llm') return { en: 'Language models', zh: '语言模型' }
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:135 :: if (key === 'agent-claude-code') return { en: 'Partners & agents', zh: '伙伴与智能体' }
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:136 :: if (key === 'starters') return { en: 'Conversation', zh: '对话' }
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:137 :: if (key === 'connections') return { en: 'Providers', zh: '提供方' }
+  B_BILINGUAL_DATA features/settings/navigation/settings-pages.ts:138 :: if (key === 'knowledge') return { en: 'Knowledge & documents', zh: '知识与文档' }
+  A_LANG_NAME features/settings/store/SettingsStore.tsx:105 :: { value: "zh", label: "简体中文" },
+  A_LANG_NAME features/settings/store/SettingsStore.tsx:106 :: { value: "zh-tw", label: "繁體中文" },
+  A_LANG_NAME features/settings/store/SettingsStore.tsx:107 :: { value: "ja", label: "日本語" },
+  C_HARDCODED features/settings/store/SettingsStore.tsx:416 :: const prefix = language === "zh" ? "模型" : "Model ";
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1443 :: if (label.includes("intro") || label.includes("引言")) {
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1446 :: if (label.includes("conclusion") || label.includes("结论")) {
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1449 :: if (label.includes("section") || label.includes("章节")) {
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1930 :: "开始",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1931 :: "开始生成",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1932 :: "生成",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1933 :: "生成题目",
+  C_HARDCODED features/co-writer/components/CoWriterWorkspace.tsx:544 :: const cjkPattern = /[一-鿿㐀-䶿぀-ヿ가-힯]/g;
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:228 :: : tr('无法读取列表', 'Could not load the list'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:279 :: detail: tr(`${kbName} 中的文件`, `File in ${kbName}`),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:298 :: label: entry.question.slice(0, 80) || tr('未命名题目', 'Untitled question'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:300 :: ? tr('已答对', 'Answered correctly')
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:301 :: : tr('答错过', 'Answered wrong'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:314 :: label: session.title || tr('未命名对话', 'Untitled conversation'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:315 :: detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:327 :: label: session.title || tr('未命名讨论', 'Untitled discussion'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:328 :: detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+  C_HARDCODED lib/workspaces-api.ts:142 :: if (row.kind === 'system') return zh ? '系统工作区' : 'System workspace'
+  C_HARDCODED lib/workspaces-api.ts:143 :: if (row.kind === 'general') return zh ? '通用工作区' : 'General workspace'
+  C_HARDCODED lib/reading-citations.ts:127 :: "第\\s*(\\d+)\\s*(?:页|章|节|张幻灯片|张)" +
+  C_HARDCODED lib/whisper-transcript.ts:39 :: t.includes("不能做危机干预") ||
+  C_HARDCODED lib/whisper-transcript.ts:40 :: t.includes("可能处于危险中") ||
+  C_HARDCODED lib/whisper-transcript.ts:42 :: t.includes("转介") ||
+  C_HARDCODED lib/whisper-transcript.ts:43 :: t.includes("热线")
+  C_HARDCODED lib/reading-inline-markdown.tsx:46 :: const IMAGE_MARKER_PATTERN = /^\s{0,3}\[图片 \d+: ([^\]\s]+)\]\s*$/;
+  C_HARDCODED lib/markdown-display.ts:406 :: /^##\s+(References|参考文献|参考资料)|<details\b[^>]*\bid=["']references["'][^>]*>/im;
+  C_HARDCODED lib/tool-availability.ts:26 :: badge: "未配置",
+  C_HARDCODED lib/tool-availability.ts:27 :: detail: "请先在搜索设置中选择提供商。DuckDuckGo 无需 API 密钥。",
+  C_HARDCODED lib/tool-availability.ts:40 :: badge: "缺少凭证",
+  C_HARDCODED lib/tool-availability.ts:41 :: detail: "当前搜索提供商缺少所需凭证，请检查搜索设置。",
+  C_HARDCODED lib/tool-availability.ts:52 :: ? { badge: "暂不可用", detail: "该工具的运行服务当前不可用。" }
+-- CJK lines by category: A_LANG_NAME=8, B_BILINGUAL_DATA=260, C_HARDCODED=129
+
+== SECTION 3b: hardcoded English JSX text (heuristic) ==
+-- files by count (top 30) --
+     2 app/(workspace)/co-writer/sampleTemplate.ts
+-- total segments: 2
+-- sample (first 60) --
+  ENG app/(workspace)/co-writer/sampleTemplate.ts:27 :: Legacy formatting path
+  ENG app/(workspace)/co-writer/sampleTemplate.ts:103 :: Write, revise, and organize learning content with AI.

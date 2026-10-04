@@ -1,0 +1,129 @@
+  C_HARDCODED app/(workspace)/whisper/page.tsx:30 :: t.includes("房间已结束") ||
+  C_HARDCODED app/(workspace)/whisper/page.tsx:256 :: startTurn("结束");
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:14 :: "DeepTutor 模型配置工作台",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:15 :: "DeepTutor 侧边栏聊天历史重组",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:16 :: "Thinking-orbs 集成到 DeepTutor",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:17 :: "DeepTutor 模型配置集成逻辑",
+  C_HARDCODED app/(utility)/avatar-preview/page.tsx:18 :: "deeptutor.info 文档审查",
+  C_HARDCODED components/settings/VoicePreviewPanel.tsx:46 :: ? '你好，我是你的学习伙伴。让我们一起探索新的知识。'
+  C_HARDCODED components/settings/ServiceConfigEditor.tsx:1329 :: ? `模型${safeIndex}`
+  C_HARDCODED components/settings/ModelCards.tsx:406 :: (language === "zh" ? `模型 ${index + 1}` : `Model ${index + 1}`);
+  C_HARDCODED components/settings/SettingsNav.tsx:37 :: page.key === 'connections' ? 'API Key token base url 密钥 凭据 地址 供应商' : '',
+  C_HARDCODED components/memory/MemorySection.tsx:152 :: quiz: { icon: ClipboardList, label: "题库" },
+  C_HARDCODED components/memory/MemorySection.tsx:160 :: recent: "近期总结",
+  C_HARDCODED components/memory/MemorySection.tsx:161 :: profile: "用户画像",
+  C_HARDCODED components/memory/MemorySection.tsx:162 :: scope: "知识 Scope",
+  C_HARDCODED components/memory/MemorySection.tsx:163 :: preferences: "偏好",
+  C_HARDCODED components/chat/home/SubagentRunTranscript.tsx:179 :: ? "收起"
+  C_HARDCODED components/chat/home/SubagentRunTranscript.tsx:182 :: ? `… 展开 +${hidden} 行`
+  C_HARDCODED components/partners/group/mentions.ts:14 :: const EVERYONE_TOKENS = new Set(["all", "everyone", "所有人", "全部", "大家"]);
+  C_HARDCODED components/space/EduHubImportModal.tsx:188 :: {tr("从 EduHub 导入技能", "Import skills from EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:199 :: {tr("在 EduHub 打开", "Open EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:203 :: aria-label={tr("关闭", "Close")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:286 :: placeholder={tr("搜索技能名称或描述…", "Search skills…")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:300 :: <p>{tr("无法连接 EduHub。", "Couldn't reach EduHub.")}</p>
+  C_HARDCODED components/space/EduHubImportModal.tsx:309 :: {tr("重试", "Retry")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:315 :: ? tr("EduHub 上暂时还没有技能。", "No skills on EduHub yet.")
+  C_HARDCODED components/space/EduHubImportModal.tsx:316 :: : tr("没有匹配的技能。", "No skills match your search.")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:354 :: <Tooltip label={tr("查看详情", "View details")} as="li" side="top">
+  C_HARDCODED components/space/EduHubImportModal.tsx:358 :: aria-label={`${tr("查看详情", "View details")}: ${skill.name}`}
+  C_HARDCODED components/space/EduHubImportModal.tsx:381 :: {tr("已导入", "Installed")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:391 :: {tr("暂无描述。", "No description.")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:463 :: {tr("返回", "Back")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:473 :: {tr("在 EduHub 查看", "View on EduHub")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:498 :: {skill.downloads} {tr("次下载", "downloads")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:522 :: {tr("导入失败：", "Import failed: ")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:562 :: {tr("下载中…", "Downloading…")}
+  C_HARDCODED components/space/EduHubImportModal.tsx:569 :: ? tr("重试", "Retry")
+  C_HARDCODED components/space/EduHubImportModal.tsx:571 :: ? tr("重新下载", "Re-download")
+  C_HARDCODED components/space/EduHubImportModal.tsx:572 :: : tr("下载", "Download");
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:38 :: chat: ['Conversations', '对话'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:39 :: book: ['Books', '书籍'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:40 :: learning: ['Mastery Path', '掌握路径'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:41 :: reading: ['Immersive Reading', '沉浸式阅读'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:42 :: timed_media: ['Immersive Watching', '沉浸式观看'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:43 :: notebook: ['Notebooks', '笔记本'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:44 :: 'co-writer': ['Writing', '协作写作'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:45 :: courses: ['Courses', '课程'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:46 :: files: ['File library', '文件库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:47 :: knowledge_bases: ['Knowledge bases', '知识库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:48 :: parse_cache: ['Document cache', '文档解析缓存'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:49 :: outputs: ['Generated outputs', '生成产物'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:50 :: presentations: ['Presented files', '已展示文件'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:51 :: attachments: ['Conversation attachments', '对话附件'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:52 :: historical_chat: ['Historical conversation database', '历史对话数据库'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:53 :: historical_agent: ['Historical agent outputs', '历史智能体产物'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:54 :: historical_output: ['Historical output folder', '历史输出目录'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:55 :: historical_archive: ['Historical archives', '历史归档'],
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:90 :: preparing: text('Preparing', '准备中'), copying: text('Copying', '复制中'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:91 :: transferring: text('Transferring', '迁移中'), committed: text('Finishing', '收尾中'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:92 :: completed: text('Completed', '已完成'), exported: text('Exported', '已导出'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:93 :: recovered: text('Recovered', '已恢复'), failed: text('Failed; source retained', '失败，来源数据已保留'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:94 :: cleanup_required: text('Cleanup required', '需要完成清理'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:95 :: recovery_required: text('Recovery required', '需要恢复'),
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:177 :: <option value="">{text('Default workspace', '默认工作区')}</option>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:189 :: <h2 className="text-lg font-semibold">{text('Data migration', '数据迁移')}</h2>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:193 :: '查找已有学习数据，将资料和关联对话一并迁移，或下载备份。迁移后会保留经过校验的恢复副本。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:199 :: '学习数据按功能整体迁移，预览会列出关联资料和对话。目标工作区中对应功能应为空，以免覆盖已有学习记录。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:206 :: '历史数据将作为档案保存在目标工作区内，不会自动合并到当前学习记录。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:213 :: <span>{text('Source workspace', '来源工作区')}</span>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:223 :: <span>{text('Destination workspace', '目标工作区')}</span>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:236 :: {text('Searching stored data…', '正在查找已有数据…')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:258 :: ? `${row.sessions} ${text('conversations', '个对话')} · `
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:260 :: {row.files} {text('files', '个文件')} · {(row.bytes / 1024 / 1024).toFixed(1)}{' '}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:274 :: {text('Additional historical data', '其他历史数据')} ({discovery.historical.length})
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:279 :: '可在导出中包含这些历史目录，便于检查和恢复。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:293 :: {text('Include in export', '导出时包含历史目录')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:304 :: {text('Preview migration', '预览迁移')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:312 :: {text('Export selected data', '导出所选数据')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:318 :: {preview.sessions} {text('conversations', '个对话')} · {preview.files}{' '}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:319 :: {text('files', '个文件')} · {(preview.bytes / 1024 / 1024).toFixed(1)} MB
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:322 :: {text('Included features', '包含功能')}: {preview.features.map(label).join('、')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:328 :: '为保留引用，额外包含关联来源数据'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:344 :: {text('Migrate these data', '迁移以上数据')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:353 :: '正在处理。可以稍后回到此页查看结果。'
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:364 :: <h3 className="text-sm font-medium">{text('Recent operations', '最近操作')}</h3>
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:380 :: {text('Download archive', '下载备份')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:389 :: {text('Recover migration', '恢复迁移')}
+  C_HARDCODED features/settings/sections/DataMigrationSettingsSection.tsx:394 :: {text('Recovery copy', '恢复副本')}: {row.recovery_path}
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:149 :: label: zh ? "体验增强" : "Experience Enhancement",
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:151 :: ? "用户可选；按需为 chat agent 开启或关闭。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:159 :: label: zh ? "内置工具" : "Built-in Tools",
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:161 :: ? "Chat agent 在需要时自动挂载，无需手动开关。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:170 :: label: zh ? `${label} · 能力工具` : `${label} · Capability Tools`,
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:172 :: ? "该能力的专属工具，仅在此能力运行时挂载。"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:378 :: ? "敬请期待"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:406 :: ? "打开设置"
+  C_HARDCODED features/settings/sections/ToolsSettingsSection.tsx:428 :: language === "zh" ? "敬请期待" : "Coming soon"
+  C_HARDCODED features/settings/store/SettingsStore.tsx:416 :: const prefix = language === "zh" ? "模型" : "Model ";
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1443 :: if (label.includes("intro") || label.includes("引言")) {
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1446 :: if (label.includes("conclusion") || label.includes("结论")) {
+  C_HARDCODED features/chat/trace/TracePresentation.tsx:1449 :: if (label.includes("section") || label.includes("章节")) {
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1930 :: "开始",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1931 :: "开始生成",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1932 :: "生成",
+  C_HARDCODED features/chat/components/ChatWorkspace.tsx:1933 :: "生成题目",
+  C_HARDCODED features/co-writer/components/CoWriterWorkspace.tsx:544 :: const cjkPattern = /[一-鿿㐀-䶿぀-ヿ가-힯]/g;
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:228 :: : tr('无法读取列表', 'Could not load the list'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:279 :: detail: tr(`${kbName} 中的文件`, `File in ${kbName}`),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:298 :: label: entry.question.slice(0, 80) || tr('未命名题目', 'Untitled question'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:300 :: ? tr('已答对', 'Answered correctly')
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:301 :: : tr('答错过', 'Answered wrong'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:314 :: label: session.title || tr('未命名对话', 'Untitled conversation'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:315 :: detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:327 :: label: session.title || tr('未命名讨论', 'Untitled discussion'),
+  C_HARDCODED hooks/useTopicSourceLibrary.ts:328 :: detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+  C_HARDCODED lib/workspaces-api.ts:142 :: if (row.kind === 'system') return zh ? '系统工作区' : 'System workspace'
+  C_HARDCODED lib/workspaces-api.ts:143 :: if (row.kind === 'general') return zh ? '通用工作区' : 'General workspace'
+  C_HARDCODED lib/reading-citations.ts:127 :: "第\\s*(\\d+)\\s*(?:页|章|节|张幻灯片|张)" +
+  C_HARDCODED lib/whisper-transcript.ts:39 :: t.includes("不能做危机干预") ||
+  C_HARDCODED lib/whisper-transcript.ts:40 :: t.includes("可能处于危险中") ||
+  C_HARDCODED lib/whisper-transcript.ts:42 :: t.includes("转介") ||
+  C_HARDCODED lib/whisper-transcript.ts:43 :: t.includes("热线")
+  C_HARDCODED lib/reading-inline-markdown.tsx:46 :: const IMAGE_MARKER_PATTERN = /^\s{0,3}\[图片 \d+: ([^\]\s]+)\]\s*$/;
+  C_HARDCODED lib/markdown-display.ts:406 :: /^##\s+(References|参考文献|参考资料)|<details\b[^>]*\bid=["']references["'][^>]*>/im;
+  C_HARDCODED lib/tool-availability.ts:26 :: badge: "未配置",
+  C_HARDCODED lib/tool-availability.ts:27 :: detail: "请先在搜索设置中选择提供商。DuckDuckGo 无需 API 密钥。",
+  C_HARDCODED lib/tool-availability.ts:40 :: badge: "缺少凭证",
+  C_HARDCODED lib/tool-availability.ts:41 :: detail: "当前搜索提供商缺少所需凭证，请检查搜索设置。",
+  C_HARDCODED lib/tool-availability.ts:52 :: ? { badge: "暂不可用", detail: "该工具的运行服务当前不可用。" }

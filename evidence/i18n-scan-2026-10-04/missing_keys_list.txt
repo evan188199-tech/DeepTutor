@@ -1,0 +1,14 @@
+  MISSING components/courses/CourseSyllabus.tsx:164 :: 'One unit per line. Add keywords after a | so DeepTutor can tell which questions belong to it:\\n\\nProcesses and threads | context switch, scheduling\\nVirtual memory | address translation, page replacement'
+  MISSING components/partners/SoulEditor.tsx:75 :: '# Soul\\nDescribe who this partner is, how it speaks, what it values…'
+  DYN_FAMILY   3 sites :: prefix='mcp.category.' en_keys_matching=10
+  DYN_FAMILY   2 sites :: prefix='readiness.section.' en_keys_matching=7
+  DYN_FAMILY   2 sites :: prefix='mcp.tier.' en_keys_matching=2
+  DYN_FAMILY   1 sites :: prefix='settings.presets.cost.' en_keys_matching=3
+  DYN_FAMILY   1 sites :: prefix='settings.presets.prerequisite.' en_keys_matching=4
+  DYN_FAMILY   1 sites :: prefix='settings.presets.credential.' en_keys_matching=3
+  DYN_FAMILY   1 sites :: prefix='settings.presets.feature.' en_keys_matching=7
+  DYN_FAMILY   1 sites :: prefix='readiness.detail.' en_keys_matching=41
+  DYN_FAMILY   1 sites :: prefix='readiness.state.' en_keys_matching=5
+  DYN_FAMILY   1 sites :: prefix='contextBudget.segment.' en_keys_matching=15
+  DYN_FAMILY   1 sites :: prefix='updateJob.' en_keys_matching=6
+

@@ -1,0 +1,2 @@
+  ENG app/(workspace)/co-writer/sampleTemplate.ts:27 :: Legacy formatting path
+  ENG app/(workspace)/co-writer/sampleTemplate.ts:103 :: Write, revise, and organize learning content with AI.

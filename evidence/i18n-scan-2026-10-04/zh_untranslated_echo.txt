@@ -1,0 +1,68 @@
+language.english
+language.chinese
+language.french
+GitHub
+tokens
+LLM
+TTS
+Base URL
+API Key
+RAG-Anything
+gpt-4o
+Markdown
+Responses API
+Chat Completions
+Pro Vide Writing
+Chart.js
+SVG
+Mermaid
+settingsTour.llm.title
+MarginNote 4
+MCP
+HTML
+Co-writer
+User prompt
+https://example.com
+MinerU PDF
+OK
+Obsidian
+Docling
+LiteParse
+PyMuPDF4LLM
+Tika
+Client ID
+markitdown
+{{done}} / {{total}}
+LightRAG server URL placeholder
+codex.oauth.title
+mcp.category.ai
+AI
+main
+docs/
+*.md
+YouTube
+Bilibili
+YouTube URL
+Invidious API URL
+youtube-transcript-api
+Redis
+Leader
+Worker ID
+Redis URL
+OpenAI Chat Completions
+OpenAI Responses
+Anthropic Messages
+Invidious
+GeoGebra
+{{value}} tok/s
+TTFT
+TPS
+https://docs.deeptutor.info/
+L1
+L2
+L3
+Python
+Kiwix / ZIM
+http://localhost:8080
+my-archive
+wikipedia_en_all
