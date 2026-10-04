@@ -34,6 +34,7 @@ from deeptutor.services.memory import paths
 from deeptutor.services.memory.consolidator.modes._runtime import (
     OnEvent,
     emit,
+    existing_doc_unparseable,
     load_doc,
     write_doc_checkpoint,
 )
@@ -80,6 +81,21 @@ async def run_merge(
     path = _path_for(layer, key)
     if not path.exists():
         await emit(on_event, {"stage": "done", "no_doc": True, "rewrote": False})
+        return MergeResult(
+            layer=layer, key=key, footnote_rows_before=0, footnote_rows_after=0, rewrote=False
+        )
+
+    if existing_doc_unparseable(path):
+        logger.warning(
+            "merge: %s doc for key %s at %s exists but is corrupt (undecodable or "
+            "parses to no title/sections/entries); skipping merge so the file is "
+            "not rewritten as an empty document — inspect or restore it manually",
+            layer,
+            key,
+            path,
+        )
+        await emit(on_event, {"stage": "corrupt_doc_skipped", "layer": layer, "key": key})
+        await emit(on_event, {"stage": "done", "rewrote": False})
         return MergeResult(
             layer=layer, key=key, footnote_rows_before=0, footnote_rows_after=0, rewrote=False
         )
@@ -175,6 +191,18 @@ def _migrate_l3_legacy_refs(doc) -> int:
         l2_path = paths.l2_file(surface)
         if not l2_path.exists():
             continue
+        if existing_doc_unparseable(l2_path):
+            # A corrupted L2 cannot answer "which entries do you own".
+            # Migrating anyway would drop every unresolvable legacy ref
+            # from the L3 doc while the evidence is unreadable — defer
+            # the whole migration until the L2 is repaired.
+            logger.warning(
+                "merge: L2 doc for surface %s at %s is unreadable; deferring L3 "
+                "legacy-ref migration so refs pointing into it are not dropped",
+                surface,
+                l2_path,
+            )
+            return 0
         try:
             l2_doc = parse(l2_path.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001 — malformed L2 should not block L3 migration

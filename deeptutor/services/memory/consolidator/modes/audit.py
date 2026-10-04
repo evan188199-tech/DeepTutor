@@ -40,6 +40,7 @@ from deeptutor.services.memory.consolidator.modes._runtime import (
     OnEvent,
     call_llm,
     emit,
+    existing_doc_unparseable,
     load_doc,
     load_prompt,
     slot_focus,
@@ -471,6 +472,15 @@ def _build_l2_entry_lookup() -> dict[str, Entry]:
     for surface in paths.SURFACES:
         path = paths.l2_file(surface)
         if not path.exists():
+            continue
+        if existing_doc_unparseable(path):
+            logger.warning(
+                "audit: excluding unreadable L2 doc for surface %s at %s from the "
+                "L3 evidence lookup; L3 entries citing it cannot be verified — "
+                "inspect or restore it manually",
+                surface,
+                path,
+            )
             continue
         try:
             doc = parse(path.read_text(encoding="utf-8"))

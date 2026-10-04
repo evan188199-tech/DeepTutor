@@ -218,6 +218,33 @@ def load_doc(path: Path, *, default_title: str) -> Document:
     return parse(path.read_text(encoding="utf-8"))
 
 
+def existing_doc_unparseable(path: Path) -> bool:
+    """True when an existing doc file cannot be safely rewritten.
+
+    Two flavors of corruption make this true:
+
+    * the bytes do not decode as UTF-8 (``read_text`` raises), or
+    * the file decodes but ``document.parse`` recognizes nothing in it
+      (e.g. an HTML error page saved over the md) — ``parse`` never
+      raises on that, it silently yields an empty document.
+
+    Treating such a doc as empty and writing it back would destroy the
+    (possibly recoverable) file, so every mode that rewrites a target
+    doc checks this first and skips. A blank file is not corruption —
+    there is nothing to lose.
+    """
+    if not path.exists():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001 — undecodable/permission errors alike
+        return True
+    if not text.strip():
+        return False  # blank file — nothing to lose
+    doc = parse(text)
+    return not doc.title and not doc.sections
+
+
 async def write_doc_atomic(path: Path, doc: Document) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     text = serialize(doc)
@@ -308,6 +335,7 @@ __all__ = [
     "OnEvent",
     "call_llm",
     "emit",
+    "existing_doc_unparseable",
     "load_doc",
     "load_focus_meta",
     "load_prompt",

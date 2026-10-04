@@ -21,7 +21,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import json
 import logging
-from pathlib import Path
 
 from deeptutor.services.memory import paths
 from deeptutor.services.memory import snapshot as snap
@@ -38,6 +37,7 @@ from deeptutor.services.memory.consolidator.modes._runtime import (
     OnEvent,
     call_llm,
     emit,
+    existing_doc_unparseable,
     load_doc,
     load_prompt,
     slot_focus,
@@ -151,11 +151,11 @@ async def _run_update_l2(
 ) -> UpdateResult:
     meta = load_l2_meta(surface)
     l2_path = paths.l2_file(surface)
-    if _existing_doc_unparseable(l2_path):
+    if existing_doc_unparseable(l2_path):
         logger.warning(
-            "update: L2 doc for surface %s at %s exists but does not parse into any "
-            "title/sections/entries; skipping update so the file is not overwritten "
-            "as an empty document — inspect or restore it manually",
+            "update: L2 doc for surface %s at %s exists but is corrupt (undecodable "
+            "or parses to no title/sections/entries); skipping update so the file "
+            "is not overwritten as an empty document — inspect or restore it manually",
             surface,
             l2_path,
         )
@@ -394,11 +394,11 @@ async def _run_update_l3(
         raise ValueError("preferences.md is not auto-consolidated")
 
     l3_path = paths.l3_file(slot)
-    if _existing_doc_unparseable(l3_path):
+    if existing_doc_unparseable(l3_path):
         logger.warning(
-            "update: L3 doc for slot %s at %s exists but does not parse into any "
-            "title/sections/entries; skipping update so the file is not overwritten "
-            "as an empty document — inspect or restore it manually",
+            "update: L3 doc for slot %s at %s exists but is corrupt (undecodable "
+            "or parses to no title/sections/entries); skipping update so the file "
+            "is not overwritten as an empty document — inspect or restore it manually",
             slot,
             l3_path,
         )
@@ -732,6 +732,15 @@ def _load_all_l2_docs() -> dict[str, Document]:
         path = paths.l2_file(surface)
         if not path.exists():
             continue
+        if existing_doc_unparseable(path):
+            logger.warning(
+                "update: skipping unreadable L2 doc for surface %s at %s; it is "
+                "excluded from this L3 update (never rewritten) — inspect or "
+                "restore it manually",
+                surface,
+                path,
+            )
+            continue
         try:
             docs[surface] = parse(path.read_text(encoding="utf-8"))
         except Exception:
@@ -744,29 +753,6 @@ def _load_all_l2_docs() -> dict[str, Document]:
             )
             continue
     return docs
-
-
-def _existing_doc_unparseable(path: Path) -> bool:
-    """True when a non-blank doc file exists but parses to nothing.
-
-    ``document.parse`` never raises on decodable-but-corrupted content —
-    it silently yields an empty document. Treating that doc as empty and
-    writing it back would destroy the (possibly recoverable) file, so
-    callers check this before updating a target doc.
-    """
-    from deeptutor.services.memory.document import parse as parse_doc
-
-    if not path.exists():
-        return False
-    try:
-        text = path.read_text(encoding="utf-8")
-    except Exception:
-        # Undecodable: load_doc will surface the error loudly instead.
-        return False
-    if not text.strip():
-        return False  # blank file — nothing to lose
-    doc = parse_doc(text)
-    return not doc.title and not doc.sections
 
 
 def _default_l3_title(slot: L3Slot) -> str:

@@ -1,14 +1,27 @@
 """Corrupted-L2 handling: no silent skips, no empty-doc overwrites.
 
 Regression tests for the swallow-and-continue paths around
-``document.parse`` failures:
+``document.parse`` failures. Both corruption flavors are exercised
+symmetrically everywhere:
+
+* ``UNDECODABLE_BYTES`` — invalid UTF-8; ``read_text`` raises.
+* ``UNPARSEABLE_MD`` — decodable but unrecognizable (e.g. an HTML
+  error page); ``parse`` returns an empty doc without raising.
+
+Guarantees:
 
 * ``update._load_all_l2_docs`` / ``audit._build_l2_entry_lookup`` must
-  warn (surface + path) instead of silently shrinking their input.
-* An existing-but-unparseable target doc must NOT be rewritten as an
-  empty document by ``run_update`` (L2 or L3 target).
+  warn (surface + path) instead of silently shrinking their input —
+  for *both* flavors.
+* An existing-but-corrupt target doc must NOT be rewritten as an empty
+  document by ``run_update`` / ``run_merge`` / ``run_dedup``, and an
+  undecodable target must be skipped with a warning instead of raising
+  out of the mode.
 * A surface skipped because its L2 is unreadable keeps its previously
   seen entry ids in the L3 meta (no mass re-consolidation after repair).
+* ``run_merge`` defers the L3 legacy-ref migration while any L2 it
+  would consult is unreadable (refs are not dropped on missing
+  evidence).
 """
 
 from __future__ import annotations
@@ -22,8 +35,10 @@ import pytest
 from deeptutor.services.memory import paths as paths_mod
 from deeptutor.services.memory.consolidator.meta import load_l3_meta, save_l3_meta
 from deeptutor.services.memory.consolidator.modes import audit as audit_mod
+from deeptutor.services.memory.consolidator.modes import dedup as dedup_mod
+from deeptutor.services.memory.consolidator.modes import merge as merge_mod
 from deeptutor.services.memory.consolidator.modes import update as update_mod
-from deeptutor.services.memory.document import Document, Entry, serialize
+from deeptutor.services.memory.document import Document, Entry, parse, serialize
 from deeptutor.services.memory.ids import new_entry_id
 from deeptutor.services.memory.snapshot.entity import Entity
 
@@ -42,9 +57,20 @@ def memory_dir(tmp_path: Path, monkeypatch):
 # without raising — the dangerous flavor of corruption.
 UNPARSEABLE_MD = "<html><body><h1>503 Service Unavailable</h1></body></html>\n"
 
-# Invalid UTF-8: ``read_text`` raises, so the ``except: continue`` paths
-# in _load_all_l2_docs / _build_l2_entry_lookup fire.
+# Invalid UTF-8: ``read_text`` raises — the loud flavor of corruption.
 UNDECODABLE_BYTES = b"\xff\xfe\x00corrupted binary blob"
+
+# Both flavors, for symmetric parametrized coverage.
+FLAVORS = [
+    pytest.param("undecodable", id="undecodable"),
+    pytest.param("unparseable", id="unparseable"),
+]
+
+
+def _corrupt_bytes(flavor: str) -> bytes:
+    if flavor == "undecodable":
+        return UNDECODABLE_BYTES
+    return UNPARSEABLE_MD.encode("utf-8")
 
 
 def _entity(eid: str, content: str = "user uses spaced repetition with FSRS scheduler.") -> Entity:
@@ -63,10 +89,18 @@ def _seed_l2(memory_dir: Path, surface: str, entries: list[Entry]) -> None:
     (memory_dir / "L2" / f"{surface}.md").write_text(serialize(doc), encoding="utf-8")
 
 
-def _settings_no_dedup():
-    from deeptutor.services.memory.settings import DedupSettings, MemorySettings
+def _seed_l3(memory_dir: Path, slot: str, entries: list[Entry]) -> None:
+    doc = Document(title=f"{slot} memory", sections=[("Highlights", entries)])
+    (memory_dir / "L3" / f"{slot}.md").write_text(serialize(doc), encoding="utf-8")
 
-    return MemorySettings(dedup=DedupSettings(auto_after_update=False))
+
+def _settings_no_dedup():
+    from deeptutor.services.memory.settings import DedupSettings, MemorySettings, MergeSettings
+
+    return MemorySettings(
+        dedup=DedupSettings(auto_after_update=False),
+        merge=MergeSettings(auto_after_update=False, auto_after_dedup=False),
+    )
 
 
 def _warned(caplog, *needles: str) -> bool:
@@ -77,13 +111,14 @@ def _warned(caplog, *needles: str) -> bool:
     )
 
 
-# ── L3 update input: unreadable L2 is skipped loudly, never rewritten ────
+# ── L3 update input: corrupted L2 is skipped loudly, never rewritten ─────
 
 
 @pytest.mark.asyncio
-async def test_l3_update_warns_and_keeps_undecodable_l2(memory_dir, caplog):
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_l3_update_warns_and_skips_corrupt_l2(memory_dir, caplog, flavor):
     chat_path = memory_dir / "L2" / "chat.md"
-    chat_path.write_bytes(UNDECODABLE_BYTES)
+    chat_path.write_bytes(_corrupt_bytes(flavor))
     original = chat_path.read_bytes()
     _seed_l2(
         memory_dir,
@@ -110,9 +145,10 @@ async def test_l3_update_warns_and_keeps_undecodable_l2(memory_dir, caplog):
     assert _warned(caplog, "chat", str(chat_path)), [r.getMessage() for r in caplog.records]
 
 
-def test_audit_l3_lookup_warns_on_undecodable_l2(memory_dir, caplog):
+@pytest.mark.parametrize("flavor", FLAVORS)
+def test_audit_l3_lookup_warns_on_corrupt_l2(memory_dir, caplog, flavor):
     chat_path = memory_dir / "L2" / "chat.md"
-    chat_path.write_bytes(UNDECODABLE_BYTES)
+    chat_path.write_bytes(_corrupt_bytes(flavor))
     entry = Entry(id=new_entry_id(), section="Topics", text="notebook fact", refs=["notebook:01A"])
     _seed_l2(memory_dir, "notebook", [entry])
 
@@ -124,11 +160,12 @@ def test_audit_l3_lookup_warns_on_undecodable_l2(memory_dir, caplog):
 
 
 @pytest.mark.asyncio
-async def test_l3_update_keeps_seen_ids_for_skipped_surface(memory_dir, caplog):
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_l3_update_keeps_seen_ids_for_skipped_surface(memory_dir, flavor):
     chat_ids = {new_entry_id()}
     save_l3_meta("recent", seen_l2_entry_ids={"chat": set(chat_ids)})
     chat_path = memory_dir / "L2" / "chat.md"
-    chat_path.write_bytes(UNDECODABLE_BYTES)
+    chat_path.write_bytes(_corrupt_bytes(flavor))
     _seed_l2(
         memory_dir,
         "notebook",
@@ -149,13 +186,14 @@ async def test_l3_update_keeps_seen_ids_for_skipped_surface(memory_dir, caplog):
     assert meta.seen_l2_entry_ids.get("chat") == chat_ids
 
 
-# ── Update target: an unparseable doc must not be overwritten ────────────
+# ── Update target: a corrupt doc must not be overwritten ─────────────────
 
 
 @pytest.mark.asyncio
-async def test_update_l2_does_not_overwrite_unparseable_doc(memory_dir, monkeypatch, caplog):
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_update_l2_does_not_overwrite_corrupt_doc(memory_dir, monkeypatch, caplog, flavor):
     chat_path = memory_dir / "L2" / "chat.md"
-    chat_path.write_text(UNPARSEABLE_MD, encoding="utf-8")
+    chat_path.write_bytes(_corrupt_bytes(flavor))
     original = chat_path.read_bytes()
 
     monkeypatch.setattr(
@@ -181,9 +219,10 @@ async def test_update_l2_does_not_overwrite_unparseable_doc(memory_dir, monkeypa
 
 
 @pytest.mark.asyncio
-async def test_update_l3_does_not_overwrite_unparseable_doc(memory_dir, caplog):
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_update_l3_does_not_overwrite_corrupt_doc(memory_dir, caplog, flavor):
     recent_path = memory_dir / "L3" / "recent.md"
-    recent_path.write_text(UNPARSEABLE_MD, encoding="utf-8")
+    recent_path.write_bytes(_corrupt_bytes(flavor))
     original = recent_path.read_bytes()
     _seed_l2(
         memory_dir,
@@ -205,3 +244,57 @@ async def test_update_l3_does_not_overwrite_unparseable_doc(memory_dir, caplog):
     assert recent_path.read_bytes() == original
     assert result.corrupt_doc_skipped is True
     assert _warned(caplog, "recent", str(recent_path)), [r.getMessage() for r in caplog.records]
+
+
+# ── Merge / dedup: standalone runs must not rewrite a corrupt doc ────────
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_run_merge_does_not_rewrite_corrupt_doc(memory_dir, caplog, flavor):
+    chat_path = memory_dir / "L2" / "chat.md"
+    chat_path.write_bytes(_corrupt_bytes(flavor))
+    original = chat_path.read_bytes()
+
+    with caplog.at_level(logging.WARNING):
+        result = await merge_mod.run_merge("L2", "chat")
+
+    assert chat_path.read_bytes() == original
+    assert result.rewrote is False
+    assert _warned(caplog, "chat", str(chat_path)), [r.getMessage() for r in caplog.records]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_run_dedup_skips_corrupt_doc(memory_dir, caplog, flavor):
+    chat_path = memory_dir / "L2" / "chat.md"
+    chat_path.write_bytes(_corrupt_bytes(flavor))
+    original = chat_path.read_bytes()
+
+    with (
+        patch.object(dedup_mod, "load_memory_settings") as mock_settings,
+        caplog.at_level(logging.WARNING),
+    ):
+        mock_settings.return_value = _settings_no_dedup()
+        result = await dedup_mod.run_dedup("L2", "chat", iterations=1)
+
+    assert chat_path.read_bytes() == original
+    assert result.edits_applied == 0
+    assert _warned(caplog, "chat", str(chat_path)), [r.getMessage() for r in caplog.records]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("flavor", FLAVORS)
+async def test_run_merge_defers_l3_legacy_migration_when_l2_corrupt(memory_dir, caplog, flavor):
+    legacy_id = new_entry_id()
+    entry = Entry(id=new_entry_id(), section="Highlights", text="fact", refs=[legacy_id])
+    _seed_l3(memory_dir, "recent", [entry])
+    chat_path = memory_dir / "L2" / "chat.md"
+    chat_path.write_bytes(_corrupt_bytes(flavor))
+
+    with caplog.at_level(logging.WARNING):
+        await merge_mod.run_merge("L3", "recent")
+
+    doc = parse((memory_dir / "L3" / "recent.md").read_text(encoding="utf-8"))
+    assert any(legacy_id in e.refs for e in doc.all_entries())
+    assert _warned(caplog, "chat", str(chat_path)), [r.getMessage() for r in caplog.records]

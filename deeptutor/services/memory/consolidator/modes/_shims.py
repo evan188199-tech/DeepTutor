@@ -92,7 +92,7 @@ async def consolidate_l3(
 
 def _to_consolidate_result(result: UpdateResult) -> ConsolidateResult:
     if result.corrupt_doc_skipped:
-        reason = "skipped: target doc exists but does not parse (left untouched)"
+        reason = "skipped: target doc exists but is unreadable/unparseable (left untouched)"
     elif result.no_new_input:
         reason = "no new input"
     else:

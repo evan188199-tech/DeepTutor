@@ -30,6 +30,7 @@ from deeptutor.services.memory.consolidator.modes._runtime import (
     OnEvent,
     call_llm,
     emit,
+    existing_doc_unparseable,
     load_doc,
     load_prompt,
     today_iso,
@@ -96,6 +97,21 @@ async def _run_dedup_inner(
     path = _path_for(layer, key)
     if not path.exists():
         await emit(on_event, {"stage": "done", "no_doc": True, "edits_applied": 0})
+        return DedupResult(
+            layer=layer, key=key, iterations_run=0, edits_applied=0, converged_early=True
+        )
+
+    if existing_doc_unparseable(path):
+        logger.warning(
+            "dedup: %s doc for key %s at %s exists but is corrupt (undecodable or "
+            "parses to no title/sections/entries); skipping dedup so the file is "
+            "not rewritten as an empty document — inspect or restore it manually",
+            layer,
+            key,
+            path,
+        )
+        await emit(on_event, {"stage": "corrupt_doc_skipped", "layer": layer, "key": key})
+        await emit(on_event, {"stage": "done", "edits_applied": 0})
         return DedupResult(
             layer=layer, key=key, iterations_run=0, edits_applied=0, converged_early=True
         )
