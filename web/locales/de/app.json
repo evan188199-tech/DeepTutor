@@ -1702,6 +1702,7 @@
   "Boundary": "Grenze",
   "Where the chunker prefers to cut.": "Wo der Chunker bevorzugt trennt.",
   "Paragraph": "Absatz",
+  "Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.": "Die gesendete Nachricht wurde nicht aus dem Entwurf entfernt. Sie könnte beim nächsten Öffnen dieses Chats erneut erscheinen.",
   "Sentence": "Satz",
   "Min chunk chars": "Min. Chunk-Zeichen",
   "Max chunk chars": "Max. Chunk-Zeichen",

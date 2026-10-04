@@ -506,6 +506,11 @@ export default memo(function ChatComposer({
   const CapIcon = activeCap.icon;
 
   const [hasContent, setHasContent] = useState(false);
+  // A failed clear leaves the sent text in storage, so the next mount
+  // restores it into the composer as if it were an unsent draft. Surfaced
+  // as a quiet status line instead of staying invisible; dismissed as soon
+  // as the user starts typing a new draft.
+  const [draftClearFailed, setDraftClearFailed] = useState(false);
   const [moreCapsOpen, setMoreCapsOpen] = useState(false);
   const [lastCapMenuOpen, setLastCapMenuOpen] = useState(capMenuOpen);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -684,13 +689,28 @@ export default memo(function ChatComposer({
   const handleInputChange = useCallback((val: string) => {
     const next = !!val.trim();
     setHasContent((prev) => (prev === next ? prev : next));
+    // New input starts a fresh draft; any stale clear-failure notice from
+    // the previous send no longer applies to what is being typed now.
+    setDraftClearFailed(false);
   }, []);
 
   const doSend = useCallback(
     (content: string) => {
       onSend(content);
       if (!restoreFailedRef.current) {
-        void saveWorkspaceDraft({ text: "", attachments: [] }).catch(() => {});
+        // The learner never saw the stored draft, so clearing it on their
+        // behalf would be wrong; when restore failed the switch-time merge
+        // owns the stored draft instead. Only a failed clear of a draft the
+        // learner did see and send leaves stale text worth warning about.
+        void saveWorkspaceDraft({ text: "", attachments: [] })
+          .then(() => setDraftClearFailed(false))
+          .catch((error) => {
+            console.warn(
+              "Failed to clear the workspace draft after send:",
+              error,
+            );
+            setDraftClearFailed(true);
+          });
       }
       setHasContent(false);
       inputHandleRef.current?.clear();
@@ -1122,7 +1142,13 @@ export default memo(function ChatComposer({
             </div>
           )}
 
-          {/* Claude-style chrome-free toolbar: no divider against the input
+          {draftClearFailed && (
+            <div role="status" className="px-4 pb-2 text-[11px] text-red-600">
+              {t("Sent message wasn't cleared from the composer draft — it may reappear next time you open this chat.")}
+            </div>
+          )}
+
+           {/* Claude-style chrome-free toolbar: no divider against the input
               area, no pill borders — quiet text/icon buttons that surface
               on hover. */}
           <div className="px-3 pb-2 pt-0.5">
