@@ -1,0 +1,14 @@
+
+> opentutor-web@1.0.0 perf:check
+> node ./scripts/route_budgets.mjs
+
+Route budgets (raw production JS; framework and root app shell excluded):
+OK   /chat                                           1008KB / budget 1020KB
+OK   /chat/[sessionId]                               1008KB / budget 1020KB
+OK   /settings                                        116KB / budget 840KB
+OK   /knowledge-bases                                 330KB / budget 550KB
+OK   /co-writer                                       273KB / budget 320KB
+OK   /co-writer/[docId]                               378KB / budget 515KB
+OK   /learning/reading/[workspaceId]/sessions/[sessionId] 1155KB / budget 1160KB
+OK   /learning/mastery/[pathId]/sessions/[sessionId]  927KB / budget 980KB
+OK   root-app-shell                                   274KB / budget 390KB
