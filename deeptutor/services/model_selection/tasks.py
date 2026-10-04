@@ -70,6 +70,7 @@ class TaskKind(StrEnum):
     READING_VOCABULARY = "reading_vocabulary"
     READING_TRANSLATION = "reading_translation"
     READING_GUIDANCE = "reading_guidance"
+    READING_ENTITY_GRAPH = "reading_entity_graph"
 
 
 @dataclass(frozen=True)
@@ -93,6 +94,7 @@ TASK_KINDS: tuple[TaskKindSpec, ...] = (
     TaskKindSpec(TaskKind.READING_TRANSLATION, "reading"),
     TaskKindSpec(TaskKind.READING_GUIDANCE, "reading"),
     TaskKindSpec(TaskKind.READING_QUIZ, "reading"),
+    TaskKindSpec(TaskKind.READING_ENTITY_GRAPH, "reading"),
 )
 
 # The three ways a task model can be chosen, global or per kind. A fourth state

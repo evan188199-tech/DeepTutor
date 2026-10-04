@@ -102,6 +102,7 @@ guided_learning = "deeptutor.reading.study_guidance:StudyGuidanceExtension"
 vocabulary = "deeptutor.reading.vocabulary:VocabularyExtension"
 quiz = "deeptutor.reading.quiz:ReadingQuizExtension"
 translation = "deeptutor.reading.translation:TranslationExtension"
+entity_graph = "deeptutor.reading.entity_graph:EntityGraphExtension"
 
 [project.optional-dependencies]
 # Compatibility extra for source installs and older docs. These packages are

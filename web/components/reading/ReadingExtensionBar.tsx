@@ -19,6 +19,7 @@ import {
   type ReadingExtensionResult,
 } from "@/lib/reading-api";
 import { useReadingActions } from "./reading-actions-context";
+import Mermaid from "@/components/Mermaid";
 import Tooltip from "@/shared/ui/Tooltip";
 
 type VocabularyTerm = {
@@ -38,6 +39,13 @@ type TranslationResult = {
   translation: string;
   alternatives: string[];
   note: string;
+};
+
+type GraphEdge = {
+  source: string;
+  target: string;
+  label: string;
+  evidence: string;
 };
 
 const PRIMARY_ACTION_ICONS = [Volume2, BookOpenText, PencilLine] as const;
@@ -329,6 +337,9 @@ export function builtInActionLabel(extensionId: string, actionId: string) {
   if (extensionId === "translation" && actionId === "translate_zh") {
     return "Translate to Chinese";
   }
+  if (extensionId === "entity_graph" && actionId === "build") {
+    return "Relationship graph";
+  }
   return "";
 }
 
@@ -381,6 +392,21 @@ export function ExtensionResult({
       : [],
     note: String(result.payload.note || ""),
   };
+  const graphEdges: GraphEdge[] = Array.isArray(result.payload.edges)
+    ? result.payload.edges
+        .map((row) => {
+          if (typeof row !== "object" || row === null) return null;
+          const edge = row as Partial<GraphEdge>;
+          return {
+            source: String(edge.source || ""),
+            target: String(edge.target || ""),
+            label: String(edge.label || ""),
+            evidence: String(edge.evidence || ""),
+          };
+        })
+        .filter((row): row is GraphEdge => row !== null)
+    : [];
+  const graphMermaid = String(result.payload.mermaid || "");
   const body = String(result.payload.body || result.payload.overview || "");
   const card = variant === "card";
   return (
@@ -448,6 +474,23 @@ export function ExtensionResult({
             </div>
           ))}
         </dl>
+      ) : null}
+      {graphMermaid ? <Mermaid chart={graphMermaid} className="my-2" /> : null}
+      {graphEdges.length ? (
+        <ul className="mt-2 space-y-2">
+          {graphEdges.map((edge, index) => (
+            <li
+              key={`${index}-${edge.source}-${edge.target}`}
+              className="border-t border-[var(--border)] pt-2 first:border-t-0 first:pt-0"
+            >
+              <span className="font-medium">
+                {edge.source} → {edge.target}
+              </span>
+              <span className="text-[var(--muted-foreground)]"> · {edge.label}</span>
+              <p className="mt-1 text-[11px] text-[var(--muted-foreground)]">{edge.evidence}</p>
+            </li>
+          ))}
+        </ul>
       ) : null}
       {questions.length ? (
         <QuizQuestions

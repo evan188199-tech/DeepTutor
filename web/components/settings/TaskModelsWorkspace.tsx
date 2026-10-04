@@ -81,6 +81,10 @@ const TASK_TEXT: Record<string, { label: string; detail: string }> = {
     label: "Reading questions",
     detail: "Writes practice questions from what you are reading.",
   },
+  reading_entity_graph: {
+    label: "Character & entity graph",
+    detail: "Maps who or what the current chapter connects, with evidence.",
+  },
 };
 
 /** Section heading per task group, in the order the backend returns them. */
