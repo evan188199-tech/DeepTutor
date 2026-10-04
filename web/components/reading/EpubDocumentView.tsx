@@ -15,9 +15,14 @@ import {
 import {
   allowsEpubPageTurn,
   directionForEpubLayout,
+  epubPaperMaxWidth,
+  EPUB_SPREAD_MIN_READER_WIDTH_PX,
   locatorForEpubHref,
+  renditionSpreadForEpubMode,
   resolveEpubPageTurnSwipe,
+  resolveEpubSpreadLayout,
   type EpubPageTurnDirection,
+  type EpubSpreadLayout,
 } from "@/lib/epub-page-turn";
 import { extractEpubHeadings, type ReaderHeading } from "@/lib/reading-outline";
 import {
@@ -57,7 +62,7 @@ type EpubRendition = {
   next: () => Promise<unknown>;
   prev: () => Promise<unknown>;
   resize: (width: number, height: number) => void;
-  spread: (mode: "none" | "auto") => void;
+  spread: (mode: "none" | "always" | "auto", min?: number) => void;
   destroy: () => void;
   on: (event: string, callback: (...args: unknown[]) => void) => void;
   off: (event: string, callback: (...args: unknown[]) => void) => void;
@@ -109,6 +114,7 @@ const HIGHLIGHT_COLORS: Record<string, string> = {
 function applyEpubDisplayPreferences(
   rendition: EpubRendition,
   preferences: ReaderDisplayPreferences,
+  layout: EpubSpreadLayout,
 ) {
   const fontFamily = preferences.serif
     ? "ui-serif, Georgia, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', serif"
@@ -120,16 +126,15 @@ function applyEpubDisplayPreferences(
         ? { background: "#16181d", color: "#e8e5df" }
         : null;
 
-  // The theme stylesheet is replaced on each preference change. EPUB
-  // publishers often set font and ink directly on paragraphs or spans; a
-  // body-only epub.js override cannot beat those declarations (#1447).
+  // Publisher styles stay authoritative: the theme supplies only a root
+  // fallback font and ink on <body>, plus image bounds and overflow
+  // protection. Forcing font-family and color onto every paragraph and span
+  // replaced publisher typography (#1236).
   rendition.themes.registerCss(
     "deeptutor",
-    `body { font-family: ${fontFamily} !important; font-size: ${preferences.fontSize}px !important; ${paper ? `background-color: ${paper.background} !important; color: ${paper.color} !important;` : ""} }
-     body :is(p, span, div, li, blockquote) { font-family: ${fontFamily} !important; font-size: inherit !important; ${paper ? `color: ${paper.color} !important;` : ""} }
-     body :is(h1, h2, h3, h4, h5, h6) { font-family: ${fontFamily} !important; ${paper ? `color: ${paper.color} !important;` : ""} }
-     body * { vertical-align: baseline; }
-     img { max-width: 100% !important; max-height: 85vh !important; height: auto !important; object-fit: contain !important; }`,
+    `body { font-family: ${fontFamily}; font-size: ${preferences.fontSize}px;${paper ? ` background-color: ${paper.background}; color: ${paper.color};` : ""} }
+     img { max-width: 100% !important; max-height: 85vh !important; height: auto !important; object-fit: contain !important; }
+     body * { vertical-align: baseline; }`,
   );
   rendition.themes.select("deeptutor");
   rendition.themes.fontSize(`${preferences.fontSize}px`);
@@ -137,8 +142,15 @@ function applyEpubDisplayPreferences(
   // can fit a third visible column after the sidebar collapses (#1447).
   rendition.themes.override(
     "column-count",
-    preferences.spreadMode === "none" ? "1" : "2",
+    layout === "double" ? "2" : "1",
     true,
+  );
+}
+
+/** The real available reader width, tolerating test layouts without layout. */
+function elementWidth(element: HTMLElement): number {
+  return (
+    element.clientWidth || Math.round(element.getBoundingClientRect().width)
   );
 }
 
@@ -181,6 +193,7 @@ export function EpubDocumentView({
 }: EpubDocumentViewProps) {
   const { t } = useTranslation();
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const bookAreaRef = useRef<HTMLDivElement | null>(null);
   const bookRef = useRef<EpubBook | null>(null);
   const renditionRef = useRef<EpubRendition | null>(null);
   const isRtlRef = useRef(false);
@@ -195,12 +208,13 @@ export function EpubDocumentView({
   const errorRef = useRef(onError);
   const locatorRef = useRef(1);
   const preferencesRef = useRef(DEFAULT_READER_DISPLAY_PREFERENCES);
-  const activeSpreadRef = useRef(DEFAULT_READER_DISPLAY_PREFERENCES.spreadMode);
+  const spreadLayoutRef = useRef<EpubSpreadLayout>("single");
   const relayoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const relayoutAnchorRef = useRef<string | undefined>(undefined);
   const [preferences, setPreferences] = useState<ReaderDisplayPreferences>(
     DEFAULT_READER_DISPLAY_PREFERENCES,
   );
+  const [spreadLayout, setSpreadLayout] = useState<EpubSpreadLayout>("single");
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
 
@@ -220,29 +234,58 @@ export function EpubDocumentView({
     [],
   );
 
-  const scheduleRelayout = useCallback((anchor?: string) => {
-    if (anchor) relayoutAnchorRef.current = anchor;
-    if (relayoutTimerRef.current) clearTimeout(relayoutTimerRef.current);
-    relayoutTimerRef.current = setTimeout(() => {
-      relayoutTimerRef.current = null;
-      const rendition = renditionRef.current;
-      const host = hostRef.current;
-      if (!rendition || !host) return;
-      const bounds = host.getBoundingClientRect();
-      const width = Math.round(bounds.width);
-      const height = Math.round(bounds.height);
-      if (!width || !height) return;
-      const cfi =
-        relayoutAnchorRef.current ?? rendition.currentLocation()?.start?.cfi;
-      relayoutAnchorRef.current = undefined;
-      rendition.resize(width, height);
-      if (cfi) {
-        void rendition.display(cfi).catch(() => {
-          // A stale publisher CFI must not break the current reading page.
-        });
-      }
-    }, 100);
+  // Repaginate from the real available size whenever side panels, the window
+  // or the preferences change. The layout is decided from the book area (the
+  // pane width the reader actually owns), not from the paper it renders into,
+  // so the width cap on the paper can never lock the layout in place (#1236).
+  const relayout = useCallback(() => {
+    const rendition = renditionRef.current;
+    const area = bookAreaRef.current;
+    const host = hostRef.current;
+    if (!rendition || !area || !host) return;
+    const nextLayout = resolveEpubSpreadLayout(
+      preferencesRef.current.spreadMode,
+      elementWidth(area),
+    );
+    const bounds = host.getBoundingClientRect();
+    const width = Math.round(bounds.width);
+    const height = Math.round(bounds.height);
+    if (!width || !height) return;
+    if (spreadLayoutRef.current !== nextLayout) {
+      spreadLayoutRef.current = nextLayout;
+      setSpreadLayout(nextLayout);
+      rendition.spread(
+        renditionSpreadForEpubMode(nextLayout),
+        EPUB_SPREAD_MIN_READER_WIDTH_PX,
+      );
+      applyEpubDisplayPreferences(
+        rendition,
+        preferencesRef.current,
+        nextLayout,
+      );
+    }
+    const cfi =
+      relayoutAnchorRef.current ?? rendition.currentLocation()?.start?.cfi;
+    relayoutAnchorRef.current = undefined;
+    rendition.resize(width, height);
+    if (cfi) {
+      void rendition.display(cfi).catch(() => {
+        // A stale publisher CFI must not break the current reading page.
+      });
+    }
   }, []);
+
+  const scheduleRelayout = useCallback(
+    (anchor?: string) => {
+      if (anchor) relayoutAnchorRef.current = anchor;
+      if (relayoutTimerRef.current) clearTimeout(relayoutTimerRef.current);
+      relayoutTimerRef.current = setTimeout(() => {
+        relayoutTimerRef.current = null;
+        relayout();
+      }, 100);
+    },
+    [relayout],
+  );
 
   useEffect(() => {
     refsRef.current = unitRefs;
@@ -433,16 +476,26 @@ export function EpubDocumentView({
         await book.ready;
         if (cancelled) return;
         isRtlRef.current = book.package?.metadata?.direction === "rtl";
+        const initialLayout = resolveEpubSpreadLayout(
+          preferencesRef.current.spreadMode,
+          elementWidth(bookAreaRef.current ?? host),
+        );
+        spreadLayoutRef.current = initialLayout;
+        setSpreadLayout(initialLayout);
         rendition = book.renderTo(host, {
           width: "100%",
           height: "100%",
           flow: "paginated",
-          spread: preferencesRef.current.spreadMode,
+          spread: renditionSpreadForEpubMode(initialLayout),
+          minSpreadWidth: EPUB_SPREAD_MIN_READER_WIDTH_PX,
           allowScriptedContent: false,
         });
         renditionRef.current = rendition;
-        activeSpreadRef.current = preferencesRef.current.spreadMode;
-        applyEpubDisplayPreferences(rendition, preferencesRef.current);
+        applyEpubDisplayPreferences(
+          rendition,
+          preferencesRef.current,
+          initialLayout,
+        );
         rendition.on("relocated", onRelocated);
         rendition.on("selected", onSelected);
         rendition.on("keydown", onRenditionKey);
@@ -506,24 +559,35 @@ export function EpubDocumentView({
   useEffect(() => {
     const rendition = renditionRef.current;
     if (!rendition || loading) return;
-    applyEpubDisplayPreferences(rendition, preferences);
-    let anchor: string | undefined;
-    if (activeSpreadRef.current !== preferences.spreadMode) {
-      // Keep the current CFI before epub.js replaces its page geometry.
-      anchor = rendition.currentLocation()?.start?.cfi;
-      rendition.spread(preferences.spreadMode);
-      activeSpreadRef.current = preferences.spreadMode;
-    }
-    scheduleRelayout(anchor);
+    applyEpubDisplayPreferences(
+      rendition,
+      preferences,
+      spreadLayoutRef.current,
+    );
+    // relayout() re-reads the preference and reconciles the spread layout
+    // with the current available width, keeping the visible CFI anchored.
+    scheduleRelayout();
   }, [loading, preferences, scheduleRelayout]);
 
   useEffect(() => {
+    const area = bookAreaRef.current;
     const host = hostRef.current;
-    if (loading || !host || !renditionRef.current) return;
+    if (loading || !area || !host || !renditionRef.current) return;
     if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => scheduleRelayout());
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        scheduleRelayout();
+      });
+    });
+    observer.observe(area);
     observer.observe(host);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [loading, scheduleRelayout]);
 
   useEffect(() => {
@@ -648,36 +712,41 @@ export function EpubDocumentView({
           showSpread
         />
       </div>
-      <div className="relative min-h-0 flex-1">
+      <div
+        ref={bookAreaRef}
+        className="dt-epub-book-area relative min-h-0 flex-1"
+      >
         <div
-          ref={hostRef}
-          className="mx-auto h-full w-full"
+          className="dt-epub-book"
+          data-spread={spreadLayout}
           style={{
-            maxWidth:
-              preferences.spreadMode === "none"
-                ? `calc(${preferences.lineWidth}ch + 4rem)`
-                : `calc(${preferences.lineWidth * 2}ch + 6rem)`,
+            maxWidth: epubPaperMaxWidth(spreadLayout, preferences.lineWidth),
             fontSize: `${preferences.fontSize}px`,
           }}
-          aria-label={t("Immersive reading")}
-        />
-        {loading && (
+        >
           <div
-            className="absolute inset-0 flex items-center justify-center gap-2 text-xs"
-            style={surface}
-          >
-            <Loader2 size={15} className="animate-spin" />
-            {t("Opening document…")}
-          </div>
-        )}
-        {!loading && loadError && (
-          <div
-            role="alert"
-            className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[var(--destructive)]"
-          >
-            {loadError}
-          </div>
-        )}
+            ref={hostRef}
+            className="dt-epub-rendition h-full w-full"
+            aria-label={t("Immersive reading")}
+          />
+          {loading && (
+            <div
+              className="absolute inset-0 flex items-center justify-center gap-2 text-xs"
+              style={surface}
+            >
+              <Loader2 size={15} className="animate-spin" />
+              {t("Opening document…")}
+            </div>
+          )}
+          {!loading && loadError && (
+            <div
+              role="alert"
+              className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[var(--destructive)]"
+            >
+              {loadError}
+            </div>
+          )}
+        </div>
         {!loadError && (
           <>
             <button

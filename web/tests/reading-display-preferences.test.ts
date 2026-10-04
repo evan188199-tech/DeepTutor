@@ -39,7 +39,8 @@ test("reset includes typography and theme preferences", () => {
     lineWidth: 84,
     serif: true,
     readerTheme: "auto",
-    spreadMode: "none",
+    // Wide readers default to the responsive two-page spread (#1236).
+    spreadMode: "auto",
   });
   assert.match(
     reader,
@@ -71,7 +72,7 @@ test("stored preferences are bounded and malformed values fall back", () => {
       lineWidth: 84,
       serif: true,
       readerTheme: "auto",
-      spreadMode: "none",
+      spreadMode: "auto",
     },
   );
 });

@@ -63,12 +63,13 @@ let publisherParagraph: HTMLParagraphElement | null = null;
 let themeStyle: HTMLStyleElement | null = null;
 
 beforeEach(() => {
+  localStorage.removeItem("dt.reader.textPreferences");
   fixture.locations.percentageFromCfi.mockReturnValue(null);
   fixture.rendition.currentLocation.mockReturnValue({
     start: { cfi: "epubcfi(/6/2)" },
   });
   fixture.rendition.themes.registerCss.mockReset();
-  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+  vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
     x: 0,
     y: 0,
     top: 0,
@@ -82,13 +83,14 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   publisherParagraph?.remove();
   themeStyle?.remove();
   publisherParagraph = null;
   themeStyle = null;
 });
 
-it("opens EPUB in single-page mode and keeps the CFI when switching spreads", async () => {
+it("opens a wide reader as a two-page spread and keeps the CFI when switching layouts", async () => {
   render(
     <EpubDocumentView
       materialId="book"
@@ -103,18 +105,79 @@ it("opens EPUB in single-page mode and keeps the CFI when switching spreads", as
   await waitFor(() =>
     expect(fixture.renderTo).toHaveBeenCalledWith(
       expect.any(Element),
-      expect.objectContaining({ spread: "none" }),
+      expect.objectContaining({ spread: "always", minSpreadWidth: 900 }),
     ),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Switch to two-page spread" }));
+  const paper = document.querySelector(".dt-epub-book");
+  expect(paper?.getAttribute("data-spread")).toBe("double");
+  expect((paper as HTMLElement).style.maxWidth).toContain("168ch");
 
-  await waitFor(() => expect(fixture.rendition.spread).toHaveBeenCalledWith("auto"));
+  // The manual control remains an opt-out of the responsive spread.
+  fireEvent.click(screen.getByRole("button", { name: "Switch to single-page view" }));
+
+  await waitFor(() => expect(fixture.rendition.spread).toHaveBeenCalledWith("none", 900));
   await waitFor(() =>
     expect(fixture.rendition.resize).toHaveBeenCalledWith(900, 600),
   );
   expect(fixture.rendition.display).toHaveBeenCalledWith("epubcfi(/6/2)");
+  expect(paper?.getAttribute("data-spread")).toBe("single");
+  expect((paper as HTMLElement).style.maxWidth).toContain("84ch");
   expect(JSON.parse(localStorage.getItem("dt.reader.textPreferences") || "{}"))
-    .toMatchObject({ spreadMode: "auto" });
+    .toMatchObject({ spreadMode: "none" });
+});
+
+it("repaginates from the real available width when the reader pane narrows (#1236)", async () => {
+  const resizeCallbacks: Array<() => void> = [];
+  class FakeResizeObserver {
+    constructor(private readonly callback: () => void) {}
+    observe() {
+      resizeCallbacks.push(this.callback);
+    }
+    unobserve() {}
+    disconnect() {}
+  }
+  vi.stubGlobal("ResizeObserver", FakeResizeObserver);
+  render(
+    <EpubDocumentView
+      materialId="book"
+      unitCount={1}
+      unitRefs={[]}
+      annotations={[]}
+      jump={null}
+      onSelection={() => undefined}
+    />,
+  );
+
+  await waitFor(() =>
+    expect(fixture.renderTo).toHaveBeenCalledWith(
+      expect.any(Element),
+      expect.objectContaining({ spread: "always" }),
+    ),
+  );
+  const paper = document.querySelector(".dt-epub-book");
+  expect(paper?.getAttribute("data-spread")).toBe("double");
+
+  vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: 640,
+    bottom: 600,
+    width: 640,
+    height: 600,
+    toJSON: () => ({}),
+  });
+  resizeCallbacks.forEach((notify) => notify());
+
+  await waitFor(() =>
+    expect(fixture.rendition.spread).toHaveBeenCalledWith("none", 900),
+  );
+  await waitFor(() =>
+    expect(fixture.rendition.resize).toHaveBeenCalledWith(640, 600),
+  );
+  expect(fixture.rendition.display).toHaveBeenCalledWith("epubcfi(/6/2)");
+  expect(paper?.getAttribute("data-spread")).toBe("single");
 });
 
 it("resolves outline anchors through epub.js spine-relative hrefs", async () => {
@@ -151,10 +214,8 @@ it("resolves outline anchors through epub.js spine-relative hrefs", async () => 
   );
 });
 
-it("overrides a publisher's explicit paragraph and span ink and font", async () => {
+it("keeps publisher typography while supplying root fallbacks and image bounds (#1236)", async () => {
   publisherParagraph = document.createElement("p");
-  publisherParagraph.style.cssText =
-    "font-family: monospace; font-size: 11px; color: #000";
   publisherParagraph.innerHTML =
     '<span style="font-family: monospace; font-size: 11px; color: #000">Publisher text</span>';
   document.body.appendChild(publisherParagraph);
@@ -181,23 +242,34 @@ it("overrides a publisher's explicit paragraph and span ink and font", async () 
   await waitFor(() =>
     expect(fixture.renderTo).toHaveBeenCalledWith(
       expect.any(Element),
-      expect.objectContaining({ spread: "auto" }),
+      expect.objectContaining({ spread: "always" }),
     ),
   );
   const publisherSpan = publisherParagraph.querySelector("span")!;
   await waitFor(() =>
-    expect(getComputedStyle(publisherSpan).color).toBe("rgb(232, 229, 223)"),
+    expect(getComputedStyle(publisherSpan).color).toBe("rgb(0, 0, 0)"),
   );
-  expect(getComputedStyle(publisherParagraph).fontFamily).toContain("ui-sans-serif");
-  expect(getComputedStyle(publisherSpan).fontFamily).toContain("ui-sans-serif");
-  expect(getComputedStyle(publisherSpan).fontSize).toBe("23px");
+  // Publisher declarations survive: the span keeps its own type and ink.
+  expect(getComputedStyle(publisherSpan).fontFamily).toBe("monospace");
+  expect(getComputedStyle(publisherSpan).fontSize).toBe("11px");
+  // The theme supplies only root fallbacks on <body>, never per-element ink.
+  const bodyStyle = getComputedStyle(document.body);
+  expect(bodyStyle.fontFamily).toContain("ui-sans-serif");
+  expect(bodyStyle.fontSize).toBe("23px");
+  expect(bodyStyle.color).toBe("rgb(232, 229, 223)");
+  expect(bodyStyle.backgroundColor).toBe("rgb(22, 24, 29)");
+  // Overflowing images stay constrained inside the page.
+  expect(themeStyle!.textContent).toContain(
+    "img { max-width: 100% !important",
+  );
   expect(fixture.rendition.themes.fontSize).toHaveBeenCalledWith("23px");
   fireEvent.click(screen.getByRole("button", { name: "Reset reading display" }));
   await waitFor(() =>
     expect(getComputedStyle(publisherSpan).color).toBe("rgb(0, 0, 0)"),
   );
+  expect(getComputedStyle(publisherSpan).fontFamily).toBe("monospace");
   expect(JSON.parse(localStorage.getItem("dt.reader.textPreferences") || "{}"))
-    .toMatchObject({ fontSize: 17, readerTheme: "auto", spreadMode: "none" });
+    .toMatchObject({ fontSize: 17, readerTheme: "auto", spreadMode: "auto" });
 });
 
 it("drops a previous book's pending CFI before the next book relayout", async () => {
@@ -216,8 +288,8 @@ it("drops a previous book's pending CFI before the next book relayout", async ()
     <EpubDocumentView materialId="old-book" {...props} />,
   );
   await waitFor(() => expect(fixture.renderTo).toHaveBeenCalledTimes(1));
-  fireEvent.click(screen.getByRole("button", { name: "Switch to two-page spread" }));
-  await waitFor(() => expect(fixture.rendition.spread).toHaveBeenCalledWith("auto"));
+  fireEvent.click(screen.getByRole("button", { name: "Switch to single-page view" }));
+  await waitFor(() => expect(fixture.rendition.spread).toHaveBeenCalledWith("none", 900));
   const oldCfiDisplays = fixture.rendition.display.mock.calls.filter(
     ([cfi]) => cfi === "epubcfi(/6/old-book)",
   ).length;

@@ -23,7 +23,9 @@ export const DEFAULT_READER_DISPLAY_PREFERENCES: ReaderDisplayPreferences = {
   lineWidth: DEFAULT_LINE_WIDTH,
   serif: true,
   readerTheme: "auto",
-  spreadMode: "none",
+  // Wide readers open as a two-page book; the responsive layout narrows to a
+  // single page when the real available width cannot host two leaves (#1236).
+  spreadMode: "auto",
 };
 
 function bounded(
@@ -49,7 +51,9 @@ export function normaliseReaderDisplayPreferences(
   )
     ? (row.readerTheme as ReaderTheme)
     : DEFAULT_READER_DISPLAY_PREFERENCES.readerTheme;
-  const spreadMode = row.spreadMode === "auto" ? "auto" : "none";
+  const spreadMode = ["none", "auto"].includes(String(row.spreadMode))
+    ? (row.spreadMode as EpubSpreadMode)
+    : DEFAULT_READER_DISPLAY_PREFERENCES.spreadMode;
   return {
     fontSize: bounded(
       row.fontSize,
