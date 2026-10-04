@@ -1,0 +1,9 @@
+d8bd20c60b5104f9fb31a7f00102925dd3faad25c6c0cfe4b5e5fb0cbe5b7d4c  ./raw/analysis.json
+90b16be4dae0891f6d476f5084e638a5da5e3853274d306549f920a2f55c780f  ./raw/py_imports.json
+9b0b900c1914222e74a164d0484cf9c83b33bac41c8b9c106c3633c1b3f64fc4  ./raw/web_analysis.json
+9bbc05dc692a0bbd5c97fa3b3ea0de6cb8b4f52eaf7ee2f46c81ffb46570dc6c  ./raw/web_imports.json
+d7a7ff1bff10ab5c42fba8463fc003340f2dc98351b5ab52b96678ed5ef979ff  ./report.md
+f2487a37a1c77c491849fa393353b705c25d5a155e064d0c22678839b4225270  ./scripts/compare.py
+7ef1e134919816d9f21ac26078164cd12a72496993236325185960fdf5decf2c  ./scripts/py_imports.py
+187f6c3bf68b554ea9ac8351c3692e3cf11d66612969ae789a8cd74358e9d731  ./scripts/web_compare.py
+64738473e2d045007cab4dc3f64e0ce73f1bed991b4e8be26b18fb069ae3187c  ./scripts/web_imports.py

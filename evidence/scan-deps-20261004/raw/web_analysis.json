@@ -1,0 +1,197 @@
+{
+ "imported_count": 38,
+ "declared_count": 48,
+ "category1_undeclared": [
+  {
+   "pkg": "jszip",
+   "files": [
+    "web/tests/epub-reader.audit.ts"
+   ],
+   "static": 1,
+   "dynamic": 0,
+   "require": 0
+  },
+  {
+   "pkg": "playwright",
+   "files": [
+    "web/scripts/probe-right-edge.mjs"
+   ],
+   "static": 1,
+   "dynamic": 0,
+   "require": 0
+  },
+  {
+   "pkg": "prettier",
+   "files": [
+    "web/scripts/generate-contracts.mjs"
+   ],
+   "static": 1,
+   "dynamic": 0,
+   "require": 0
+  }
+ ],
+ "category2_unused": [
+  {
+   "pkg": "@testing-library/dom",
+   "kind": "devDependencies",
+   "spec": "^10.4.1",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "@types/node",
+   "kind": "devDependencies",
+   "spec": "^25",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "@types/react",
+   "kind": "devDependencies",
+   "spec": "^19",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "@types/react-dom",
+   "kind": "devDependencies",
+   "spec": "^19",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "@types/react-syntax-highlighter",
+   "kind": "devDependencies",
+   "spec": "^15.5.13",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "autoprefixer",
+   "kind": "devDependencies",
+   "spec": "^10.4.20",
+   "text_refs": [
+    "package.json",
+    "postcss.config.js"
+   ]
+  },
+  {
+   "pkg": "cytoscape",
+   "kind": "dependencies",
+   "spec": "^3.33.1",
+   "text_refs": [
+    "next.config.js",
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "dependency-cruiser",
+   "kind": "devDependencies",
+   "spec": "^17.4.3",
+   "text_refs": [
+    "package.json",
+    "lib/random-uuid.ts"
+   ]
+  },
+  {
+   "pkg": "eslint",
+   "kind": "devDependencies",
+   "spec": "^9",
+   "text_refs": [
+    "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+    "app/(utility)/notebooks/NotebooksRoute.tsx",
+    "contracts/generated/turn-protocol.ts",
+    "features/chat/messages/ChatMessageList.tsx",
+    "features/chat/ChatStateAdapter.tsx",
+    "features/chat/components/ChatWorkspace.tsx",
+    "features/knowledge/components/engines/EngineDetail.tsx",
+    "tests/voice-settings.spec.tsx"
+   ]
+  },
+  {
+   "pkg": "html2canvas",
+   "kind": "dependencies",
+   "spec": "^1.4.1",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "jsdom",
+   "kind": "devDependencies",
+   "spec": "^29.1.1",
+   "text_refs": [
+    "vitest.config.mts",
+    "tests/integration/mastery-teaching.spec.tsx",
+    "tests/learning-dashboard.spec.tsx",
+    "tests/setup/rendered.ts",
+    "tests/reading-learning-mode.spec.tsx",
+    "tests/pdf-reading-resize.spec.tsx",
+    "components/settings/RegistryControls.tsx",
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "json-schema-to-typescript",
+   "kind": "devDependencies",
+   "spec": "^16.0.0",
+   "text_refs": [
+    "contracts/generated/turn-protocol.ts",
+    "package.json",
+    "scripts/generate-contracts.mjs"
+   ]
+  },
+  {
+   "pkg": "openapi-typescript",
+   "kind": "devDependencies",
+   "spec": "^7.13.0",
+   "text_refs": [
+    "contracts/generated/api.ts",
+    "package.json",
+    "scripts/generate-contracts.mjs"
+   ]
+  },
+  {
+   "pkg": "postcss",
+   "kind": "devDependencies",
+   "spec": "^8",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "react-chartjs-2",
+   "kind": "dependencies",
+   "spec": "^5.3.1",
+   "text_refs": [
+    "package.json"
+   ]
+  },
+  {
+   "pkg": "tailwindcss",
+   "kind": "devDependencies",
+   "spec": "^3.4.17",
+   "text_refs": [
+    "tailwind.config.js",
+    "package.json",
+    "postcss.config.js"
+   ]
+  }
+ ],
+ "category3_guarded_dynamic_undeclared": [],
+ "category4_lockfile_drift": [],
+ "category4_overrides": [
+  {
+   "parent": "epubjs",
+   "pkg": "@xmldom/xmldom",
+   "override": "^0.9.12",
+   "lock_version": "0.9.12"
+  }
+ ],
+ "lockfile_version": 3
+}
