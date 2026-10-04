@@ -1433,7 +1433,7 @@ class ProviderModeUpdate(BaseModel):
     mode: str
 
 
-@router.put("/knowledge-bases/rag-providers/{provider}/mode")
+@router.put("/knowledge-bases/rag-providers/{provider}/mode", dependencies=[Depends(require_admin)])
 async def set_rag_provider_mode(provider: str, payload: ProviderModeUpdate):
     """Persist the default retrieval mode for a mode-aware engine.
 
@@ -1963,7 +1963,7 @@ class ActiveModelUpdate(BaseModel):
     model_id: str
 
 
-@router.put("/knowledge-bases/rag-pipelines/active-model")
+@router.put("/knowledge-bases/rag-pipelines/active-model", dependencies=[Depends(require_admin)])
 async def set_rag_active_model(payload: ActiveModelUpdate):
     """Set the active model for an engine's required kind, applied immediately.
 
@@ -2113,7 +2113,7 @@ async def update_kb_config(kb_name: str, config: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/knowledge-bases/configs/sync")
+@router.post("/knowledge-bases/configs/sync", dependencies=[Depends(require_admin)])
 async def sync_configs_from_metadata():
     """Sync all KB configurations from their metadata.json files to centralized config."""
     try:

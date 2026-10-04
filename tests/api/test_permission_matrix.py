@@ -54,7 +54,7 @@ _ANON = "anon"
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module")
 def _hermetic_knowledge_router(tmp_path_factory) -> None:
     """Import the knowledge router against a throwaway settings root.
 
@@ -62,6 +62,12 @@ def _hermetic_knowledge_router(tmp_path_factory) -> None:
     ``PROJECT_ROOT / data/user/settings`` at import time. Pointing the config
     package at a temporary root before the first import keeps this module
     independent of whatever runtime state the surrounding checkout has.
+
+    Scoped to this module and requested only by ``matrix_env``: the patch
+    covers exactly the import below and is undone immediately afterwards, so
+    no other module's view of ``PROJECT_ROOT`` is affected, whatever the
+    collection order. If the router was already imported earlier in the
+    session, the import is a cache hit and the patch is a harmless no-op.
     """
     config_module = importlib.import_module("deeptutor.services.config")
     root = tmp_path_factory.mktemp("perm-matrix-settings")
@@ -71,7 +77,7 @@ def _hermetic_knowledge_router(tmp_path_factory) -> None:
 
     monkeypatch = pytest.MonkeyPatch()
     monkeypatch.setattr(config_module, "PROJECT_ROOT", root)
-    yield
+    importlib.import_module("deeptutor.api.routers.knowledge")
     monkeypatch.undo()
 
 
@@ -115,7 +121,7 @@ class MatrixEnv:
 
 
 @pytest.fixture
-def matrix_env(tmp_path, monkeypatch) -> MatrixEnv:
+def matrix_env(tmp_path, monkeypatch, _hermetic_knowledge_router) -> MatrixEnv:
     """One isolated deployment per cell: users, scopes and routers under tmp."""
     mods = _load_routers()
     auth_module = mods.auth
