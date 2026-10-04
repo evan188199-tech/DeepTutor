@@ -1,0 +1,1067 @@
+{
+ "count": 118,
+ "rows": [
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 3952,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`run_reindex_task`",
+   "try_body_first_line": "ProgressTracker(kb_name, Path(base_dir)).update("
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4353,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_progress`",
+   "try_body_first_line": "age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4402,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_progress`",
+   "try_body_first_line": "progress_time = datetime.fromisoformat(timestamp)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4480,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_progress`",
+   "try_body_first_line": "await websocket.send_json({\"type\": \"error\", \"message\": str(e)})"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4486,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_progress`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4491,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_progress`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 131,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`write`",
+   "try_body_first_line": "self.original_stdout.write(message)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 323,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_mimic_generate`",
+   "try_body_first_line": "await websocket.send_json({\"type\": \"error\", \"content\": error_msg})"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 567,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`update_kb_status`",
+   "try_body_first_line": "from deeptutor.services.rag.embedding_binding import entry_signature"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 2130,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`update_folder_sync_state`",
+   "try_body_first_line": "if source_mtimes is not None:"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 1252,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_handoff_pending_update`",
+   "try_body_first_line": "store.mark_failed(job.id, f\"Launcher handoff failed: {exc}\")"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/runtime/update_worker.py",
+   "line": 144,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`run_update_worker`",
+   "try_body_first_line": "current = store.load()"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/embedding/client.py",
+   "line": 204,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`embed`",
+   "try_body_first_line": "progress_callback(i + 1, total_batches)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/embedding/client.py",
+   "line": 279,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`embed_contents`",
+   "try_body_first_line": "progress_callback(i + 1, total_batches)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/memory/snapshot/adapters.py",
+   "line": 51,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_iso`",
+   "try_body_first_line": "datetime.fromisoformat(ts.replace(\"Z\", \"+00:00\"))"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/rag/pipelines/graphrag/provider.py",
+   "line": 119,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`resolve_persisted_completion_provider`",
+   "try_body_first_line": "from deeptutor.services.config import ("
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py",
+   "line": 403,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_describe_one`",
+   "try_body_first_line": "image_progress_callback(completed, total)"
+  },
+  {
+   "risk": "HIGH",
+   "file": "deeptutor/services/storage/file_library.py",
+   "line": 205,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_delete_file`",
+   "try_body_first_line": "for parent in target.parents:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/agents/base_agent.py",
+   "line": 333,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_track_tokens`",
+   "try_body_first_line": "self.token_tracker.add_usage("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/partner_groups.py",
+   "line": 530,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`partner_group_ws`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/partners.py",
+   "line": 546,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_load_persona_markdown`",
+   "try_body_first_line": "detail = get_persona_service().get_detail(name)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/partners.py",
+   "line": 553,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_load_persona_markdown`",
+   "try_body_first_line": "admin_service = PersonaService("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/partners.py",
+   "line": 2019,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`partner_chat_ws`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 153,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`flush`",
+   "try_body_first_line": "self.original_stdout.flush()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 336,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_mimic_generate`",
+   "try_body_first_line": "pusher_task.cancel()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 343,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_mimic_generate`",
+   "try_body_first_line": "while not log_queue.empty():"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 349,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_mimic_generate`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 355,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_mimic_generate`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 438,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`ws_callback`",
+   "try_body_first_line": "await log_queue.put(data)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/question.py",
+   "line": 577,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_question_generate`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 284,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 289,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 298,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 303,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 390,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 395,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 454,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "await websocket.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/quiz_judge.py",
+   "line": 459,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`websocket_quiz_judge`",
+   "try_body_first_line": "reset_current_user(user_token)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/reading.py",
+   "line": 518,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`duplicate_check`",
+   "try_body_first_line": "material_id = url_material_id(url)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/settings.py",
+   "line": 518,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`load_ui_settings`",
+   "try_body_first_line": "with open(settings_file, encoding=\"utf-8\") as handle:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/routers/settings.py",
+   "line": 2247,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`tour_status`",
+   "try_body_first_line": "cache = json.loads(tour_cache.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/api/utils/tool_options.py",
+   "line": 97,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`build_tool_options`",
+   "try_body_first_line": "definition = tool.get_definition()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/capabilities/course_study/capability.py",
+   "line": 291,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_durable_reading_position`",
+   "try_body_first_line": "workspace = catalog.get_workspace(workspace_id)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/capabilities/setup/apply.py",
+   "line": 115,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_neighbour_values`",
+   "try_body_first_line": "out[other.key] = (other.label, other.read())"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/capabilities/setup/binding.py",
+   "line": 135,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`setup_gaps`",
+   "try_body_first_line": "parsing = specs.get(\"document_parsing.engine\")"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/capabilities/setup/binding.py",
+   "line": 207,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`mark_intro_shown`",
+   "try_body_first_line": "from deeptutor.services.settings.interface_settings import set_ui_setting"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/co_writer/docx_converter.py",
+   "line": 256,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_style_name`",
+   "try_body_first_line": "if paragraph.style is not None and paragraph.style.name:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/co_writer/docx_converter.py",
+   "line": 340,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_run_to_markdown`",
+   "try_body_first_line": "if run.font.strike:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/co_writer/docx_converter.py",
+   "line": 356,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_table_to_markdown`",
+   "try_body_first_line": "cells = [_cell_text(cell) for cell in row.cells]"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 1295,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`get_default`",
+   "try_body_first_line": "from deeptutor.services.config import get_kb_config_service"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 1616,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`get_info`",
+   "try_body_first_line": "raw_count = sum(1 for _ in iter_kb_documents(raw_dir)) if raw_dir else 0"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 1623,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`get_info`",
+   "try_body_first_line": "images_count = ("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/knowledge/manager.py",
+   "line": 1630,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`get_info`",
+   "try_body_first_line": "content_lists_count = ("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/email.py",
+   "line": 377,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_fetch_messages`",
+   "try_body_first_line": "client.logout()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/matrix.py",
+   "line": 529,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_set_typing`",
+   "try_body_first_line": "response = await self.client.room_typing("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/mochat.py",
+   "line": 360,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`stop`",
+   "try_body_first_line": "await self._socket.disconnect()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/mochat.py",
+   "line": 512,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_start_socket_client`",
+   "try_body_first_line": "await client.disconnect()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/napcat.py",
+   "line": 172,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`stop`",
+   "try_body_first_line": "await self._ws.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/napcat.py",
+   "line": 178,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`stop`",
+   "try_body_first_line": "await self._http.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/qq.py",
+   "line": 134,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`stop`",
+   "try_body_first_line": "await self._client.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/telegram.py",
+   "line": 519,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_send_with_streaming`",
+   "try_body_first_line": "step = max(len(text) // 8, 40)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/zulip.py",
+   "line": 173,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`stop`",
+   "try_body_first_line": "self._client.deregister(self._queue_id)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/partners/channels/zulip.py",
+   "line": 858,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_typing_loop`",
+   "try_body_first_line": "self._client.set_typing_status("
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/reading/references.py",
+   "line": 118,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`resolve_reading_sources`",
+   "try_body_first_line": "current_manifest = active_store.manifest(material_id)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/reading/references.py",
+   "line": 135,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`resolve_reading_sources`",
+   "try_body_first_line": "body = read_unit(material_id, locator).strip()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 146,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.path_service import PathService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 152,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.config.runtime_settings import RuntimeSettingsService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 158,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.config.model_catalog import ModelCatalogService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 260,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_terminate`",
+   "try_body_first_line": "_send_tree_signal(proc.process.pid, proc.pgid, signal.SIGTERM)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 267,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_terminate`",
+   "try_body_first_line": "_send_tree_signal(proc.process.pid, proc.pgid, KILL_SIGNAL)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 502,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_kill_port_listeners`",
+   "try_body_first_line": "_send_tree_signal(pid, None, signal.SIGTERM)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 511,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_kill_port_listeners`",
+   "try_body_first_line": "_send_tree_signal(pid, None, KILL_SIGNAL)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 638,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_copy_packaged_web_if_needed`",
+   "try_body_first_line": "if json.loads(marker.read_text(encoding=\"utf-8\")) == marker_payload:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 787,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_ensure_source_production_build`",
+   "try_body_first_line": "if json.loads(marker.read_text(encoding=\"utf-8\")) == payload:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/launcher.py",
+   "line": 943,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_detect_existing_source_frontend`",
+   "try_body_first_line": "payload = json.loads(lock_path.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/runtime/memory_probe.py",
+   "line": 304,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_host_memory`",
+   "try_body_first_line": "vm = psutil.virtual_memory()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/codebuddy_auth.py",
+   "line": 79,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`cancel_login`",
+   "try_body_first_line": "await flow.cancel()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/codebuddy_auth.py",
+   "line": 99,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`logout`",
+   "try_body_first_line": "await flow.cancel()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/codex_auth/service.py",
+   "line": 872,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`logout`",
+   "try_body_first_line": "await self._oauth.revoke(credentials)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/codex_auth/service.py",
+   "line": 882,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`logout`",
+   "try_body_first_line": "await self._catalog.invalidate()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/config/model_catalog.py",
+   "line": 642,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`get_model_catalog_service`",
+   "try_body_first_line": "from deeptutor.multi_user.context import get_current_user"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/config/readiness.py",
+   "line": 872,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_redis_reachable`",
+   "try_body_first_line": "await asyncio.wait_for(coordinator.close(), timeout=1.0)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/config/settings_spec.py",
+   "line": 471,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_clear_runtime_caches`",
+   "try_body_first_line": "from deeptutor.services.llm import clear_llm_config_cache"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/embedding/adapters/openai_sdk.py",
+   "line": 113,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`embed`",
+   "try_body_first_line": "await client.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/embedding/client.py",
+   "line": 223,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`supports_multimodal_contents`",
+   "try_body_first_line": "info = self.adapter.get_model_info()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "line": 115,
+   "exc_type": "BaseException",
+   "handler": "pass",
+   "function": "`_owner_loop`",
+   "try_body_first_line": "await client.disconnect()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "line": 144,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`close`",
+   "try_body_first_line": "await owner"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "line": 363,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`aclose`",
+   "try_body_first_line": "await session.close()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "line": 553,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_consume_messages`",
+   "try_body_first_line": "await interrupt()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/memory/snapshot/adapters.py",
+   "line": 56,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_iso`",
+   "try_body_first_line": "return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/notebook/service.py",
+   "line": 153,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_rebuild_index_entries`",
+   "try_body_first_line": "with open(path, encoding=\"utf-8\") as f:"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/parsing/engines/markitdown/formats.py",
+   "line": 76,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`markitdown_supported_formats`",
+   "try_body_first_line": "module = importlib.import_module(module_info.name)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/parsing/engines/markitdown/formats.py",
+   "line": 82,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`markitdown_supported_formats`",
+   "try_body_first_line": "converters = importlib.import_module(\"markitdown.converters\")"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/parsing/engines/mineru/readiness.py",
+   "line": 74,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`mineru_models_ready`",
+   "try_body_first_line": "if not root.is_dir():"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+   "line": 250,
+   "exc_type": "BaseException",
+   "handler": "pass",
+   "function": "`run_in_worker_loop`",
+   "try_body_first_line": "worker.result()"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/rag/pipelines/modes.py",
+   "line": 37,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`resolve_kb_mode`",
+   "try_body_first_line": "cfg_path = Path(kb_base_dir) / \"kb_config.json\""
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/rag/service.py",
+   "line": 183,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`search`",
+   "try_body_first_line": "from deeptutor.services.memory import get_memory_store"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/services/subagent/opencode_family.py",
+   "line": 410,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_swallow`",
+   "try_body_first_line": "await awaitable"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor/utils/document_images.py",
+   "line": 557,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`extract_pdf_images`",
+   "try_body_first_line": "extracted = doc.extract_image(xref)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor_cli/init_cmd.py",
+   "line": 35,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.path_service import PathService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor_cli/init_cmd.py",
+   "line": 41,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.config.runtime_settings import RuntimeSettingsService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor_cli/init_cmd.py",
+   "line": 47,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_reset_runtime_singletons`",
+   "try_body_first_line": "from deeptutor.services.config.model_catalog import ModelCatalogService"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor_cli/provider_cmd.py",
+   "line": 150,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_login_codebuddy`",
+   "try_body_first_line": "webbrowser.open(auth.auth_url)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "deeptutor_cli/skill_login.py",
+   "line": 123,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`run_login`",
+   "try_body_first_line": "webbrowser.open(url)"
+  },
+  {
+   "risk": "MEDIUM",
+   "file": "scripts/_cli_kit.py",
+   "line": 10,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_ensure_replace_errors`",
+   "try_body_first_line": "if getattr(sys.stdout, \"errors\", None) != \"replace\":"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/api/routers/memory.py",
+   "line": 116,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`resolve_entry`",
+   "try_body_first_line": "doc = parse(path.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/api/routers/settings.py",
+   "line": 1187,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_document_parsing_payload`",
+   "try_body_first_line": "parser = get_parser(entry[\"id\"])"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/book/blocks/_rag_helpers.py",
+   "line": 103,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`optional_rag_lookup`",
+   "try_body_first_line": "from deeptutor.multi_user.knowledge_access import resolve_kb"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/codebuddy_credentials.py",
+   "line": 212,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_iter_cached_product_configs`",
+   "try_body_first_line": "decoded = json.loads(gzip.decompress(base64.b64decode(raw)).decode(\"utf-8\"))"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+   "line": 239,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`_parse_tool_arguments`",
+   "try_body_first_line": "return _as_arguments_dict("
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 477,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_build_l2_entry_lookup`",
+   "try_body_first_line": "doc = parse(path.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/memory/consolidator/modes/merge.py",
+   "line": 180,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_migrate_l3_legacy_refs`",
+   "try_body_first_line": "l2_doc = parse(l2_path.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 692,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_load_all_l2_docs`",
+   "try_body_first_line": "docs[surface] = parse(path.read_text(encoding=\"utf-8\"))"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/parsing/service.py",
+   "line": 66,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_find_fallback_engine`",
+   "try_body_first_line": "parser = get_parser(name)"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/services/rag/pipelines/llamaindex/storage.py",
+   "line": 175,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_iter_file_embedding_dicts`",
+   "try_body_first_line": "with open(path, \"rb\") as probe:"
+  },
+  {
+   "risk": "LOW",
+   "file": "deeptutor/visualizers/store.py",
+   "line": 121,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`user_packages`",
+   "try_body_first_line": "if manifest_file.stat().st_size > _MAX_MANIFEST_BYTES:"
+  },
+  {
+   "risk": "LOW",
+   "file": "tests/agents/test_failure_notices_name_the_cause.py",
+   "line": 39,
+   "exc_type": "Exception",
+   "handler": "continue",
+   "function": "`_notice_definitions`",
+   "try_body_first_line": "data = yaml.safe_load(path.read_text(encoding=\"utf-8\")) or {}"
+  },
+  {
+   "risk": "LOW",
+   "file": "tests/conftest.py",
+   "line": 44,
+   "exc_type": "Exception",
+   "handler": "pass",
+   "function": "`<module>`",
+   "try_body_first_line": "from deeptutor.multi_user.paths import ADMIN_WORKSPACE_ROOT as _REAL_ADMIN_ROOT"
+  }
+ ]
+}
