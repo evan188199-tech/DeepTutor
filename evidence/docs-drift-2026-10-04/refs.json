@@ -1,0 +1,5522 @@
+[
+ {
+  "doc": "AGENTS.md",
+  "line": 38,
+  "kind": "backtick_path",
+  "token": "data/user/settings/*.json",
+  "fence": "",
+  "context": "`data/user/settings/*.json` — project-root `.env` files are intentionally",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 44,
+  "kind": "backtick_path",
+  "token": "/settings/tools",
+  "fence": "",
+  "context": "surface in `/settings/tools`:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 56,
+  "kind": "backtick_path",
+  "token": "deeptutor/tools/builtin/__init__.py",
+  "fence": "",
+  "context": "`USER_TOGGLEABLE_TOOL_NAMES` in `deeptutor/tools/builtin/__init__.py` is the",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 56,
+  "kind": "text_path",
+  "token": "deeptutor/tools/builtin/__init__",
+  "fence": "",
+  "context": "`USER_TOGGLEABLE_TOOL_NAMES` in `deeptutor/tools/builtin/__init__.py` is the",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 59,
+  "kind": "backtick_path",
+  "token": "deeptutor/agents/_shared/tool_composition.py",
+  "fence": "",
+  "context": "surface, while `deeptutor/agents/_shared/tool_composition.py` owns the mount",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 59,
+  "kind": "text_path",
+  "token": "deeptutor/agents/_shared/tool_composition",
+  "fence": "",
+  "context": "surface, while `deeptutor/agents/_shared/tool_composition.py` owns the mount",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 61,
+  "kind": "text_path",
+  "token": "MCP/CLI",
+  "fence": "",
+  "context": "include `rag`, memory and notebook tools, `read_skill`, deferred MCP/CLI tools,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 84,
+  "kind": "backtick_path",
+  "token": "deeptutor/capabilities/_shared.py",
+  "fence": "",
+  "context": "`deeptutor/capabilities/_shared.py` so every turn emits the same envelope",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 84,
+  "kind": "text_path",
+  "token": "deeptutor/capabilities/_shared",
+  "fence": "",
+  "context": "`deeptutor/capabilities/_shared.py` so every turn emits the same envelope",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 86,
+  "kind": "backtick_path",
+  "token": "capabilities/prompts/{en,zh}/<name>.yaml",
+  "fence": "",
+  "context": "prompts are i18n'd via `capabilities/prompts/{en,zh}/<name>.yaml`.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 119,
+  "kind": "backtick_path",
+  "token": "deeptutor/runtime/orchestrator.py",
+  "fence": "",
+  "context": "| `deeptutor/runtime/orchestrator.py`        | `ChatOrchestrator` — unified entry   |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 119,
+  "kind": "text_path",
+  "token": "deeptutor/runtime/orchestrator",
+  "fence": "",
+  "context": "| `deeptutor/runtime/orchestrator.py`        | `ChatOrchestrator` — unified entry   |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 120,
+  "kind": "backtick_path",
+  "token": "deeptutor/runtime/launcher.py",
+  "fence": "",
+  "context": "| `deeptutor/runtime/launcher.py`            | Backend + frontend lifecycle / port discovery |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 120,
+  "kind": "text_path",
+  "token": "deeptutor/runtime/launcher",
+  "fence": "",
+  "context": "| `deeptutor/runtime/launcher.py`            | Backend + frontend lifecycle / port discovery |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 121,
+  "kind": "backtick_path",
+  "token": "deeptutor/runtime/registry/",
+  "fence": "",
+  "context": "| `deeptutor/runtime/registry/`              | Tool + Capability registries         |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 122,
+  "kind": "backtick_path",
+  "token": "deeptutor/runtime/bootstrap/builtin_capabilities.py",
+  "fence": "",
+  "context": "| `deeptutor/runtime/bootstrap/builtin_capabilities.py` | Built-in capability class paths |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 122,
+  "kind": "text_path",
+  "token": "deeptutor/runtime/bootstrap/builtin_capabilities",
+  "fence": "",
+  "context": "| `deeptutor/runtime/bootstrap/builtin_capabilities.py` | Built-in capability class paths |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 123,
+  "kind": "backtick_path",
+  "token": "deeptutor/services/config/runtime_settings.py",
+  "fence": "",
+  "context": "| `deeptutor/services/config/runtime_settings.py` | JSON settings + process-env overrides |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 123,
+  "kind": "text_path",
+  "token": "deeptutor/services/config/runtime_settings",
+  "fence": "",
+  "context": "| `deeptutor/services/config/runtime_settings.py` | JSON settings + process-env overrides |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 124,
+  "kind": "backtick_path",
+  "token": "deeptutor/services/subagent/",
+  "fence": "",
+  "context": "| `deeptutor/services/subagent/`             | Local/remote agent connectors; register each backend in `registry.py` and its model options in `models.py` (Grok ",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 124,
+  "kind": "text_path",
+  "token": "Local/remote",
+  "fence": "",
+  "context": "| `deeptutor/services/subagent/`             | Local/remote agent connectors; register each backend in `registry.py` and its model options in `models.py` (Grok ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 124,
+  "kind": "bare_file",
+  "token": "registry.py",
+  "fence": "",
+  "context": "| `deeptutor/services/subagent/`             | Local/remote agent connectors; register each backend in `registry.py` and its model options in `models.py` (Grok ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 124,
+  "kind": "bare_file",
+  "token": "models.py",
+  "fence": "",
+  "context": "| `deeptutor/services/subagent/`             | Local/remote agent connectors; register each backend in `registry.py` and its model options in `models.py` (Grok ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 125,
+  "kind": "backtick_path",
+  "token": "deeptutor/core/stream.py",
+  "fence": "",
+  "context": "| `deeptutor/core/stream.py`, `deeptutor/runtime/stream_bus.py` | StreamEvent protocol + async fan-out |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 125,
+  "kind": "backtick_path",
+  "token": "deeptutor/runtime/stream_bus.py",
+  "fence": "",
+  "context": "| `deeptutor/core/stream.py`, `deeptutor/runtime/stream_bus.py` | StreamEvent protocol + async fan-out |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 125,
+  "kind": "text_path",
+  "token": "deeptutor/core/stream",
+  "fence": "",
+  "context": "| `deeptutor/core/stream.py`, `deeptutor/runtime/stream_bus.py` | StreamEvent protocol + async fan-out |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 125,
+  "kind": "text_path",
+  "token": "deeptutor/runtime/stream_bus",
+  "fence": "",
+  "context": "| `deeptutor/core/stream.py`, `deeptutor/runtime/stream_bus.py` | StreamEvent protocol + async fan-out |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 126,
+  "kind": "backtick_path",
+  "token": "deeptutor/core/tool_protocol.py",
+  "fence": "",
+  "context": "| `deeptutor/core/tool_protocol.py`          | `BaseTool` + `ToolDefinition`         |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 126,
+  "kind": "text_path",
+  "token": "deeptutor/core/tool_protocol",
+  "fence": "",
+  "context": "| `deeptutor/core/tool_protocol.py`          | `BaseTool` + `ToolDefinition`         |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 127,
+  "kind": "backtick_path",
+  "token": "deeptutor/core/capability_protocol.py",
+  "fence": "",
+  "context": "| `deeptutor/core/capability_protocol.py`    | `TurnCapability` + `CapabilityManifest` |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 127,
+  "kind": "text_path",
+  "token": "deeptutor/core/capability_protocol",
+  "fence": "",
+  "context": "| `deeptutor/core/capability_protocol.py`    | `TurnCapability` + `CapabilityManifest` |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 128,
+  "kind": "backtick_path",
+  "token": "deeptutor/core/context.py",
+  "fence": "",
+  "context": "| `deeptutor/core/context.py`                | `UnifiedContext` dataclass            |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 128,
+  "kind": "text_path",
+  "token": "deeptutor/core/context",
+  "fence": "",
+  "context": "| `deeptutor/core/context.py`                | `UnifiedContext` dataclass            |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 129,
+  "kind": "backtick_path",
+  "token": "deeptutor/tools/builtin/__init__.py",
+  "fence": "",
+  "context": "| `deeptutor/tools/builtin/__init__.py`      | All built-in tool wrappers           |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 129,
+  "kind": "text_path",
+  "token": "deeptutor/tools/builtin/__init__",
+  "fence": "",
+  "context": "| `deeptutor/tools/builtin/__init__.py`      | All built-in tool wrappers           |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 130,
+  "kind": "backtick_path",
+  "token": "deeptutor/capabilities/",
+  "fence": "",
+  "context": "| `deeptutor/capabilities/`                  | Built-in capability implementations  |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 131,
+  "kind": "backtick_path",
+  "token": "deeptutor/app.py",
+  "fence": "",
+  "context": "| `deeptutor/app.py`                         | `DeepTutorApp` — Python SDK facade    |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 131,
+  "kind": "text_path",
+  "token": "deeptutor/app",
+  "fence": "",
+  "context": "| `deeptutor/app.py`                         | `DeepTutorApp` — Python SDK facade    |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 132,
+  "kind": "backtick_path",
+  "token": "deeptutor_cli/main.py",
+  "fence": "",
+  "context": "| `deeptutor_cli/main.py`                    | Typer CLI entry point                |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 132,
+  "kind": "text_path",
+  "token": "deeptutor_cli/main",
+  "fence": "",
+  "context": "| `deeptutor_cli/main.py`                    | Typer CLI entry point                |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 133,
+  "kind": "backtick_path",
+  "token": "deeptutor/api/routers/unified_ws.py",
+  "fence": "",
+  "context": "| `deeptutor/api/routers/unified_ws.py`      | Unified WebSocket endpoint           |",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 133,
+  "kind": "text_path",
+  "token": "deeptutor/api/routers/unified_ws",
+  "fence": "",
+  "context": "| `deeptutor/api/routers/unified_ws.py`      | Unified WebSocket endpoint           |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 137,
+  "kind": "bare_file",
+  "token": "pyproject.toml",
+  "fence": "",
+  "context": "Public install paths and source extras are defined in `pyproject.toml`.",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "AGENTS.md",
+  "line": 138,
+  "kind": "text_path",
+  "token": "Docker/CI",
+  "fence": "",
+  "context": "Requirements files mirror the same dependency groups for Docker/CI installs.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 8,
+  "kind": "text_path",
+  "token": "./Communication",
+  "fence": "",
+  "context": "<a href=\"./Communication.md\"><img src=\"https://img.shields.io/badge/Feishu-Join_Group-00D4AA?style=for-the-badge&logo=feishu&logoColor=white\" alt=\"Feishu\"></a>",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 101,
+  "kind": "py_module",
+  "token": "venv",
+  "fence": "bash",
+  "context": "python -m venv venv",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 143,
+  "kind": "backtick_path",
+  "token": "python3 scripts/check_workspace_hygiene.py",
+  "fence": "",
+  "context": "| Check clean workspace + tracked hygiene | `python3 scripts/check_workspace_hygiene.py` |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 143,
+  "kind": "text_path",
+  "token": "scripts/check_workspace_hygiene",
+  "fence": "",
+  "context": "| Check clean workspace + tracked hygiene | `python3 scripts/check_workspace_hygiene.py` |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 144,
+  "kind": "backtick_path",
+  "token": "python3 scripts/check_repo_hygiene.py",
+  "fence": "",
+  "context": "| Check repository hygiene | `python3 scripts/check_repo_hygiene.py` |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 144,
+  "kind": "text_path",
+  "token": "scripts/check_repo_hygiene",
+  "fence": "",
+  "context": "| Check repository hygiene | `python3 scripts/check_repo_hygiene.py` |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 152,
+  "kind": "backtick_path",
+  "token": "web/.next*",
+  "fence": "",
+  "context": "Keep build outputs out of Git. `web/.next*`, `node_modules`, test reports, and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 177,
+  "kind": "bare_file",
+  "token": "pyproject.toml",
+  "fence": "",
+  "context": "We use automated tools (configured via `pyproject.toml` and `.pre-commit-config.yaml`) to maintain high standards:",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "CONTRIBUTING.md",
+  "line": 177,
+  "kind": "bare_file",
+  "token": ".pre-commit-config.yaml",
+  "fence": "",
+  "context": "We use automated tools (configured via `pyproject.toml` and `.pre-commit-config.yaml`) to maintain high standards:",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 3,
+  "kind": "text_path",
+  "token": "assets/figs/logo/logo",
+  "fence": "",
+  "context": "<p align=\"center\"><img src=\"assets/figs/logo/logo.png\" alt=\"DeepTutor logo\" height=\"56\" style=\"vertical-align: middle;\">&nbsp;<img src=\"assets/figs/logo/banner.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 3,
+  "kind": "text_path",
+  "token": "assets/figs/logo/banner",
+  "fence": "",
+  "context": "<p align=\"center\"><img src=\"assets/figs/logo/logo.png\" alt=\"DeepTutor logo\" height=\"56\" style=\"vertical-align: middle;\">&nbsp;<img src=\"assets/figs/logo/banner.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 13,
+  "kind": "text_path",
+  "token": "HKUDS/DeepTutor",
+  "fence": "",
+  "context": "<a href=\"https://www.star-history.com/hkuds/deeptutor\"><picture><source media=\"(prefers-color-scheme: dark)\" srcset=\"https://api.star-history.com/badge?repo=HKU",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 18,
+  "kind": "text_path",
+  "token": "assets/README/README_CN",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_CN.md\"><img alt=\"简体中文\" height=\"40\" src=\"https://img.shields.io/badge/简体中文-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 19,
+  "kind": "text_path",
+  "token": "assets/README/README_TW",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_TW.md\"><img alt=\"繁體中文\" height=\"40\" src=\"https://img.shields.io/badge/繁體中文-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 20,
+  "kind": "text_path",
+  "token": "assets/README/README_JA",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_JA.md\"><img alt=\"日本語\" height=\"40\" src=\"https://img.shields.io/badge/日本語-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 21,
+  "kind": "text_path",
+  "token": "assets/README/README_ES",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_ES.md\"><img alt=\"Español\" height=\"40\" src=\"https://img.shields.io/badge/Español-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 22,
+  "kind": "text_path",
+  "token": "assets/README/README_FR",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_FR.md\"><img alt=\"Français\" height=\"40\" src=\"https://img.shields.io/badge/Français-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 23,
+  "kind": "text_path",
+  "token": "assets/README/README_AR",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_AR.md\"><img alt=\"Arabic\" height=\"40\" src=\"https://img.shields.io/badge/Arabic-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 24,
+  "kind": "text_path",
+  "token": "assets/README/README_RU",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_RU.md\"><img alt=\"Русский\" height=\"40\" src=\"https://img.shields.io/badge/Русский-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 25,
+  "kind": "text_path",
+  "token": "assets/README/README_HI",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_HI.md\"><img alt=\"Hindi\" height=\"40\" src=\"https://img.shields.io/badge/Hindi-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 26,
+  "kind": "text_path",
+  "token": "assets/README/README_PT",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_PT.md\"><img alt=\"Português\" height=\"40\" src=\"https://img.shields.io/badge/Português-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 27,
+  "kind": "text_path",
+  "token": "assets/README/README_TH",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_TH.md\"><img alt=\"Thai\" height=\"40\" src=\"https://img.shields.io/badge/Thai-CDCFD4\"></a>&nbsp;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 28,
+  "kind": "text_path",
+  "token": "assets/README/README_PL",
+  "fence": "",
+  "context": "<a href=\"assets/README/README_PL.md\"><img alt=\"Polski\" height=\"40\" src=\"https://img.shields.io/badge/Polski-CDCFD4\"></a>",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 38,
+  "kind": "text_path",
+  "token": "./Communication",
+  "fence": "",
+  "context": "[![Feishu](https://img.shields.io/badge/Feishu-Group-00D4AA?style=flat-square&logo=feishu&logoColor=white)](./Communication.md)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 72,
+  "kind": "text_path",
+  "token": "front/back-end",
+  "fence": "",
+  "context": "> **[2026.9.2]** [v1.6.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.6.3) — Breaking front/back-end refactor, strict canonical routes and recoverable st",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 72,
+  "kind": "text_path",
+  "token": "learner/guardian",
+  "fence": "",
+  "context": "> **[2026.9.2]** [v1.6.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.6.3) — Breaking front/back-end refactor, strict canonical routes and recoverable st",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 78,
+  "kind": "text_path",
+  "token": "Serply/native",
+  "fence": "",
+  "context": "> **[2026.8.27]** [v1.6.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.6.0) — Faithful EPUB reading and annotations, Courses with Little Tutor and Ask Qu",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 84,
+  "kind": "text_path",
+  "token": "tool/capability",
+  "fence": "",
+  "context": "> **[2026.8.20]** [v1.5.15](https://github.com/HKUDS/DeepTutor/releases/tag/v1.5.15) — **PageIndex OSS** you host yourself with reasoning retrieval, a question ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 96,
+  "kind": "backtick_path",
+  "token": "data/",
+  "fence": "",
+  "context": "> **[2026.8.4]** [v1.5.9](https://github.com/HKUDS/DeepTutor/releases/tag/v1.5.9) — Gemini **Embedding 2** on its native endpoint, a per-model **reasoning effor",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 110,
+  "kind": "text_path",
+  "token": "Anthropic/OpenAI",
+  "fence": "",
+  "context": "> **[2026.7.19]** [v1.5.2](https://github.com/HKUDS/DeepTutor/releases/tag/v1.5.2) — Configurable chat attachment limits, PageIndex retrieval that reasons acros",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 132,
+  "kind": "backtick_path",
+  "token": "/agents",
+  "fence": "",
+  "context": "> **[2026.6.18]** [v1.4.7](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.7) — Connect your local **Claude Code / Codex** and consult it live mid-turn, **",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 136,
+  "kind": "backtick_path",
+  "token": "/learning",
+  "fence": "",
+  "context": "> **[2026.6.14]** [v1.4.5](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.5) — Guided Learning rebuilt on the chat agent loop with a hard per-type mastery",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 138,
+  "kind": "text_path",
+  "token": "DOCX/XLSX",
+  "fence": "",
+  "context": "> **[2026.6.13]** [v1.4.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.4) — Install community skills from [ClawHub](https://clawhub.ai/) with `deeptuto",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 144,
+  "kind": "text_path",
+  "token": "HTTP/SSE",
+  "fence": "",
+  "context": "> **[2026.5.27]** [v1.4.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.1) — Security + stability: TutorBot tool sandbox locked down, per-user resource ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 146,
+  "kind": "text_path",
+  "token": "Visualize/Animator",
+  "fence": "",
+  "context": "> **[2026.5.22]** [v1.4.0](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.0) — GA cut of v1.4: Auto Mode, three-layer Memory, agentic Deep Research / Solv",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 148,
+  "kind": "text_path",
+  "token": "L1/L2/L3",
+  "fence": "",
+  "context": "> **[2026.5.21]** [v1.4.0-beta](https://github.com/HKUDS/DeepTutor/releases/tag/v1.4.0-beta) — Three-layer Memory workbench (L1/L2/L3), every chat capability re",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 156,
+  "kind": "text_path",
+  "token": "Thinking-model/provider",
+  "fence": "",
+  "context": "> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.7) — Thinking-model/provider fixes, visible Knowledge index history, and safer Co",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 156,
+  "kind": "text_path",
+  "token": "clear/template",
+  "fence": "",
+  "context": "> **[2026.5.4]** [v1.3.7](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.7) — Thinking-model/provider fixes, visible Knowledge index history, and safer Co",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 162,
+  "kind": "text_path",
+  "token": "language/reasoning",
+  "fence": "",
+  "context": "> **[2026.5.1]** [v1.3.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.4) — Book page chat persistence and rebuild flows, chat-to-book references, stron",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 164,
+  "kind": "text_path",
+  "token": "history/skills/memory",
+  "fence": "",
+  "context": "> **[2026.4.30]** [v1.3.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.3) — NVIDIA NIM + Gemini embedding support, unified Space context for chat histo",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 168,
+  "kind": "text_path",
+  "token": "Windows/GBK",
+  "fence": "",
+  "context": "> **[2026.4.28]** [v1.3.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.3.1) — Stability: safer RAG routing & embedding validation, Docker persistence, IM",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 174,
+  "kind": "text_path",
+  "token": "Text/code/SVG",
+  "fence": "",
+  "context": "> **[2026.4.25]** [v1.2.4](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.4) — Text/code/SVG attachments, one-command Setup Tour, Markdown chat export, co",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 176,
+  "kind": "text_path",
+  "token": "PDF/DOCX/XLSX/PPTX",
+  "fence": "",
+  "context": "> **[2026.4.24]** [v1.2.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.2.3) — Document attachments (PDF/DOCX/XLSX/PPTX), reasoning thinking-block display",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 192,
+  "kind": "text_path",
+  "token": "Qwen/vLLM",
+  "fence": "",
+  "context": "> **[2026.4.13]** [v1.0.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.3) — Question Notebook with bookmarks & categories, Mermaid in Visualize, embedd",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 196,
+  "kind": "text_path",
+  "token": "Chart.js/SVG",
+  "fence": "",
+  "context": "> **[2026.4.10]** [v1.0.1](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.1) — Visualize capability (Chart.js/SVG), quiz duplicate prevention, and o4-mini",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 200,
+  "kind": "text_path",
+  "token": "OpenAI/Anthropic",
+  "fence": "",
+  "context": "> **[2026.4.8]** [v1.0.0-beta.3](https://github.com/HKUDS/DeepTutor/releases/tag/v1.0.0-beta.3) — Native OpenAI/Anthropic SDK (drop litellm), Windows Math Anima",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 214,
+  "kind": "text_path",
+  "token": "CI/CD",
+  "fence": "",
+  "context": "> **[2026.1.5]** [v0.3.0](https://github.com/HKUDS/DeepTutor/releases/tag/v0.3.0) — Unified PromptManager architecture, GitHub Actions CI/CD, and pre-built Dock",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 241,
+  "kind": "text_path",
+  "token": "deeptutor/services/rag/pipelines/lightrag/README",
+  "fence": "",
+  "context": "- **Multi-engine knowledge** — versioned RAG libraries across LlamaIndex, PageIndex, GraphRAG, LightRAG, a remote LightRAG Server, a self-hosted WeKnora knowled",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 249,
+  "kind": "backtick_path",
+  "token": "data/user/settings/",
+  "fence": "",
+  "context": "DeepTutor ships four installation paths. They all share one runtime-home layout: private settings live in `data/user/settings/` under the directory you launch f",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 255,
+  "kind": "backtick_path",
+  "token": "outputs/<capability>/<session>/<turn>/",
+  "fence": "",
+  "context": "`outputs/<capability>/<session>/<turn>/`. Custom workspaces isolate conversations,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 256,
+  "kind": "backtick_path",
+  "token": ".deeptutor/data/",
+  "fence": "",
+  "context": "learning materials, progress, and caches in a private `.deeptutor/data/` tree",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 261,
+  "kind": "backtick_path",
+  "token": "<runtime-home>/data/user/workspace",
+  "fence": "",
+  "context": "`<runtime-home>/data/user/workspace`. Local PyPI, CLI, and source installs can",
+  "verdict": "skip_url",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 271,
+  "kind": "backtick_path",
+  "token": "outputs/...",
+  "fence": "",
+  "context": "tools. The model only receives relative paths such as `outputs/...`; when it",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 271,
+  "kind": "text_path",
+  "token": "outputs/.",
+  "fence": "",
+  "context": "tools. The model only receives relative paths such as `outputs/...`; when it",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 281,
+  "kind": "text_path",
+  "token": "docs-for-user/workspaces",
+  "fence": "",
+  "context": "versions. See [workspace resource assignments](docs-for-user/workspaces.md).",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 283,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "Execution is read-only outside `outputs/`. Copying a generated file elsewhere",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 305,
+  "kind": "text_path",
+  "token": "WebM/Opus",
+  "fence": "",
+  "context": "**Browser microphone transcription:** OpenAI-compatible STT adapters forward browser audio to the provider without local conversion. The native DashScope and Vo",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 320,
+  "kind": "py_module",
+  "token": "venv",
+  "fence": "bash",
+  "context": "python3 -m venv .venv && source .venv/bin/activate",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 321,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install --upgrade pip",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 324,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install -e .",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 331,
+  "kind": "backtick_path",
+  "token": "web/",
+  "fence": "",
+  "context": "`deeptutor start` builds the local `web/` frontend for production once and reuses it; `--dev` runs Next.js with HMR. Config layout, ports, and `Ctrl+C` match Op",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 339,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install --upgrade pip",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "backtick_path",
+  "token": "web/package-lock.json",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "backtick_path",
+  "token": "web/package.json",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "backtick_path",
+  "token": "web/package-lock.json",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "text_path",
+  "token": "web/package-lock",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "text_path",
+  "token": "web/package",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 363,
+  "kind": "text_path",
+  "token": "web/package-lock",
+  "fence": "",
+  "context": "**Changing frontend dependencies:** run `npm install --legacy-peer-deps` to refresh `web/package-lock.json`, then commit both `web/package.json` and `web/packag",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 381,
+  "kind": "backtick_path",
+  "token": "ghcr.io/hkuds/deeptutor:latest",
+  "fence": "",
+  "context": "- `ghcr.io/hkuds/deeptutor:latest` — latest stable release",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 381,
+  "kind": "text_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "- `ghcr.io/hkuds/deeptutor:latest` — latest stable release",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 382,
+  "kind": "backtick_path",
+  "token": "ghcr.io/hkuds/deeptutor:<version>",
+  "fence": "",
+  "context": "- `ghcr.io/hkuds/deeptutor:<version>` — exact release without the leading `v` (for example `:1.6.3`); pre-releases receive only their version tag",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 382,
+  "kind": "text_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "- `ghcr.io/hkuds/deeptutor:<version>` — exact release without the leading `v` (for example `:1.6.3`); pre-releases receive only their version tag",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 384,
+  "kind": "text_path",
+  "token": "./docs-for-user/CONTAINERIZATION",
+  "fence": "",
+  "context": "> See [CONTAINERIZATION.md](./docs-for-user/CONTAINERIZATION.md) for podman/rootless/read-only-rootfs deployments and the full per-installation guide.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 384,
+  "kind": "text_path",
+  "token": "podman/rootless/read-only-rootfs",
+  "fence": "",
+  "context": "> See [CONTAINERIZATION.md](./docs-for-user/CONTAINERIZATION.md) for podman/rootless/read-only-rootfs deployments and the full per-installation guide.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 397,
+  "kind": "env_use",
+  "token": "PWD",
+  "fence": "bash",
+  "context": "mkdir -p \"$PWD/deeptutor-workspace/outputs\"",
+  "verdict": "ok",
+  "note": "27 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 401,
+  "kind": "env_use",
+  "token": "PWD",
+  "fence": "bash",
+  "context": "-v \"$PWD/deeptutor-workspace:/workspace\" \\",
+  "verdict": "ok",
+  "note": "27 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 402,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_ROOT",
+  "fence": "bash",
+  "context": "-e DEEPTUTOR_WORKSPACE_ROOT=/workspace \\",
+  "verdict": "ok",
+  "note": "44 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 403,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS",
+  "fence": "bash",
+  "context": "-e DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS=/workspace \\",
+  "verdict": "ok",
+  "note": "25 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 407,
+  "kind": "backtick_path",
+  "token": "DEEPTUTOR_WORKSPACE_HOST=/absolute/host/folder",
+  "fence": "",
+  "context": "For Compose, set `DEEPTUTOR_WORKSPACE_HOST=/absolute/host/folder` before",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 408,
+  "kind": "backtick_path",
+  "token": "python scripts/docker_compose.py up -d",
+  "fence": "",
+  "context": "running `python scripts/docker_compose.py up -d`. When omitted it uses",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 408,
+  "kind": "text_path",
+  "token": "scripts/docker_compose",
+  "fence": "",
+  "context": "running `python scripts/docker_compose.py up -d`. When omitted it uses",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 409,
+  "kind": "backtick_path",
+  "token": "./data/user/workspace",
+  "fence": "",
+  "context": "`./data/user/workspace`. Docker paths are selected at startup and therefore",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 409,
+  "kind": "text_path",
+  "token": "./data/user/workspace",
+  "fence": "",
+  "context": "`./data/user/workspace`. Docker paths are selected at startup and therefore",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 412,
+  "kind": "backtick_path",
+  "token": "web/proxy.ts",
+  "fence": "",
+  "context": "> **Only `3782` needs to be published.** The browser talks exclusively to the frontend origin; the Next.js middleware (`web/proxy.ts`) forwards `/api/*` and `/w",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 412,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "> **Only `3782` needs to be published.** The browser talks exclusively to the frontend origin; the Next.js middleware (`web/proxy.ts`) forwards `/api/*` and `/w",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 412,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "> **Only `3782` needs to be published.** The browser talks exclusively to the frontend origin; the Next.js middleware (`web/proxy.ts`) forwards `/api/*` and `/w",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 412,
+  "kind": "text_path",
+  "token": "web/proxy",
+  "fence": "",
+  "context": "> **Only `3782` needs to be published.** The browser talks exclusively to the frontend origin; the Next.js middleware (`web/proxy.ts`) forwards `/api/*` and `/w",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 414,
+  "kind": "backtick_path",
+  "token": "/app/data/user/settings/*.json",
+  "fence": "",
+  "context": "Open [http://127.0.0.1:3782](http://127.0.0.1:3782). The container creates `/app/data/user/settings/*.json` on first boot; configure model providers from the We",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 416,
+  "kind": "backtick_path",
+  "token": "/app/data/user/settings/system.json",
+  "fence": "",
+  "context": "- **Different host ports:** change the left side of each `-p host:container` mapping (e.g. `-p 127.0.0.1:8088:3782`). If you change container-side ports in `/ap",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 420,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "origin (`:3782`); the in-container Next.js middleware forwards `/api/*` and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 421,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "`/ws/*` to the backend server-side. For the common single-container case you",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 424,
+  "kind": "text_path",
+  "token": "container/host",
+  "fence": "",
+  "context": "(backend in a separate container/host): set `next_public_api_base` in",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 425,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "`data/user/settings/system.json` to the in-network address the frontend server",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 425,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "`data/user/settings/system.json` to the in-network address the frontend server",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 436,
+  "kind": "text_path",
+  "token": "HTTP/HTTPS",
+  "fence": "",
+  "context": "auth disabled, DeepTutor permits normal HTTP/HTTPS browser origins by default.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 460,
+  "kind": "text_path",
+  "token": "11434/v1",
+  "fence": "",
+  "context": "- Ollama LLM: `http://host.docker.internal:11434/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 461,
+  "kind": "text_path",
+  "token": "11434/api/embed",
+  "fence": "",
+  "context": "- Ollama embedding: `http://host.docker.internal:11434/api/embed`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 462,
+  "kind": "text_path",
+  "token": "1234/v1",
+  "fence": "",
+  "context": "- LM Studio: `http://host.docker.internal:1234/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 463,
+  "kind": "text_path",
+  "token": "8080/v1",
+  "fence": "",
+  "context": "- llama.cpp: `http://host.docker.internal:8080/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 464,
+  "kind": "text_path",
+  "token": "13305/api/v1",
+  "fence": "",
+  "context": "- Lemonade: `http://host.docker.internal:13305/api/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 466,
+  "kind": "text_path",
+  "token": "macOS/Windows",
+  "fence": "",
+  "context": "Docker Desktop (macOS/Windows) usually resolves `host.docker.internal` without `--add-host`. On Linux, the flag is the portable way to create that hostname on m",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 468,
+  "kind": "text_path",
+  "token": "11434/v1",
+  "fence": "",
+  "context": "**Linux alternative — host networking:** add `--network=host` and drop the `-p` flags. The container shares the host network directly, so open [http://127.0.0.1",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 468,
+  "kind": "text_path",
+  "token": "./docs-for-user/CONTAINERIZATION",
+  "fence": "",
+  "context": "**Linux alternative — host networking:** add `--network=host` and drop the `-p` flags. The container shares the host network directly, so open [http://127.0.0.1",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 468,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "**Linux alternative — host networking:** add `--network=host` and drop the `-p` flags. The container shares the host network directly, so open [http://127.0.0.1",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 485,
+  "kind": "py_module",
+  "token": "venv",
+  "fence": "bash",
+  "context": "python3 -m venv .venv-cli && source .venv-cli/bin/activate",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 486,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install --upgrade pip",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 488,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install -e ./packaging/deeptutor-cli",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "backtick_path",
+  "token": "data/user/settings/",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "text_path",
+  "token": "backend/frontend",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "auth.json",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "integrations.json",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "interface.json",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "model_catalog.json",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "main.yaml",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 493,
+  "kind": "bare_file",
+  "token": "agents.yaml",
+  "fence": "",
+  "context": "`deeptutor init --cli` shares the same `data/user/settings/` layout as the full app but skips the backend/frontend port prompts. It still offers the Embedding a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 529,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "The `sandbox_allow_subprocess` setting in `data/user/settings/system.json`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 529,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "The `sandbox_allow_subprocess` setting in `data/user/settings/system.json`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 538,
+  "kind": "text_path",
+  "token": "JSON/YAML",
+  "fence": "",
+  "context": "<summary><b>Configuration reference</b> — config files under <code>data/user/settings/</code> (JSON/YAML)</summary>",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 540,
+  "kind": "backtick_path",
+  "token": "data/user/settings/",
+  "fence": "",
+  "context": "Everything under `data/user/settings/` is plain JSON/YAML. The **Settings** page is the recommended editor; workspace registrations live separately in `data/use",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 540,
+  "kind": "backtick_path",
+  "token": "data/user/.runtime/workspaces.sqlite3",
+  "fence": "",
+  "context": "Everything under `data/user/settings/` is plain JSON/YAML. The **Settings** page is the recommended editor; workspace registrations live separately in `data/use",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 540,
+  "kind": "text_path",
+  "token": "JSON/YAML",
+  "fence": "",
+  "context": "Everything under `data/user/settings/` is plain JSON/YAML. The **Settings** page is the recommended editor; workspace registrations live separately in `data/use",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 540,
+  "kind": "text_path",
+  "token": "data/user/.runtime/workspaces",
+  "fence": "",
+  "context": "Everything under `data/user/settings/` is plain JSON/YAML. The **Settings** page is the recommended editor; workspace registrations live separately in `data/use",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 544,
+  "kind": "bare_file",
+  "token": "model_catalog.json",
+  "fence": "",
+  "context": "| `model_catalog.json` | Provider connections plus LLM, task, embedding, search, TTS, STT, image, and video profiles, credentials, and active selections |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 545,
+  "kind": "text_path",
+  "token": "Backend/frontend",
+  "fence": "",
+  "context": "| `system.json` | Backend/frontend ports, public API base, CORS, SSL verification, attachment directory and upload/extraction limits |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 545,
+  "kind": "text_path",
+  "token": "upload/extraction",
+  "fence": "",
+  "context": "| `system.json` | Backend/frontend ports, public API base, CORS, SSL verification, attachment directory and upload/extraction limits |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 545,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "| `system.json` | Backend/frontend ports, public API base, CORS, SSL verification, attachment directory and upload/extraction limits |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 546,
+  "kind": "text_path",
+  "token": "token/cookie",
+  "fence": "",
+  "context": "| `auth.json` | Optional auth toggle, username, password hash, token/cookie settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 546,
+  "kind": "bare_file",
+  "token": "auth.json",
+  "fence": "",
+  "context": "| `auth.json` | Optional auth toggle, username, password hash, token/cookie settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 547,
+  "kind": "bare_file",
+  "token": "integrations.json",
+  "fence": "",
+  "context": "| `integrations.json` | Optional PocketBase and sidecar integration settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 548,
+  "kind": "bare_file",
+  "token": "interface.json",
+  "fence": "",
+  "context": "| `interface.json` | UI and model output language / theme / sidebar preferences |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 549,
+  "kind": "bare_file",
+  "token": "document_parsing.json",
+  "fence": "",
+  "context": "| `document_parsing.json` | Parsing engine selection, remote endpoints, and engine-specific options |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 550,
+  "kind": "text_path",
+  "token": "YouTube/Invidious",
+  "fence": "",
+  "context": "| `video_learning.json` | Default YouTube/Invidious playback provider, Invidious origins, and optional transcript adapter |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 550,
+  "kind": "bare_file",
+  "token": "video_learning.json",
+  "fence": "",
+  "context": "| `video_learning.json` | Default YouTube/Invidious playback provider, Invidious origins, and optional transcript adapter |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 551,
+  "kind": "bare_file",
+  "token": "main.yaml",
+  "fence": "",
+  "context": "| `main.yaml` | Runtime behavior defaults and path injection |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 552,
+  "kind": "text_path",
+  "token": "Capability/tool",
+  "fence": "",
+  "context": "| `agents.yaml` | Capability/tool temperature and token settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 552,
+  "kind": "bare_file",
+  "token": "agents.yaml",
+  "fence": "",
+  "context": "| `agents.yaml` | Capability/tool temperature and token settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 556,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "an education-focused domain policy in `data/user/settings/system.json`:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 556,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "an education-focused domain policy in `data/user/settings/system.json`:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 606,
+  "kind": "text_path",
+  "token": "Trash/Recycle",
+  "fence": "",
+  "context": "operating system's Trash/Recycle Bin. Do not run a recursive deletion",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 619,
+  "kind": "text_path",
+  "token": "Trash/Recycle",
+  "fence": "",
+  "context": "checkout. Only move the checkout to Trash/Recycle Bin after confirming it",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 638,
+  "kind": "text_path",
+  "token": "./docs-for-user/REASONING_SAFETY_CHECKLIST",
+  "fence": "",
+  "context": "If an answer loses an earlier constraint, cites weak evidence, or disagrees with selected material, collect the diagnostics in [`REASONING_SAFETY_CHECKLIST.md`]",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 641,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.6.5/OVERVIEW",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.6.5/OVERVIEW.png\" alt=\"DeepTutor home — the Chat workspace with every surface in the sidebar\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 661,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/home/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/home/00-overview.png\" alt=\"DeepTutor chat workspace\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 667,
+  "kind": "text_path",
+  "token": "assets/figs/system/chat-agent-loop",
+  "fence": "",
+  "context": "<img src=\"assets/figs/system/chat-agent-loop.png\" alt=\"DeepTutor chat agent loop\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 682,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/partners/00-partners%20overview.png\" alt=\"DeepTutor partners workspace\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 688,
+  "kind": "text_path",
+  "token": "assets/figs/system/partners-architecture",
+  "fence": "",
+  "context": "<img src=\"assets/figs/system/partners-architecture.png\" alt=\"DeepTutor partners architecture\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 691,
+  "kind": "backtick_path",
+  "token": "data/partners/<id>/workspace/",
+  "fence": "",
+  "context": "Each partner has a `SOUL.md`, model selection, channels, tool policy, and assigned library. Its library either copies knowledge bases, skills, and notebooks int",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 694,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/partners/02-IM%20config%20for%20each%20partner.png\" alt=\"Per-partner IM channel configuration\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 697,
+  "kind": "text_path",
+  "token": "QQ/NapCat",
+  "fence": "",
+  "context": "The channel layer is schema-driven and can connect to IM platforms such as Feishu, Telegram, Slack, Discord, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matter",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 699,
+  "kind": "text_path",
+  "token": "Feishu/Lark",
+  "fence": "",
+  "context": "For faster setup, the Partner channel page can create a Feishu/Lark app or WeCom AI bot, or sign a personal WeChat account in, from a QR scan drawn in the brows",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 699,
+  "kind": "text_path",
+  "token": "Feishu/Lark",
+  "fence": "",
+  "context": "For faster setup, the Partner channel page can create a Feishu/Lark app or WeCom AI bot, or sign a personal WeChat account in, from a QR scan drawn in the brows",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 707,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/myagents/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/myagents/00-overview.png\" alt=\"DeepTutor My Agents workspace\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 738,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/home/08-subagent%20demo%20with%20claude%20code.png\" alt=\"Consulting a Claude Code subagent live\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 741,
+  "kind": "bare_file",
+  "token": "conversations.json",
+  "fence": "",
+  "context": "**Import past conversations** — bring in your existing ChatGPT, Claude Code, and Codex history as searchable, resumable conversations. Select `conversations.jso",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 749,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/co-writer/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/co-writer/00-overview.png\" alt=\"DeepTutor Co-Writer workspace\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 755,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/co-writer/01-edit%20panel.png\" alt=\"Co-Writer editor with live preview\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 766,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/book/00-book_overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/book/00-book_overview.png\" alt=\"DeepTutor book library\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 772,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/book/01-book-demo-quiz%20card.png\" alt=\"Book quiz block\" width=\"31%\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 774,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/book/02-book-demo-manim%20video.png\" alt=\"Book Manim animation block\" width=\"31%\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 776,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/book/03-book-demo%20interactive%20module.png\" alt=\"Book interactive widget block\" width=\"31%\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 787,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/knowledge/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/knowledge/00-overview.png\" alt=\"DeepTutor Knowledge Center\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 793,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/knowledge/01-create%20knowledge%20base.png\" alt=\"Create a knowledge base\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 796,
+  "kind": "text_path",
+  "token": "./docs-for-user/KNOWLEDGE_MIGRATION",
+  "fence": "",
+  "context": "Migrating an existing Obsidian, Hermes, or Markdown library? See [Knowledge migration guide](./docs-for-user/KNOWLEDGE_MIGRATION.md) for connected-vault and ind",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 798,
+  "kind": "backtick_path",
+  "token": "list/info/create/connect-kiwix/add/search/set-default/delete",
+  "fence": "",
+  "context": "Creating a KB, you can **create new** (upload and index documents), **link existing** (reuse an index in place), or **connect Kiwix** (search one served ZIM arc",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 798,
+  "kind": "text_path",
+  "token": "list/info/create/connect-kiwix/add/search/set-default/delete",
+  "fence": "",
+  "context": "Creating a KB, you can **create new** (upload and index documents), **link existing** (reuse an index in place), or **connect Kiwix** (search one served ZIM arc",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 798,
+  "kind": "text_path",
+  "token": "add/remove",
+  "fence": "",
+  "context": "Creating a KB, you can **create new** (upload and index documents), **link existing** (reuse an index in place), or **connect Kiwix** (search one served ZIM arc",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 810,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/learning-space/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/learning-space/00-overview.png\" alt=\"DeepTutor Learning Space hub\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 816,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/learning-space/07-%20download%20skills%20from%20eduhub.png\" alt=\"Import skills from EduHub\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 827,
+  "kind": "text_path",
+  "token": "assets/figs/web-1.4.6+/memory/00-overview",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/memory/00-overview.png\" alt=\"DeepTutor memory overview\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 830,
+  "kind": "backtick_path",
+  "token": "trace/<surface>/<date>.jsonl",
+  "fence": "",
+  "context": "Memory is a file-backed, three-layer system you can read, curate, and audit — deliberately *not* a hidden vector store. **L1** is the workspace mirror plus an a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 830,
+  "kind": "backtick_path",
+  "token": "L2/<surface>.md",
+  "fence": "",
+  "context": "Memory is a file-backed, three-layer system you can read, curate, and audit — deliberately *not* a hidden vector store. **L1** is the workspace mirror plus an a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 830,
+  "kind": "backtick_path",
+  "token": "L3/<profile|recent|scope|preferences>.md",
+  "fence": "",
+  "context": "Memory is a file-backed, three-layer system you can read, curate, and audit — deliberately *not* a hidden vector store. **L1** is the workspace mirror plus an a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 833,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/memory/01-3%20layer%20memory%20graph.png\" alt=\"DeepTutor memory graph\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 844,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/settings/00-setting%20overview.png\" alt=\"DeepTutor settings hub\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 852,
+  "kind": "text_path",
+  "token": "assets/figs/web-1",
+  "fence": "",
+  "context": "<img src=\"assets/figs/web-1.4.6+/settings/01-appearance%20settings.png\" alt=\"DeepTutor appearance settings and themes\" width=\"900\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 855,
+  "kind": "backtick_path",
+  "token": "data/user/settings/*.json",
+  "fence": "",
+  "context": "Most sections use a draft-and-apply flow, so you can test a provider before committing it. You can also just ask in Chat: the assistant reads the current config",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 857,
+  "kind": "backtick_path",
+  "token": "data/system/user-secrets/<owner>/private/openai-codex/",
+  "fence": "",
+  "context": "**OpenAI Codex OAuth (experimental).** Adding **OpenAI Codex** under Settings → Providers opens a browser sign-in that runs against your own ChatGPT plan, so no",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 857,
+  "kind": "backtick_path",
+  "token": "~/.codex",
+  "fence": "",
+  "context": "**OpenAI Codex OAuth (experimental).** Adding **OpenAI Codex** under Settings → Providers opens a browser sign-in that runs against your own ChatGPT plan, so no",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 859,
+  "kind": "backtick_path",
+  "token": "@openai/codex",
+  "fence": "",
+  "context": "On sign-in and **Refresh models**, DeepTutor reads the latest stable `@openai/codex` version from the official npm registry and uses it as the catalog request's",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 859,
+  "kind": "text_path",
+  "token": "@openai/codex",
+  "fence": "",
+  "context": "On sign-in and **Refresh models**, DeepTutor reads the latest stable `@openai/codex` version from the official npm registry and uses it as the catalog request's",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 863,
+  "kind": "text_path",
+  "token": "./docs-for-user/CONTAINERIZATION",
+  "fence": "",
+  "context": "Default local Docker and Podman deployments use separate loopback networks and need a temporary bridge during sign-in. Follow the [temporary local Codex OAuth b",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 877,
+  "kind": "text_path",
+  "token": "frontend/container",
+  "fence": "",
+  "context": "Run only the one command that matches the actual callback port; never run both. `3782` is only the example Web port: it is the configured frontend/container por",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 888,
+  "kind": "backtick_path",
+  "token": "data/",
+  "fence": "",
+  "context": "Authentication is **off by default** — DeepTutor runs single-user. Turn it on and one `data/` tree hosts an admin workspace, isolated per-user workspaces, and p",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 899,
+  "kind": "backtick_path",
+  "token": "/register",
+  "fence": "",
+  "context": "The **first registered user becomes admin** and owns model catalogs, provider credentials, shared knowledge bases, skills, canonical shared books, and per-user ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 899,
+  "kind": "backtick_path",
+  "token": "/admin/users",
+  "fence": "",
+  "context": "The **first registered user becomes admin** and owns model catalogs, provider credentials, shared knowledge bases, skills, canonical shared books, and per-user ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 899,
+  "kind": "bare_file",
+  "token": "auth.json",
+  "fence": "",
+  "context": "The **first registered user becomes admin** and owns model catalogs, provider credentials, shared knowledge bases, skills, canonical shared books, and per-user ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 901,
+  "kind": "backtick_path",
+  "token": "data/user/settings/auth.json",
+  "fence": "",
+  "context": "**Enable it:** turn auth on in `data/user/settings/auth.json`, restart `deeptutor start`, register the first admin at `/register`, then add users from `/admin/u",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 901,
+  "kind": "backtick_path",
+  "token": "/register",
+  "fence": "",
+  "context": "**Enable it:** turn auth on in `data/user/settings/auth.json`, restart `deeptutor start`, register the first admin at `/register`, then add users from `/admin/u",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 901,
+  "kind": "backtick_path",
+  "token": "/admin/users",
+  "fence": "",
+  "context": "**Enable it:** turn auth on in `data/user/settings/auth.json`, restart `deeptutor start`, register the first admin at `/register`, then add users from `/admin/u",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 901,
+  "kind": "text_path",
+  "token": "data/user/settings/auth",
+  "fence": "",
+  "context": "**Enable it:** turn auth on in `data/user/settings/auth.json`, restart `deeptutor start`, register the first admin at `/register`, then add users from `/admin/u",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 901,
+  "kind": "text_path",
+  "token": "tool/MCP/CLI-app",
+  "fence": "",
+  "context": "**Enable it:** turn auth on in `data/user/settings/auth.json`, restart `deeptutor start`, register the first admin at `/register`, then add users from `/admin/u",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 903,
+  "kind": "backtick_path",
+  "token": "/handoff",
+  "fence": "",
+  "context": "For split private/public origins, set `auth.private_login_hosts` (or `AUTH_PRIVATE_LOGIN_HOSTS`) to the private frontend hosts that may show password sign-in an",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 903,
+  "kind": "text_path",
+  "token": "private/public",
+  "fence": "",
+  "context": "For split private/public origins, set `auth.private_login_hosts` (or `AUTH_PRIVATE_LOGIN_HOSTS`) to the private frontend hosts that may show password sign-in an",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 941,
+  "kind": "env_decl",
+  "token": "SID",
+  "fence": "bash",
+  "context": "SID=$(deeptutor run deep_research \"Survey 2026 papers on RAG\" \\",
+  "verdict": "ok",
+  "note": "88 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 941,
+  "kind": "env_decl",
+  "token": "SID",
+  "fence": "bash",
+  "context": "SID=$(deeptutor run deep_research \"Survey 2026 papers on RAG\" \\",
+  "verdict": "ok",
+  "note": "88 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 944,
+  "kind": "env_use",
+  "token": "SID",
+  "fence": "bash",
+  "context": "deeptutor run deep_question \"Quiz me on that survey\" --session \"$SID\" --format json",
+  "verdict": "ok",
+  "note": "88 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "README.md",
+  "line": 956,
+  "kind": "backtick_path",
+  "token": "data/user/settings",
+  "fence": "",
+  "context": "| `deeptutor init` | Create or update `data/user/settings` in the current runtime home |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 956,
+  "kind": "text_path",
+  "token": "data/user/settings",
+  "fence": "",
+  "context": "| `deeptutor init` | Create or update `data/user/settings` in the current runtime home |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 961,
+  "kind": "backtick_path",
+  "token": "deeptutor workspace show/set/reset",
+  "fence": "",
+  "context": "| `deeptutor workspace show/set/reset` | Inspect, select, or restore the per-user Content Workspace |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 961,
+  "kind": "text_path",
+  "token": "show/set/reset",
+  "fence": "",
+  "context": "| `deeptutor workspace show/set/reset` | Inspect, select, or restore the per-user Content Workspace |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 964,
+  "kind": "backtick_path",
+  "token": "deeptutor partner list/create/start/stop",
+  "fence": "",
+  "context": "| `deeptutor partner list/create/start/stop` | Manage IM-connected partners |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 964,
+  "kind": "text_path",
+  "token": "list/create/start/stop",
+  "fence": "",
+  "context": "| `deeptutor partner list/create/start/stop` | Manage IM-connected partners |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 965,
+  "kind": "backtick_path",
+  "token": "deeptutor kb list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync",
+  "fence": "",
+  "context": "| `deeptutor kb list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync` | Manage knowledge bases and synchronize registered GitHub/web s",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 965,
+  "kind": "text_path",
+  "token": "list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync",
+  "fence": "",
+  "context": "| `deeptutor kb list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync` | Manage knowledge bases and synchronize registered GitHub/web s",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 965,
+  "kind": "text_path",
+  "token": "GitHub/web",
+  "fence": "",
+  "context": "| `deeptutor kb list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync` | Manage knowledge bases and synchronize registered GitHub/web s",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 965,
+  "kind": "text_path",
+  "token": "add/remove",
+  "fence": "",
+  "context": "| `deeptutor kb list/info/create/connect-kiwix/add/search/set-default/delete/list-sources/sync` | Manage knowledge bases and synchronize registered GitHub/web s",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 966,
+  "kind": "backtick_path",
+  "token": "deeptutor skill search/install/list/remove/login/logout/publish/update",
+  "fence": "",
+  "context": "| `deeptutor skill search/install/list/remove/login/logout/publish/update` | Manage skills, install from hubs, and publish your own (`eduhub:<slug>` by default,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 966,
+  "kind": "text_path",
+  "token": "search/install/list/remove/login/logout/publish/update",
+  "fence": "",
+  "context": "| `deeptutor skill search/install/list/remove/login/logout/publish/update` | Manage skills, install from hubs, and publish your own (`eduhub:<slug>` by default,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 967,
+  "kind": "backtick_path",
+  "token": "deeptutor memory show/clear",
+  "fence": "",
+  "context": "| `deeptutor memory show/clear` | Inspect L2/L3 memory docs or clear L1/all memory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 967,
+  "kind": "text_path",
+  "token": "show/clear",
+  "fence": "",
+  "context": "| `deeptutor memory show/clear` | Inspect L2/L3 memory docs or clear L1/all memory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 967,
+  "kind": "text_path",
+  "token": "L2/L3",
+  "fence": "",
+  "context": "| `deeptutor memory show/clear` | Inspect L2/L3 memory docs or clear L1/all memory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 967,
+  "kind": "text_path",
+  "token": "L1/all",
+  "fence": "",
+  "context": "| `deeptutor memory show/clear` | Inspect L2/L3 memory docs or clear L1/all memory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 968,
+  "kind": "backtick_path",
+  "token": "deeptutor session list/show/open/rename/delete",
+  "fence": "",
+  "context": "| `deeptutor session list/show/open/rename/delete` | Manage shared sessions |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 968,
+  "kind": "text_path",
+  "token": "list/show/open/rename/delete",
+  "fence": "",
+  "context": "| `deeptutor session list/show/open/rename/delete` | Manage shared sessions |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 969,
+  "kind": "backtick_path",
+  "token": "deeptutor notebook list/create/show/add-md/replace-md/remove-record",
+  "fence": "",
+  "context": "| `deeptutor notebook list/create/show/add-md/replace-md/remove-record` | Manage notebooks from Markdown files |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 969,
+  "kind": "text_path",
+  "token": "list/create/show/add-md/replace-md/remove-record",
+  "fence": "",
+  "context": "| `deeptutor notebook list/create/show/add-md/replace-md/remove-record` | Manage notebooks from Markdown files |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 970,
+  "kind": "backtick_path",
+  "token": "deeptutor book list/health/refresh-fingerprints",
+  "fence": "",
+  "context": "| `deeptutor book list/health/refresh-fingerprints` | Inspect books and refresh source fingerprints |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 970,
+  "kind": "text_path",
+  "token": "list/health/refresh-fingerprints",
+  "fence": "",
+  "context": "| `deeptutor book list/health/refresh-fingerprints` | Inspect books and refresh source fingerprints |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 971,
+  "kind": "backtick_path",
+  "token": "deeptutor plugin list/info",
+  "fence": "",
+  "context": "| `deeptutor plugin list/info` | Inspect registered tools and capabilities |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 971,
+  "kind": "text_path",
+  "token": "list/info",
+  "fence": "",
+  "context": "| `deeptutor plugin list/info` | Inspect registered tools and capabilities |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 980,
+  "kind": "backtick_path",
+  "token": "packaging/deeptutor-cli",
+  "fence": "",
+  "context": "The CLI-only package lives in `packaging/deeptutor-cli`. In this checkout, install it from source:",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 980,
+  "kind": "text_path",
+  "token": "packaging/deeptutor-cli",
+  "fence": "",
+  "context": "The CLI-only package lives in `packaging/deeptutor-cli`. In this checkout, install it from source:",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "README.md",
+  "line": 983,
+  "kind": "py_module",
+  "token": "pip",
+  "fence": "bash",
+  "context": "python -m pip install -e ./packaging/deeptutor-cli",
+  "verdict": "MISSING",
+  "note": "module file not found"
+ },
+ {
+  "doc": "README.md",
+  "line": 1028,
+  "kind": "bare_file",
+  "token": ".hub-lock.json",
+  "fence": "",
+  "context": "- provenance — hub, version, verdict, and install time — is written to `.hub-lock.json` for audits and updates.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1030,
+  "kind": "text_path",
+  "token": "owner/admin",
+  "fence": "",
+  "context": "In multi-user deployments, browser imports land in the authenticated caller's skill layer, while CLI and admin-console installs target the owner/admin workspace",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1046,
+  "kind": "backtick_path",
+  "token": "clawhub:<ownerHandle>/<slug>",
+  "fence": "",
+  "context": "fully scoped install ref (`clawhub:<ownerHandle>/<slug>`).",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1048,
+  "kind": "backtick_path",
+  "token": "data/user/settings/skill_hubs.json",
+  "fence": "",
+  "context": "Add more registries in `data/user/settings/skill_hubs.json`: a `type: \"clawhub\"` entry points at any compatible HTTP API (EduHub and ClawHub both speak it), `ty",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1048,
+  "kind": "text_path",
+  "token": "data/user/settings/skill_hubs",
+  "fence": "",
+  "context": "Add more registries in `data/user/settings/skill_hubs.json`: a `type: \"clawhub\"` entry points at any compatible HTTP API (EduHub and ClawHub both speak it), `ty",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1057,
+  "kind": "text_path",
+  "token": "assets/figs/partners/pageindex-mark-dark",
+  "fence": "",
+  "context": "<source media=\"(prefers-color-scheme: dark)\" srcset=\"assets/figs/partners/pageindex-mark-dark.svg\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1058,
+  "kind": "text_path",
+  "token": "assets/figs/partners/pageindex-mark",
+  "fence": "",
+  "context": "<source media=\"(prefers-color-scheme: light)\" srcset=\"assets/figs/partners/pageindex-mark.svg\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "README.md",
+  "line": 1059,
+  "kind": "text_path",
+  "token": "assets/figs/partners/pageindex-mark",
+  "fence": "",
+  "context": "<img src=\"assets/figs/partners/pageindex-mark.svg\" alt=\"PageIndex\" height=\"38\">",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 26,
+  "kind": "backtick_path",
+  "token": "data/user/settings",
+  "fence": "",
+  "context": "- Run `deeptutor init` for first-time interactive setup. It walks a guided wizard (ports → LLM → embedding → search → review) and writes the same settings as th",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 26,
+  "kind": "text_path",
+  "token": "data/user/settings",
+  "fence": "",
+  "context": "- Run `deeptutor init` for first-time interactive setup. It walks a guided wizard (ports → LLM → embedding → search → review) and writes the same settings as th",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 60,
+  "kind": "backtick_path",
+  "token": "--session / --tool / --kb / --notebook-ref / --history-ref / --language / --config / --config-json",
+  "fence": "",
+  "context": "`deeptutor chat` accepts the same `--session / --tool / --kb / --notebook-ref / --history-ref / --language / --config / --config-json` options, plus `--capabili",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 60,
+  "kind": "backtick_path",
+  "token": "--capability/-c <name>",
+  "fence": "",
+  "context": "`deeptutor chat` accepts the same `--session / --tool / --kb / --notebook-ref / --history-ref / --language / --config / --config-json` options, plus `--capabili",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 60,
+  "kind": "text_path",
+  "token": "--capability/-c",
+  "fence": "",
+  "context": "`deeptutor chat` accepts the same `--session / --tool / --kb / --notebook-ref / --history-ref / --language / --config / --config-json` options, plus `--capabili",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 105,
+  "kind": "text_path",
+  "token": "authoring/reading",
+  "fence": "",
+  "context": "Maintenance commands for the BookEngine (authoring/reading is via the Web app).",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 166,
+  "kind": "backtick_path",
+  "token": "/quit",
+  "fence": "",
+  "context": "| `/quit` | Exit REPL |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 167,
+  "kind": "backtick_path",
+  "token": "/session",
+  "fence": "",
+  "context": "| `/session` | Show current session id |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 168,
+  "kind": "backtick_path",
+  "token": "/status",
+  "fence": "",
+  "context": "| `/status` | Print the current REPL state |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 169,
+  "kind": "backtick_path",
+  "token": "/new",
+  "fence": "",
+  "context": "| `/new` or `/clear` | Start a new session context |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 169,
+  "kind": "backtick_path",
+  "token": "/clear",
+  "fence": "",
+  "context": "| `/new` or `/clear` | Start a new session context |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 170,
+  "kind": "backtick_path",
+  "token": "/regenerate",
+  "fence": "",
+  "context": "| `/regenerate` or `/retry` | Re-run the last user message |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 170,
+  "kind": "backtick_path",
+  "token": "/retry",
+  "fence": "",
+  "context": "| `/regenerate` or `/retry` | Re-run the last user message |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 171,
+  "kind": "backtick_path",
+  "token": "/tool on\\|off <name>",
+  "fence": "",
+  "context": "| `/tool on\\|off <name>` | Toggle a tool |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 172,
+  "kind": "backtick_path",
+  "token": "/cap <name>",
+  "fence": "",
+  "context": "| `/cap <name>` | Switch capability |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 173,
+  "kind": "backtick_path",
+  "token": "/kb <name>\\|none",
+  "fence": "",
+  "context": "| `/kb <name>\\|none` | Set or clear knowledge base |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 174,
+  "kind": "backtick_path",
+  "token": "/history add <id>",
+  "fence": "",
+  "context": "| `/history add <id>` / `/history clear` | Manage history references |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 174,
+  "kind": "backtick_path",
+  "token": "/history clear",
+  "fence": "",
+  "context": "| `/history add <id>` / `/history clear` | Manage history references |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 175,
+  "kind": "backtick_path",
+  "token": "/notebook add <ref>",
+  "fence": "",
+  "context": "| `/notebook add <ref>` / `/notebook clear` | Manage notebook references |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 175,
+  "kind": "backtick_path",
+  "token": "/notebook clear",
+  "fence": "",
+  "context": "| `/notebook add <ref>` / `/notebook clear` | Manage notebook references |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 176,
+  "kind": "backtick_path",
+  "token": "/show last\\|<n>",
+  "fence": "",
+  "context": "| `/show last\\|<n>` | Expand a captured tool result or thinking block |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 177,
+  "kind": "backtick_path",
+  "token": "/refs",
+  "fence": "",
+  "context": "| `/refs` | Show all active references |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "SKILL.md",
+  "line": 178,
+  "kind": "backtick_path",
+  "token": "/config show\\|set\\|clear",
+  "fence": "",
+  "context": "| `/config show\\|set\\|clear` | Manage capability config |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 5,
+  "kind": "text_path",
+  "token": "SuperJJ007/CSSwitch",
+  "fence": "",
+  "context": "- Project: [SuperJJ007/CSSwitch](https://github.com/SuperJJ007/CSSwitch)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 42,
+  "kind": "text_path",
+  "token": "NousResearch/hermes-agent",
+  "fence": "",
+  "context": "- Project: [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 46,
+  "kind": "text_path",
+  "token": "Feishu/Lark",
+  "fence": "",
+  "context": "- Adapted concepts: Feishu/Lark device-code bot registration and the WeCom AI",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 79,
+  "kind": "backtick_path",
+  "token": "packages/thinking-orbs",
+  "fence": "",
+  "context": "- Project: [Jakubantalik/Libraries](https://github.com/Jakubantalik/Libraries) (`packages/thinking-orbs`)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 79,
+  "kind": "text_path",
+  "token": "Jakubantalik/Libraries",
+  "fence": "",
+  "context": "- Project: [Jakubantalik/Libraries](https://github.com/Jakubantalik/Libraries) (`packages/thinking-orbs`)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 79,
+  "kind": "text_path",
+  "token": "packages/thinking-orbs",
+  "fence": "",
+  "context": "- Project: [Jakubantalik/Libraries](https://github.com/Jakubantalik/Libraries) (`packages/thinking-orbs`)",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 83,
+  "kind": "backtick_path",
+  "token": "web/vendor/thinking-orbs/",
+  "fence": "",
+  "context": "- Vendored files: `web/vendor/thinking-orbs/`",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 88,
+  "kind": "backtick_path",
+  "token": "web/vendor/thinking-orbs/index.ts",
+  "fence": "",
+  "context": "`web/vendor/thinking-orbs/index.ts` and marked at each site. Everything else is",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "THIRD_PARTY_NOTICES.md",
+  "line": 88,
+  "kind": "text_path",
+  "token": "web/vendor/thinking-orbs/index",
+  "fence": "",
+  "context": "`web/vendor/thinking-orbs/index.ts` and marked at each site. Everything else is",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 8,
+  "kind": "text_path",
+  "token": "../README",
+  "fence": "",
+  "context": "For PyPI / source installs, see the main [README.md](../README.md). This",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 15,
+  "kind": "backtick_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "The published `ghcr.io/hkuds/deeptutor` image runs both the FastAPI",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 15,
+  "kind": "text_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "The published `ghcr.io/hkuds/deeptutor` image runs both the FastAPI",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 18,
+  "kind": "backtick_path",
+  "token": "/app/data",
+  "fence": "",
+  "context": "tree (`/app/data` inside the container) holds settings, credentials, databases,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 20,
+  "kind": "backtick_path",
+  "token": "/workspace",
+  "fence": "",
+  "context": "there, but may instead be mounted separately at `/workspace`. Bind-mount the",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 26,
+  "kind": "backtick_path",
+  "token": "/app/data",
+  "fence": "",
+  "context": "bind mount on `/app/data`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 27,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "2. **`docker compose`** (`docker-compose.yml`) — same image plus the",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 30,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "3. **`podman compose -f compose.yaml`** — the hardened path. Rootless",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 32,
+  "kind": "backtick_path",
+  "token": "./data",
+  "fence": "",
+  "context": "system dirs, bind mount on `./data`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 32,
+  "kind": "text_path",
+  "token": "./data",
+  "fence": "",
+  "context": "system dirs, bind mount on `./data`.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 38,
+  "kind": "backtick_path",
+  "token": "web/lib/api.ts",
+  "fence": "",
+  "context": "`sed -i` of the build output. `web/lib/api.ts` exports `apiUrl` and",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 38,
+  "kind": "text_path",
+  "token": "web/lib/api",
+  "fence": "",
+  "context": "`sed -i` of the build output. `web/lib/api.ts` exports `apiUrl` and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 40,
+  "kind": "backtick_path",
+  "token": ":3782/api/...",
+  "fence": "",
+  "context": "paths through the frontend (`:3782/api/...`).",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 40,
+  "kind": "text_path",
+  "token": "3782/api/.",
+  "fence": "",
+  "context": "paths through the frontend (`:3782/api/...`).",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 41,
+  "kind": "backtick_path",
+  "token": "web/proxy.ts",
+  "fence": "",
+  "context": "- `web/proxy.ts` catches `/api/*` and `/ws/*` and rewrites them to",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 41,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "- `web/proxy.ts` catches `/api/*` and `/ws/*` and rewrites them to",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 41,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "- `web/proxy.ts` catches `/api/*` and `/ws/*` and rewrites them to",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 41,
+  "kind": "text_path",
+  "token": "web/proxy",
+  "fence": "",
+  "context": "- `web/proxy.ts` catches `/api/*` and `/ws/*` and rewrites them to",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 44,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "`data/user/settings/system.json`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 44,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "`data/user/settings/system.json`.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 45,
+  "kind": "bare_file",
+  "token": "start-frontend.sh",
+  "fence": "",
+  "context": "- `start-frontend.sh` is now 12 lines: it sets `PORT`/`HOSTNAME` and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 46,
+  "kind": "backtick_path",
+  "token": "node /app/web/server.js",
+  "fence": "",
+  "context": "`exec`s `node /app/web/server.js`. No mutations of the bundle.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 70,
+  "kind": "backtick_path",
+  "token": "/app/data/user/settings/*.json",
+  "fence": "",
+  "context": "`/app/data/user/settings/*.json` on first boot; configure model providers",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 79,
+  "kind": "text_path",
+  "token": "backend/frontend",
+  "fence": "",
+  "context": "backend/frontend to the non-root `deeptutor` user; the entrypoint remaps",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 80,
+  "kind": "text_path",
+  "token": "UID/GID",
+  "fence": "",
+  "context": "that user's UID/GID to match the volume:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 84,
+  "kind": "env_decl",
+  "token": "PUID",
+  "fence": "bash",
+  "context": "-e PUID=99 -e PGID=100 \\",
+  "verdict": "ok",
+  "note": "42 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 84,
+  "kind": "env_decl",
+  "token": "PGID",
+  "fence": "bash",
+  "context": "-e PUID=99 -e PGID=100 \\",
+  "verdict": "ok",
+  "note": "36 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 90,
+  "kind": "backtick_path",
+  "token": "/app/data",
+  "fence": "",
+  "context": "If the runtime user still cannot write `/app/data`, the entrypoint",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 91,
+  "kind": "text_path",
+  "token": "owner/mode",
+  "fence": "",
+  "context": "**exits** with an owner/mode message instead of starting and later",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 101,
+  "kind": "backtick_path",
+  "token": "/workspace",
+  "fence": "",
+  "context": "stable `/workspace` path and lock the deployment to that path:",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 104,
+  "kind": "env_use",
+  "token": "PWD",
+  "fence": "bash",
+  "context": "mkdir -p \"$PWD/deeptutor-workspace/outputs\"",
+  "verdict": "ok",
+  "note": "27 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 108,
+  "kind": "env_use",
+  "token": "PWD",
+  "fence": "bash",
+  "context": "-v \"$PWD/deeptutor-workspace:/workspace\" \\",
+  "verdict": "ok",
+  "note": "27 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 109,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_ROOT",
+  "fence": "bash",
+  "context": "-e DEEPTUTOR_WORKSPACE_ROOT=/workspace \\",
+  "verdict": "ok",
+  "note": "44 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 110,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS",
+  "fence": "bash",
+  "context": "-e DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS=/workspace \\",
+  "verdict": "ok",
+  "note": "25 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 117,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_HOST",
+  "fence": "bash",
+  "context": "DEEPTUTOR_WORKSPACE_HOST=/absolute/host/folder \\",
+  "verdict": "ok",
+  "note": "24 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 117,
+  "kind": "env_decl",
+  "token": "DEEPTUTOR_WORKSPACE_HOST",
+  "fence": "bash",
+  "context": "DEEPTUTOR_WORKSPACE_HOST=/absolute/host/folder \\",
+  "verdict": "ok",
+  "note": "24 occurrence(s) in tracked code"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 118,
+  "kind": "script_exec",
+  "token": "scripts/docker_compose.py",
+  "fence": "bash",
+  "context": "python scripts/docker_compose.py -f docker-compose.yml up -d",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 121,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "The helper creates the host folder and its nested `outputs/` directory before",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 123,
+  "kind": "backtick_path",
+  "token": "./data/user/workspace",
+  "fence": "",
+  "context": "`./data/user/workspace` is used. The container always sees `/workspace`, so",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 123,
+  "kind": "backtick_path",
+  "token": "/workspace",
+  "fence": "",
+  "context": "`./data/user/workspace` is used. The container always sees `/workspace`, so",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 123,
+  "kind": "text_path",
+  "token": "./data/user/workspace",
+  "fence": "",
+  "context": "`./data/user/workspace` is used. The container always sees `/workspace`, so",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 125,
+  "kind": "text_path",
+  "token": "startup/deployment",
+  "fence": "",
+  "context": "startup/deployment choice and is shown as locked in **Settings → Workspace**.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 127,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "With `docker-compose.yml`, the sandbox runner receives the content tree",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 128,
+  "kind": "backtick_path",
+  "token": "/workspace/outputs",
+  "fence": "",
+  "context": "read-only plus a writable overlay for `/workspace/outputs`; it does not receive",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 129,
+  "kind": "backtick_path",
+  "token": "/app/data",
+  "fence": "",
+  "context": "`/app/data`, user settings, or credentials. Generated programs therefore read",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 137,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "the frontend origin (`:3782`); all `/api/*` and `/ws/*` traffic is",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 137,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "the frontend origin (`:3782`); all `/api/*` and `/ws/*` traffic is",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 139,
+  "kind": "backtick_path",
+  "token": "web/proxy.ts",
+  "fence": "",
+  "context": "middleware (`web/proxy.ts`), which reads `DEEPTUTOR_API_BASE_URL`",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 139,
+  "kind": "text_path",
+  "token": "web/proxy",
+  "fence": "",
+  "context": "middleware (`web/proxy.ts`), which reads `DEEPTUTOR_API_BASE_URL`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 146,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "ports in `data/user/settings/system.json` (`backend_port`,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 146,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "ports in `data/user/settings/system.json` (`backend_port`,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 178,
+  "kind": "script_exec",
+  "token": "scripts/docker_compose.py",
+  "fence": "bash",
+  "context": "python scripts/docker_compose.py \\",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 183,
+  "kind": "script_exec",
+  "token": "scripts/docker_compose.py",
+  "fence": "bash",
+  "context": "python scripts/docker_compose.py \\",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 195,
+  "kind": "bare_file",
+  "token": "compose.codex-oauth.yaml",
+  "fence": "",
+  "context": "without `compose.codex-oauth.yaml`; keep `--force-recreate deeptutor` so the",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 199,
+  "kind": "backtick_path",
+  "token": "/app/data/system",
+  "fence": "",
+  "context": "`/app/data/system` tree. Bind every callback mapping to `127.0.0.1` and never",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 201,
+  "kind": "backtick_path",
+  "token": "/auth/callback",
+  "fence": "",
+  "context": "frontend on those two ports, not just `/auth/callback`. For a manual",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 203,
+  "kind": "backtick_path",
+  "token": "scripts/docker_compose.py",
+  "fence": "",
+  "context": "right-hand `3782` targets; `scripts/docker_compose.py` handles configured",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 203,
+  "kind": "text_path",
+  "token": "scripts/docker_compose",
+  "fence": "",
+  "context": "right-hand `3782` targets; `scripts/docker_compose.py` handles configured",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 208,
+  "kind": "backtick_path",
+  "token": "./data",
+  "fence": "",
+  "context": "### One-time migration: `docker-compose.ghcr.yml` now mounts all of `./data`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 208,
+  "kind": "text_path",
+  "token": "./data",
+  "fence": "",
+  "context": "### One-time migration: `docker-compose.ghcr.yml` now mounts all of `./data`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 208,
+  "kind": "bare_file",
+  "token": "docker-compose.ghcr.yml",
+  "fence": "",
+  "context": "### One-time migration: `docker-compose.ghcr.yml` now mounts all of `./data`",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 210,
+  "kind": "bare_file",
+  "token": "docker-compose.ghcr.yml",
+  "fence": "",
+  "context": "`docker-compose.ghcr.yml` used to bind-mount only three subtrees",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "backtick_path",
+  "token": "data/user",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "backtick_path",
+  "token": "data/memory",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "backtick_path",
+  "token": "data/knowledge_bases",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "text_path",
+  "token": "data/user",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "text_path",
+  "token": "data/memory",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 211,
+  "kind": "text_path",
+  "token": "data/knowledge_bases",
+  "fence": "",
+  "context": "(`data/user`, `data/memory`, `data/knowledge_bases`), so everything else —",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 212,
+  "kind": "backtick_path",
+  "token": "data/system",
+  "fence": "",
+  "context": "`data/system` (the JWT signing secret, accounts, grants, audit log, per-owner",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 212,
+  "kind": "text_path",
+  "token": "data/system",
+  "fence": "",
+  "context": "`data/system` (the JWT signing secret, accounts, grants, audit log, per-owner",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 213,
+  "kind": "backtick_path",
+  "token": "data/users",
+  "fence": "",
+  "context": "Codex tokens), `data/users` (per-user workspaces), `data/partners`,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 213,
+  "kind": "backtick_path",
+  "token": "data/partners",
+  "fence": "",
+  "context": "Codex tokens), `data/users` (per-user workspaces), `data/partners`,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 213,
+  "kind": "text_path",
+  "token": "data/users",
+  "fence": "",
+  "context": "Codex tokens), `data/users` (per-user workspaces), `data/partners`,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 213,
+  "kind": "text_path",
+  "token": "data/partners",
+  "fence": "",
+  "context": "Codex tokens), `data/users` (per-user workspaces), `data/partners`,",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 214,
+  "kind": "backtick_path",
+  "token": "data/cli-apps",
+  "fence": "",
+  "context": "`data/cli-apps` — lived in the container's writable layer and was discarded",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 214,
+  "kind": "text_path",
+  "token": "data/cli-apps",
+  "fence": "",
+  "context": "`data/cli-apps` — lived in the container's writable layer and was discarded",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 216,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "`docker-compose.yml` and `compose.yaml`.",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 216,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "`docker-compose.yml` and `compose.yaml`.",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 229,
+  "kind": "backtick_path",
+  "token": "-v deeptutor-data:/app/data",
+  "fence": "",
+  "context": "Deployments using a named volume (`-v deeptutor-data:/app/data`) or the",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 236,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "to configure an API base at all. The browser issues relative `/api/*` and",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 237,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "`/ws/*` requests against whatever origin serves the UI",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 243,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "backend runs in a separate container. Edit `data/user/settings/system.json`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 243,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "backend runs in a separate container. Edit `data/user/settings/system.json`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 263,
+  "kind": "text_path",
+  "token": "HTTP/HTTPS",
+  "fence": "",
+  "context": "DeepTutor permits normal HTTP/HTTPS browser origins by default. With",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 289,
+  "kind": "text_path",
+  "token": "11434/v1",
+  "fence": "",
+  "context": "- Ollama LLM: `http://host.docker.internal:11434/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 290,
+  "kind": "text_path",
+  "token": "11434/api/embed",
+  "fence": "",
+  "context": "- Ollama embedding: `http://host.docker.internal:11434/api/embed`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 291,
+  "kind": "text_path",
+  "token": "1234/v1",
+  "fence": "",
+  "context": "- LM Studio: `http://host.docker.internal:1234/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 292,
+  "kind": "text_path",
+  "token": "8080/v1",
+  "fence": "",
+  "context": "- llama.cpp: `http://host.docker.internal:8080/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 293,
+  "kind": "text_path",
+  "token": "13305/api/v1",
+  "fence": "",
+  "context": "- Lemonade: `http://host.docker.internal:13305/api/v1`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 295,
+  "kind": "text_path",
+  "token": "macOS/Windows",
+  "fence": "",
+  "context": "Docker Desktop (macOS/Windows) usually resolves `host.docker.internal`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 300,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "<http://127.0.0.1:3782> (or the `frontend_port` in `system.json`), and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 315,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "read-only root filesystem — `compose.yaml` is the supported starting",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 316,
+  "kind": "backtick_path",
+  "token": "ghcr.io/hkuds/deeptutor:latest",
+  "fence": "",
+  "context": "point. It pulls the same `ghcr.io/hkuds/deeptutor:latest` image and",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 316,
+  "kind": "text_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "point. It pulls the same `ghcr.io/hkuds/deeptutor:latest` image and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 330,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "What `compose.yaml` does, and why:",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 334,
+  "kind": "backtick_path",
+  "token": "./data",
+  "fence": "",
+  "context": "per service plus the bind-mounted `./data` and Content Workspace directories.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 334,
+  "kind": "text_path",
+  "token": "./data",
+  "fence": "",
+  "context": "per service plus the bind-mounted `./data` and Content Workspace directories.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 341,
+  "kind": "backtick_path",
+  "token": "/tmp",
+  "fence": "",
+  "context": "`/tmp` (Python/Node scratch), `/run` and `/var/run` (pidfiles),",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 341,
+  "kind": "backtick_path",
+  "token": "/run",
+  "fence": "",
+  "context": "`/tmp` (Python/Node scratch), `/run` and `/var/run` (pidfiles),",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 341,
+  "kind": "backtick_path",
+  "token": "/var/run",
+  "fence": "",
+  "context": "`/tmp` (Python/Node scratch), `/run` and `/var/run` (pidfiles),",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 341,
+  "kind": "text_path",
+  "token": "Python/Node",
+  "fence": "",
+  "context": "`/tmp` (Python/Node scratch), `/run` and `/var/run` (pidfiles),",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 342,
+  "kind": "backtick_path",
+  "token": "/var/log",
+  "fence": "",
+  "context": "`/var/log`, `/root`, `/home`. Sizes are intentionally generous; trim",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 342,
+  "kind": "backtick_path",
+  "token": "/root",
+  "fence": "",
+  "context": "`/var/log`, `/root`, `/home`. Sizes are intentionally generous; trim",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 342,
+  "kind": "backtick_path",
+  "token": "/home",
+  "fence": "",
+  "context": "`/var/log`, `/root`, `/home`. Sizes are intentionally generous; trim",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 350,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "- **No sandbox-runner sidecar.** The `docker-compose.yml` shape includes",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 355,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "`sandbox_allow_subprocess` in `system.json`.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 357,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "### Running outside `compose.yaml`",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 359,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "`compose.yaml` is a starting point, not the only shape. The same",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 385,
+  "kind": "text_path",
+  "token": "Docker/Podman",
+  "fence": "",
+  "context": "Docker/Podman, or the host user under rootless podman + `userns_mode: keep-id`.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 395,
+  "kind": "bare_file",
+  "token": "options.py",
+  "fence": "",
+  "context": "user` (see supervisord's `options.py`).",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 397,
+  "kind": "backtick_path",
+  "token": "/tmp/supervisord.pid",
+  "fence": "",
+  "context": "The pidfile is written to **`/tmp/supervisord.pid`**. `/tmp` is `mode=1777`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 397,
+  "kind": "backtick_path",
+  "token": "/tmp",
+  "fence": "",
+  "context": "The pidfile is written to **`/tmp/supervisord.pid`**. `/tmp` is `mode=1777`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 399,
+  "kind": "backtick_path",
+  "token": "/var/run",
+  "fence": "",
+  "context": "whether PID 1 is root or the host UID, and regardless of who owns `/var/run`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 400,
+  "kind": "backtick_path",
+  "token": "/var/run/supervisord.pid",
+  "fence": "",
+  "context": "An earlier build pointed the pidfile at the root-owned `/var/run/supervisord.pid`;",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 402,
+  "kind": "backtick_path",
+  "token": "/tmp",
+  "fence": "",
+  "context": "cosmetic `CRIT could not write pidfile` on every start. Putting it in `/tmp`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 403,
+  "kind": "backtick_path",
+  "token": "/var/run",
+  "fence": "",
+  "context": "removes that dependency on the `/var/run` owner and mode entirely.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 409,
+  "kind": "backtick_path",
+  "token": "data/user/settings/",
+  "fence": "",
+  "context": "Almost everything you tune lives under `data/user/settings/` inside the",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 418,
+  "kind": "text_path",
+  "token": "Backend/frontend",
+  "fence": "",
+  "context": "| `system.json` | Backend/frontend ports, public API base, CORS, SSL verification, attachment directory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 418,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "| `system.json` | Backend/frontend ports, public API base, CORS, SSL verification, attachment directory |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 419,
+  "kind": "text_path",
+  "token": "token/cookie",
+  "fence": "",
+  "context": "| `auth.json` | Optional auth toggle, username, password hash, token/cookie settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 419,
+  "kind": "bare_file",
+  "token": "auth.json",
+  "fence": "",
+  "context": "| `auth.json` | Optional auth toggle, username, password hash, token/cookie settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 420,
+  "kind": "bare_file",
+  "token": "integrations.json",
+  "fence": "",
+  "context": "| `integrations.json` | Optional PocketBase and sidecar integration settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 421,
+  "kind": "bare_file",
+  "token": "model_catalog.json",
+  "fence": "",
+  "context": "| `model_catalog.json` | LLM, embedding, and search provider profiles; API keys; active models |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 422,
+  "kind": "bare_file",
+  "token": "interface.json",
+  "fence": "",
+  "context": "| `interface.json` | UI language / theme / sidebar preferences |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 423,
+  "kind": "bare_file",
+  "token": "main.yaml",
+  "fence": "",
+  "context": "| `main.yaml` | Runtime behavior defaults and path injection |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 424,
+  "kind": "text_path",
+  "token": "Capability/tool",
+  "fence": "",
+  "context": "| `agents.yaml` | Capability/tool temperature and token settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 424,
+  "kind": "bare_file",
+  "token": "agents.yaml",
+  "fence": "",
+  "context": "| `agents.yaml` | Capability/tool temperature and token settings |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 428,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "- **`system.json` → `next_public_api_base`** (in-network) and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 429,
+  "kind": "text_path",
+  "token": "cloud/external",
+  "fence": "",
+  "context": "**`next_public_api_base_external`** (cloud/external override). The",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 431,
+  "kind": "backtick_path",
+  "token": "web/proxy.ts",
+  "fence": "",
+  "context": "`web/proxy.ts` consumes. `public_api_base` is accepted as a",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 431,
+  "kind": "text_path",
+  "token": "web/proxy",
+  "fence": "",
+  "context": "`web/proxy.ts` consumes. `public_api_base` is accepted as a",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 434,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "- **`system.json` → `backend_port` / `frontend_port`**. The container",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 437,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "`HOST_PORT_*` env var that `compose.yaml` reads) to match.",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 441,
+  "kind": "text_path",
+  "token": "JSON/YAML",
+  "fence": "",
+  "context": "JSON/YAML files; deep links to each section live in the page sidebar.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 449,
+  "kind": "backtick_path",
+  "token": "data/user/settings/integrations.json",
+  "fence": "",
+  "context": "`data/user/settings/integrations.json` and bringing the `pocketbase`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 449,
+  "kind": "text_path",
+  "token": "data/user/settings/integrations",
+  "fence": "",
+  "context": "`data/user/settings/integrations.json` and bringing the `pocketbase`",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 454,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "The `pocketbase` service in `compose.yaml` (and the corrected mount in",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 455,
+  "kind": "backtick_path",
+  "token": "./data",
+  "fence": "",
+  "context": "`docker-compose.yml`) bind-mounts three subdirectories of `./data` —",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 455,
+  "kind": "text_path",
+  "token": "./data",
+  "fence": "",
+  "context": "`docker-compose.yml`) bind-mounts three subdirectories of `./data` —",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 455,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "`docker-compose.yml`) bind-mounts three subdirectories of `./data` —",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 456,
+  "kind": "backtick_path",
+  "token": "/pb_data",
+  "fence": "",
+  "context": "`/pb_data`, `/pb_public`, `/pb_hooks` — matching the upstream",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 456,
+  "kind": "backtick_path",
+  "token": "/pb_public",
+  "fence": "",
+  "context": "`/pb_data`, `/pb_public`, `/pb_hooks` — matching the upstream",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 456,
+  "kind": "backtick_path",
+  "token": "/pb_hooks",
+  "fence": "",
+  "context": "`/pb_data`, `/pb_public`, `/pb_hooks` — matching the upstream",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 457,
+  "kind": "backtick_path",
+  "token": "ghcr.io/muchobien/pocketbase:latest",
+  "fence": "",
+  "context": "`ghcr.io/muchobien/pocketbase:latest` image's entrypoint, which uses",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 457,
+  "kind": "text_path",
+  "token": "ghcr.io/muchobien/pocketbase",
+  "fence": "",
+  "context": "`ghcr.io/muchobien/pocketbase:latest` image's entrypoint, which uses",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 458,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "absolute paths. The earlier `docker-compose.yml` example mounted",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 459,
+  "kind": "backtick_path",
+  "token": "/pb/pb_data",
+  "fence": "",
+  "context": "`/pb/pb_data` and crashed on first start with",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 460,
+  "kind": "backtick_path",
+  "token": "mkdir /pb_data: read-only file system",
+  "fence": "",
+  "context": "`mkdir /pb_data: read-only file system`; this PR fixes that.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 470,
+  "kind": "backtick_path",
+  "token": "CRIT could not write pidfile /var/run/supervisord.pid",
+  "fence": "",
+  "context": "**`CRIT could not write pidfile /var/run/supervisord.pid` on container start.**",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 471,
+  "kind": "backtick_path",
+  "token": "/tmp/supervisord.pid",
+  "fence": "",
+  "context": "Only on images built before the pidfile moved to `/tmp/supervisord.pid`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 474,
+  "kind": "backtick_path",
+  "token": "/var/run",
+  "fence": "",
+  "context": "current image (or, on an old one, set the `/var/run` tmpfs to `mode=1777`).",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 485,
+  "kind": "backtick_path",
+  "token": "DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock",
+  "fence": "",
+  "context": "`DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock` for the",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 485,
+  "kind": "text_path",
+  "token": "UID/podman/podman",
+  "fence": "",
+  "context": "`DOCKER_HOST=unix:///run/user/$UID/podman/podman.sock` for the",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 501,
+  "kind": "backtick_path",
+  "token": "ghcr.io/hkuds/deeptutor:latest",
+  "fence": "",
+  "context": "`ghcr.io/hkuds/deeptutor:latest` again.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 501,
+  "kind": "text_path",
+  "token": "ghcr.io/hkuds/deeptutor",
+  "fence": "",
+  "context": "`ghcr.io/hkuds/deeptutor:latest` again.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 504,
+  "kind": "backtick_path",
+  "token": "data/user/settings/system.json",
+  "fence": "",
+  "context": "`data/user/settings/system.json` on the host and set",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 504,
+  "kind": "text_path",
+  "token": "data/user/settings/system",
+  "fence": "",
+  "context": "`data/user/settings/system.json` on the host and set",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 516,
+  "kind": "backtick_path",
+  "token": "/app/data",
+  "fence": "",
+  "context": "attempted chown of `/app/data`, and the env-var export. The app",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 521,
+  "kind": "backtick_path",
+  "token": "./data",
+  "fence": "",
+  "context": "paths or the bind-mounted `./data` tree will fail.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 521,
+  "kind": "text_path",
+  "token": "./data",
+  "fence": "",
+  "context": "paths or the bind-mounted `./data` tree will fail.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 524,
+  "kind": "bare_file",
+  "token": "docker-compose.yml",
+  "fence": "",
+  "context": "- The sandbox-runner sidecar (in `docker-compose.yml`, **not** in",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 525,
+  "kind": "bare_file",
+  "token": "compose.yaml",
+  "fence": "",
+  "context": "`compose.yaml`) is the strongest posture for untrusted model-generated",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 531,
+  "kind": "backtick_path",
+  "token": "data/user/settings/auth.json",
+  "fence": "",
+  "context": "- Auth (`data/user/settings/auth.json` → `auth_enabled = true`) gates",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 531,
+  "kind": "text_path",
+  "token": "data/user/settings/auth",
+  "fence": "",
+  "context": "- Auth (`data/user/settings/auth.json` → `auth_enabled = true`) gates",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 532,
+  "kind": "backtick_path",
+  "token": "/api/*",
+  "fence": "",
+  "context": "`/api/*` and `/ws/*` via the `dt_token` cookie. `web/proxy.ts` reads",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 532,
+  "kind": "backtick_path",
+  "token": "/ws/*",
+  "fence": "",
+  "context": "`/api/*` and `/ws/*` via the `dt_token` cookie. `web/proxy.ts` reads",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 532,
+  "kind": "backtick_path",
+  "token": "web/proxy.ts",
+  "fence": "",
+  "context": "`/api/*` and `/ws/*` via the `dt_token` cookie. `web/proxy.ts` reads",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 532,
+  "kind": "text_path",
+  "token": "web/proxy",
+  "fence": "",
+  "context": "`/api/*` and `/ws/*` via the `dt_token` cookie. `web/proxy.ts` reads",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/CONTAINERIZATION.md",
+  "line": 536,
+  "kind": "bare_file",
+  "token": "system.json",
+  "fence": "",
+  "context": "`cors_origins` in `system.json` to the exact frontend origins the",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/KNOWLEDGE_MIGRATION.md",
+  "line": 11,
+  "kind": "backtick_path",
+  "token": "raw/",
+  "fence": "",
+  "context": "| Import an indexed knowledge base | Markdown and other supported files copied into `raw/`, then indexed | Search a copied corpus with the selected retrieval en",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/KNOWLEDGE_MIGRATION.md",
+  "line": 38,
+  "kind": "backtick_path",
+  "token": "/Users/example/Documents/MyVault",
+  "fence": "",
+  "context": "reach, for example `/Users/example/Documents/MyVault`. Do not enter a path",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/KNOWLEDGE_MIGRATION.md",
+  "line": 100,
+  "kind": "backtick_path",
+  "token": "raw/",
+  "fence": "",
+  "context": "each matched file into the top level of the KB's `raw/` directory. Because a",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/PRACTICE.md",
+  "line": 3,
+  "kind": "backtick_path",
+  "token": "/space/questions",
+  "fence": "",
+  "context": "「学习空间 → 题库」（`/space/questions`）用于管理完整题库与错题，支持导入、搜索、筛选、标签和收藏。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/PRACTICE.md",
+  "line": 4,
+  "kind": "backtick_path",
+  "token": "/learning/practice",
+  "fence": "",
+  "context": "「个性化学习 → 练习」（`/learning/practice`）提供练习统计、每日错题复习，以及相同的题库、错题和导入功能。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/PRACTICE.md",
+  "line": 6,
+  "kind": "backtick_path",
+  "token": "/space/questions",
+  "fence": "",
+  "context": "切换题库、错题时保留当前入口及课程、工作空间等查询参数，原有 `/space/questions` 链接仍然可用。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/PRACTICE.md",
+  "line": 25,
+  "kind": "text_path",
+  "token": "CSV/TSV",
+  "fence": "",
+  "context": "Excel 使用当前活动工作表；CSV/TSV 支持 UTF-8（含 BOM）和 GB18030。",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/PRACTICE.md",
+  "line": 105,
+  "kind": "backtick_path",
+  "token": "/api/question-notebook/practice",
+  "fence": "",
+  "context": "`/api/question-notebook/practice`。删除题目时关联复习记录一并清理。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/SOURCE_VISUALS.md",
+  "line": 8,
+  "kind": "backtick_path",
+  "token": "visual_assets/",
+  "fence": "",
+  "context": "when available. The visual record lives under the KB's `visual_assets/`",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/SOURCE_VISUALS.md",
+  "line": 10,
+  "kind": "backtick_path",
+  "token": "/api/knowledge-bases/{kb_name}/visual-assets/{asset_id}",
+  "fence": "",
+  "context": "`/api/knowledge-bases/{kb_name}/visual-assets/{asset_id}` serves those exact",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/VOICE_CONFIGURATION.md",
+  "line": 19,
+  "kind": "text_path",
+  "token": "OpenAI/Gemini",
+  "fence": "",
+  "context": "选项按服务商和具体模型提供。OpenAI 的不同 TTS 系列、OpenRouter 的 OpenAI/Gemini 模型、火山 TTS 1.0/2.0、Groq 英语/阿拉伯语模型分别使用对应音色建议。阿里云目前对接 Qwen TTS 的原生 HTTP 接口；CosyVoice 等使用其他协议的模型需要另行适配。",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/VOICE_CONFIGURATION.md",
+  "line": 19,
+  "kind": "text_path",
+  "token": "1.0/2",
+  "fence": "",
+  "context": "选项按服务商和具体模型提供。OpenAI 的不同 TTS 系列、OpenRouter 的 OpenAI/Gemini 模型、火山 TTS 1.0/2.0、Groq 英语/阿拉伯语模型分别使用对应音色建议。阿里云目前对接 Qwen TTS 的原生 HTTP 接口；CosyVoice 等使用其他协议的模型需要另行适配。",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 10,
+  "kind": "bare_file",
+  "token": "subagent.json",
+  "fence": "",
+  "context": "`subagent.json` settings document:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 16,
+  "kind": "text_path",
+  "token": "deployment/profile",
+  "fence": "",
+  "context": "- `profile`: informational deployment/profile label; it is not a credential and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 24,
+  "kind": "backtick_path",
+  "token": "GET /api/subagents/settings",
+  "fence": "",
+  "context": "field, persisted, or returned by `GET /api/subagents/settings`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 26,
+  "kind": "backtick_path",
+  "token": "/p/<profile>",
+  "fence": "",
+  "context": "An optional `/p/<profile>` prefix supports Hermes multi-profile routing.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 32,
+  "kind": "text_path",
+  "token": "connect/read/write/pool",
+  "fence": "",
+  "context": "with explicit connect/read/write/pool timeouts. The endpoints and machine-",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 36,
+  "kind": "backtick_path",
+  "token": "GET /v1/capabilities",
+  "fence": "",
+  "context": "1. `GET /v1/capabilities` detects availability and verifies that the configured",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 41,
+  "kind": "backtick_path",
+  "token": "POST /v1/runs",
+  "fence": "",
+  "context": "2. `POST /v1/runs` starts a run. The request uses `input` for the user prompt,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 48,
+  "kind": "backtick_path",
+  "token": "GET /api/sessions/{session_id}/messages",
+  "fence": "",
+  "context": "`GET /api/sessions/{session_id}/messages`. It keeps only non-empty",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 49,
+  "kind": "text_path",
+  "token": "user/assistant",
+  "fence": "",
+  "context": "user/assistant rows, excludes tool rows, and sends at most the last 40 rows",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 53,
+  "kind": "backtick_path",
+  "token": "GET /v1/runs/{run_id}/events",
+  "fence": "",
+  "context": "3. `GET /v1/runs/{run_id}/events` is an SSE stream. Frames contain JSON in a",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 58,
+  "kind": "text_path",
+  "token": "tool/tool-result",
+  "fence": "",
+  "context": "`run.cancelled`. Tool lifecycle events become tool/tool-result rows;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 60,
+  "kind": "text_path",
+  "token": "log/error",
+  "fence": "",
+  "context": "`hermes_remote:final`; other lifecycle events become log/error rows. The",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 61,
+  "kind": "text_path",
+  "token": "tool/reasoning",
+  "fence": "",
+  "context": "gateway emits tool/reasoning, text/completion, and approval events through",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 61,
+  "kind": "text_path",
+  "token": "text/completion",
+  "fence": "",
+  "context": "gateway emits tool/reasoning, text/completion, and approval events through",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 63,
+  "kind": "backtick_path",
+  "token": "POST /v1/runs/{run_id}/approval",
+  "fence": "",
+  "context": "4. `POST /v1/runs/{run_id}/approval` resolves a pending approval. The body is",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 67,
+  "kind": "backtick_path",
+  "token": "POST /v1/runs/{run_id}/stop",
+  "fence": "",
+  "context": "5. `POST /v1/runs/{run_id}/stop` interrupts a run. Cancellation posts this",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 80,
+  "kind": "backtick_path",
+  "token": "/v1/runs",
+  "fence": "",
+  "context": "The `/v1/runs` API has no image upload field. Attachments and their DeepTutor-",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 85,
+  "kind": "text_path",
+  "token": "process/container",
+  "fence": "",
+  "context": "This backend keeps the Hermes gateway outside the DeepTutor process/container:",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/remote-hermes-backend.md",
+  "line": 93,
+  "kind": "backtick_path",
+  "token": "POST /v1/runs",
+  "fence": "",
+  "context": "adapter. It does not poll or retry `POST /v1/runs`; a caller cancellation or",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 3,
+  "kind": "backtick_path",
+  "token": "/watching",
+  "fence": "",
+  "context": "Open **Immersive Watching** in the sidebar, or visit `/watching`. Paste a YouTube URL and open the video. The first question creates a conversation at `/watchin",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 3,
+  "kind": "backtick_path",
+  "token": "/watching/{sessionId}",
+  "fence": "",
+  "context": "Open **Immersive Watching** in the sidebar, or visit `/watching`. Paste a YouTube URL and open the video. The first question creates a conversation at `/watchin",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 9,
+  "kind": "bare_file",
+  "token": "video_learning.json",
+  "fence": "",
+  "context": "In administrator settings, open the video-learning section, enter the existing instance's backend API origin and public origin, test the connection, and select ",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 12,
+  "kind": "text_path",
+  "token": "browser/device",
+  "fence": "",
+  "context": "- `invidious.public_base_url`: the same instance's origin reachable by the user's browser/device.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 22,
+  "kind": "text_path",
+  "token": "save/reopen",
+  "fence": "",
+  "context": "2. Click a caption, use Explain here, follow an answer's timestamp, and save/reopen a timestamped note.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 26,
+  "kind": "text_path",
+  "token": "media/companion",
+  "fence": "",
+  "context": "If metadata works but playback fails, inspect the authenticated stream response and the configured instance's media/companion service. If captions are unavailab",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 32,
+  "kind": "backtick_path",
+  "token": "pytest tests/video_learning",
+  "fence": "",
+  "context": "Run frontend type, contract, lint, translation and build checks, the Watching browser tests, and `pytest tests/video_learning`. Switch service paths only after ",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 32,
+  "kind": "backtick_path",
+  "token": "/watching",
+  "fence": "",
+  "context": "Run frontend type, contract, lint, translation and build checks, the Watching browser tests, and `pytest tests/video_learning`. Switch service paths only after ",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 32,
+  "kind": "backtick_path",
+  "token": "/reading",
+  "fence": "",
+  "context": "Run frontend type, contract, lint, translation and build checks, the Watching browser tests, and `pytest tests/video_learning`. Switch service paths only after ",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 32,
+  "kind": "backtick_path",
+  "token": "/chat",
+  "fence": "",
+  "context": "Run frontend type, contract, lint, translation and build checks, the Watching browser tests, and `pytest tests/video_learning`. Switch service paths only after ",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 32,
+  "kind": "text_path",
+  "token": "tests/video_learning",
+  "fence": "",
+  "context": "Run frontend type, contract, lint, translation and build checks, the Watching browser tests, and `pytest tests/video_learning`. Switch service paths only after ",
+  "verdict": "ok",
+  "note": ""
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 42,
+  "kind": "backtick_path",
+  "token": "GET:playlists/*",
+  "fence": "",
+  "context": "The additional scopes are `GET:feed`, `GET:playlists`, and `GET:playlists/*`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/watching-workspace.md",
+  "line": 57,
+  "kind": "text_path",
+  "token": "Expired/revoked",
+  "fence": "",
+  "context": "feed can mean that the account has no subscriptions. Expired/revoked tokens require",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 10,
+  "kind": "text_path",
+  "token": "Unselected/default",
+  "fence": "",
+  "context": "- Unselected/default workspace retains historical paths and data. Previous",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 12,
+  "kind": "backtick_path",
+  "token": ".deeptutor/data/",
+  "fence": "",
+  "context": "- Custom data lives under `.deeptutor/data/` inside its registered folder;",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 13,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "presented outputs remain under `outputs/`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 21,
+  "kind": "text_path",
+  "token": "books/knowledge",
+  "fence": "",
+  "context": "- Shared admin books/knowledge bases retain their grant policy. Personal learning",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 45,
+  "kind": "text_path",
+  "token": "opens/mutations",
+  "fence": "",
+  "context": "tag each result with its origin, and preserve that origin for opens/mutations.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 49,
+  "kind": "text_path",
+  "token": "empty/error",
+  "fence": "",
+  "context": "has cancellation, a 40-second deadline and distinct empty/error states.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 67,
+  "kind": "text_path",
+  "token": "CLI/application",
+  "fence": "",
+  "context": "- CLI/application checks: 45 passed. PocketBase/usage checks: 12 passed;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 67,
+  "kind": "text_path",
+  "token": "PocketBase/usage",
+  "fence": "",
+  "context": "- CLI/application checks: 45 passed. PocketBase/usage checks: 12 passed;",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 68,
+  "kind": "text_path",
+  "token": "Migration/HTTP",
+  "fence": "",
+  "context": "final PocketBase migration rerun: 4 passed. Migration/HTTP checks: 17 passed.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 69,
+  "kind": "text_path",
+  "token": "runtime/partner",
+  "fence": "",
+  "context": "- Earlier larger runtime/partner regression: 159 passed; broader workspace and",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 73,
+  "kind": "text_path",
+  "token": "keys/UI",
+  "fence": "",
+  "context": "existing missing keys/UI literal notices.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 75,
+  "kind": "text_path",
+  "token": "A/B",
+  "fence": "",
+  "context": "- Real browser QA in an isolated data home: A/B learning dashboards and chat",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 85,
+  "kind": "text_path",
+  "token": "3024/8024",
+  "fence": "",
+  "context": "destination without changing data. Ports 3024/8024 and QA",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 88,
+  "kind": "backtick_path",
+  "token": "/Users/frank/HKUDS/DeepTutor-backups/workspace-isolation-20260919-023534/",
+  "fence": "",
+  "context": "`/Users/frank/HKUDS/DeepTutor-backups/workspace-isolation-20260919-023534/`.",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 90,
+  "kind": "backtick_path",
+  "token": "output/playwright/",
+  "fence": "",
+  "context": "Browser artifacts are under `output/playwright/`: `workspace-migration-production.png`,",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 99,
+  "kind": "text_path",
+  "token": "account/workspace",
+  "fence": "",
+  "context": "account/workspace roots; it does not search arbitrary disks.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-isolation-implementation.md",
+  "line": 106,
+  "kind": "text_path",
+  "token": "usage/settings",
+  "fence": "",
+  "context": "resources, memory and account-level usage/settings keep their stated scope.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-resources-verification.md",
+  "line": 20,
+  "kind": "text_path",
+  "token": "export/generation",
+  "fence": "",
+  "context": "- TypeScript typecheck; lint on the affected surfaces; backend Ruff; API contract export/generation check; locale key parity; production build.",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-resources-verification.md",
+  "line": 21,
+  "kind": "text_path",
+  "token": "skills/MCP/KB",
+  "fence": "",
+  "context": "- Browser verification in an isolated runtime: existing inherited workspace, creation of a selected workspace, persisted skills/MCP/KB assignments, account reso",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-resources-verification.md",
+  "line": 25,
+  "kind": "text_path",
+  "token": "update/trace/settings",
+  "fence": "",
+  "context": "The full Node frontend test suite reported 1,150 passed and 34 failed. This is **not** a claim of a clean repository-wide baseline. The working tree contains ot",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspace-resources-verification.md",
+  "line": 41,
+  "kind": "text_path",
+  "token": "create/rebuild",
+  "fence": "",
+  "context": "- model controls are scoped to built-in LightRAG create/rebuild surfaces",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 11,
+  "kind": "backtick_path",
+  "token": "data/user/workspace/",
+  "fence": "",
+  "context": "| 默认工作区的数据 | 保留历史 `data/user/workspace/`、`data/user/chat_history.db` 等路径；多用户使用各自的数据根目录。 |",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 11,
+  "kind": "backtick_path",
+  "token": "data/user/chat_history.db",
+  "fence": "",
+  "context": "| 默认工作区的数据 | 保留历史 `data/user/workspace/`、`data/user/chat_history.db` 等路径；多用户使用各自的数据根目录。 |",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 11,
+  "kind": "text_path",
+  "token": "data/user/chat_history",
+  "fence": "",
+  "context": "| 默认工作区的数据 | 保留历史 `data/user/workspace/`、`data/user/chat_history.db` 等路径；多用户使用各自的数据根目录。 |",
+  "verdict": "MISSING",
+  "note": "path not found in worktree"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 12,
+  "kind": "backtick_path",
+  "token": ".deeptutor/data/",
+  "fence": "",
+  "context": "| 自建工作区的数据 | 工作区文件夹内的 `.deeptutor/data/`，包括独立会话数据库、学习资料、进度和缓存。 |",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 13,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "| 便于查看的生成文件 | 工作区文件夹内的 `outputs/`，按功能、会话和轮次组织。 |",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 30,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "新建 Partner 的「资料库」步骤可以选择已有工作区，配置页也可以更改绑定。绑定后持续共享该工作区的文件、知识库、技能和笔记本，生成文件写入该工作区的 `outputs/`；工作区的资源分配规则和 Partner 的工具开关同时生效。Soul、对话记录和 Partner 记忆保持独立。更改绑定从下一条消息开始生效。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 42,
+  "kind": "backtick_path",
+  "token": "historical/",
+  "fence": "",
+  "context": "历史目录会在发现列表中显示。已经支持的历史学习格式继续使用各功能原有的升级逻辑；额外旧目录可导出，或作为历史档案保存在目标工作区的 `historical/` 数据目录，保留原文件，不自动混入当前学习记录。导出 ZIP 包包含所选数据、依赖与校验清单，不包含账号设置和凭据。记忆不属于迁移范围。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 44,
+  "kind": "backtick_path",
+  "token": "data-migrations/",
+  "fence": "",
+  "context": "恢复副本保存在账号私有运行目录的 `data-migrations/` 下，界面显示具体路径。成功迁移后也保留副本。数据量较大时，应为复制和备份预留磁盘空间，并暂停外部程序对这些目录的写入。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 50,
+  "kind": "backtick_path",
+  "token": "outputs/",
+  "fence": "",
+  "context": "默认工作区为兼容历史数据保留原存储路径；其文件夹位置设置影响展示给模型的文件和 `outputs/`。若要将默认工作区的完整学习数据放进一个自建目录，应使用「数据迁移」。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ },
+ {
+  "doc": "docs-for-user/workspaces.md",
+  "line": 77,
+  "kind": "backtick_path",
+  "token": "skills/",
+  "fence": "",
+  "context": "技能页面可切换「账户共享技能」与某个工作区的专属技能。专属技能保存在该工作区的 `skills/` 下，在已启用的同名技能中优先于账户共享、管理员分配和内置版本。摘要、自动注入正文和按需读取都使用相同的解析结果。MCP 的连接配置及凭据继续由账户管理，工作区只保存服务引用，不能扩大管理员授予的权限。",
+  "verdict": "MISSING",
+  "note": "not found at repo root nor docs-for-user-relative"
+ }
+]
