@@ -120,6 +120,21 @@ _UNFINISHED_PAGE_STATUSES = frozenset(
 )
 
 
+def _interrupted_by_provider(page: Page) -> bool:
+    """Whether a half-generated page owes its holes to the provider account.
+
+    PARTIAL is normally terminal — the compiler ran every block and the ones
+    that failed failed for content reasons, so re-running them re-spends the
+    same model calls for the same outcome. A page where at least half of the
+    failed blocks are provider-level failures (quota exhausted, credentials
+    revoked, outage) is different: its broken blocks never had a fair chance.
+    Those pages get a retry on ``resume_book``; the compiler skips blocks that
+    are already READY, so the retry spends only the missing work while the
+    finished chapters around it are left untouched.
+    """
+    return page.status == PageStatus.PARTIAL and bool(systemic_failure_reason(page))
+
+
 # Blocks whose content is a single run of prose the reader can correct in
 # place. Everything else carries structured payloads — a section's subsections,
 # a quiz's questions, a figure's source — where a plain text box would either
@@ -1089,7 +1104,11 @@ class BookEngine:
         - a page stranded in ``PLANNING``/``GENERATING`` by a crash.
 
         Pages that are already ``READY`` are left exactly as they are, so
-        resuming costs only the work that is genuinely missing.
+        resuming costs only the work that is genuinely missing. A chapter
+        that was interrupted mid-run by a provider-level failure (quota ran
+        out while its blocks were generating) is half-done through no fault
+        of its content: it is requeued too, and its retry re-spends only the
+        blocks that failed.
         """
         book = self.storage.load_book(book_id)
         if book is None:
@@ -1106,7 +1125,9 @@ class BookEngine:
                 page.updated_at = time.time()
                 self.storage.save_page(page)
 
-        pending = [p for p in pages if p.status in _UNFINISHED_PAGE_STATUSES]
+        pending = [
+            p for p in pages if p.status in _UNFINISHED_PAGE_STATUSES or _interrupted_by_provider(p)
+        ]
         if not pending:
             await self._maybe_finalize_book(book_id)
             return pages
@@ -1518,8 +1539,19 @@ class BookEngine:
         """Feed a finished background page into the breaker.
 
         Returns ``True`` when the breaker tripped and the queue was drained.
+
+        A PARTIAL page counts when its failures are provider-level: a book
+        that keeps shipping half-chapters through an outage is grinding, not
+        progressing, and letting it reset the breaker sprays partial chapters
+        across the rest of the book — exactly what the breaker exists to stop.
+        A PARTIAL page whose failures were content-level still proves the
+        provider is alive and resets the count.
         """
-        reason = systemic_failure_reason(page) if page.status == PageStatus.ERROR else ""
+        reason = (
+            systemic_failure_reason(page)
+            if page.status in (PageStatus.ERROR, PageStatus.PARTIAL)
+            else ""
+        )
         if not reason:
             # Any page that produced *something* proves the provider is alive.
             runtime.consecutive_page_failures = 0
