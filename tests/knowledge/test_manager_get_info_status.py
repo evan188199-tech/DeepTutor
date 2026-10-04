@@ -366,22 +366,36 @@ def test_get_info_count_failures_report_unknown_not_zero(
     assert "content lists" in warned
 
 
-def test_get_info_empty_kb_reports_real_zero_counts(tmp_path: Path) -> None:
+def test_get_info_empty_kb_reports_real_zero_counts(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
     """A healthy KB with no files reports genuine ``0`` counts — the inverse
     guarantee that keeps ``None`` meaningful as "unknown".
+
+    A freshly created KB has no ``images`` / ``content_list`` subdirectory at
+    all, and the missing directories must count as a real zero without
+    emitting a warning.
     """
+    import logging
+
     manager = KnowledgeBaseManager(base_dir=str(tmp_path))
     kb_dir = tmp_path / "kb-empty"
     (kb_dir / "raw").mkdir(parents=True)
-    (kb_dir / "images").mkdir()
-    (kb_dir / "content_list").mkdir()
     manager.update_kb_status(name="kb-empty", status="ready", progress=None)
 
-    statistics = manager.get_info("kb-empty")["statistics"]
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.manager"):
+        statistics = manager.get_info("kb-empty")["statistics"]
 
     assert statistics["raw_documents"] == 0
     assert statistics["images"] == 0
     assert statistics["content_lists"] == 0
+    # No counting-failure warning may fire for a healthy KB (log spam is the
+    # other half of the missing-directory false positive).
+    assert [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.knowledge.manager" and record.levelno >= logging.WARNING
+    ] == []
 
 
 def test_get_default_logs_warning_when_config_service_fails(

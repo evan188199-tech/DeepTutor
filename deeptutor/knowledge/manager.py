@@ -1620,8 +1620,13 @@ class KnowledgeBaseManager:
                 raw_count = None
 
             try:
+                # A healthy KB may have no ``images`` / ``content_list`` directory
+                # (nothing extracted yet): that is a real zero, not a failure.
+                # Only a path that exists but cannot be read is unknown (None).
                 images_count = (
-                    len([f for f in images_dir.iterdir() if f.is_file()]) if images_dir else 0
+                    len([f for f in images_dir.iterdir() if f.is_file()])
+                    if images_dir and images_dir.exists()
+                    else 0
                 )
             except Exception as exc:
                 logger.warning(f"Failed to count images for KB '{kb_name}': {exc}")
@@ -1629,7 +1634,9 @@ class KnowledgeBaseManager:
 
             try:
                 content_lists_count = (
-                    len(list(content_list_dir.glob("*.json"))) if content_list_dir else 0
+                    len(list(content_list_dir.glob("*.json")))
+                    if content_list_dir and content_list_dir.exists()
+                    else 0
                 )
             except Exception as exc:
                 logger.warning(f"Failed to count content lists for KB '{kb_name}': {exc}")
