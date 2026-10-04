@@ -121,7 +121,6 @@ parse_cache/<source_hash前2位>/<source_hash>/<signature>/
 
 ```mermaid
 sequenceDiagram
-    title="on_output 传递链（以两个真实调用方为例）"
     participant UI as 前端进度面板
     participant QS as mimic_source.py:82-89<br/>asyncio.to_thread
     participant PS as ParseService.parse
