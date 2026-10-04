@@ -10,7 +10,7 @@ import type { SessionRef } from "@/lib/chat-import/types";
 
 /**
  * Failing tests for the chat export/import pipeline. Each case pins one
- * reproducible defect (see evidence/chat-export-tests-20261004): cross-project
+ * reproducible defect: cross-project
  * misattribution, corrupt-row tolerance, lost attachment references, and
  * messages dropped at the codex storage-layer boundary.
  */

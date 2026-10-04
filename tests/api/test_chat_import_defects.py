@@ -1,7 +1,7 @@
 """Failing tests for chat-history import boundaries.
 
-Each case pins one reproducible defect in the import contract (see
-evidence/chat-export-tests-20261004): dedup-id collisions that silently drop a
+Each case pins one reproducible defect in the import contract:
+dedup-id collisions that silently drop a
 whole conversation, non-idempotent re-import when the external id carries no
 usable characters, and attachment references lost with empty-content rows.
 """
