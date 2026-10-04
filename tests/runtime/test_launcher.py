@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import builtins
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json
+import logging
 from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
@@ -229,6 +231,45 @@ def test_packaged_web_cache_refreshes_when_public_settings_change(tmp_path: Path
     assert "https://api.example" in (second / "server.js").read_text(encoding="utf-8")
 
 
+def test_packaged_web_cache_repairs_a_corrupt_marker_without_rebuilding_twice(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A corrupt cache marker must warn once and heal instead of rebuilding silently."""
+    packaged = tmp_path / "pkg"
+    (packaged / ".next").mkdir(parents=True)
+    (packaged / "server.js").write_text(
+        "const api='__NEXT_PUBLIC_API_BASE_PLACEHOLDER__';", encoding="utf-8"
+    )
+    home = tmp_path / "home"
+    cache = home / launcher.WEB_CACHE_DIR
+    cache.mkdir(parents=True)
+    (cache / "server.js").write_text("stale", encoding="utf-8")
+    marker = cache / ".deeptutor-web-runtime.json"
+    marker.write_text("{corrupt", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger=launcher.logger.name):
+        runtime = launcher._copy_packaged_web_if_needed(
+            packaged, home=home, api_base="http://localhost:8001", auth_enabled=True
+        )
+
+    assert runtime == cache
+    assert any(str(marker) in record.getMessage() for record in caplog.records)
+    assert (cache / "server.js").read_text(encoding="utf-8") == "const api='http://localhost:8001';"
+    assert json.loads(marker.read_text(encoding="utf-8"))["api_base"] == "http://localhost:8001"
+
+    (cache / "server.js").write_text("sentinel", encoding="utf-8")
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger=launcher.logger.name):
+        reused = launcher._copy_packaged_web_if_needed(
+            packaged, home=home, api_base="http://localhost:8001", auth_enabled=True
+        )
+
+    assert reused == cache
+    assert (cache / "server.js").read_text(encoding="utf-8") == "sentinel"
+    assert not caplog.records
+
+
 def test_detect_existing_source_frontend_from_next_dev_lock(tmp_path: Path, monkeypatch) -> None:
     source = tmp_path / "web"
     lock = source / ".next" / "dev" / "lock"
@@ -267,6 +308,31 @@ def test_detect_existing_source_frontend_ignores_stale_lock(tmp_path: Path, monk
     )
 
     assert existing is None
+
+
+def test_detect_existing_source_frontend_warns_on_a_corrupt_dev_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An unreadable dev lock is skipped with a warning instead of silence."""
+    source = tmp_path / "web"
+    lock = source / ".next" / "dev" / "lock"
+    lock.parent.mkdir(parents=True)
+    lock.write_text("{corrupt", encoding="utf-8")
+    monkeypatch.setattr(
+        launcher,
+        "_is_pid_alive",
+        lambda pid: (_ for _ in ()).throw(AssertionError("corrupt lock must not reach pid probe")),
+    )
+
+    with caplog.at_level(logging.WARNING, logger=launcher.logger.name):
+        existing = launcher._detect_existing_source_frontend(
+            launcher.FrontendRuntime("source", [], source)
+        )
+
+    assert existing is None
+    assert any(str(lock) in record.getMessage() for record in caplog.records)
 
 
 def test_resolve_port_conflicts_passthrough_when_free(tmp_path: Path, monkeypatch) -> None:
@@ -566,6 +632,106 @@ def test_source_production_build_is_reused_until_an_input_changes(
         (["npm", "run", "build"], source, launcher.SOURCE_PRODUCTION_DIST_DIR),
     ]
     assert next_env.read_text(encoding="utf-8") == "// developer dist types\n"
+
+
+def test_source_production_build_repairs_a_corrupt_marker_without_rebuilding_twice(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A corrupt build marker must warn once and heal instead of rebuilding silently."""
+    source = tmp_path / "web"
+    source.mkdir()
+    (source / "package.json").write_text('{"scripts":{"build":"next build"}}', encoding="utf-8")
+    dist = source / launcher.SOURCE_PRODUCTION_DIST_DIR
+    marker = dist / launcher.SOURCE_BUILD_MARKER
+    (dist / "standalone").mkdir(parents=True)
+    (dist / "BUILD_ID").write_text("stale", encoding="utf-8")
+    (dist / "standalone" / "server.js").write_text("", encoding="utf-8")
+    marker.write_text("{corrupt", encoding="utf-8")
+    builds: list[list[str]] = []
+
+    def _run(command, cwd, env, **_kwargs):
+        builds.append(list(command))
+        (dist / "BUILD_ID").write_text(f"build-{len(builds)}", encoding="utf-8")
+        return _CompletedProcess(0)
+
+    monkeypatch.setattr(launcher.subprocess, "run", _run)
+
+    with caplog.at_level(logging.WARNING, logger=launcher.logger.name):
+        launcher._ensure_source_production_build(
+            source, "npm", api_base="http://localhost:8001", auth_enabled=False
+        )
+
+    assert builds == [["npm", "run", "build"]]
+    assert any(str(marker) in record.getMessage() for record in caplog.records)
+    assert json.loads(marker.read_text(encoding="utf-8"))["fingerprint"]
+
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger=launcher.logger.name):
+        launcher._ensure_source_production_build(
+            source, "npm", api_base="http://localhost:8001", auth_enabled=False
+        )
+
+    assert builds == [["npm", "run", "build"]]
+    assert not caplog.records
+
+
+def test_stale_dev_lock_removal_failure_is_logged_at_debug(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A dead dev server whose lock cannot be removed still counts as stopped."""
+    source = tmp_path / "web"
+    lock = source / ".next" / "dev" / "lock"
+    lock.mkdir(parents=True)  # a directory defeats unlink() with OSError
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda pid: False)
+
+    frontend = launcher.ExistingFrontendRuntime(
+        url="http://localhost:3999", port=3999, pid=12345, lock_path=lock
+    )
+
+    with caplog.at_level(logging.DEBUG, logger=launcher.logger.name):
+        stopped = launcher._stop_unhealthy_source_frontend(frontend)
+
+    assert stopped is True
+    assert any(
+        str(lock) in record.getMessage() and record.levelno == logging.DEBUG
+        for record in caplog.records
+    )
+
+
+def test_stopped_next_dev_lock_removal_failure_is_logged_at_debug(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """After killing a stale Next dev server, a failed lock cleanup leaves a debug trace."""
+    source = tmp_path / "web"
+    lock = source / ".next" / "dev" / "lock"
+    lock.mkdir(parents=True)
+    alive = {"pid": True}
+
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda pid: alive["pid"])
+    monkeypatch.setattr(launcher, "_looks_like_next_process", lambda pid: True)
+    monkeypatch.setattr(
+        launcher, "_send_tree_signal", lambda pid, pgid, sig: alive.__setitem__("pid", False)
+    )
+    monkeypatch.setattr(launcher, "_http_ready", lambda url, timeout: False)
+
+    frontend = launcher.ExistingFrontendRuntime(
+        url="http://localhost:3999", port=3999, pid=12345, lock_path=lock
+    )
+
+    with caplog.at_level(logging.DEBUG, logger=launcher.logger.name):
+        stopped = launcher._stop_unhealthy_source_frontend(frontend)
+
+    assert stopped is True
+    assert any(
+        str(lock) in record.getMessage() and record.levelno == logging.DEBUG
+        for record in caplog.records
+    )
 
 
 @pytest.mark.parametrize("resolved_backend_port", [8001, 8123])

@@ -6,6 +6,7 @@ import atexit
 from dataclasses import dataclass
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 import secrets
@@ -31,6 +32,8 @@ from deeptutor.runtime.home import (
 from deeptutor.runtime.memory_probe import SUPERVISOR_PID_ENV
 from deeptutor.runtime.process import is_process_alive
 from deeptutor.services.app_update import LAUNCHER_PID_ENV
+
+logger = logging.getLogger(__name__)
 
 BACKEND_READY_TIMEOUT_ENV = "DEEPTUTOR_BACKEND_READY_TIMEOUT"
 FRONTEND_READY_TIMEOUT_ENV = "DEEPTUTOR_FRONTEND_READY_TIMEOUT"
@@ -633,10 +636,18 @@ def _copy_packaged_web_if_needed(
     }
     if (cache / "server.js").exists():
         try:
-            if json.loads(marker.read_text(encoding="utf-8")) == marker_payload:
+            existing_marker = json.loads(marker.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning(
+                "Web runtime cache marker %s is unreadable (%s); refreshing the cache "
+                "from %s to repair it",
+                marker,
+                exc,
+                packaged,
+            )
+        else:
+            if existing_marker == marker_payload:
                 return cache
-        except Exception:
-            pass
 
     if cache.exists():
         shutil.rmtree(cache)
@@ -781,11 +792,17 @@ def _ensure_source_production_build(
     payload = {"fingerprint": _source_build_fingerprint(source, env)}
     if (dist / "BUILD_ID").is_file() and (dist / "standalone" / "server.js").is_file():
         try:
-            if json.loads(marker.read_text(encoding="utf-8")) == payload:
+            existing_marker = json.loads(marker.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning(
+                "Source build marker %s is unreadable (%s); rebuilding the frontend to repair it",
+                marker,
+                exc,
+            )
+        else:
+            if existing_marker == payload:
                 _prepare_source_standalone(source)
                 return
-        except Exception:
-            pass
 
     _log(f"Building the source frontend for production in {source} ...")
     # Next rewrites these source-controlled files to point at whichever dist
@@ -940,7 +957,14 @@ def _detect_existing_source_frontend(frontend: FrontendRuntime) -> ExistingFront
     for lock_path in lock_candidates:
         try:
             payload = json.loads(lock_path.read_text(encoding="utf-8"))
-        except Exception:
+        except FileNotFoundError:
+            continue
+        except Exception as exc:
+            logger.warning(
+                "Next dev lock %s is unreadable (%s); ignoring it and starting a fresh dev server",
+                lock_path,
+                exc,
+            )
             continue
         if not isinstance(payload, dict):
             continue
@@ -994,8 +1018,8 @@ def _stop_unhealthy_source_frontend(frontend: ExistingFrontendRuntime) -> bool:
     if not _is_pid_alive(frontend.pid):
         try:
             frontend.lock_path.unlink(missing_ok=True)
-        except OSError:
-            pass
+        except OSError as exc:
+            logger.debug("Could not remove stale Next dev lock %s (%s)", frontend.lock_path, exc)
         return True
     if not _looks_like_next_process(frontend.pid):
         return False
@@ -1019,8 +1043,8 @@ def _stop_unhealthy_source_frontend(frontend: ExistingFrontendRuntime) -> bool:
 
     try:
         frontend.lock_path.unlink(missing_ok=True)
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.debug("Could not remove stale Next dev lock %s (%s)", frontend.lock_path, exc)
     return not _http_ready(frontend.url, timeout=0.5)
 
 
