@@ -314,3 +314,101 @@ def test_get_info_does_not_reparse_docstore_on_repeat_calls(
     assert info_again["statistics"]["active_match"] is True
     # Cached count + reused version probes: no re-read of the docstore.
     assert len(reads) == parses_after_first_call
+
+
+def test_get_info_count_failures_report_unknown_not_zero(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A counter that cannot be computed must surface as ``None`` (unknown),
+    never as a fake ``0`` — otherwise a broken KB looks like an empty one and
+    the failure is undiagnosable from the KB detail page.
+    """
+    import logging
+
+    from deeptutor.knowledge import manager as manager_module
+
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path))
+    kb_dir = tmp_path / "kb-counts"
+    (kb_dir / "raw").mkdir(parents=True)
+    (kb_dir / "raw" / "a.pdf").write_text("%PDF-1.4\n", encoding="utf-8")
+    # A stray file where the images directory belongs makes ``iterdir()``
+    # fail with NotADirectoryError.
+    (kb_dir / "images").write_text("not a directory", encoding="utf-8")
+    (kb_dir / "content_list").mkdir()
+    manager.update_kb_status(name="kb-counts", status="ready", progress=None)
+
+    def _unreadable_raw(root: Path):
+        raise PermissionError("raw directory is unreadable")
+
+    real_glob = Path.glob
+
+    def _unreadable_content_list(self: Path, /, pattern: str):
+        if self.name == "content_list":
+            raise PermissionError("content_list directory is unreadable")
+        return real_glob(self, pattern)
+
+    monkeypatch.setattr(manager_module, "iter_kb_documents", _unreadable_raw)
+    monkeypatch.setattr(Path, "glob", _unreadable_content_list)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.manager"):
+        info = manager.get_info("kb-counts")
+
+    statistics = info["statistics"]
+    assert statistics["raw_documents"] is None
+    assert statistics["images"] is None
+    assert statistics["content_lists"] is None
+    warned = " ".join(record.getMessage() for record in caplog.records)
+    assert "kb-counts" in warned
+    assert "raw documents" in warned
+    assert "images" in warned
+    assert "content lists" in warned
+
+
+def test_get_info_empty_kb_reports_real_zero_counts(tmp_path: Path) -> None:
+    """A healthy KB with no files reports genuine ``0`` counts — the inverse
+    guarantee that keeps ``None`` meaningful as "unknown".
+    """
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path))
+    kb_dir = tmp_path / "kb-empty"
+    (kb_dir / "raw").mkdir(parents=True)
+    (kb_dir / "images").mkdir()
+    (kb_dir / "content_list").mkdir()
+    manager.update_kb_status(name="kb-empty", status="ready", progress=None)
+
+    statistics = manager.get_info("kb-empty")["statistics"]
+
+    assert statistics["raw_documents"] == 0
+    assert statistics["images"] == 0
+    assert statistics["content_lists"] == 0
+
+
+def test_get_default_logs_warning_when_config_service_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """When the centralized config read fails, the first-KB fallback still
+    applies, but the failure must be logged instead of silently swallowed.
+    """
+    import logging
+
+    import deeptutor.services.config as config_module
+
+    def _broken_service():
+        raise RuntimeError("config service unavailable")
+
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path))
+    (tmp_path / "kb-a").mkdir()
+    manager.update_kb_status(name="kb-a", status="ready", progress=None)
+
+    monkeypatch.setattr(config_module, "get_kb_config_service", _broken_service)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.manager"):
+        default = manager.get_default()
+
+    assert default == "kb-a"
+    assert any("default KB" in record.getMessage() for record in caplog.records), [
+        record.getMessage() for record in caplog.records
+    ]

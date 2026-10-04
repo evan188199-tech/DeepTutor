@@ -1292,8 +1292,8 @@ class KnowledgeBaseManager:
             default_kb = kb_config_service.get_default_kb()
             if default_kb and default_kb in kb_list:
                 return default_kb
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning(f"Failed to read default KB from centralized config: {exc}")
 
         # Fallback to first knowledge base in sorted list
         if kb_list:
@@ -1603,9 +1603,11 @@ class KnowledgeBaseManager:
         images_dir = kb_dir / "images" if dir_exists else None
         content_list_dir = kb_dir / "content_list" if dir_exists else None
 
-        raw_count = 0
-        images_count = 0
-        content_lists_count = 0
+        # ``None`` marks a count that could not be computed (unknown); ``0`` is
+        # a real, verified zero. Never collapse the former into the latter.
+        raw_count: int | None = 0
+        images_count: int | None = 0
+        content_lists_count: int | None = 0
 
         if dir_exists:
             try:
@@ -1613,22 +1615,25 @@ class KnowledgeBaseManager:
                 # manifest / ``kb_files`` so a user is never told two different
                 # counts for the same KB (see :mod:`deeptutor.knowledge.manifest`).
                 raw_count = sum(1 for _ in iter_kb_documents(raw_dir)) if raw_dir else 0
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"Failed to count raw documents for KB '{kb_name}': {exc}")
+                raw_count = None
 
             try:
                 images_count = (
                     len([f for f in images_dir.iterdir() if f.is_file()]) if images_dir else 0
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"Failed to count images for KB '{kb_name}': {exc}")
+                images_count = None
 
             try:
                 content_lists_count = (
                     len(list(content_list_dir.glob("*.json"))) if content_list_dir else 0
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning(f"Failed to count content lists for KB '{kb_name}': {exc}")
+                content_lists_count = None
 
         # Check rag_initialized from provider-owned real output, not metadata alone.
         from deeptutor.services.rag.index_versioning import (
