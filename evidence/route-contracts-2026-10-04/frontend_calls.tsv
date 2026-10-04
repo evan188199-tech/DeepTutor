@@ -1,0 +1,1083 @@
+/api	lib/book-api.ts:22	lib
+/api	lib/co-writer-api.ts:3	lib
+/api	tests/proxy-policy.test.ts:36	tests
+/api/	lib/proxy-policy.ts:31	lib
+/api/	tests/internal-route-contract.test.ts:71	tests
+/api/agent-config/agents	contracts/generated/api.ts:24	contracts
+/api/agent-config/agents/{agent_type}	contracts/generated/api.ts:47	contracts
+/api/auth/avatar	PARAM	lib/profile-api.ts:112	lib
+/api/auth/avatar/{user_id}	contracts/generated/api.ts:73	contracts
+/api/auth/device-login	contracts/generated/api.ts:94	contracts
+/api/auth/device/heartbeat	contracts/generated/api.ts:114	contracts
+/api/auth/devices	contracts/generated/api.ts:134	contracts
+/api/auth/devices/{device_credential_id}	contracts/generated/api.ts:158	contracts
+/api/auth/is_first_user	contracts/generated/api.ts:175	contracts
+/api/auth/is_first_user	lib/auth.ts:165	lib
+/api/auth/login	contracts/generated/api.ts:195	contracts
+/api/auth/login	lib/auth.ts:91	lib
+/api/auth/logout	contracts/generated/api.ts:215	contracts
+/api/auth/logout	lib/auth.ts:179	lib
+/api/auth/openai-codex/callback	contracts/generated/api.ts:238	contracts
+/api/auth/openai-codex/callback	lib/proxy-policy.ts:13	lib
+/api/auth/openai-codex/callback	tests/proxy-policy.test.ts:71	tests
+/api/auth/profile	contracts/generated/api.ts:255	contracts
+/api/auth/profile	lib/profile-api.ts:57	lib
+/api/auth/profile	lib/profile-api.ts:68	lib
+/api/auth/profile/avatar	contracts/generated/api.ts:282	contracts
+/api/auth/profile/avatar	lib/profile-api.ts:85	lib
+/api/auth/profile/avatar	lib/profile-api.ts:99	lib
+/api/auth/profile/learner-profile	contracts/generated/api.ts:310	contracts
+/api/auth/profile/learner-profile	lib/profile-api.ts:14	lib
+/api/auth/profile/learner-profile	lib/profile-api.ts:25	lib
+/api/auth/profile/learner-profile	lib/settings-extensions.ts:21	lib
+/api/auth/register	contracts/generated/api.ts:334	contracts
+/api/auth/register	lib/auth.ts:140	lib
+/api/auth/session-handoff	contracts/generated/api.ts:360	contracts
+/api/auth/session-handoff	lib/session-handoff-api.ts:13	lib
+/api/auth/session-handoff/complete	contracts/generated/api.ts:380	contracts
+/api/auth/session-handoff/complete	lib/session-handoff-api.ts:41	lib
+/api/auth/session-handoff/exchange	contracts/generated/api.ts:400	contracts
+/api/auth/session-handoff/exchange	lib/session-handoff-api.ts:27	lib
+/api/auth/status	contracts/generated/api.ts:420	contracts
+/api/auth/status	lib/auth.ts:56	lib
+/api/auth/status	tests/e2e/learning-progress.audit.ts:15	tests
+/api/auth/status	tests/e2e/reading-citation-material.audit.ts:89	tests
+/api/auth/status	tests/e2e/reading-location-history.audit.ts:111	tests
+/api/auth/status	tests/e2e/reading-w3c-annotations.audit.ts:86	tests
+/api/auth/status	tests/e2e/settings-navigation.audit.ts:106	tests
+/api/auth/users	contracts/generated/api.ts:440	contracts
+/api/auth/users	lib/admin-api.ts:175	lib
+/api/auth/users	lib/admin-api.ts:67	lib
+/api/auth/users	PARAM	lib/admin-api.ts:149	lib
+/api/auth/users	PARAM	lib/admin-api.ts:35	lib
+/api/auth/users	PARAM	lib/admin-api.ts:49	lib
+/api/auth/users	PARAM	lib/admin-api.ts:74	lib
+/api/auth/users/batch-delete	contracts/generated/api.ts:525	contracts
+/api/auth/users/batch-delete	lib/admin-api.ts:128	lib
+/api/auth/users/import	contracts/generated/api.ts:545	contracts
+/api/auth/users/import	lib/admin-api.ts:110	lib
+/api/auth/users/{username}	contracts/generated/api.ts:464	contracts
+/api/auth/users/{username}/learner-profile	contracts/generated/api.ts:484	contracts
+/api/auth/users/{username}/role	contracts/generated/api.ts:505	contracts
+/api/books	contracts/generated/api.ts:568	contracts
+/api/books	tests/e2e/book-reader-sequential.audit.ts:116	tests
+/api/books	PARAM	hooks/useTopicSourceLibrary.ts:380	hooks
+/api/books/block-types	contracts/generated/api.ts:737	contracts
+/api/books/change-block-type	contracts/generated/api.ts:754	contracts
+/api/books/compile-page	contracts/generated/api.ts:771	contracts
+/api/books/confirm-proposal	contracts/generated/api.ts:791	contracts
+/api/books/confirm-spine	contracts/generated/api.ts:811	contracts
+/api/books/deep-dive	contracts/generated/api.ts:831	contracts
+/api/books/delete-block	contracts/generated/api.ts:848	contracts
+/api/books/estimate-basis	contracts/generated/api.ts:865	contracts
+/api/books/health	contracts/generated/api.ts:890	contracts
+/api/books/insert-block	contracts/generated/api.ts:907	contracts
+/api/books/move-block	contracts/generated/api.ts:924	contracts
+/api/books/page-chat-session	contracts/generated/api.ts:941	contracts
+/api/books/pause	contracts/generated/api.ts:958	contracts
+/api/books/progress/bookmark	contracts/generated/api.ts:978	contracts
+/api/books/progress/visit	contracts/generated/api.ts:995	contracts
+/api/books/quiz-attempt	contracts/generated/api.ts:1015	contracts
+/api/books/rebuild	contracts/generated/api.ts:1032	contracts
+/api/books/regenerate-block	contracts/generated/api.ts:1049	contracts
+/api/books/resume	contracts/generated/api.ts:1066	contracts
+/api/books/sequential-fixture	tests/e2e/book-reader-sequential.audit.ts:111	tests
+/api/books/sequential-fixture/pages/page-1	tests/e2e/book-reader-sequential.audit.ts:102	tests
+/api/books/sequential-fixture/pages/page-2	tests/e2e/book-reader-sequential.audit.ts:105	tests
+/api/books/sequential-fixture/pages/page-3	tests/e2e/book-reader-sequential.audit.ts:108	tests
+/api/books/supplement	contracts/generated/api.ts:1086	contracts
+/api/books/update-block	contracts/generated/api.ts:1103	contracts
+/api/books/{book_id}	contracts/generated/api.ts:589	contracts
+/api/books/{book_id}/export	contracts/generated/api.ts:607	contracts
+/api/books/{book_id}/health	contracts/generated/api.ts:627	contracts
+/api/books/{book_id}/learning-captures	contracts/generated/api.ts:644	contracts
+/api/books/{book_id}/learning-captures/{capture_id}	contracts/generated/api.ts:662	contracts
+/api/books/{book_id}/pages/{page_id}	contracts/generated/api.ts:679	contracts
+/api/books/{book_id}/refresh-fingerprints	contracts/generated/api.ts:696	contracts
+/api/books/{book_id}/spine	contracts/generated/api.ts:720	contracts
+/api/capabilities/registered	contracts/generated/api.ts:1127	contracts
+/api/capabilities/registered	features/capabilities/api.ts:15	features
+/api/capabilities/settings	contracts/generated/api.ts:1147	contracts
+/api/capabilities/settings	lib/settings-extensions.ts:28	lib
+/api/chat	tests/e2e/fixtures/runtime.ts:67	tests
+/api/courses	contracts/generated/api.ts:1165	contracts
+/api/courses	lib/courses-api.ts:178	lib
+/api/courses	lib/courses-api.ts:198	lib
+/api/courses	PARAM	lib/courses-api.ts:224	lib
+/api/courses	PARAM	lib/courses-api.ts:236	lib
+/api/courses	PARAM	lib/courses-api.ts:248	lib
+/api/courses	PARAM	lib/courses-api.ts:266	lib
+/api/courses	PARAM	lib/courses-api.ts:281	lib
+/api/courses	PARAM	lib/courses-api.ts:318	lib
+/api/courses	PARAM	lib/courses-api.ts:335	lib
+/api/courses/resource-candidates	contracts/generated/api.ts:1286	contracts
+/api/courses/resource-candidates	lib/courses-api.ts:302	lib
+/api/courses/{course_id}	contracts/generated/api.ts:1183	contracts
+/api/courses/{course_id}/resources	contracts/generated/api.ts:1201	contracts
+/api/courses/{course_id}/resources/{resource_id}	contracts/generated/api.ts:1218	contracts
+/api/courses/{course_id}/state	contracts/generated/api.ts:1235	contracts
+/api/courses/{course_id}/syllabus	contracts/generated/api.ts:1252	contracts
+/api/courses/{course_id}/syllabus/{unit_id}	contracts/generated/api.ts:1269	contracts
+/api/dashboard/learning-index	contracts/generated/api.ts:1320	contracts
+/api/dashboard/learning-library	PARAM	lib/learning-library.ts:12	lib
+/api/dashboard/learning-library/{kind}	contracts/generated/api.ts:1340	contracts
+/api/dashboard/recent	contracts/generated/api.ts:1360	contracts
+/api/dashboard/source-library	PARAM	hooks/useTopicSourceLibrary.ts:108	hooks
+/api/dashboard/source-library/{kind}	contracts/generated/api.ts:1377	contracts
+/api/dashboard/suggestions	components/chat/home/StarterSuggestions.tsx:92	components
+/api/dashboard/suggestions	contracts/generated/api.ts:1397	contracts
+/api/dashboard/suggestions	tests/e2e/reading-citation-material.audit.ts:93	tests
+/api/dashboard/suggestions	tests/e2e/reading-location-history.audit.ts:115	tests
+/api/dashboard/suggestions	tests/e2e/reading-w3c-annotations.audit.ts:97	tests
+/api/dashboard/suggestions/refresh	components/chat/home/StarterSuggestions.tsx:164	components
+/api/dashboard/suggestions/refresh	contracts/generated/api.ts:1425	contracts
+/api/dashboard/{entry_id}	contracts/generated/api.ts:1303	contracts
+/api/documents	contracts/generated/api.ts:1448	contracts
+/api/documents/actions/automark	contracts/generated/api.ts:1500	contracts
+/api/documents/actions/automark	features/co-writer/components/CoWriterWorkspace.tsx:1147	features
+/api/documents/actions/edit	contracts/generated/api.ts:1520	contracts
+/api/documents/actions/edit	features/co-writer/components/CoWriterWorkspace.tsx:1100	features
+/api/documents/actions/edit-react	contracts/generated/api.ts:1537	contracts
+/api/documents/actions/edit-react/stream	contracts/generated/api.ts:1554	contracts
+/api/documents/actions/edit-react/stream	features/co-writer/components/CoWriterWorkspace.tsx:979	features
+/api/documents/export/docx	contracts/generated/api.ts:1571	contracts
+/api/documents/history	contracts/generated/api.ts:1588	contracts
+/api/documents/history/{operation_id}	contracts/generated/api.ts:1608	contracts
+/api/documents/import/docx	contracts/generated/api.ts:1628	contracts
+/api/documents/tool-calls/{operation_id}	contracts/generated/api.ts:1645	contracts
+/api/documents/{doc_id}	contracts/generated/api.ts:1472	contracts
+/api/file-preview/pdf	components/chat/preview/previewers/OfficePdfPreview.tsx:114	components
+/api/file-preview/pdf	contracts/generated/api.ts:1665	contracts
+/api/file-preview/pdf	tests/office-pdf-preview.spec.tsx:133	tests
+/api/file-preview/pdf	tests/office-pdf-preview.spec.tsx:91	tests
+/api/file-preview/pdf?source=	PARAM	components/chat/preview/previewers/OfficePdfPreview.tsx:71	components
+/api/files/frame-1.png	tests/math-animator-types.test.ts:28	tests
+/api/imports/chat-history	contracts/generated/api.ts:1689	contracts
+/api/imports/chat-history	lib/imports-api.ts:30	lib
+/api/imports/chat-history?	PARAM	lib/imports-api.ts:91	lib
+/api/knowledge-bases	contracts/generated/api.ts:1707	contracts
+/api/knowledge-bases	features/knowledge/api/client.ts:15	features
+/api/knowledge-bases	features/knowledge/api/client.ts:297	features
+/api/knowledge-bases	features/knowledge/api/client.ts:792	features
+/api/knowledge-bases	tests/lightrag-indexing-model.test.ts:59	tests
+/api/knowledge-bases	tests/proxy-policy.test.ts:33	tests
+/api/knowledge-bases	PARAM	components/knowledge/KnowledgePage.tsx:190	components
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1028	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1047	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1069	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1087	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1360	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1378	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1397	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1459	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1484	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1504	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1581	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1599	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1626	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1645	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1720	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1736	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1762	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1780	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1799	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1822	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1839	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:1852	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:695	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:723	features
+/api/knowledge-bases	PARAM	features/knowledge/api/client.ts:734	features
+/api/knowledge-bases	PARAM	hooks/useTopicSourceLibrary.ts:266	hooks
+/api/knowledge-bases/Team%20Notes%2F2026/link-folder	tests/linked-folder-api.test.ts:72	tests
+/api/knowledge-bases/Team%20Notes%2F2026/linked-folders	tests/linked-folder-api.test.ts:68	tests
+/api/knowledge-bases/Team%20Notes%2F2026/linked-folders/folder%2F1	tests/linked-folder-api.test.ts:80	tests
+/api/knowledge-bases/Team%20Notes%2F2026/sync-folder/folder%2F1	tests/linked-folder-api.test.ts:85	tests
+/api/knowledge-bases/configs	contracts/generated/api.ts:2347	contracts
+/api/knowledge-bases/configs/sync	contracts/generated/api.ts:2367	contracts
+/api/knowledge-bases/connect-folder	contracts/generated/api.ts:2387	contracts
+/api/knowledge-bases/connect-folder	features/knowledge/api/client.ts:999	features
+/api/knowledge-bases/connect-ima	contracts/generated/api.ts:2412	contracts
+/api/knowledge-bases/connect-ima	features/knowledge/api/client.ts:1200	features
+/api/knowledge-bases/connect-ima?dt_workspace=	tests/ima-knowledge-api.test.ts:149	tests
+/api/knowledge-bases/connect-kiwix	features/knowledge/api/client.ts:842	features
+/api/knowledge-bases/connect-lightrag-server	contracts/generated/api.ts:2439	contracts
+/api/knowledge-bases/connect-lightrag-server	features/knowledge/api/client.ts:1265	features
+/api/knowledge-bases/connect-marginnote4	contracts/generated/api.ts:2463	contracts
+/api/knowledge-bases/connect-marginnote4	features/knowledge/api/client.ts:908	features
+/api/knowledge-bases/connect-obsidian	contracts/generated/api.ts:2487	contracts
+/api/knowledge-bases/connect-obsidian	features/knowledge/api/client.ts:885	features
+/api/knowledge-bases/connect-weknora	contracts/generated/api.ts:2511	contracts
+/api/knowledge-bases/connect-weknora	features/knowledge/api/client.ts:1323	features
+/api/knowledge-bases/default	contracts/generated/api.ts:2531	contracts
+/api/knowledge-bases/default	PARAM	features/knowledge/api/client.ts:1432	features
+/api/knowledge-bases/default/{kb_name}	contracts/generated/api.ts:2551	contracts
+/api/knowledge-bases/delete	contracts/generated/api.ts:2571	contracts
+/api/knowledge-bases/delete	features/knowledge/api/client.ts:1529	features
+/api/knowledge-bases/embedding-usage	contracts/generated/api.ts:2603	contracts
+/api/knowledge-bases/embedding-usage	features/knowledge/api/client.ts:30	features
+/api/knowledge-bases/health	contracts/generated/api.ts:2623	contracts
+/api/knowledge-bases/kiwix-articles?kb_ref=	PARAM	features/knowledge/api/client.ts:856	features
+/api/knowledge-bases/kiwix-catalog?server_url=	PARAM	features/knowledge/api/client.ts:817	features
+/api/knowledge-bases/list-ima	contracts/generated/api.ts:2643	contracts
+/api/knowledge-bases/list-ima	features/knowledge/api/client.ts:1146	features
+/api/knowledge-bases/list-ima?dt_workspace=	tests/ima-knowledge-api.test.ts:64	tests
+/api/knowledge-bases/notes/reindex	tests/kb-embedding-binding.spec.tsx:194	tests
+/api/knowledge-bases/papers/reindex	tests/lightrag-indexing-model.test.ts:64	tests
+/api/knowledge-bases/probe-folder	contracts/generated/api.ts:2663	contracts
+/api/knowledge-bases/probe-folder	features/knowledge/api/client.ts:974	features
+/api/knowledge-bases/probe-ima	contracts/generated/api.ts:2687	contracts
+/api/knowledge-bases/probe-ima	features/knowledge/api/client.ts:1170	features
+/api/knowledge-bases/probe-kiwix	features/knowledge/api/client.ts:828	features
+/api/knowledge-bases/probe-lightrag-server	contracts/generated/api.ts:2711	contracts
+/api/knowledge-bases/probe-lightrag-server	features/knowledge/api/client.ts:1234	features
+/api/knowledge-bases/probe-weknora	contracts/generated/api.ts:2734	contracts
+/api/knowledge-bases/probe-weknora	features/knowledge/api/client.ts:1296	features
+/api/knowledge-bases/rag-pipelines	PARAM	features/knowledge/api/client.ts:506	features
+/api/knowledge-bases/rag-pipelines	PARAM	features/knowledge/api/client.ts:525	features
+/api/knowledge-bases/rag-pipelines	PARAM	features/knowledge/api/client.ts:586	features
+/api/knowledge-bases/rag-pipelines/active-model	contracts/generated/api.ts:2777	contracts
+/api/knowledge-bases/rag-pipelines/active-model	features/knowledge/api/client.ts:638	features
+/api/knowledge-bases/rag-pipelines/graphrag/config	contracts/generated/api.ts:2800	contracts
+/api/knowledge-bases/rag-pipelines/graphrag/model-compatibility	contracts/generated/api.ts:2824	contracts
+/api/knowledge-bases/rag-pipelines/graphrag/model-compatibility	features/knowledge/api/client.ts:617	features
+/api/knowledge-bases/rag-pipelines/graphrag/model-compatibility?dt_workspace=	tests/graphrag-model-compatibility.test.ts:33	tests
+/api/knowledge-bases/rag-pipelines/ima/config	contracts/generated/api.ts:2844	contracts
+/api/knowledge-bases/rag-pipelines/ima/config	features/knowledge/api/client.ts:415	features
+/api/knowledge-bases/rag-pipelines/lightrag-server/config	contracts/generated/api.ts:2868	contracts
+/api/knowledge-bases/rag-pipelines/lightrag/config	contracts/generated/api.ts:2892	contracts
+/api/knowledge-bases/rag-pipelines/lightrag/model-options	contracts/generated/api.ts:2920	contracts
+/api/knowledge-bases/rag-pipelines/lightrag/model-options	features/knowledge/api/client.ts:551	features
+/api/knowledge-bases/rag-pipelines/llamaindex/config	contracts/generated/api.ts:2940	contracts
+/api/knowledge-bases/rag-pipelines/llamaindex/config	features/knowledge/api/client.ts:458	features
+/api/knowledge-bases/rag-pipelines/model-options	contracts/generated/api.ts:2967	contracts
+/api/knowledge-bases/rag-pipelines/model-options?kinds=	PARAM	features/knowledge/api/client.ts:602	features
+/api/knowledge-bases/rag-pipelines/pageindex/config	contracts/generated/api.ts:2987	contracts
+/api/knowledge-bases/rag-pipelines/pageindex/config	features/knowledge/api/client.ts:374	features
+/api/knowledge-bases/rag-pipelines/{provider}/preflight	contracts/generated/api.ts:2754	contracts
+/api/knowledge-bases/rag-providers	contracts/generated/api.ts:3011	contracts
+/api/knowledge-bases/rag-providers	features/knowledge/api/client.ts:326	features
+/api/knowledge-bases/rag-providers	PARAM	features/knowledge/api/client.ts:658	features
+/api/knowledge-bases/rag-providers/{provider}/mode	contracts/generated/api.ts:3031	contracts
+/api/knowledge-bases/supported-file-types	contracts/generated/api.ts:3054	contracts
+/api/knowledge-bases/supported-file-types	features/knowledge/api/client.ts:350	features
+/api/knowledge-bases/tasks	PARAM	hooks/useKnowledgeProgress.ts:298	hooks
+/api/knowledge-bases/tasks/{task_id}/stream	contracts/generated/api.ts:3074	contracts
+/api/knowledge-bases/{kb_name}	contracts/generated/api.ts:1728	contracts
+/api/knowledge-bases/{kb_name}/config	contracts/generated/api.ts:1752	contracts
+/api/knowledge-bases/{kb_name}/file-preview-text/{filename}	contracts/generated/api.ts:1776	contracts
+/api/knowledge-bases/{kb_name}/files	contracts/generated/api.ts:1796	contracts
+/api/knowledge-bases/{kb_name}/files/move	contracts/generated/api.ts:1856	contracts
+/api/knowledge-bases/{kb_name}/files/{filename}	contracts/generated/api.ts:1822	contracts
+/api/knowledge-bases/{kb_name}/folders	contracts/generated/api.ts:1879	contracts
+/api/knowledge-bases/{kb_name}/github-source	contracts/generated/api.ts:1899	contracts
+/api/knowledge-bases/{kb_name}/github-source/{source_id}	contracts/generated/api.ts:1916	contracts
+/api/knowledge-bases/{kb_name}/github-sources	contracts/generated/api.ts:1933	contracts
+/api/knowledge-bases/{kb_name}/indexing-policy	contracts/generated/api.ts:1950	contracts
+/api/knowledge-bases/{kb_name}/link-folder	contracts/generated/api.ts:1970	contracts
+/api/knowledge-bases/{kb_name}/linked-folders	contracts/generated/api.ts:1998	contracts
+/api/knowledge-bases/{kb_name}/linked-folders/{folder_id}	contracts/generated/api.ts:2018	contracts
+/api/knowledge-bases/{kb_name}/progress	contracts/generated/api.ts:2038	contracts
+/api/knowledge-bases/{kb_name}/progress/clear	contracts/generated/api.ts:2058	contracts
+/api/knowledge-bases/{kb_name}/reindex	contracts/generated/api.ts:2078	contracts
+/api/knowledge-bases/{kb_name}/reindex-config	contracts/generated/api.ts:2102	contracts
+/api/knowledge-bases/{kb_name}/retry	contracts/generated/api.ts:2122	contracts
+/api/knowledge-bases/{kb_name}/sync-folder/{folder_id}	contracts/generated/api.ts:2142	contracts
+/api/knowledge-bases/{kb_name}/sync-github	contracts/generated/api.ts:2165	contracts
+/api/knowledge-bases/{kb_name}/sync-web	contracts/generated/api.ts:2182	contracts
+/api/knowledge-bases/{kb_name}/upload	contracts/generated/api.ts:2202	contracts
+/api/knowledge-bases/{kb_name}/web-source	contracts/generated/api.ts:2228	contracts
+/api/knowledge-bases/{kb_name}/web-source-sync	contracts/generated/api.ts:2245	contracts
+/api/knowledge-bases/{kb_name}/web-source/{source_id}	contracts/generated/api.ts:2262	contracts
+/api/knowledge-bases/{kb_name}/web-source/{source_id}/cancel	contracts/generated/api.ts:2279	contracts
+/api/knowledge-bases/{kb_name}/web-source/{source_id}/retry	contracts/generated/api.ts:2296	contracts
+/api/knowledge-bases/{kb_name}/web-source/{source_id}/schedule	contracts/generated/api.ts:2313	contracts
+/api/knowledge-bases/{kb_name}/web-sources	contracts/generated/api.ts:2330	contracts
+/api/knowledge-bases?resource_library=true	features/knowledge/api/client.ts:296	features
+/api/marginnote4	lib/marginnote4-api.ts:18	lib
+/api/marginnote4/devices	contracts/generated/api.ts:3094	contracts
+/api/marginnote4/devices/a%2Fb%3Fc?dt_workspace=	tests/marginnote4-api.test.ts:105	tests
+/api/marginnote4/devices/d1?dt_workspace=	tests/marginnote4-api.test.ts:65	tests
+/api/marginnote4/devices/{device_id}	contracts/generated/api.ts:3114	contracts
+/api/marginnote4/devices?dt_workspace=	tests/marginnote4-api.test.ts:64	tests
+/api/marginnote4/heartbeat	contracts/generated/api.ts:3134	contracts
+/api/marginnote4/pair	contracts/generated/api.ts:3154	contracts
+/api/marginnote4/pair?dt_workspace=	tests/marginnote4-api.test.ts:63	tests
+/api/marginnote4/status	contracts/generated/api.ts:3176	contracts
+/api/marginnote4/status?dt_workspace=	tests/marginnote4-api.test.ts:66	tests
+/api/marginnote4/sync	contracts/generated/api.ts:3196	contracts
+/api/mastery-paths/progress	contracts/generated/api.ts:3216	contracts
+/api/mastery-paths/progress	lib/learning-api.ts:338	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:167	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:180	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:191	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:224	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:314	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:345	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:354	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:365	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:379	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:398	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:46	lib
+/api/mastery-paths/progress	PARAM	lib/learning-api.ts:53	lib
+/api/mastery-paths/progress	PARAM	lib/reading-workspace-api.ts:476	lib
+/api/mastery-paths/progress/{book_id}	contracts/generated/api.ts:3233	contracts
+/api/mastery-paths/progress/{book_id}/board	contracts/generated/api.ts:3259	contracts
+/api/mastery-paths/progress/{book_id}/events	contracts/generated/api.ts:3282	contracts
+/api/mastery-paths/progress/{book_id}/generate-from-notebook	contracts/generated/api.ts:3302	contracts
+/api/mastery-paths/progress/{book_id}/generate-from-reading	contracts/generated/api.ts:3319	contracts
+/api/mastery-paths/progress/{book_id}/import-from-book	contracts/generated/api.ts:3339	contracts
+/api/mastery-paths/progress/{book_id}/init-modules	contracts/generated/api.ts:3356	contracts
+/api/mastery-paths/progress/{book_id}/map	contracts/generated/api.ts:3373	contracts
+/api/mastery-paths/progress/{book_id}/objectives/{kp_id}	contracts/generated/api.ts:3395	contracts
+/api/mastery-paths/progress/{book_id}/redo	contracts/generated/api.ts:3419	contracts
+/api/mastery-paths/progress/{book_id}/sessions	contracts/generated/api.ts:3436	contracts
+/api/mastery-paths/progress/{book_id}/skip-question	contracts/generated/api.ts:3456	contracts
+/api/mastery-paths/reading/records	contracts/generated/api.ts:3479	contracts
+/api/mastery-paths/reading/records	lib/learning-records-api.ts:28	lib
+/api/mastery-paths/reading/records	tests/e2e/learning-progress.audit.ts:112	tests
+/api/mastery-paths/reading/records	tests/e2e/learning-progress.audit.ts:55	tests
+/api/mastery-paths/reading/records	tests/learning-records-api.test.ts:25	tests
+/api/mastery-paths/topics	contracts/generated/api.ts:3499	contracts
+/api/mastery-paths/topics	lib/learning-api.ts:598	lib
+/api/mastery-paths/topics	lib/learning-api.ts:712	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:643	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:655	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:666	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:683	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:727	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:744	lib
+/api/mastery-paths/topics	PARAM	lib/learning-api.ts:762	lib
+/api/mastery-paths/topics/draft	contracts/generated/api.ts:3651	contracts
+/api/mastery-paths/topics/draft	lib/learning-api.ts:698	lib
+/api/mastery-paths/topics/index	contracts/generated/api.ts:3668	contracts
+/api/mastery-paths/topics/index	lib/learning-api.ts:628	lib
+/api/mastery-paths/topics/{path_id}	contracts/generated/api.ts:3517	contracts
+/api/mastery-paths/topics/{path_id}/ask-hint	contracts/generated/api.ts:3534	contracts
+/api/mastery-paths/topics/{path_id}/map	contracts/generated/api.ts:3557	contracts
+/api/mastery-paths/topics/{path_id}/objectives/{kp_id}/override	contracts/generated/api.ts:3574	contracts
+/api/mastery-paths/topics/{path_id}/review-settings	contracts/generated/api.ts:3591	contracts
+/api/mastery-paths/topics/{path_id}/sessions	contracts/generated/api.ts:3609	contracts
+/api/mastery-paths/topics/{path_id}/sessions/{session_id}/mode	contracts/generated/api.ts:3626	contracts
+/api/memory/backup	contracts/generated/api.ts:3697	contracts
+/api/memory/doc	PARAM	components/memory/MemoryRunPanel.tsx:237	components
+/api/memory/doc	PARAM	components/memory/MemorySection.tsx:336	components
+/api/memory/doc	PARAM	components/memory/MemorySection.tsx:351	components
+/api/memory/doc	PARAM	components/memory/MemorySection.tsx:381	components
+/api/memory/doc	PARAM	components/memory/MemoryWorkbench.tsx:228	components
+/api/memory/doc	PARAM	components/memory/MemoryWorkbench.tsx:236	components
+/api/memory/doc	PARAM	components/memory/MemoryWorkbench.tsx:314	components
+/api/memory/doc/L2	PARAM	lib/memory-graph.ts:254	lib
+/api/memory/doc/L3	PARAM	lib/memory-graph.ts:265	lib
+/api/memory/doc/{layer}/{key}	contracts/generated/api.ts:3714	contracts
+/api/memory/doc/{layer}/{key}/apply	contracts/generated/api.ts:3732	contracts
+/api/memory/doc/{layer}/{key}/audit	contracts/generated/api.ts:3752	contracts
+/api/memory/doc/{layer}/{key}/dedup	contracts/generated/api.ts:3769	contracts
+/api/memory/doc/{layer}/{key}/entry/{entry_id}	contracts/generated/api.ts:3786	contracts
+/api/memory/doc/{layer}/{key}/lines	contracts/generated/api.ts:3803	contracts
+/api/memory/doc/{layer}/{key}/reset	contracts/generated/api.ts:3827	contracts
+/api/memory/doc/{layer}/{key}/update	contracts/generated/api.ts:3855	contracts
+/api/memory/overview	components/memory/MemoryHub.tsx:61	components
+/api/memory/overview	components/memory/MemorySection.tsx:311	components
+/api/memory/overview	components/memory/MemoryWorkbench.tsx:218	components
+/api/memory/overview	contracts/generated/api.ts:3872	contracts
+/api/memory/resolve_entry	PARAM	app/(utility)/memory/resolve/page.tsx:35	app(pages)
+/api/memory/resolve_entry/{entry_id}	contracts/generated/api.ts:3889	contracts
+/api/memory/runs	contracts/generated/api.ts:3916	contracts
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:128	components
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:187	components
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:222	components
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:246	components
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:384	components
+/api/memory/runs	PARAM	components/memory/useMemoryRun.ts:396	components
+/api/memory/runs/start	components/memory/useMemoryRun.ts:347	components
+/api/memory/runs/start	contracts/generated/api.ts:4008	contracts
+/api/memory/runs/{run_id}	contracts/generated/api.ts:3933	contracts
+/api/memory/runs/{run_id}/cancel	contracts/generated/api.ts:3950	contracts
+/api/memory/runs/{run_id}/events	contracts/generated/api.ts:3967	contracts
+/api/memory/runs/{run_id}/undo	contracts/generated/api.ts:3991	contracts
+/api/memory/runs?layer=	PARAM	components/memory/useMemoryRun.ts:134	components
+/api/memory/settings	components/memory/MemoryRunPanel.tsx:112	components
+/api/memory/settings	contracts/generated/api.ts:4031	contracts
+/api/memory/settings	lib/settings-extensions.ts:29	lib
+/api/memory/snapshot	PARAM	components/memory/MemoryHub.tsx:63	components
+/api/memory/snapshot	PARAM	components/memory/MemoryL1Workbench.tsx:85	components
+/api/memory/snapshot	PARAM	components/memory/MemorySection.tsx:692	components
+/api/memory/snapshot	PARAM	components/memory/MemorySection.tsx:706	components
+/api/memory/snapshot	PARAM	components/memory/MemorySection.tsx:781	components
+/api/memory/snapshot	PARAM	lib/memory-graph.ts:244	lib
+/api/memory/snapshot/{surface}	contracts/generated/api.ts:4055	contracts
+/api/memory/snapshot/{surface}/changes	contracts/generated/api.ts:4079	contracts
+/api/memory/snapshot/{surface}/refresh	contracts/generated/api.ts:4097	contracts
+/api/memory/trace/kb?limit=200	components/memory/MemorySection.tsx:721	components
+/api/memory/trace/{surface}	contracts/generated/api.ts:4117	contracts
+/api/memory/trace/{surface}/day/{day}	contracts/generated/api.ts:4135	contracts
+/api/multi-user/admin/books	contracts/generated/api.ts:4152	contracts
+/api/multi-user/admin/books	features/multi-user/api.ts:56	features
+/api/multi-user/admin/resources	contracts/generated/api.ts:4169	contracts
+/api/multi-user/admin/resources	features/multi-user/api.ts:19	features
+/api/multi-user/admin/skills/install	contracts/generated/api.ts:4190	contracts
+/api/multi-user/guardians	contracts/generated/api.ts:4216	contracts
+/api/multi-user/guardians	lib/guardian-api.ts:75	lib
+/api/multi-user/guardians	lib/guardian-api.ts:86	lib
+/api/multi-user/guardians	PARAM	lib/guardian-api.ts:104	lib
+/api/multi-user/guardians/{relationship_id}	contracts/generated/api.ts:4234	contracts
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:120	lib
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:129	lib
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:142	lib
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:152	lib
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:166	lib
+/api/multi-user/learners	PARAM	lib/guardian-api.ts:175	lib
+/api/multi-user/learners	PARAM	lib/settings-extensions.ts:59	lib
+/api/multi-user/learners/{learner_user_id}/credentials/reset	contracts/generated/api.ts:4251	contracts
+/api/multi-user/learners/{learner_user_id}/guardian-report	contracts/generated/api.ts:4268	contracts
+/api/multi-user/learners/{learner_user_id}/materials	contracts/generated/api.ts:4285	contracts
+/api/multi-user/learners/{learner_user_id}/restrictions	contracts/generated/api.ts:4303	contracts
+/api/multi-user/me/guardianships	contracts/generated/api.ts:4321	contracts
+/api/multi-user/me/guardianships	lib/guardian-api.ts:66	lib
+/api/multi-user/me/guardianships	PARAM	lib/guardian-api.ts:113	lib
+/api/multi-user/me/guardianships/{relationship_id}	contracts/generated/api.ts:4338	contracts
+/api/multi-user/users	contracts/generated/api.ts:4355	contracts
+/api/multi-user/users	PARAM	features/multi-user/api.ts:29	features
+/api/multi-user/users	PARAM	features/multi-user/api.ts:42	features
+/api/multi-user/users	PARAM	features/multi-user/api.ts:68	features
+/api/multi-user/users	PARAM	features/multi-user/api.ts:83	features
+/api/multi-user/users/{user_id}/book-permission	contracts/generated/api.ts:4372	contracts
+/api/multi-user/users/{user_id}/grants	contracts/generated/api.ts:4390	contracts
+/api/notebooks	contracts/generated/api.ts:4408	contracts
+/api/notebooks	lib/notebook-api.ts:53	lib
+/api/notebooks	lib/notebook-api.ts:75	lib
+/api/notebooks	PARAM	hooks/useTopicSourceLibrary.ts:402	hooks
+/api/notebooks	PARAM	lib/notebook-api.ts:110	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:121	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:147	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:167	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:184	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:62	lib
+/api/notebooks	PARAM	lib/notebook-api.ts:99	lib
+/api/notebooks/actions/add-record	contracts/generated/api.ts:4579	contracts
+/api/notebooks/actions/add-record-with-summary	components/notebook/SaveToNotebookModal.tsx:333	components
+/api/notebooks/actions/add-record-with-summary	contracts/generated/api.ts:4605	contracts
+/api/notebooks/health	contracts/generated/api.ts:4625	contracts
+/api/notebooks/statistics	contracts/generated/api.ts:4645	contracts
+/api/notebooks/{notebook_id}	contracts/generated/api.ts:4441	contracts
+/api/notebooks/{notebook_id}/export	contracts/generated/api.ts:4488	contracts
+/api/notebooks/{notebook_id}/records/{record_id}	contracts/generated/api.ts:4508	contracts
+/api/notebooks/{notebook_id}/records/{record_id}/actions/copy	contracts/generated/api.ts:4539	contracts
+/api/notebooks/{notebook_id}/records/{record_id}/actions/move	contracts/generated/api.ts:4559	contracts
+/api/partner-groups	contracts/generated/api.ts:4668	contracts
+/api/partner-groups	lib/partner-groups-api.ts:103	lib
+/api/partner-groups	lib/partner-groups-api.ts:122	lib
+/api/partner-groups	tests/e2e/reading-citation-material.audit.ts:88	tests
+/api/partner-groups	tests/e2e/reading-location-history.audit.ts:110	tests
+/api/partner-groups	tests/e2e/reading-w3c-annotations.audit.ts:85	tests
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:110	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:136	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:149	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:165	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:177	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:191	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:221	lib
+/api/partner-groups	PARAM	lib/partner-groups-api.ts:234	lib
+/api/partner-groups/discussion-modes	contracts/generated/api.ts:4911	contracts
+/api/partner-groups/discussion-modes	lib/partner-groups-api.ts:265	lib
+/api/partner-groups/shared-memory-types	contracts/generated/api.ts:4928	contracts
+/api/partner-groups/{group_id}	contracts/generated/api.ts:4686	contracts
+/api/partner-groups/{group_id}/history	contracts/generated/api.ts:4705	contracts
+/api/partner-groups/{group_id}/invocations	contracts/generated/api.ts:4722	contracts
+/api/partner-groups/{group_id}/invocations/{invocation_id}/approve	contracts/generated/api.ts:4740	contracts
+/api/partner-groups/{group_id}/invocations/{invocation_id}/reject	contracts/generated/api.ts:4757	contracts
+/api/partner-groups/{group_id}/messages	contracts/generated/api.ts:4774	contracts
+/api/partner-groups/{group_id}/rounds/{turn_id}/summary	contracts/generated/api.ts:4791	contracts
+/api/partner-groups/{group_id}/sessions	contracts/generated/api.ts:4808	contracts
+/api/partner-groups/{group_id}/sessions/{session_key}	contracts/generated/api.ts:4826	contracts
+/api/partner-groups/{group_id}/turns/{turn_id}/partners/{partner_id}/retry	contracts/generated/api.ts:4843	contracts
+/api/partner-groups/{group_id}/whiteboard	contracts/generated/api.ts:4860	contracts
+/api/partner-groups/{group_id}/whiteboard/pins	contracts/generated/api.ts:4877	contracts
+/api/partner-groups/{group_id}/whiteboard/pins/{event_id}	contracts/generated/api.ts:4894	contracts
+/api/partners	contracts/generated/api.ts:4945	contracts
+/api/partners	lib/partners-api.ts:195	lib
+/api/partners	lib/partners-api.ts:214	lib
+/api/partners	tests/e2e/reading-citation-material.audit.ts:88	tests
+/api/partners	tests/e2e/reading-location-history.audit.ts:110	tests
+/api/partners	tests/e2e/reading-w3c-annotations.audit.ts:85	tests
+/api/partners	PARAM	components/partners/PartnerChannels.tsx:148	components
+/api/partners	PARAM	components/partners/PartnerChannels.tsx:83	components
+/api/partners	PARAM	lib/partners-api.ts:11	lib
+/api/partners	PARAM	lib/partners-api.ts:205	lib
+/api/partners	PARAM	lib/partners-api.ts:245	lib
+/api/partners	PARAM	lib/partners-api.ts:256	lib
+/api/partners	PARAM	lib/partners-api.ts:265	lib
+/api/partners	PARAM	lib/partners-api.ts:273	lib
+/api/partners	PARAM	lib/partners-api.ts:282	lib
+/api/partners	PARAM	lib/partners-api.ts:294	lib
+/api/partners	PARAM	lib/partners-api.ts:338	lib
+/api/partners	PARAM	lib/partners-api.ts:353	lib
+/api/partners	PARAM	lib/partners-api.ts:371	lib
+/api/partners	PARAM	lib/partners-api.ts:418	lib
+/api/partners	PARAM	lib/partners-api.ts:462	lib
+/api/partners	PARAM	lib/partners-api.ts:480	lib
+/api/partners	PARAM	lib/partners-api.ts:494	lib
+/api/partners	PARAM	lib/partners-api.ts:508	lib
+/api/partners	PARAM	lib/partners-api.ts:536	lib
+/api/partners	PARAM	lib/partners-api.ts:552	lib
+/api/partners	PARAM	lib/partners-api.ts:564	lib
+/api/partners	PARAM	lib/partners-api.ts:576	lib
+/api/partners	PARAM	lib/partners-api.ts:591	lib
+/api/partners	PARAM	lib/partners-api.ts:605	lib
+/api/partners	PARAM	lib/partners-api.ts:635	lib
+/api/partners	PARAM	lib/partners-api.ts:670	lib
+/api/partners	PARAM	lib/partners-api.ts:681	lib
+/api/partners	PARAM	lib/partners-api.ts:694	lib
+/api/partners	PARAM	lib/partners-api.ts:729	lib
+/api/partners	PARAM	lib/partners-api.ts:743	lib
+/api/partners/channels/schema	contracts/generated/api.ts:5491	contracts
+/api/partners/channels/schema	lib/partners-api.ts:519	lib
+/api/partners/commands/palette	contracts/generated/api.ts:5511	contracts
+/api/partners/commands/palette	lib/partners-api.ts:328	lib
+/api/partners/consultation-session	contracts/generated/api.ts:5528	contracts
+/api/partners/consultation-session?	PARAM	lib/partners-api.ts:753	lib
+/api/partners/drafts	PARAM	lib/partners-api.ts:228	lib
+/api/partners/drafts/{draft_id}	contracts/generated/api.ts:5548	contracts
+/api/partners/drafts/{draft_id}/confirm	contracts/generated/api.ts:5568	contracts
+/api/partners/partner%20id/channel-onboarding/session%20id?dt_workspace=	tests/partners-channel-onboarding.test.ts:99	tests
+/api/partners/partner%20id/channel-onboarding/start?dt_workspace=	tests/partners-channel-onboarding.test.ts:94	tests
+/api/partners/partner%20id/channels/status?dt_workspace=	tests/partners-channel-onboarding.test.ts:116	tests
+/api/partners/recent	contracts/generated/api.ts:5588	contracts
+/api/partners/soul-sources	contracts/generated/api.ts:5605	contracts
+/api/partners/soul-sources	lib/partners-api.ts:305	lib
+/api/partners/souls	contracts/generated/api.ts:5625	contracts
+/api/partners/souls	lib/partners-api.ts:314	lib
+/api/partners/souls/{soul_id}	contracts/generated/api.ts:5643	contracts
+/api/partners/tool-options	contracts/generated/api.ts:5662	contracts
+/api/partners/tool-options	lib/partners-api.ts:323	lib
+/api/partners/{partner_id}	contracts/generated/api.ts:4973	contracts
+/api/partners/{partner_id}/assets	contracts/generated/api.ts:4998	contracts
+/api/partners/{partner_id}/assets/{asset_type}/{name}	contracts/generated/api.ts:5016	contracts
+/api/partners/{partner_id}/channel-onboarding/start	contracts/generated/api.ts:5068	contracts
+/api/partners/{partner_id}/channel-onboarding/{session_id}	contracts/generated/api.ts:5033	contracts
+/api/partners/{partner_id}/channel-onboarding/{session_id}/apply	contracts/generated/api.ts:5051	contracts
+/api/partners/{partner_id}/channels/reload	contracts/generated/api.ts:5085	contracts
+/api/partners/{partner_id}/channels/status	contracts/generated/api.ts:5102	contracts
+/api/partners/{partner_id}/channels/weixin/qr	contracts/generated/api.ts:5122	contracts
+/api/partners/{partner_id}/channels/weixin/qr/{session_id}	contracts/generated/api.ts:5142	contracts
+/api/partners/{partner_id}/chat	contracts/generated/api.ts:5162	contracts
+/api/partners/{partner_id}/chat/execute-stream	contracts/generated/api.ts:5182	contracts
+/api/partners/{partner_id}/history	contracts/generated/api.ts:5202	contracts
+/api/partners/{partner_id}/history/page	contracts/generated/api.ts:5224	contracts
+/api/partners/{partner_id}/links	contracts/generated/api.ts:5244	contracts
+/api/partners/{partner_id}/links/code	contracts/generated/api.ts:5284	contracts
+/api/partners/{partner_id}/links/{key}	contracts/generated/api.ts:5264	contracts
+/api/partners/{partner_id}/sessions	contracts/generated/api.ts:5307	contracts
+/api/partners/{partner_id}/sessions/archive	contracts/generated/api.ts:5324	contracts
+/api/partners/{partner_id}/sessions/branch	contracts/generated/api.ts:5344	contracts
+/api/partners/{partner_id}/sessions/delete	contracts/generated/api.ts:5364	contracts
+/api/partners/{partner_id}/sessions/resume	contracts/generated/api.ts:5381	contracts
+/api/partners/{partner_id}/soul	contracts/generated/api.ts:5401	contracts
+/api/partners/{partner_id}/start	contracts/generated/api.ts:5419	contracts
+/api/partners/{partner_id}/stop	contracts/generated/api.ts:5436	contracts
+/api/partners/{partner_id}/web-continuity	contracts/generated/api.ts:5453	contracts
+/api/partners/{partner_id}/workspaces	contracts/generated/api.ts:5471	contracts
+/api/personas	contracts/generated/api.ts:5690	contracts
+/api/personas	lib/personas-api.ts:56	lib
+/api/personas	lib/personas-api.ts:84	lib
+/api/personas	PARAM	lib/personas-api.ts:103	lib
+/api/personas	PARAM	lib/personas-api.ts:117	lib
+/api/personas	PARAM	lib/personas-api.ts:69	lib
+/api/personas/{name}	contracts/generated/api.ts:5708	contracts
+/api/question-notebook/categories	contracts/generated/api.ts:5727	contracts
+/api/question-notebook/categories	lib/notebook-api.ts:636	lib
+/api/question-notebook/categories	PARAM	lib/notebook-api.ts:629	lib
+/api/question-notebook/categories	PARAM	lib/notebook-api.ts:649	lib
+/api/question-notebook/categories	PARAM	lib/notebook-api.ts:661	lib
+/api/question-notebook/categories/{category_id}	contracts/generated/api.ts:5751	contracts
+/api/question-notebook/entries	contracts/generated/api.ts:5769	contracts
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:373	lib
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:383	lib
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:442	lib
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:514	lib
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:529	lib
+/api/question-notebook/entries	PARAM	lib/notebook-api.ts:615	lib
+/api/question-notebook/entries/categories/bulk	contracts/generated/api.ts:5839	contracts
+/api/question-notebook/entries/categories/bulk	lib/notebook-api.ts:558	lib
+/api/question-notebook/entries/lookup/by-question	contracts/generated/api.ts:5856	contracts
+/api/question-notebook/entries/lookup/by-question?	PARAM	lib/notebook-api.ts:405	lib
+/api/question-notebook/entries/lookup/by-question?	PARAM	lib/notebook-api.ts:426	lib
+/api/question-notebook/entries/upsert	contracts/generated/api.ts:5873	contracts
+/api/question-notebook/entries/upsert	lib/notebook-api.ts:497	lib
+/api/question-notebook/entries/{entry_id}	contracts/generated/api.ts:5786	contracts
+/api/question-notebook/entries/{entry_id}/categories	contracts/generated/api.ts:5805	contracts
+/api/question-notebook/entries/{entry_id}/categories/{category_id}	contracts/generated/api.ts:5822	contracts
+/api/question-notebook/materials	contracts/generated/api.ts:5890	contracts
+/api/question-notebook/materials	PARAM	lib/notebook-api.ts:603	lib
+/api/question-notebook/practice/analytics	contracts/generated/api.ts:5910	contracts
+/api/question-notebook/practice/import/commit	contracts/generated/api.ts:5927	contracts
+/api/question-notebook/practice/import/preview	contracts/generated/api.ts:5944	contracts
+/api/question-notebook/practice/import/template	contracts/generated/api.ts:5961	contracts
+/api/question-notebook/practice/questions/{entry_id}	contracts/generated/api.ts:5978	contracts
+/api/question-notebook/practice/questions/{entry_id}/check	contracts/generated/api.ts:5995	contracts
+/api/question-notebook/practice/questions/{entry_id}/review	contracts/generated/api.ts:6012	contracts
+/api/question-notebook/practice/queue	contracts/generated/api.ts:6029	contracts
+/api/question-notebook/practice/summary	contracts/generated/api.ts:6046	contracts
+/api/question-notebook/stats	contracts/generated/api.ts:6063	contracts
+/api/question-notebook/stats	PARAM	lib/notebook-api.ts:592	lib
+/api/reading	lib/reading-api.ts:209	lib
+/api/reading	lib/reading-workspace-api.ts:5	lib
+/api/reading/epub-pairings	contracts/generated/api.ts:6086	contracts
+/api/reading/epub-pairings/{pairing_id}	contracts/generated/api.ts:6104	contracts
+/api/reading/extensions	contracts/generated/api.ts:6121	contracts
+/api/reading/extensions	tests/e2e/reading-citation-material.audit.ts:183	tests
+/api/reading/extensions	tests/e2e/reading-location-history.audit.ts:149	tests
+/api/reading/extensions	tests/e2e/reading-w3c-annotations.audit.ts:123	tests
+/api/reading/library/duplicate-check	contracts/generated/api.ts:6138	contracts
+/api/reading/library/import-urls	contracts/generated/api.ts:6162	contracts
+/api/reading/library/import-zim-article	features/knowledge/api/client.ts:868	features
+/api/reading/library/materials	contracts/generated/api.ts:6182	contracts
+/api/reading/materials	contracts/generated/api.ts:6206	contracts
+/api/reading/materials	tests/e2e/reading-citation-material.audit.ts:190	tests
+/api/reading/materials	tests/e2e/reading-location-history.audit.ts:168	tests
+/api/reading/materials	tests/e2e/reading-w3c-annotations.audit.ts:130	tests
+/api/reading/materials	tests/epub-reader.audit.ts:139	tests
+/api/reading/materials	tests/workspace-scope.spec.ts:12	tests
+/api/reading/materials	PARAM	tests/e2e/reading-citation-material.audit.ts:193	tests
+/api/reading/materials	PARAM	tests/e2e/reading-citation-material.audit.ts:194	tests
+/api/reading/materials	PARAM	tests/e2e/reading-location-history.audit.ts:171	tests
+/api/reading/materials	PARAM	tests/e2e/reading-location-history.audit.ts:174	tests
+/api/reading/materials	PARAM	tests/e2e/reading-location-history.audit.ts:177	tests
+/api/reading/materials	PARAM	tests/epub-reader.audit.ts:147	tests
+/api/reading/materials/book/raw	tests/epub-display-preferences.spec.tsx:49	tests
+/api/reading/materials/book/render	tests/epub-display-preferences.spec.tsx:50	tests
+/api/reading/materials/w3c-material	tests/e2e/reading-w3c-annotations.audit.ts:131	tests
+/api/reading/materials/w3c-material/annotations	tests/e2e/reading-w3c-annotations.audit.ts:134	tests
+/api/reading/materials/w3c-material/units/1	tests/e2e/reading-w3c-annotations.audit.ts:137	tests
+/api/reading/materials/{material_id}	contracts/generated/api.ts:6236	contracts
+/api/reading/materials/{material_id}/annotations	contracts/generated/api.ts:6254	contracts
+/api/reading/materials/{material_id}/annotations/{annotation_id}	contracts/generated/api.ts:6275	contracts
+/api/reading/materials/{material_id}/assets/{asset_name}	contracts/generated/api.ts:6292	contracts
+/api/reading/materials/{material_id}/bookmarks	contracts/generated/api.ts:6312	contracts
+/api/reading/materials/{material_id}/bookmarks/{bookmark_id}	contracts/generated/api.ts:6336	contracts
+/api/reading/materials/{material_id}/epub-pairing-candidates	contracts/generated/api.ts:6353	contracts
+/api/reading/materials/{material_id}/export	contracts/generated/api.ts:6370	contracts
+/api/reading/materials/{material_id}/extensions/quiz/answers	contracts/generated/api.ts:6411	contracts
+/api/reading/materials/{material_id}/extensions/{extension_id}/actions/{action}	contracts/generated/api.ts:6394	contracts
+/api/reading/materials/{material_id}/media	contracts/generated/api.ts:6428	contracts
+/api/reading/materials/{material_id}/media/{name}	contracts/generated/api.ts:6448	contracts
+/api/reading/materials/{material_id}/position	contracts/generated/api.ts:6468	contracts
+/api/reading/materials/{material_id}/raw	contracts/generated/api.ts:6492	contracts
+/api/reading/materials/{material_id}/render	contracts/generated/api.ts:6512	contracts
+/api/reading/materials/{material_id}/retry	contracts/generated/api.ts:6532	contracts
+/api/reading/materials/{material_id}/revisions	contracts/generated/api.ts:6549	contracts
+/api/reading/materials/{material_id}/revisions/{revision}/units/{locator}	contracts/generated/api.ts:6569	contracts
+/api/reading/materials/{material_id}/transcript	contracts/generated/api.ts:6586	contracts
+/api/reading/materials/{material_id}/units/{locator}	contracts/generated/api.ts:6610	contracts
+/api/reading/materials?dt_workspace=	tests/workspace-scope.spec.ts:12	tests
+/api/reading/supported-formats	contracts/generated/api.ts:6630	contracts
+/api/reading/supported-formats	tests/e2e/reading-citation-material.audit.ts:176	tests
+/api/reading/supported-formats	tests/e2e/reading-location-history.audit.ts:142	tests
+/api/reading/supported-formats	tests/e2e/reading-w3c-annotations.audit.ts:116	tests
+/api/reading/workspaces	contracts/generated/api.ts:6650	contracts
+/api/reading/workspaces	PARAM	tests/e2e/reading-citation-material.audit.ts:184	tests
+/api/reading/workspaces	PARAM	tests/e2e/reading-citation-material.audit.ts:187	tests
+/api/reading/workspaces	PARAM	tests/e2e/reading-location-history.audit.ts:150	tests
+/api/reading/workspaces	PARAM	tests/e2e/reading-location-history.audit.ts:156	tests
+/api/reading/workspaces	PARAM	tests/e2e/reading-w3c-annotations.audit.ts:124	tests
+/api/reading/workspaces	PARAM	tests/e2e/reading-w3c-annotations.audit.ts:127	tests
+/api/reading/workspaces/index	contracts/generated/api.ts:6879	contracts
+/api/reading/workspaces/{workspace_id}	contracts/generated/api.ts:6668	contracts
+/api/reading/workspaces/{workspace_id}/ask-hint	contracts/generated/api.ts:6687	contracts
+/api/reading/workspaces/{workspace_id}/materials	contracts/generated/api.ts:6707	contracts
+/api/reading/workspaces/{workspace_id}/materials/order	contracts/generated/api.ts:6758	contracts
+/api/reading/workspaces/{workspace_id}/materials/{material_id}	contracts/generated/api.ts:6724	contracts
+/api/reading/workspaces/{workspace_id}/materials/{material_id}/active	contracts/generated/api.ts:6741	contracts
+/api/reading/workspaces/{workspace_id}/notebook	contracts/generated/api.ts:6775	contracts
+/api/reading/workspaces/{workspace_id}/notes/organize	contracts/generated/api.ts:6792	contracts
+/api/reading/workspaces/{workspace_id}/sessions	contracts/generated/api.ts:6809	contracts
+/api/reading/workspaces/{workspace_id}/sessions/{session_id}	contracts/generated/api.ts:6827	contracts
+/api/reading/workspaces/{workspace_id}/sessions/{session_id}/links	contracts/generated/api.ts:6845	contracts
+/api/reading/workspaces/{workspace_id}/sessions/{session_id}/links/{target_session_id}	contracts/generated/api.ts:6862	contracts
+/api/sessions	contracts/generated/api.ts:6907	contracts
+/api/sessions	tests/e2e/reading-citation-material.audit.ts:175	tests
+/api/sessions	tests/e2e/reading-location-history.audit.ts:141	tests
+/api/sessions	PARAM	lib/session-api.ts:271	lib
+/api/sessions	PARAM	lib/session-api.ts:289	lib
+/api/sessions	PARAM	lib/session-api.ts:308	lib
+/api/sessions	PARAM	lib/session-api.ts:324	lib
+/api/sessions	PARAM	lib/session-api.ts:344	lib
+/api/sessions	PARAM	lib/session-api.ts:366	lib
+/api/sessions	PARAM	lib/session-api.ts:380	lib
+/api/sessions	PARAM	lib/session-api.ts:394	lib
+/api/sessions	PARAM	lib/session-api.ts:409	lib
+/api/sessions	PARAM	lib/session-api.ts:422	lib
+/api/sessions	PARAM	tests/e2e/reading-citation-material.audit.ts:112	tests
+/api/sessions	PARAM	tests/e2e/reading-location-history.audit.ts:135	tests
+/api/sessions	PARAM	tests/e2e/reading-location-history.audit.ts:136	tests
+/api/sessions	PARAM	tests/e2e/reading-location-history.audit.ts:137	tests
+/api/sessions/child/organization?dt_workspace=	tests/course-organization-api.test.ts:112	tests
+/api/sessions/recycle-bin	contracts/generated/api.ts:7102	contracts
+/api/sessions/search	contracts/generated/api.ts:7119	contracts
+/api/sessions/search	tests/session-search-api.test.ts:31	tests
+/api/sessions/search?	PARAM	lib/session-api.ts:260	lib
+/api/sessions/{session_id}	contracts/generated/api.ts:6924	contracts
+/api/sessions/{session_id}/ask-hint	contracts/generated/api.ts:6943	contracts
+/api/sessions/{session_id}/branch-selection	contracts/generated/api.ts:6963	contracts
+/api/sessions/{session_id}/messages/{message_id}	contracts/generated/api.ts:6980	contracts
+/api/sessions/{session_id}/messages/{message_id}/events	contracts/generated/api.ts:6997	contracts
+/api/sessions/{session_id}/organization	contracts/generated/api.ts:7014	contracts
+/api/sessions/{session_id}/purge	contracts/generated/api.ts:7031	contracts
+/api/sessions/{session_id}/quiz-results	contracts/generated/api.ts:7048	contracts
+/api/sessions/{session_id}/reply-language	contracts/generated/api.ts:7065	contracts
+/api/sessions/{session_id}/restore	contracts/generated/api.ts:7085	contracts
+/api/sessions?	PARAM	lib/session-api.ts:214	lib
+/api/settings	components/access/CapabilityAccessContext.tsx:62	components
+/api/settings	components/settings/ChatResponseTimeoutSection.tsx:38	components
+/api/settings	contracts/generated/api.ts:7139	contracts
+/api/settings	features/settings/store/SettingsStore.tsx:751	features
+/api/settings	hooks/useVoiceAutoplay.ts:25	hooks
+/api/settings	hooks/useVoiceMathSpeak.ts:15	hooks
+/api/settings	tests/e2e/book-reader-sequential.audit.ts:119	tests
+/api/settings	tests/e2e/learning-progress.audit.ts:24	tests
+/api/settings	tests/e2e/settings-navigation.audit.ts:113	tests
+/api/settings	tests/model-settings-store.spec.tsx:93	tests
+/api/settings	tests/settings-unified-draft.spec.tsx:62	tests
+/api/settings/apply	contracts/generated/api.ts:7156	contracts
+/api/settings/apply	features/settings/store/SettingsStore.tsx:1765	features
+/api/settings/apply	tests/e2e/settings-navigation.audit.ts:143	tests
+/api/settings/apply	tests/settings-unified-draft.spec.tsx:72	tests
+/api/settings/apply/provider	contracts/generated/api.ts:7181	contracts
+/api/settings/apply/provider	features/settings/store/SettingsStore.tsx:1646	features
+/api/settings/apply/provider	tests/model-settings-store.spec.tsx:239	tests
+/api/settings/apply/registry	contracts/generated/api.ts:7201	contracts
+/api/settings/apply/registry	features/settings/store/SettingsStore.tsx:1561	features
+/api/settings/apply/service	contracts/generated/api.ts:7221	contracts
+/api/settings/apply/service	features/settings/store/SettingsStore.tsx:1501	features
+/api/settings/catalog	contracts/generated/api.ts:7245	contracts
+/api/settings/chat-attachments	contracts/generated/api.ts:7263	contracts
+/api/settings/chat-attachments	lib/attachment-limits.ts:43	lib
+/api/settings/chat-attachments	lib/settings-extensions.ts:26	lib
+/api/settings/chat-attachments	tests/e2e/settings-navigation.audit.ts:397	tests
+/api/settings/chat-response-timeout	components/settings/ChatResponseTimeoutSection.tsx:74	components
+/api/settings/chat-response-timeout	contracts/generated/api.ts:7285	contracts
+/api/settings/chat-response-timeout	lib/settings-extensions.ts:27	lib
+/api/settings/chat-response-timeout	tests/e2e/settings-navigation.audit.ts:147	tests
+/api/settings/chat-response-timeout	tests/e2e/settings-navigation.audit.ts:297	tests
+/api/settings/chat-starters	contracts/generated/api.ts:7309	contracts
+/api/settings/chat-starters	lib/settings-extensions.ts:25	lib
+/api/settings/chat-starters	tests/e2e/settings-navigation.audit.ts:150	tests
+/api/settings/document-parsing	contracts/generated/api.ts:7334	contracts
+/api/settings/document-parsing	features/settings/sections/DocumentParsingSettingsSection.tsx:82	features
+/api/settings/document-parsing	lib/settings-extensions.ts:22	lib
+/api/settings/document-parsing	tests/settings-unified-draft.spec.tsx:318	tests
+/api/settings/document-parsing/docling/test	contracts/generated/api.ts:7352	contracts
+/api/settings/document-parsing/docling/test	features/settings/sections/DocumentParsingSettingsSection.tsx:399	features
+/api/settings/document-parsing/install	contracts/generated/api.ts:7376	contracts
+/api/settings/document-parsing/install	features/settings/sections/DocumentParsingSettingsSection.tsx:1248	features
+/api/settings/document-parsing/job/cancel	contracts/generated/api.ts:7400	contracts
+/api/settings/document-parsing/job/cancel	features/settings/sections/DocumentParsingSettingsSection.tsx:1136	features
+/api/settings/document-parsing/job/status	contracts/generated/api.ts:7417	contracts
+/api/settings/document-parsing/job/status?cursor=	PARAM	features/settings/sections/DocumentParsingSettingsSection.tsx:1069	features
+/api/settings/document-parsing/models/download	contracts/generated/api.ts:7434	contracts
+/api/settings/document-parsing/models/download	features/settings/sections/DocumentParsingSettingsSection.tsx:1297	features
+/api/settings/document-parsing/test	contracts/generated/api.ts:7459	contracts
+/api/settings/document-parsing/tika/test	contracts/generated/api.ts:7481	contracts
+/api/settings/document-parsing/tika/test	features/settings/sections/DocumentParsingSettingsSection.tsx:689	features
+/api/settings/draft	contracts/generated/api.ts:7502	contracts
+/api/settings/draft	features/settings/store/SettingsStore.tsx:1471	features
+/api/settings/draft	features/settings/store/SettingsStore.tsx:1745	features
+/api/settings/draft	features/settings/store/SettingsStore.tsx:1784	features
+/api/settings/draft	features/settings/store/SettingsStore.tsx:1863	features
+/api/settings/draft	features/settings/store/SettingsStore.tsx:791	features
+/api/settings/draft	tests/e2e/settings-navigation.audit.ts:138	tests
+/api/settings/draft	tests/model-settings-store.spec.tsx:98	tests
+/api/settings/draft	tests/settings-unified-draft.spec.tsx:67	tests
+/api/settings/enabled-tools	contracts/generated/api.ts:7528	contracts
+/api/settings/enabled-tools	lib/settings-extensions.ts:18	lib
+/api/settings/fetch-models	components/settings/ServiceConfigEditor.tsx:384	components
+/api/settings/fetch-models	contracts/generated/api.ts:7545	contracts
+/api/settings/language	contracts/generated/api.ts:7569	contracts
+/api/settings/llm-options	contracts/generated/api.ts:7586	contracts
+/api/settings/llm-options	lib/llm-options.ts:58	lib
+/api/settings/llm-options	tests/e2e/reading-citation-material.audit.ts:96	tests
+/api/settings/llm-options	tests/e2e/reading-location-history.audit.ts:118	tests
+/api/settings/llm-options	tests/e2e/reading-w3c-annotations.audit.ts:100	tests
+/api/settings/mcp	contracts/generated/api.ts:7603	contracts
+/api/settings/mcp	lib/mcp-api.ts:107	lib
+/api/settings/mcp/servers/{name}	contracts/generated/api.ts:7621	contracts
+/api/settings/mcp/test	contracts/generated/api.ts:7647	contracts
+/api/settings/mineru	components/settings/MinerUEngineSettings.tsx:113	components
+/api/settings/mineru	contracts/generated/api.ts:7664	contracts
+/api/settings/mineru	lib/settings-extensions.ts:23	lib
+/api/settings/mineru	tests/settings-unified-draft.spec.tsx:341	tests
+/api/settings/mineru/models/download	components/settings/MinerUEngineSettings.tsx:223	components
+/api/settings/mineru/models/download	contracts/generated/api.ts:7682	contracts
+/api/settings/mineru/models/download/cancel	components/settings/MinerUEngineSettings.tsx:257	components
+/api/settings/mineru/models/download/cancel	contracts/generated/api.ts:7705	contracts
+/api/settings/mineru/models/download/status	contracts/generated/api.ts:7722	contracts
+/api/settings/mineru/models/download/status?cursor=	PARAM	components/settings/MinerUEngineSettings.tsx:191	components
+/api/settings/mineru/test	components/settings/MinerUEngineSettings.tsx:155	components
+/api/settings/mineru/test	contracts/generated/api.ts:7739	contracts
+/api/settings/model-capabilities	components/settings/ModelCapabilityFields.tsx:59	components
+/api/settings/model-capabilities	contracts/generated/api.ts:7763	contracts
+/api/settings/model-capabilities	tests/e2e/settings-navigation.audit.ts:94	tests
+/api/settings/network	contracts/generated/api.ts:7786	contracts
+/api/settings/network	features/settings/sections/NetworkSettingsSection.tsx:114	features
+/api/settings/network	features/settings/sections/NetworkSettingsSection.tsx:169	features
+/api/settings/network	lib/settings-extensions.ts:30	lib
+/api/settings/presets	contracts/generated/api.ts:7804	contracts
+/api/settings/presets	lib/settings-presets.ts:20	lib
+/api/settings/presets	PARAM	features/settings/store/SettingsStore.tsx:1811	features
+/api/settings/presets/{preset_id}/draft	contracts/generated/api.ts:7824	contracts
+/api/settings/profile	contracts/generated/api.ts:7844	contracts
+/api/settings/profile/diff	contracts/generated/api.ts:7864	contracts
+/api/settings/providers/codebuddy/auth	lib/codebuddy-auth.ts:11	lib
+/api/settings/providers/codebuddy/auth/cancel	contracts/generated/api.ts:7884	contracts
+/api/settings/providers/codebuddy/auth/logout	contracts/generated/api.ts:7901	contracts
+/api/settings/providers/codebuddy/auth/start	contracts/generated/api.ts:7918	contracts
+/api/settings/providers/codebuddy/auth/status	contracts/generated/api.ts:7935	contracts
+/api/settings/providers/openai-codex	lib/codex-oauth.ts:63	lib
+/api/settings/providers/openai-codex/models/reasoning-effort	contracts/generated/api.ts:7952	contracts
+/api/settings/providers/openai-codex/models/refresh	contracts/generated/api.ts:7969	contracts
+/api/settings/providers/openai-codex/oauth/cancel	contracts/generated/api.ts:7986	contracts
+/api/settings/providers/openai-codex/oauth/complete	contracts/generated/api.ts:8003	contracts
+/api/settings/providers/openai-codex/oauth/logout	contracts/generated/api.ts:8030	contracts
+/api/settings/providers/openai-codex/oauth/start	contracts/generated/api.ts:8047	contracts
+/api/settings/providers/openai-codex/oauth/status	contracts/generated/api.ts:8064	contracts
+/api/settings/readiness	contracts/generated/api.ts:8081	contracts
+/api/settings/readiness	lib/settings-readiness.ts:213	lib
+/api/settings/readiness	tests/e2e/settings-navigation.audit.ts:157	tests
+/api/settings/reset	contracts/generated/api.ts:8101	contracts
+/api/settings/sidebar	contracts/generated/api.ts:8118	contracts
+/api/settings/sidebar/description	contracts/generated/api.ts:8135	contracts
+/api/settings/sidebar/nav-order	contracts/generated/api.ts:8152	contracts
+/api/settings/test-provider	components/settings/ProviderModelDiscovery.tsx:76	components
+/api/settings/test-provider	components/settings/RegistryControls.tsx:149	components
+/api/settings/test-provider	contracts/generated/api.ts:8169	contracts
+/api/settings/test-provider	tests/e2e/settings-navigation.audit.ts:95	tests
+/api/settings/tests	PARAM	features/settings/store/SettingsStore.tsx:1980	features
+/api/settings/tests	PARAM	features/settings/store/SettingsStore.tsx:1995	features
+/api/settings/tests/{service}/start	contracts/generated/api.ts:8223	contracts
+/api/settings/tests/{service}/{run_id}/cancel	contracts/generated/api.ts:8189	contracts
+/api/settings/tests/{service}/{run_id}/events	contracts/generated/api.ts:8206	contracts
+/api/settings/theme	contracts/generated/api.ts:8240	contracts
+/api/settings/themes	contracts/generated/api.ts:8257	contracts
+/api/settings/tour/complete	contracts/generated/api.ts:8274	contracts
+/api/settings/tour/reopen	contracts/generated/api.ts:8291	contracts
+/api/settings/tour/status	contracts/generated/api.ts:8308	contracts
+/api/settings/ui	context/AppShellContext.tsx:141	context
+/api/settings/ui	contracts/generated/api.ts:8325	contracts
+/api/settings/ui	features/settings/store/SettingsStore.tsx:154	features
+/api/settings/ui	hooks/useSetupSync.ts:60	hooks
+/api/settings/ui	lib/settings-extensions.ts:17	lib
+/api/settings/ui	tests/e2e/learning-progress.audit.ts:23	tests
+/api/settings/ui	tests/e2e/reading-citation-material.audit.ts:92	tests
+/api/settings/ui	tests/e2e/reading-location-history.audit.ts:114	tests
+/api/settings/ui	tests/e2e/reading-w3c-annotations.audit.ts:96	tests
+/api/settings/ui	tests/e2e/settings-navigation.audit.ts:113	tests
+/api/settings/ui	tests/settings-unified-draft.spec.tsx:208	tests
+/api/settings/usage	contracts/generated/api.ts:8363	contracts
+/api/settings/usage?	PARAM	lib/usage-statistics.ts:13	lib
+/api/settings/video-learning	contracts/generated/api.ts:8380	contracts
+/api/settings/video-learning	lib/settings-extensions.ts:20	lib
+/api/settings/video-learning	lib/video-learning-api.ts:248	lib
+/api/settings/video-learning	lib/video-learning-api.ts:258	lib
+/api/settings/video-learning/test-invidious	contracts/generated/api.ts:8398	contracts
+/api/settings/video-learning/test-invidious	lib/video-learning-api.ts:270	lib
+/api/settings/voice-autoplay	contracts/generated/api.ts:8415	contracts
+/api/settings/voice-autoplay	hooks/useVoiceAutoplay.ts:103	hooks
+/api/settings/voice-math-speak	contracts/generated/api.ts:8438	contracts
+/api/settings/voice-math-speak	hooks/useVoiceMathSpeak.ts:66	hooks
+/api/settings/voice/preview	contracts/generated/api.ts:8462	contracts
+/api/settings/workspace	contracts/generated/api.ts:8482	contracts
+/api/settings/workspace	lib/settings-extensions.ts:19	lib
+/api/settings/workspace	tests/settings-unified-draft.spec.tsx:139	tests
+/api/settings/workspace	tests/settings-unified-draft.spec.tsx:172	tests
+/api/settings/workspace	tests/settings-unified-draft.spec.tsx:183	tests
+/api/settings/workspace	tests/settings-unified-draft.spec.tsx:374	tests
+/api/settings/workspace/data/discover	contracts/generated/api.ts:8500	contracts
+/api/settings/workspace/data/export	contracts/generated/api.ts:8517	contracts
+/api/settings/workspace/data/exports/{operation_id}	contracts/generated/api.ts:8534	contracts
+/api/settings/workspace/data/migrate	contracts/generated/api.ts:8551	contracts
+/api/settings/workspace/data/operations	contracts/generated/api.ts:8568	contracts
+/api/settings/workspace/data/operations/{operation_id}/recover	contracts/generated/api.ts:8585	contracts
+/api/settings/workspace/data/preview	contracts/generated/api.ts:8602	contracts
+/api/settings/workspace/registrations	contracts/generated/api.ts:8619	contracts
+/api/settings/workspace/registrations/migrate-root	contracts/generated/api.ts:8671	contracts
+/api/settings/workspace/registrations/system-snapshot	contracts/generated/api.ts:8688	contracts
+/api/settings/workspace/registrations/{workspace_id}	contracts/generated/api.ts:8637	contracts
+/api/settings/workspace/registrations/{workspace_id}/migrate	contracts/generated/api.ts:8654	contracts
+/api/settings/workspace/resource-usage	contracts/generated/api.ts:8706	contracts
+/api/settings/workspace/resource-usage?	PARAM	lib/workspaces-api.ts:158	lib
+/api/settings/workspace/resources	contracts/generated/api.ts:8723	contracts
+/api/settings/workspace/resources?workspace_id=	PARAM	lib/workspaces-api.ts:29	lib
+/api/settings/workspace/validate	contracts/generated/api.ts:8740	contracts
+/api/skills	PARAM	lib/skills-api.ts:268	lib
+/api/skills	PARAM	lib/skills-api.ts:286	lib
+/api/skills	PARAM	lib/skills-api.ts:98	lib
+/api/skills/create	contracts/generated/api.ts:8776	contracts
+/api/skills/create	lib/skills-api.ts:244	lib
+/api/skills/hub/catalog	contracts/generated/api.ts:8793	contracts
+/api/skills/hub/catalog	PARAM	lib/skills-api.ts:207	lib
+/api/skills/hub/detail	contracts/generated/api.ts:8818	contracts
+/api/skills/hub/detail?	PARAM	lib/skills-api.ts:229	lib
+/api/skills/install	contracts/generated/api.ts:8838	contracts
+/api/skills/install	lib/skills-api.ts:130	lib
+/api/skills/list	contracts/generated/api.ts:8863	contracts
+/api/skills/list	lib/skills-api.ts:71	lib
+/api/skills/tags	PARAM	lib/skills-api.ts:327	lib
+/api/skills/tags	PARAM	lib/skills-api.ts:341	lib
+/api/skills/tags/create	contracts/generated/api.ts:8898	contracts
+/api/skills/tags/create	lib/skills-api.ts:312	lib
+/api/skills/tags/list	contracts/generated/api.ts:8915	contracts
+/api/skills/tags/list	lib/skills-api.ts:301	lib
+/api/skills/tags/{tag}	contracts/generated/api.ts:8880	contracts
+/api/skills/{name}	contracts/generated/api.ts:8757	contracts
+/api/space/cli-apps	lib/cli-apps-api.ts:4	lib
+/api/space/cli-apps/apps	contracts/generated/api.ts:8932	contracts
+/api/space/cli-apps/apps/a%20b%2Fc/enabled?dt_workspace=	tests/cli-apps-api.test.ts:140	tests
+/api/space/cli-apps/apps/{app_id}	contracts/generated/api.ts:8952	contracts
+/api/space/cli-apps/apps/{app_id}/enabled	contracts/generated/api.ts:8972	contracts
+/api/space/cli-apps/catalog	contracts/generated/api.ts:8996	contracts
+/api/space/cli-apps/catalog/{app_id}/install	contracts/generated/api.ts:9016	contracts
+/api/space/mcp	lib/mcp-api.ts:110	lib
+/api/space/mcp	tests/mcp-store.test.ts:283	tests
+/api/space/mcp	tests/mcp-store.test.ts:292	tests
+/api/space/mcp/catalog	contracts/generated/api.ts:9036	contracts
+/api/space/mcp/catalog/{entry_id}/install	contracts/generated/api.ts:9053	contracts
+/api/space/mcp/catalog?	tests/mcp-store.test.ts:302	tests
+/api/space/mcp/oauth/callback	contracts/generated/api.ts:9070	contracts
+/api/space/mcp/servers	contracts/generated/api.ts:9096	contracts
+/api/space/mcp/servers	tests/mcp-server-config.test.ts:112	tests
+/api/space/mcp/servers/a%20b?dt_workspace=	tests/mcp-space-surface.test.ts:205	tests
+/api/space/mcp/servers/{name}	contracts/generated/api.ts:9120	contracts
+/api/space/mcp/servers/{name}/authorize	contracts/generated/api.ts:9138	contracts
+/api/space/mcp/servers/{name}/test	contracts/generated/api.ts:9162	contracts
+/api/space/mcp/servers?dt_workspace=	tests/mcp-server-config.test.ts:113	tests
+/api/space/mcp/servers?dt_workspace=	tests/mcp-space-surface.test.ts:112	tests
+/api/subagents/backends	PARAM	lib/subagents-api.ts:109	lib
+/api/subagents/backends/options	contracts/generated/api.ts:9214	contracts
+/api/subagents/backends/options	lib/subagents-api.ts:92	lib
+/api/subagents/backends/{kind}/sync	contracts/generated/api.ts:9191	contracts
+/api/subagents/connections	contracts/generated/api.ts:9234	contracts
+/api/subagents/connections	lib/subagents-api.ts:35	lib
+/api/subagents/connections	lib/subagents-api.ts:48	lib
+/api/subagents/connections	PARAM	lib/subagents-api.ts:167	lib
+/api/subagents/connections	PARAM	lib/subagents-api.ts:65	lib
+/api/subagents/connections/{name}	contracts/generated/api.ts:9258	contracts
+/api/subagents/connections/{name}/message	contracts/generated/api.ts:9278	contracts
+/api/subagents/detect	contracts/generated/api.ts:9304	contracts
+/api/subagents/detect	lib/subagents-api.ts:26	lib
+/api/subagents/settings	contracts/generated/api.ts:9324	contracts
+/api/subagents/settings	lib/subagents-api.ts:209	lib
+/api/subagents/settings	lib/subagents-api.ts:222	lib
+/api/system/memory	components/settings/MemoryUsageItem.tsx:87	components
+/api/system/memory	contracts/generated/api.ts:9348	contracts
+/api/system/runtime	contracts/generated/api.ts:9376	contracts
+/api/system/runtime	features/runtime-status/api.ts:4	features
+/api/system/runtime	shared/api/runtime.ts:8	shared
+/api/system/status	contracts/generated/api.ts:9396	contracts
+/api/system/status	features/settings/store/SettingsStore.tsx:1532	features
+/api/system/status	features/settings/store/SettingsStore.tsx:1777	features
+/api/system/status	features/settings/store/SettingsStore.tsx:840	features
+/api/system/status	tests/e2e/settings-navigation.audit.ts:155	tests
+/api/system/test/embeddings	contracts/generated/api.ts:9419	contracts
+/api/system/test/llm	contracts/generated/api.ts:9442	contracts
+/api/system/test/search	contracts/generated/api.ts:9465	contracts
+/api/system/update	contracts/generated/api.ts:9482	contracts
+/api/system/update	lib/app-update.ts:107	lib
+/api/system/update	lib/app-update.ts:135	lib
+/api/system/update/check	contracts/generated/api.ts:9506	contracts
+/api/system/update/check	lib/app-update.ts:116	lib
+/api/system/update/check?dt_workspace=	tests/app-update.test.ts:97	tests
+/api/system/update/job	contracts/generated/api.ts:9526	contracts
+/api/system/update/job	lib/app-update.ts:147	lib
+/api/system/update/job?dt_workspace=	tests/app-update.test.ts:100	tests
+/api/system/update/settings	contracts/generated/api.ts:9543	contracts
+/api/system/update/settings	lib/app-update.ts:126	lib
+/api/system/update/settings	lib/settings-extensions.ts:24	lib
+/api/system/update/settings?dt_workspace=	tests/app-update.test.ts:98	tests
+/api/system/update?dt_workspace=	tests/app-update.test.ts:71	tests
+/api/system/update?dt_workspace=	tests/app-update.test.ts:96	tests
+/api/system/update?dt_workspace=	tests/app-update.test.ts:99	tests
+/api/task-board	contracts/generated/api.ts:9560	contracts
+/api/task-board/cards	contracts/generated/api.ts:9580	contracts
+/api/task-board/cards/{card_id}	contracts/generated/api.ts:9600	contracts
+/api/tools	contracts/generated/api.ts:9620	contracts
+/api/tools	features/settings/sections/ToolsSettingsSection.tsx:96	features
+/api/tools	lib/tools-settings.ts:10	lib
+/api/v1/learning/records	tests/e2e/learning-progress.audit.ts:113	tests
+/api/video-learning/invidious/account	PARAM	lib/video-learning-api.ts:302	lib
+/api/video-learning/invidious/account/authorize	contracts/generated/api.ts:9641	contracts
+/api/video-learning/invidious/account/callback	contracts/generated/api.ts:9658	contracts
+/api/video-learning/invidious/account/disconnect	contracts/generated/api.ts:9675	contracts
+/api/video-learning/invidious/account/status	contracts/generated/api.ts:9692	contracts
+/api/video-learning/invidious/browse	PARAM	lib/video-learning-api.ts:321	lib
+/api/video-learning/invidious/browse/{kind}	contracts/generated/api.ts:9709	contracts
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:110	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:125	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:140	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:155	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:173	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:203	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:217	lib
+/api/video-learning/materials	PARAM	lib/video-learning-api.ts:232	lib
+/api/video-learning/materials	PARAM	tests/e2e/video-learning.audit.ts:267	tests
+/api/video-learning/materials	PARAM	tests/e2e/video-learning.audit.ts:273	tests
+/api/video-learning/materials	PARAM	tests/e2e/video-learning.audit.ts:91	tests
+/api/video-learning/materials	PARAM	tests/e2e/video-learning.audit.ts:92	tests
+/api/video-learning/materials/resolve	contracts/generated/api.ts:9865	contracts
+/api/video-learning/materials/resolve	lib/video-learning-api.ts:186	lib
+/api/video-learning/materials/{material_id}	contracts/generated/api.ts:9726	contracts
+/api/video-learning/materials/{material_id}/notes	contracts/generated/api.ts:9743	contracts
+/api/video-learning/materials/{material_id}/notes.md	contracts/generated/api.ts:9761	contracts
+/api/video-learning/materials/{material_id}/notes/{note_id}	contracts/generated/api.ts:9778	contracts
+/api/video-learning/materials/{material_id}/progress	contracts/generated/api.ts:9796	contracts
+/api/video-learning/materials/{material_id}/stream/{format_id}	contracts/generated/api.ts:9813	contracts
+/api/video-learning/materials/{material_id}/subtitles.vtt	contracts/generated/api.ts:9831	contracts
+/api/video-learning/materials/{material_id}/transcript/refresh	contracts/generated/api.ts:9848	contracts
+/api/visualizers	lib/visualizers-api.ts:3	lib
+/api/visualizers/bundled/{visualizer_id}/install	contracts/generated/api.ts:9950	contracts
+/api/visualizers/import	contracts/generated/api.ts:9967	contracts
+/api/visualizers/list	contracts/generated/api.ts:9987	contracts
+/api/visualizers/{visualizer_id}	contracts/generated/api.ts:9882	contracts
+/api/visualizers/{visualizer_id}/assets/{asset_path}	contracts/generated/api.ts:9899	contracts
+/api/visualizers/{visualizer_id}/disable	contracts/generated/api.ts:9916	contracts
+/api/visualizers/{visualizer_id}/enable	contracts/generated/api.ts:9933	contracts
+/api/voice/stt	contracts/generated/api.ts:10004	contracts
+/api/voice/stt	hooks/useVoiceRecorder.ts:71	hooks
+/api/voice/tts	contracts/generated/api.ts:10024	contracts
+/api/voice/tts	features/chat/messages/ChatMessageList.tsx:1334	features
+/files/	lib/proxy-policy.ts:33	lib
+/files/	tests/internal-route-contract.test.ts:73	tests
+/files/attachments/a/b/file.pdf	tests/workspace-scope.spec.ts:13	tests
+/files/attachments/att-1/syllabus.pdf	tests/session-activity.test.ts:57	tests
+/files/attachments/{session_id}/{attachment_id}/{filename}	contracts/generated/api.ts:10044	contracts
+/files/library	contracts/generated/api.ts:10069	contracts
+/files/library/search	contracts/generated/api.ts:10165	contracts
+/files/library/{file_id}	contracts/generated/api.ts:10097	contracts
+/files/library/{file_id}/download	contracts/generated/api.ts:10121	contracts
+/files/library/{file_id}/restore	contracts/generated/api.ts:10145	contracts
+/files/outputs	lib/session-activity.ts:19	lib
+/files/outputs/bad%zz.pptx	tests/session-activity.test.ts:223	tests
+/files/outputs/slides.pptx	tests/office-pdf-preview.spec.tsx:149	tests
+/files/outputs/workspace/chat/chat/t/exec/%E6%8A%A5%E5%91%8A.pptx	tests/session-activity.test.ts:216	tests
+/files/outputs/workspace/chat/chat/turn_1/exec/summary.pptx	tests/session-activity.test.ts:65	tests
+/files/outputs/{output_path}	contracts/generated/api.ts:10185	contracts
+/files/workspace-items/item-1/report.docx?dt_workspace=source-workspace	tests/office-pdf-preview.spec.tsx:75	tests
+/files/workspace-items/ws_test	PARAM	tests/workspace-present.test.ts:19	tests
+/files/workspace-items/{workspace_id}/{workspace_item_id}	contracts/generated/api.ts:10209	contracts
+/ws	features/chat/transport/TurnRuntimeClient.ts:127	features
+/ws	lib/proxy-policy.ts:38	lib
+/ws	tests/proxy-policy.test.ts:38	tests
+/ws	tests/proxy-policy.test.ts:40	tests
+/ws	tests/workspace-scope.spec.ts:21	tests
+/ws	tests/workspace-scope.spec.ts:24	tests
+/ws	tests/workspace-scope.spec.ts:27	tests
+/ws/	lib/proxy-policy.ts:38	lib
+/ws/	tests/internal-route-contract.test.ts:72	tests
+/ws/books	lib/book-api.ts:23	lib
+/ws/books	lib/use-book-stream.ts:8	lib
+/ws/books	tests/proxy-policy.test.ts:39	tests
+/ws/chat	tests/proxy-policy.test.ts:34	tests
+/ws/knowledge-bases	PARAM	hooks/useKnowledgeProgress.ts:175	hooks
+/ws/mastery-paths	lib/mastery-ws.ts:8	lib
+/ws/partner-groups	PARAM	components/partners/group/useGroupSession.ts:320	components
+/ws/partners	PARAM	components/partners/PartnerChat.tsx:869	components
+/ws/questions/judge	lib/quiz-judge.ts:40	lib
