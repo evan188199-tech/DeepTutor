@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
+  BookOpenText,
   BookmarkPlus,
   Highlighter,
   MessageSquareQuote,
@@ -15,6 +16,7 @@ import {
   ANNOTATION_COLORS,
   ANNOTATION_SWATCH,
   type AnnotationColor,
+  type EpubPairAlignment,
 } from "@/lib/reading-api";
 
 export interface AnnotationPopoverProps {
@@ -33,6 +35,12 @@ export interface AnnotationPopoverProps {
    * with "Ask about this" as its last icon.
    */
   aiActions?: PopoverAiAction[];
+  /**
+   * Opposite-edition aligned text for the selection, served by the pairing
+   * without a model call. Absent on unpaired materials, so the popover keeps
+   * its exact old shape everywhere else.
+   */
+  pairAlignment?: PopoverPairAlignment;
 }
 
 export interface PopoverAiAction {
@@ -41,6 +49,12 @@ export interface PopoverAiAction {
   label: string;
   title: string;
   onClick: () => void;
+}
+
+/** Aligned opposite-side text for the selection, when the edition is paired. */
+export interface PopoverPairAlignment {
+  loading: boolean;
+  alignment: EpubPairAlignment | null;
 }
 
 /** Chips that fit on the row before the rest go behind ⋯. */
@@ -68,6 +82,7 @@ export function AnnotationPopover({
   onAsk,
   onDismiss,
   aiActions,
+  pairAlignment,
 }: AnnotationPopoverProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -217,6 +232,8 @@ export function AnnotationPopover({
         </div>
       )}
 
+      {pairAlignment && <PairAlignmentBlock state={pairAlignment} />}
+
       {noteOpen && (
         <div className="mt-1.5 border-t border-[var(--border)] pt-1.5">
           <p className="mb-1 line-clamp-2 px-1 text-[11px] italic text-[var(--muted-foreground)]">
@@ -315,4 +332,53 @@ function swatchLabel(color: AnnotationColor): string {
     default:
       return "Yellow";
   }
+}
+
+/**
+ * The paired edition's answer to the selection: the aligned paragraph, the
+ * paragraph-level fallback notice, or an explicit "nothing aligned" line.
+ *
+ * The failure branch deliberately shows no text at all — when alignment is
+ * unsure, a guessed paragraph would be unrelated reading masquerading as a
+ * translation.
+ */
+function PairAlignmentBlock({ state }: { state: PopoverPairAlignment }) {
+  const { t } = useTranslation();
+  if (state.loading) {
+    return (
+      <div className="mt-1.5 border-t border-[var(--border)] pt-1.5">
+        <p className="px-1 text-[11px] text-[var(--muted-foreground)]">
+          {t("Checking the paired edition…")}
+        </p>
+      </div>
+    );
+  }
+  const alignment = state.alignment;
+  if (!alignment || alignment.status !== "aligned" || !alignment.excerpt) {
+    return (
+      <div className="mt-1.5 border-t border-[var(--border)] pt-1.5">
+        <p className="px-1 text-[11px] text-[var(--muted-foreground)]">
+          {t("No aligned passage was found in the paired edition.")}
+        </p>
+      </div>
+    );
+  }
+  const edition = alignment.opposite_title || t("Paired edition");
+  return (
+    <div className="mt-1.5 max-w-[min(420px,88vw)] border-t border-[var(--border)] pt-1.5">
+      <p className="flex items-center gap-1 px-1 text-[11px] font-medium text-[var(--muted-foreground)]">
+        <BookOpenText size={12} aria-hidden />
+        {t("Paired edition")} · {edition}
+      </p>
+      <p className="mt-1 line-clamp-4 px-1 text-[12px] leading-relaxed text-[var(--foreground)]">
+        {alignment.excerpt}
+        {alignment.excerpt_truncated ? "…" : ""}
+      </p>
+      {alignment.degraded && (
+        <p className="mt-1 px-1 text-[11px] italic text-[var(--muted-foreground)]">
+          {t("Shown as the aligned paragraph.")}
+        </p>
+      )}
+    </div>
+  );
 }

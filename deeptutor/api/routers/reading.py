@@ -355,6 +355,39 @@ class EpubPairingRequest(BaseModel):
     chinese_material_id: str
 
 
+class EpubPairSessionInfo(BaseModel):
+    """The confirmed pairing that makes one material a bilingual session."""
+
+    pairing_id: str
+    english_material_id: str
+    chinese_material_id: str
+    opposite_material_id: str
+    opposite_language: str
+    opposite_title: str = ""
+
+
+class EpubPairAlignmentRequest(BaseModel):
+    locator: int = Field(ge=1)
+    quote: str = Field(min_length=1, max_length=4000)
+
+
+class EpubPairAlignmentInfo(BaseModel):
+    """Aligned opposite-side text for a selection, served without a model."""
+
+    status: str
+    granularity: str = ""
+    degraded: bool = False
+    excerpt: str = ""
+    excerpt_truncated: bool = False
+    pairing_id: str = ""
+    opposite_material_id: str = ""
+    opposite_title: str = ""
+    opposite_language: str = ""
+    opposite_locator: int = 0
+    source_locator: int = 0
+    source_unit: str = ""
+
+
 class UrlImportRequest(BaseModel):
     urls: list[str] = Field(min_length=1, max_length=50)
     workspace_id: str = ""
@@ -1172,6 +1205,57 @@ async def remove_epub_pairing(pairing_id: str) -> dict[str, Any]:
     return {"status": "ok", "pairing_id": pairing_id}
 
 
+@router.get("/materials/{material_id}/epub-pair-session", response_model=EpubPairSessionInfo | None)
+async def get_epub_pair_session(material_id: str) -> EpubPairSessionInfo | None:
+    """The pairing behind a linked bilingual session, or ``null`` unpaired."""
+    from deeptutor.reading.epub_pair_session import (
+        opposite_material_id,
+        pairing_for_material,
+    )
+
+    store = _store()
+    try:
+        assert_learning_material(material_id)
+        pairing = pairing_for_material(store, material_id)
+        if pairing is None:
+            return None
+        opposite_id = opposite_material_id(pairing, material_id) or ""
+        manifest = store.manifest(opposite_id) if opposite_id else None
+        return EpubPairSessionInfo(
+            pairing_id=str(pairing.get("pairing_id") or ""),
+            english_material_id=str(pairing.get("english_material_id") or ""),
+            chinese_material_id=str(pairing.get("chinese_material_id") or ""),
+            opposite_material_id=opposite_id,
+            opposite_language=(
+                "zh" if material_id == str(pairing.get("english_material_id") or "") else "en"
+            ),
+            opposite_title=manifest.title if manifest else "",
+        )
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post("/materials/{material_id}/epub-pair-alignment", response_model=EpubPairAlignmentInfo)
+async def epub_pair_alignment(
+    material_id: str, payload: EpubPairAlignmentRequest
+) -> EpubPairAlignmentInfo:
+    """Show the aligned opposite-side paragraph for a selection, no model."""
+    from deeptutor.reading.epub_pair_session import aligned_excerpt
+
+    try:
+        assert_learning_material(material_id)
+        result = await asyncio.to_thread(
+            aligned_excerpt,
+            _store(),
+            material_id,
+            locator=payload.locator,
+            quote=payload.quote,
+        )
+        return EpubPairAlignmentInfo(**result)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
 @router.delete("/materials/{material_id}")
 async def delete_material(material_id: str) -> dict[str, Any]:
     store = _store()
@@ -1434,6 +1518,16 @@ async def save_position(material_id: str, payload: PositionPayload) -> PositionI
             )
         except Exception:
             logger.exception("Reading position saved, but learning activity recording failed")
+        try:
+            from deeptutor.reading.epub_pair_session import mirror_pair_position
+
+            await asyncio.to_thread(mirror_pair_position, store, material_id, saved)
+        except Exception:
+            # Sharing the viewport with the opposite edition must never fail
+            # the save itself; the reader's own position is already durable.
+            logger.exception(
+                "Reading position saved, but sharing it with the paired edition failed"
+            )
         return PositionInfo(**saved.to_dict())
     except Exception as exc:
         raise _http_error(exc) from exc

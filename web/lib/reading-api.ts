@@ -532,6 +532,92 @@ export async function saveReadingPosition(
   );
 }
 
+/** The confirmed pairing that links this edition to its opposite side. */
+export interface EpubPairSession {
+  pairing_id: string;
+  english_material_id: string;
+  chinese_material_id: string;
+  opposite_material_id: string;
+  opposite_language: "en" | "zh";
+  opposite_title: string;
+}
+
+export type EpubPairAlignmentStatus =
+  | "aligned"
+  | "unpaired"
+  | "empty_selection"
+  | "quote_not_found"
+  | "unmappable_section"
+  | "section_unavailable"
+  | "paragraph_unaligned";
+
+/** Opposite-side aligned text for one selection, served without a model. */
+export interface EpubPairAlignment {
+  status: EpubPairAlignmentStatus;
+  granularity: string;
+  degraded: boolean;
+  excerpt: string;
+  excerpt_truncated: boolean;
+  pairing_id: string;
+  opposite_material_id: string;
+  opposite_title: string;
+  opposite_language: string;
+  opposite_locator: number;
+  source_locator: number;
+  source_unit: string;
+}
+
+function parseEpubPairAlignment(payload: unknown): EpubPairAlignment {
+  const body = payload as Record<string, unknown>;
+  if (!body || typeof body.status !== "string") {
+    throw new Error("Invalid pair alignment response");
+  }
+  return {
+    status: body.status as EpubPairAlignmentStatus,
+    granularity: typeof body.granularity === "string" ? body.granularity : "",
+    degraded: body.degraded === true,
+    excerpt: typeof body.excerpt === "string" ? body.excerpt : "",
+    excerpt_truncated: body.excerpt_truncated === true,
+    pairing_id: typeof body.pairing_id === "string" ? body.pairing_id : "",
+    opposite_material_id:
+      typeof body.opposite_material_id === "string" ? body.opposite_material_id : "",
+    opposite_title: typeof body.opposite_title === "string" ? body.opposite_title : "",
+    opposite_language:
+      typeof body.opposite_language === "string" ? body.opposite_language : "",
+    opposite_locator:
+      typeof body.opposite_locator === "number" ? body.opposite_locator : 0,
+    source_locator: typeof body.source_locator === "number" ? body.source_locator : 0,
+    source_unit: typeof body.source_unit === "string" ? body.source_unit : "",
+  };
+}
+
+export async function getEpubPairSession(
+  materialId: string,
+): Promise<EpubPairSession | null> {
+  const session = await unwrap<EpubPairSession | null>(
+    await apiFetch(apiUrl(`${BASE}/materials/${materialId}/epub-pair-session`), {
+      cache: "no-store",
+    }),
+  );
+  return session ?? null;
+}
+
+export async function fetchEpubPairAlignment(
+  materialId: string,
+  locator: number,
+  quote: string,
+): Promise<EpubPairAlignment> {
+  return parseEpubPairAlignment(
+    await unwrap(
+      await apiFetch(apiUrl(`${BASE}/materials/${materialId}/epub-pair-alignment`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locator, quote }),
+      }),
+    ),
+  );
+}
+
 export async function listBookmarks(
   materialId: string,
 ): Promise<ReadingBookmark[]> {

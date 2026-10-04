@@ -29,17 +29,25 @@ import {
 } from "@/lib/reading-reader-action";
 import { citationTargetFromHref } from "@/lib/reading-citations";
 import {
+  fetchEpubPairAlignment,
   fetchExport,
+  getEpubPairSession,
   getMaterial,
   getReadingPosition,
   saveReadingPosition,
   type AnnotationColor,
   type AnnotationItem,
+  type EpubPairAlignment,
+  type EpubPairSession,
   type MaterialDetail,
   type ReadingBookmark,
 } from "@/lib/reading-api";
+import {
+  AnnotationPopover,
+  type PopoverAiAction,
+  type PopoverPairAlignment,
+} from "./AnnotationPopover";
 import { AnnotationList } from "./AnnotationList";
-import { AnnotationPopover, type PopoverAiAction } from "./AnnotationPopover";
 import { passagePrompts } from "@/lib/reading-passage-prompts";
 import {
   PdfDocumentView,
@@ -579,6 +587,56 @@ export function ReaderPane({
     },
     [],
   );
+
+  // -- the paired edition of this book, if the reader confirmed one ---------
+  //
+  // A confirmed EPUB pairing turns the material into a bilingual session:
+  // positions are shared server-side on every save, and a selection can be
+  // answered with the opposite side's aligned paragraph without a model. The
+  // session is looked up once per material; anything else fails closed — no
+  // pairing, no aligned block in the popover.
+  const [pairSession, setPairSession] = useState<EpubPairSession | null>(null);
+  const [pairAlignment, setPairAlignment] = useState<PopoverPairAlignment | null>(
+    null,
+  );
+  useEffect(() => {
+    const materialId = material?.material_id;
+    setPairSession(null);
+    setPairAlignment(null);
+    if (!materialId || material?.render_mode !== "epub") return;
+    let cancelled = false;
+    void getEpubPairSession(materialId)
+      .then((session) => {
+        if (!cancelled) setPairSession(session);
+      })
+      .catch(() => {
+        // Unpaired or unreachable: the reader stays a plain single-edition view.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [material?.material_id, material?.render_mode]);
+
+  useEffect(() => {
+    const materialId = material?.material_id;
+    if (!pairSession || !materialId || !selection?.quote) {
+      setPairAlignment(null);
+      return;
+    }
+    let cancelled = false;
+    setPairAlignment({ loading: true, alignment: null });
+    void fetchEpubPairAlignment(materialId, selection.locator, selection.quote)
+      .then((alignment: EpubPairAlignment) => {
+        if (!cancelled) setPairAlignment({ loading: false, alignment });
+      })
+      .catch(() => {
+        // The fetch failed, not the alignment: say so instead of guessing.
+        if (!cancelled) setPairAlignment({ loading: false, alignment: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [pairSession, material?.material_id, selection?.locator, selection?.quote]);
 
   const navigateCitation = useCallback(
     async (href: string | null | undefined) => {
@@ -1272,6 +1330,7 @@ export function ReaderPane({
           onCitation={(color) => commitSelection("citation", color)}
           onAsk={() => askAboutSelection()}
           aiActions={aiActions}
+          pairAlignment={pairSession ? (pairAlignment ?? { loading: true, alignment: null }) : undefined}
           // Closes the popover WITHOUT dropping the selection, so the
           // toolbar's selection-gated actions stay reachable.
           onDismiss={() => setPopoverOpen(false)}
