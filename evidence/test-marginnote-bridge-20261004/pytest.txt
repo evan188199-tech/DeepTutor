@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/Shared/DeepTutor/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/Shared/DeepTutor-worktrees/agen442-mn4-bridge-contract
+configfile: pyproject.toml
+plugins: cov-7.1.0, devtools-0.12.2, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 11 items
+
+tests/api/test_marginnote4_bridge_contract.py::test_route_surface_is_exactly_the_six_documented_endpoints PASSED [  9%]
+tests/api/test_marginnote4_bridge_contract.py::test_no_bridge_route_is_served_under_api_v1 PASSED [ 18%]
+tests/api/test_marginnote4_bridge_contract.py::test_drifted_v1_urls_return_404 PASSED [ 27%]
+tests/api/test_marginnote4_bridge_contract.py::test_bridge_routes_declare_their_own_auth_split PASSED [ 36%]
+tests/api/test_marginnote4_bridge_contract.py::test_session_routes_reject_unauthenticated_calls PASSED [ 45%]
+tests/api/test_marginnote4_bridge_contract.py::test_device_routes_accept_a_device_token_without_any_session PASSED [ 54%]
+tests/api/test_marginnote4_bridge_contract.py::test_device_routes_reject_without_device_credentials PASSED [ 63%]
+tests/api/test_marginnote4_bridge_contract.py::test_pair_response_shape PASSED [ 72%]
+tests/api/test_marginnote4_bridge_contract.py::test_sync_request_and_response_shape PASSED [ 81%]
+tests/api/test_marginnote4_bridge_contract.py::test_devices_list_and_revoke_shape PASSED [ 90%]
+tests/api/test_marginnote4_bridge_contract.py::test_status_shape PASSED  [100%]
+
+============================== 11 passed in 0.46s ==============================
