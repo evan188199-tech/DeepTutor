@@ -107,12 +107,13 @@
 
 ## 8. 验证
 
-只读导读，未改任何代码。可用下列命令复核（timeout 已加）：
+只读导读，未改任何代码。已用下列命令复核（工作树任意 checkout 需自带 venv；timeout 用 Bash 侧限时替代，macOS 无 timeout 命令）：
 
 ```bash
-timeout 300 python -m pytest tests/services/mcp tests/runtime/registry \
-  tests/runtime/providers tests/services/skill \
-  tests/tools/builtin/test_read_skill_tool.py -q
+/Users/Shared/DeepTutor/.venv/bin/python -m pytest \
+  tests/services/mcp tests/runtime/registry tests/runtime/providers \
+  tests/services/skill tests/tools/builtin/test_read_skill_tool.py -q
+# 实测 @ ef2d9e5c3 + 本证据文件：302 passed in 3.15s
 ```
 
 行号抽查示例：`sed -n '31,47p' deeptutor/services/mcp/network.py`（SSRF 两档网段表）。
