@@ -118,6 +118,22 @@ test("eight-year-old learners receive the young presentation", async () => {
   ).toHaveClass("h-7", "w-7", "rounded-full");
 });
 
+test("eleven-year-old learners receive the older presentation", async () => {
+  vi.mocked(getOwnLearnerProfile).mockResolvedValue({ age: 11 });
+  render(<ReadingExtensionBar {...props} />);
+  const toolbar = await screen.findByRole("toolbar", {
+    name: "Reading actions",
+  });
+  await vi.waitFor(() =>
+    expect(toolbar).toHaveAttribute("data-reading-presentation", "older"),
+  );
+  expect(toolbar).toHaveClass("overflow-x-auto");
+  expect(toolbar.parentElement).not.toHaveClass("absolute");
+  expect(screen.getByRole("button", { name: "Read aloud" })).toHaveClass(
+    "min-h-11",
+  );
+});
+
 test("fixed primary order and secondary disclosure", async () => {
   render(<ReadingExtensionBar {...props} />);
   const toolbar = await screen.findByRole("toolbar");

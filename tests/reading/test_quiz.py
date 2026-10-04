@@ -154,6 +154,18 @@ async def test_invalid_or_ungrounded_model_output_is_rejected(monkeypatch, respo
         await ReadingQuizExtension().run_action("start", _context())
 
 
+@pytest.mark.asyncio
+async def test_evidence_with_trailing_punctuation_still_grounds(monkeypatch):
+    async def complete(**_kwargs):
+        return _model_response(evidence="verified phrase supports the answer.")
+
+    monkeypatch.setattr("deeptutor.reading.quiz.complete", complete)
+    result = await ReadingQuizExtension().run_action("start", _context())
+
+    assert result.type == "quiz"
+    assert len(result.payload["questions"]) == 3
+
+
 def test_quiz_is_registered_as_a_packaged_extension():
     project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     group = project["project"]["entry-points"]["deeptutor.reading_extensions"]

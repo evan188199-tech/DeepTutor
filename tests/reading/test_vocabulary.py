@@ -167,6 +167,53 @@ async def test_invalid_or_ungrounded_model_output_is_rejected(monkeypatch, respo
         await VocabularyExtension().run_action("explain", _context())
 
 
+@pytest.mark.asyncio
+async def test_ungrounded_terms_are_dropped_while_valid_terms_are_kept(monkeypatch):
+    async def complete(**_kwargs):
+        return json.dumps(
+            {
+                "terms": [
+                    {
+                        "term": "verified",
+                        "meaning": "The passage presents this phrase as checked evidence.",
+                        "usage": "It modifies the noun that carries the passage's main claim.",
+                    },
+                    {
+                        "term": "outside",
+                        "meaning": "This term is not part of the selected text.",
+                        "usage": "The passage does not use this term at all.",
+                    },
+                ]
+            }
+        )
+
+    monkeypatch.setattr("deeptutor.reading.vocabulary.complete", complete)
+    result = await VocabularyExtension().run_action("explain", _context())
+
+    assert [term["term"] for term in result.payload["terms"]] == ["verified"]
+
+
+@pytest.mark.asyncio
+async def test_terms_wrapped_in_punctuation_still_ground(monkeypatch):
+    async def complete(**_kwargs):
+        return json.dumps(
+            {
+                "terms": [
+                    {
+                        "term": "(verified)",
+                        "meaning": "The passage presents this phrase as checked evidence.",
+                        "usage": "It modifies the noun that carries the passage's main claim.",
+                    }
+                ]
+            }
+        )
+
+    monkeypatch.setattr("deeptutor.reading.vocabulary.complete", complete)
+    result = await VocabularyExtension().run_action("explain", _context())
+
+    assert [term["term"] for term in result.payload["terms"]] == ["(verified)"]
+
+
 def test_vocabulary_is_registered_as_a_packaged_extension():
     project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     group = project["project"]["entry-points"]["deeptutor.reading_extensions"]
