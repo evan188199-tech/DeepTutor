@@ -515,6 +515,22 @@ function draftFailedSubmissionKey(): string {
   return `draft:${activeWorkspaceId() || "general"}`;
 }
 
+/** A ``submit_user_reply`` is the one frame that stays deliverable after
+ *  its turn reports completed: STREAM_END keeps ``activeTurnId`` alive
+ *  while the ask_user card is unanswered (#1278), and the backend keeps
+ *  the card's waiter open. True only while this exact reply still targets
+ *  that pending card — streaming state is irrelevant for it, unlike for
+ *  every other frame. */
+function isPendingAskUserReply(
+  msg: ChatMessage | ClientCommand,
+  session: SessionEntry | undefined,
+): boolean {
+  if (msg.type !== "submit_user_reply") return false;
+  const turnId = session?.activeTurnId;
+  if (!turnId || msg.turn_id !== turnId) return false;
+  return hasPendingAskUserInMessages(session?.messages, turnId);
+}
+
 function restoredFailedMessage(
   record: FailedSubmissionRecord,
   parentMessageId: number | null,
@@ -2237,8 +2253,15 @@ export function ChatStateAdapterProvider({
       options: { awaitAck?: boolean; attempt?: number } = {},
     ): Promise<boolean> {
       const attempt = options.attempt ?? 0;
-      if (attempt > 0 && !stateRef.current.sessions[key]?.isStreaming) {
-        return Promise.resolve(false);
+      if (attempt > 0) {
+        // Re-read state on every retry: the session may have stopped
+        // streaming while the connect ladder was waiting. Every frame
+        // but a still-pending ask_user reply must then be dropped —
+        // its turn is over and a resend would land on the wrong turn.
+        const session = stateRef.current.sessions[key];
+        if (!session?.isStreaming && !isPendingAskUserReply(msg, session)) {
+          return Promise.resolve(false);
+        }
       }
       const runner = ensureRunner(key);
       if (!runner.client.connected) {
@@ -3114,20 +3137,22 @@ export function ChatStateAdapterProvider({
       if (!key) return false;
       const session = currentState.sessions[key];
       const turnId = session?.activeTurnId;
-      const pendingAskUser = session
-        ? hasPendingAskUserInMessages(session.messages, turnId)
-        : false;
-      // Only meaningful while a turn is live. A paused ask_user turn can be
-      // silent long enough for the socket to reconnect, so allow submission
-      // whenever the unresolved card and active turn id are still present.
-      if (!session || !turnId || (!session.isStreaming && !pendingAskUser)) {
-        return false;
-      }
       const message: import("@/features/chat/model/protocol").SubmitUserReplyMessage =
         {
           type: "submit_user_reply",
-          turn_id: turnId,
+          turn_id: turnId ?? "",
         };
+      // Only meaningful while a turn is live. A paused ask_user turn can be
+      // silent long enough for the socket to reconnect, and the card can
+      // even outlive a completed turn (#1278) — allow submission whenever
+      // the unresolved card and active turn id are still present.
+      if (
+        !session ||
+        !turnId ||
+        (!session.isStreaming && !isPendingAskUserReply(message, session))
+      ) {
+        return false;
+      }
       if (typeof reply === "string") {
         message.text = reply;
       } else {

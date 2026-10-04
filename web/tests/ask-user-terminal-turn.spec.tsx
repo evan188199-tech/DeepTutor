@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ChatStateAdapterProvider,
@@ -15,6 +15,15 @@ const transport = vi.hoisted(() => {
   type MockEvent = Record<string, unknown>;
   type EventListener = (event: MockEvent) => void;
   const instances: MockUnifiedTurnClient[] = [];
+  // Per-test knobs. The default reproduces #1278's original fix: a socket
+  // that is connected the moment connect() returns. Flip them to expose
+  // the races the sync mock was hiding.
+  const knobs = {
+    // connect() only raises `connected` after this delay (0 = sync).
+    connectDelayMs: 0,
+    // Emit ask_user_resolved before done, i.e. the card was answered.
+    resolveCard: false,
+  };
 
   class MockUnifiedTurnClient {
     connected = false;
@@ -28,7 +37,13 @@ const transport = vi.hoisted(() => {
     }
 
     connect(): void {
-      this.connected = true;
+      if (knobs.connectDelayMs <= 0) {
+        this.connected = true;
+        return;
+      }
+      window.setTimeout(() => {
+        this.connected = true;
+      }, knobs.connectDelayMs);
     }
 
     setResumeState(): void {}
@@ -59,6 +74,23 @@ const transport = vi.hoisted(() => {
           timestamp: Date.now() / 1000,
         });
       }, 0);
+      if (knobs.resolveCard) {
+        window.setTimeout(() => {
+          this.onEvent({
+            type: "progress",
+            source: "chat",
+            stage: "responding",
+            content: "",
+            metadata: {
+              ask_user_resolved: true,
+              ask_user_tool_call_id: "call-1273",
+            },
+            turn_id: "turn-1273",
+            seq: 2,
+            timestamp: Date.now() / 1000,
+          });
+        }, 0);
+      }
       window.setTimeout(() => {
         this.onEvent({
           type: "done",
@@ -67,7 +99,7 @@ const transport = vi.hoisted(() => {
           content: "",
           metadata: { status: "completed" },
           turn_id: "turn-1273",
-          seq: 2,
+          seq: 3,
           timestamp: Date.now() / 1000,
         });
       }, 0);
@@ -79,7 +111,7 @@ const transport = vi.hoisted(() => {
     }
   }
 
-  return { MockUnifiedTurnClient, instances };
+  return { MockUnifiedTurnClient, instances, knobs, reset: () => instances.splice(0) };
 });
 
 vi.mock("@/features/chat/transport/UnifiedTurnClient", () => ({
@@ -88,6 +120,7 @@ vi.mock("@/features/chat/transport/UnifiedTurnClient", () => ({
 
 function Harness() {
   const chat = useChatStateAdapter();
+  const [submitResult, setSubmitResult] = useState<boolean | null>(null);
 
   useEffect(() => {
     chat.newSession();
@@ -98,16 +131,19 @@ function Harness() {
   return (
     <div>
       <span data-testid="streaming">{String(chat.state.isStreaming)}</span>
+      <span data-testid="submit-result">{String(submitResult)}</span>
       <button type="button" onClick={() => chat.sendMessage("hello")}>
         Start turn
       </button>
       <button
         type="button"
         onClick={() => {
-          void chat.submitUserReply({
-            text: "Knowledge center",
-            answers: [{ questionId: "source", text: "Knowledge center" }],
-          });
+          void chat
+            .submitUserReply({
+              text: "Knowledge center",
+              answers: [{ questionId: "source", text: "Knowledge center" }],
+            })
+            .then(setSubmitResult);
         }}
       >
         Submit answer
@@ -117,6 +153,12 @@ function Harness() {
 }
 
 describe("ask_user terminal turn state", () => {
+  beforeEach(() => {
+    transport.knobs.connectDelayMs = 0;
+    transport.knobs.resolveCard = false;
+    transport.reset();
+  });
+
   it("keeps the pending card addressable after a completed turn", async () => {
     const user = userEvent.setup();
     render(
@@ -139,5 +181,62 @@ describe("ask_user terminal turn state", () => {
         text: "Knowledge center",
       });
     });
+  });
+
+  it("submits a pending card after a completed turn when the socket connects asynchronously", async () => {
+    // The completed turn's runner is already gone, so submitUserReply opens
+    // a fresh socket. connect() only becomes true 50ms later, past the
+    // first 200ms retry — the send-retry guard must not eat the frame
+    // just because the turn itself is over (#1278 regression, #1359).
+    transport.knobs.connectDelayMs = 50;
+    const user = userEvent.setup();
+    render(
+      <ChatStateAdapterProvider>
+        <Harness />
+      </ChatStateAdapterProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Start turn" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("streaming")).toHaveTextContent("false"),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Submit answer" }));
+    await waitFor(() => {
+      const client = transport.instances.at(-1);
+      expect(client?.submitted.at(-1)).toMatchObject({
+        type: "submit_user_reply",
+        turn_id: "turn-1273",
+      });
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId("submit-result")).toHaveTextContent("true"),
+    );
+  });
+
+  it("refuses to submit once the card is answered after the turn ends", async () => {
+    transport.knobs.resolveCard = true;
+    const user = userEvent.setup();
+    render(
+      <ChatStateAdapterProvider>
+        <Harness />
+      </ChatStateAdapterProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Start turn" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("streaming")).toHaveTextContent("false"),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Submit answer" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("submit-result")).toHaveTextContent("false"),
+    );
+    // Leave enough time for a rogue retry ladder (200ms per attempt) to
+    // fire — an answered card must never emit a submit_user_reply frame.
+    await new Promise((resolve) => window.setTimeout(resolve, 600));
+    expect(transport.instances.every((c) => c.submitted.length === 0)).toBe(
+      true,
+    );
   });
 });
