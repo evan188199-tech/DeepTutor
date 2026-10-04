@@ -84,7 +84,7 @@ cd <DeepTutor worktree @ ef2d9e5c>
 python3 evidence/async-tasks-2026-10-04/scan_async_tasks.py . --out /tmp/scan.json
 python3 evidence/async-tasks-2026-10-04/refine_async_tasks.py . /tmp/scan.json
 # 期望：files=1023 hits=96 parse_errors=0
-sha256sum -c evidence/async-tasks-2026-10-04/SHA256SUMS
+cd evidence/async-tasks-2026-10-04 && sha256sum -c SHA256SUMS
 ```
 
 ## 8. 验收对照
