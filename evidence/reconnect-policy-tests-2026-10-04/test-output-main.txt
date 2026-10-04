@@ -1,0 +1,92 @@
+TAP version 13
+# Subtest: reconnect ladder grows exponentially from 250ms and caps at 8s
+ok 1 - reconnect ladder grows exponentially from 250ms and caps at 8s
+  ---
+  duration_ms: 0.415542
+  type: 'test'
+  ...
+# Subtest: reconnect jitter stays within 0.8x..1.2x of each exponential rung
+ok 2 - reconnect jitter stays within 0.8x..1.2x of each exponential rung
+  ---
+  duration_ms: 0.199417
+  type: 'test'
+  ...
+# Subtest: shouldReconnect keeps the ladder alive for active turns and bounded idle retries
+ok 3 - shouldReconnect keeps the ladder alive for active turns and bounded idle retries
+  ---
+  duration_ms: 0.060584
+  type: 'test'
+  ...
+# Subtest: all four submit gates share one retry budget
+ok 4 - all four submit gates share one retry budget
+  ---
+  duration_ms: 2.440625
+  type: 'test'
+  ...
+# Subtest: submit gate give-up is bounded and reports a user-facing failure
+ok 5 - submit gate give-up is bounded and reports a user-facing failure
+  ---
+  duration_ms: 0.940792
+  type: 'test'
+  ...
+# Subtest: submit retry budget covers the worst-case reconnect rung
+not ok 6 - submit retry budget covers the worst-case reconnect rung
+  ---
+  duration_ms: 0.86975
+  type: 'test'
+  location: '/Users/Shared/DeepTutor/dt-agen384-wt/web/dist/node-tests/tests/chat/transport/reconnect-policy.test.js:146:25'
+  failureType: 'testCodeFailure'
+  error: 'QuizFollowupContext submit budget is 2000ms (10 x 200ms) but one reconnect rung can take up to 9600ms — a submit issued mid-reconnect gives up before the socket returns. Raise the submit budget above the reconnect ladder (see upstream #1648).'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Users/Shared/DeepTutor/dt-agen384-wt/web/dist/node-tests/tests/chat/transport/reconnect-policy.test.js:150:26)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a submit issued mid-reconnect is delivered anywhere on the reconnect ladder
+not ok 7 - a submit issued mid-reconnect is delivered anywhere on the reconnect ladder
+  ---
+  duration_ms: 0.452916
+  type: 'test'
+  location: '/Users/Shared/DeepTutor/dt-agen384-wt/web/dist/node-tests/tests/chat/transport/reconnect-policy.test.js:153:25'
+  failureType: 'testCodeFailure'
+  error: |-
+    submit wait window is 1800ms (last poll of 10 x 200ms) but the socket reconnects only after 3750ms when the ladder reaches rung 4.
+    rungs 0..0: reconnect lands at 0ms
+    rungs 0..1: reconnect lands at 250ms
+    rungs 0..2: reconnect lands at 750ms
+    rungs 0..3: reconnect lands at 1750ms
+    rungs 0..4: reconnect lands at 3750ms
+    The submit gives up first and reports a false expiry (upstream #1648).
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/Users/Shared/DeepTutor/dt-agen384-wt/web/dist/node-tests/tests/chat/transport/reconnect-policy.test.js:160:26)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 5
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9.887292
+exit=1

@@ -1,0 +1,3 @@
+22b0f22e741f4432ce29ea8f77e4c8df9d6d17722f884c5670a2e169aba2992a  web/tests/chat/transport/reconnect-policy.test.ts
+637ed21903b32e7a67294730acd6e2f91ccbeeadb0c58b1c2d7a46c542c36a01  evidence/reconnect-policy-tests-2026-10-04/report.md
+6b3b8d9b6eb39ad0aa0cc9324d7f55fa22fd69e718ef5786d6a569d24c1bb96e  evidence/reconnect-policy-tests-2026-10-04/test-output-main.txt
