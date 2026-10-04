@@ -1,0 +1,17 @@
+{
+ "ref": "f07029cfc (origin/dev == origin/main, release v1.6.13)",
+ "py_files_scanned": 1818,
+ "py_module_level_symbols": 8068,
+ "py_unused_modules": 26,
+ "py_unused_symbols": 65,
+ "py_unused_symbols_loc": 461,
+ "py_unused_modules_loc": 3733,
+ "ts_files_scanned": 1258,
+ "ts_unused_files": 11,
+ "ts_unused_files_loc": 1191,
+ "ts_unused_exports": 1188,
+ "ts_unused_exports_est_loc": 22078,
+ "ts_unreachable_branches": 0,
+ "py_unreachable_branches": 0,
+ "shim_clusters": 5
+}

@@ -1,0 +1,260 @@
+[
+ {
+  "module": "deeptutor.agents.research.utils.json_utils",
+  "file": "deeptutor/agents/research/utils/json_utils.py",
+  "loc": 94,
+  "prod_importers": [
+   "deeptutor.agents.research.utils"
+  ],
+  "test_importers": [
+   "tests.agents.research.test_extract_json_adjacent"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.agents.research.utils.token_tracker",
+  "file": "deeptutor/agents/research/utils/token_tracker.py",
+  "loc": 281,
+  "prod_importers": [
+   "deeptutor.agents.research.utils"
+  ],
+  "test_importers": [
+   "tests.agents.research.test_token_tracker_pricing"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.book.agents.spine_agent",
+  "file": "deeptutor/book/agents/spine_agent.py",
+  "loc": 189,
+  "prod_importers": [
+   "deeptutor.book.agents"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.capabilities.registry",
+  "file": "deeptutor/capabilities/registry.py",
+  "loc": 240,
+  "prod_importers": [],
+  "test_importers": [
+   "tests.capabilities.test_loop_registry",
+   "tests.capabilities.test_partner_authoring_capability",
+   "tests.reading.test_mode_registration",
+   "tests.video_learning.test_capability"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.core.errors",
+  "file": "deeptutor/core/errors.py",
+  "loc": 57,
+  "prod_importers": [],
+  "test_importers": [
+   "tests.core.test_context"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.logging.adapters",
+  "file": "deeptutor/logging/adapters/__init__.py",
+  "loc": 13,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.logging.adapters.llamaindex",
+  "file": "deeptutor/logging/adapters/llamaindex.py",
+  "loc": 74,
+  "prod_importers": [
+   "deeptutor.logging.adapters"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.reading.refresh",
+  "file": "deeptutor/reading/refresh.py",
+  "loc": 185,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": [
+   "scripts.reading_refresh_figures"
+  ]
+ },
+ {
+  "module": "deeptutor.services.cli_apps.vendor.build_snapshot",
+  "file": "deeptutor/services/cli_apps/vendor/build_snapshot.py",
+  "loc": 65,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.services.llm.provider_registry",
+  "file": "deeptutor/services/llm/provider_registry.py",
+  "loc": 3,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.services.llm.registry",
+  "file": "deeptutor/services/llm/registry.py",
+  "loc": 71,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.services.llm.telemetry",
+  "file": "deeptutor/services/llm/telemetry.py",
+  "loc": 46,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.services.rag.pipelines.base",
+  "file": "deeptutor/services/rag/pipelines/base.py",
+  "loc": 41,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.textbook_struct",
+  "file": "deeptutor/textbook_struct/__init__.py",
+  "loc": 20,
+  "prod_importers": [],
+  "test_importers": [
+   "tests.textbook_struct.test_page_headers"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.textbook_struct.chapter_rebuild",
+  "file": "deeptutor/textbook_struct/chapter_rebuild.py",
+  "loc": 273,
+  "prod_importers": [
+   "deeptutor.textbook_struct",
+   "deeptutor.textbook_struct.page_headers"
+  ],
+  "test_importers": [
+   "tests.textbook_struct.test_page_headers"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.textbook_struct.column_blacklist",
+  "file": "deeptutor/textbook_struct/column_blacklist.py",
+  "loc": 41,
+  "prod_importers": [
+   "deeptutor.textbook_struct",
+   "deeptutor.textbook_struct.chapter_rebuild"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.textbook_struct.page_headers",
+  "file": "deeptutor/textbook_struct/page_headers.py",
+  "loc": 100,
+  "prod_importers": [
+   "deeptutor.textbook_struct",
+   "deeptutor.textbook_struct.chapter_rebuild"
+  ],
+  "test_importers": [
+   "tests.textbook_struct.test_page_headers"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.file_tools",
+  "file": "deeptutor/tools/file_tools.py",
+  "loc": 291,
+  "prod_importers": [],
+  "test_importers": [
+   "tests.tools.test_file_tools"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.mastery_tool",
+  "file": "deeptutor/tools/mastery_tool.py",
+  "loc": 45,
+  "prod_importers": [],
+  "test_importers": [
+   "deeptutor.learning.tests.test_mastery_mode",
+   "deeptutor.learning.tests.test_mastery_state_integrity",
+   "deeptutor.learning.tests.test_mastery_tools"
+  ],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.solve_tool",
+  "file": "deeptutor/tools/solve_tool.py",
+  "loc": 22,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.tex_chunker",
+  "file": "deeptutor/tools/tex_chunker.py",
+  "loc": 341,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.tex_downloader",
+  "file": "deeptutor/tools/tex_downloader.py",
+  "loc": 256,
+  "prod_importers": [],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.vision.block_parser",
+  "file": "deeptutor/tools/vision/block_parser.py",
+  "loc": 251,
+  "prod_importers": [
+   "deeptutor.tools.vision"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.vision.coord_transform",
+  "file": "deeptutor/tools/vision/coord_transform.py",
+  "loc": 436,
+  "prod_importers": [
+   "deeptutor.tools.vision"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.tools.vision.image_utils",
+  "file": "deeptutor/tools/vision/image_utils.py",
+  "loc": 210,
+  "prod_importers": [
+   "deeptutor.tools.vision"
+  ],
+  "test_importers": [],
+  "script_importers": []
+ },
+ {
+  "module": "deeptutor.utils.network.circuit_breaker",
+  "file": "deeptutor/utils/network/circuit_breaker.py",
+  "loc": 88,
+  "prod_importers": [],
+  "test_importers": [
+   "tests.utils.test_circuit_breaker"
+  ],
+  "script_importers": []
+ }
+]
