@@ -1,0 +1,2 @@
+{"timestamp": "2026-06-25T10:00:00Z", "type": "user", "cwd": "/Users/xzh/work/demo", "message": {"role": "user", "content": "how do I parse this file?"}}
+{"timestamp": "2026-06-25T10:00:05Z", "type": "assistant", "cwd": "/Users/xzh/work/demo", "message": {"role": "assistant", "content": "Use a streaming JSONL reader."}}

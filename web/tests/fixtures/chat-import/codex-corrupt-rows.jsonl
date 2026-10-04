@@ -1,0 +1,5 @@
+{"timestamp": "2026-06-25T10:00:00Z", "type": "session_meta", "payload": {"id": "codex-corrupt-1", "cwd": "/Users/xzh/work/demo", "thread_source": "user"}}
+null
+{"timestamp": "2026-06-25T10:00:01Z", "type": "event_msg", "payload": {"type": "user_message", "message": "codex question"}}
+{"timestamp": "2026-06-25T10:00:02Z", "type": "event_msg", "payload": {"type": "agent_message", "message": "codex answer"}}
+{"timestamp": "2026-06-25T10:

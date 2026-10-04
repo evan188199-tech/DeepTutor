@@ -1,0 +1,3 @@
+{"timestamp": "2026-06-25T10:00:00Z", "type": "session_meta", "payload": {"id": "codex-mixed-1", "cwd": "/Users/xzh/work/demo", "thread_source": "user"}}
+{"timestamp": "2026-06-25T10:00:01Z", "type": "event_msg", "payload": {"type": "user_message", "message": "pre-upgrade question"}}
+{"timestamp": "2026-06-25T10:00:02Z", "type": "response_item", "payload": {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "post-upgrade answer"}]}}

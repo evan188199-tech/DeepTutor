@@ -1,0 +1,2 @@
+{"timestamp": "2026-06-25T09:00:00Z", "type": "user", "cwd": "/Users/xzh/work/demo.sub", "message": {"role": "user", "content": "older session in a sibling project"}}
+{"timestamp": "2026-06-25T09:00:05Z", "type": "assistant", "cwd": "/Users/xzh/work/demo.sub", "message": {"role": "assistant", "content": "Noted."}}
