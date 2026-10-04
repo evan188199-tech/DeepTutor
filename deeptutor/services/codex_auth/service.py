@@ -864,7 +864,6 @@ class CodexOAuthService:
             self._logging_out = True
         try:
             await self.cancel_login()
-            logout_warnings: list[str] = []
             async with self._catalog_sync_lock:
                 credentials = self._store.load_credentials()
                 if credentials is not None:
@@ -880,7 +879,6 @@ class CodexOAuthService:
                             getattr(exc, "code", None) or type(exc).__name__,
                             getattr(exc, "http_status", None),
                         )
-                        logout_warnings.append("token_revocation_failed")
                     self._store.clear_credentials(expected_generation=credentials.generation)
                 else:
                     self._store.clear_credentials(
@@ -896,13 +894,10 @@ class CodexOAuthService:
                         getattr(exc, "code", None) or type(exc).__name__,
                         getattr(exc, "http_status", None),
                     )
-                    logout_warnings.append("catalog_invalidation_failed")
                 self._last_snapshot = None
                 self._operation = None
                 self._clear_reauth_required()
-                status = self.public_status()
-                status["logout_warnings"] = logout_warnings
-                return status
+                return self.public_status()
         finally:
             async with self._inference_lock:
                 self._logging_out = False

@@ -4,6 +4,7 @@ import asyncio
 from copy import deepcopy
 import hashlib
 import json
+import logging
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlsplit
@@ -1621,28 +1622,69 @@ async def test_revoke_failure_does_not_block_local_logout_and_restore(
     status = await service.logout()
 
     assert status["connection"] == "disconnected"
-    assert status["logout_warnings"] == ["token_revocation_failed"]
     assert store.current_generation() == committed.generation + 1
     assert store.load_credentials() is None
     assert _selection(model_catalog.load()) == _selection(original)
 
 
 @pytest.mark.asyncio
-async def test_logout_reports_clean_logout_without_warnings(tmp_path: Path) -> None:
-    service, _callback, _oauth, catalog, store, _model_catalog = await _oauth_service(tmp_path)
+async def test_revoke_failure_logs_warning_without_token_content(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    service, _callback, oauth, _catalog, store, _model_catalog = await _oauth_service(tmp_path)
     store.commit_credentials(_stored_credentials(), expected_generation=0)
+    oauth.revoke_error = CodexAuthError(
+        "token_revoke_failed",
+        "Codex authentication could not be revoked remotely.",
+        502,
+    )
 
-    status = await service.logout()
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codex_auth.service"):
+        status = await service.logout()
 
     assert status["connection"] == "disconnected"
-    assert status["logout_warnings"] == []
-    assert catalog.invalidated is True
     assert store.load_credentials() is None
+    warnings = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codex_auth.service"
+        and record.levelno >= logging.WARNING
+    ]
+    assert warnings, "a failed token revocation during logout must be logged"
+    rendered = "\n".join(record.getMessage() for record in warnings)
+    assert "token_revoke_failed" in rendered
+    for secret in ("old-access", "old-refresh", "old-id", "account-123"):
+        assert secret not in rendered
 
 
 @pytest.mark.asyncio
-async def test_catalog_invalidation_failure_is_reported_and_does_not_block_logout(
+async def test_logout_clean_logout_logs_no_warnings(
     tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    service, _callback, _oauth, catalog, store, _model_catalog = await _oauth_service(tmp_path)
+    store.commit_credentials(_stored_credentials(), expected_generation=0)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codex_auth.service"):
+        status = await service.logout()
+
+    assert status["connection"] == "disconnected"
+    assert "logout_warnings" not in status
+    assert catalog.invalidated is True
+    assert store.load_credentials() is None
+    assert [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codex_auth.service"
+        and record.levelno >= logging.WARNING
+    ] == []
+
+
+@pytest.mark.asyncio
+async def test_catalog_invalidation_failure_is_logged_and_does_not_block_logout(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     service, _callback, _oauth, catalog, store, model_catalog = await _oauth_service(tmp_path)
     committed = store.commit_credentials(_stored_credentials(), expected_generation=0)
@@ -1654,13 +1696,25 @@ async def test_catalog_invalidation_failure_is_reported_and_does_not_block_logou
         503,
     )
 
-    status = await service.logout()
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codex_auth.service"):
+        status = await service.logout()
 
     assert status["connection"] == "disconnected"
-    assert status["logout_warnings"] == ["catalog_invalidation_failed"]
+    assert "logout_warnings" not in status
     assert store.current_generation() == committed.generation + 1
     assert store.load_credentials() is None
     assert _selection(model_catalog.load()) == _selection(original)
+    warnings = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codex_auth.service"
+        and record.levelno >= logging.WARNING
+    ]
+    assert warnings, "a failed catalog invalidation during logout must be logged"
+    rendered = "\n".join(record.getMessage() for record in warnings)
+    assert "catalog_invalidation_failed" in rendered
+    for secret in ("old-access", "old-refresh", "old-id", "account-123"):
+        assert secret not in rendered
 
 
 @pytest.mark.asyncio

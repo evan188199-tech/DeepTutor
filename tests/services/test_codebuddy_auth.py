@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from types import SimpleNamespace
 
 import pytest
@@ -162,54 +163,84 @@ async def test_logout_explains_that_an_ide_session_ends_in_the_ide(tmp_path, mon
 
 
 @pytest.mark.asyncio
-async def test_cancel_login_reports_flow_cancel_failure(tmp_path, monkeypatch) -> None:
+async def test_cancel_login_logs_flow_cancel_failure(
+    tmp_path, monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
     monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
     flow = FailingCancelFlow("https://codebuddy.example/login")
     monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
     service = CodeBuddyAuthService()
 
     await service.start_login()
-    status = await service.cancel_login()
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.cancel_login()
 
     assert flow.cancel_attempted is True
     assert status["connection"] == "disconnected"
     assert status["operation_state"] == "cancelled"
-    assert status["error_code"] == "flow_cancel_failed"
+    assert status["error_code"] is None
     assert service._flow is None
     assert service._task is None
+    warnings = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codebuddy_auth" and record.levelno >= logging.WARNING
+    ]
+    assert warnings, "a failed login flow cancellation must be logged"
+    rendered = "\n".join(record.getMessage() for record in warnings)
+    assert "RuntimeError" in rendered
 
 
 @pytest.mark.asyncio
-async def test_logout_reports_flow_cancel_failure(tmp_path, monkeypatch) -> None:
+async def test_logout_logs_flow_cancel_failure(
+    tmp_path, monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
     monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
     flow = FailingCancelFlow("https://codebuddy.example/login")
     monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
     service = CodeBuddyAuthService()
 
     await service.start_login()
-    status = await service.logout()
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.logout()
 
     assert flow.cancel_attempted is True
     assert status["connection"] == "disconnected"
     assert status["operation_state"] is None
-    assert status["error_code"] == "flow_cancel_failed"
+    assert status["error_code"] is None
     assert service._flow is None
     assert service._task is None
+    warnings = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codebuddy_auth" and record.levelno >= logging.WARNING
+    ]
+    assert warnings, "a failed login flow cancellation during logout must be logged"
+    rendered = "\n".join(record.getMessage() for record in warnings)
+    assert "RuntimeError" in rendered
 
 
 @pytest.mark.asyncio
-async def test_logout_without_flow_cancel_failure_stays_clean(tmp_path, monkeypatch) -> None:
+async def test_logout_without_flow_cancel_failure_stays_clean(
+    tmp_path, monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
     monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
     flow = FakeFlow("https://codebuddy.example/login")
     monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
     service = CodeBuddyAuthService()
 
     await service.start_login()
-    status = await service.logout()
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.logout()
 
     assert flow.cancelled is True
     assert status["connection"] == "disconnected"
     assert status["error_code"] is None
+    assert [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.codebuddy_auth" and record.levelno >= logging.WARNING
+    ] == []
 
 
 def _write_ide_session(tmp_path, monkeypatch) -> None:
