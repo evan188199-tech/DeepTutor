@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/Shared/DeepTutor/dt-agen440-chat-search-wt
+configfile: pyproject.toml
+plugins: cov-7.1.0, devtools-0.12.2, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 13 items
+
+tests/services/session/test_history_search.py ...                        [ 23%]
+tests/api/test_session_search.py .                                       [ 30%]
+tests/services/workspace/test_navigation.py .........                    [100%]
+
+============================== 13 passed in 1.08s ==============================

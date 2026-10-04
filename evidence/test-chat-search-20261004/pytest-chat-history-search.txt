@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/Shared/DeepTutor/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/Shared/DeepTutor/dt-agen440-chat-search-wt
+configfile: pyproject.toml
+plugins: cov-7.1.0, devtools-0.12.2, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 10 items
+
+tests/services/session/test_chat_history_search.py::test_query_construction_trims_whitespace_and_bounds_length PASSED [ 10%]
+tests/services/session/test_chat_history_search.py::test_exact_substring_in_earlier_user_message_is_found PASSED [ 20%]
+tests/services/session/test_chat_history_search.py::test_exact_substring_in_assistant_reply_wins_as_latest_visible_match PASSED [ 30%]
+tests/services/session/test_chat_history_search.py::test_case_differences_do_not_block_matches PASSED [ 40%]
+tests/services/session/test_chat_history_search.py::test_outer_whitespace_is_trimmed_and_matching_stays_literal PASSED [ 50%]
+tests/services/session/test_chat_history_search.py::test_empty_or_blank_queries_return_empty_results PASSED [ 60%]
+tests/services/session/test_chat_history_search.py::test_term_without_any_hit_reports_an_empty_page PASSED [ 70%]
+tests/services/session/test_chat_history_search.py::test_match_excerpt_windows_around_the_hit_case_insensitively PASSED [ 80%]
+tests/services/session/test_chat_history_search.py::test_search_endpoint_serves_transcript_matches_and_rejects_blank_queries PASSED [ 90%]
+tests/services/session/test_chat_history_search.py::test_all_workspaces_entry_finds_message_text_in_other_workspaces PASSED [100%]
+
+============================== 10 passed in 0.39s ==============================
