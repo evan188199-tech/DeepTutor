@@ -2,14 +2,18 @@
 
 ``deeptutor/api/routers/knowledge.py`` is the data-integrity entry point for
 knowledge bases; the happy paths were covered but the guard rails were not.
-Three contracts are locked here, matching the coverage-gap evidence card:
+Four contracts are locked here, matching the coverage-gap evidence card:
 
 1. a rejected upload batch fails with 4xx and leaves nothing behind — no
    staged files under ``raw/``, no queued task, no status flip;
 2. task IDs are idempotent per logical task key (a retried dispatch reuses
    its ID) while two accepted uploads never share one;
 3. deleting a raw document (or a whole KB) keeps the file listing, the
-   indexed-hash metadata and the disk consistent.
+   indexed-hash metadata and the disk consistent;
+4. the entry bounds type and size but not content: plain files with an
+   accepted suffix (empty, fake-suffix, truncated) pass through verbatim,
+   while ``.zip`` payloads are expanded at the entry and unreadable,
+   empty or truncated archives are rejected with a readable error.
 
 No product code is changed by this file.
 """
@@ -20,6 +24,7 @@ import importlib
 import io
 import json
 from pathlib import Path
+import zipfile
 
 import pytest
 
@@ -141,7 +146,11 @@ def test_upload_rejects_unsupported_extension_without_side_effects(
         )
 
     assert response.status_code == 400
-    assert "unsupported file type" in response.json()["detail"].lower()
+    detail = response.json()["detail"]
+    assert "unsupported file type" in detail.lower()
+    # Readable: names the offending file and states what is allowed.
+    assert "payload.unsupported" in detail
+    assert "Allowed types" in detail
     # Nothing staged on disk, no task dispatched, no status flip.
     assert _staged_files(manager.base_dir / "kb" / "raw") == []
     assert recorder.calls == []
@@ -164,7 +173,11 @@ def test_upload_rejects_oversize_file_without_side_effects(monkeypatch, tmp_path
         )
 
     assert response.status_code == 400
-    assert "too large" in response.json()["detail"].lower()
+    detail = response.json()["detail"]
+    assert "too large" in detail.lower()
+    # Readable: names the original file and states the concrete limit.
+    assert "big.txt" in detail
+    assert "32" in detail
     assert _staged_files(manager.base_dir / "kb" / "raw") == []
     assert recorder.calls == []
     entry = json.loads((manager.base_dir / "kb_config.json").read_text(encoding="utf-8"))[
@@ -245,6 +258,145 @@ def test_mid_write_size_limit_removes_the_partial_file(monkeypatch, tmp_path: Pa
     assert exc_info.value.status_code == 400
     assert "exceeds maximum size" in exc_info.value.detail.lower()
     assert not any(raw.rglob("*"))  # the partial file was unlinked, not staged
+
+
+# ---------------------------------------------------------------------------
+# 1b. Entry input boundaries: empty, fake-suffix and truncated payloads
+# ---------------------------------------------------------------------------
+
+_MINIMAL_PDF = (
+    b"%PDF-1.4\n"
+    b"1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+    b"2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+    b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]>>endobj\n"
+    b"xref\n0 4\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n9\n%%EOF\n"
+)
+
+
+def _zip_bytes() -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr("notes.txt", "hello")
+    return buf.getvalue()
+
+
+def test_upload_entry_accepts_empty_text_file(monkeypatch, tmp_path: Path) -> None:
+    """A 0-byte file passes the entry; emptiness is a parsing-stage concern.
+
+    Locks the current contract: the entry bounds type and size, it does not
+    inspect content.
+    """
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+
+    with TestClient(_build_app()) as client:
+        response = client.post("/api/knowledge-bases/kb/upload", files=_upload("empty.txt", b""))
+
+    assert response.status_code == 200
+    assert response.json()["files"] == ["empty.txt"]
+    staged = _staged_files(kb_dir / "raw")
+    assert [path.name for path in staged] == ["empty.txt"]
+    assert staged[0].stat().st_size == 0
+    assert len(recorder.calls) == 1
+    assert recorder.calls[0]["uploaded_file_paths"] == [str(kb_dir / "raw" / "empty.txt")]
+
+
+def test_upload_rejects_empty_zip_archive_with_readable_error(monkeypatch, tmp_path: Path) -> None:
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+
+    with TestClient(_build_app()) as client:
+        response = client.post("/api/knowledge-bases/kb/upload", files=_upload("empty.zip", b""))
+
+    assert response.status_code == 400
+    detail = response.json()["detail"]
+    assert "empty.zip" in detail
+    assert "not a valid zip archive" in detail
+    assert _staged_files(kb_dir / "raw") == []
+    assert recorder.calls == []
+
+
+def test_upload_entry_defers_content_checks_for_fake_pdf(monkeypatch, tmp_path: Path) -> None:
+    """A ``.pdf`` whose bytes are plain text is accepted at the entry.
+
+    Locks the current contract: the entry validates the suffix, not the
+    content; a payload that no PDF parser can open is rejected later, by the
+    parsing stage.
+    """
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+    payload = b"plain text pretending to be a pdf, not a pdf at all"
+
+    with TestClient(_build_app()) as client:
+        response = client.post(
+            "/api/knowledge-bases/kb/upload", files=_upload("report.pdf", payload)
+        )
+
+    assert response.status_code == 200
+    assert response.json()["files"] == ["report.pdf"]
+    staged = _staged_files(kb_dir / "raw")
+    assert [path.name for path in staged] == ["report.pdf"]
+    assert staged[0].read_bytes() == payload
+    assert len(recorder.calls) == 1
+
+
+def test_upload_rejects_fake_zip_content_with_readable_error(monkeypatch, tmp_path: Path) -> None:
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+
+    with TestClient(_build_app()) as client:
+        response = client.post(
+            "/api/knowledge-bases/kb/upload", files=_upload("bundle.zip", b"definitely not a zip")
+        )
+
+    assert response.status_code == 400
+    detail = response.json()["detail"]
+    assert "bundle.zip" in detail
+    assert "not a valid zip archive" in detail
+    assert _staged_files(kb_dir / "raw") == []
+    assert recorder.calls == []
+
+
+def test_upload_entry_defers_content_checks_for_truncated_pdf(monkeypatch, tmp_path: Path) -> None:
+    """A truncated PDF is written verbatim; the entry does not sniff content."""
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+    payload = _MINIMAL_PDF[: len(_MINIMAL_PDF) // 2]
+
+    with TestClient(_build_app()) as client:
+        response = client.post(
+            "/api/knowledge-bases/kb/upload", files=_upload("truncated.pdf", payload)
+        )
+
+    assert response.status_code == 200
+    assert response.json()["files"] == ["truncated.pdf"]
+    staged = _staged_files(kb_dir / "raw")
+    assert [path.name for path in staged] == ["truncated.pdf"]
+    assert staged[0].read_bytes() == payload
+    assert len(recorder.calls) == 1
+
+
+def test_upload_rejects_truncated_zip_with_readable_error(monkeypatch, tmp_path: Path) -> None:
+    """A zip cut before its central directory cannot pass archive expansion."""
+    manager = _real_manager(monkeypatch, tmp_path)
+    kb_dir = _seed_kb(manager, files={})
+    recorder = _install_dispatch_recorder(monkeypatch)
+    payload = _zip_bytes()[: len(_zip_bytes()) // 2]
+
+    with TestClient(_build_app()) as client:
+        response = client.post("/api/knowledge-bases/kb/upload", files=_upload("cut.zip", payload))
+
+    assert response.status_code == 400
+    detail = response.json()["detail"]
+    assert "cut.zip" in detail
+    assert "not a valid zip archive" in detail
+    assert _staged_files(kb_dir / "raw") == []
+    assert recorder.calls == []
 
 
 # ---------------------------------------------------------------------------
