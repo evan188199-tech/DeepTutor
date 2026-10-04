@@ -1,0 +1,380 @@
+{
+  "scan": "ts-catch-scan",
+  "scope": "web",
+  "total": 41,
+  "counts": {
+    "empty_catch": 3,
+    "noop_catch": 38
+  },
+  "items": [
+    {
+      "file": "web/app/(utility)/courses/[courseId]/page.tsx",
+      "line": 70,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "CourseDetailPage",
+      "statement": "const [nextCourses, nextSessions, nextState] = await Promise.all([ listCourses({ force: true }), listAllSessions({ force: true }), // The aggregate reaches across five subsystems, so one of them being // unavailable must not take the page with it — the tiles below render // their own empty state fro",
+      "context": "  const [deleteOpen, setDeleteOpen] = useState(false);\n  const [menuOpen, setMenuOpen] = useState(false);\n\n  const load = useCallback(async () => {\n    setLoading(true);\n    try {\n      const [nextCourses, nextSessions, nextState] = await Promise.all([\n        listCourses({ force: true }),\n        listAllSessions({ force: true }),\n        // The aggregate reaches across five subsystems, so one of them being\n        // unavailable must not take the page with it — the tiles below render\n        // their own empty state from a null.\n        getCourseState(courseId, { force: true }).catch(() => null),\n      ]);\n      setCourses(nextCourses);\n      setCourse(nextCourses.find((item) => item.id === courseId) ?? null);\n      setSessions(nextSessions);\n      setState(nextState);"
+    },
+    {
+      "file": "web/app/(workspace)/partners/new/page.tsx",
+      "line": 113,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "NewPartnerPage",
+      "statement": "void getToolOptions() .then((options) => { setToolOptions(options); setEnabledTools(options.tools.map((tool) => tool.name)); setBuiltinTools(options.builtin_tools.map((tool) => tool.name)); // MCP starts empty: these tools reach host-side capabilities, so a new // partner gets them only by an explic",
+      "context": "        setLLMLoading(false);\n      }\n    })();\n    void getToolOptions()\n      .then((options) => {\n        setToolOptions(options);\n        setEnabledTools(options.tools.map((tool) => tool.name));\n        setBuiltinTools(options.builtin_tools.map((tool) => tool.name));\n        // MCP starts empty: these tools reach host-side capabilities, so a new\n        // partner gets them only by an explicit pick here.\n        setMcpTools([]);\n      })\n      .catch(() => {});\n  }, []);\n\n  const canContinue = step !== \"identity\" || Boolean(name.trim());\n\n  const goNext = () => {"
+    },
+    {
+      "file": "web/components/chat/BookReferencePicker.tsx",
+      "line": 106,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "BookReferencePicker",
+      "statement": "void bookApi .get(activeBookId) .then((detail) => { if (!mounted) return; setDetails((prev) => ({ ...prev, [activeBookId]: detail })); }) .catch(() => undefined)",
+      "context": "  useEffect(() => {\n    if (!open || !activeBookId || details[activeBookId]) return;\n    let mounted = true;\n    // Show detail loading before the async book lookup resolves.\n    // eslint-disable-next-line react-hooks/set-state-in-effect\n    setLoadingDetail(true);\n    void bookApi\n      .get(activeBookId)\n      .then((detail) => {\n        if (!mounted) return;\n        setDetails((prev) => ({ ...prev, [activeBookId]: detail }));\n      })\n      .catch(() => undefined)\n      .finally(() => {\n        if (mounted) setLoadingDetail(false);\n      });\n    return () => {\n      mounted = false;"
+    },
+    {
+      "file": "web/components/chat/home/ChatComposer.tsx",
+      "line": 545,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "if",
+      "statement": "void restore .then((draft) => { if (!alive || restoredDraftRef.current) return; restoredDraftRef.current = true; if (!draft) return; const current = inputHandleRef.current?.getValue() || \"\"; inputHandleRef.current?.setValue( current ? `${draft.text}\\n${current}` : draft.text, ); const files = draft.",
+      "context": "          const files = draft.attachments\n            .filter((item) => item.base64)\n            .map((item) => {\n              const bytes = Uint8Array.from(atob(item.base64!), (char) =>\n                char.charCodeAt(0),\n              );\n              return new File([bytes], item.filename, {\n                type: item.mimeType || \"application/octet-stream\",\n              });\n            });\n          if (files.length) addDraftFilesRef.current(files);\n        })\n        .catch(() => {});\n    }\n    const save = (event: Event) => {\n      (event as CustomEvent<Promise<void>[]>).detail.push(\n        restore.then(() =>\n          saveWorkspaceDraft({"
+    },
+    {
+      "file": "web/components/chat/home/ChatComposer.tsx",
+      "line": 658,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "restoreFocus",
+      "statement": "void saveWorkspaceDraft({ text: \"\", attachments: [] }).catch(() => {});",
+      "context": "\n  // Functional-update form keeps `handleInputChange` identity stable across\n  // every keystroke (no `hasContent` in deps), so the memoized ComposerInput\n  // doesn't get re-rendered just because we observed a content-empty toggle.\n  const handleInputChange = useCallback((val: string) => {\n    const next = !!val.trim();\n    setHasContent((prev) => (prev === next ? prev : next));\n  }, []);\n\n  const doSend = useCallback(\n    (content: string) => {\n      onSend(content);\n      void saveWorkspaceDraft({ text: \"\", attachments: [] }).catch(() => {});\n      setHasContent(false);\n      inputHandleRef.current?.clear();\n      // Sending can move focus to the button or rerender the empty-state\n      // composer into the conversation layout. Restore it after that update\n      // so the user can keep typing, including after switching back to the tab."
+    },
+    {
+      "file": "web/components/chat/home/ConsultationTabBody.tsx",
+      "line": 153,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "LegacyPartnerConsultation",
+      "statement": "void getPartnerConsultationSession(sessionId, name).then(value => { if (active) setIdentity(value) }).catch(() => {})",
+      "context": "    </>\n  )\n}\n\nfunction LegacyPartnerConsultation({ events, sessionId }: { events: StreamEvent[]; sessionId: string | null }) {\n  const name = String(events.find(event => event.metadata?.subagent_name)?.metadata?.subagent_name || '')\n  const [identity, setIdentity] = useState<{ partner_id: string; session_key: string } | null>(null)\n  useEffect(() => {\n    if (!sessionId || !name) return\n    let active = true\n    void getPartnerConsultationSession(sessionId, name).then(value => {\n      if (active) setIdentity(value)\n    }).catch(() => {})\n    return () => { active = false }\n  }, [sessionId, name])\n  return identity ? <PartnerConsultationBody partnerId={identity.partner_id} sessionKey={identity.session_key} /> : <PartnerConsultationPending events={events} />\n}"
+    },
+    {
+      "file": "web/components/chat/home/SessionActivityPanel.tsx",
+      "line": 87,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "useResolvedTitles",
+      "statement": "let cancelled = false; listSessions(200) .then((rows: SessionSummary[]) => { if (cancelled) return; const map = new Map<string, string>(); rows.forEach((r) => map.set(r.session_id, r.title || r.session_id)); setSessions(map); }) .catch(() => {});",
+      "context": "  const needsBooks = activity.space.bookIds.length > 0;\n\n  useEffect(() => {\n    if (!open || !needsSessions || sessions.size > 0) return;\n    let cancelled = false;\n    listSessions(200)\n      .then((rows: SessionSummary[]) => {\n        if (cancelled) return;\n        const map = new Map<string, string>();\n        rows.forEach((r) => map.set(r.session_id, r.title || r.session_id));\n        setSessions(map);\n      })\n      .catch(() => {});\n    return () => {\n      cancelled = true;\n    };\n  }, [open, needsSessions, sessions.size]);\n"
+    },
+    {
+      "file": "web/components/chat/home/SessionActivityPanel.tsx",
+      "line": 103,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "useResolvedTitles",
+      "statement": "let cancelled = false; listNotebooks() .then((rows: NotebookSummary[]) => { if (cancelled) return; const map = new Map<string, string>(); rows.forEach((r) => map.set(r.id, r.name || r.id)); setNotebooks(map); }) .catch(() => {});",
+      "context": "  }, [open, needsSessions, sessions.size]);\n\n  useEffect(() => {\n    if (!open || !needsNotebooks || notebooks.size > 0) return;\n    let cancelled = false;\n    listNotebooks()\n      .then((rows: NotebookSummary[]) => {\n        if (cancelled) return;\n        const map = new Map<string, string>();\n        rows.forEach((r) => map.set(r.id, r.name || r.id));\n        setNotebooks(map);\n      })\n      .catch(() => {});\n    return () => {\n      cancelled = true;\n    };\n  }, [open, needsNotebooks, notebooks.size]);\n"
+    },
+    {
+      "file": "web/components/chat/home/SessionActivityPanel.tsx",
+      "line": 120,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "useResolvedTitles",
+      "statement": "let cancelled = false; bookApi .list() .then(({ books: rows }: { books: Book[] }) => { if (cancelled) return; const map = new Map<string, string>(); rows.forEach((r) => map.set(r.id, r.title || r.id)); setBooks(map); }) .catch(() => {});",
+      "context": "\n  useEffect(() => {\n    if (!open || !needsBooks || books.size > 0) return;\n    let cancelled = false;\n    bookApi\n      .list()\n      .then(({ books: rows }: { books: Book[] }) => {\n        if (cancelled) return;\n        const map = new Map<string, string>();\n        rows.forEach((r) => map.set(r.id, r.title || r.id));\n        setBooks(map);\n      })\n      .catch(() => {});\n    return () => {\n      cancelled = true;\n    };\n  }, [open, needsBooks, books.size]);\n"
+    },
+    {
+      "file": "web/components/chat/home/StandaloneComposer.tsx",
+      "line": 615,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "if",
+      "statement": "void getSubagentSettings() .then((settings) => { if (!cancelled) setSubagentBudget(settings.consult_budget); }) .catch(() => undefined);",
+      "context": "  // the next turn. Null until the setting loads, which is also what \"no agent\n  // selected\" looks like — neither case has a budget to send.\n  const [subagentBudget, setSubagentBudget] = useState<number | null>(null);\n  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);\n  const [selectedPartnerGroup, setSelectedPartnerGroup] = useState<string | null>(null);\n\n  useEffect(() => {\n    let cancelled = false;\n    void getSubagentSettings()\n      .then((settings) => {\n        if (!cancelled) setSubagentBudget(settings.consult_budget);\n      })\n      .catch(() => undefined);\n    return () => {\n      cancelled = true;\n    };\n  }, []);\n"
+    },
+    {
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 198,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "if",
+      "statement": "void apiFetch( apiUrl(`/api/knowledge-bases/${encodeURIComponent(explicitSelection)}?resource_library=true`), ) .then((response) => response.ok ? response.json() : null) .then((detail: { id?: string } | null) => { if (!cancelled && detail?.id && kbs.some((kb) => knowledgeBaseRef(kb) === detail.id)) ",
+      "context": "      kbs.some((kb) => knowledgeBaseRef(kb) === explicitSelection || kb.name === explicitSelection)\n    ) return;\n    let cancelled = false;\n    void apiFetch(\n      apiUrl(`/api/knowledge-bases/${encodeURIComponent(explicitSelection)}?resource_library=true`),\n    )\n      .then((response) => response.ok ? response.json() : null)\n      .then((detail: { id?: string } | null) => {\n        if (!cancelled && detail?.id && kbs.some((kb) => knowledgeBaseRef(kb) === detail.id)) {\n          setExplicitSelection(detail.id);\n        }\n      })\n      .catch(() => undefined);\n    return () => { cancelled = true; };\n  }, [explicitSelection, kbs, loading]);\n\n  // The effective engine selection: respect the pick if it still exists.\n  const selectedProvider = useMemo("
+    },
+    {
+      "file": "web/components/partners/PartnerComposer.tsx",
+      "line": 143,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "if",
+      "statement": "void getPartnerCommands() .then((next) => { if (!cancelled) setCommands(next); }) .catch(() => {});",
+      "context": "    restoreFocusAfterSendRef.current = false;\n    focusTextarea();\n  }, [disabled, focusTextarea, streaming]);\n\n  // Slash commands (same 5 the IM channels expose) — fetched once; the palette\n  // is partner-independent so no id is needed.\n  useEffect(() => {\n    let cancelled = false;\n    void getPartnerCommands()\n      .then((next) => {\n        if (!cancelled) setCommands(next);\n      })\n      .catch(() => {});\n    return () => {\n      cancelled = true;\n    };\n  }, []);\n"
+    },
+    {
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 136,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "PartnerConfigure",
+      "statement": "void getPartnerAssets(partnerId) .then(setAssets) .catch(() => {});",
+      "context": "  });\n  const [addingAssets, setAddingAssets] = useState(false);\n\n  useEffect(() => {\n    void getPartnerSoul(partnerId)\n      .then((content) => {\n        setSoul(content);\n        setSoulLoaded(true);\n      })\n      .catch(() => setSoulLoaded(true));\n    void getPartnerAssets(partnerId)\n      .then(setAssets)\n      .catch(() => {});\n    void (async () => {\n      try {\n        const payload = await listLLMOptions();\n        setLLMOptions(payload.options);\n        setActiveLLMDefault(payload.active);"
+    },
+    {
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 164,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "<top-level>",
+      "statement": "void getToolOptions() .then((options) => { setToolOptions(options); setEnabledTools( partner.enabled_tools ?? options.tools.map((tool) => tool.name), ); setBuiltinTools( partner.builtin_tools ?? options.builtin_tools.map((tool) => tool.name), ); // MCP is deny-by-default. A nullish value must not ma",
+      "context": "        setEnabledTools(\n          partner.enabled_tools ?? options.tools.map((tool) => tool.name),\n        );\n        setBuiltinTools(\n          partner.builtin_tools ??\n            options.builtin_tools.map((tool) => tool.name),\n        );\n        // MCP is deny-by-default. A nullish value must not materialise as\n        // \"all selected\": the picker hands back exactly what is checked, so\n        // that fallback would re-grant every configured MCP tool on save.\n        setMcpTools(partner.mcp_tools ?? []);\n      })\n      .catch(() => {});\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [partnerId]);\n\n  const saveWorkspace = async (workspaceId: string) => {\n    setSavingWorkspace(true);"
+    },
+    {
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "line": 411,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "anchor",
+      "statement": "const [module, response, position] = await Promise.all([ import(\"epubjs\"), apiFetch(renderMaterialUrl(materialId), { cache: \"no-store\" }), getReadingPosition(materialId).catch(() => null),",
+      "context": "        event.preventDefault();\n        window.open(href, \"_blank\", \"noopener,noreferrer\");\n      });\n    };\n\n    void (async () => {\n      try {\n        setLoading(true);\n        setLoadError(\"\");\n        const [module, response, position] = await Promise.all([\n          import(\"epubjs\"),\n          apiFetch(renderMaterialUrl(materialId), { cache: \"no-store\" }),\n          getReadingPosition(materialId).catch(() => null),\n        ]);\n        if (!response.ok) throw new Error(t(\"Could not load this section.\"));\n        const bytes = await response.arrayBuffer();\n        if (cancelled) return;\n        const createBook = module.default as unknown as ("
+    },
+    {
+      "file": "web/components/reading/ReadingActionsProvider.tsx",
+      "line": 80,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "ReadingActionsProvider",
+      "statement": "const profile = await getOwnLearnerProfile().catch(() => null);",
+      "context": "      });\n    return () => {\n      active = false;\n    };\n  }, []);\n\n  useEffect(() => {\n    let active = true;\n    void fetchAuthStatus().then(async (status) => {\n      const learnerMode =\n        status?.preset === \"learner\" || Boolean(status?.learning_policy);\n      if (!learnerMode) return;\n      const profile = await getOwnLearnerProfile().catch(() => null);\n      if (active) {\n        setAgeMode(\n          resolveReadingAgeMode({\n            learnerMode,\n            profileAge: profile?.age,"
+    },
+    {
+      "file": "web/components/reading/ReadingExtensionBar.tsx",
+      "line": 121,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "if",
+      "statement": "const profile = await getOwnLearnerProfile().catch(() => null);",
+      "context": "      active = false;\n    };\n  }, [onError]);\n\n  useEffect(() => {\n    let active = true;\n    void fetchAuthStatus().then(async (status) => {\n      const learnerMode = status?.preset === \"learner\" || Boolean(status?.learning_policy);\n      if (!learnerMode) {\n        if (active) setAgeMode(\"default\");\n        return;\n      }\n      const profile = await getOwnLearnerProfile().catch(() => null);\n      if (active) {\n        setAgeMode(\n          resolveReadingAgeMode({\n            learnerMode,\n            profileAge: profile?.age,"
+    },
+    {
+      "file": "web/components/reading/library/AddMaterialsDialog.tsx",
+      "line": 714,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "LibraryPicker",
+      "statement": "void listReadingLibraryMaterials() .then((payload) => { if (alive) setRows(payload.materials); }) .catch(() => undefined)",
+      "context": "}) {\n  const { t } = useTranslation();\n  const [query, setQuery] = useState(\"\");\n  const [rows, setRows] = useState<ReadingLibraryMaterial[]>([]);\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    let alive = true;\n    void listReadingLibraryMaterials()\n      .then((payload) => {\n        if (alive) setRows(payload.materials);\n      })\n      .catch(() => undefined)\n      .finally(() => {\n        if (alive) setLoading(false);\n      });\n    return () => {\n      alive = false;"
+    },
+    {
+      "file": "web/components/reading/library/MaterialLibrary.tsx",
+      "line": 482,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "<top-level>",
+      "statement": "void retryReadingMaterial(material.material_id, material.content_workspace_id ?? \"\") .then(onRetried) .catch(() => undefined);",
+      "context": "              {t(\"Add to a collection\")}\n            </button>\n          )}\n        </span>\n\n        <span className=\"text-right text-[10.5px] text-[var(--muted-foreground)]\">\n          {failed ? (\n            <button\n              type=\"button\"\n              onClick={() => {\n                void retryReadingMaterial(material.material_id, material.content_workspace_id ?? \"\")\n                  .then(onRetried)\n                  .catch(() => undefined);\n              }}\n              className=\"font-semibold text-[var(--primary)]\"\n            >\n              {t(\"Retry\")}\n            </button>"
+    },
+    {
+      "file": "web/components/reading/library/ReadingLibrary.tsx",
+      "line": 512,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "UnsettledRow",
+      "statement": "void retryReadingMaterial(material.material_id, material.content_workspace_id ?? \"\") .then(onRetried) .catch(() => undefined)",
+      "context": "            {material.progress}%\n          </span>\n        </>\n      )}\n      {failed && (\n        <button\n          type=\"button\"\n          disabled={retrying}\n          onClick={() => {\n            setRetrying(true);\n            void retryReadingMaterial(material.material_id, material.content_workspace_id ?? \"\")\n              .then(onRetried)\n              .catch(() => undefined)\n              .finally(() => setRetrying(false));\n          }}\n          className=\"shrink-0 text-[11px] font-semibold text-[var(--primary)] disabled:opacity-50\"\n        >\n          {retrying ? t(\"Retrying…\") : t(\"Retry\")}"
+    },
+    {
+      "file": "web/components/reading/workspace/MediaReadingStage.tsx",
+      "line": 142,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "if",
+      "statement": "void document.exitFullscreen().catch(() => undefined);",
+      "context": "  useEffect(() => {\n    const onFullscreenChange = () =>\n      setIsFullscreen(document.fullscreenElement === mediaStageRef.current);\n    document.addEventListener(\"fullscreenchange\", onFullscreenChange);\n    return () =>\n      document.removeEventListener(\"fullscreenchange\", onFullscreenChange);\n  }, []);\n\n  const toggleFullscreen = useCallback(() => {\n    const node = mediaStageRef.current;\n    if (!node) return;\n    if (document.fullscreenElement === node) {\n      void document.exitFullscreen().catch(() => undefined);\n      return;\n    }\n    const request = node.requestFullscreen();\n    if (request) {\n      request.catch(() =>"
+    },
+    {
+      "file": "web/components/reading/workspace/MediaReadingStage.tsx",
+      "line": 240,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "for",
+      "statement": "void saveReadingPosition(material.material_id, { locator, source_anchor: `#t=${Math.floor(current.time)}`, percentage: current.duration > 0 ? Math.min(1, Math.max(0, current.time / current.duration)) : 0, }).catch(() => undefined);",
+      "context": "    if (current.time < 0 || !refs.length) return;\n    const locator = Math.max(\n      1,\n      activeLocatorRef.current || locatorAtTime(current.time),\n    );\n    void saveReadingPosition(material.material_id, {\n      locator,\n      source_anchor: `#t=${Math.floor(current.time)}`,\n      percentage:\n        current.duration > 0\n          ? Math.min(1, Math.max(0, current.time / current.duration))\n          : 0,\n    }).catch(() => undefined);\n    lastSavedRef.current = current.time;\n  }, [locatorAtTime, material.material_id, refs.length]);\n\n  const handleTime = useCallback(\n    (nextTime: number, nextDuration: number) => {"
+    },
+    {
+      "file": "web/components/reading/workspace/MediaReadingStage.tsx",
+      "line": 328,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "if",
+      "statement": "void getReadingPosition(material.material_id) .then((position) => { if (cancelled) return; const savedTime = timeFromSourceHref(position.source_anchor); const entry = material.source_kind === \"bilibili\" ? parseBilibiliSource(material.source_url)?.startSeconds || 0 : youtubeEntryTime(material.source_",
+      "context": "            : youtubeEntryTime(material.source_url);\n        const nextStart = savedTime ?? entry;\n        setStartSeconds(nextStart);\n        if (\n          position.locator > 0 &&\n          refs.some((row) => row.locator === position.locator)\n        ) {\n          activeLocatorRef.current = position.locator;\n          notifyLocator(position.locator);\n        }\n        controllerRef.current?.seek(nextStart);\n      })\n      .catch(() => undefined);\n    return () => {\n      cancelled = true;\n    };\n  }, [\n    material.material_id,"
+    },
+    {
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 453,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "detail",
+      "statement": "void listReadingConversations(workspaceId) .then(setConversations) .catch(() => {});",
+      "context": "  // named. So the address bar is corrected in place and `usePathname` — which\n  // does follow the native API — keeps `sessionIdParam` honest for refreshes,\n  // links and the back button.\n  useEffect(() => {\n    if (!state.sessionId || sessionIdParam) return;\n    window.history.replaceState(\n      null,\n      \"\",\n      readingSessionRoute(workspaceId, state.sessionId),\n    );\n    void listReadingConversations(workspaceId)\n      .then(setConversations)\n      .catch(() => {});\n  }, [sessionIdParam, state.sessionId, workspaceId]);\n\n  const organizeNotes = useCallback(async () => {\n    if (!workspace) return;\n    try {"
+    },
+    {
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 279,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "<top-level>",
+      "statement": "void invidiousAccount('status') .then(setAccount) .catch(() => undefined)",
+      "context": "            ))}\n          </nav>\n        </div>\n        <div className=\"mt-5\">\n          {error && (\n            <LearningErrorState\n              message={error}\n              onRetry={() => {\n                setReload(value => value + 1)\n                if (!account)\n                  void invidiousAccount('status')\n                    .then(setAccount)\n                    .catch(() => undefined)\n              }}\n            />\n          )}\n          {view !== 'search' && account && !account.connected ? (\n            <div className=\"watching-browser-empty\">"
+    },
+    {
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 108,
+      "kind": "noop_catch",
+      "matched": ".catch(\n      () => undefined\n    )",
+      "enclosing": "WatchingPane",
+      "statement": "void saveVideoProgress(material.material_id, current.time, current.duration).catch(",
+      "context": "  const stateRef = useRef({ time: 0, duration: 0 })\n  activeMaterialIdRef.current = materialId\n\n  useEffect(() => {\n    setActive(true)\n    return () => setActive(false)\n  }, [setActive])\n\n  const persist = useCallback(() => {\n    if (!material) return\n    const current = stateRef.current\n    if (current.time <= 0) return\n    void saveVideoProgress(material.material_id, current.time, current.duration).catch(\n      () => undefined\n    )\n    lastSavedRef.current = current.time\n  }, [material])\n"
+    },
+    {
+      "file": "web/context/QuizFollowupContext.tsx",
+      "line": 280,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "if",
+      "statement": "void updateNotebookEntry(entryId, { followup_session_id: nextSessionId, }).catch(() => {});",
+      "context": "        if (!nextSessionId) return;\n        updateThread(key, (prev) => ({\n          ...prev,\n          sessionId: nextSessionId,\n          activeTurnId: nextTurnId,\n        }));\n        const runner = runnersRef.current.get(key);\n        if (runner) runner.questionKey = nextSessionId;\n        const entryId = entryIdsRef.current.get(key);\n        if (entryId) {\n          void updateNotebookEntry(entryId, {\n            followup_session_id: nextSessionId,\n          }).catch(() => {});\n        }\n        return;\n      }\n\n      if (event.type === \"done\") {"
+    },
+    {
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 1887,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "<top-level>",
+      "statement": "void getSubagentSettings() .then((settings) => setSubagentBudget(settings.consult_budget)) .catch(() => undefined);",
+      "context": "    () => state.knowledgeBases.find((name) => agentNameSet.has(name)) ?? null,\n    [state.knowledgeBases, agentNameSet],\n  );\n  // How many times DeepTutor may consult the selected agent this turn. Seeded\n  // from the configured default; the composer's stepper overrides it per turn.\n  const [subagentBudget, setSubagentBudget] = useState<number | null>(null);\n  const [selectedPartner, setSelectedPartner] = useState<string | null>(null);\n  const [selectedPartnerGroup, setSelectedPartnerGroup] = useState<string | null>(null);\n\n  useEffect(() => {\n    void getSubagentSettings()\n      .then((settings) => setSubagentBudget(settings.consult_budget))\n      .catch(() => undefined);\n  }, []);\n\n  const handleSend = useCallback(\n    async (content: string) => {\n      // An existing session saves its selector before the next turn starts."
+    },
+    {
+      "file": "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+      "line": 113,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "mutate",
+      "statement": "await load().catch(() => {});",
+      "context": "\n  const mutate = async (id: string, operation: () => Promise<void>) => {\n    if (busy) return;\n    setBusy(id);\n    setError(\"\");\n    try {\n      await operation();\n      await load();\n    } catch {\n      setError(\n        t(\"Some changes could not be completed. Please refresh and try again.\"),\n      );\n      await load().catch(() => {});\n    } finally {\n      notifySessionsChanged();\n      setBusy(null);\n    }\n  };"
+    },
+    {
+      "file": "web/features/settings/sections/DataMigrationSettingsSection.tsx",
+      "line": 113,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "statusLabel",
+      "statement": "const timer = window.setInterval(() => { request<{ operations: Operation[] }>('/operations') .then(value => { if (alive) setOperations(value.operations) }) .catch(() => {})",
+      "context": "    include_historical: historical,\n  }\n  useEffect(() => {\n    setPreview(null)\n  }, [source, target, selected])\n  useEffect(() => {\n    let alive = true\n    const timer = window.setInterval(() => {\n      request<{ operations: Operation[] }>('/operations')\n        .then(value => {\n          if (alive) setOperations(value.operations)\n        })\n        .catch(() => {})\n    }, 5000)\n    return () => {\n      alive = false\n      window.clearInterval(timer)\n    }"
+    },
+    {
+      "file": "web/features/settings/sections/DataMigrationSettingsSection.tsx",
+      "line": 136,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "statusLabel",
+      "statement": "let alive = true setDiscovery(null) setSelected([]) setError('') request<Discovery>(`/discover?source_workspace_id=${encodeURIComponent(source)}`) .then(value => { if (alive) setDiscovery(value) }) .catch(err => { if (alive) setError(String(err.message)) }) request<{ operations: Operation[] }>('/ope",
+      "context": "    setError('')\n    request<Discovery>(`/discover?source_workspace_id=${encodeURIComponent(source)}`)\n      .then(value => {\n        if (alive) setDiscovery(value)\n      })\n      .catch(err => {\n        if (alive) setError(String(err.message))\n      })\n    request<{ operations: Operation[] }>('/operations')\n      .then(value => {\n        if (alive) setOperations(value.operations)\n      })\n      .catch(() => {})\n    return () => {\n      alive = false\n    }\n  }, [source])\n  async function run(action: 'preview' | 'migrate' | 'export') {"
+    },
+    {
+      "file": "web/hooks/useVoiceRecorder.ts",
+      "line": 76,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "detail",
+      "statement": "const detail = (await resp.json().catch(() => null)) as {",
+      "context": "        const ext = mimeType.includes(\"ogg\")\n          ? \"ogg\"\n          : mimeType.includes(\"mp4\")\n            ? \"mp4\"\n            : \"webm\";\n        const form = new FormData();\n        form.append(\"file\", blob, `recording.${ext}`);\n        const resp = await apiFetch(apiUrl(\"/api/voice/stt\"), {\n          method: \"POST\",\n          body: form,\n        });\n        if (!resp.ok) {\n          const detail = (await resp.json().catch(() => null)) as {\n            detail?: string;\n          } | null;\n          throw new Error(\n            detail?.detail || `Transcription failed (HTTP ${resp.status}).`,\n          );"
+    },
+    {
+      "file": "web/lib/attachment-limits.ts",
+      "line": 46,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "data",
+      "statement": "const data = (await response.json().catch(() => null)) as {",
+      "context": "// at once; share one fetch and keep the resolved value for the session.\n// Admin edits land on the next full page load, which is fine for a policy\n// that changes rarely.\nlet cached: AttachmentLimits | null = null;\nlet inflight: Promise<AttachmentLimits> | null = null;\n\nfunction loadAttachmentLimits(): Promise<AttachmentLimits> {\n  if (cached) return Promise.resolve(cached);\n  if (!inflight) {\n    inflight = apiFetch(apiUrl(\"/api/settings/chat-attachments\"))\n      .then(async (response) => {\n        if (!response.ok) return DEFAULT_ATTACHMENT_LIMITS;\n        const data = (await response.json().catch(() => null)) as {\n          effective?: { max_file_bytes?: number; max_total_bytes?: number };\n        } | null;\n        const fileBytes = Number(data?.effective?.max_file_bytes);\n        const totalBytes = Number(data?.effective?.max_total_bytes);\n        if (!Number.isFinite(fileBytes) || fileBytes <= 0) {"
+    },
+    {
+      "file": "web/lib/courses-api.ts",
+      "line": 132,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "expectJson",
+      "statement": "const payload = await response.json().catch(() => null);",
+      "context": "}\n\nexport const DEFAULT_COURSE_COLORS = [\n  \"#C65D2E\",\n  \"#3F6F8F\",\n  \"#4F7655\",\n  \"#8A6543\",\n  \"#705B8E\",\n  \"#A04F5F\",\n];\n\nasync function expectJson<T>(response: Response): Promise<T> {\n  const payload = await response.json().catch(() => null);\n  if (!response.ok) {\n    const detail =\n      payload && typeof payload === \"object\"\n        ? String((payload as { detail?: unknown }).detail ?? \"\").trim()\n        : \"\";"
+    },
+    {
+      "file": "web/lib/guardian-api.ts",
+      "line": 57,
+      "kind": "noop_catch",
+      "matched": ".catch(() => null)",
+      "enclosing": "request",
+      "statement": "const data: unknown = await res.json().catch(() => null);",
+      "context": "}\n\nfunction extractDetail(value: unknown): string | null {\n  if (typeof value !== \"object\" || value === null || !(\"detail\" in value)) {\n    return null;\n  }\n  const detail = (value as { detail: unknown }).detail;\n  return typeof detail === \"string\" ? detail : null;\n}\n\nasync function request<T>(path: string, init?: RequestInit): Promise<T> {\n  const res = await apiFetch(apiUrl(path), init);\n  const data: unknown = await res.json().catch(() => null);\n  if (!res.ok) throw new Error(extractDetail(data) ?? \"Request failed\");\n  return data as T;\n}\n\nexport async function listGuardianRelationships(): Promise<"
+    },
+    {
+      "file": "web/lib/iframe-html.ts",
+      "line": 103,
+      "kind": "empty_catch",
+      "matched": "catch (error) {}",
+      "enclosing": "catch",
+      "statement": "} catch (error) {}",
+      "context": " *   - observers post the current body content height so the host can grow and\n *     shrink the iframe instead of retaining an old viewport height.\n */\nconst BRIDGE_SCRIPT =\n  `<script data-dt-bridge>\n(function () {\n  window.sendPrompt = function (text) {\n    try {\n      parent.postMessage({\n        type: \"dt:visualize-prompt\",\n        text: String(text || \"\")\n      }, \"*\");\n    } catch (error) {}\n  };\n\n  function reportHeight() {\n    try {\n      var body = document.body;"
+    },
+    {
+      "file": "web/lib/iframe-html.ts",
+      "line": 121,
+      "kind": "empty_catch",
+      "matched": "catch (error) {}",
+      "enclosing": "catch",
+      "statement": "} catch (error) {}",
+      "context": "      var root = document.documentElement;\n      // root.scrollHeight is at least the iframe viewport height. Once the host\n      // grows that viewport it becomes a historical floor, so body content is\n      // the primary measurement and the root is only a defensive fallback.\n      var height = body && body.scrollHeight > 0\n        ? body.scrollHeight\n        : root.scrollHeight;\n      if (!height || !isFinite(height)) height = root.scrollHeight || 0;\n      parent.postMessage({\n        type: \"dt:visualize-height\",\n        height: height\n      }, \"*\");\n    } catch (error) {}\n  }\n\n  var scheduledFrame = 0;\n  function scheduleHeightReport() {\n    if (scheduledFrame) return;"
+    },
+    {
+      "file": "web/next.config.js",
+      "line": 89,
+      "kind": "empty_catch",
+      "matched": "catch {}",
+      "enclosing": "APP_VERSION",
+      "statement": "} catch {}",
+      "context": "\n// Resolve the build-time application version from the single source of\n// truth at ``deeptutor/__version__.py``. The Python file is parsed with a\n// small regex so the JS build does not need to execute Python.\nconst APP_VERSION = (() => {\n  try {\n    const text = fs.readFileSync(\n      path.resolve(__dirname, \"..\", \"deeptutor\", \"__version__.py\"),\n      \"utf8\",\n    );\n    const match = text.match(/__version__\\s*=\\s*[\"']([^\"']+)[\"']/);\n    if (match) return match[1];\n  } catch {}\n  return \"\";\n})();\n\nconst nextConfig = {\n  // Keep the production build used by `deeptutor start` separate from the"
+    },
+    {
+      "file": "web/tests/chat-reply-language.spec.tsx",
+      "line": 56,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "Harness",
+      "statement": "return ( <> <button onClick={() => void loadSession(\"session-1\")}>Load</button> <button onClick={() => void setReplyLanguageOverride(\"de\").catch(() => undefined)}>Fix German</button>",
+      "context": "  messages: [],\n  preferences: {\n    language: \"zh\",\n    reply_language_override: replyLanguageOverride,\n  },\n});\n\nfunction Harness() {\n  const { state, loadSession, setReplyLanguageOverride, sendMessage } = useChatStateAdapter();\n  return (\n    <>\n      <button onClick={() => void loadSession(\"session-1\")}>Load</button>\n      <button onClick={() => void setReplyLanguageOverride(\"de\").catch(() => undefined)}>Fix German</button>\n      <button onClick={() => void setReplyLanguageOverride(null).catch(() => undefined)}>Use account</button>\n      <button onClick={() => sendMessage(\"Explain this\")}>Send</button>\n      <output data-testid=\"session-language\">\n        {state.sessionId ?? \"draft\"}:{state.replyLanguageOverride ?? \"account\"}:{state.language}\n      </output>"
+    },
+    {
+      "file": "web/tests/chat-reply-language.spec.tsx",
+      "line": 57,
+      "kind": "noop_catch",
+      "matched": ".catch(() => undefined)",
+      "enclosing": "Harness",
+      "statement": "return ( <> <button onClick={() => void loadSession(\"session-1\")}>Load</button> <button onClick={() => void setReplyLanguageOverride(\"de\").catch(() => undefined)}>Fix German</button> <button onClick={() => void setReplyLanguageOverride(null).catch(() => undefined)}>Use account</button>",
+      "context": "  preferences: {\n    language: \"zh\",\n    reply_language_override: replyLanguageOverride,\n  },\n});\n\nfunction Harness() {\n  const { state, loadSession, setReplyLanguageOverride, sendMessage } = useChatStateAdapter();\n  return (\n    <>\n      <button onClick={() => void loadSession(\"session-1\")}>Load</button>\n      <button onClick={() => void setReplyLanguageOverride(\"de\").catch(() => undefined)}>Fix German</button>\n      <button onClick={() => void setReplyLanguageOverride(null).catch(() => undefined)}>Use account</button>\n      <button onClick={() => sendMessage(\"Explain this\")}>Send</button>\n      <output data-testid=\"session-language\">\n        {state.sessionId ?? \"draft\"}:{state.replyLanguageOverride ?? \"account\"}:{state.language}\n      </output>\n    </>"
+    },
+    {
+      "file": "web/tests/e2e/settings-navigation.audit.ts",
+      "line": 557,
+      "kind": "noop_catch",
+      "matched": ".catch(() => {})",
+      "enclosing": "<top-level>",
+      "statement": "await route.fulfill({ json: { status: \"connected\", models: [{ id: \"stale-model\" }] } }).catch(() => {});",
+      "context": "  await expect(page.getByLabel(\"Model ID\", { exact: true })).toHaveValue(\"manual-custom-id\");\n  status = \"connected\";\n  await probe.click();\n  await expect(page.getByRole(\"status\").filter({ hasText: \"0 models available\" })).toBeVisible();\n  await expect(page.getByLabel(\"Model ID\", { exact: true })).toHaveValue(\"manual-custom-id\");\n});\n\ntest(\"a delayed probe cannot attach results to changed credentials or another provider\", async ({ page }) => {\n  const state = await mockSettings(page);\n  let finish: (() => void) | undefined;\n  await page.route(\"**/api/settings/test-provider*\", async route => {\n    await new Promise<void>(resolve => { finish = resolve; });\n    await route.fulfill({ json: { status: \"connected\", models: [{ id: \"stale-model\" }] } }).catch(() => {});\n  });\n  await page.goto(\"/settings/connections?provider=llm:legacy\", { waitUntil: \"domcontentloaded\" });\n  await page.getByRole(\"button\", { name: \"Test provider\", exact: true }).click();\n  await expect.poll(() => Boolean(finish)).toBe(true);\n  await page.getByLabel(\"API key\", { exact: true }).fill(\"changed-key\");"
+    }
+  ]
+}
