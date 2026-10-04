@@ -103,10 +103,7 @@ def test_sanitize_strips_fences_quotes_and_bullets() -> None:
 
 
 def test_sanitize_normalizes_whitespace_and_joins_lines() -> None:
-    assert (
-        mastery_hints._sanitize("  Why   does  it  route?  ", "en")
-        == "Why does it route?"
-    )
+    assert mastery_hints._sanitize("  Why   does  it  route?  ", "en") == "Why does it route?"
     # The transcript tail is collapsed before the newline check, so a
     # multi-line answer survives only when the joined text still ends in "?".
     assert mastery_hints._sanitize(
@@ -397,9 +394,7 @@ async def test_load_transcript_unreadable_session_is_empty(
                 raise broken
             return broken
 
-    monkeypatch.setattr(
-        "deeptutor.services.session.get_session_store", lambda: _BrokenStore()
-    )
+    monkeypatch.setattr("deeptutor.services.session.get_session_store", lambda: _BrokenStore())
 
     assert await mastery_hints._load_transcript("session-1") == ([], "")
 
@@ -443,7 +438,15 @@ async def test_collect_composes_anchor_and_material(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     def load_position(_path_id: str) -> tuple[str, str, str, str, str, str, str]:
-        return ("Networking Basics", "goal", "Routing", "Intent routing", "concept", "learning", "kp-1")
+        return (
+            "Networking Basics",
+            "goal",
+            "Routing",
+            "Intent routing",
+            "concept",
+            "learning",
+            "kp-1",
+        )
 
     async def load_transcript(_session_id: str) -> tuple[list[tuple[str, str]], str]:
         return ([("user", "hello?")], "5")
