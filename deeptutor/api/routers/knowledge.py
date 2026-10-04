@@ -413,6 +413,22 @@ def _safe_join_raw(raw_dir: Path, rel_path: str) -> Path:
     return target
 
 
+def _remove_partial_file(path: Path | None) -> str | None:
+    """Best-effort removal of a written upload file.
+
+    Returns the path string when the file had to be left on disk so callers
+    can surface the leftover location instead of silently swallowing it.
+    """
+    if path is None or not path.exists():
+        return None
+    try:
+        os.unlink(path)
+    except OSError as exc:
+        logger.warning("Failed to remove file '%s': %s", path, exc)
+        return str(path)
+    return None
+
+
 def _save_uploaded_files(
     files: list[UploadFile],
     target_dir: Path,
@@ -524,22 +540,29 @@ def _save_uploaded_files(
                             pb_exc,
                         )
             except Exception as e:
-                if file_path and file_path.exists():
-                    try:
-                        os.unlink(file_path)
-                    except OSError:
-                        pass
+                residual = _remove_partial_file(file_path)
 
                 error_message = f"Validation failed for file '{original_filename}': {format_exception_message(e)}"
+                if residual:
+                    error_message += f"; partial file left on disk: '{residual}'"
                 logger.error(error_message, exc_info=True)
                 raise HTTPException(status_code=400, detail=error_message) from e
-    except Exception:
+    except Exception as exc:
+        residual_paths = []
         for written_path in written_file_paths:
-            if written_path.exists():
-                try:
-                    os.unlink(written_path)
-                except OSError:
-                    pass
+            residual = _remove_partial_file(written_path)
+            if residual:
+                residual_paths.append(residual)
+        if residual_paths:
+            logger.warning(
+                "Could not remove already written files after upload failure, "
+                "manual cleanup may be needed: %s",
+                residual_paths,
+            )
+            if isinstance(exc, HTTPException) and isinstance(exc.detail, str):
+                exc.detail += "; files left on disk: " + ", ".join(
+                    f"'{residual}'" for residual in residual_paths
+                )
         raise
 
     return uploaded_files, uploaded_file_paths
