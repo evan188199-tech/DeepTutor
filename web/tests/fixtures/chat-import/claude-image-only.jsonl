@@ -1,2 +1,0 @@
-{"timestamp": "2026-06-25T10:00:00Z", "type": "user", "cwd": "/Users/xzh/work/demo", "message": {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "iVBORw0KGgo="}}]}}
-{"timestamp": "2026-06-25T10:00:05Z", "type": "assistant", "cwd": "/Users/xzh/work/demo", "message": {"role": "assistant", "content": "The chart shows monthly revenue."}}

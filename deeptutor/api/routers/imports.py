@@ -13,6 +13,8 @@ own Space category. Re-importing the same folder is idempotent (dedup by id).
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 from typing import Any
 
@@ -71,6 +73,25 @@ class ChatHistoryImportRequest(BaseModel):
         return normalized
 
 
+def _fallback_external_id(incoming: ImportedSession, messages: list[ImportedMessage]) -> str:
+    """Deterministic pseudo id for sessions whose ``external_id`` is blank.
+
+    ``external_id`` is only length-validated, so a whitespace-only id reaches
+    the store with no stable key of its own; deriving one from the
+    conversation's stable fields keeps re-import idempotent instead of
+    duplicating the session on every run.
+    """
+    stable = json.dumps(
+        [
+            incoming.title,
+            incoming.created_at,
+            incoming.updated_at,
+            [[m.role, m.content] for m in messages],
+        ]
+    )
+    return hashlib.sha256(stable.encode("utf-8")).hexdigest()[:32]
+
+
 @router.post("/chat-history")
 async def import_chat_history(payload: ChatHistoryImportRequest) -> dict[str, Any]:
     if not payload.sessions:
@@ -99,7 +120,13 @@ async def import_chat_history(payload: ChatHistoryImportRequest) -> dict[str, An
         if len(messages) > _MAX_MESSAGES_PER_SESSION:
             messages = messages[:_MAX_MESSAGES_PER_SESSION]
 
-        session_id = make_imported_session_id(payload.source, incoming.external_id)
+        raw_external_id = (incoming.external_id or "").strip()
+        if raw_external_id:
+            session_id = make_imported_session_id(payload.source, raw_external_id)
+        else:
+            session_id = make_imported_session_id(
+                payload.source, _fallback_external_id(incoming, messages)
+            )
         import_meta: dict[str, Any] = {
             "source": payload.source,
             "source_cwd": incoming.source_cwd,

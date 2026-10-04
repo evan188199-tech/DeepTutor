@@ -222,6 +222,9 @@ export async function parseCodexSession(
     } catch {
       continue;
     }
+    // A row that parses but is not an object (e.g. literal `null`) would
+    // otherwise throw on property access and abort the whole parse.
+    if (!rec || typeof rec !== "object") continue;
     if (rec.type === "session_meta") {
       const p = rec.payload ?? {};
       if (typeof p.cwd === "string") cwd = p.cwd;

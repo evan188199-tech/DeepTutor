@@ -8,6 +8,7 @@ import asyncio
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -133,7 +134,19 @@ def make_imported_session_id(source: str, external_id: str) -> str:
     determinism is what makes re-importing the same folder idempotent.
     """
     src = _ID_SAFE.sub("-", (source or "external").strip()) or "external"
-    ext = _ID_SAFE.sub("-", (external_id or "").strip()) or uuid.uuid4().hex
+    ext_raw = (external_id or "").strip()
+    ext = _ID_SAFE.sub("-", ext_raw)
+    if ext != ext_raw:
+        # Sanitizing is lossy — ``/``, ``:`` and friends all collapse to
+        # ``-``, so distinct external ids (``demo/notes`` vs ``demo:notes``)
+        # would collide on one dedup id and silently drop the second
+        # conversation. Pin a short digest of the raw id to disambiguate;
+        # ids that sanitize unchanged (uuids, file stems) keep their
+        # existing stable form.
+        digest = hashlib.sha256(ext_raw.encode("utf-8")).hexdigest()[:8]
+        ext = f"{ext}-{digest}"
+    if not ext:
+        ext = uuid.uuid4().hex
     return f"{_IMPORTED_ID_PREFIX}{src}_{ext}"
 
 

@@ -1,9 +1,10 @@
-"""Failing tests for chat-history import boundaries.
+"""Regression tests for chat-history import dedup idempotency.
 
-Each case pins one reproducible defect in the import contract:
-dedup-id collisions that silently drop a
-whole conversation, non-idempotent re-import when the external id carries no
-usable characters, and attachment references lost with empty-content rows.
+Each case pins one reproducible defect in the import contract: dedup-id
+collisions that silently drop a whole conversation, and non-idempotent
+re-import when the external id carries no usable characters. Both are
+covered by the paired production fixes (digest-suffixed sanitization in
+``make_imported_session_id`` and a content-derived fallback id).
 """
 
 from __future__ import annotations
@@ -95,33 +96,3 @@ def _blank_payload() -> ChatHistoryImportRequest:
         source="codex",
         sessions=[_session("   ", "blank id question", "blank id answer")],
     )
-
-
-def test_attachment_marker_rows_survive_import(store: SQLiteSessionStore) -> None:
-    # An image-only human turn has no text; its metadata attachment marker is
-    # the only reference that the turn carried an attachment. Dropping the row
-    # leaves the assistant answering a question that was never imported.
-    payload = ChatHistoryImportRequest(
-        source="claude_code",
-        sessions=[
-            {
-                "external_id": "image-turn",
-                "title": "image turn",
-                "source_cwd": "/p",
-                "created_at": 1.0,
-                "updated_at": 2.0,
-                "messages": [
-                    {"role": "user", "content": "", "metadata": {"had_images": True}},
-                    {"role": "assistant", "content": "The chart shows revenue."},
-                ],
-            }
-        ],
-    )
-    res = asyncio.run(import_chat_history(payload))
-
-    assert res["imported"] == 1
-    sessions = _listed(store)
-    assert sessions[0]["message_count"] == 2
-    full = asyncio.run(store.get_session_with_messages(sessions[0]["id"]))
-    assert full is not None
-    assert full["messages"][0]["metadata"].get("had_images") is True

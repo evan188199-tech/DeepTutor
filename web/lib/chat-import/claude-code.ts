@@ -148,6 +148,9 @@ export async function parseClaudeSession(
     } catch {
       continue;
     }
+    // A row that parses but is not an object (e.g. literal `null`) would
+    // otherwise throw on property access and abort the whole parse.
+    if (!rec || typeof rec !== "object") continue;
     if (rec.type === "ai-title" && typeof rec.aiTitle === "string") {
       aiTitle = rec.aiTitle;
       continue;

@@ -34,15 +34,22 @@ export async function readHead(file: File, maxBytes: number): Promise<string> {
   return file.slice(0, maxBytes).text();
 }
 
-/** Parse newline-delimited JSON, skipping blank or unparsable rows (e.g. the
- *  truncated last line from a head read). */
+/** Parse newline-delimited JSON, skipping blank, unparsable, or non-object
+ *  rows (e.g. the truncated last line from a head read, or a literal `null`
+ *  row in a corrupt file — callers treat every row as a record, so a non-
+ *  object value must not leak through and crash them). */
 export function parseJsonl(text: string): unknown[] {
   const out: unknown[] = [];
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
     if (!trimmed) continue;
     try {
-      out.push(JSON.parse(trimmed));
+      const value: unknown = JSON.parse(trimmed);
+      if (typeof value !== "object" || value === null || Array.isArray(value)) {
+        // corrupt row (parses but is not a record) — skip
+        continue;
+      }
+      out.push(value);
     } catch {
       // partial/corrupt row — skip
     }
