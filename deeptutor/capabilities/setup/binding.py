@@ -25,10 +25,13 @@ turn share one filesystem pass, matching how the other capabilities bind.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 import re
 from typing import Any
 
 from deeptutor.core.context import UnifiedContext
+
+logger = logging.getLogger(__name__)
 
 _GAPS_CACHE_KEY = "_setup_gaps"
 _ACTIVE_CACHE_KEY = "_setup_active"
@@ -74,6 +77,9 @@ def setup_gaps() -> tuple[SetupGap, ...]:
     try:
         specs = setting_specs()
     except Exception:  # noqa: BLE001 - advisory only
+        logger.warning(
+            "setup gap report unavailable: settings spec table unreadable", exc_info=True
+        )
         return ()
 
     def _has_selection(key: str) -> bool:
@@ -86,6 +92,9 @@ def setup_gaps() -> tuple[SetupGap, ...]:
                 choice.value == current and choice.available for choice in spec.choices()
             )
         except Exception:  # noqa: BLE001 - treat an unreadable row as configured
+            logger.warning(
+                "setup gap check for %s failed; treating it as configured", key, exc_info=True
+            )
             return True
 
     if not _has_selection("catalog.embedding"):
@@ -133,7 +142,10 @@ def setup_gaps() -> tuple[SetupGap, ...]:
                 )
             )
     except Exception:  # noqa: BLE001 - advisory only
-        pass
+        logger.warning(
+            "setup gap check for document_parsing.engine failed; skipping parsing gap",
+            exc_info=True,
+        )
 
     return tuple(gaps)
 
@@ -205,7 +217,11 @@ def mark_intro_shown() -> None:
 
         set_ui_setting(INTRO_SHOWN_KEY, True)
     except Exception:  # noqa: BLE001 - best effort
-        pass
+        logger.warning(
+            "failed to record %s; the first-run setup offer may repeat",
+            INTRO_SHOWN_KEY,
+            exc_info=True,
+        )
 
 
 def setup_activation(context: UnifiedContext) -> str:
