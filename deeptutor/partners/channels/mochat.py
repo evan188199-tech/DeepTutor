@@ -17,6 +17,7 @@ from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import Base, DeliveryOverrides
+from deeptutor.partners.helpers import aclose_quietly
 
 try:
     import socketio
@@ -354,11 +355,10 @@ class MochatChannel(BaseChannel):
         await self._stop_fallback_workers()
         await self._cancel_delay_timers()
 
+        failed: list[str] = []
         if self._socket:
-            try:
-                await self._socket.disconnect()
-            except Exception:
-                pass
+            if not await aclose_quietly("Mochat websocket", self._socket.disconnect):
+                failed.append("websocket")
             self._socket = None
 
         if self._cursor_save_task:
@@ -367,9 +367,12 @@ class MochatChannel(BaseChannel):
         await self._save_session_cursors()
 
         if self._http:
-            await self._http.aclose()
+            if not await aclose_quietly("Mochat HTTP client", self._http.aclose):
+                failed.append("HTTP client")
             self._http = None
         self._ws_connected = self._ws_ready = False
+        if failed:
+            logger.warning("Mochat stop finished with cleanup failures: {}", ", ".join(failed))
 
     async def send(self, msg: OutboundMessage) -> None:
         """Send outbound message to session or panel."""
@@ -507,10 +510,7 @@ class MochatChannel(BaseChannel):
             return True
         except Exception as e:
             logger.error("Failed to connect Mochat websocket: {}", e)
-            try:
-                await client.disconnect()
-            except Exception:
-                pass
+            await aclose_quietly("Mochat websocket", client.disconnect)
             self._socket = None
             return False
 

@@ -28,7 +28,7 @@ from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
-from deeptutor.partners.helpers import safe_filename
+from deeptutor.partners.helpers import aclose_quietly, safe_filename
 from deeptutor.partners.network import validate_url_target
 
 _DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
@@ -166,17 +166,14 @@ class NapcatChannel(BaseChannel):
 
     async def stop(self) -> None:
         self._running = False
+        failed: list[str] = []
         if self._ws is not None:
-            try:
-                await self._ws.close()
-            except Exception:
-                pass
+            if not await aclose_quietly("napcat websocket", self._ws.close):
+                failed.append("websocket")
             self._ws = None
         if self._http is not None:
-            try:
-                await self._http.close()
-            except Exception:
-                pass
+            if not await aclose_quietly("napcat HTTP client", self._http.close):
+                failed.append("HTTP client")
             self._http = None
         self._fail_pending(RuntimeError("napcat: stopped"))
         tasks = list(self._background_tasks)
@@ -185,6 +182,8 @@ class NapcatChannel(BaseChannel):
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
         self._background_tasks.clear()
+        if failed:
+            logger.warning("napcat stop finished with cleanup failures: {}", ", ".join(failed))
 
     def _fail_pending(self, err: BaseException) -> None:
         for fut in self._pending.values():

@@ -21,6 +21,7 @@ from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
+from deeptutor.partners.helpers import close_quietly
 
 
 class EmailConfig(DeliveryOverrides):
@@ -372,10 +373,7 @@ class EmailChannel(BaseChannel):
                 if mark_seen:
                     client.store(imap_id, "+FLAGS", "\\Seen")
         finally:
-            try:
-                client.logout()
-            except Exception:
-                pass
+            close_quietly("IMAP session", client.logout)
 
         return messages
 

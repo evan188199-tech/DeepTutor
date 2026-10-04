@@ -11,6 +11,7 @@ from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
+from deeptutor.partners.helpers import aclose_quietly
 
 try:
     import botpy
@@ -129,10 +130,7 @@ class QQChannel(BaseChannel):
         """Stop the QQ bot."""
         self._running = False
         if self._client:
-            try:
-                await self._client.close()
-            except Exception:
-                pass
+            await aclose_quietly("QQ bot client", self._client.close)
         logger.info("QQ bot stopped")
 
     async def send(self, msg: OutboundMessage) -> None:

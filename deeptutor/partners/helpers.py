@@ -1,8 +1,55 @@
 """Utility functions shared by the partner channel layer."""
 
+from collections.abc import Callable
 from datetime import datetime
+import inspect
 from pathlib import Path
 import re
+from typing import Any
+
+from loguru import logger
+
+#: A close/logout callable. It may be sync or (for ``aclose_quietly``) async.
+CloseCallable = Callable[[], Any]
+
+
+def _warn_close_failure(label: str, exc: BaseException) -> None:
+    logger.warning("Failed to close {}: {}", label, exc)
+
+
+def close_quietly(label: str, close: CloseCallable) -> bool:
+    """Invoke a sync close/logout callable without ever raising.
+
+    Channel shutdown must run the remaining cleanup steps even when one
+    resource fails to close, but the failure must stay diagnosable instead of
+    being swallowed: it is logged as a warning and the success flag is
+    returned so callers can aggregate the outcome of the whole shutdown.
+
+    Returns True if the resource closed cleanly, False otherwise.
+    """
+    try:
+        close()
+    except Exception as exc:
+        _warn_close_failure(label, exc)
+        return False
+    return True
+
+
+async def aclose_quietly(label: str, close: CloseCallable) -> bool:
+    """Awaitable twin of :func:`close_quietly` for async close coroutines.
+
+    Accepts a sync or async close/logout callable, awaits the result when
+    needed, and behaves like :func:`close_quietly`: never raises, logs a
+    warning on failure, returns the per-resource success flag.
+    """
+    try:
+        result = close()
+        if inspect.isawaitable(result):
+            await result
+    except Exception as exc:
+        _warn_close_failure(label, exc)
+        return False
+    return True
 
 
 def detect_image_mime(data: bytes) -> str | None:

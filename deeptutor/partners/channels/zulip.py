@@ -20,7 +20,7 @@ from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
-from deeptutor.partners.helpers import split_message
+from deeptutor.partners.helpers import aclose_quietly, split_message
 
 _UPLOAD_LINK_RE = re.compile(
     r"\[([^\]]*)\]\((/user_uploads/[^)\s]+)\)"
@@ -168,10 +168,10 @@ class ZulipChannel(BaseChannel):
             self._stop_typing(chat_id)
 
         if self._queue_id and self._client:
-            try:
-                self._client.deregister(self._queue_id)
-            except Exception:
-                pass
+            await aclose_quietly(
+                "zulip event queue",
+                lambda: self._client.deregister(self._queue_id),
+            )
 
         self._queue_id = None
         self._client = None
