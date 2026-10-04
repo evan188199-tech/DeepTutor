@@ -98,9 +98,7 @@ def test_parse_chunks_does_not_report_stop_for_stream_without_terminal_frame() -
 def test_baseline_chunked_tool_argument_json_is_concatenated_and_parsed() -> None:
     """Tool-call arguments split across many deltas concatenate into JSON."""
     fragments = ['{"quer', 'y": "deep', 'seek", "lim', 'it": 3}']
-    chunks = [
-        _chunk([_tc_delta(0, "call_a", "search", fragment)]) for fragment in fragments
-    ]
+    chunks = [_chunk([_tc_delta(0, "call_a", "search", fragment)]) for fragment in fragments]
 
     response = OpenAICompatProvider._parse_chunks(chunks)
 
@@ -150,7 +148,9 @@ def test_baseline_choiceless_usage_tail_frame_is_captured_and_zero_echo_ignored(
     zero_echo_after_real = OpenAICompatProvider._parse_chunks(
         [
             _chunk(content="hi", usage=delta_report),
-            _choiceless_chunk(SimpleNamespace(prompt_tokens=0, completion_tokens=0, total_tokens=0)),
+            _choiceless_chunk(
+                SimpleNamespace(prompt_tokens=0, completion_tokens=0, total_tokens=0)
+            ),
         ]
     )
     assert zero_echo_after_real.usage == {

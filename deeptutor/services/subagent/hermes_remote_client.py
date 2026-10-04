@@ -131,6 +131,28 @@ class HermesRemoteClient:
                 raise HermesRemoteHTTPError(response.status_code)
             event_name = ""
             data_lines: list[str] = []
+
+            def _pending_payload() -> dict[str, Any] | None:
+                """Parse and clear the buffered frame; an empty buffer yields None."""
+                nonlocal event_name
+                raw = "\n".join(data_lines)
+                data_lines.clear()
+                frame_event, event_name = event_name, ""
+                if not raw:
+                    # Empty data buffer (``data:`` heartbeat, event-only frame):
+                    # nothing to dispatch, and the event type still resets so
+                    # it cannot bleed into the next data-only frame.
+                    return None
+                try:
+                    payload = json.loads(raw)
+                except json.JSONDecodeError as exc:
+                    raise HermesRemoteProtocolError("invalid_sse_json") from exc
+                if not isinstance(payload, dict):
+                    raise HermesRemoteProtocolError("invalid_sse_event")
+                if frame_event and "event" not in payload:
+                    payload["event"] = frame_event
+                return payload
+
             async for line in response.aiter_lines():
                 if line.startswith(":"):
                     # Surface heartbeat comments to the workflow so each one
@@ -141,23 +163,25 @@ class HermesRemoteClient:
                     event_name = line[6:].strip()
                     continue
                 if line.startswith("data:"):
-                    data_lines.append(line[5:].lstrip())
+                    value = line[5:].lstrip()
+                    if value == "[DONE]":
+                        # Deliver the frame buffered before the done marker
+                        # even when the gateway omits the blank line.
+                        payload = _pending_payload()
+                        if payload is not None:
+                            yield payload
+                        return
+                    data_lines.append(value)
                     continue
-                if line.strip() or not data_lines:
+                if line.strip():
                     continue
-                raw = "\n".join(data_lines)
-                data_lines.clear()
-                if raw == "[DONE]":
-                    return
-                try:
-                    payload = json.loads(raw)
-                except json.JSONDecodeError as exc:
-                    raise HermesRemoteProtocolError("invalid_sse_json") from exc
-                if not isinstance(payload, dict):
-                    raise HermesRemoteProtocolError("invalid_sse_event")
-                if event_name and "event" not in payload:
-                    payload["event"] = event_name
-                event_name = ""
+                payload = _pending_payload()
+                if payload is not None:
+                    yield payload
+            # A gateway that ends the response right after the last data line
+            # (no trailing blank line) must not lose that final frame.
+            payload = _pending_payload()
+            if payload is not None:
                 yield payload
 
     @staticmethod

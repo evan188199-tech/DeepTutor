@@ -872,7 +872,10 @@ class OpenAICompatProvider(LLMProvider):
         content_parts: list[str] = []
         reasoning_parts: list[str] = []
         tc_bufs: dict[int, dict[str, Any]] = {}
-        finish_reason = "stop"
+        # Only a chunk that actually carries a finish_reason may set this; a
+        # stream that ends without a terminal frame is a truncated one and
+        # must stay distinguishable from a clean "stop".
+        finish_reason = ""
         usage: dict[str, int] = {}
 
         def _accum_tc(tc: Any, idx_hint: int) -> None:
@@ -942,7 +945,7 @@ class OpenAICompatProvider(LLMProvider):
                     name=b["name"],
                     arguments=json_repair.loads(b["arguments"]) if b["arguments"] else {},
                 )
-                for b in tc_bufs.values()
+                for _, b in sorted(tc_bufs.items())
             ],
             finish_reason=finish_reason,
             usage=usage,

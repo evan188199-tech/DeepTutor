@@ -47,9 +47,7 @@ async def test_empty_data_heartbeat_frame_is_skipped_not_fatal() -> None:
     alive.
     """
     events = await _collect(
-        b': ping\n\n'
-        b'data:\n\n'
-        b'data: {"event":"message.delta","delta":"hello"}\n\n'
+        b': ping\n\ndata:\n\ndata: {"event":"message.delta","delta":"hello"}\n\n'
     )
 
     assert _delta_events(events) == [{"event": "message.delta", "delta": "hello"}]
@@ -65,10 +63,7 @@ async def test_event_field_without_data_does_not_bleed_into_next_frame() -> None
     keeps it, so a benign ``{"delta": ...}`` frame arrives mislabelled as
     e.g. ``run.failed`` and the mapper acts on the wrong event.
     """
-    events = await _collect(
-        b'event: run.failed\n\n'
-        b'data: {"delta":"still fine"}\n\n'
-    )
+    events = await _collect(b'event: run.failed\n\ndata: {"delta":"still fine"}\n\n')
 
     assert len(_delta_events(events)) == 1
     payload = _delta_events(events)[0]
@@ -105,9 +100,9 @@ async def test_done_marker_without_blank_line_terminates_cleanly_keeping_the_fra
     must end cleanly.
     """
     events = await _collect(
-        b'data: {"event":"message.delta","delta":"hello"}\n'
+        b'data: {"event":"message.delta","delta":"hello"}\n\n'
         b'data: {"event":"run.completed","output":"hello"}\n'
-        b'data: [DONE]\n'
+        b"data: [DONE]\n"
     )
 
     assert _delta_events(events) == [
@@ -120,10 +115,7 @@ async def test_done_marker_without_blank_line_terminates_cleanly_keeping_the_fra
 async def test_baseline_comment_heartbeats_and_done_marker_are_quiet() -> None:
     """Baseline: comment heartbeats stay quiet and ``[DONE]`` ends the stream."""
     events = await _collect(
-        b': ping\n\n'
-        b'data: {"event":"message.delta","delta":"hi"}\n\n'
-        b': ping\n\n'
-        b'data: [DONE]\n\n'
+        b': ping\n\ndata: {"event":"message.delta","delta":"hi"}\n\n: ping\n\ndata: [DONE]\n\n'
     )
 
     assert _delta_events(events) == [{"event": "message.delta", "delta": "hi"}]
