@@ -1,0 +1,34 @@
+=== shell=True ===
+deeptutor/services/sandbox/runner/server.py:233:        completed = subprocess.run(  # noqa: S602 - shell=True is the contract
+=== executable= ===
+=== /bin/ literals ===
+deeptutor/services/sandbox/backends.py:247:            argv += ["/bin/sh", "-c", request.command]
+=== windows guards (creationflags etc) ===
+deeptutor/runtime/update_worker.py:91:        kwargs["creationflags"] = (
+deeptutor/runtime/update_worker.py:96:        kwargs["start_new_session"] = True
+deeptutor/runtime/launcher.py:214:def _no_window_kwargs() -> dict[str, Any]:
+deeptutor/runtime/launcher.py:230:    return {"creationflags": subprocess.CREATE_NO_WINDOW}  # type: ignore[attr-defined]
+deeptutor/runtime/launcher.py:245:            **_no_window_kwargs(),
+deeptutor/runtime/launcher.py:311:        kwargs["creationflags"] = (
+deeptutor/runtime/launcher.py:313:            | subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
+deeptutor/runtime/launcher.py:316:        kwargs["start_new_session"] = True
+deeptutor/runtime/launcher.py:378:            **_no_window_kwargs(),
+deeptutor/runtime/launcher.py:408:                    **_no_window_kwargs(),
+deeptutor/runtime/launcher.py:705:    result = subprocess.run([npm, action], cwd=source, **_no_window_kwargs())
+deeptutor/runtime/launcher.py:801:        result = subprocess.run([npm, "run", "build"], cwd=source, env=env, **_no_window_kwargs())
+deeptutor/runtime/launcher.py:1125:        kwargs["creationflags"] = (
+deeptutor/runtime/launcher.py:1130:        kwargs["start_new_session"] = True
+deeptutor/services/sandbox/backends.py:257:                start_new_session=sys.platform != "win32",
+deeptutor/services/sandbox/backends.py:371:                    start_new_session=sys.platform != "win32",
+deeptutor/services/sandbox/backends.py:384:                    start_new_session=sys.platform != "win32",
+deeptutor/services/sandbox/backends.py:393:                    start_new_session=sys.platform != "win32",
+deeptutor/services/app_update.py:644:        kwargs["creationflags"] = (
+deeptutor/services/app_update.py:649:        kwargs["start_new_session"] = True
+deeptutor/services/office_preview.py:125:                start_new_session=os.name == "posix",
+deeptutor/services/llm/provider_core/codebuddy_provider.py:806:        process_kwargs["creationflags"] = (
+deeptutor/services/llm/provider_core/codebuddy_provider.py:807:            subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
+deeptutor/services/llm/provider_core/codebuddy_provider.py:812:        process_kwargs["start_new_session"] = True
+=== npm/node/cmd shim handling ===
+deeptutor/runtime/launcher.py:850:    node = shutil.which("node")
+deeptutor/runtime/launcher.py:864:        npm = shutil.which("npm")
+deeptutor/services/skill/hub.py:824:        ".cmd",

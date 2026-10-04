@@ -1,0 +1,58 @@
+deeptutor/video_learning/service.py:376:        # Binary + msvcrt on Windows (fcntl is Unix-only). Mirror
+deeptutor/video_learning/service.py:386:                import msvcrt
+deeptutor/video_learning/service.py:388:                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/video_learning/service.py:398:                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/video_learning/invidious_account_storage.py:38:        os.chmod(path, stat.S_IRWXU)
+deeptutor/video_learning/invidious_account_storage.py:49:    os.chmod(path, stat.S_IRWXU)
+deeptutor/services/mcp/oauth.py:98:    os.chmod(path, stat.S_IRWXU)
+deeptutor/services/mcp/oauth.py:127:        os.chmod(tmp, stat.S_IRUSR | stat.S_IWUSR)
+deeptutor/services/mcp/secrets.py:55:    os.chmod(path, stat.S_IRWXU)
+deeptutor/services/mcp/secrets.py:178:        os.chmod(tmp, stat.S_IRUSR | stat.S_IWUSR)
+deeptutor/learning/migration.py:124:            import msvcrt
+deeptutor/learning/migration.py:130:            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/learning/migration.py:135:                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/services/mcp/user_config.py:75:    os.chmod(root, stat.S_IRWXU)
+deeptutor/services/mcp/user_config.py:217:        os.chmod(tmp, stat.S_IRUSR | stat.S_IWUSR)
+deeptutor/runtime/launcher.py:251:        os.kill(pid, sig)
+deeptutor/runtime/launcher.py:1045:            signal.signal(signal.SIGINT, signal.SIG_IGN)
+deeptutor/runtime/launcher.py:1064:            signal.signal(sig, _handler)
+deeptutor/runtime/process.py:39:        # CPython implements ordinary os.kill signals with TerminateProcess on
+deeptutor/runtime/process.py:40:        # Windows, so os.kill(pid, 0) is destructive rather than a POSIX probe.
+deeptutor/runtime/process.py:43:        os.kill(pid, 0)
+deeptutor/multi_user/session_handoff.py:192:            os.chmod(self.db_path.parent, 0o700)
+deeptutor/multi_user/session_handoff.py:224:            os.chmod(self.db_path, 0o600)
+deeptutor/multi_user/session_handoff.py:225:            os.chmod(self.db_path.parent, 0o700)
+deeptutor/services/cli_apps/paths.py:99:            os.chmod(path, 0o700)
+deeptutor/multi_user/grants.py:62:                import msvcrt
+deeptutor/multi_user/grants.py:64:                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/multi_user/grants.py:74:                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/multi_user/paths.py:137:    os.chmod(secrets_root, stat.S_IRWXU)
+deeptutor/multi_user/paths.py:234:        os.chmod(path, stat.S_IRWXU)
+deeptutor/services/codex_auth/storage.py:59:        os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+deeptutor/services/codex_auth/storage.py:66:        # so the Windows-only ``msvcrt`` branch type-checks off Windows too.
+deeptutor/services/codex_auth/storage.py:68:            import msvcrt
+deeptutor/services/codex_auth/storage.py:70:            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/services/codex_auth/storage.py:80:                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/services/codex_auth/storage.py:100:        os.chmod(temp_path, stat.S_IRUSR | stat.S_IWUSR)
+deeptutor/services/codex_auth/storage.py:135:        os.chmod(private_root, stat.S_IRWXU)
+deeptutor/services/codex_auth/storage.py:136:        os.chmod(self.root, stat.S_IRWXU)
+deeptutor/services/cron/repository.py:61:                import msvcrt
+deeptutor/services/cron/repository.py:63:                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/services/cron/repository.py:73:                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/services/partners/manager.py:89:            import msvcrt
+deeptutor/services/partners/manager.py:91:            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+deeptutor/services/partners/manager.py:110:            import msvcrt
+deeptutor/services/partners/manager.py:112:            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/services/workspace/catalog.py:402:                os.kill(int(migration["pid"]), 0)
+deeptutor/knowledge/manager.py:132:        import msvcrt
+deeptutor/knowledge/manager.py:134:        msvcrt.locking(file_handle.fileno(), msvcrt.LK_NBLCK, 1)
+deeptutor/knowledge/manager.py:139:            msvcrt.locking(file_handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/knowledge/manager.py:1843:                    os.chmod(path, writable_mode)
+deeptutor/services/partners/web_continuity.py:38:                import msvcrt
+deeptutor/services/partners/web_continuity.py:40:                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+deeptutor/services/partners/web_continuity.py:50:                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+deeptutor/services/subagent/claude_models.py:222:            os.kill(pid, signal.SIGTERM)
+deeptutor/services/subagent/claude_models.py:226:            os.waitpid(pid, 0)
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:36:                import msvcrt
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:39:                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:53:                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)

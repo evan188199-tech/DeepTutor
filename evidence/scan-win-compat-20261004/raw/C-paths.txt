@@ -1,0 +1,175 @@
+=== f-string with }/ path join (non-test) ===
+deeptutor_cli/kb.py:101:            console.print(f"  {index}/{total} [red]failed[/] {item.case_id}: {item.error}")
+deeptutor_cli/kb.py:104:        console.print(f"  {index}/{total} [green]ok[/] {item.case_id} {recall_key}={value}")
+scripts/pb_setup.py:298:    print(f"Open the admin panel at {POCKETBASE_BASE_URL}/_/ to view and configure collections.")
+deeptutor_cli/init_wizard.py:704:                models_path = f"{prefix}/models"
+deeptutor_cli/init_wizard.py:709:                models_path = f"{prefix}/models"
+deeptutor_cli/init_wizard.py:711:                models_path = f"{path}/models"
+deeptutor_cli/init_wizard.py:724:            return f"{url[: -len(suffix)]}/models"
+deeptutor_cli/init_wizard.py:726:    return f"{url}/models"
+scripts/export_discord_history.py:281:            page = self._request_json(f"/channels/{channel_id}/messages", params=params)
+scripts/export_discord_history.py:319:                f"/channels/{parent_id}/threads/archived/public",
+scripts/export_discord_history.py:352:                f"/channels/{parent_id}/users/@me/threads/archived/private",
+scripts/export_discord_history.py:374:            active = self._request_json(f"/guilds/{self.guild_id}/threads/active")
+scripts/export_discord_history.py:457:        raw_channels = self._request_json(f"/guilds/{self.guild_id}/channels")
+scripts/export_discord_history.py:459:            raise DiscordAPIError(200, f"/guilds/{self.guild_id}/channels", "unexpected body")
+scripts/export_discord_history.py:488:                    f"[{index}/{len(sources)}] skipped #{channel_name}: {exc.status_code} {exc.detail}"
+scripts/export_discord_history.py:494:            self._progress(f"[{index}/{len(sources)}] {record['path']}: {len(messages)} messages")
+deeptutor_cli/common.py:571:        numbering = f"({index + 1}/{total}) " if total > 1 else ""
+scripts/update.py:45:        return f"{self.remote}/{self.remote_branch}"
+scripts/update.py:167:            remote_ref=f"refs/remotes/{remote}/{remote_branch}",
+scripts/update.py:168:            upstream=f"{remote}/{remote_branch}",
+scripts/update.py:181:        remote_ref=f"refs/remotes/{selected_remote}/{branch}",
+deeptutor_cli/skill.py:102:                f"{ref.hub}:{ref.owner_handle}/{ref.slug}"
+deeptutor_cli/skill.py:114:            f"{ref.hub}:{ref.owner_handle}/{ref.slug}"
+deeptutor/video_learning/invidious_account.py:95:    authorize_url = f"{public_base}/authorize_token?{urlencode({'scopes': ','.join(ACCOUNT_SCOPES), 'callback_url': callback_url})}"
+deeptutor/agents/visualize/capability.py:265:            return f"{binding}/{model}" if model else binding
+deeptutor/reading/refresh.py:135:        label = f"[{index}/{total}] {material_id} {filename}"
+deeptutor/tools/zotero_search.py:74:        url = f"{ZOTERO_API_BASE}/users/{user_id}/items/top"
+deeptutor/agents/base_agent.py:419:                self.logger.debug(f"response_format not supported for {binding}/{model}, skipping")
+deeptutor/agents/base_agent.py:591:                self.logger.debug(f"response_format not supported for {binding}/{model}, skipping")
+deeptutor/reading/ingestion.py:727:            f"/video/{candidate}/",
+deeptutor/tools/file_tools.py:253:                    items.append(f"{rel_posix}/" if item.is_dir() else rel_posix)
+deeptutor/tools/exec_tool.py:116:            prefix = f"{call_dir.rstrip('/')}/" if call_dir else ""
+deeptutor/capabilities/audio_overview/pipeline.py:490:                "path": f"{logical}/{audio_path.name}",
+deeptutor/capabilities/audio_overview/pipeline.py:495:                "path": f"{logical}/{transcript_path.name}",
+deeptutor/agents/math_animator/retry_manager.py:57:                        f"Starting render attempt {attempt + 1}/{self.max_retries + 1}."
+deeptutor/agents/math_animator/renderer.py:113:                f"Rendering image block {idx}/{len(matches)} with scene `{scene_name}`."
+deeptutor/agents/_shared/workspace_prompt.py:30:            f"本轮唯一默认可写目录是 `{output}/`；所有新建、下载、解压、代码和生成素材都必须"
+deeptutor/agents/_shared/workspace_prompt.py:48:        f"The only default writable directory for this turn is `{output}/`. Save every new, "
+deeptutor/learning/tests/test_topic_materials.py:282:            f"[{ref['group_id']}/{ref['session_key']}] 讨论记录",
+deeptutor/agents/math_animator/visual_review.py:80:                f"Extracting review frame {idx}/{len(timestamps)} at {timestamp:.1f}s.",
+deeptutor/runtime/memory_probe.py:196:        stat = Path(f"/proc/{pid}/stat").read_text(encoding="utf-8", errors="replace")
+deeptutor/runtime/memory_probe.py:215:            Path(f"/proc/{pid}/cmdline")
+deeptutor/runtime/memory_probe.py:227:        fields = Path(f"/proc/{pid}/statm").read_text(encoding="utf-8").split()
+deeptutor/services/cli_apps/models.py:245:                subdirectory = f"{app_id}/agent-harness"
+deeptutor/runtime/agentic/tool_dispatch.py:748:                    f"{tool_name} {retry_reason}; retrying attempt {attempt + 1}/{attempts}",
+deeptutor/agents/question/pipeline.py:1900:                f"  - [{template.question_id}] ({template.question_type}/"
+deeptutor/services/llm/utils.py:215:        url = f"{base_url}/messages"
+deeptutor/services/llm/utils.py:217:        url = f"{base_url}/chat"
+deeptutor/services/llm/utils.py:219:        url = f"{base_url}/chat/completions"
+deeptutor/services/codex_auth/oauth.py:84:    return f"{CODEX_OAUTH_ISSUER}/oauth/authorize?{query}"
+deeptutor/services/llm/cloud_provider.py:97:            url = f"{base_url}/models"
+deeptutor/services/codex_auth/constants.py:19:CODEX_TOKEN_URL = f"{CODEX_OAUTH_ISSUER}/oauth/token"
+deeptutor/services/codex_auth/constants.py:20:CODEX_REVOKE_URL = f"{CODEX_OAUTH_ISSUER}/oauth/revoke"
+deeptutor/services/skill/service.py:472:            raise SkillFileNotFoundError(f"File not found in skill: {name}/{candidate}")
+deeptutor/services/skill/hub.py:177:        f"{match.group('owner')}/{match.group('slug')}"
+deeptutor/services/skill/hub.py:355:                f"/skills/{skill_slug}/verify",
+deeptutor/services/skill/hub.py:518:        url = f"{self._base_url}/skills"
+deeptutor/services/skill/hub.py:547:        url = f"{self._base_url}/skills"
+deeptutor/services/skill/hub.py:576:        url = f"{self._base_url}/skills/{slug}/dist-tags"
+deeptutor/services/videogen/adapters/async_task.py:100:        poll_url = join_api_path(config.base_url, f"{_SUBMIT_PATH}/{task_id}")
+deeptutor/services/parsing/engines/mineru/cloud.py:202:                f"MinerU cloud: parsing part {index}/{total} (pages {part.start + 1}-{part.end})"
+deeptutor/services/parsing/engines/mineru/cloud.py:217:                report(f"MinerU cloud: reusing completed part {index}/{total}")
+deeptutor/services/parsing/engines/mineru/cloud.py:218:            report(f"MinerU cloud: merging part {index}/{total} artifacts")
+deeptutor/services/parsing/engines/mineru/cloud.py:460:                    report += f" ({progress.get('extracted_pages') or 0}/{total_pages} pages)"
+deeptutor/services/embedding/validation.py:24:        parts.append(f"batch={batch_index}/{total_batches}")
+deeptutor/services/web_source/crawler.py:174:    return f"_web/{namespace}/{_to_filename(page_url, base_path_prefix)}"
+deeptutor/services/prompt/manager.py:124:        print(f"Warning: No prompt file found for {module_name}/{agent_name}")
+deeptutor/services/generation_http.py:72:    joined = f"{head.rstrip('/')}/{norm_suffix}"
+deeptutor/services/config/embedding_endpoint.py:49:    return f"{GEMINI_EMBEDDING_API_ROOT}/{model_id}:batchEmbedContents"
+deeptutor/services/config/embedding_endpoint.py:228:            return f"{trimmed}/embeddings"
+deeptutor/services/config/embedding_endpoint.py:233:            return f"{trimmed}/embed"
+deeptutor/services/config/embedding_endpoint.py:241:            return f"{trimmed}/embed"
+deeptutor/services/memory/consolidator/runs.py:176:                raise RunBusyError(f"a run is already in progress for {layer}/{key}")
+deeptutor/services/llm/local_provider.py:69:            models_url = f"{base_url}/models"
+deeptutor/capabilities/course_study/capability.py:122:        shown.append(f"{name} {done}/{total} modules ({stage})")
+deeptutor/capabilities/course_study/capability.py:157:        return f"Syllabus: {covered}/{total} units covered; next up: none."
+deeptutor/capabilities/course_study/capability.py:164:    return f"Syllabus: {covered}/{total} units covered; next up: {title} (unit {position_text})."
+deeptutor/services/settings/provider_probe.py:192:    url = f"{base_url}/models"
+deeptutor/services/search/providers/serply.py:82:        resp = requests.get(f"{root}/{path}/{encoded_query}", timeout=timeout, **request_kwargs)
+deeptutor/services/config/context_window_detection.py:133:    url = f"{base_url.rstrip('/')}/models"
+deeptutor/services/embedding/adapters/openai_compatible.py:345:                        f"on attempt {attempt + 1}/{1 + self._MAX_RETRIES}, "
+deeptutor/capabilities/course_study/tools.py:182:        lines.append(f"Syllabus ({syllabus_covered}/{syllabus_total} units covered):")
+deeptutor/capabilities/course_study/tools.py:233:            f"{int(path.get('objectives_mastered') or 0)}/{int(path.get('objectives_total') or 0)} "
+deeptutor/services/workspace/service.py:671:                    f"/files/workspace-items/{quote(binding.workspace_id, safe='')}/"
+deeptutor/services/search/providers/jina.py:79:        url = f"{self.BASE_URL}/{encoded_query}"
+deeptutor/services/embedding/client.py:171:                    f"batch_index={i + 1}/{total_batches}, batch_items={len(batch)}, "
+deeptutor/services/embedding/client.py:194:                    f"got {batch_dim} in batch {i + 1}/{total_batches}. "
+deeptutor/services/search/providers/searxng.py:50:        endpoint = f"{_validate_base_url(base_url)}/search"
+deeptutor/services/sandbox/backends.py:116:                resp = await client.post(f"{self._base_url}/exec", json=payload)
+deeptutor/services/sandbox/backends.py:132:                resp = await client.get(f"{self._base_url}/health")
+deeptutor/services/search/providers/serper.py:89:        url = f"{self.BASE_URL}/{mode}"
+deeptutor/services/subagent/hermes_remote_client.py:45:            base_url=f"{base_url}/",
+deeptutor/services/sandbox/quota.py:47:            raise QuotaExceeded(f"execution rate limit reached ({self._max_per_minute}/min)")
+deeptutor/services/voice/base.py:178:    joined = f"{head.rstrip('/')}/{suffix.lstrip('/')}"
+deeptutor/services/storage/attachment_store.py:174:        return workspace_url(f"{_PUBLIC_URL_PREFIX}/{sid}/{aid}/{name}")
+deeptutor/services/subagent/opencode_family.py:161:                    response = await client.post(f"/session/{sid}/message", json=body)
+deeptutor/services/subagent/opencode_family.py:166:                    with_abort = client.post(f"/session/{sid}/abort", timeout=5.0)
+deeptutor/services/subagent/opencode_family.py:364:                    f"/session/{sid}/permissions/{permission_id}",
+deeptutor/knowledge/add_documents.py:674:                f"Failed to index {result.failed_count}/{len(new_files)} file(s): "
+deeptutor/services/voice/adapters/openai_compat.py:86:    joined = f"{head.rstrip('/')}/{suffix}"
+deeptutor/knowledge/progress_tracker.py:245:                progress_msg = f"{prefix} {message} ({current}/{total}, {percent}%)"
+deeptutor/services/mcp/secrets.py:45:    return f"${{secret:{server}/{field}}}"
+deeptutor/book/compiler.py:244:            f"({sum(1 for b in page.blocks if b.status == BlockStatus.READY)}/{len(page.blocks)} blocks ready)",
+deeptutor/book/compiler.py:471:            page.error = f"{errored}/{len(page.blocks)} blocks failed."
+deeptutor/book/agents/source_explorer.py:72:        by_source.setdefault(f"{chunk.source}/{chunk.kb_name or ''}", []).append(chunk)
+deeptutor/book/agents/source_explorer.py:694:            f"- [{c.source}/{c.kb_name or 'n/a'}] (q={c.query!r}) {_clip(c.text, 320)}"
+deeptutor/book/inputs.py:161:            prefix = f"{prefix}/{msg.capability}"
+deeptutor/book/engine.py:1293:            raise ValueError(f"Cannot compile page – missing book/spine/page ({book_id}/{page_id})")
+deeptutor/book/engine.py:1492:                    f"Background compilation failed for {book_id}/{page_id}: {exc}",
+deeptutor/partners/channels/weixin.py:294:        url = f"{self.config.base_url}/{endpoint}"
+deeptutor/partners/channels/weixin.py:310:        url = f"{self.config.base_url}/{endpoint}"
+deeptutor/partners/channels/weixin.py:726:                    f"{self.config.cdn_base_url}/download"
+deeptutor/partners/channels/weixin.py:1262:                f"{self.config.cdn_base_url}/upload"
+deeptutor/services/rag/pipelines/pageindex/client.py:29:    return model if model.startswith(f"{prefix}/") else f"{prefix}/{model}"
+deeptutor/partners/channels/msteams.py:280:            f"{ref.service_url.rstrip('/')}/v3/conversations/{ref.conversation_id}/activities"
+deeptutor/partners/channels/discord.py:128:        url = f"{DISCORD_API_BASE}/channels/{msg.chat_id}/messages"
+deeptutor/partners/channels/discord.py:196:        create_url = f"{DISCORD_API_BASE}/channels/{chat_id}/messages"
+deeptutor/partners/channels/discord.py:208:            edit_url = f"{create_url}/{buf.message_id}"
+deeptutor/partners/channels/discord.py:245:            edit_url = f"{create_url}/{buf.message_id}"
+deeptutor/partners/channels/discord.py:255:        edit_url = f"{create_url}/{buf.message_id}"
+deeptutor/partners/channels/discord.py:499:            url = f"{DISCORD_API_BASE}/channels/{channel_id}/typing"
+deeptutor/services/rag/pipelines/kiwix/client.py:138:    prefix = f"{base.path.rstrip('/')}/content/"
+deeptutor/services/rag/pipelines/kiwix/client.py:192:    prefix = f"{base.path.rstrip('/')}/content/{quote(zim_name, safe='')}/"
+deeptutor/services/rag/pipelines/kiwix/client.py:257:        url = f"{self.base_url}/{path.lstrip('/')}"
+deeptutor/services/rag/pipelines/kiwix/client.py:277:                f"raw/{quote(self.zim_name, safe='')}/meta/Title",
+deeptutor/services/rag/pipelines/kiwix/client.py:352:            f"raw/{quote(self.zim_name, safe='')}/content/{quote(path, safe='/')}",
+deeptutor/book/blocks/_prompts.py:51:            f"Expected deeptutor/book/prompts/{{en,zh}}/{name}.yaml."
+deeptutor/services/rag/pipelines/ima/inventory.py:170:                queue.append((folder.folder_id, f"{prefix}{folder.name}/", depth + 1))
+deeptutor/partners/channels/weixin_qr.py:149:        f"{base_url.rstrip('/')}/{QR_ENDPOINT}",
+deeptutor/partners/channels/weixin_qr.py:172:        f"{base_url.rstrip('/')}/{QR_STATUS_ENDPOINT}",
+deeptutor/services/rag/pipelines/ima/transport.py:73:            response = await client.post(f"{prefix}/{method}", json=body)
+deeptutor/services/rag/pipelines/ima/transport.py:89:            response = client.post(f"{prefix}/{method}", json=body)
+deeptutor/partners/channels/mattermost.py:111:        return f"{ws_base}{MATTERMOST_API_PATH}/websocket"
+deeptutor/partners/channels/mattermost.py:203:            resp = await self._http.get(f"{self._api_base}/users/me")
+deeptutor/partners/channels/mattermost.py:349:            info_resp = await self._http.get(f"{self._api_base}/files/{file_id}/info")
+deeptutor/partners/channels/mattermost.py:358:            data_resp = await self._http.get(f"{self._api_base}/files/{file_id}")
+deeptutor/partners/channels/mattermost.py:420:        resp = await self._http.post(f"{self._api_base}/posts", json=payload)
+deeptutor/partners/channels/mattermost.py:440:                    f"{self._api_base}/files",
+=== plus-concat with slash ===
+deeptutor/video_learning/invidious_account.py:303:            candidate = urljoin(public_base + "/", str(entry.get("url", "")))
+deeptutor/api/routers/reading.py:618:        source_url = f"{client.base_url}/content/{client.zim_name}/" + "/".join(
+deeptutor/api/routers/auth.py:636:    normalized = "/" + str(path or "").lstrip("/")
+tests/api/test_canonical_route_surface.py:42:        if any(path == prefix or path.startswith(prefix + "/") for prefix in retired_prefixes)
+deeptutor/services/workspace/execution.py:21:        text = text.replace(prefix + "/", "")
+deeptutor/services/rag/visual_assets.py:344:                isinstance(source, str) and source.startswith(old_relative_path + "/")
+deeptutor/services/web_source/crawler.py:128:    return path == prefix or path.startswith(prefix + "/")
+deeptutor/services/web_source/bilingual.py:117:        stem = "/" + "/".join(segments[1:])
+deeptutor/services/web_source/bilingual.py:123:            stem = f"/{segments[0]}" + ("/" + "/".join(segments[2:]) if len(segments) > 2 else "")
+deeptutor/services/github_source/client.py:130:            if prefix and not p.startswith(prefix + "/") and p != prefix:
+deeptutor/services/github_source/sync.py:115:    if prefix and github_path.startswith(prefix + "/"):
+deeptutor/services/github_source/sync.py:145:        if prefix and not p.startswith(prefix + "/") and p != prefix:
+deeptutor/services/github_source/sync.py:160:        if prefix and not p.startswith(prefix + "/") and p != prefix:
+deeptutor/services/voice/base.py:176:    if "/audio/" in head or head.rstrip("/").endswith("/" + suffix.strip("/")):
+deeptutor/services/voice/adapters/dashscope.py:99:    if parsed.path.rstrip("/").endswith("/" + other):
+=== split on literal slash (non-test) ===
+deeptutor/services/web_source/crawler.py:153:        for raw_segment in path.split("/"):
+deeptutor/services/web_source/crawler.py:512:        segments = [s for s in path.split("/") if s]
+deeptutor/services/web_source/bilingual.py:111:    segments = [s for s in raw_path.split("/") if s]
+deeptutor/services/app_update.py:191:        for component in reversed(fields[2].split("/")):
+deeptutor/services/subagent/images.py:75:    parts = path[len(_LOCAL_ATTACHMENT_PREFIX) :].split("/")
+deeptutor/runtime/agentic/client.py:388:    if model.split("/")[-1] in native_web_search_models and not config.api_version:
+deeptutor/visualizers/protocol.py:62:        parts = value.split("/")
+deeptutor/api/routers/knowledge.py:394:    for raw_seg in str(rel_path).replace("\\", "/").split("/"):
+deeptutor/partners/channels/matrix.py:335:        prefix = mime.split("/")[0]
+deeptutor/api/routers/quiz_judge.py:192:                parts = (parsed.path or url).strip("/").split("/")
+deeptutor/services/llm/multimodal.py:99:    parts = path[len(_LOCAL_ATTACHMENT_PREFIX) :].split("/")
+deeptutor/services/rag/pipelines/kiwix/client.py:52:        or any(part in {".", ".."} for part in unquote(parsed.path).split("/"))
+deeptutor/services/rag/pipelines/kiwix/client.py:72:        or any(part in {"", ".", ".."} for part in path.split("/"))
+deeptutor/services/llm/provider_core/openai_compat_provider.py:426:            model_name = model_name.split("/")[-1]
+deeptutor/services/llm/provider_core/openai_compat_provider.py:517:        model_name = (model or self.default_model or "").strip().lower().split("/")[-1]
+deeptutor/services/llm/provider_core/openai_compat_provider.py:729:            model_name = model_name.split("/")[-1]
+deeptutor/utils/document_extractor.py:726:    return any(part == "__MACOSX" or part.startswith(".") for part in name.split("/") if part)
+deeptutor/api/routers/reading.py:619:            quote(segment, safe="") for segment in path.split("/")
+deeptutor/tools/paper_search_tool.py:119:            arxiv_id = result.entry_id.split("/")[-1]

@@ -1,0 +1,31 @@
+=== subprocess text=True/universal_newlines without encoding ===
+scripts/check_branch_policy.py:15:        text=True,
+scripts/check_branch_policy.py:25:        text=True,
+scripts/check_workspace_hygiene.py:15:        text=True,
+scripts/update.py:92:            text=True,
+deeptutor/services/cli_apps/installer.py:263:            text=True,
+deeptutor/runtime/launcher.py:347:            text=True,
+deeptutor/runtime/launcher.py:375:            text=True,
+deeptutor/runtime/launcher.py:405:                    text=True,
+deeptutor/runtime/launcher.py:976:            text=True,
+deeptutor/services/sandbox/runner/server.py:242:            text=True,
+deeptutor/services/parsing/engines/_install.py:201:                    text=True,
+deeptutor/services/skill/hub.py:633:                text=True,
+deeptutor/services/parsing/engines/docling/local_worker.py:56:            text=True,
+deeptutor/services/parsing/engines/mineru/local.py:89:            text=True,
+deeptutor/services/parsing/engines/mineru/local.py:103:            text=True,
+deeptutor/services/parsing/engines/mineru/local.py:213:        # Stream combined stdout/stderr line by line. text=True enables
+deeptutor/services/parsing/engines/mineru/local.py:220:            text=True,
+deeptutor/services/parsing/engines/mineru/backend.py:173:            text=True,
+deeptutor/services/parsing/engines/mineru/models.py:127:                    text=True,
+deeptutor/services/rag/pipelines/lightrag_server/client.py:6:* ``POST /query`` with ``only_need_context=True`` — return the grounded context
+deeptutor/co_writer/edit_agent.py:272:                    query=query, kb_name=kb_name, only_need_context=True
+deeptutor/reading/ingestion.py:1016:                command, capture_output=True, text=True, timeout=3600, check=False
+deeptutor/reading/ingestion.py:1079:                text=True,
+=== PYTHONUTF8 / PYTHONIOENCODING ===
+deeptutor/runtime/launcher.py:275:    and the children themselves get ``PYTHONIOENCODING=utf-8:replace``, but the
+deeptutor/runtime/launcher.py:1413:    common_env["PYTHONIOENCODING"] = "utf-8:replace"
+deeptutor/services/workspace/execution.py:105:        "PYTHONUTF8": "1",
+=== locale.getpreferredencoding ===
+deeptutor/services/sandbox/backends.py:518:        for encoding in (locale.getpreferredencoding(False), "mbcs"):
+tests/services/sandbox/test_sandbox.py:258:        "deeptutor.services.sandbox.backends.locale.getpreferredencoding",

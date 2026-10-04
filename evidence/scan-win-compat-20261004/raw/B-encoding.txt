@@ -1,0 +1,216 @@
+=== open( without encoding= (non-test code) ===
+deeptutor/utils/archive_extractor.py:190:    with archive.open(info) as source, open(destination, "wb") as sink:
+scripts/install_extras.py:48:    with open(pyproject, "rb") as handle:
+deeptutor_cli/provider_cmd.py:54:        if not webbrowser.open(authorize_url):
+deeptutor_cli/provider_cmd.py:149:                    webbrowser.open(auth.auth_url)
+deeptutor_cli/skill_login.py:122:                webbrowser.open(url)
+deeptutor/utils/document_images.py:533:        with pymupdf.open(stream=data, filetype="pdf") as doc:
+deeptutor/video_learning/service.py:379:        with (lock_root / f"{material_id}.lock").open("a+b") as handle:
+deeptutor/video_learning/invidious_account_storage.py:72:        descriptor = os.open(
+deeptutor/reading/extract.py:182:        with pymupdf.open(source) as doc:
+deeptutor/reading/export.py:118:        with pymupdf.open(raw_path) as doc:
+deeptutor/utils/document_extractor.py:380:            with fitz.open(stream=data, filetype="pdf") as doc:
+deeptutor/reading/page_render.py:53:        with pymupdf.open(raw) as doc:
+deeptutor/reading/page_render.py:92:        with pymupdf.open(raw) as doc:
+deeptutor/utils/secret_files.py:41:    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, SECRET_FILE_MODE)
+deeptutor/tools/tex_downloader.py:91:            with open(source_file, "wb") as f:
+deeptutor/tools/tex_downloader.py:144:            with tarfile.open(file_path, "r:*"):
+deeptutor/tools/tex_downloader.py:159:        with tarfile.open(tar_path, "r:*") as tar:
+deeptutor/multi_user/grants.py:55:        with lock_path.open("a+b") as handle:
+deeptutor/visualizers/store.py:250:                with archive.open(info) as source, open(target, "wb") as sink:
+deeptutor/learning/migration.py:50:    with path.open("rb") as handle:
+deeptutor/learning/migration.py:122:    with lock_path.open("a+b") as handle:
+deeptutor/agents/math_animator/renderer.py:170:        process = subprocess.Popen(
+deeptutor/runtime/isolated_worker.py:130:            process = subprocess.Popen(  # noqa: S603 - fixed argv and shell=False
+deeptutor/capabilities/audio_overview/pipeline.py:104:        with wave.open(io.BytesIO(audio), "rb") as source:
+deeptutor/capabilities/audio_overview/pipeline.py:118:        with wave.open(str(output), "wb") as target:
+deeptutor/capabilities/audio_overview/pipeline.py:123:                with wave.open(io.BytesIO(audio), "rb") as source:
+deeptutor/capabilities/audio_overview/pipeline.py:131:            with raw_path.open("wb") as raw:
+deeptutor/services/session/sqlite_store.py:58:    with lock_path.open("a+b") as lock_file:
+deeptutor/learning/tests/test_policy.py:114:def test_next_objective_skips_mastered_and_returns_first_open():
+deeptutor/learning/tests/test_policy.py:289:def test_next_objective_returns_deferred_when_nothing_else_is_open():
+deeptutor/runtime/launcher.py:317:    process = subprocess.Popen(command, **kwargs)  # type: ignore[arg-type,call-overload]
+deeptutor/runtime/launcher.py:588:            with _LOOPBACK_OPENER.open(url, timeout=1):  # noqa: S310  # nosec B310 - loopback health-check URL constructed by caller
+deeptutor/runtime/launcher.py:598:        with _LOOPBACK_OPENER.open(url, timeout=timeout):  # noqa: S310  # nosec B310 - loopback health check
+deeptutor/runtime/launcher.py:758:        with path.open("rb") as stream:
+deeptutor/runtime/launcher.py:1075:        webbrowser.open(url)
+deeptutor/runtime/launcher.py:1133:        process = subprocess.Popen(command, stdout=log, **kwargs)  # nosec B603
+deeptutor/runtime/update_worker.py:98:        subprocess.Popen(  # type: ignore[arg-type,call-overload] # nosec B603
+deeptutor/learning/tests/test_v2_migration.py:20:    with path.open("rb") as handle:
+deeptutor/services/session/legacy_migration.py:49:    with (archive_root / ".migration.lock").open("a+b") as handle:
+deeptutor/learning/tests/test_storage.py:690:    def test_a_database_written_before_the_rule_converges_on_open(self, tmp_path):
+deeptutor/book/engine.py:1132:    async def maybe_resume_on_open(self, book_id: str) -> bool:
+deeptutor/book/kb_health.py:59:        with open(path, "rb") as handle:
+deeptutor/api/routers/knowledge.py:495:                with open(file_path, "wb") as buffer:
+deeptutor/api/routers/knowledge.py:656:        with open(file_path, "rb") as fh:
+deeptutor/services/codex_auth/storage.py:58:    with path.open("a+b") as handle:
+deeptutor/api/routers/reading.py:1066:        with tmp_path.open("wb") as sink:
+deeptutor/services/cron/repository.py:51:        with self._migration_lock_path.open("a+b") as handle:
+deeptutor/services/cron/repository.py:80:            with path.open("rb") as handle:
+deeptutor/api/routers/question.py:214:                with open(pdf_path, "wb") as f:
+deeptutor/services/office_preview.py:110:            process = subprocess.Popen(
+deeptutor/api/routers/book.py:753:        await engine.maybe_resume_on_open(book_id)
+deeptutor/services/workspace/migration.py:24:                with path.open("rb") as handle:
+deeptutor/services/partners/manager.py:81:    handle = path.open("a+b")
+deeptutor/services/workspace/data_migration.py:118:    with path.open("rb") as handle:
+deeptutor/services/workspace/data_migration.py:129:        with path.open("rb") as handle:
+deeptutor/services/workspace/data_migration.py:156:        with path.open("rb") as handle:
+deeptutor/api/routers/file_preview.py:146:        with path.open("rb") as source:
+deeptutor/services/config/test_runner.py:546:        with wave.open(buffer, "wb") as wav:
+deeptutor/api/routers/visualizers.py:103:        with temp_path.open("wb") as sink:
+deeptutor/services/workspace/kb_move.py:313:                with path.open("rb") as handle:
+deeptutor/services/workspace/execution.py:100:        # (cp936, cp1252, …): a bare ``open()`` / ``Path.read_text()`` would then
+deeptutor/services/skill/hub.py:244:            with archive.open(info) as source, open(target, "wb") as sink:
+deeptutor/partners/channels/zulip.py:773:        with open(local_path, "rb") as f:
+deeptutor/services/partners/web_continuity.py:31:        with lock_path.open("a+b") as handle:
+deeptutor/services/workspace/service.py:63:    with path.open("rb") as handle:
+deeptutor/services/workspace/service.py:644:                with os.fdopen(fd, "wb") as target, source.open("rb") as handle:
+deeptutor/services/search/source_filter.py:253:    with urllib.request.urlopen(request, timeout=_MODERATION_TIMEOUT_S) as response:  # nosec B310 - hardcoded https constant URL
+deeptutor/services/search/source_filter.py:271:    with urllib.request.urlopen(request, timeout=_WEB_RISK_TIMEOUT_S) as response:  # nosec B310 - hardcoded https constant URL
+deeptutor/partners/channels/matrix.py:420:            with resolved.open("rb") as f:
+deeptutor/partners/channels/feishu.py:1108:            with open(file_path, "rb") as f:
+deeptutor/partners/channels/feishu.py:1138:            with open(file_path, "rb") as f:
+deeptutor/services/storage/attachment_store.py:183:            with tmp.open("wb") as fh:
+deeptutor/services/partners/sessions.py:203:            with open(self._path(session_key), "a", encoding="utf-8") as f:
+deeptutor/services/rag/visual_assets.py:55:            with Image.open(BytesIO(data)) as image:
+deeptutor/services/rag/visual_assets.py:88:    with path.open("rb") as handle:
+deeptutor/services/rag/visual_assets.py:380:            with os.fdopen(fd, "wb") as handle:
+deeptutor/services/voice/audio.py:20:    with wave.open(output, "wb") as wav:
+deeptutor/services/voice/audio.py:31:        with wave.open(io.BytesIO(audio), "rb") as wav:
+deeptutor/services/voice/audio.py:110:    with wave.open(buffer, "wb") as wav:
+deeptutor/services/storage/file_library.py:181:            with tmp.open("wb") as fh:
+deeptutor/services/app_update.py:498:            descriptor = os.open(self.active_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+deeptutor/services/app_update.py:651:        subprocess.Popen(command, stdout=log, **kwargs)  # nosec B603
+deeptutor/partners/transcription.py:42:                with open(path, "rb") as f:
+deeptutor/partners/channels/mattermost.py:437:            with open(path, "rb") as f:
+deeptutor/knowledge/add_documents.py:127:    with open(file_path, "rb") as handle:
+deeptutor/partners/channels/discord.py:305:                with open(path, "rb") as f:
+deeptutor/services/rag/file_routing.py:216:            with open(file_path, "rb") as f:
+deeptutor/services/rag/file_routing.py:303:            with open(file_path, "rb") as f:
+deeptutor/services/parsing/engines/_install.py:197:                process = subprocess.Popen(  # nosec B603 - argv from fixed allow-lists
+deeptutor/partners/channels/telegram.py:501:                with open(media_path, "rb") as f:
+deeptutor/services/rag/pipelines/lightrag_server/client.py:49:    def _open(self) -> httpx.AsyncClient:
+deeptutor/services/rag/pipelines/lightrag_server/client.py:88:        async with self._open() as client:
+deeptutor/services/rag/pipelines/lightrag_server/client.py:106:        async with self._open() as client:
+deeptutor/services/rag/pipelines/lightrag_server/client.py:117:        async with self._open() as client:
+deeptutor/services/parsing/cache.py:42:    with open(path, "rb") as handle:
+deeptutor/knowledge/manager.py:466:        ever see the previous or the new file — ``open(..., "w")`` used to
+deeptutor/services/parsing/engines/mineru/normalization.py:34:    with pymupdf.open(source) as doc:
+deeptutor/services/parsing/engines/mineru/normalization.py:76:    with pymupdf.open(path) as doc:
+deeptutor/services/rag/pipelines/weknora/client.py:37:    def _open(self) -> httpx.AsyncClient:
+deeptutor/services/rag/pipelines/weknora/client.py:57:        async with self._open() as client:
+deeptutor/services/parsing/engines/docling/local_worker.py:52:        process = subprocess.Popen(  # noqa: S603 - argv is fixed and shell=False
+deeptutor/services/parsing/engines/docling/remote.py:103:    with source_path.open("rb") as source:
+deeptutor/services/parsing/engines/mineru/checkpoints.py:32:    with source.open("rb") as handle:
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:32:    descriptor = os.open(lock_path, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o600)
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:33:    with os.fdopen(descriptor, "r+b") as handle:
+deeptutor/services/parsing/engines/mineru/models.py:123:                process = subprocess.Popen(  # nosec B603 — argv from validated resolver
+deeptutor/services/parsing/engines/tika/remote.py:101:    with source_path.open("rb") as source:
+deeptutor/services/parsing/engines/mineru/local.py:216:        process = subprocess.Popen(  # nosec B603 — fixed argv, shell=False
+deeptutor/services/rag/pipelines/llamaindex/vector_store.py:95:    with open(persist_path, "wb") as handle:
+deeptutor/services/rag/pipelines/llamaindex/vector_store.py:109:    with open(persist_path, "rb") as handle:
+deeptutor/services/rag/pipelines/llamaindex/vector_store.py:242:        with open(path, "rb") as handle:
+deeptutor/services/parsing/engines/mineru/cloud.py:279:                with open(part_path, "wb") as out:
+deeptutor/services/parsing/engines/mineru/cloud.py:625:                with archive.open(member) as src, open(dest, "wb") as out:
+deeptutor/services/rag/pipelines/llamaindex/storage.py:170:            with open(path, "rb") as probe:
+deeptutor/services/rag/pipelines/lightrag/ingress.py:56:    with path.open("rb") as handle:
+deeptutor/services/rag/pipelines/lightrag/ingress.py:101:    with resolved_source.open("rb") as src, target.open("xb") as dst:
+deeptutor/services/rag/pipelines/lightrag/ingress.py:115:    with path.open("xb") as handle:
+deeptutor/services/rag/pipelines/lightrag/parser.py:37:        with source.open("rb") as handle:
+=== open( without encoding= (tests) ===
+tests/test_packaging_metadata.py:10
+tests/services/parsing/test_mineru_local_failures.py:7
+tests/reading/test_capability.py:5
+tests/services/parsing/test_mineru_normalization.py:4
+tests/runtime/test_launcher.py:4
+tests/reading/test_engine.py:4
+tests/utils/test_document_images.py:3
+tests/services/parsing/test_engines.py:3
+tests/reading/test_router.py:3
+tests/capabilities/test_audio_overview.py:3
+tests/utils/test_secret_files.py:2
+tests/services/skill/test_skill_login.py:2
+tests/reading/test_reading_pdf_media.py:2
+tests/utils/test_document_extractor.py:1
+tests/services/workspace/test_content_workspace.py:1
+=== read_text/write_text without encoding (non-test) ===
+scripts/prepare_web_package.py:50:    (PACKAGE_DIR / "BUILD_INFO").write_text(
+scripts/docker_compose.py:70:    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+deeptutor/services/session/usage_recovery.py:68:                data = json.loads(path.read_text())
+deeptutor/services/partners/manager.py:657:        tmp_path.write_text(yaml.dump(data, allow_unicode=True), encoding="utf-8")
+deeptutor/services/partners/manager.py:1570:        self._souls_file.write_text(
+deeptutor/multi_user/identity.py:103:    atomic_write_text(USERS_FILE, json.dumps(users, indent=2, ensure_ascii=False))
+deeptutor/services/partners/workspace.py:323:    index_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+deeptutor/services/partners/workspace.py:397:                    config_file.write_text(
+deeptutor/services/partners/workspace.py:429:                index_path.write_text(
+deeptutor/services/partners/drafts.py:105:            tmp.write_text(
+deeptutor/multi_user/device_credentials.py:133:    atomic_write_text(
+deeptutor/services/partners/web_continuity.py:94:        temporary.write_text(json.dumps(state), encoding="utf-8")
+deeptutor/multi_user/grants.py:278:        atomic_write_text(path, written_text)
+deeptutor/multi_user/grants.py:312:            atomic_write_text(path, receipt.previous_text)
+deeptutor/services/partners/sessions.py:88:            self._index_path.write_text(
+deeptutor/services/workspace/dependencies.py:104:            book = json.loads(path.read_text())
+deeptutor/services/workspace/dependencies.py:213:                    document = json.loads(path.read_text())
+deeptutor/multi_user/guardians.py:78:    atomic_write_text(GUARDIANS_FILE, json.dumps(records, indent=2, ensure_ascii=False))
+deeptutor/services/workspace/data_migration.py:489:        item = json.loads(path.read_text())
+deeptutor/services/workspace/data_migration.py:755:    saved = json.loads(snapshot.read_text())
+deeptutor/services/workspace/data_migration.py:811:                atomic_write_text(path, updated)
+deeptutor/services/workspace/data_migration.py:900:            rows.append(json.loads(path.read_text()))
+deeptutor/services/workspace/data_migration.py:931:        result = json.loads(journal.read_text())
+deeptutor/services/workspace/data_migration.py:944:                    manifest = json.loads((root / "manifest.json").read_text())[feature]
+deeptutor/services/skill/credentials.py:94:    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+deeptutor/services/workspace/session_move.py:80:            previous = json.loads(backup.read_text()) if backup.exists() else []
+deeptutor/services/skill/service.py:309:        self._tags_path().write_text(
+deeptutor/services/skill/service.py:829:        self._hub_lock_path().write_text(
+deeptutor/services/workspace/execution.py:100:        # (cp936, cp1252, …): a bare ``open()`` / ``Path.read_text()`` would then
+deeptutor/services/workspace/service.py:499:    def read_text(
+deeptutor/services/mcp/session_state.py:51:        path.write_text(
+deeptutor/capabilities/obsidian/vault.py:55:def _read_text(path: Path) -> str:
+deeptutor/capabilities/obsidian/vault.py:168:    text = _read_text(path)
+deeptutor/capabilities/obsidian/vault.py:182:            text = _read_text(path)
+deeptutor/capabilities/obsidian/vault.py:227:            text = _read_text(path)
+deeptutor/capabilities/obsidian/vault.py:248:            text = _read_text(path)
+deeptutor/capabilities/obsidian/vault.py:281:    path.write_text(_compose_note(frontmatter or {}, content or ""), encoding="utf-8")
+deeptutor/capabilities/obsidian/vault.py:292:    path.write_text(existing + separator + (content or ""), encoding="utf-8")
+deeptutor/capabilities/obsidian/vault.py:306:    path.write_text(_compose_note(frontmatter, body), encoding="utf-8")
+deeptutor/services/cli_apps/vendor/build_snapshot.py:64:target.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+deeptutor/services/partner_groups/store.py:83:            tmp.write_text(
+deeptutor/services/partner_groups/store.py:209:            tmp.write_text("\n".join(output) + "\n", encoding="utf-8")
+deeptutor/services/partner_groups/store.py:320:            tmp.write_text(
+deeptutor/services/partner_groups/store.py:379:            tmp.write_text(
+deeptutor/services/subagent/config.py:205:    path.write_text(json.dumps(settings.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+deeptutor/api/routers/settings.py:2306:        tour_cache.write_text(json.dumps(cache, indent=2), encoding="utf-8")
+deeptutor/services/subagent/claude_models.py:97:    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+deeptutor/services/subagent/sessions.py:52:    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+deeptutor/services/memory/consolidator/modes/_shims.py:126:    path.write_text(serialize(doc), encoding="utf-8")
+deeptutor/services/file_io.py:63:def atomic_write_text(path: Path, text: str) -> None:
+deeptutor/services/persona/service.py:333:            self._persona_file(name).write_text(
+deeptutor/services/app_update.py:167:        raw = distribution.read_text("direct_url.json")
+deeptutor/services/memory/snapshot/store.py:69:    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+deeptutor/services/parsing/engines/docling/local_worker.py:131:    (workdir / f"{source_path.stem}.md").write_text(str(markdown), encoding="utf-8")
+deeptutor/services/memory/store.py:419:                meta_path.write_text(
+deeptutor/services/parsing/engines/markitdown/engine.py:85:        (workdir / f"{stem}.md").write_text(str(text), encoding="utf-8")
+deeptutor/services/parsing/engines/pymupdf4llm/engine.py:122:        (workdir / f"{source_path.stem}.md").write_text(str(markdown), encoding="utf-8")
+deeptutor/services/parsing/engines/mineru/cloud.py:244:        content_list_path.write_text(
+deeptutor/book/storage.py:56:    _atomic_write_text(path, text)
+deeptutor/co_writer/storage.py:56:    _atomic_write_text(path, text)
+deeptutor/book/learning_overlay.py:33:    atomic_write_text(path, json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+deeptutor/runtime/launcher.py:652:    marker.write_text(json.dumps(marker_payload, indent=2), encoding="utf-8")
+deeptutor/runtime/launcher.py:816:    marker.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+deeptutor/visualizers/store.py:72:        temp.write_text(
+deeptutor/learning/migration.py:289:            atomic_write_text(
+deeptutor/partners/channels/weixin.py:245:            state_file.write_text(json.dumps(data, ensure_ascii=False))
+deeptutor/tools/exec_tool.py:263:            (call_dir / "stdin.txt").write_text(str(kwargs["stdin"]), encoding="utf-8")
+deeptutor/partners/channels/mochat.py:996:            data = json.loads(self._cursor_path.read_text("utf-8"))
+deeptutor/partners/channels/mochat.py:1009:            self._cursor_path.write_text(
+deeptutor/learning/tests/test_v2_migration.py:121:    legacy_json.write_text(
+deeptutor/learning/tests/test_v2_migration.py:144:    good_json.write_text(
+deeptutor/learning/tests/test_v2_migration.py:171:    late_json.write_text(
+deeptutor/learning/tests/test_storage.py:247:        legacy_path.write_text(
+deeptutor/learning/tests/test_storage.py:276:        (tmp_path / "legacy-review.json").write_text(
+deeptutor/learning/tests/test_storage.py:630:        legacy_path.write_text(
+deeptutor/learning/tests/test_storage.py:647:        (tmp_path / "legacy-bound.json").write_text(
+deeptutor/learning/tests/test_storage.py:966:        _atomic_write_text(target, "hello")
+deeptutor/learning/tests/test_storage.py:971:        _atomic_write_text(target, "x")
+deeptutor/learning/tests/test_storage.py:976:        _atomic_write_text(target, "data")
+deeptutor/learning/tests/test_storage.py:988:            _atomic_write_text(target, "data")

@@ -1,0 +1,28 @@
+=== PATH env construction ===
+deeptutor/services/sandbox/backends.py:236:            path_entries = [part for part in base_path.split(os.pathsep) if part != venv_bin]
+deeptutor/services/sandbox/backends.py:237:            env["PATH"] = os.pathsep.join([venv_bin, *path_entries])
+deeptutor/services/sandbox/backends.py:327:            for entry in base_path.split(os.pathsep)
+deeptutor/services/sandbox/backends.py:330:        env["PATH"] = os.pathsep.join([venv_bin, *path_entries])
+deeptutor/services/workspace/service.py:104:            Path(value).expanduser().resolve() for value in raw.split(os.pathsep) if value.strip()
+deeptutor/services/rag/linked_kb.py:28:# under, as an ``os.pathsep``-separated list. Unset (the default) means no
+deeptutor/services/rag/linked_kb.py:81:    for chunk in raw.split(os.pathsep):
+deeptutor/services/cli_apps/installer.py:245:    env.setdefault("PATH", "/usr/local/bin:/usr/bin:/bin")
+deeptutor/services/cli_apps/runner.py:135:        *os.environ.get("PATH", "").split(os.pathsep),
+deeptutor/services/cli_apps/runner.py:142:    return os.pathsep.join(parts)
+=== /tmp literals ===
+=== unix sockets ===
+deeptutor/services/codex_auth/oauth.py:195:            if len({int(sock.getsockname()[1]) for sock in server.sockets}) == 1:
+deeptutor/services/codex_auth/oauth.py:208:        if server is None or not server.sockets:
+deeptutor/services/codex_auth/oauth.py:214:        bound_port = int(server.sockets[0].getsockname()[1])
+deeptutor/services/subagent/opencode_server.py:155:    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+deeptutor/partners/channels/slack.py:9:from slack_sdk.socket_mode.request import SocketModeRequest
+deeptutor/partners/channels/slack.py:10:from slack_sdk.socket_mode.response import SocketModeResponse
+deeptutor/partners/channels/slack.py:11:from slack_sdk.socket_mode.websockets import SocketModeClient
+deeptutor/partners/channels/slack.py:98:        self._socket_client.socket_mode_request_listeners.append(self._on_socket_request)
+deeptutor/partners/channels/mochat.py:436:        if not self.config.socket_disable_msgpack:
+deeptutor/partners/channels/mochat.py:445:            reconnection_delay=max(0.1, self.config.socket_reconnect_delay_ms / 1000.0),
+=== add_signal_handler ===
+deeptutor_cli/common.py:270:    On platforms without ``add_signal_handler`` (Windows) this is a no-op
+deeptutor_cli/common.py:282:            asyncio.get_running_loop().add_signal_handler(signal.SIGINT, self._on_sigint)
+=== multiprocessing start method ===
+=== catalog assert_available platform guard? ===

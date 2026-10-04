@@ -1,0 +1,93 @@
+tests/video_learning/test_service.py:485:    # Top-level ``import fcntl`` breaks ``deeptutor start`` on Windows (#1140).
+tests/video_learning/test_service.py:486:    assert "fcntl" not in service.__dict__
+deeptutor/video_learning/service.py:376:        # Binary + msvcrt on Windows (fcntl is Unix-only). Mirror
+deeptutor/video_learning/service.py:390:                import fcntl
+deeptutor/video_learning/service.py:392:                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/video_learning/service.py:400:                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+tests/reading/test_extension_router.py:261:@pytest.mark.parametrize("use_uvloop", [False, True])
+tests/reading/test_extension_router.py:262:def test_async_reading_action_runs_on_its_event_loop(material, monkeypatch, use_uvloop):
+tests/reading/test_extension_router.py:263:    """Vocabulary/translation actions must work under Uvicorn's uvloop (#1448)."""
+tests/reading/test_extension_router.py:264:    if use_uvloop:
+tests/reading/test_extension_router.py:265:        pytest.importorskip("uvloop")
+tests/reading/test_extension_router.py:275:    with TestClient(app, backend_options={"use_uvloop": use_uvloop}) as client:
+deeptutor_cli/common.py:42:        import termios
+deeptutor_cli/common.py:48:    if encoding not in {"utf-8", "utf8"} or not hasattr(termios, "IUTF8"):
+deeptutor_cli/common.py:57:        original_attributes = termios.tcgetattr(file_descriptor)
+deeptutor_cli/common.py:62:    if original_attributes[0] & termios.IUTF8:
+deeptutor_cli/common.py:67:    updated_attributes[0] |= termios.IUTF8
+deeptutor_cli/common.py:69:        termios.tcsetattr(file_descriptor, termios.TCSANOW, updated_attributes)
+deeptutor_cli/common.py:78:            termios.tcsetattr(file_descriptor, termios.TCSANOW, original_attributes)
+tests/cli/test_chat_terminal.py:15:termios = pytest.importorskip("termios")
+tests/cli/test_chat_terminal.py:18:@pytest.mark.skipif(not hasattr(termios, "IUTF8"), reason="IUTF8 is not available")
+tests/cli/test_chat_terminal.py:21:    original = termios.tcgetattr(slave_fd)
+tests/cli/test_chat_terminal.py:22:    original[0] &= ~termios.IUTF8
+tests/cli/test_chat_terminal.py:23:    termios.tcsetattr(slave_fd, termios.TCSANOW, original)
+tests/cli/test_chat_terminal.py:67:        assert not termios.tcgetattr(slave_fd)[0] & termios.IUTF8
+tests/utils/test_secret_files.py:55:    previous = os.umask(0)
+tests/utils/test_secret_files.py:61:        os.umask(previous)
+deeptutor/services/session/sqlite_store.py:21:    import fcntl
+deeptutor/services/session/sqlite_store.py:23:    fcntl = None  # type: ignore[assignment]
+deeptutor/services/session/sqlite_store.py:59:        if fcntl is not None:
+deeptutor/services/session/sqlite_store.py:60:            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+deeptutor/services/session/sqlite_store.py:64:            if fcntl is not None:
+deeptutor/services/session/sqlite_store.py:65:                fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+deeptutor/services/session/legacy_migration.py:18:    import fcntl
+deeptutor/services/session/legacy_migration.py:20:    fcntl = None  # type: ignore[assignment]
+deeptutor/services/session/legacy_migration.py:50:        if fcntl is not None:
+deeptutor/services/session/legacy_migration.py:51:            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/services/session/legacy_migration.py:55:            if fcntl is not None:
+deeptutor/services/session/legacy_migration.py:56:                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+tests/services/cron/test_cron_repository.py:42:        # Top-level ``import fcntl`` breaks cron startup on Windows (#1183).
+tests/services/cron/test_cron_repository.py:43:        assert "fcntl" not in repository.__dict__
+tests/services/cron/test_cron_repository.py:73:        monkeypatch.setitem(sys.modules, "fcntl", fake_fcntl)
+tests/services/cron/test_cron_service.py:32:    assert "fcntl" not in cron_repository.__dict__
+tests/services/setup/test_data_volume.py:108:        "deeptutor.services.setup.data_volume.os.fork",
+deeptutor/services/cron/repository.py:52:            # ``fcntl`` is unavailable on Windows. Keep the migration lock
+deeptutor/services/cron/repository.py:65:                import fcntl
+deeptutor/services/cron/repository.py:67:                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/services/cron/repository.py:75:                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+deeptutor/runtime/launcher.py:166:        return os.getpgid(pid)
+deeptutor/runtime/launcher.py:249:        os.killpg(pgid, sig)
+deeptutor/multi_user/grants.py:66:                import fcntl
+deeptutor/multi_user/grants.py:68:                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/multi_user/grants.py:76:                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+tests/services/rag/test_graphrag_pipeline.py:364:    refuses uvloop — the loop uvicorn[standard] runs the backend on. Every
+deeptutor/services/partners/manager.py:93:            import fcntl
+deeptutor/services/partners/manager.py:95:            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+deeptutor/services/partners/manager.py:114:            import fcntl
+deeptutor/services/partners/manager.py:116:            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+deeptutor/learning/migration.py:137:            import fcntl
+deeptutor/learning/migration.py:139:            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/learning/migration.py:143:                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+deeptutor/services/partners/web_continuity.py:42:                import fcntl
+deeptutor/services/partners/web_continuity.py:44:                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/services/partners/web_continuity.py:52:                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+deeptutor/services/sandbox/backends.py:453:            os.killpg(process.pid, signal.SIGKILL)
+deeptutor/services/codex_auth/storage.py:72:            import fcntl
+deeptutor/services/codex_auth/storage.py:74:            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+deeptutor/services/codex_auth/storage.py:82:                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+deeptutor/services/sandbox/runner/server.py:14:    apply per-command resource limits via :func:`resource.setrlimit`.
+deeptutor/services/sandbox/runner/server.py:69:    import resource
+deeptutor/services/sandbox/runner/server.py:91:# POSIX-only: setrlimit / preexec_fn are not available on Windows. The runner
+deeptutor/services/sandbox/runner/server.py:110:def _build_preexec_fn(memory_mb: int, cpu_seconds: int):
+deeptutor/services/sandbox/runner/server.py:111:    """Return a ``preexec_fn`` that applies rlimits in the forked child (POSIX).
+deeptutor/services/sandbox/runner/server.py:135:                resource.setrlimit(resource.RLIMIT_AS, (mem_bytes, mem_bytes))  # type: ignore[attr-defined]
+deeptutor/services/sandbox/runner/server.py:141:                resource.setrlimit(resource.RLIMIT_CPU, (cpu_seconds, cpu_seconds))  # type: ignore[attr-defined]
+deeptutor/services/sandbox/runner/server.py:147:                resource.setrlimit(resource.RLIMIT_NOFILE, (_RLIMIT_NOFILE, _RLIMIT_NOFILE))  # type: ignore[attr-defined]
+deeptutor/services/sandbox/runner/server.py:230:    preexec_fn = _build_preexec_fn(memory_mb, cpu_seconds)
+deeptutor/services/sandbox/runner/server.py:243:            preexec_fn=preexec_fn,  # POSIX-only; None elsewhere
+deeptutor/partners/channels/msteams.py:30:    import fcntl
+deeptutor/partners/channels/msteams.py:32:    fcntl = None
+deeptutor/partners/channels/msteams.py:656:            if fcntl is not None:
+deeptutor/partners/channels/msteams.py:657:                fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX)
+deeptutor/partners/channels/msteams.py:661:                if fcntl is not None:
+deeptutor/partners/channels/msteams.py:662:                    fcntl.flock(lock_fp.fileno(), fcntl.LOCK_UN)
+deeptutor/knowledge/manager.py:141:        import fcntl
+deeptutor/knowledge/manager.py:143:        fcntl.flock(file_handle.fileno(), fcntl.LOCK_SH)
+deeptutor/knowledge/manager.py:147:            fcntl.flock(file_handle.fileno(), fcntl.LOCK_UN)
+deeptutor/services/office_preview.py:136:                    os.killpg(process.pid, signal.SIGKILL)
+deeptutor/services/rag/pipelines/graphrag/engine.py:116:    patch refuses uvloop ("Can't patch loop of type <class 'uvloop.Loop'>") —
+deeptutor/services/rag/pipelines/graphrag/engine.py:122:    the server's uvloop loop untouched.
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:41:                import fcntl
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:43:                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+deeptutor/services/rag/pipelines/lightrag/write_lock.py:55:                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
