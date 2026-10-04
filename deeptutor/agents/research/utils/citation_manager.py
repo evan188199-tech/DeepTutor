@@ -8,11 +8,14 @@ import asyncio
 from datetime import datetime
 import html
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from deeptutor.services.path_service import get_path_service
 from deeptutor.utils.json_parser import parse_json_response
+
+logger = logging.getLogger(__name__)
 
 _RAG_SOURCE_FIELDS = ("chunks", "documents", "sources", "context", "retrieved_docs")
 
@@ -183,8 +186,13 @@ class CitationManager:
                 try:
                     num = int(citation_id.replace("PLAN-", ""))
                     self._plan_counter = max(self._plan_counter, num)
-                except ValueError:
-                    pass
+                except ValueError as exc:
+                    logger.warning(
+                        "Skipping malformed PLAN citation id %r while restoring"
+                        " counters: %s",
+                        citation_id,
+                        exc,
+                    )
             elif citation_id.startswith("CIT-"):
                 try:
                     parts = citation_id.replace("CIT-", "").split("-")
@@ -196,8 +204,13 @@ class CitationManager:
                         self._block_counters[block_num] = max(
                             self._block_counters[block_num], seq_num
                         )
-                except (ValueError, IndexError):
-                    pass
+                except (ValueError, IndexError) as exc:
+                    logger.warning(
+                        "Skipping malformed CIT citation id %r while restoring"
+                        " counters: %s",
+                        citation_id,
+                        exc,
+                    )
 
     def _save_citations(self):
         """Save citation information to JSON file"""
