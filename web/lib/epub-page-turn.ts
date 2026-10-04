@@ -32,13 +32,21 @@ export function renditionSpreadForEpubMode(
   return layout === "double" ? "always" : "none";
 }
 
-/** The centered paper surface width cap for each layout (#1236). */
+/**
+ * The centered paper surface width cap for each layout (#1236).
+ *
+ * The double-page cap keeps a 900px floor: epub.js only paginates spreads
+ * when its stage (this paper) is at least `minSpreadWidth` wide, even with
+ * `spread("always")`. Without the floor a small line-width preference could
+ * cap the paper below 900px while the outer book area still chose a spread,
+ * leaving two forced columns fighting single-page pagination (#1236).
+ */
 export function epubPaperMaxWidth(
   layout: EpubSpreadLayout,
   lineWidth: number,
 ): string {
   return layout === "double"
-    ? `min(100%, calc(${lineWidth * 2}ch + 6rem))`
+    ? `min(100%, max(calc(${lineWidth * 2}ch + 6rem), ${EPUB_SPREAD_MIN_READER_WIDTH_PX}px))`
     : `min(100%, calc(${lineWidth}ch + 4rem))`;
 }
 

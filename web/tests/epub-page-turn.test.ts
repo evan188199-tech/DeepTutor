@@ -41,9 +41,17 @@ test("spread layouts map to epub.js rendition values and paper widths", () => {
   assert.equal(renditionSpreadForEpubMode("double"), "always");
   assert.equal(renditionSpreadForEpubMode("single"), "none");
   assert.equal(epubPaperMaxWidth("single", 84), "min(100%, calc(84ch + 4rem))");
+  // The spread paper keeps a 900px floor so the stage epub.js measures can
+  // never fall below minSpreadWidth while a spread layout is active (#1236).
   assert.equal(
     epubPaperMaxWidth("double", 84),
-    "min(100%, calc(168ch + 6rem))",
+    "min(100%, max(calc(168ch + 6rem), 900px))",
+  );
+  // A narrow line-width preference no longer caps the spread paper under
+  // the spread threshold epub.js enforces.
+  assert.equal(
+    epubPaperMaxWidth("double", 48),
+    "min(100%, max(calc(96ch + 6rem), 900px))",
   );
 });
 

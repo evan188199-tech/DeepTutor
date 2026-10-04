@@ -214,7 +214,7 @@ it("resolves outline anchors through epub.js spine-relative hrefs", async () => 
   );
 });
 
-it("keeps publisher typography while supplying root fallbacks and image bounds (#1236)", async () => {
+it("keeps publisher type in daylight but re-inks it for night reading (#1447, #1236)", async () => {
   publisherParagraph = document.createElement("p");
   publisherParagraph.innerHTML =
     '<span style="font-family: monospace; font-size: 11px; color: #000">Publisher text</span>';
@@ -246,27 +246,33 @@ it("keeps publisher typography while supplying root fallbacks and image bounds (
     ),
   );
   const publisherSpan = publisherParagraph.querySelector("span")!;
+  // Night paper must re-ink hard-coded publisher black (#1447 regression):
+  // a body-only fallback cannot beat a span's own color declaration.
   await waitFor(() =>
-    expect(getComputedStyle(publisherSpan).color).toBe("rgb(0, 0, 0)"),
+    expect(getComputedStyle(publisherSpan).color).toBe("rgb(232, 229, 223)"),
   );
-  // Publisher declarations survive: the span keeps its own type and ink.
+  // Publisher typography survives everywhere, night included.
   expect(getComputedStyle(publisherSpan).fontFamily).toBe("monospace");
   expect(getComputedStyle(publisherSpan).fontSize).toBe("11px");
-  // The theme supplies only root fallbacks on <body>, never per-element ink.
   const bodyStyle = getComputedStyle(document.body);
   expect(bodyStyle.fontFamily).toContain("ui-sans-serif");
   expect(bodyStyle.fontSize).toBe("23px");
   expect(bodyStyle.color).toBe("rgb(232, 229, 223)");
   expect(bodyStyle.backgroundColor).toBe("rgb(22, 24, 29)");
+  // The paper shell follows the reader theme instead of a fixed bright sheet.
+  const paper = document.querySelector(".dt-epub-book");
+  expect(paper?.getAttribute("data-reader-theme")).toBe("night");
   // Overflowing images stay constrained inside the page.
   expect(themeStyle!.textContent).toContain(
     "img { max-width: 100% !important",
   );
   expect(fixture.rendition.themes.fontSize).toHaveBeenCalledWith("23px");
   fireEvent.click(screen.getByRole("button", { name: "Reset reading display" }));
-  await waitFor(() =>
-    expect(getComputedStyle(publisherSpan).color).toBe("rgb(0, 0, 0)"),
-  );
+  await waitFor(() => {
+    // Back on the default day theme the publisher's own ink returns.
+    expect(getComputedStyle(publisherSpan).color).toBe("rgb(0, 0, 0)");
+    expect(paper?.getAttribute("data-reader-theme")).toBe("auto");
+  });
   expect(getComputedStyle(publisherSpan).fontFamily).toBe("monospace");
   expect(JSON.parse(localStorage.getItem("dt.reader.textPreferences") || "{}"))
     .toMatchObject({ fontSize: 17, readerTheme: "auto", spreadMode: "auto" });

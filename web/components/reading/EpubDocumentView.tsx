@@ -126,13 +126,22 @@ function applyEpubDisplayPreferences(
         ? { background: "#16181d", color: "#e8e5df" }
         : null;
 
-  // Publisher styles stay authoritative: the theme supplies only a root
-  // fallback font and ink on <body>, plus image bounds and overflow
-  // protection. Forcing font-family and color onto every paragraph and span
-  // replaced publisher typography (#1236).
+  // Publisher styles stay authoritative in the default day theme: the theme
+  // supplies only a root fallback font on <body>, plus image bounds and
+  // overflow protection. Forcing font-family onto every paragraph and span
+  // replaced publisher typography (#1236). Non-default themes must still
+  // re-ink the text: EPUBs ship hard-coded black that is unreadable on sepia
+  // or dark paper, so the color override from #1447 stays for those themes
+  // while publisher fonts survive everywhere.
+  const ink = paper
+    ? `body { background-color: ${paper.background} !important; color: ${paper.color} !important; }
+     body :is(p, span, div, li, blockquote) { color: ${paper.color} !important; }
+     body :is(h1, h2, h3, h4, h5, h6) { color: ${paper.color} !important; }`
+    : "";
   rendition.themes.registerCss(
     "deeptutor",
-    `body { font-family: ${fontFamily}; font-size: ${preferences.fontSize}px;${paper ? ` background-color: ${paper.background}; color: ${paper.color};` : ""} }
+    `body { font-family: ${fontFamily}; font-size: ${preferences.fontSize}px; }
+     ${ink}
      img { max-width: 100% !important; max-height: 85vh !important; height: auto !important; object-fit: contain !important; }
      body * { vertical-align: baseline; }`,
   );
@@ -151,6 +160,22 @@ function applyEpubDisplayPreferences(
 function elementWidth(element: HTMLElement): number {
   return (
     element.clientWidth || Math.round(element.getBoundingClientRect().width)
+  );
+}
+
+/**
+ * The width a paper leaf can actually occupy inside the book area. The desk
+ * padding around the paper is not part of the host epub.js measures, so the
+ * spread boundary must be applied to the content-box width, not clientWidth
+ * (#1236).
+ */
+function availableReaderWidth(area: HTMLElement): number {
+  const styles = window.getComputedStyle(area);
+  const padding = (value: string) => Number.parseFloat(value) || 0;
+  return (
+    elementWidth(area) -
+    padding(styles.paddingLeft) -
+    padding(styles.paddingRight)
   );
 }
 
@@ -245,7 +270,7 @@ export function EpubDocumentView({
     if (!rendition || !area || !host) return;
     const nextLayout = resolveEpubSpreadLayout(
       preferencesRef.current.spreadMode,
-      elementWidth(area),
+      availableReaderWidth(area),
     );
     const bounds = host.getBoundingClientRect();
     const width = Math.round(bounds.width);
@@ -478,7 +503,7 @@ export function EpubDocumentView({
         isRtlRef.current = book.package?.metadata?.direction === "rtl";
         const initialLayout = resolveEpubSpreadLayout(
           preferencesRef.current.spreadMode,
-          elementWidth(bookAreaRef.current ?? host),
+          availableReaderWidth(bookAreaRef.current ?? host),
         );
         spreadLayoutRef.current = initialLayout;
         setSpreadLayout(initialLayout);
@@ -719,6 +744,7 @@ export function EpubDocumentView({
         <div
           className="dt-epub-book"
           data-spread={spreadLayout}
+          data-reader-theme={preferences.readerTheme}
           style={{
             maxWidth: epubPaperMaxWidth(spreadLayout, preferences.lineWidth),
             fontSize: `${preferences.fontSize}px`,
@@ -732,7 +758,7 @@ export function EpubDocumentView({
           {loading && (
             <div
               className="absolute inset-0 flex items-center justify-center gap-2 text-xs"
-              style={surface}
+              style={{ background: "var(--dt-epub-paper)" }}
             >
               <Loader2 size={15} className="animate-spin" />
               {t("Opening document…")}

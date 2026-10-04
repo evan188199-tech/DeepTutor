@@ -1154,7 +1154,9 @@ a[href^="#dt-locator-"]:hover {
 /* EPUB pages sit on a centered paper surface instead of bleeding edge to
    edge. The epub.js rendition owns pagination; this shell supplies the desk,
    the paper and its width caps. Layout switches between a two-page spread
-   and a single page from the real available width (#1236). */
+   and a single page from the real available width (#1236). The paper ink is
+   theme-linked (data-reader-theme mirrors the reader surface) so sepia and
+   night readers never flash a bright sheet behind dark content (#1236). */
 .dt-epub-book-area {
   display: flex;
   align-items: stretch;
@@ -1170,6 +1172,7 @@ a[href^="#dt-locator-"]:hover {
 }
 
 .dt-epub-book {
+  --dt-epub-paper: #fffdf8;
   position: relative;
   width: 100%;
   height: 100%;
@@ -1177,7 +1180,7 @@ a[href^="#dt-locator-"]:hover {
   overflow: hidden;
   border: 1px solid rgb(82 67 43 / 0.18);
   border-radius: 4px 8px 8px 4px;
-  background: #fffdf8;
+  background: var(--dt-epub-paper);
   box-shadow:
     0 2px 2px rgb(48 38 24 / 0.08),
     0 15px 38px -14px rgb(37 29 18 / 0.34),
@@ -1188,11 +1191,24 @@ a[href^="#dt-locator-"]:hover {
   border-radius: 8px;
 }
 
+.dt-epub-book[data-reader-theme="sepia"] {
+  --dt-epub-paper: #f4ecd8;
+  border-color: rgb(71 60 44 / 0.28);
+}
+
+.dt-epub-book[data-reader-theme="night"] {
+  --dt-epub-paper: #16181d;
+  border-color: rgb(232 229 223 / 0.14);
+  box-shadow:
+    0 2px 2px rgb(0 0 0 / 0.35),
+    0 15px 38px -14px rgb(0 0 0 / 0.6);
+}
+
 .dt-epub-rendition {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #fffdf8;
+  background: transparent;
 }
 
 @media (max-width: 640px) {
