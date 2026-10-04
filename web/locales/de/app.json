@@ -4667,6 +4667,7 @@
   "Partially Correct": "Teilweise richtig",
   "Not Graded": "Nicht bewertet",
   "Partner Chat": "Partner Chat",
+  "Visual Practice": "Visuelles Üben",
   "Failed to save answer. Please try again.": "Antwort konnte nicht gespeichert werden. Bitte versuche es erneut.",
   "Select an embedding model": "Embedding-Modell auswählen",
   "This knowledge base keeps using the selected model when the global default changes.": "Diese Knowledge Base verwendet weiterhin das ausgewählte Modell, wenn sich der globale Standard ändert.",

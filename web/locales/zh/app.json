@@ -4667,6 +4667,7 @@
   "Partially Correct": "部分正确",
   "Not Graded": "未评分",
   "Partner Chat": "伙伴对话",
+  "Visual Practice": "视觉练习",
   "Failed to save answer. Please try again.": "答案保存失败，请重试。",
   "Select an embedding model": "选择嵌入模型",
   "This knowledge base keeps using the selected model when the global default changes.": "此知识库始终使用所选模型，不受全局默认模型变更影响。",

@@ -260,7 +260,8 @@ export type AssessmentSource =
   | "immersive_reading"
   | "book"
   | "partner_chat"
-  | "import";
+  | "import"
+  | "source_visual";
 
 export type QuestionOriginType =
   | "conversation"

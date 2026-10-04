@@ -4684,6 +4684,7 @@
   "Partially Correct": "Частково правильно",
   "Not Graded": "Не оцінено",
   "Partner Chat": "Партнерський чат",
+  "Visual Practice": "Візуальна практика",
   "Failed to save answer. Please try again.": "Не вдалося зберегти відповідь. Спробуйте ще раз.",
   "Select an embedding model": "Виберіть модель вбудовування",
   "This knowledge base keeps using the selected model when the global default changes.": "Ця база знань продовжує використовувати вибрану модель, коли змінюється глобальне значення за умовчанням.",

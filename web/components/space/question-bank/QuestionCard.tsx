@@ -27,6 +27,7 @@ const SOURCE_LABELS: Record<NotebookEntry["source"], string> = {
   book: "Book",
   partner_chat: "Partner Chat",
   import: "Imported",
+  source_visual: "Visual Practice",
 };
 
 const ASSESSMENT_TYPE_LABELS: Record<string, string> = {

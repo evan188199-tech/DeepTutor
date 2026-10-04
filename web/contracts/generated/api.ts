@@ -13835,7 +13835,8 @@ export interface components {
         | "immersive_reading"
         | "book"
         | "partner_chat"
-        | "import";
+        | "import"
+        | "source_visual";
       /**
        * Turn Id
        * @default
@@ -16155,7 +16156,8 @@ export interface components {
         | "immersive_reading"
         | "book"
         | "partner_chat"
-        | "import";
+        | "import"
+        | "source_visual";
       /**
        * Turn Id
        * @default
@@ -30157,6 +30159,7 @@ export interface operations {
               | "book"
               | "partner_chat"
               | "import"
+              | "source_visual"
             )
           | "";
         /** @description Only entries filed under no category — the triage inbox. Ignored when category_id is set. */

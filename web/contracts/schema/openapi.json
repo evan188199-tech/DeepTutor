@@ -6810,7 +6810,8 @@
               "immersive_reading",
               "book",
               "partner_chat",
-              "import"
+              "import",
+              "source_visual"
             ],
             "title": "Source",
             "type": "string"
@@ -12224,7 +12225,8 @@
               "immersive_reading",
               "book",
               "partner_chat",
-              "import"
+              "import",
+              "source_visual"
             ],
             "title": "Source",
             "type": "string"
@@ -40154,7 +40156,8 @@
                     "immersive_reading",
                     "book",
                     "partner_chat",
-                    "import"
+                    "import",
+                    "source_visual"
                   ],
                   "type": "string"
                 },
