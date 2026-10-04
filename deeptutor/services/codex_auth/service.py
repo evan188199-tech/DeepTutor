@@ -864,13 +864,23 @@ class CodexOAuthService:
             self._logging_out = True
         try:
             await self.cancel_login()
+            logout_warnings: list[str] = []
             async with self._catalog_sync_lock:
                 credentials = self._store.load_credentials()
                 if credentials is not None:
                     try:
                         await self._oauth.revoke(credentials)
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        # Never log credential material: record only the error
+                        # kind and status so operators know the remote token
+                        # may still be valid.
+                        logger.warning(
+                            "Codex token revocation failed during logout; the "
+                            "remote token may still be valid (error=%s, http_status=%s)",
+                            getattr(exc, "code", None) or type(exc).__name__,
+                            getattr(exc, "http_status", None),
+                        )
+                        logout_warnings.append("token_revocation_failed")
                     self._store.clear_credentials(expected_generation=credentials.generation)
                 else:
                     self._store.clear_credentials(
@@ -879,12 +889,20 @@ class CodexOAuthService:
                 remove_codex_catalog(self._model_catalog)
                 try:
                     await self._catalog.invalidate()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning(
+                        "Codex catalog invalidation failed during logout; cached "
+                        "model data may be stale (error=%s, http_status=%s)",
+                        getattr(exc, "code", None) or type(exc).__name__,
+                        getattr(exc, "http_status", None),
+                    )
+                    logout_warnings.append("catalog_invalidation_failed")
                 self._last_snapshot = None
                 self._operation = None
                 self._clear_reauth_required()
-                return self.public_status()
+                status = self.public_status()
+                status["logout_warnings"] = logout_warnings
+                return status
         finally:
             async with self._inference_lock:
                 self._logging_out = False

@@ -627,6 +627,7 @@ class FakeCatalog:
         self.error = error
         self.calls: list[tuple[int, bool]] = []
         self.invalidated = False
+        self.invalidate_error: CodexAuthError | None = None
         self.get_started: asyncio.Event | None = None
         self.get_release: asyncio.Event | None = None
 
@@ -646,6 +647,8 @@ class FakeCatalog:
 
     async def invalidate(self) -> None:
         self.invalidated = True
+        if self.invalidate_error is not None:
+            raise self.invalidate_error
 
 
 def _stored_credentials(
@@ -1618,6 +1621,43 @@ async def test_revoke_failure_does_not_block_local_logout_and_restore(
     status = await service.logout()
 
     assert status["connection"] == "disconnected"
+    assert status["logout_warnings"] == ["token_revocation_failed"]
+    assert store.current_generation() == committed.generation + 1
+    assert store.load_credentials() is None
+    assert _selection(model_catalog.load()) == _selection(original)
+
+
+@pytest.mark.asyncio
+async def test_logout_reports_clean_logout_without_warnings(tmp_path: Path) -> None:
+    service, _callback, _oauth, catalog, store, _model_catalog = await _oauth_service(tmp_path)
+    store.commit_credentials(_stored_credentials(), expected_generation=0)
+
+    status = await service.logout()
+
+    assert status["connection"] == "disconnected"
+    assert status["logout_warnings"] == []
+    assert catalog.invalidated is True
+    assert store.load_credentials() is None
+
+
+@pytest.mark.asyncio
+async def test_catalog_invalidation_failure_is_reported_and_does_not_block_logout(
+    tmp_path: Path,
+) -> None:
+    service, _callback, _oauth, catalog, store, model_catalog = await _oauth_service(tmp_path)
+    committed = store.commit_credentials(_stored_credentials(), expected_generation=0)
+    original = model_catalog.load()
+    sync_codex_catalog(model_catalog, _snapshot("live", _model("gpt-5.6-sol")))
+    catalog.invalidate_error = CodexAuthError(
+        "catalog_invalidation_failed",
+        "The cached Codex model catalog could not be invalidated.",
+        503,
+    )
+
+    status = await service.logout()
+
+    assert status["connection"] == "disconnected"
+    assert status["logout_warnings"] == ["catalog_invalidation_failed"]
     assert store.current_generation() == committed.generation + 1
     assert store.load_credentials() is None
     assert _selection(model_catalog.load()) == _selection(original)

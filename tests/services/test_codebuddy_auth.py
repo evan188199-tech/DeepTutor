@@ -29,6 +29,16 @@ class FakeFlow:
         self.cancelled = True
 
 
+class FailingCancelFlow(FakeFlow):
+    def __init__(self, auth_url: str) -> None:
+        super().__init__(auth_url)
+        self.cancel_attempted = False
+
+    async def cancel(self) -> None:
+        self.cancel_attempted = True
+        raise RuntimeError("flow transport is gone")
+
+
 def auth_result(label: str = "Karsa"):
     return SimpleNamespace(
         userinfo=SimpleNamespace(user_nickname=label, user_name="", user_id="user-1")
@@ -149,6 +159,57 @@ async def test_logout_explains_that_an_ide_session_ends_in_the_ide(tmp_path, mon
 
     assert status["connection"] == "connected"
     assert status["error_code"] == "logout_external"
+
+
+@pytest.mark.asyncio
+async def test_cancel_login_reports_flow_cancel_failure(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
+    flow = FailingCancelFlow("https://codebuddy.example/login")
+    monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
+    service = CodeBuddyAuthService()
+
+    await service.start_login()
+    status = await service.cancel_login()
+
+    assert flow.cancel_attempted is True
+    assert status["connection"] == "disconnected"
+    assert status["operation_state"] == "cancelled"
+    assert status["error_code"] == "flow_cancel_failed"
+    assert service._flow is None
+    assert service._task is None
+
+
+@pytest.mark.asyncio
+async def test_logout_reports_flow_cancel_failure(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
+    flow = FailingCancelFlow("https://codebuddy.example/login")
+    monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
+    service = CodeBuddyAuthService()
+
+    await service.start_login()
+    status = await service.logout()
+
+    assert flow.cancel_attempted is True
+    assert status["connection"] == "disconnected"
+    assert status["operation_state"] is None
+    assert status["error_code"] == "flow_cancel_failed"
+    assert service._flow is None
+    assert service._task is None
+
+
+@pytest.mark.asyncio
+async def test_logout_without_flow_cancel_failure_stays_clean(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "absent-session"))
+    flow = FakeFlow("https://codebuddy.example/login")
+    monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
+    service = CodeBuddyAuthService()
+
+    await service.start_login()
+    status = await service.logout()
+
+    assert flow.cancelled is True
+    assert status["connection"] == "disconnected"
+    assert status["error_code"] is None
 
 
 def _write_ide_session(tmp_path, monkeypatch) -> None:
