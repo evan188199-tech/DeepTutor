@@ -55,6 +55,7 @@ BUILTIN_TOOL_SPECS: tuple[BuiltinToolSpec, ...] = (
             ("reason", "ReasonTool"),
             ("paper_search", "PaperSearchToolWrapper"),
             ("zotero_search", "ZoteroSearchToolWrapper"),
+            ("arxiv_import", "ArxivImportTool"),
             ("read_source", "ReadSourceTool"),
             ("read_memory", "ReadMemoryTool"),
             ("write_memory", "WriteMemoryTool"),

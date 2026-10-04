@@ -1,0 +1,5 @@
+short_description: "Search arXiv and import preprints into an attached knowledge base as citable sources."
+when_to_use: "The learner explicitly asks to add, save, or import arXiv papers into one of the attached knowledge bases."
+input_format: "kb_name; either a keyword query or explicit arxiv_ids; optional max_results and years_limit"
+guideline: "Call only after the learner explicitly asks to import into the knowledge base; for read-only discovery use paper_search instead. Imports store each abstract plus citation metadata (authors, year, link), never full PDFs. Report what was stored and what was already indexed."
+phase: other

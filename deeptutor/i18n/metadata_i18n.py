@@ -58,6 +58,10 @@ _TOOL_DESCRIPTIONS: dict[str, dict[str, str]] = {
         "en": "Search a user-supplied Zotero library for references.",
         "zh": "搜索用户提供的 Zotero 文献库。",
     },
+    "arxiv_import": {
+        "en": "Search arXiv and import preprints into an attached knowledge base.",
+        "zh": "搜索 arXiv 并把预印本导入已选知识库。",
+    },
     "reason": {
         "en": "Use a dedicated reasoning model call for hard reasoning tasks.",
         "zh": "调用专门的推理模型处理高难度推理任务。",

@@ -684,6 +684,142 @@ class ZoteroSearchToolWrapper(_PromptHintsMixin, BaseTool):
         )
 
 
+class ArxivImportTool(_PromptHintsMixin, BaseTool):
+    """Search arXiv and import preprints into an attached knowledge base."""
+
+    _ERROR_MESSAGES = {
+        "rate_limited": (
+            "arXiv rate-limited the request (it allows about one search every 3 seconds). "
+            "Try again shortly."
+        ),
+        "network_unavailable": "arXiv is temporarily unreachable. Check the network and try again.",
+        "invalid_response": "arXiv returned an unexpected response.",
+        "request_failed": "The arXiv request failed.",
+        "kb_not_found": "The target knowledge base no longer exists.",
+        "import_failed": (
+            "Indexing the preprints into the knowledge base failed. The knowledge base "
+            "may need reindexing; no sources were imported."
+        ),
+    }
+
+    def get_definition(self) -> ToolDefinition:
+        return ToolDefinition(
+            name="arxiv_import",
+            description=(
+                "Search arXiv or resolve explicit arXiv IDs and import the preprints into "
+                "one attached knowledge base as citable sources, storing each abstract "
+                "plus citation metadata (title, authors, year, link). Use only when the "
+                "learner explicitly asks to add, save, or import papers into the "
+                "knowledge base; use paper_search for read-only discovery."
+            ),
+            parameters=[
+                ToolParameter(
+                    name="kb_name",
+                    type="string",
+                    description=(
+                        "Knowledge base to import into. Must be one of the attached "
+                        "knowledge bases."
+                    ),
+                ),
+                ToolParameter(
+                    name="query",
+                    type="string",
+                    description="arXiv keyword query. Provide this or arxiv_ids.",
+                    required=False,
+                ),
+                ToolParameter(
+                    name="arxiv_ids",
+                    type="array",
+                    description="Explicit arXiv IDs (e.g. 1706.03762) to import.",
+                    required=False,
+                    items={"type": "string"},
+                ),
+                ToolParameter(
+                    name="max_results",
+                    type="integer",
+                    description="Maximum preprints to import (default 3, max 10).",
+                    required=False,
+                    default=3,
+                ),
+                ToolParameter(
+                    name="years_limit",
+                    type="integer",
+                    description=("Only import preprints from the last N years. Omit for no limit."),
+                    required=False,
+                ),
+            ],
+        )
+
+    async def execute(self, **kwargs: Any) -> ToolResult:
+        from fastapi import HTTPException
+
+        from deeptutor.multi_user.knowledge_access import resolve_kb
+        from deeptutor.tools.arxiv_import import ArxivImportError, import_papers
+
+        kb_name = str(kwargs.get("kb_name") or "").strip()
+        if not kb_name:
+            return ToolResult(
+                content="Error: kb_name is required. Pick one of the attached knowledge bases.",
+                success=False,
+                metadata={"provider": "arxiv", "papers": []},
+            )
+
+        raw_ids = kwargs.get("arxiv_ids") or []
+        if isinstance(raw_ids, str):
+            raw_ids = [raw_ids]
+        arxiv_ids = [str(value).strip() for value in raw_ids if str(value).strip()]
+        query = str(kwargs.get("query") or "").strip()
+        if not query and not arxiv_ids:
+            return ToolResult(
+                content="Error: provide either a search query or explicit arxiv_ids.",
+                success=False,
+                metadata={"provider": "arxiv", "papers": []},
+            )
+
+        try:
+            resource = await asyncio.to_thread(resolve_kb, kb_name, require_write=True)
+        except HTTPException:
+            return ToolResult(
+                content=f"Error: knowledge base '{kb_name}' is not accessible for import.",
+                success=False,
+                metadata={"provider": "arxiv", "papers": [], "kb_name": kb_name},
+            )
+        if getattr(resource, "read_only", False):
+            return ToolResult(
+                content=f"Error: knowledge base '{kb_name}' is read-only and cannot import papers.",
+                success=False,
+                metadata={"provider": "arxiv", "papers": [], "kb_name": kb_name},
+            )
+
+        try:
+            result = await import_papers(
+                kb_name=resource.name,
+                base_dir=str(resource.base_dir),
+                query=query,
+                arxiv_ids=arxiv_ids,
+                max_results=kwargs.get("max_results", 3),
+                years_limit=kwargs.get("years_limit"),
+            )
+        except ArxivImportError as exc:
+            message = self._ERROR_MESSAGES.get(exc.code, "arXiv import failed.")
+            return ToolResult(
+                content=message,
+                sources=[],
+                metadata={
+                    "provider": "arxiv",
+                    "papers": [],
+                    "error": exc.code,
+                    "status_code": exc.status_code,
+                },
+                success=False,
+            )
+        return ToolResult(
+            content=result["content"],
+            sources=result["sources"],
+            metadata=result["metadata"],
+        )
+
+
 class GeoGebraAnalysisTool(_PromptHintsMixin, BaseTool):
     """Analyze a math-problem image and generate GeoGebra visualization commands."""
 
@@ -1933,6 +2069,7 @@ CONFIGURABLE_BUILTIN_TOOL_NAMES: tuple[str, ...] = (
     "rag",
     "kb_files",
     "knowledge_frontier",
+    "arxiv_import",
     "read_source",
     "read_memory",
     "write_memory",
@@ -1984,6 +2121,7 @@ __all__ = [
     "PARTNER_BUILTIN_TOOL_NAMES",
     "TOOL_ALIASES",
     "USER_TOGGLEABLE_TOOL_NAMES",
+    "ArxivImportTool",
     "AskUserTool",
     "BrainstormTool",
     "ExecTool",

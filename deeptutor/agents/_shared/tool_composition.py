@@ -48,6 +48,7 @@ _CONDITIONAL_MOUNT_FLAGS: dict[str, str] = {
     "rag": "has_kb",
     "kb_files": "has_kb",
     "knowledge_frontier": "has_kb",
+    "arxiv_import": "has_kb",
     "read_source": "has_sources",
     "read_memory": "has_memory",
     "list_notebook": "has_notebooks",

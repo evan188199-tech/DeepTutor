@@ -1,0 +1,5 @@
+short_description: "搜索 arXiv，并把预印本作为可引用来源导入已选知识库。"
+when_to_use: "学习者明确要求把 arXiv 论文添加、保存或导入某个已选知识库时。"
+input_format: "kb_name；关键词 query 或明确的 arxiv_ids 二选一；可选 max_results 与 years_limit"
+guideline: "仅在学习者明确要求导入知识库时调用；只做检索发现时改用 paper_search。导入保存的是摘要与引用元数据（作者、年份、链接），不下载全文 PDF。汇报新导入与已存在的条目。"
+phase: other
