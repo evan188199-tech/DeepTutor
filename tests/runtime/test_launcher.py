@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import builtins
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import logging
 from pathlib import Path
+import signal
+import subprocess
 from threading import Thread
 from types import SimpleNamespace
 
@@ -878,3 +881,131 @@ def test_windows_children_and_console_tools_allocate_no_console(
 class _NoopThread:
     def start(self) -> None:
         return None
+
+
+class _StubbornPopen:
+    """Popen stand-in that stays alive until a fake signal lets it exit."""
+
+    def __init__(self, *, pid: int = 4242) -> None:
+        self.pid = pid
+        self.exited = False
+
+    def poll(self) -> int | None:
+        return 0 if self.exited else None
+
+    def wait(self, timeout: float | None = None) -> int:
+        if not self.exited:
+            raise subprocess.TimeoutExpired(cmd="backend", timeout=timeout)
+        return 0
+
+
+def test_terminate_warns_when_sigterm_fails_and_reports_survivor(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A child no signal reaches must surface both the failure and itself."""
+    child = _StubbornPopen()
+    proc = launcher.ManagedProcess(name="backend", process=child, pgid=4242)
+    sent: list[int] = []
+
+    def fake_send(pid, pgid, sig):
+        sent.append(sig)
+        # Neither round is delivered: SIGTERM is refused, SIGKILL vanishes.
+        raise PermissionError("operation not permitted")
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        terminated = launcher._terminate(proc)
+
+    assert terminated is False
+    assert sent == [signal.SIGTERM, launcher.KILL_SIGNAL]
+    warnings = [record.getMessage() for record in caplog.records]
+    assert any("SIGTERM" in message for message in warnings)
+    assert any("SIGKILL" in message for message in warnings)
+
+
+def test_terminate_reports_child_stopped_after_kill_escalation(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The ladder keeps its shape: refused SIGTERM, working SIGKILL, done."""
+    child = _StubbornPopen()
+    proc = launcher.ManagedProcess(name="backend", process=child, pgid=4242)
+
+    def fake_send(pid, pgid, sig):
+        if sig == launcher.KILL_SIGNAL:
+            child.exited = True
+            return
+        raise PermissionError("operation not permitted")
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        terminated = launcher._terminate(proc)
+
+    assert terminated is True
+    assert child.exited is True
+    assert any("SIGTERM" in record.getMessage() for record in caplog.records)
+
+
+def test_terminate_returns_true_for_absent_or_exited_child() -> None:
+    exited = _StubbornPopen()
+    exited.exited = True
+    assert launcher._terminate(None) is True
+    assert (
+        launcher._terminate(launcher.ManagedProcess(name="web", process=exited, pgid=None)) is True
+    )
+
+
+def test_kill_port_listeners_isolates_one_targets_sigterm_failure(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """One unreachable listener must not spare the others or hide itself."""
+    occupied = {8000}
+
+    def fake_send(pid, pgid, sig):
+        if pid == 123:
+            raise PermissionError("operation not permitted")
+        occupied.discard(8000)
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+    monkeypatch.setattr(launcher, "_port_accepts_connection", lambda port: port in occupied)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        results = launcher._kill_port_listeners({8000: [(123, "python uvicorn"), (456, "node")]})
+
+    assert results == {8000: [(123, False), (456, True)]}
+    assert occupied == set()
+    assert any("123" in record.getMessage() for record in caplog.records)
+
+
+def test_kill_port_listeners_reports_kill_round_failures_per_target(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """SIGTERM-ignoring listeners escalate; KILL failures stay per-target."""
+    occupied = {8000}
+    sent: list[tuple[int, int]] = []
+    clock = {"now": 0.0}
+
+    def fake_send(pid, pgid, sig):
+        sent.append((pid, sig))
+        if sig == launcher.KILL_SIGNAL and pid == 123:
+            raise OSError("no such process")
+        # pid 456 accepts both signals; zombie 123 keeps holding the port.
+
+    def fake_sleep(seconds: float) -> None:
+        clock["now"] += seconds
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+    monkeypatch.setattr(launcher, "_port_accepts_connection", lambda port: port in occupied)
+    monkeypatch.setattr(launcher.time, "monotonic", lambda: clock["now"])
+    monkeypatch.setattr(launcher.time, "sleep", fake_sleep)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        results = launcher._kill_port_listeners({8000: [(123, "python uvicorn"), (456, "node")]})
+
+    assert results == {8000: [(123, False), (456, True)]}
+    assert (123, signal.SIGTERM) in sent
+    assert (456, signal.SIGTERM) in sent
+    assert (123, launcher.KILL_SIGNAL) in sent
+    assert (456, launcher.KILL_SIGNAL) in sent
+    assert any("SIGKILL" in record.getMessage() for record in caplog.records)
