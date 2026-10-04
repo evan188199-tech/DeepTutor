@@ -1,0 +1,640 @@
+{
+  "files_scanned": 1258,
+  "total": 63,
+  "findings": [
+    {
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 184,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "app"
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 244,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "app"
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 476,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "app"
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 663,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "app"
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 785,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "app"
+    },
+    {
+      "file": "web/components/Geogebra.tsx",
+      "line": 173,
+      "col": 21,
+      "kind": "console_call",
+      "method": "warn",
+      "surface": "code",
+      "in_catch": false,
+      "area": "components"
+    },
+    {
+      "file": "web/components/Geogebra.tsx",
+      "line": 177,
+      "col": 19,
+      "kind": "console_call",
+      "method": "warn",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/components/notebook/useNotebookSelection.ts",
+      "line": 49,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/components/notebook/useNotebookSelection.ts",
+      "line": 79,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 458,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/components/sidebar/UtilitySidebar.tsx",
+      "line": 65,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/components/sidebar/WorkspaceSidebar.tsx",
+      "line": 78,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "components"
+    },
+    {
+      "file": "web/context/GeogebraTabContext.tsx",
+      "line": 57,
+      "col": 7,
+      "kind": "console_call",
+      "method": "warn",
+      "surface": "code",
+      "in_catch": false,
+      "area": "context"
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 2261,
+      "col": 11,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "features"
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 2412,
+      "col": 11,
+      "kind": "console_call",
+      "method": "warn",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3582,
+      "col": 9,
+      "kind": "console_call",
+      "method": "warn",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3620,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 917,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 832,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 845,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "features"
+    },
+    {
+      "file": "web/lib/brand-slugs.ts",
+      "line": 83,
+      "col": 10,
+      "kind": "debugger_mention",
+      "method": null,
+      "surface": "comment",
+      "in_catch": false,
+      "area": "lib",
+      "text": "// The debugger ships with LLVM and has no mark of its own."
+    },
+    {
+      "file": "web/lib/iframe-html.ts",
+      "line": 22,
+      "col": 392,
+      "kind": "console_mention",
+      "method": "error",
+      "surface": "string",
+      "in_catch": false,
+      "area": "lib",
+      "text": "'document.addEventListener(\"DOMContentLoaded\",function(){var t=0,i=setInterval(function(){if(typeof renderMathInElement===\"function\"){clearInterval(i);try{rende"
+    },
+    {
+      "file": "web/lib/iframe-html.ts",
+      "line": 22,
+      "col": 460,
+      "kind": "console_mention",
+      "method": "warn",
+      "surface": "string",
+      "in_catch": false,
+      "area": "lib",
+      "text": "'document.addEventListener(\"DOMContentLoaded\",function(){var t=0,i=setInterval(function(){if(typeof renderMathInElement===\"function\"){clearInterval(i);try{rende"
+    },
+    {
+      "file": "web/lib/latex-commands.ts",
+      "line": 14,
+      "col": 8,
+      "kind": "console_mention",
+      "method": "log",
+      "surface": "comment",
+      "in_catch": false,
+      "area": "lib",
+      "text": "*     console.log([...n].filter(x=>x.length>=3).sort().join(\" \"))'"
+    },
+    {
+      "file": "web/scripts/build-brand-icons.mts",
+      "line": 34,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/build-brand-icons.mts",
+      "line": 100,
+      "col": 1,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/build.mjs",
+      "line": 124,
+      "col": 5,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/generate-contracts.mjs",
+      "line": 78,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/generate-contracts.mjs",
+      "line": 83,
+      "col": 5,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 130,
+      "col": 5,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 143,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 180,
+      "col": 7,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 182,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 186,
+      "col": 7,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 193,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 199,
+      "col": 7,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 200,
+      "col": 41,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 206,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 208,
+      "col": 9,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 233,
+      "col": 3,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 237,
+      "col": 1,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 240,
+      "col": 3,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 243,
+      "col": 5,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 246,
+      "col": 5,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_audit.mjs",
+      "line": 249,
+      "col": 3,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 39,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 52,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 53,
+      "col": 32,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 57,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 58,
+      "col": 30,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 75,
+      "col": 5,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 77,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 78,
+      "col": 36,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 81,
+      "col": 7,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 82,
+      "col": 34,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/i18n_parity.mjs",
+      "line": 88,
+      "col": 1,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/probe-right-edge.mjs",
+      "line": 21,
+      "col": 1,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/route_budgets.mjs",
+      "line": 162,
+      "col": 3,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/route_budgets.mjs",
+      "line": 191,
+      "col": 5,
+      "kind": "console_call",
+      "method": "log",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/route_budgets.mjs",
+      "line": 207,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": true,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/run-node-tests.mjs",
+      "line": 51,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/scripts/typecheck.mjs",
+      "line": 49,
+      "col": 3,
+      "kind": "console_call",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "scripts"
+    },
+    {
+      "file": "web/tests/setup/rendered.ts",
+      "line": 73,
+      "col": 30,
+      "kind": "console_reference",
+      "method": "error",
+      "surface": "code",
+      "in_catch": false,
+      "area": "tests"
+    }
+  ]
+}
