@@ -12,8 +12,11 @@ Resolution order, first valid wins:
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any, Optional, Sequence
+
+logger = logging.getLogger(__name__)
 
 
 def resolve_kb_mode(
@@ -26,16 +29,25 @@ def resolve_kb_mode(
     default: str,
 ) -> str:
     candidates: list[Any] = [explicit]
+    cfg_path = Path(kb_base_dir) / "kb_config.json"
     try:
-        cfg_path = Path(kb_base_dir) / "kb_config.json"
         if cfg_path.exists():
             data = json.loads(cfg_path.read_text(encoding="utf-8"))
             if kb_name:
                 entry = data.get("knowledge_bases", {}).get(kb_name, {})
                 candidates.append(entry.get("search_mode"))
             candidates.append(data.get("defaults", {}).get("provider_modes", {}).get(provider))
-    except Exception:  # pragma: no cover - defensive
-        pass
+    except Exception as exc:
+        # A missing config file is a legal default state (handled by the
+        # ``exists()`` check above); an existing but unreadable/unusable one
+        # must be visible instead of silently degrading retrieval mode.
+        logger.warning(
+            "Failed to read %s; falling back to default retrieval mode %r for provider %r: %s",
+            cfg_path,
+            default,
+            provider,
+            exc,
+        )
 
     supported_set = {m.lower() for m in supported}
     for candidate in candidates:
