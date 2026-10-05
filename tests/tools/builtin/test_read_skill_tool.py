@@ -65,6 +65,49 @@ async def test_missing_skill_lists_available_skills(
     assert "Available skills: another-skill" in result.content
 
 
+@pytest.mark.asyncio
+async def test_unreadable_listed_skill_reports_explicit_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A manifest-listed skill whose package stops resolving is an explicit
+    error, not the generic "not listed" retry hint.
+
+    The skill shows up in the visible manifest, so telling the model to "use
+    a name exactly as listed" — while still naming this very skill among the
+    available ones — would loop it back to the same call.
+    """
+    import logging
+
+    from deeptutor.services.skill.service import SkillNotFoundError
+
+    root = tmp_path / "skills"
+    _write_skill(root, "vanishing-skill")
+
+    real_read = SkillService.read_skill_file
+
+    def _vanishing_read(service_self: SkillService, name: str, rel_path: str = "SKILL.md") -> str:
+        if name == "vanishing-skill":
+            raise SkillNotFoundError(name)
+        return real_read(service_self, name, rel_path)
+
+    # The package stops resolving after the manifest already listed the
+    # skill (e.g. it was removed mid-session). Patched at class level
+    # because skill_sources() builds fresh service instances per layer.
+    monkeypatch.setattr(SkillService, "read_skill_file", _vanishing_read)
+    _use_service(monkeypatch, SkillService(root=root, builtin_root=None))
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.tools.builtin"):
+        result = await ReadSkillTool().execute(name="vanishing-skill")
+
+    assert result.success is False
+    assert "skill unavailable: 'vanishing-skill'" in result.content
+    # Not the misleading fall-through: the name WAS listed.
+    assert "skill not found" not in result.content
+    assert "Available skills" not in result.content
+    # The loss is logged for operators, not silently swallowed.
+    assert "vanishing-skill" in caplog.text
+
+
 def test_missing_file_has_a_distinct_service_exception(tmp_path: Path) -> None:
     root = tmp_path / "skills"
     _write_skill(root, "demo")

@@ -1709,7 +1709,26 @@ class ReadSkillTool(_PromptHintsMixin, BaseTool):
                     success=False,
                 )
             except SkillNotFoundError:
-                continue
+                # The manifest listed this skill, but its package no longer
+                # resolves (e.g. removed mid-session after the prompt was
+                # assembled). The generic fall-through below would still
+                # name this skill among the available ones and push the
+                # model back into the same call, so surface the real cause
+                # and leave a log trace instead of swallowing it.
+                logger.warning(
+                    "read_skill: skill %r is listed in the visible manifest "
+                    "but its package is no longer readable",
+                    name,
+                )
+                return ToolResult(
+                    content=(
+                        f"(skill unavailable: {name!r} was listed in the Skills "
+                        "section but its files can no longer be read — it may "
+                        "have been removed or changed. Do not retry the same "
+                        "call; proceed without it or ask the user.)"
+                    ),
+                    success=False,
+                )
             except (InvalidSkillNameError, InvalidSkillPathError) as exc:
                 return ToolResult(content=f"(read_skill error: {exc})", success=False)
             return ToolResult(
