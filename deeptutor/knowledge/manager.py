@@ -101,8 +101,15 @@ def _entry_updated_after(kb_entry: dict | None, cutoff: datetime) -> bool:
     if not isinstance(raw, str):
         return False
     try:
-        return datetime.fromisoformat(raw) > cutoff
-    except ValueError:
+        parsed = datetime.fromisoformat(raw)
+        if (parsed.tzinfo is None) != (cutoff.tzinfo is None):
+            # Comparing naive and aware datetimes raises TypeError. Both sides
+            # record local wall-clock time, so attach the host's zone to the
+            # naive side before comparing.
+            parsed = parsed.astimezone()
+            cutoff = cutoff.astimezone()
+        return parsed > cutoff
+    except (TypeError, ValueError):
         return False
 
 

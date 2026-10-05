@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
@@ -101,7 +101,7 @@ class KnowledgeBaseInitializer:
                 metadata = {}
 
         metadata["rag_provider"] = provider
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now(timezone.utc).isoformat()
         metadata["last_updated"] = timestamp
         metadata["last_indexed_at"] = timestamp
         metadata["last_indexed_count"] = len(

@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import itertools
 import json
@@ -495,7 +495,7 @@ class DocumentAdder:
 
         metadata["rag_provider"] = self.rag_provider
         metadata["needs_reindex"] = False
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now(timezone.utc).isoformat()
         metadata["last_updated"] = timestamp
         if added_count > 0:
             metadata["last_indexed_at"] = timestamp
@@ -565,7 +565,7 @@ async def _bootstrap_index_from_files(
         )
         metadata["rag_provider"] = provider
         metadata["needs_reindex"] = False
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ts = datetime.now(timezone.utc).isoformat()
         metadata["last_updated"] = ts
         metadata["last_indexed_at"] = ts
         metadata["last_indexed_count"] = indexed
