@@ -108,6 +108,8 @@ class TestNapcatConfig:
             NapcatConfig(group_policy=1.5)
         with pytest.raises(ValidationError):
             NapcatConfig(group_policy=-0.1)
+        assert NapcatConfig(group_policy=1.0).group_policy == 1.0
+        assert NapcatConfig(group_policy=0.0).group_policy == 0.0
 
     def test_group_policy_overrides_mixed_types(self):
         cfg = NapcatConfig(
@@ -293,6 +295,10 @@ class TestParseSegments:
             [{"type": "image", "data": {"url": "file:///etc/passwd"}}]
         )
         assert images == []
+        _, images, _, _ = ch._parse_segments([{"type": "image", "data": {}}])
+        assert images == []
+        _, images, _, _ = ch._parse_segments([{"type": "image", "data": {"url": None}}])
+        assert images == []
 
     def test_at_self_sets_mentioned(self):
         ch = _make_channel()
@@ -328,8 +334,10 @@ class TestParseSegments:
 
     def test_reply_id_parsed(self):
         ch = _make_channel()
-        _, _, _, reply_to = ch._parse_segments([{"type": "reply", "data": {"id": "777"}}])
+        _, _, mentioned, reply_to = ch._parse_segments([{"type": "reply", "data": {"id": "777"}}])
         assert reply_to == 777
+        assert isinstance(reply_to, int)
+        assert mentioned is False
 
     def test_bad_reply_id_ignored(self):
         ch = _make_channel()
@@ -356,11 +364,16 @@ class TestOnMessage:
         assert msg.content == "hi there"
         assert msg.metadata["is_group"] is False
         assert msg.metadata["message_id"] == 2000
+        assert msg.metadata["nickname"] == "Alice"
+        assert msg.metadata["reply_to"] is None
+        assert msg.media == []
 
     @pytest.mark.asyncio
     async def test_duplicate_message_filtered(self):
         ch = _make_channel()
         await ch._on_message(_private_event(message_id=2000))
+        assert ch.bus.publish_inbound.await_count == 1
+        assert 2000 in ch._processed_ids
         ch.bus.publish_inbound.reset_mock()
         await ch._on_message(_private_event(message_id=2000))
         ch.bus.publish_inbound.assert_not_awaited()
@@ -371,6 +384,8 @@ class TestOnMessage:
         ch._self_id = 999
         await ch._on_message(_group_event())
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.bus.publish_inbound.await_count == 0
+        assert 1000 in ch._processed_ids
 
     @pytest.mark.asyncio
     async def test_group_mention_policy_allows_at_self(self):
@@ -449,18 +464,23 @@ class TestOnMessage:
         ch = _make_channel()
         await ch._on_message(_private_event(message=[]))
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.bus.publish_inbound.await_count == 0
+        assert 2000 in ch._processed_ids
 
     @pytest.mark.asyncio
     async def test_disallowed_sender_blocked_by_base(self):
         ch = _make_channel(allow_from=["1000"])
         await ch._on_message(_private_event(user_id=42))
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.is_allowed("42") is False
+        assert ch.bus.publish_inbound.await_count == 0
 
     @pytest.mark.asyncio
     async def test_unknown_message_type_ignored(self):
         ch = _make_channel()
         await ch._on_message(_private_event(message_type="weird"))
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.bus.publish_inbound.await_count == 0
 
 
 class TestOnNotice:
@@ -475,6 +495,7 @@ class TestOnNotice:
         ch.bus.publish_inbound.assert_awaited_once()
         msg = ch.bus.publish_inbound.call_args[0][0]
         assert msg.chat_id == "group:123456"
+        assert msg.sender_id == "55"
         assert "Bob" in msg.content
         assert msg.metadata["event"] == "group_increase"
 
@@ -483,12 +504,14 @@ class TestOnNotice:
         ch = _make_channel(welcome_new_members=False)
         await ch._on_notice({"notice_type": "group_increase", "group_id": 123456, "user_id": 55})
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.bus.publish_inbound.await_count == 0
 
     @pytest.mark.asyncio
     async def test_other_notice_types_ignored(self):
         ch = _make_channel(welcome_new_members=True)
         await ch._on_notice({"notice_type": "group_decrease", "group_id": 1, "user_id": 2})
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch.bus.publish_inbound.await_count == 0
 
 
 class TestSend:
@@ -497,16 +520,18 @@ class TestSend:
         ch = _make_channel()
         ch._ws = None
         msg = OutboundMessage(channel="napcat", chat_id="private:42", content="hi")
-        with pytest.raises(RuntimeError):
+        with pytest.raises(RuntimeError, match="not connected"):
             await ch.send(msg)
+        assert ch._ws is None
 
     @pytest.mark.asyncio
     async def test_send_raises_on_invalid_chat_id(self):
         ch = _make_channel()
         ch._ws = MagicMock()
         msg = OutboundMessage(channel="napcat", chat_id="bogus", content="hi")
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="invalid chat_id"):
             await ch.send(msg)
+        assert ch._ws.send.call_count == 0
 
     @pytest.mark.asyncio
     async def test_send_private_text(self):
@@ -542,6 +567,7 @@ class TestSend:
             await ch.send(msg)
 
         _, params = mock_call.call_args[0]
+        assert mock_call.call_args[0][0] == "send_msg"
         assert params["message_type"] == "group"
         assert params["group_id"] == 123456
 
@@ -553,6 +579,8 @@ class TestSend:
             msg = OutboundMessage(channel="napcat", chat_id="private:42", content="   ")
             await ch.send(msg)
         mock_call.assert_not_awaited()
+        assert mock_call.await_count == 0
+        assert not ch._bot_outbound_ids
 
     @pytest.mark.asyncio
     async def test_send_local_image_as_base64(self, tmp_path: Path):
@@ -587,8 +615,10 @@ class TestSend:
             new=AsyncMock(side_effect=RuntimeError("napcat: action send_msg failed")),
         ):
             msg = OutboundMessage(channel="napcat", chat_id="private:42", content="hello")
-            with pytest.raises(RuntimeError):
+            with pytest.raises(RuntimeError, match="action send_msg failed"):
                 await ch.send(msg)
+        assert not ch._bot_outbound_ids
+        assert not ch._pending
 
 
 class TestDispatchFrame:
@@ -604,6 +634,36 @@ class TestDispatchFrame:
         await ch._dispatch_frame('{"echo": "echo-1", "status": "ok", "retcode": 0}')
         assert fut.done()
         assert fut.result()["status"] == "ok"
+        assert fut.result()["retcode"] == 0
+        assert "echo-1" not in ch._pending
+
+    @pytest.mark.asyncio
+    async def test_action_response_unknown_echo_ignored(self):
+        import asyncio
+
+        ch = _make_channel()
+        loop = asyncio.get_running_loop()
+        fut = loop.create_future()
+        ch._pending["echo-1"] = fut
+
+        await ch._dispatch_frame('{"echo": "echo-other", "status": "ok", "retcode": 0}')
+        assert not fut.done()
+        assert ch._pending["echo-1"] is fut
+
+    @pytest.mark.asyncio
+    async def test_echo_with_post_type_is_event_not_action_response(self):
+        import asyncio
+
+        ch = _make_channel()
+        loop = asyncio.get_running_loop()
+        fut = loop.create_future()
+        ch._pending["echo-1"] = fut
+
+        with patch.object(ch, "_create_background_task") as mock_bg:
+            await ch._dispatch_frame('{"echo": "echo-1", "post_type": "message", "self_id": 999}')
+        assert not fut.done()
+        assert "echo-1" in ch._pending
+        mock_bg.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_self_id_captured_from_event(self):
@@ -614,9 +674,52 @@ class TestDispatchFrame:
         mock_bg.assert_called_once()
 
     @pytest.mark.asyncio
+    async def test_self_id_string_coerced_to_int(self):
+        ch = _make_channel()
+        with patch.object(ch, "_create_background_task"):
+            await ch._dispatch_frame('{"post_type": "message", "self_id": "1001"}')
+        assert ch._self_id == 1001
+        assert isinstance(ch._self_id, int)
+
+    @pytest.mark.asyncio
+    async def test_self_id_non_numeric_keeps_previous(self):
+        ch = _make_channel()
+        ch._self_id = 999
+        with patch.object(ch, "_create_background_task"):
+            await ch._dispatch_frame('{"post_type": "message", "self_id": "not-a-number"}')
+        assert ch._self_id == 999
+
+    @pytest.mark.asyncio
     async def test_non_json_frame_dropped(self):
         ch = _make_channel()
-        await ch._dispatch_frame("not-json{")  # must not raise
+        with patch.object(ch, "_create_background_task") as mock_bg:
+            await ch._dispatch_frame("not-json{")  # must not raise
+        assert ch._self_id is None
+        assert ch._pending == {}
+        assert not ch._background_tasks
+        assert mock_bg.call_count == 0
+
+    @pytest.mark.asyncio
+    async def test_non_dict_json_frame_dropped(self):
+        ch = _make_channel()
+        with patch.object(ch, "_create_background_task") as mock_bg:
+            await ch._dispatch_frame("[1, 2, 3]")
+        assert ch._self_id is None
+        assert ch._pending == {}
+        assert not ch._background_tasks
+        assert mock_bg.call_count == 0
+
+    @pytest.mark.asyncio
+    async def test_other_post_types_not_dispatched(self):
+        import json as _json
+
+        ch = _make_channel()
+        with patch.object(ch, "_create_background_task") as mock_bg:
+            await ch._dispatch_frame(
+                _json.dumps({"post_type": "meta_event", "meta_event_type": "heartbeat"})
+            )
+        assert mock_bg.call_count == 0
+        assert ch._self_id is None
 
 
 class TestChannelSchema:
