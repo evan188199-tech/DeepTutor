@@ -383,3 +383,224 @@ def test_a_deployment_without_the_qrcode_library_still_gets_a_page(monkeypatch) 
     monkeypatch.setattr(builtins, "__import__", _no_qrcode)
 
     assert weixin_onboarding.render_qr_svg("payload") == ""
+
+
+def test_an_empty_payload_draws_nothing() -> None:
+    assert weixin_onboarding.render_qr_svg("") == ""
+
+
+# ---- expiry, cleanup and failure branches -------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_a_session_left_open_past_the_ttl_reports_expired_and_is_pruned(
+    monkeypatch, stub_partner
+) -> None:
+    """An overnight tab must not hold a pending login forever."""
+    _stub_exchange(monkeypatch)
+    started = await weixin_onboarding.start_login("p1")
+    weixin_onboarding._attempts[started["session_id"]].created_at -= (
+        weixin_onboarding._SESSION_TTL_SECONDS + 1
+    )
+
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+
+    assert status["status"] == "expired"
+    assert status["expires_in"] == 0
+    assert status["error"] == ""
+    # The stale attempt is really gone, not just re-reported.
+    assert started["session_id"] not in weixin_onboarding._attempts
+    assert weixin_onboarding.current_scan_payload("p1", started["session_id"]) == ""
+
+
+@pytest.mark.asyncio
+async def test_pruning_takes_only_the_stale_sessions(monkeypatch, stub_partner) -> None:
+    """Sweeping an expired tab must not kill a login that is still in progress."""
+    _stub_exchange(monkeypatch)
+    stale = await weixin_onboarding.start_login("p1")
+    fresh = await weixin_onboarding.start_login("p1")
+    weixin_onboarding._attempts[stale["session_id"]].created_at -= (
+        weixin_onboarding._SESSION_TTL_SECONDS + 1
+    )
+
+    assert (await weixin_onboarding.poll_login("p1", stale["session_id"]))["status"] == "expired"
+    assert (await weixin_onboarding.poll_login("p1", fresh["session_id"]))["status"] == "waiting"
+
+
+@pytest.mark.asyncio
+async def test_current_scan_payload_serves_the_latest_code_to_its_owner_only(
+    monkeypatch, stub_partner
+) -> None:
+    """The browser re-reads what to draw; wrong partner or dead id draws nothing."""
+    _stub_exchange(monkeypatch, outcomes=[QrOutcome(status="expired")])
+    started = await weixin_onboarding.start_login("p1")
+    assert weixin_onboarding.current_scan_payload("p1", started["session_id"]) == "scan-qr-1-1"
+
+    await weixin_onboarding.poll_login("p1", started["session_id"])  # expiry re-issues the code
+
+    assert weixin_onboarding.current_scan_payload("p1", started["session_id"]) == "scan-qr-1-2"
+    assert weixin_onboarding.current_scan_payload("p2", started["session_id"]) == ""
+    assert weixin_onboarding.current_scan_payload("p1", "no-such-session") == ""
+
+
+@pytest.mark.asyncio
+async def test_forget_drops_the_attempt_and_tolerates_unknown_ids(
+    monkeypatch, stub_partner
+) -> None:
+    _stub_exchange(monkeypatch)
+    started = await weixin_onboarding.start_login("p1")
+
+    weixin_onboarding.forget("no-such-session")  # must be a no-op, not a raise
+    weixin_onboarding.forget(started["session_id"])
+
+    assert started["session_id"] not in weixin_onboarding._attempts
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+    assert status["status"] == "expired"
+
+
+@pytest.mark.asyncio
+async def test_a_hard_poll_failure_ends_the_attempt_and_stays_put(
+    monkeypatch, stub_partner
+) -> None:
+    """A non-transient failure is a verdict; polling it again repeats the verdict."""
+    _stub_exchange(monkeypatch)
+    started = await weixin_onboarding.start_login("p1")
+
+    async def _hard_fail(*args, **kwargs):  # noqa: ARG001
+        raise ValueError("4xx-style refusal")
+
+    monkeypatch.setattr(weixin_onboarding, "poll_qr_code", _hard_fail)
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+    assert status["status"] == "error"
+    assert status["error"]
+
+    async def _must_not_poll_again(*args, **kwargs):  # noqa: ARG001
+        raise AssertionError("a failed attempt must not poll again")
+
+    monkeypatch.setattr(weixin_onboarding, "poll_qr_code", _must_not_poll_again)
+    again = await weixin_onboarding.poll_login("p1", started["session_id"])
+    assert again["status"] == "error"
+    assert again["error"] == status["error"]
+
+
+@pytest.mark.asyncio
+async def test_a_confirmed_login_that_cannot_be_saved_reports_a_recoverable_error(
+    monkeypatch,
+) -> None:
+    """The scan worked but persistence failed: say so, and leak no token."""
+    saved: dict[str, Any] = {"channels": {"weixin": {}}}
+
+    class _Config:
+        channels = saved["channels"]
+
+    class _Manager:
+        def get_partner(self, partner_id: str):  # noqa: ARG002
+            return None
+
+        def load_config(self, partner_id: str):  # noqa: ARG002
+            return _Config()
+
+        def save_config(self, partner_id: str, config, **kwargs):  # noqa: ARG002
+            raise OSError("disk full")
+
+        async def reload_channels(self, partner_id: str):  # noqa: ARG002
+            raise AssertionError("must not reload a channel that failed to save")
+
+    monkeypatch.setattr(
+        "deeptutor.services.partners.manager.get_partner_manager", lambda: _Manager()
+    )
+    _stub_exchange(monkeypatch, outcomes=[QrOutcome(status="confirmed", token="s3cret")])
+    started = await weixin_onboarding.start_login("p1")
+
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+
+    assert status["status"] == "error"
+    assert "could not save" in status["error"]
+    assert "s3cret" not in str(status)
+    assert "token" not in status
+
+
+@pytest.mark.asyncio
+async def test_confirming_a_partner_that_no_longer_exists_is_an_error_not_a_crash(
+    monkeypatch,
+) -> None:
+    class _Manager:
+        def get_partner(self, partner_id: str):  # noqa: ARG002
+            return None
+
+        def load_config(self, partner_id: str):  # noqa: ARG002
+            return None
+
+    monkeypatch.setattr(
+        "deeptutor.services.partners.manager.get_partner_manager", lambda: _Manager()
+    )
+    _stub_exchange(monkeypatch, outcomes=[QrOutcome(status="confirmed", token="t")])
+    started = await weixin_onboarding.start_login("p1")
+
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+
+    assert status["status"] == "error"
+    assert "could not save" in status["error"]
+
+
+@pytest.mark.asyncio
+async def test_a_failed_reissue_declares_the_attempt_expired(monkeypatch, stub_partner) -> None:
+    """No replacement code means the slow scan really is over."""
+    calls = _stub_exchange(monkeypatch, outcomes=[QrOutcome(status="expired")])
+    started = await weixin_onboarding.start_login("p1")
+
+    async def _reissue_boom(*args, **kwargs):  # noqa: ARG001
+        raise httpx.ConnectTimeout("WeChat unreachable")
+
+    monkeypatch.setattr(weixin_onboarding, "fetch_qr_code", _reissue_boom)
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+
+    assert status["status"] == "expired"
+    assert calls["fetched"] == 1  # only the original issue; the replacement failed
+
+
+@pytest.mark.asyncio
+async def test_expires_in_counts_down_while_the_attempt_is_alive(monkeypatch, stub_partner) -> None:
+    _stub_exchange(monkeypatch)
+    started = await weixin_onboarding.start_login("p1")
+    weixin_onboarding._attempts[started["session_id"]].created_at -= (
+        weixin_onboarding._SESSION_TTL_SECONDS - 30
+    )
+
+    status = await weixin_onboarding.poll_login("p1", started["session_id"])
+
+    assert status["status"] == "waiting"
+    assert 0 < status["expires_in"] <= 30
+
+
+@pytest.mark.asyncio
+async def test_a_garbled_channel_config_still_falls_back_to_the_default_endpoint(
+    monkeypatch,
+) -> None:
+    """Bad partner config must not stop a login from starting."""
+    seen: dict[str, Any] = {}
+
+    class _Config:
+        channels = None  # not a dict — the reader must tolerate it
+
+    class _Manager:
+        def load_config(self, partner_id: str):  # noqa: ARG002
+            return _Config()
+
+    monkeypatch.setattr(
+        "deeptutor.services.partners.manager.get_partner_manager", lambda: _Manager()
+    )
+
+    async def _fetch(client, base_url, **kwargs):  # noqa: ARG001
+        seen["base_url"] = base_url
+        seen["route_tag"] = kwargs.get("route_tag")
+        return QrCode(qrcode_id="qr-x", scan_payload="scan-x")
+
+    monkeypatch.setattr(weixin_onboarding, "fetch_qr_code", _fetch)
+
+    started = await weixin_onboarding.start_login("p1")
+
+    assert started["status"] == "waiting"
+    assert started["scan_payload"] == "scan-x"
+    assert seen["base_url"] == weixin_onboarding._DEFAULT_BASE_URL
+    assert seen["route_tag"] == ""
