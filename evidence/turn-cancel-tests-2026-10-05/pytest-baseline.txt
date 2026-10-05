@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/Shared/DeepTutor/.venv/bin/python
+rootdir: /Users/Shared/DeepTutor/dt-agen605-wt
+configfile: pyproject.toml
+plugins: cov-7.1.0, devtools-0.12.2, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 8 items
+
+tests/services/session/test_turn_cancel.py::test_cancel_confirms_terminal_state_when_task_swallows_cancellation FAILED [ 12%]
+tests/services/session/test_turn_cancel.py::test_cancel_converges_memory_and_durable_state_for_taskless_execution FAILED [ 25%]
+tests/services/session/test_turn_cancel.py::test_repeated_cancel_is_idempotent_after_settled_turn PASSED [ 37%]
+tests/services/session/test_turn_cancel.py::test_cancel_storm_converges_to_one_terminal_row PASSED [ 50%]
+tests/services/session/test_turn_cancel.py::test_late_waiter_restore_and_events_cannot_revive_cancelled_turn PASSED [ 62%]
+tests/services/session/test_turn_cancel.py::test_cancel_fallback_settles_orphaned_running_row PASSED [ 75%]
+tests/services/session/test_turn_cancel.py::test_cancel_defers_to_coordinator_for_unowned_turn PASSED [ 87%]
+tests/services/session/test_turn_cancel.py::test_cancel_returns_false_for_unknown_or_settled_turns PASSED [100%]
+
+=================================== FAILURES ===================================
+_____ test_cancel_confirms_terminal_state_when_task_swallows_cancellation ______
+tests/services/session/test_turn_cancel.py:211: in test_cancel_confirms_terminal_state_when_task_swallows_cancellation
+    assert row["status"] == "cancelled"
+E   AssertionError: assert 'running' == 'cancelled'
+E     
+E     - cancelled
+E     + running
+____ test_cancel_converges_memory_and_durable_state_for_taskless_execution _____
+tests/services/session/test_turn_cancel.py:243: in test_cancel_converges_memory_and_durable_state_for_taskless_execution
+    assert not await lifecycle.has_live_execution(turn["id"])
+E   assert not True
+=========================== short test summary info ============================
+FAILED tests/services/session/test_turn_cancel.py::test_cancel_confirms_terminal_state_when_task_swallows_cancellation
+FAILED tests/services/session/test_turn_cancel.py::test_cancel_converges_memory_and_durable_state_for_taskless_execution
+========================= 2 failed, 6 passed in 0.27s ==========================
