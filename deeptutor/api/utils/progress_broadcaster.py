@@ -46,27 +46,35 @@ class ProgressBroadcaster:
 
     async def broadcast(self, kb_name: str, progress: dict):
         """Broadcast progress update to all WebSocket connections for specified knowledge base"""
+        # Snapshot the connection set under the lock, then send outside it so a
+        # slow or half-dead client blocks neither other KBs' broadcasts nor
+        # connect/disconnect (mirrors _cached_index in llamaindex/storage.py).
         async with self._lock:
-            if kb_name not in self._connections:
+            connections = set(self._connections.get(kb_name, ()))
+            if not connections:
                 return
 
-            # Create list of connections to remove (closed connections)
-            to_remove = []
+        # Failed connections are removed back under the lock
+        to_remove = []
 
-            for websocket in self._connections[kb_name]:
-                try:
-                    await websocket.send_json({"type": "progress", "data": progress})
-                except Exception as e:
-                    # Connection closed or error, mark for removal
-                    logger.debug(f"Error sending to WebSocket for KB '{kb_name}': {e}")
-                    to_remove.append(websocket)
+        for websocket in connections:
+            try:
+                await websocket.send_json({"type": "progress", "data": progress})
+            except Exception as e:
+                # Connection closed or error, mark for removal
+                logger.debug(f"Error sending to WebSocket for KB '{kb_name}': {e}")
+                to_remove.append(websocket)
 
-            # Remove closed connections
-            for ws in to_remove:
-                self._connections[kb_name].discard(ws)
-
-            if not self._connections[kb_name]:
-                del self._connections[kb_name]
+        # Remove closed connections
+        if to_remove:
+            async with self._lock:
+                current = self._connections.get(kb_name)
+                if current is None:
+                    return
+                for ws in to_remove:
+                    current.discard(ws)
+                if not current:
+                    del self._connections[kb_name]
 
     def get_connection_count(self, kb_name: str) -> int:
         """Get connection count for specified knowledge base"""
