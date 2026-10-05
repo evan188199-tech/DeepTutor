@@ -312,6 +312,8 @@ class TurnLifecycle:
             if turn is None or turn.get("status") != "running":
                 return False
             await self.store.update_turn_status(turn_id, "cancelled", "Turn cancelled")
+            async with self._lock:
+                self._executions.pop(turn_id, None)
             return True
         execution.task.cancel()
         # Wait for the task to finish so its finally block (including save)
@@ -320,6 +322,13 @@ class TurnLifecycle:
             await execution.task
         except asyncio.CancelledError:
             pass
+        # The task may have swallowed the cancellation without persisting a
+        # terminal row; a True return must still imply the row is terminal.
+        turn = await self.store.get_turn(turn_id)
+        if turn is not None and turn.get("status") in ("running", "waiting_input"):
+            await self.store.update_turn_status(turn_id, "cancelled", "Turn cancelled")
+        async with self._lock:
+            self._executions.pop(turn_id, None)
         return True
 
     async def submit_user_reply(
