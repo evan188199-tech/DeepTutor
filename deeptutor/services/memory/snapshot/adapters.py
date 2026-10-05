@@ -46,8 +46,13 @@ def _sha1(*parts: object) -> str:
 def _iso(ts: float | int | str | None) -> str:
     if isinstance(ts, str):
         try:
-            datetime.fromisoformat(ts.replace("Z", "+00:00"))
-            return ts
+            parsed = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+            # Naive stamps enter the timeline as UTC (same assume-UTC
+            # convention as recall._parse_ts); aware ones shift to UTC so
+            # every surface emits one comparable isoformat.
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed.astimezone(timezone.utc).isoformat()
         except Exception:
             pass
     if isinstance(ts, (int, float)):
