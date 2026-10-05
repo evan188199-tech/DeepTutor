@@ -57,18 +57,24 @@ _OPENAI_TTS_VOICES = {
 }
 
 
-def _provider_error_message(action: str, status_code: int, body: str = "") -> str:
-    detail = (body or "").strip()[:400]
-    return f"{action} failed with HTTP {status_code}" + (f": {detail}" if detail else ".")
+def _provider_error_message(action: str, status_code: int) -> str:
+    return f"{action} failed with HTTP {status_code}."
 
 
 def _raise_for_provider(resp: httpx.Response, action: str) -> None:
-    """Surface a provider error with a trimmed body for diagnostics."""
+    """Raise on provider HTTP errors with a status-only public message.
+
+    The response body can quote credentials or internal endpoints, so it goes
+    to the server log only; callers only see the HTTP status code.
+    """
     if resp.status_code < 400:
         return
     body = resp.text or ""
+    detail = body.strip()
+    if detail:
+        logger.error("%s failed with HTTP %s: %s", action, resp.status_code, detail[:400])
     raise VoiceProviderHTTPError(
-        _provider_error_message(action, resp.status_code, body),
+        _provider_error_message(action, resp.status_code),
         status_code=resp.status_code,
         body=body,
     )

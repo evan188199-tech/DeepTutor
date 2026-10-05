@@ -84,8 +84,8 @@ class JinaProvider(BaseSearchProvider):
         response = requests.get(url, timeout=timeout, **request_kwargs)
 
         if response.status_code != 200:
-            self.logger.error(f"Jina API error: {response.status_code}")
-            raise Exception(f"Jina API error: {response.status_code} - {response.text}")
+            self.logger.error(f"Jina API error: HTTP {response.status_code}: {response.text[:400]}")
+            raise Exception(f"Jina API error: HTTP {response.status_code}")
 
         data = response.json()
         rows = data.get("data", []) or []

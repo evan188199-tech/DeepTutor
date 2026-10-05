@@ -24,6 +24,7 @@ from deeptutor.services.generation_http import (
     build_auth_headers,
     decode_base64_media,
     join_api_path,
+    raise_for_provider,
 )
 from deeptutor.services.imagegen import generate_image
 from deeptutor.services.imagegen.adapters.chat_completions import ChatCompletionsImagegenAdapter
@@ -90,6 +91,22 @@ def test_join_api_path_appends_and_preserves_full_url() -> None:
     )
     full = "https://ark.cn-beijing.volces.com/api/v3/images/generations"
     assert join_api_path(full, "images/generations") == full
+
+
+def test_raise_for_provider_reports_status_without_the_response_body(caplog) -> None:
+    marker = "upstream-detail-marker"
+    with caplog.at_level("ERROR", logger="deeptutor.services.generation_http"):
+        with pytest.raises(GenerationProviderError, match="HTTP 503") as raised:
+            raise_for_provider(httpx.Response(503, text=f"provider said: {marker}"), "Image gen")
+    message = str(raised.value)
+    assert "503" in message
+    assert marker not in message
+    # The body still reaches the server-side log for diagnostics.
+    assert marker in caplog.text
+
+
+def test_raise_for_provider_accepts_success_statuses_without_logging() -> None:
+    raise_for_provider(httpx.Response(200, json={"data": []}), "Image generation")
 
 
 @pytest.mark.parametrize(

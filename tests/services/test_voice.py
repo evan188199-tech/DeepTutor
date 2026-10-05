@@ -323,8 +323,57 @@ async def test_tts_adapter_raises_on_http_error(monkeypatch: pytest.MonkeyPatch)
 
     _capture_post(monkeypatch, httpx.Response(401, text="bad key"))
     config = TTSConfig(model="m", base_url="https://x/v1", api_key="k", voice="alloy")
-    with pytest.raises(VoiceProviderError, match="401"):
+    with pytest.raises(VoiceProviderError, match="401") as raised:
         await OpenAICompatTTSAdapter().synthesize("hi", config)
+    # The upstream body must not travel with the exception message.
+    assert "bad key" not in str(raised.value)
+
+
+def test_provider_error_helpers_report_status_without_the_response_body() -> None:
+    from deeptutor.services.voice.adapters.dashscope import _provider_error
+    from deeptutor.services.voice.adapters.openai_compat import _raise_for_provider
+    from deeptutor.services.voice.base import VoiceProviderHTTPError
+
+    marker = "upstream-detail-marker"
+    resp = httpx.Response(403, text=f"provider said: {marker}")
+    for raise_site in (
+        lambda: _provider_error(resp, "TTS synthesis"),
+        lambda: _raise_for_provider(resp, "TTS synthesis"),
+    ):
+        with pytest.raises(VoiceProviderHTTPError) as raised:
+            raise_site()
+        message = str(raised.value)
+        assert "403" in message
+        assert marker not in message
+        assert raised.value.status_code == 403
+        # The body stays attached for server-side diagnostics only.
+        assert marker in raised.value.body
+
+
+@pytest.mark.asyncio
+async def test_dashscope_tts_http_error_keeps_body_out_of_message(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.services.voice.base import VoiceProviderHTTPError
+
+    _capture_http(
+        monkeypatch,
+        post=httpx.Response(403, text='{"code":"InvalidApiKey","message":"upstream-detail"}'),
+        get=None,
+    )
+    config = TTSConfig(
+        model="qwen3-tts-instruct-flash",
+        adapter="dashscope",
+        base_url="https://dashscope.aliyuncs.com/api/v1",
+        api_key="k",
+        voice="Cherry",
+    )
+    with pytest.raises(VoiceProviderHTTPError) as raised:
+        await DashScopeTTSAdapter().synthesize("hi", config)
+    message = str(raised.value)
+    assert "403" in message
+    assert "upstream-detail" not in message
+    assert "InvalidApiKey" not in message
 
 
 @pytest.mark.asyncio

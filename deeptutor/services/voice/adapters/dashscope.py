@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from pathlib import Path
 import tempfile
 from typing import Any
@@ -35,15 +36,19 @@ _AUDIO_CONTENT_TYPES = {
     "pcm": "audio/pcm",
 }
 
+logger = logging.getLogger(__name__)
+
 
 def _provider_error(
     resp: httpx.Response, action: str, *, public_message: str | None = None
 ) -> None:
     if resp.status_code < 400:
         return
-    detail = (resp.text or "").strip()[:400]
+    detail = (resp.text or "").strip()
+    if detail:
+        logger.error("%s failed with HTTP %s: %s", action, resp.status_code, detail[:400])
     raise VoiceProviderHTTPError(
-        f"{action} failed with HTTP {resp.status_code}" + (f": {detail}" if detail else "."),
+        f"{action} failed with HTTP {resp.status_code}.",
         status_code=resp.status_code,
         body=resp.text,
         public_message=public_message,

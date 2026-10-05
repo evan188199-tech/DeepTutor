@@ -91,7 +91,8 @@ class ZhipuProvider(BaseSearchProvider):
             request_kwargs["proxies"] = {"http": self.proxy, "https": self.proxy}
         resp = requests.post(endpoint, timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Zhipu API error: {resp.status_code} - {resp.text}")
+            self.logger.error(f"Zhipu API error: HTTP {resp.status_code}: {resp.text[:400]}")
+            raise Exception(f"Zhipu API error: HTTP {resp.status_code}")
 
         data = resp.json()
         rows = data.get("search_result") or []

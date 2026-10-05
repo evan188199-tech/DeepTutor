@@ -76,12 +76,14 @@ class BochaProvider(BaseSearchProvider):
             request_kwargs["proxies"] = {"http": self.proxy, "https": self.proxy}
         resp = requests.post(endpoint, timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Bocha API error: {resp.status_code} - {resp.text}")
+            self.logger.error(f"Bocha API error: HTTP {resp.status_code}: {resp.text[:400]}")
+            raise Exception(f"Bocha API error: HTTP {resp.status_code}")
 
         payload_json = resp.json()
         # Bocha wraps failures in a 200 with a non-zero code.
         if payload_json.get("code") not in (200, 0, None):
-            raise Exception(f"Bocha API error: {payload_json.get('msg') or payload_json}")
+            self.logger.error(f"Bocha API error: {payload_json.get('msg') or payload_json}")
+            raise Exception("Bocha API error: request failed")
         data = payload_json.get("data") or {}
         rows = ((data.get("webPages") or {}).get("value")) or []
 

@@ -342,7 +342,7 @@ def test_aliyun_iqs_caps_results_client_side(monkeypatch) -> None:
     assert result.citations[0].date.count("-") == 2
 
 
-def test_bocha_surfaces_an_error_carried_inside_a_200(monkeypatch) -> None:
+def test_bocha_error_inside_a_200_stays_out_of_the_message(monkeypatch, caplog) -> None:
     class _FakeRequests:
         @staticmethod
         def post(url: str, **kwargs: Any) -> _FakeResponse:
@@ -352,8 +352,12 @@ def test_bocha_surfaces_an_error_carried_inside_a_200(monkeypatch) -> None:
 
     from deeptutor.services.search.providers.bocha import BochaProvider
 
-    with pytest.raises(Exception, match="quota exhausted"):
-        BochaProvider(api_key="k").search("q")
+    with caplog.at_level("ERROR", logger="deeptutor.services.search.providers.bocha"):
+        with pytest.raises(Exception, match="Bocha API error") as raised:
+            BochaProvider(api_key="k").search("q")
+    assert "quota exhausted" not in str(raised.value)
+    # The upstream detail still reaches the server-side log.
+    assert "quota exhausted" in caplog.text
 
 
 # --------------------------------------------------------------------------
@@ -497,3 +501,77 @@ def test_serply_rejects_an_unknown_mode() -> None:
 
     with pytest.raises(ValueError, match="mode"):
         SerplyProvider(api_key="k").search("q", mode="images")
+
+
+# --------------------------------------------------------------------------
+# Provider HTTP failures report the status code only. The response body can
+# quote credentials or internal endpoints, so it belongs to the server log,
+# never to the exception message that travels up to callers.
+# --------------------------------------------------------------------------
+
+_MARKER = "upstream-detail-marker"
+
+_HTTP_FAILING_PROVIDERS = [
+    ("serply", "SerplyProvider"),
+    ("firecrawl", "FirecrawlProvider"),
+    ("jina", "JinaProvider"),
+    ("doubao", "DoubaoProvider"),
+    ("zhipu", "ZhipuProvider"),
+    ("qianfan", "QianfanProvider"),
+    ("aliyun_iqs", "AliyunIQSProvider"),
+    ("bocha", "BochaProvider"),
+]
+
+
+class _ErrorResponse:
+    """A non-200 transport response carrying an upstream body."""
+
+    status_code = 503
+    text = f'{{"error": {{"message": "{_MARKER}"}}}}'
+
+    def json(self) -> dict[str, Any]:
+        return {}
+
+
+@pytest.mark.parametrize(("module", "cls_name"), _HTTP_FAILING_PROVIDERS)
+def test_provider_http_error_reports_status_without_the_body(
+    module, cls_name, monkeypatch, caplog
+) -> None:
+    class _FakeRequests:
+        get = staticmethod(lambda url, **kwargs: _ErrorResponse())
+        post = staticmethod(lambda url, **kwargs: _ErrorResponse())
+
+    monkeypatch.setattr(f"deeptutor.services.search.providers.{module}.requests", _FakeRequests)
+    with caplog.at_level("ERROR", logger=f"deeptutor.services.search.providers.{module}"):
+        with pytest.raises(Exception) as raised:
+            _provider_class(module, cls_name)(api_key="k").search("q")
+    message = str(raised.value)
+    assert "503" in message
+    assert _MARKER not in message
+    # The body still reaches the server-side log for diagnostics.
+    assert _MARKER in caplog.text
+
+
+# Providers that wrap failures inside a 200 envelope also keep the payload out
+# of the raised message.
+_ENVELOPE_FAILING_PROVIDERS = [
+    ("firecrawl", "FirecrawlProvider", {"success": False, "error": _MARKER}),
+    ("doubao", "DoubaoProvider", {"error": {"message": _MARKER}}),
+    ("qianfan", "QianfanProvider", {"code": "AccessDenied", "message": _MARKER}),
+]
+
+
+@pytest.mark.parametrize(("module", "cls_name", "body"), _ENVELOPE_FAILING_PROVIDERS)
+def test_provider_envelope_error_keeps_the_body_out_of_the_message(
+    module, cls_name, body, monkeypatch, caplog
+) -> None:
+    class _FakeRequests:
+        get = staticmethod(lambda url, **kwargs: _FakeResponse(body))
+        post = staticmethod(lambda url, **kwargs: _FakeResponse(body))
+
+    monkeypatch.setattr(f"deeptutor.services.search.providers.{module}.requests", _FakeRequests)
+    with caplog.at_level("ERROR", logger=f"deeptutor.services.search.providers.{module}"):
+        with pytest.raises(Exception, match="API error") as raised:
+            _provider_class(module, cls_name)(api_key="k").search("q")
+    assert _MARKER not in str(raised.value)
+    assert _MARKER in caplog.text
