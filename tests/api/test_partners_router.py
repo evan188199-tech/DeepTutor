@@ -610,6 +610,60 @@ class TestSoulLibraryEndpoints:
         assert "library" in body and "personas" in body
 
 
+class TestPersonaSoulSource:
+    def _write_persona(self, root: Path, name: str, body: str) -> None:
+        persona_dir = root / name
+        persona_dir.mkdir(parents=True, exist_ok=True)
+        (persona_dir / "PERSONA.md").write_text(
+            f"---\nname: {name}\ndescription: test persona\n---\n\n{body}",
+            encoding="utf-8",
+        )
+
+    def test_persona_cloned_from_user_workspace(self, client):
+        from deeptutor.services.persona import get_persona_service
+
+        self._write_persona(get_persona_service().root, "mentor", "Be a warm mentor.")
+        res = _create(client, partner_id="percy", soul={"source": "persona", "id": "mentor"})
+        assert res.status_code == 200
+        soul = client.get("/api/partners/percy/soul").json()
+        assert "Be a warm mentor." in soul["content"]
+
+    def test_persona_miss_returns_404_and_logs(self, client, caplog):
+        import logging
+
+        with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.partners"):
+            res = _create(client, soul={"source": "persona", "id": "ghost"})
+        assert res.status_code == 404
+        warnings = [r for r in caplog.records if "ghost" in r.getMessage()]
+        assert warnings, "persona load failures must leave a log trace"
+        assert any("user persona" in r.getMessage() for r in warnings)
+        assert any("admin persona" in r.getMessage() for r in warnings)
+
+    def test_persona_falls_back_to_admin_preset_with_trace(self, client, monkeypatch, caplog):
+        import logging
+
+        from deeptutor.multi_user.paths import get_admin_path_service
+        import deeptutor.services.persona as persona_mod
+
+        def _boom():
+            raise RuntimeError("user workspace unavailable")
+
+        monkeypatch.setattr(persona_mod, "get_persona_service", _boom)
+        self._write_persona(
+            get_admin_path_service().get_workspace_dir() / "personas",
+            "mentor",
+            "Teach like the admin preset.",
+        )
+        with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.partners"):
+            res = _create(client, partner_id="ada", soul={"source": "persona", "id": "mentor"})
+        assert res.status_code == 200
+        soul = client.get("/api/partners/ada/soul").json()
+        assert "Teach like the admin preset." in soul["content"]
+        failure = [r for r in caplog.records if "mentor" in r.getMessage()]
+        assert failure, "the failed user-path load must be logged"
+        assert failure[0].exc_info is not None
+
+
 class TestHistory:
     def test_history_reads_session_store(self, client, isolated_root):
         _create(client)

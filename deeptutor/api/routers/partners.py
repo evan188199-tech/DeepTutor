@@ -544,14 +544,14 @@ def _load_persona_markdown(name: str) -> str:
         detail = get_persona_service().get_detail(name)
         return strip_frontmatter(detail.content)
     except Exception:
-        pass
+        logger.warning("Failed to load user persona '%s'", name, exc_info=True)
     try:
         admin_service = PersonaService(
             root=get_admin_path_service().get_workspace_dir() / "personas"
         )
         return strip_frontmatter(admin_service.get_detail(name).content)
     except Exception:
-        pass
+        logger.warning("Failed to load admin persona preset '%s'", name, exc_info=True)
     return ""
 
 
