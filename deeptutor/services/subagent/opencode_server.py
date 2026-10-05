@@ -66,7 +66,25 @@ class ServerHandle:
 
 
 _servers: dict[tuple[str, str], ServerHandle] = {}
-_lock = asyncio.Lock()
+# Serializes spawn/reuse per (CLI, workdir) key, so a cold spawn of one key
+# never blocks another key's cache hit.
+_key_locks: dict[tuple[str, str], asyncio.Lock] = {}
+# Guards only the registry dicts above (lookup, insert, pop, reap) — never held
+# across a spawn.
+_registry_lock = asyncio.Lock()
+
+
+def _key_lock_for(key: tuple[str, str]) -> asyncio.Lock:
+    """The per-key lock, created on first use (call under the registry lock).
+
+    Locks live as long as the process: one tiny object per distinct
+    (CLI, workdir) combination ever served.
+    """
+    lock = _key_locks.get(key)
+    if lock is None:
+        lock = asyncio.Lock()
+        _key_locks[key] = lock
+    return lock
 
 
 async def acquire_server(
@@ -82,17 +100,27 @@ async def acquire_server(
     ``MIMOCODE``); ``username`` is the basic-auth user the CLI expects.
     """
     key = (cli_command, cwd or "")
-    async with _lock:
+    async with _registry_lock:
         _reap_stale(except_key=key)
         handle = _servers.get(key)
         if handle is not None and handle.alive:
             handle.touch()
             return handle
-        if handle is not None:  # died in between — clean up before respawn
-            _terminate_sync(handle)
-            _servers.pop(key, None)
+        key_lock = _key_lock_for(key)
+    async with key_lock:
+        # Re-check under the key lock: a racing acquire of this same key may
+        # have finished spawning while we waited.
+        async with _registry_lock:
+            handle = _servers.get(key)
+            if handle is not None and handle.alive:
+                handle.touch()
+                return handle
+            if handle is not None:  # died in between — clean up before respawn
+                _terminate_sync(handle)
+                _servers.pop(key, None)
         handle = await _spawn(cli_command, cwd=cwd, env_prefix=env_prefix, username=username)
-        _servers[key] = handle
+        async with _registry_lock:
+            _servers[key] = handle
         return handle
 
 
@@ -158,7 +186,7 @@ def _free_port() -> int:
 
 
 def _reap_stale(*, except_key: tuple[str, str] | None = None) -> None:
-    """Terminate servers idle past the TTL (called under the lock)."""
+    """Terminate servers idle past the TTL (called under the registry lock)."""
     now = time.monotonic()
     for key, handle in list(_servers.items()):
         if key == except_key:
@@ -179,8 +207,19 @@ def _terminate_sync(handle: ServerHandle) -> None:
 
 async def shutdown_servers() -> None:
     """Terminate every managed server and wait briefly (tests, app shutdown)."""
-    async with _lock:
+    async with _registry_lock:
         handles = list(_servers.values())
+        _servers.clear()
+        locks = list(_key_locks.values())
+    # Wait out any in-flight spawns (each holds only its key's lock) so a
+    # server published mid-shutdown is still reaped below instead of leaking.
+    # Registry lock is released here — acquire_server nests it inside a key
+    # lock, so taking key locks while holding it could deadlock.
+    for lock in locks:
+        async with lock:
+            pass
+    async with _registry_lock:
+        handles.extend(_servers.values())
         _servers.clear()
     for handle in handles:
         _terminate_sync(handle)
