@@ -139,7 +139,9 @@ loop 扩展同样每回合新建：`active_loop_capabilities(context)`（`deeptu
 | `test_discover_from_manifest_factory` | 工厂形态 → manifest → 实例 | `tests/plugins/test_loader.py:92` |
 | `test_capability_registry_loads_plugins` | `CapabilityRegistry.load_plugins` 端到端注册 | `tests/plugins/test_loader.py:116` |
 
-`tests/capabilities/test_loop_registry.py`（10 个，loop 侧）覆盖：内置名单不变量、无插件时合并结果等于内置、外部类追加、工厂形态、内置名遮蔽告警、坏入口点跳过、非法对象拒绝、重名先到先得、`active_loop_capabilities` 含外部扩展等（`tests/capabilities/test_loop_registry.py:68-220`）。
+`tests/capabilities/test_loop_registry.py`（10 个，loop 侧，测试起点 `:88`-`:235`）覆盖：内置名单不变量、无插件时合并结果等于内置、外部类追加、工厂形态、内置名遮蔽告警、坏入口点跳过、非法对象拒绝、重名先到先得、`active_loop_capabilities` 含外部扩展、工具归属映射等。
+
+环境注记（本机实测）：`test_active_loop_capabilities_includes_external`（`:220`）在本机新鲜环境下失败——内置 `setup` 能力因本地 onboarding 缺口判定为激活（`deeptutor/capabilities/setup/binding.py:242-244`），而该测试假设裸上下文无内置激活。这是 main 上既有的环境敏感断言，与本文档改动无关（本分支仅含 evidence/ 文档）。
 
 ### 5.2 PR #1740 新增的断言（`tests/plugins/test_entrypoint_loader.py`，13 个，五条路径族）
 
