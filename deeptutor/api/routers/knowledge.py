@@ -1399,8 +1399,9 @@ def _knowledge_health():
             "base_dir_exists": base_dir.exists(),
             "knowledge_bases_count": kb_count,
         }
-    except Exception as e:
-        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+    except Exception:
+        logger.error(f"Knowledge base health check failed:\n{traceback.format_exc()}")
+        return {"status": "error", "reason": "health_check_failed"}
 
 
 @router.get("/knowledge-bases/rag-providers")

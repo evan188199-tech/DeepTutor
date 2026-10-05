@@ -3252,3 +3252,13 @@ async def test_health_counts_registry_without_constructing_index_manager(tmp_pat
     result = await knowledge_router_module.health_check()
     assert result["status"] == "ok"
     assert result["knowledge_bases_count"] == 2
+
+
+@pytest.mark.asyncio
+async def test_health_error_response_has_no_internal_details(tmp_path, monkeypatch):
+    def broken_base_dir():
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(knowledge_router_module, "current_kb_base_dir", broken_base_dir)
+    result = await knowledge_router_module.health_check()
+    assert result == {"status": "error", "reason": "health_check_failed"}
