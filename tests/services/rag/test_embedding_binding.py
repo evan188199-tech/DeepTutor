@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from copy import deepcopy
 import json
+import logging
 from types import SimpleNamespace
 
 import pytest
@@ -236,6 +237,38 @@ def test_lightrag_reconciliation_checks_bound_index_not_global_default(
     _reconcile_embedding_flags({"kb": entry}, tmp_path)
     assert bool(entry.get("embedding_mismatch")) is missing_identity
     assert entry["embedding_selection"] == selection("a")
+
+
+def test_lightrag_reconciliation_reports_missing_bound_index_version(
+    catalog, tmp_path, monkeypatch, caplog
+):
+    from deeptutor.knowledge.manager import _reconcile_embedding_flags
+    from deeptutor.services.rag.pipelines.lightrag import engine, storage
+
+    monkeypatch.setattr(engine, "installed_version", lambda: "synthetic-test-version")
+    entry = write_entry(tmp_path, rag_provider="lightrag")
+    root = tmp_path / "kb" / "version-1"
+    root.mkdir()
+    (root / "kv_store_doc_status.json").write_text('{"doc":{"status":"processed"}}')
+    storage.write_meta(root, embedding_config=get_embedding_config(selection("b")))
+    workspace = root / engine.workspace_for(root)
+    workspace.mkdir()
+    (workspace / "kv_store_doc_status.json").write_text('{"doc":{"status":"processed"}}')
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.knowledge.manager"):
+        changed = _reconcile_embedding_flags({"kb": entry}, tmp_path)
+
+    # Reconciliation still flags the mismatch against the fallback index.
+    assert changed is True
+    assert entry["embedding_mismatch"] is True
+    assert entry["needs_reindex"] is True
+    # The failed bound-version lookup is visible in the logs.
+    assert any(
+        record.name == "deeptutor.knowledge.manager"
+        and "kb" in record.getMessage()
+        and "No index version matches" in record.getMessage()
+        for record in caplog.records
+    )
 
 
 @pytest.mark.parametrize("drift", [False, True])

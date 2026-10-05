@@ -218,8 +218,17 @@ def _reconcile_embedding_flags(knowledge_bases: dict, base_dir: Path | None = No
                 with embedding_config_scope(bound_config):
                     try:
                         published = bound_graph_storage_root(kb_dir, provider, published)
-                    except ValueError:
-                        pass  # Check the unmatched published index below.
+                    except ValueError as exc:
+                        # Check the unmatched published index below, but leave a
+                        # trace: silently reading a fallback index here is how a
+                        # KB drifts from its bound embedding model unnoticed.
+                        logger.warning(
+                            "Knowledge base '%s': no published index version matches "
+                            "its bound embedding model; reconciliation continues with "
+                            "the latest published index (%s)",
+                            kb_name,
+                            exc,
+                        )
             lightrag_mismatch = published is not None and not embedding_matches(
                 published, entry_signature(kb_entry)
             )
