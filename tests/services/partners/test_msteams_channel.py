@@ -191,9 +191,7 @@ class TestSanitizeInboundText:
         out = ch._sanitize_inbound_text(
             _activity(text="Reply wrapper\nWhat was our answer?\n\nThe answer is 42.")
         )
-        assert out == (
-            "User is replying to: What was our answer?\nUser reply: The answer is 42."
-        )
+        assert out == ("User is replying to: What was our answer?\nUser reply: The answer is 42.")
 
     def test_reply_wrapper_compact_fallback_normalized(self, state_dir):
         ch = _make_channel()
@@ -204,8 +202,7 @@ class TestSanitizeInboundText:
             )
         )
         assert out == (
-            "User is replying to: Bob asked about limits.\n"
-            "User reply: The limit is 10 pages."
+            "User is replying to: Bob asked about limits.\nUser reply: The limit is 10 pages."
         )
 
     def test_empty_text_returns_empty(self, state_dir):
@@ -601,7 +598,9 @@ class TestValidateInboundAuth:
     async def test_token_without_kid_rejected(self, state_dir):
         pytest.importorskip("jwt")
         ch = _make_channel()
-        token = msteams_mod.jwt.encode({"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256")
+        token = msteams_mod.jwt.encode(
+            {"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256"
+        )
         with pytest.raises(ValueError, match="missing token kid"):
             await ch._validate_inbound_auth(f"Bearer {token}", _activity())
         assert ch._botframework_jwks is None
@@ -622,7 +621,10 @@ class TestValidateInboundAuth:
         ch._http.get = AsyncMock(side_effect=[openid_resp, jwks_resp])
 
         token = msteams_mod.jwt.encode(
-            {"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256", headers={"kid": "kid-1"}
+            {"sub": "bot"},
+            "secret-secret-secret-secret-secret",
+            algorithm="HS256",
+            headers={"kid": "kid-1"},
         )
         with pytest.raises(ValueError, match="signing key not found") as excinfo:
             await ch._validate_inbound_auth(f"Bearer {token}", _activity())
@@ -664,7 +666,10 @@ class TestValidateInboundAuth:
         )
 
         token = msteams_mod.jwt.encode(
-            {"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256", headers={"kid": "kid-1"}
+            {"sub": "bot"},
+            "secret-secret-secret-secret-secret",
+            algorithm="HS256",
+            headers={"kid": "kid-1"},
         )
         with pytest.raises(ValueError, match="serviceUrl claim mismatch") as excinfo:
             await ch._validate_inbound_auth(f"Bearer {token}", _activity())
