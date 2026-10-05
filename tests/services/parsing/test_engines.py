@@ -157,6 +157,90 @@ def test_markitdown_advertises_all_current_builtin_formats() -> None:
     assert markitdown_version_is_current("0.1.6") is False
 
 
+def test_markitdown_detection_failure_falls_back_and_is_visible(monkeypatch, caplog) -> None:
+    import logging
+
+    from deeptutor.services.parsing.engines.markitdown import formats as md_formats
+
+    def broken_import(name: str):
+        raise RuntimeError("converter package broken")
+
+    monkeypatch.setattr(md_formats.importlib, "import_module", broken_import)
+    monkeypatch.setattr(md_formats, "_DETECTION_FAILURES", [])
+    md_formats.markitdown_supported_formats.cache_clear()
+
+    with caplog.at_level(logging.WARNING):
+        formats_set = md_formats.markitdown_supported_formats()
+        failures = md_formats.markitdown_format_detection_failures()
+
+    assert formats_set == md_formats.MARKITDOWN_0_1_7_FORMATS
+    assert failures and "markitdown.converters" in failures[0]
+    assert any(
+        record.levelno == logging.WARNING and "degraded" in record.message
+        for record in caplog.records
+    )
+
+
+def test_markitdown_converter_module_failure_reports_missing_formats(monkeypatch, caplog) -> None:
+    import logging
+    import pkgutil
+    import types
+
+    from deeptutor.services.parsing.engines.markitdown import formats as md_formats
+
+    converters = types.ModuleType("markitdown.converters")
+    converters.__path__ = ["/nowhere"]
+
+    def fake_import(name: str):
+        if name == "markitdown.converters":
+            return converters
+        if name.endswith("._broken"):
+            raise ImportError("optional dependency missing")
+        module = types.ModuleType(name)
+        module.SUPPORTED_EXTENSIONS = ["xyz"]
+        return module
+
+    module_infos = [
+        pkgutil.ModuleInfo(None, "markitdown.converters._broken", False),
+        pkgutil.ModuleInfo(None, "markitdown.converters._good", False),
+    ]
+    monkeypatch.setattr(md_formats.importlib, "import_module", fake_import)
+    monkeypatch.setattr(md_formats.pkgutil, "iter_modules", lambda paths, prefix: module_infos)
+    monkeypatch.setattr(md_formats, "_DETECTION_FAILURES", [])
+    md_formats.markitdown_supported_formats.cache_clear()
+
+    with caplog.at_level(logging.WARNING):
+        formats_set = md_formats.markitdown_supported_formats()
+        failures = md_formats.markitdown_format_detection_failures()
+
+    assert ".xyz" in formats_set
+    assert len(failures) == 1 and "_broken" in failures[0]
+    assert any(record.levelno == logging.WARNING for record in caplog.records)
+
+
+def test_markitdown_converters_without_module_list_is_reported(monkeypatch) -> None:
+    import types
+
+    from deeptutor.services.parsing.engines.markitdown import formats as md_formats
+
+    converters = types.ModuleType("markitdown.converters")
+    converters.__path__ = ["/nowhere"]
+
+    def fake_import(name: str):
+        return converters
+
+    monkeypatch.setattr(md_formats.importlib, "import_module", fake_import)
+    monkeypatch.setattr(md_formats.pkgutil, "iter_modules", lambda paths, prefix: [])
+    monkeypatch.setattr(md_formats, "_DETECTION_FAILURES", [])
+    md_formats.markitdown_supported_formats.cache_clear()
+
+    formats_set = md_formats.markitdown_supported_formats()
+    failures = md_formats.markitdown_format_detection_failures()
+
+    assert formats_set == md_formats.MARKITDOWN_0_1_7_FORMATS
+    assert failures and "no converter modules" in failures[0]
+
+
 def test_markitdown_readiness_requires_current_package(monkeypatch) -> None:
     from deeptutor.services.parsing.engines.markitdown import engine as markitdown_engine
 
