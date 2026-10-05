@@ -2,7 +2,7 @@
 
 - 卡: AGEN-714 · 日期: 2026-10-05 · 基线: origin/main `f07029cfc`（release v1.6.13）· 只读扫描，未改任何代码
 - 方法: `git grep` 全仓枚举 `os.environ[...] / os.environ.get / os.getenv`（排除 tests）+ 常量回溯；对照面 = 后端代码读取点 / compose·Dockerfile·.env.example / 全部跟踪 `*.md`（活文档为主，历史 release notes 单独标注）/ `web/` 前端读取点
-- 目录变量总数: 146 + 补充 compose/外部条目 6 = **152**
+- 目录变量总数: 147 + 补充 compose/外部条目 6 = **153**
 - 去重声明: 本卡只清点 env 键名层面；settings JSON↔env 链路机制（`_apply_*_process_overrides`、`render_environment` 的双写语义）属 scan-settings 范围，文档整体结构漂移属 scan-docs-drift 范围，依赖 import 属 scan-deps-drift 范围。重叠条目已在分级列标注。
 
 ## 漂移分级汇总
@@ -13,7 +13,7 @@
 | B1′ 解析引擎未文档化（与已文档 DOCLING_* 不对称） | 10 | scan-docs-drift 重叠 |
 | B1 用户面未文档化 | 50 | scan-docs-drift 建议覆盖 |
 | B2 运维面未文档化 | 55 | scan-settings 链路相邻 |
-| C 命名/别名漂移 | 2 | scan-settings 链路相邻 |
+| C 命名/别名漂移 | 3 | scan-settings 链路相邻 |
 | G 模型/缓存目录变量 | 4 | scan-deps-drift 相邻（依赖下载面） |
 | D 内部/平台变量（无需文档） | 13 | — |
 | E 构建/测试工具变量（无需用户文档） | 10 | — |
