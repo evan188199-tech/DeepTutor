@@ -1,0 +1,2093 @@
+{
+ "files_scanned": 1253,
+ "findings": [
+  {
+   "file": "app/(workspace)/learning/mastery/[pathId]/page.tsx",
+   "line": 538,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+   "line": 599,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+   "line": 472,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+   "line": 572,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+   "line": 615,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookChatPanel.tsx",
+   "line": 553,
+   "category": "B1-aria-hidden-focusable",
+   "detail": "<input> 带 aria-hidden=true 但可聚焦/可交互",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 313,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 487,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 60,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 321,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 328,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+   "line": 335,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/BookHealthBanner.tsx",
+   "line": 359,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/blocks/UserNoteBlock.tsx",
+   "line": 93,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/blocks/BlockBodyEditor.tsx",
+   "line": 52,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/learning/books/components/blocks/QuizBlock.tsx",
+   "line": 232,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/groups/[groupId]/page.tsx",
+   "line": 314,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/groups/[groupId]/page.tsx",
+   "line": 323,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/groups/[groupId]/page.tsx",
+   "line": 302,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/groups/new/page.tsx",
+   "line": 153,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/groups/new/page.tsx",
+   "line": 160,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/[partnerId]/page.tsx",
+   "line": 509,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/new/page.tsx",
+   "line": 327,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/new/page.tsx",
+   "line": 342,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/new/page.tsx",
+   "line": 359,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(workspace)/partners/new/page.tsx",
+   "line": 378,
+   "category": "A4-heading-skip",
+   "detail": "h1(line 312) → h3 跳级（+2）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "app/(utility)/avatar-preview/page.tsx",
+   "line": 100,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/AttachmentsSettingsSection.tsx",
+   "line": 188,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/AttachmentsSettingsSection.tsx",
+   "line": 206,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/AttachmentsSettingsSection.tsx",
+   "line": 232,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/AttachmentsSettingsSection.tsx",
+   "line": 251,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/NetworkSettingsSection.tsx",
+   "line": 300,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/NetworkSettingsSection.tsx",
+   "line": 323,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/NetworkSettingsSection.tsx",
+   "line": 356,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/NetworkSettingsSection.tsx",
+   "line": 379,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/StartersSettingsSection.tsx",
+   "line": 161,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/AppearanceSettingsSection.tsx",
+   "line": 133,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/MemorySettingsSection.tsx",
+   "line": 321,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/MemorySettingsSection.tsx",
+   "line": 353,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 499,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 522,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 744,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 906,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 924,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 986,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 1026,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+   "line": 1224,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/CapabilitiesSettingsSection.tsx",
+   "line": 590,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/settings/sections/CapabilitiesSettingsSection.tsx",
+   "line": 622,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/chat/messages/ChatMessageList.tsx",
+   "line": 1756,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/chat/components/ChatWorkspace.tsx",
+   "line": 2503,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "features/multi-user/components/GuardianRelationshipsEditor.tsx",
+   "line": 216,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+   "line": 62,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+   "line": 75,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+   "line": 107,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+   "line": 131,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+   "line": 144,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+   "line": 1934,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+   "line": 2076,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+   "line": 2360,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+   "line": 2373,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+   "line": 2387,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/knowledge/components/engines/EngineDetail.tsx",
+   "line": 801,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/knowledge/components/engines/EngineDetail.tsx",
+   "line": 815,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/knowledge/components/engines/EngineDetail.tsx",
+   "line": 1357,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/knowledge/components/engines/EngineDetail.tsx",
+   "line": 1576,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "features/knowledge/components/engines/EngineDetail.tsx",
+   "line": 924,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/SessionList.tsx",
+   "line": 170,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/SessionList.tsx",
+   "line": 276,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchConfigPanel.tsx",
+   "line": 67,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchConfigPanel.tsx",
+   "line": 104,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchConfigPanel.tsx",
+   "line": 118,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchOutlineEditor.tsx",
+   "line": 182,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchOutlineEditor.tsx",
+   "line": 191,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/research/ResearchOutlineEditor.tsx",
+   "line": 207,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/AnnotationPopover.tsx",
+   "line": 225,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/AnnotationList.tsx",
+   "line": 220,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/workspace/ReadingActionCards.tsx",
+   "line": 177,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/workspace/dialogs.tsx",
+   "line": 348,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/workspace/dialogs.tsx",
+   "line": 392,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/library/ReadingLibrary.tsx",
+   "line": 341,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/library/AddMaterialsDialog.tsx",
+   "line": 434,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/reading/library/LibraryShell.tsx",
+   "line": 78,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/sidebar/SidebarNav.tsx",
+   "line": 693,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/ui/ConfirmDialog.tsx",
+   "line": 91,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/VoicePreviewPanel.tsx",
+   "line": 120,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/RegistryControls.tsx",
+   "line": 292,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 580,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 596,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 612,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 624,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 740,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 875,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/SubagentSettingsEditor.tsx",
+   "line": 896,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/ModelsWorkspace.tsx",
+   "line": 241,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/ModelCards.tsx",
+   "line": 182,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/ModelCards.tsx",
+   "line": 52,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/ModelCards.tsx",
+   "line": 79,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/VoiceModelFields.tsx",
+   "line": 43,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/VoiceModelFields.tsx",
+   "line": 121,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/VoiceModelFields.tsx",
+   "line": 163,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/DimensionField.tsx",
+   "line": 98,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/DimensionField.tsx",
+   "line": 117,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 395,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 429,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 454,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 472,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 553,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 571,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 602,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 623,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/MinerUEngineSettings.tsx",
+   "line": 288,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/ProviderModelDiscovery.tsx",
+   "line": 227,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/settings/Toggle.tsx",
+   "line": 13,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/cli-apps/CliAppsSection.tsx",
+   "line": 460,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemorySection.tsx",
+   "line": 1431,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemorySection.tsx",
+   "line": 928,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemorySection.tsx",
+   "line": 964,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemorySection.tsx",
+   "line": 1474,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemoryWorkbench.tsx",
+   "line": 427,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemoryWorkbench.tsx",
+   "line": 577,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemoryRunPanel.tsx",
+   "line": 880,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/memory/MemoryHub.tsx",
+   "line": 192,
+   "category": "A4-heading-skip",
+   "detail": "h1(line 95) → h3 跳级（+2）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/HistorySessionPicker.tsx",
+   "line": 252,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/ReadingReferencePicker.tsx",
+   "line": 341,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/QuestionBankPicker.tsx",
+   "line": 265,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/PersonaPicker.tsx",
+   "line": 123,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/BookReferencePicker.tsx",
+   "line": 242,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/MyAgentsPicker.tsx",
+   "line": 364,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/SessionViewerPanel.tsx",
+   "line": 1069,
+   "category": "B1-aria-hidden-focusable",
+   "detail": "<input> 带 aria-hidden=true 但可聚焦/可交互",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/PersonaSelector.tsx",
+   "line": 185,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/ChatComposer.tsx",
+   "line": 1022,
+   "category": "B1-aria-hidden-focusable",
+   "detail": "<input> 带 aria-hidden=true 但可聚焦/可交互",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/SessionActivityPanel.tsx",
+   "line": 541,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/MasteryQuestionCard.tsx",
+   "line": 225,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/CourseHandoffCard.tsx",
+   "line": 112,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/ResourceSelector.tsx",
+   "line": 149,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/AskUserOptions.tsx",
+   "line": 1472,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/chat/home/SubagentTabBody.tsx",
+   "line": 143,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/watching/WatchingPane.tsx",
+   "line": 705,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/watching/WatchingPane.tsx",
+   "line": 782,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/watching/WatchingPane.tsx",
+   "line": 1202,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/watching/WatchingBrowser.tsx",
+   "line": 255,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/activity/ActivityHeader.tsx",
+   "line": 86,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizViewer.tsx",
+   "line": 1083,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizViewer.tsx",
+   "line": 1101,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizViewer.tsx",
+   "line": 1056,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 191,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 207,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 326,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 339,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 561,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/quiz/QuizConfigPanel.tsx",
+   "line": 595,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/agents/ConnectedAgents.tsx",
+   "line": 314,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/agents/ConnectedAgents.tsx",
+   "line": 336,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/KeyValueEditor.tsx",
+   "line": 53,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/KeyValueEditor.tsx",
+   "line": 82,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 189,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 200,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 227,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 240,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 252,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 278,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 300,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpServerForm.tsx",
+   "line": 318,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），仅 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpCatalogBrowser.tsx",
+   "line": 244,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpCatalogBrowser.tsx",
+   "line": 585,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/mcp/McpCatalogBrowser.tsx",
+   "line": 605,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/visualize/VisualizeConfigPanel.tsx",
+   "line": 101,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/visualize/VisualizeConfigPanel.tsx",
+   "line": 140,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/visualize/VisualizeConfigPanel.tsx",
+   "line": 157,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 264,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 643,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 126,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 413,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/common/InlineFileCard.tsx",
+   "line": 464,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/courses/CourseConventions.tsx",
+   "line": 85,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/courses/CoursesShelf.tsx",
+   "line": 167,
+   "category": "A4-heading-skip",
+   "detail": "h1(line 121) → h3 跳级（+2）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/courses/OrganizedSessionList.tsx",
+   "line": 360,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/courses/CourseSyllabus.tsx",
+   "line": 160,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbGitHubSourcesSection.tsx",
+   "line": 169,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbGitHubSourcesSection.tsx",
+   "line": 178,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbGitHubSourcesSection.tsx",
+   "line": 190,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbGitHubSourcesSection.tsx",
+   "line": 199,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 663,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 687,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1079,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1112,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1201,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1242,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1341,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1373,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1390,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/CreateKbModal.tsx",
+   "line": 1592,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KnowledgeHome.tsx",
+   "line": 328,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KnowledgeHome.tsx",
+   "line": 308,
+   "category": "B3-broken-aria-ref",
+   "detail": "aria-labelledby=\"knowledge-bases-tab\" 引用的 id 在同文件未找到: knowledge-bases-tab",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KnowledgeHome.tsx",
+   "line": 414,
+   "category": "B3-broken-aria-ref",
+   "detail": "aria-labelledby=\"knowledge-engines-tab\" 引用的 id 在同文件未找到: knowledge-engines-tab",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/ImaConnectionFields.tsx",
+   "line": 53,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/ImaConnectionFields.tsx",
+   "line": 65,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/ImaConnectionFields.tsx",
+   "line": 198,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/ImaConnectionFields.tsx",
+   "line": 267,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/PageIndexSettingsModal.tsx",
+   "line": 116,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbDocumentList.tsx",
+   "line": 520,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbDocumentList.tsx",
+   "line": 444,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/EmbeddingModelSelector.tsx",
+   "line": 24,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbMarginNoteDevicesSection.tsx",
+   "line": 152,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/knowledge/KbSettingsSection.tsx",
+   "line": 168,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerComposer.tsx",
+   "line": 467,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerComposer.tsx",
+   "line": 422,
+   "category": "B1-aria-hidden-focusable",
+   "detail": "<input> 带 aria-hidden=true 但可聚焦/可交互",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerWorkspacePicker.tsx",
+   "line": 71,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/SoulPicker.tsx",
+   "line": 238,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/SoulPicker.tsx",
+   "line": 144,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/SoulEditor.tsx",
+   "line": 70,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/SoulEditor.tsx",
+   "line": 50,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/FaceEditor.tsx",
+   "line": 141,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerConfigure.tsx",
+   "line": 341,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerConfigure.tsx",
+   "line": 351,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/PartnerConfigure.tsx",
+   "line": 365,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/schema-form.tsx",
+   "line": 112,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/schema-form.tsx",
+   "line": 204,
+   "category": "A2-control-no-name",
+   "detail": "<select> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/schema-form.tsx",
+   "line": 228,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/schema-form.tsx",
+   "line": 295,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/schema-form.tsx",
+   "line": 319,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/group/GroupComposer.tsx",
+   "line": 192,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/group/GroupComposer.tsx",
+   "line": 181,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/group/GroupSidePanel.tsx",
+   "line": 215,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/partners/group/GroupSessionPicker.tsx",
+   "line": 92,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/SaveToNotebookModal.tsx",
+   "line": 461,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/SaveToNotebookModal.tsx",
+   "line": 594,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookConsole.tsx",
+   "line": 291,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookConsole.tsx",
+   "line": 302,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookConsole.tsx",
+   "line": 357,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookConsole.tsx",
+   "line": 614,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookConsole.tsx",
+   "line": 529,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/notebook/NotebookRecordActions.tsx",
+   "line": 203,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/EduHubImportModal.tsx",
+   "line": 283,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/EduHubImportModal.tsx",
+   "line": 576,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 477,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 533,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 844,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 874,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 918,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 946,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 712,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 783,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 831,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 897,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/SkillsSection.tsx",
+   "line": 1018,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/PersonasSection.tsx",
+   "line": 498,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/PersonasSection.tsx",
+   "line": 528,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/PersonasSection.tsx",
+   "line": 542,
+   "category": "A2-control-no-name",
+   "detail": "<textarea> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/PersonasSection.tsx",
+   "line": 432,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/PersonasSection.tsx",
+   "line": 485,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无文本内容且无 aria-label/title（空/仅图标或条件图标）",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/MyAgentsSection.tsx",
+   "line": 567,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/MyAgentsSection.tsx",
+   "line": 595,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/learning/ConfirmDialog.tsx",
+   "line": 73,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/learning/ConfirmDialog.tsx",
+   "line": 81,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/learning/MasteryStudy.tsx",
+   "line": 750,
+   "category": "A3-button-no-text",
+   "detail": "<button> 无 aria-label/title，内容由调用方变量决定（children/label 等），可访问名取决于用法",
+   "tier": "review",
+   "test_file": false
+  },
+  {
+   "file": "components/space/question-bank/CategoryManager.tsx",
+   "line": 64,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/question-bank/CategoryManager.tsx",
+   "line": 156,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/question-bank/CategoryMenu.tsx",
+   "line": 177,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  },
+  {
+   "file": "components/space/question-bank/BankToolbar.tsx",
+   "line": 56,
+   "category": "A2-control-no-name",
+   "detail": "<input> 无 label 关联/aria-label/aria-labelledby/title（id/name≈?），无 placeholder",
+   "tier": "confirmed",
+   "test_file": false
+  }
+ ]
+}
