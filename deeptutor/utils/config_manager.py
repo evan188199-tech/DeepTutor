@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 from ..services.config.loader import get_runtime_settings_dir
+from ..services.file_io import fsync_directory
 
 
 class ConfigManager:
@@ -86,6 +87,7 @@ class ConfigManager:
                     tmp.flush()
                     os.fsync(tmp.fileno())
                 os.replace(tmp_path, self.config_path)
+                fsync_directory(self.config_path.parent)
                 self._config_cache = current
                 self._last_mtime = self.config_path.stat().st_mtime
                 return True

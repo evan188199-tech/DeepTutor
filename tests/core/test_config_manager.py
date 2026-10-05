@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 
 import pytest
 import yaml
 
+from deeptutor.services import file_io
 from deeptutor.utils.config_manager import ConfigManager
 
 
@@ -43,6 +45,29 @@ def test_atomic_save_and_deep_merge(tmp_path: Path):
     assert updated["llm"]["model"] == "Other"
     assert updated["llm"]["provider"] == "openai"
     assert updated["features"]["enable_solve"] is True
+
+
+@pytest.mark.skipif(not hasattr(os, "O_DIRECTORY"), reason="platform without os.O_DIRECTORY")
+def test_save_config_fsyncs_settings_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    project = tmp_path
+    settings_dir = project / "data" / "user" / "settings"
+    write_yaml(settings_dir / "main.yaml", {"llm": {"model": "A", "provider": "openai"}})
+
+    synced_dirs = []
+    real_open = os.open
+
+    def spy_open(path: str | os.PathLike[str], flags: int, *args: int, **kwargs: int) -> int:
+        if flags & os.O_DIRECTORY:
+            synced_dirs.append(Path(path))
+        return real_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(file_io.os, "open", spy_open)
+
+    cm = ConfigManager(project_root=project)
+
+    assert cm.save_config({"llm": {"model": "B"}})
+
+    assert synced_dirs == [settings_dir]
 
 
 def test_env_info_reads_project_model_catalog(tmp_path: Path):
