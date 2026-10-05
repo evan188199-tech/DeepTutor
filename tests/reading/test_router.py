@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import io
+import logging
 from pathlib import Path
 import zipfile
 
@@ -864,6 +865,35 @@ def test_duplicate_check_separates_same_content_from_same_name(
     assert [row["kind"] for row in matches] == ["same_content", "same_name"]
     assert matches[0]["material"]["material_id"] == material["material_id"]
     assert [row["title"] for row in matches[0]["collections"]] == ["Close reading"]
+
+
+def test_duplicate_check_reports_urls_it_could_not_verify(
+    client: TestClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    imported = reading._ingestion().queue_url("https://example.com/article")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.reading"):
+        response = client.post(
+            "/api/reading/library/duplicate-check",
+            json={
+                "urls": [
+                    "ftp://example.com/report.pdf",
+                    "https://example.com/article",
+                    "https://www.youtube.com/",
+                ]
+            },
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert [row["material"]["material_id"] for row in body["matches"]] == [imported.material_id]
+    assert body["unchecked_urls"] == [
+        "ftp://example.com/report.pdf",
+        "https://www.youtube.com/",
+    ]
+    warnings = [record.getMessage() for record in caplog.records]
+    assert any("ftp://example.com/report.pdf" in message for message in warnings)
+    assert any("https://www.youtube.com/" in message for message in warnings)
 
 
 def test_reuse_false_keeps_a_second_copy_with_its_own_annotations(

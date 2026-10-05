@@ -503,6 +503,7 @@ async def duplicate_check(payload: DuplicateCheckRequest) -> dict[str, Any]:
 
     try:
         matches: list[dict[str, Any]] = []
+        unchecked_urls: list[str] = []
         for item in payload.files:
             kind = "same_content"
             record = catalog.find_material_by_content(item.content_id) if item.content_id else None
@@ -522,7 +523,9 @@ async def duplicate_check(payload: DuplicateCheckRequest) -> dict[str, Any]:
         for url in payload.urls:
             try:
                 material_id = url_material_id(url)
-            except Exception:  # noqa: BLE001 - a malformed URL is simply not a match
+            except Exception as exc:  # noqa: BLE001 - a malformed URL is simply not a match
+                logger.warning("duplicate_check skipped an unverifiable url %r: %s", url, exc)
+                unchecked_urls.append(url)
                 continue
             record = catalog.get_material(material_id)
             if record is None or not _material_allowed(record.material_id):
@@ -535,7 +538,9 @@ async def duplicate_check(payload: DuplicateCheckRequest) -> dict[str, Any]:
                     "collections": catalog.collections_for_material(record.material_id),
                 }
             )
-        return {"matches": matches}
+        # unchecked_urls tells the client this answer is partial: those URLs
+        # were not compared at all, so "no match" is not a clean bill of health.
+        return {"matches": matches, "unchecked_urls": unchecked_urls}
     except Exception as exc:
         raise _http_error(exc) from exc
 
