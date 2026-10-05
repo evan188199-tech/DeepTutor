@@ -244,3 +244,82 @@ def test_absolute_parent_and_symlink_escapes_are_rejected(tmp_path: Path) -> Non
     link.parent.mkdir(parents=True, exist_ok=True)
     link.symlink_to(external)
     assert service.resolve_public_output_path(link.absolute()) is None
+
+
+def test_head_returns_metadata_without_a_body(output_app) -> None:
+    relative_path = "workspace/chat/chat/session-1/code_runs/report.pdf"
+    alice = TokenPayload(username="alice", role="user", user_id="u_alice")
+    client, _admin_root, users_root = output_app({"alice-token": alice})
+    _write_output(users_root / "u_alice", relative_path, b"alice report")
+
+    with client:
+        client.cookies.set("dt_token", "alice-token")
+        response = client.head(f"/files/outputs/{relative_path}")
+
+    assert response.status_code == 200
+    assert response.content == b""
+    assert response.headers["content-type"] == "application/pdf"
+
+
+def test_ambiguous_partner_match_fails_closed(output_app, monkeypatch) -> None:
+    """Two visible partners owning the same artifact answer 404, not a guess (#1012)."""
+    relative_path = "workspace/outputs/chat/session-1/turn-1/exec/result.txt"
+    alice = TokenPayload(username="alice", role="user", user_id="u_alice")
+    client, admin_root, _users_root = output_app({"alice-token": alice})
+    for partner_id in ("bot-a", "bot-b"):
+        _write_output(admin_root / "partners" / partner_id / "workspace", relative_path, b"dupe")
+
+    from deeptutor.api.routers import outputs
+
+    monkeypatch.setattr(
+        outputs,
+        "visible_partners",
+        lambda: [{"partner_id": "bot-a"}, {"partner_id": "bot-b"}],
+    )
+
+    with client:
+        client.cookies.set("dt_token", "alice-token")
+        response = client.get(f"/files/outputs/{relative_path}")
+
+    assert response.status_code == 404
+    assert b"dupe" not in response.content
+
+
+def test_partner_lookup_is_skipped_inside_a_workspace_context(output_app, monkeypatch) -> None:
+    """A content-workspace request only sees its own tree, never partner workspaces."""
+    relative_path = "workspace/outputs/chat/session-1/turn-1/exec/chart.png"
+    alice = TokenPayload(username="alice", role="user", user_id="u_alice")
+    client, admin_root, _users_root = output_app({"alice-token": alice})
+    _write_output(
+        admin_root / "partners" / "math-bot" / "workspace", relative_path, b"partner chart"
+    )
+
+    from deeptutor.api.routers import outputs
+    from deeptutor.services.workspace import context as workspace_context_module
+
+    monkeypatch.setattr(outputs, "visible_partners", lambda: [{"partner_id": "math-bot"}])
+    monkeypatch.setattr(workspace_context_module, "current_workspace_id", lambda: "content-ws")
+
+    with client:
+        client.cookies.set("dt_token", "alice-token")
+        response = client.get(f"/files/outputs/{relative_path}")
+
+    assert response.status_code == 404
+
+
+def test_missing_user_context_fails_closed(output_app) -> None:
+    """The #481 guard: a download without an installed user context 404s."""
+    relative_path = "workspace/chat/chat/session-1/code_runs/report.pdf"
+    alice = TokenPayload(username="alice", role="user", user_id="u_alice")
+    client, _admin_root, users_root = output_app({"alice-token": alice})
+    _write_output(users_root / "u_alice", relative_path, b"alice report")
+
+    from deeptutor.api.routers.auth import require_auth
+
+    client.app.dependency_overrides[require_auth] = lambda: None
+
+    with client:
+        response = client.get(f"/files/outputs/{relative_path}")
+
+    assert response.status_code == 404
+    assert b"alice report" not in response.content
