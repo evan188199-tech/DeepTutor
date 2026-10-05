@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from contextvars import ContextVar
+import logging
 import threading
 
 import pytest
@@ -84,3 +85,41 @@ async def test_worker_keeps_the_request_context() -> None:
         )
     finally:
         user.reset(token)
+
+
+@pytest.mark.asyncio
+async def test_worker_business_exception_propagates_to_caller() -> None:
+    async def job(_bridge) -> None:
+        raise ValueError("index failed")
+
+    with pytest.raises(ValueError, match="index failed"):
+        await run_in_worker_loop(job)
+
+
+@pytest.mark.asyncio
+async def test_cancelled_request_logs_worker_business_failure(caplog) -> None:
+    active = threading.Event()
+
+    async def job(_bridge) -> None:
+        active.set()
+        try:
+            await asyncio.sleep(999)
+        except asyncio.CancelledError:
+            raise RuntimeError("storage flush failed during abort")
+
+    worker_logger = "deeptutor.services.rag.pipelines.lightrag.worker"
+    with caplog.at_level(logging.ERROR, logger=worker_logger):
+        task = asyncio.create_task(run_in_worker_loop(job, cancel_grace_seconds=0.05))
+        await asyncio.wait_for(asyncio.to_thread(active.wait), timeout=5)
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await asyncio.wait_for(task, timeout=5)
+    failures = [
+        record
+        for record in caplog.records
+        if record.name == worker_logger
+        and "worker job failed" in record.getMessage()
+        and record.exc_info
+        and record.exc_info[0] is RuntimeError
+    ]
+    assert failures, "a worker business failure must not vanish during request cancellation"
