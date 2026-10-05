@@ -10,10 +10,13 @@ and makes deleted materials or unknown revisions fail closed.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 import re
-from typing import Any
+from typing import Any, Iterable
 
 from deeptutor.reading.store import MAX_READ_CHARS, ReadingStore
+
+logger = logging.getLogger(__name__)
 
 MAX_READING_REFERENCE_MATERIALS = 8
 MAX_READING_REFERENCE_UNITS = 24
@@ -28,6 +31,32 @@ class ResolvedReadingSource:
     source_id: str
     name: str
     full_text: str
+
+
+@dataclass(frozen=True, slots=True)
+class UnresolvedReadingReference:
+    """A persisted reference whose sources could not be re-resolved."""
+
+    material_id: str
+    revision: int
+    locators: tuple[int, ...]
+    error: str
+
+
+class ReadingSourceResolution(list[ResolvedReadingSource]):
+    """Resolved sources plus the references that could not be re-resolved.
+
+    Behaves like the plain list of resolved sources callers already consume;
+    ``failures`` makes dropped references observable instead of silent.
+    """
+
+    def __init__(
+        self,
+        resolved: Iterable[ResolvedReadingSource] = (),
+        failures: Iterable[UnresolvedReadingReference] = (),
+    ) -> None:
+        super().__init__(resolved)
+        self.failures = list(failures)
 
 
 def normalize_reading_references(value: Any) -> list[dict[str, Any]]:
@@ -85,13 +114,20 @@ def resolve_reading_sources(
     value: Any,
     *,
     store: ReadingStore | None = None,
-) -> list[ResolvedReadingSource]:
-    """Resolve canonical references against the active user's reading store."""
+) -> ReadingSourceResolution:
+    """Resolve canonical references against the active user's reading store.
+
+    Fail-closed behaviour for missing, deleted, corrupt, or unknown revisions
+    is unchanged: they contribute no resolved sources. Each such drop is now
+    logged and recorded in ``failures`` so callers can surface that a saved
+    reference could not be verified instead of losing it silently.
+    """
 
     from deeptutor.multi_user.learning_access import learning_material_allowed
 
     active_store = store or ReadingStore()
     resolved: list[ResolvedReadingSource] = []
+    failures: list[UnresolvedReadingReference] = []
     for reference in normalize_reading_references(value):
         material_id = reference["material_id"]
         # A saved turn or historical source may outlive a learner's assignment.
@@ -115,8 +151,24 @@ def resolve_reading_sources(
                 read_unit = lambda material_id, locator: active_store.revision_unit_text(  # noqa: E731
                     material_id, revision, locator
                 )
-        except Exception:
-            # Missing, deleted, corrupt, or unknown revisions are not sources.
+        except Exception as exc:
+            # Missing, deleted, corrupt, or unknown revisions are not sources,
+            # but the drop must remain visible for verification and debugging.
+            logger.warning(
+                "Could not re-resolve reading reference for material %s revision %s (locators %s)",
+                material_id,
+                revision,
+                reference["locators"],
+                exc_info=True,
+            )
+            failures.append(
+                UnresolvedReadingReference(
+                    material_id=material_id,
+                    revision=revision,
+                    locators=tuple(reference["locators"]),
+                    error=f"{type(exc).__name__}: {exc}",
+                )
+            )
             continue
 
         headings: dict[int, str] = {}
@@ -132,7 +184,23 @@ def resolve_reading_sources(
                 continue
             try:
                 body = read_unit(material_id, locator).strip()
-            except Exception:
+            except Exception as exc:
+                logger.warning(
+                    "Could not read %s %s of material %s revision %s",
+                    manifest.unit,
+                    locator,
+                    material_id,
+                    revision,
+                    exc_info=True,
+                )
+                failures.append(
+                    UnresolvedReadingReference(
+                        material_id=material_id,
+                        revision=revision,
+                        locators=(locator,),
+                        error=f"{type(exc).__name__}: {exc}",
+                    )
+                )
                 continue
             if not body:
                 continue
@@ -160,7 +228,7 @@ def resolve_reading_sources(
                     full_text=f"{header}\n\n{body}",
                 )
             )
-    return resolved
+    return ReadingSourceResolution(resolved, failures)
 
 
 def _positive_integer(value: Any) -> int | None:
@@ -177,7 +245,9 @@ def _positive_integer(value: Any) -> int | None:
 __all__ = [
     "MAX_READING_REFERENCE_MATERIALS",
     "MAX_READING_REFERENCE_UNITS",
+    "ReadingSourceResolution",
     "ResolvedReadingSource",
+    "UnresolvedReadingReference",
     "normalize_reading_references",
     "resolve_reading_sources",
 ]

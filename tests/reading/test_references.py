@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from deeptutor.reading.references import (
@@ -7,7 +8,7 @@ from deeptutor.reading.references import (
     normalize_reading_references,
     resolve_reading_sources,
 )
-from deeptutor.reading.store import ReadingStore
+from deeptutor.reading.store import MANIFEST_NAME, ReadingStore
 
 
 def test_reference_normalization_rejects_paths_and_deduplicates_locators() -> None:
@@ -117,3 +118,74 @@ def test_references_fail_closed_without_a_content_revision() -> None:
     assert (
         normalize_reading_references([{"material_id": "abcdef0123456789", "locators": [1]}]) == []
     )
+
+
+def test_unreadable_manifest_is_reported_as_a_failure(tmp_path: Path, caplog) -> None:
+    source = tmp_path / "chapter.txt"
+    source.write_text("# Opening\n\nTrusted source text.", encoding="utf-8")
+    store = ReadingStore(tmp_path / "reading")
+    manifest = store.ingest(source)
+    (store._dir(manifest.material_id) / MANIFEST_NAME).write_text("{ not json", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.references"):
+        resolved = resolve_reading_sources(
+            [
+                {
+                    "material_id": manifest.material_id,
+                    "revision": manifest.revision,
+                    "locators": [1, 2],
+                }
+            ],
+            store=store,
+        )
+
+    assert list(resolved) == []
+    failure_rows = [
+        (row.material_id, row.revision, tuple(row.locators)) for row in resolved.failures
+    ]
+    assert failure_rows == [(manifest.material_id, manifest.revision, (1, 2))]
+    assert all(row.error for row in resolved.failures)
+    assert any(record.levelno == logging.WARNING for record in caplog.records)
+
+
+def test_unreadable_unit_is_reported_as_a_per_locator_failure(tmp_path: Path) -> None:
+    store = ReadingStore(tmp_path / "reading")
+    material_id = "abcdef0123456789"
+    first = store.ingest_units(
+        material_id,
+        filename="snapshot.md",
+        units=["Original revision text."],
+        source_type="url_snapshot",
+    )
+    store.ingest_units(
+        material_id,
+        filename="snapshot.md",
+        units=["Replacement revision text."],
+        source_type="url_snapshot",
+    )
+    revision_unit = (
+        store._dir(material_id) / "revisions" / f"{first.revision:06d}" / "units" / "0001.txt"
+    )
+    revision_unit.unlink()
+
+    resolved = resolve_reading_sources(
+        [{"material_id": material_id, "revision": first.revision, "locators": [1]}],
+        store=store,
+    )
+
+    assert list(resolved) == []
+    assert [(row.material_id, row.revision, tuple(row.locators)) for row in resolved.failures] == [
+        (material_id, first.revision, (1,))
+    ]
+
+
+def test_missing_materials_are_reported_as_failures(tmp_path: Path) -> None:
+    resolved = resolve_reading_sources(
+        [{"material_id": "abcdef0123456789", "revision": 1, "locators": [1]}],
+        store=ReadingStore(tmp_path / "reading"),
+    )
+
+    assert list(resolved) == []
+    assert [(row.material_id, row.revision, tuple(row.locators)) for row in resolved.failures] == [
+        ("abcdef0123456789", 1, (1,))
+    ]
