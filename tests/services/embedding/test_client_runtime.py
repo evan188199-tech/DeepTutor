@@ -45,6 +45,7 @@ def _build_config(
     model: str = "text-embedding-3-small",
     base_url: str = "https://api.openai.com/v1/embeddings",
     send_dimensions: bool | None = None,
+    batch_delay: float = 0.0,
 ) -> EmbeddingConfig:
     return EmbeddingConfig(
         model=model,
@@ -57,6 +58,7 @@ def _build_config(
         dim=8,
         send_dimensions=send_dimensions,
         batch_size=2,
+        batch_delay=batch_delay,
         request_timeout=30,
     )
 
@@ -78,20 +80,15 @@ async def test_embedding_client_batches_requests(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_embedding_client_serializes_concurrent_calls_without_blocking_loop(
+async def test_embedding_client_runs_concurrently_when_batch_delay_disabled(
     monkeypatch,
 ) -> None:
-    class _NonBlockingOnlyLock:
-        def __init__(self) -> None:
-            self._lock = threading.Lock()
-
+    class _ForbiddenLock:
         def acquire(self, blocking: bool = True) -> bool:
-            if blocking:
-                raise AssertionError("embedding spacing lock must not block the event loop")
-            return self._lock.acquire(blocking=False)
+            raise AssertionError("spacing lock must not be used when batch_delay <= 0")
 
         def release(self) -> None:
-            self._lock.release()
+            raise AssertionError("spacing lock must not be used when batch_delay <= 0")
 
     class _ConcurrentAdapter(_FakeAdapter):
         in_flight = 0
@@ -111,11 +108,11 @@ async def test_embedding_client_serializes_concurrent_calls_without_blocking_loo
         "deeptutor.services.embedding.client._resolve_adapter_class",
         lambda _b: _ConcurrentAdapter,
     )
-    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", _NonBlockingOnlyLock())
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", _ForbiddenLock())
     monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
     _ConcurrentAdapter.in_flight = 0
     _ConcurrentAdapter.max_in_flight = 0
-    client = EmbeddingClient(_build_config("openai"))
+    client = EmbeddingClient(_build_config("openai", batch_delay=0.0))
 
     heartbeat = asyncio.Event()
 
@@ -123,18 +120,125 @@ async def test_embedding_client_serializes_concurrent_calls_without_blocking_loo
         await asyncio.sleep(0)
         heartbeat.set()
 
-    first, second, _ = await asyncio.wait_for(
+    first, second, third, _ = await asyncio.wait_for(
         asyncio.gather(
             client.embed(["first"]),
             client.embed(["second"]),
+            client.embed(["third"]),
             mark_loop_responsive(),
         ),
         timeout=1.0,
     )
 
     assert heartbeat.is_set()
-    assert len(first) == len(second) == 1
-    assert _ConcurrentAdapter.max_in_flight == 1
+    assert len(first) == len(second) == len(third) == 1
+    assert _ConcurrentAdapter.max_in_flight > 1
+
+
+@pytest.mark.asyncio
+async def test_embedding_client_spaces_batch_starts_when_batch_delay_enabled(
+    monkeypatch,
+) -> None:
+    class _NonBlockingOnlyLock:
+        def __init__(self) -> None:
+            self._lock = threading.Lock()
+
+        def acquire(self, blocking: bool = True) -> bool:
+            if blocking:
+                raise AssertionError("embedding spacing lock must not block the event loop")
+            return self._lock.acquire(blocking=False)
+
+        def release(self) -> None:
+            self._lock.release()
+
+    class _TimingAdapter(_FakeAdapter):
+        start_monotonic: list[float] = []
+
+        async def embed(self, request):
+            from time import monotonic
+
+            type(self).start_monotonic.append(monotonic())
+            return await super().embed(request)
+
+    _FakeAdapter.instances = []
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class",
+        lambda _b: _TimingAdapter,
+    )
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", _NonBlockingOnlyLock())
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    _TimingAdapter.start_monotonic = []
+    client = EmbeddingClient(_build_config("openai", batch_delay=0.05))
+
+    heartbeat = asyncio.Event()
+
+    async def mark_loop_responsive() -> None:
+        await asyncio.sleep(0)
+        heartbeat.set()
+
+    results = await asyncio.wait_for(
+        asyncio.gather(
+            client.embed(["first"]),
+            client.embed(["second"]),
+            client.embed(["third"]),
+            mark_loop_responsive(),
+        ),
+        timeout=2.0,
+    )
+
+    assert heartbeat.is_set()
+    assert all(len(vectors) == 1 for vectors in results[:3])
+    starts = sorted(_TimingAdapter.start_monotonic)
+    assert len(starts) == 3
+    for earlier, later in zip(starts, starts[1:]):
+        assert later - earlier >= 0.045
+
+
+def test_embedding_client_spaces_requests_across_event_loops(monkeypatch) -> None:
+    from time import monotonic
+
+    class _TimingAdapter(_FakeAdapter):
+        start_monotonic: list[float] = []
+        _append_lock = threading.Lock()
+
+        async def embed(self, request):
+            with type(self)._append_lock:
+                type(self).start_monotonic.append(monotonic())
+            return await super().embed(request)
+
+    _FakeAdapter.instances = []
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class",
+        lambda _b: _TimingAdapter,
+    )
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", None)
+    monkeypatch.setattr(EmbeddingClient, "_thread_guard", None)
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    _TimingAdapter.start_monotonic = []
+
+    barrier = threading.Barrier(2)
+
+    def run_in_new_loop(text: str) -> None:
+        client = EmbeddingClient(_build_config("openai", batch_delay=0.05))
+
+        async def call() -> None:
+            await asyncio.sleep(0)
+            barrier.wait(timeout=5.0)
+            vectors = await client.embed([text])
+            assert len(vectors) == 1
+
+        asyncio.run(call())
+
+    threads = [threading.Thread(target=run_in_new_loop, args=(f"chunk-{i}",)) for i in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=5.0)
+    assert not any(thread.is_alive() for thread in threads)
+
+    starts = sorted(_TimingAdapter.start_monotonic)
+    assert len(starts) == 2
+    assert starts[1] - starts[0] >= 0.045
 
 
 @pytest.mark.asyncio

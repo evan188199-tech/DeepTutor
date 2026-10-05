@@ -146,18 +146,22 @@ class EmbeddingClient:
                 input_type=role,
             )
             try:
-                # 全局发帖节流：线程级锁串行化"等待间隔+发帖"，跨线程/跨
-                # event loop 互斥（asyncio 锁在新 loop 模型下失效的教训）。
-                # 非阻塞轮询避免同一 loop 内的并发调用在 acquire() 上互锁。
-                from time import monotonic as _mono
+                # 全局发帖节流：仅当配置了请求间隔时才进入临界区，把"等待
+                # 间隔+记账"串行化，跨线程/跨 event loop 互斥（asyncio 锁在
+                # 新 loop 模型下失效的教训）。非阻塞轮询避免同一 loop 内的
+                # 并发调用在 acquire() 上互锁。网络调用留在锁外：
+                # batch_delay<=0 时没有任何节流语义需要保护，无条件加锁会把
+                # 全进程 embedding 请求压成串行，摧毁上层并发（#1779）；
+                # batch_delay>0 时相邻请求起点间隔仍由锁内记账保证。
+                if batch_delay > 0:
+                    from time import monotonic as _mono
 
-                async with EmbeddingClient._hold_spacing_lock():
-                    if batch_delay > 0:
+                    async with EmbeddingClient._hold_spacing_lock():
                         elapsed = _mono() - EmbeddingClient._last_request_monotonic
                         if elapsed < batch_delay:
                             await asyncio.sleep(batch_delay - elapsed)
-                    EmbeddingClient._last_request_monotonic = _mono()
-                    response = await self.adapter.embed(request)
+                        EmbeddingClient._last_request_monotonic = _mono()
+                response = await self.adapter.embed(request)
             except Exception as exc:
                 # Capture batch context so the task log stream / KB diagnostics
                 # show actionable info instead of a bare exception string.
