@@ -414,7 +414,18 @@ class PartnerRunner:
             )
 
         if not final_text and errors:
-            final_text = f"Sorry, the turn failed: {errors[-1]}"
+            # The reader gets a neutral apology only: raw error text (class
+            # names, exception details, provider messages) stays in the log,
+            # and callers can branch on the machine-readable code instead of
+            # matching on the reply string.
+            logger.error(
+                "Partner %s turn failed on every attempt; last error: %s",
+                self.partner_id,
+                errors[-1][:500],
+            )
+            final_text = "Sorry, the reply failed. Please try again."
+            if delivery_meta is not None:
+                delivery_meta["turn_error_code"] = "turn_failed"
         return final_text, events, generated_attachments
 
     async def _execute_turn(

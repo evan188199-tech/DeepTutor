@@ -518,25 +518,57 @@ class TestTurnExecution:
         assert fake_orchestrator.activated_selections == [primary, backup]
 
     @pytest.mark.asyncio
-    async def test_no_backup_returns_error_text(self, partners_root, fake_orchestrator):
+    async def test_no_backup_returns_neutral_failure(self, partners_root, fake_orchestrator):
         fake_orchestrator.script = [
             event(StreamEventType.ERROR, content="rate limited"),
             event(StreamEventType.RESULT, metadata={"response": ""}),
             event(StreamEventType.DONE),
         ]
         runner = _runner(partners_root)
+        delivery_meta: dict[str, Any] = {}
 
-        final = await runner.process_message(_msg())
-        assert "rate limited" in final
+        final = await runner.process_message(_msg(), delivery_meta=delivery_meta)
+
+        assert final == "Sorry, the reply failed. Please try again."
+        assert "rate limited" not in final
+        assert delivery_meta["turn_error_code"] == "turn_failed"
         assert len(fake_orchestrator.seen_contexts) == 1
 
     @pytest.mark.asyncio
+    async def test_crashed_turn_replies_neutrally_and_logs_the_exception(
+        self, partners_root, fake_orchestrator, monkeypatch, caplog
+    ):
+        # A turn that dies mid-flight must apologize without quoting the
+        # exception (class name or message) back to the reader; the raw
+        # reason belongs to the log, and the code carries the failure fact.
+        import deeptutor.runtime.orchestrator as orchestrator_module
+
+        class CrashingOrchestrator:
+            async def handle(self, context):
+                raise RuntimeError("internal provider detail")
+                yield  # pragma: no cover
+
+        monkeypatch.setattr(orchestrator_module, "ChatOrchestrator", CrashingOrchestrator)
+        runner = _runner(partners_root)
+        delivery_meta: dict[str, Any] = {}
+
+        with caplog.at_level("ERROR", logger="deeptutor.services.partners.runtime"):
+            final = await runner.process_message(_msg(), delivery_meta=delivery_meta)
+
+        assert final == "Sorry, the reply failed. Please try again."
+        assert "RuntimeError" not in final
+        assert "internal provider detail" not in final
+        assert delivery_meta["turn_error_code"] == "turn_failed"
+        logged = " ".join(record.getMessage() for record in caplog.records)
+        assert "RuntimeError: internal provider detail" in logged
+
+    @pytest.mark.asyncio
     async def test_llm_config_error_folds_into_graceful_reply(
-        self, partners_root, fake_orchestrator, monkeypatch
+        self, partners_root, fake_orchestrator, monkeypatch, caplog
     ):
         # A setup failure with no resolvable LLM model (LLMConfigError) must
-        # fold into the turn's error path — an apology carrying the real reason
-        # — instead of propagating as an opaque crash / bare "Internal error".
+        # fold into the turn's error path — a neutral apology, with the real
+        # reason in the log — instead of propagating as an opaque crash.
         from deeptutor.services.llm.exceptions import LLMConfigError
         from deeptutor.services.model_selection import runtime as selection_runtime
 
@@ -546,8 +578,14 @@ class TestTurnExecution:
         monkeypatch.setattr(selection_runtime, "activate_llm_selection", _raise)
         runner = _runner(partners_root)
 
-        final = await runner.process_message(_msg("hi"))
-        assert "No active LLM model is configured." in final
+        with caplog.at_level("ERROR", logger="deeptutor.services.partners.runtime"):
+            final = await runner.process_message(_msg("hi"))
+
+        assert final == "Sorry, the reply failed. Please try again."
+        assert "No active LLM model" not in final
+        assert "LLMConfigError" not in final
+        logged = " ".join(record.getMessage() for record in caplog.records)
+        assert "No active LLM model is configured." in logged
         # The orchestrator is never reached when LLM-selection resolution fails.
         assert fake_orchestrator.seen_contexts == []
 
