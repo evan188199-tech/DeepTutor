@@ -157,6 +157,43 @@ def test_an_unpublished_item_is_still_not_found(partner_workspace_api) -> None:
     assert response.status_code == 404
 
 
+def test_a_failed_partner_resolution_is_logged_and_skipped(
+    partner_workspace_api, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A partner-side failure must stay visible: log it, still answer 404.
+
+    The fallback probes each partner in turn and skips the ones that cannot
+    resolve the item. When the skip is caused by a broken presentation rather
+    than a clean miss, an unlogged ``continue`` leaves a 404 with no trace of
+    why — the caller concludes their generated file was lost.
+    """
+    import logging
+
+    client, scoped = partner_workspace_api
+    item = _publish_in_partner_scope(scoped(), "broken.md", "broken body")
+    from deeptutor.multi_user.paths import user_context
+    from deeptutor.services.partners.scope import partner_user
+
+    with user_context(partner_user("math-bot")):
+        presentations = scoped().get_runtime_state_dir() / "workspace_presentations"
+        manifest = next(presentations.glob(f"*/items/{item.workspace_item_id}.json"))
+        manifest.write_text("{ not a manifest", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.workspace"):
+        response = client.get(item.url)
+
+    assert response.status_code == 404
+    records = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.api.routers.workspace" and record.levelno >= logging.WARNING
+    ]
+    assert records, "a skipped broken partner item must leave a warning behind"
+    message = records[-1].getMessage()
+    assert "math-bot" in message
+    assert item.workspace_item_id in message
+
+
 def test_workspace_migration_api_blocks_active_turns_and_keeps_bindings(
     workspace_api, tmp_path, monkeypatch
 ):

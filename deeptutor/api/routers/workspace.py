@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -23,6 +24,8 @@ from deeptutor.services.workspace.resources import WorkspaceResources
 
 settings_router = APIRouter()
 files_router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 class WorkspacePathPayload(BaseModel):
@@ -319,7 +322,17 @@ def _resolve_partner_item(
                 return get_content_workspace_service().resolve_published_item(
                     workspace_id, workspace_item_id
                 )
-            except WorkspaceError:
+            except WorkspaceError as exc:
+                # The probe skips partners that cannot resolve the item, but a
+                # broken presentation must not vanish with them: without this
+                # line the eventual 404 carries no trace of why.
+                logger.warning(
+                    "Skipping partner %s: resolving item %s in workspace %s failed: %s",
+                    partner_id,
+                    workspace_item_id,
+                    workspace_id,
+                    exc,
+                )
                 continue
     return None
 
