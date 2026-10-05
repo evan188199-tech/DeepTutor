@@ -133,3 +133,66 @@ def test_matching_nested_role_policy_beats_newer_mismatch(tmp_path: Path) -> Non
     assert {value["return"] for value in json.loads(_cache_path(target).read_text()).values()} == {
         "matching"
     }
+
+
+def test_dirty_version_directory_names_are_skipped(tmp_path: Path) -> None:
+    for name in ("version-junk", "version-", "version-2-beta"):
+        dirty = tmp_path / name
+        dirty.mkdir()
+        (dirty / "meta.json").write_text(
+            json.dumps({"indexing_policy": _policy("same")}), encoding="utf-8"
+        )
+        _cache(dirty, {f"default:extract:{'a' * 32}": _entry("extract", f"dirty-{name}")})
+    good = tmp_path / "version-1"
+    good.mkdir()
+    (good / "meta.json").write_text(
+        json.dumps({"indexing_policy": _policy("same")}), encoding="utf-8"
+    )
+    _cache(good, {f"default:extract:{'b' * 32}": _entry("extract", "good")})
+    target = tmp_path / "version-2"
+    target.mkdir()
+
+    assert inherit_index_cache(tmp_path, target, _policy("same")) is True
+
+    copied = json.loads(_cache_path(target).read_text(encoding="utf-8"))
+    assert [value["return"] for value in copied.values()] == ["good"]
+
+
+def test_newest_eligible_donor_wins_and_newer_versions_are_ignored(tmp_path: Path) -> None:
+    key = f"default:extract:{'a' * 32}"
+    for version, value in ((1, "v1"), (2, "v2"), (4, "future")):
+        donor = tmp_path / f"version-{version}"
+        donor.mkdir()
+        (donor / "meta.json").write_text(
+            json.dumps({"indexing_policy": _policy("same")}), encoding="utf-8"
+        )
+        _cache(donor, {key: _entry("extract", value)})
+    target = tmp_path / "version-3"
+    target.mkdir()
+
+    assert inherit_index_cache(tmp_path, target, _policy("same")) is True
+
+    copied = json.loads(_cache_path(target).read_text(encoding="utf-8"))
+    assert copied == {key: _entry("extract", "v2")}
+
+
+def test_donor_versions_without_usable_cache_leave_target_untouched(tmp_path: Path) -> None:
+    empty_donor = tmp_path / "version-1"
+    empty_donor.mkdir()
+    (empty_donor / "meta.json").write_text(
+        json.dumps({"indexing_policy": _policy("same")}), encoding="utf-8"
+    )
+    (tmp_path / "not-a-version").mkdir()
+    target = tmp_path / "version-2"
+    target.mkdir()
+
+    assert inherit_index_cache(tmp_path, target, _policy("same")) is False
+
+    assert not list(target.rglob("kv_store_llm_response_cache.json"))
+
+
+def test_missing_target_root_without_donors_is_a_noop(tmp_path: Path) -> None:
+    assert inherit_index_cache(tmp_path, tmp_path / "version-1", _policy("same")) is False
+
+    assert not (tmp_path / "version-1").exists()
+    assert list(tmp_path.iterdir()) == []
