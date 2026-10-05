@@ -700,7 +700,13 @@ async def clear_trace(surface: str):
         try:
             path.unlink()
             removed += 1
-        except OSError:
+        except OSError as exc:
+            logger.warning(
+                "trace cleanup: failed to remove %s for surface %s: %s",
+                path,
+                surf,
+                exc,
+            )
             continue
     return {"surface": surf, "removed_files": removed}
 
