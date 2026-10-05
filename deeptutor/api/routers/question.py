@@ -30,6 +30,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 ws_router = APIRouter()
 
+# Neutral copy for rejected/unreadable uploads sent over WS; validator
+# exceptions can embed server-side paths and stay in the server log only.
+_ATTACHMENT_LOAD_FAILED_MESSAGE = "That attachment could not be loaded."
+
 
 async def mimic_exam_questions(*args, **kwargs):
     """Compatibility seam that keeps the legacy workflow import deferred."""
@@ -183,8 +187,12 @@ async def websocket_mimic_generate(websocket: WebSocket):
                 try:
                     pdf_bytes = base64.b64decode(pdf_data)
                 except Exception as e:
+                    logger.warning("Uploaded PDF failed base64 decoding: %s", e)
                     await websocket.send_json(
-                        {"type": "error", "content": f"Invalid base64 PDF data: {e}"}
+                        {
+                            "type": "error",
+                            "content": "The uploaded PDF data is corrupt. Re-upload the file.",
+                        }
                     )
                     return
 
@@ -194,7 +202,10 @@ async def websocket_mimic_generate(websocket: WebSocket):
                         pdf_name, len(pdf_bytes), {".pdf"}
                     )
                 except ValueError as e:
-                    await websocket.send_json({"type": "error", "content": str(e)})
+                    logger.warning("Uploaded PDF rejected by validator: %s", e)
+                    await websocket.send_json(
+                        {"type": "error", "content": _ATTACHMENT_LOAD_FAILED_MESSAGE}
+                    )
                     return
 
                 # Create batch directory for this mimic session
@@ -220,7 +231,10 @@ async def websocket_mimic_generate(websocket: WebSocket):
                 except (ValueError, FileNotFoundError, PermissionError) as e:
                     # Clean up invalid or inaccessible file
                     pdf_path.unlink(missing_ok=True)
-                    await websocket.send_json({"type": "error", "content": str(e)})
+                    logger.warning("Uploaded PDF failed file validation: %s", e)
+                    await websocket.send_json(
+                        {"type": "error", "content": _ATTACHMENT_LOAD_FAILED_MESSAGE}
+                    )
                     return
 
                 await websocket.send_json(
@@ -315,9 +329,11 @@ async def websocket_mimic_generate(websocket: WebSocket):
 
     except WebSocketDisconnect:
         logger.debug("Client disconnected during mimic generation")
-    except Exception as e:
+    except Exception:
+        # Provider/exception text can embed URLs and internal paths; the raw
+        # exception is logged and the client gets neutral copy.
         logger.exception("Mimic generation error")
-        error_msg = format_exception_message(e)
+        error_msg = "Generation failed. Please try again in a moment."
         try:
             await websocket.send_json({"type": "error", "content": error_msg})
         except Exception:

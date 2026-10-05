@@ -298,6 +298,21 @@ def test_malformed_files_are_validation_errors(bank):
     ]:
         response = client.post("/practice/import/preview", files={"file": (filename, data)})
         assert response.status_code == 422
+        assert response.json()["detail"] == "That file is not a valid practice import package."
+
+
+def test_import_preview_error_detail_stays_neutral(bank, monkeypatch):
+    _, _, client = bank
+
+    def _failing_preview(_data, _filename):
+        raise OSError(2, "No such file or directory", "/srv/deep/private/questions.xlsx")
+
+    monkeypatch.setattr(practice, "preview", _failing_preview)
+    response = client.post(
+        "/practice/import/preview", files={"file": ("questions.xlsx", b"placeholder")}
+    )
+    assert response.status_code == 422
+    assert response.json()["detail"] == "That file is not a valid practice import package."
 
 
 def test_import_receipts_and_questions_are_isolated_between_stores(bank, tmp_path):

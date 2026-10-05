@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 from contextlib import contextmanager
 import importlib
 from pathlib import Path
@@ -152,3 +153,95 @@ def test_mimic_websocket_accepts_config_and_returns_messages(
     assert messages[0]["stage"] == "init"
     assert messages[1]["stage"] == "processing"
     assert messages[2]["content"] == "stub mimic failure"
+
+
+def test_mimic_upload_failures_return_neutral_errors(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+    monkeypatch.setattr(
+        question_router_module, "_mimic_output_dir", lambda: tmp_path / "mimic_papers"
+    )
+
+    with TestClient(_build_app(question_router_module)) as client:
+        # Undecodable upload payload.
+        with client.websocket_connect("/ws/questions/mimic") as websocket:
+            websocket.send_json(
+                {"mode": "upload", "pdf_data": "not-base64!", "pdf_name": "paper.pdf"}
+            )
+            messages = [websocket.receive_json() for _ in range(2)]
+        assert messages[0]["type"] == "status"
+        assert messages[1] == {
+            "type": "error",
+            "content": "The uploaded PDF data is corrupt. Re-upload the file.",
+        }
+
+        # Upload rejected by the filename/size validator.
+        with client.websocket_connect("/ws/questions/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "upload",
+                    "pdf_data": base64.b64encode(b"placeholder").decode(),
+                    "pdf_name": "paper.txt",
+                }
+            )
+            messages = [websocket.receive_json() for _ in range(2)]
+        assert messages[1] == {
+            "type": "error",
+            "content": "That attachment could not be loaded.",
+        }
+
+        # Written upload fails the file-level checks.
+        def _missing_file(_path):
+            raise FileNotFoundError(2, "No such file or directory", str(tmp_path / "gone.pdf"))
+
+        monkeypatch.setattr(
+            question_router_module.DocumentValidator, "validate_file", staticmethod(_missing_file)
+        )
+        with client.websocket_connect("/ws/questions/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "upload",
+                    "pdf_data": base64.b64encode(b"placeholder").decode(),
+                    "pdf_name": "paper.pdf",
+                }
+            )
+            messages = [websocket.receive_json() for _ in range(3)]
+        assert messages[2] == {
+            "type": "error",
+            "content": "That attachment could not be loaded.",
+        }
+
+
+def test_mimic_generation_failure_error_is_neutral(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, caplog
+) -> None:
+    question_router_module = _load_question_router_module(monkeypatch)
+
+    async def _failing_mimic_exam_questions(*_args, **_kwargs):
+        raise RuntimeError(
+            "provider call to https://provider.example/v1 failed (request id: req-1)"
+        )
+
+    monkeypatch.setattr(
+        question_router_module, "mimic_exam_questions", _failing_mimic_exam_questions
+    )
+    monkeypatch.setattr(
+        question_router_module, "_mimic_output_dir", lambda: tmp_path / "mimic_papers"
+    )
+
+    with TestClient(_build_app(question_router_module)) as client:
+        with client.websocket_connect("/ws/questions/mimic") as websocket:
+            websocket.send_json(
+                {
+                    "mode": "parsed",
+                    "paper_path": str(tmp_path / "paper"),
+                    "kb_name": "demo-kb",
+                    "max_questions": 3,
+                }
+            )
+            messages = [websocket.receive_json() for _ in range(3)]
+
+    assert [message["type"] for message in messages] == ["status", "status", "error"]
+    assert messages[2]["content"] == "Generation failed. Please try again in a moment."
+    assert "provider.example" in caplog.text

@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import csv
 import io
+import logging
 import time
 from typing import Literal
 import zipfile
@@ -22,6 +23,8 @@ from deeptutor.services.session import get_sqlite_session_store
 from .question_notebook import NotebookEntryItem, _course_session_ids
 
 router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 class PracticeSummary(BaseModel):
@@ -335,7 +338,10 @@ async def import_preview(
         data = await file.read(MAX_BYTES + 1)
         parsed = await asyncio.to_thread(preview, data, file.filename or "")
     except (ValueError, UnicodeError, OSError, zipfile.BadZipFile, KeyError, ParseError) as exc:
-        raise HTTPException(422, str(exc)) from exc
+        # The exception text can embed server-side paths and archive member
+        # names; keep it in the log and return neutral copy to the client.
+        logger.warning("Practice import preview failed: %s", exc, exc_info=True)
+        raise HTTPException(422, "That file is not a valid practice import package.") from exc
     finally:
         await file.close()
     token = None
