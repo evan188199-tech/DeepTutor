@@ -538,11 +538,18 @@ def _resolve_soul_content(soul: SoulSpec | None) -> tuple[str, dict[str, str]]:
 
 def _load_persona_markdown(name: str) -> str:
     from deeptutor.multi_user.paths import get_admin_path_service
-    from deeptutor.services.persona import PersonaService, get_persona_service
+    from deeptutor.services.persona import (
+        InvalidPersonaNameError,
+        PersonaNotFoundError,
+        PersonaService,
+        get_persona_service,
+    )
 
     try:
         detail = get_persona_service().get_detail(name)
         return strip_frontmatter(detail.content)
+    except (PersonaNotFoundError, InvalidPersonaNameError):
+        pass
     except Exception:
         logger.warning("Failed to load user persona '%s'", name, exc_info=True)
     try:
@@ -550,6 +557,8 @@ def _load_persona_markdown(name: str) -> str:
             root=get_admin_path_service().get_workspace_dir() / "personas"
         )
         return strip_frontmatter(admin_service.get_detail(name).content)
+    except (PersonaNotFoundError, InvalidPersonaNameError):
+        pass
     except Exception:
         logger.warning("Failed to load admin persona preset '%s'", name, exc_info=True)
     return ""

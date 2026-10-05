@@ -628,25 +628,52 @@ class TestPersonaSoulSource:
         soul = client.get("/api/partners/percy/soul").json()
         assert "Be a warm mentor." in soul["content"]
 
-    def test_persona_miss_returns_404_and_logs(self, client, caplog):
+    def test_persona_miss_returns_404_without_warnings(self, client, caplog):
         import logging
 
         with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.partners"):
             res = _create(client, soul={"source": "persona", "id": "ghost"})
         assert res.status_code == 404
-        warnings = [r for r in caplog.records if "ghost" in r.getMessage()]
-        assert warnings, "persona load failures must leave a log trace"
-        assert any("user persona" in r.getMessage() for r in warnings)
-        assert any("admin persona" in r.getMessage() for r in warnings)
+        records = [r for r in caplog.records if r.name == "deeptutor.api.routers.partners"]
+        assert not records, "an expected persona miss must not log warnings"
 
-    def test_persona_falls_back_to_admin_preset_with_trace(self, client, monkeypatch, caplog):
+    def test_persona_falls_back_to_admin_preset_silently(
+        self, client, monkeypatch, caplog, tmp_path
+    ):
+        import logging
+
+        from deeptutor.multi_user.paths import get_admin_path_service
+        import deeptutor.services.persona as persona_mod
+        from deeptutor.services.persona import PersonaService
+
+        # A real (unmocked) user workspace without the persona: the first hop
+        # must miss with a genuine PersonaNotFoundError and fall back quietly.
+        monkeypatch.setattr(
+            persona_mod,
+            "get_persona_service",
+            lambda: PersonaService(root=tmp_path / "user-home"),
+        )
+        self._write_persona(
+            get_admin_path_service().get_workspace_dir() / "personas",
+            "mentor",
+            "Teach like the admin preset.",
+        )
+        with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.partners"):
+            res = _create(client, partner_id="ada", soul={"source": "persona", "id": "mentor"})
+        assert res.status_code == 200
+        soul = client.get("/api/partners/ada/soul").json()
+        assert "Teach like the admin preset." in soul["content"]
+        records = [r for r in caplog.records if r.name == "deeptutor.api.routers.partners"]
+        assert not records, "a normal preset fallback is not a failure"
+
+    def test_persona_load_failure_falls_back_with_trace(self, client, monkeypatch, caplog):
         import logging
 
         from deeptutor.multi_user.paths import get_admin_path_service
         import deeptutor.services.persona as persona_mod
 
         def _boom():
-            raise RuntimeError("user workspace unavailable")
+            raise OSError("user workspace unreadable")
 
         monkeypatch.setattr(persona_mod, "get_persona_service", _boom)
         self._write_persona(
@@ -659,9 +686,14 @@ class TestPersonaSoulSource:
         assert res.status_code == 200
         soul = client.get("/api/partners/ada/soul").json()
         assert "Teach like the admin preset." in soul["content"]
-        failure = [r for r in caplog.records if "mentor" in r.getMessage()]
-        assert failure, "the failed user-path load must be logged"
-        assert failure[0].exc_info is not None
+        records = [
+            r
+            for r in caplog.records
+            if r.name == "deeptutor.api.routers.partners" and "mentor" in r.getMessage()
+        ]
+        assert len(records) == 1, "only the genuinely failed user-path load is logged"
+        assert "user persona" in records[0].getMessage()
+        assert records[0].exc_info is not None
 
 
 class TestHistory:
