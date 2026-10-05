@@ -1,0 +1,2564 @@
+{
+  "total_lazy": 2219,
+  "files_with_lazy": 426,
+  "top20": [
+    {
+      "display": "from deeptutor.services.workspace import get_content_workspace_service",
+      "count": 31,
+      "distinct_files": 23,
+      "files": [
+        "deeptutor.agents.loop.pipeline",
+        "deeptutor.agents.math_animator.pipeline",
+        "deeptutor.api.routers.auth",
+        "deeptutor.api.routers.file_preview",
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.api.routers.settings",
+        "deeptutor.app.container",
+        "deeptutor.capabilities.audio_overview.pipeline",
+        "deeptutor.services.partners.runtime",
+        "deeptutor.services.sandbox.artifacts",
+        "deeptutor.services.session.artifact_attachments",
+        "deeptutor.services.session.turns.executor",
+        "deeptutor.services.session.turns.request_preparer",
+        "deeptutor.services.skill.runtime",
+        "deeptutor.services.skill.service",
+        "deeptutor.services.storage.attachment_store",
+        "deeptutor.services.workspace.context",
+        "deeptutor.services.workspace.data_migration",
+        "deeptutor.services.workspace.kb_move",
+        "deeptutor.services.workspace.knowledge",
+        "deeptutor.services.workspace.resources",
+        "deeptutor.tools.media_gen_tool",
+        "deeptutor_cli.workspace_cmd"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/tools/media_gen_tool.py",
+          "line": 71,
+          "func": "_run_dir"
+        },
+        {
+          "file": "deeptutor/capabilities/audio_overview/pipeline.py",
+          "line": 483,
+          "func": "_publish_workspace_items"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 164,
+          "func": "_recover_user_workspaces"
+        },
+        {
+          "file": "deeptutor/agents/math_animator/pipeline.py",
+          "line": 230,
+          "func": "_publish_workspace_artifacts"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 399,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 1304,
+          "func": "_resolve_workspace_export"
+        },
+        {
+          "file": "deeptutor/api/routers/file_preview.py",
+          "line": 114,
+          "func": "_resolve_authorized_file"
+        },
+        {
+          "file": "deeptutor/api/routers/auth.py",
+          "line": 504,
+          "func": "_install_request_workspace"
+        },
+        {
+          "file": "deeptutor/api/routers/settings.py",
+          "line": 2342,
+          "func": "get_usage_statistics"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1893,
+          "func": "get_embedding_usage"
+        },
+        {
+          "file": "deeptutor/services/skill/service.py",
+          "line": 1040,
+          "func": "get_skill_service"
+        },
+        {
+          "file": "deeptutor/services/skill/runtime.py",
+          "line": 18,
+          "func": "workspace_skill_service"
+        },
+        {
+          "file": "deeptutor/services/workspace/kb_move.py",
+          "line": 88,
+          "func": "preview_kb_move"
+        },
+        {
+          "file": "deeptutor/services/workspace/kb_move.py",
+          "line": 169,
+          "func": "_rewrite_assignments"
+        },
+        {
+          "file": "deeptutor/services/workspace/kb_move.py",
+          "line": 194,
+          "func": "_restore_assignments"
+        },
+        {
+          "file": "deeptutor/services/workspace/kb_move.py",
+          "line": 356,
+          "func": "move_kb"
+        },
+        {
+          "file": "deeptutor/services/workspace/context.py",
+          "line": 67,
+          "func": "resolve_workspace_scope"
+        },
+        {
+          "file": "deeptutor/services/workspace/context.py",
+          "line": 154,
+          "func": "scoped_path_service"
+        },
+        {
+          "file": "deeptutor/services/workspace/data_migration.py",
+          "line": 80,
+          "func": "_feature_path"
+        },
+        {
+          "file": "deeptutor/services/workspace/resources.py",
+          "line": 79,
+          "func": "current_resources"
+        },
+        {
+          "file": "deeptutor/services/workspace/resources.py",
+          "line": 166,
+          "func": "resource_usage"
+        },
+        {
+          "file": "deeptutor/services/workspace/resources.py",
+          "line": 206,
+          "func": "knowledge_migration_blockers"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 24,
+          "func": "workspace_id_for_kb_base_dir"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 110,
+          "func": "knowledge_catalog"
+        },
+        {
+          "file": "deeptutor/services/storage/attachment_store.py",
+          "line": 306,
+          "func": "_attachment_root"
+        },
+        {
+          "file": "deeptutor/services/sandbox/artifacts.py",
+          "line": 138,
+          "func": "collect_public_artifact_batch"
+        },
+        {
+          "file": "deeptutor/services/partners/runtime.py",
+          "line": 712,
+          "func": "_build_context"
+        },
+        {
+          "file": "deeptutor/services/session/artifact_attachments.py",
+          "line": 164,
+          "func": "_resolve_artifact_path"
+        },
+        {
+          "file": "deeptutor/services/session/turns/request_preparer.py",
+          "line": 193,
+          "func": "start_turn"
+        },
+        {
+          "file": "deeptutor/services/session/turns/executor.py",
+          "line": 251,
+          "func": "_run_turn"
+        },
+        {
+          "file": "deeptutor_cli/workspace_cmd.py",
+          "line": 14,
+          "func": "register.show"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.multi_user.context import get_current_user",
+      "count": 22,
+      "distinct_files": 16,
+      "files": [
+        "deeptutor.agents.loop.pipeline",
+        "deeptutor.api.routers.co_writer",
+        "deeptutor.capabilities.setup.access",
+        "deeptutor.services.config.model_catalog",
+        "deeptutor.services.memory.snapshot.adapters",
+        "deeptutor.services.partners.workspace",
+        "deeptutor.services.session.pocketbase_store",
+        "deeptutor.services.session.scope",
+        "deeptutor.services.session.source_inventory",
+        "deeptutor.services.session.turns.executor",
+        "deeptutor.services.session.turns.request_preparer",
+        "deeptutor.services.skill.runtime",
+        "deeptutor.services.skill.service",
+        "deeptutor.services.web_source.sync",
+        "deeptutor.services.workspace.data_migration",
+        "deeptutor.services.workspace.resources"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/capabilities/setup/access.py",
+          "line": 48,
+          "func": "_is_partner_turn"
+        },
+        {
+          "file": "deeptutor/capabilities/setup/access.py",
+          "line": 66,
+          "func": "_is_admin"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 714,
+          "func": "_exec_allowed"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 1386,
+          "func": "_augment_tool_kwargs"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 1721,
+          "func": "_current_user_id"
+        },
+        {
+          "file": "deeptutor/api/routers/co_writer.py",
+          "line": 89,
+          "func": "_validated_llm_selection"
+        },
+        {
+          "file": "deeptutor/services/memory/snapshot/adapters.py",
+          "line": 310,
+          "func": "read_partner_entities"
+        },
+        {
+          "file": "deeptutor/services/skill/service.py",
+          "line": 1038,
+          "func": "get_skill_service"
+        },
+        {
+          "file": "deeptutor/services/skill/runtime.py",
+          "line": 25,
+          "func": "skill_sources"
+        },
+        {
+          "file": "deeptutor/services/config/model_catalog.py",
+          "line": 635,
+          "func": "get_model_catalog_service"
+        },
+        {
+          "file": "deeptutor/services/workspace/data_migration.py",
+          "line": 281,
+          "func": "_shared_source_blockers"
+        },
+        {
+          "file": "deeptutor/services/workspace/resources.py",
+          "line": 112,
+          "func": "resource_catalog"
+        },
+        {
+          "file": "deeptutor/services/partners/workspace.py",
+          "line": 56,
+          "func": "_requester_path_service"
+        },
+        {
+          "file": "deeptutor/services/partners/workspace.py",
+          "line": 232,
+          "func": "_skill_source_dir"
+        },
+        {
+          "file": "deeptutor/services/web_source/sync.py",
+          "line": 193,
+          "func": "sync_source"
+        },
+        {
+          "file": "deeptutor/services/session/source_inventory.py",
+          "line": 965,
+          "func": "_load_partner_session"
+        },
+        {
+          "file": "deeptutor/services/session/pocketbase_store.py",
+          "line": 57,
+          "func": "_captured_store_context.call"
+        },
+        {
+          "file": "deeptutor/services/session/pocketbase_store.py",
+          "line": 120,
+          "func": "_current_user_id"
+        },
+        {
+          "file": "deeptutor/services/session/scope.py",
+          "line": 24,
+          "func": "current_owner_id"
+        },
+        {
+          "file": "deeptutor/services/session/turns/request_preparer.py",
+          "line": 191,
+          "func": "start_turn"
+        },
+        {
+          "file": "deeptutor/services/session/turns/request_preparer.py",
+          "line": 466,
+          "func": "start_turn"
+        },
+        {
+          "file": "deeptutor/services/session/turns/executor.py",
+          "line": 570,
+          "func": "_run_turn"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.path_service import get_path_service",
+      "count": 21,
+      "distinct_files": 21,
+      "files": [
+        "deeptutor.agents._shared.tool_runtime",
+        "deeptutor.agents.loop.pipeline",
+        "deeptutor.agents.question.capability",
+        "deeptutor.api.main",
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.app.container",
+        "deeptutor.book.engine",
+        "deeptutor.capabilities.marginnote4.store",
+        "deeptutor.logging.config",
+        "deeptutor.services.base_sync",
+        "deeptutor.services.doctor",
+        "deeptutor.services.parsing.engines.mineru.checkpoints",
+        "deeptutor.services.parsing.service",
+        "deeptutor.services.partners.runtime",
+        "deeptutor.services.rag.service",
+        "deeptutor.services.session.legacy_migration",
+        "deeptutor.services.suggestions",
+        "deeptutor.services.workspace.knowledge",
+        "deeptutor.services.workspace.service",
+        "deeptutor.tools.exec_tool",
+        "deeptutor.visualizers.store"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/tools/exec_tool.py",
+          "line": 238,
+          "func": "_execute_source"
+        },
+        {
+          "file": "deeptutor/capabilities/marginnote4/store.py",
+          "line": 106,
+          "func": "default_db_path"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 216,
+          "func": "migrate_legacy_chat"
+        },
+        {
+          "file": "deeptutor/visualizers/store.py",
+          "line": 47,
+          "func": "__init__"
+        },
+        {
+          "file": "deeptutor/agents/question/capability.py",
+          "line": 71,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/agents/_shared/tool_runtime.py",
+          "line": 121,
+          "func": "fallback_task_dir_from_metadata"
+        },
+        {
+          "file": "deeptutor/agents/loop/pipeline.py",
+          "line": 1336,
+          "func": "_augment_tool_kwargs"
+        },
+        {
+          "file": "deeptutor/book/engine.py",
+          "line": 2174,
+          "func": "get_book_engine"
+        },
+        {
+          "file": "deeptutor/api/main.py",
+          "line": 329,
+          "func": "lifespan"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1887,
+          "func": "get_embedding_usage"
+        },
+        {
+          "file": "deeptutor/logging/config.py",
+          "line": 20,
+          "func": "get_default_log_dir"
+        },
+        {
+          "file": "deeptutor/services/suggestions.py",
+          "line": 160,
+          "func": "_cache_path"
+        },
+        {
+          "file": "deeptutor/services/base_sync.py",
+          "line": 39,
+          "func": "default_base_dir"
+        },
+        {
+          "file": "deeptutor/services/doctor.py",
+          "line": 382,
+          "func": "run_diagnostics"
+        },
+        {
+          "file": "deeptutor/services/workspace/service.py",
+          "line": 372,
+          "func": "_presentation_root"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 23,
+          "func": "workspace_id_for_kb_base_dir"
+        },
+        {
+          "file": "deeptutor/services/rag/service.py",
+          "line": 38,
+          "func": "__init__"
+        },
+        {
+          "file": "deeptutor/services/partners/runtime.py",
+          "line": 914,
+          "func": "_list_kb_names"
+        },
+        {
+          "file": "deeptutor/services/parsing/service.py",
+          "line": 85,
+          "func": "_cache_root"
+        },
+        {
+          "file": "deeptutor/services/parsing/engines/mineru/checkpoints.py",
+          "line": 25,
+          "func": "checkpoint_root"
+        },
+        {
+          "file": "deeptutor/services/session/legacy_migration.py",
+          "line": 241,
+          "func": "migrate_all_legacy_chat_scopes"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.session import get_session_store",
+      "count": 21,
+      "distinct_files": 15,
+      "files": [
+        "deeptutor.api.routers.mastery_path",
+        "deeptutor.api.routers.reading",
+        "deeptutor.api.routers.settings",
+        "deeptutor.api.routers.workspace",
+        "deeptutor.capabilities.mastery.binding",
+        "deeptutor.learning.navigation",
+        "deeptutor.services.chat_hints",
+        "deeptutor.services.courses_state",
+        "deeptutor.services.doctor",
+        "deeptutor.services.mastery_hints",
+        "deeptutor.services.reading_hints",
+        "deeptutor.services.session.legacy_migration",
+        "deeptutor.services.session.turn_runtime",
+        "deeptutor.services.session.turns.lifecycle",
+        "deeptutor.services.workspace.navigation"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/capabilities/mastery/binding.py",
+          "line": 140,
+          "func": "_remember_on_session"
+        },
+        {
+          "file": "deeptutor/capabilities/mastery/binding.py",
+          "line": 162,
+          "func": "remember_mode_on_session"
+        },
+        {
+          "file": "deeptutor/learning/navigation.py",
+          "line": 279,
+          "func": "topic_sessions"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 770,
+          "func": "delete_workspace"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 833,
+          "func": "list_reading_sessions"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 874,
+          "func": "create_reading_session"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 915,
+          "func": "rename_reading_session"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 928,
+          "func": "delete_reading_session"
+        },
+        {
+          "file": "deeptutor/api/routers/settings.py",
+          "line": 2333,
+          "func": "get_usage_statistics"
+        },
+        {
+          "file": "deeptutor/api/routers/workspace.py",
+          "line": 167,
+          "func": "_migrate_workspaces"
+        },
+        {
+          "file": "deeptutor/api/routers/mastery_path.py",
+          "line": 136,
+          "func": "_cancel_active_learning_turn"
+        },
+        {
+          "file": "deeptutor/api/routers/mastery_path.py",
+          "line": 766,
+          "func": "set_session_mode"
+        },
+        {
+          "file": "deeptutor/services/courses_state.py",
+          "line": 229,
+          "func": "_session_state"
+        },
+        {
+          "file": "deeptutor/services/reading_hints.py",
+          "line": 149,
+          "func": "_load_transcript"
+        },
+        {
+          "file": "deeptutor/services/chat_hints.py",
+          "line": 102,
+          "func": "_collect"
+        },
+        {
+          "file": "deeptutor/services/mastery_hints.py",
+          "line": 161,
+          "func": "_load_transcript"
+        },
+        {
+          "file": "deeptutor/services/doctor.py",
+          "line": 516,
+          "func": "run_runtime_diagnostics"
+        },
+        {
+          "file": "deeptutor/services/workspace/navigation.py",
+          "line": 49,
+          "func": "session_index"
+        },
+        {
+          "file": "deeptutor/services/session/legacy_migration.py",
+          "line": 242,
+          "func": "migrate_all_legacy_chat_scopes"
+        },
+        {
+          "file": "deeptutor/services/session/turn_runtime.py",
+          "line": 44,
+          "func": "get_turn_runtime_manager"
+        },
+        {
+          "file": "deeptutor/services/session/turns/lifecycle.py",
+          "line": 42,
+          "func": "__init__"
+        }
+      ]
+    },
+    {
+      "display": "asyncio",
+      "count": 18,
+      "distinct_files": 12,
+      "files": [
+        "deeptutor.api.routers.skills",
+        "deeptutor.book.inputs",
+        "deeptutor.capabilities.mastery.pipeline",
+        "deeptutor.learning.topic_materials",
+        "deeptutor.services.config.settings_spec",
+        "deeptutor.services.embedding.adapters.openai_compatible",
+        "deeptutor.services.embedding.client",
+        "deeptutor.services.llm.client",
+        "deeptutor.services.mcp.network",
+        "deeptutor.services.mcp.oauth",
+        "deeptutor.services.subagent.claude_models",
+        "deeptutor_cli.main"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/capabilities/mastery/pipeline.py",
+          "line": 76,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/learning/topic_materials.py",
+          "line": 262,
+          "func": "_run_sync"
+        },
+        {
+          "file": "deeptutor/book/inputs.py",
+          "line": 344,
+          "func": "build_book_inputs"
+        },
+        {
+          "file": "deeptutor/api/routers/skills.py",
+          "line": 162,
+          "func": "hub_catalog"
+        },
+        {
+          "file": "deeptutor/api/routers/skills.py",
+          "line": 182,
+          "func": "hub_detail"
+        },
+        {
+          "file": "deeptutor/api/routers/skills.py",
+          "line": 252,
+          "func": "install_skill"
+        },
+        {
+          "file": "deeptutor/services/llm/client.py",
+          "line": 175,
+          "func": "complete_sync"
+        },
+        {
+          "file": "deeptutor/services/config/settings_spec.py",
+          "line": 522,
+          "func": "_probe_llm"
+        },
+        {
+          "file": "deeptutor/services/config/settings_spec.py",
+          "line": 569,
+          "func": "_probe_embedding"
+        },
+        {
+          "file": "deeptutor/services/embedding/client.py",
+          "line": 65,
+          "func": "_hold_spacing_lock"
+        },
+        {
+          "file": "deeptutor/services/embedding/client.py",
+          "line": 121,
+          "func": "embed"
+        },
+        {
+          "file": "deeptutor/services/embedding/client.py",
+          "line": 247,
+          "func": "embed_contents"
+        },
+        {
+          "file": "deeptutor/services/embedding/client.py",
+          "line": 288,
+          "func": "embed_sync"
+        },
+        {
+          "file": "deeptutor/services/embedding/adapters/openai_compatible.py",
+          "line": 172,
+          "func": "embed"
+        },
+        {
+          "file": "deeptutor/services/mcp/network.py",
+          "line": 116,
+          "func": "validate_mcp_url_async"
+        },
+        {
+          "file": "deeptutor/services/mcp/oauth.py",
+          "line": 346,
+          "func": "begin_authorization"
+        },
+        {
+          "file": "deeptutor/services/subagent/claude_models.py",
+          "line": 75,
+          "func": "sync_claude_models"
+        },
+        {
+          "file": "deeptutor_cli/main.py",
+          "line": 170,
+          "func": "serve"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.session import get_sqlite_session_store",
+      "count": 16,
+      "distinct_files": 12,
+      "files": [
+        "deeptutor.agents._shared.tool_composition",
+        "deeptutor.api.routers.book",
+        "deeptutor.api.routers.dashboard",
+        "deeptutor.api.routers.reading",
+        "deeptutor.api.routers.reading_extensions",
+        "deeptutor.book.inputs",
+        "deeptutor.capabilities.mastery.tools",
+        "deeptutor.learning.assessment",
+        "deeptutor.learning.topic_materials",
+        "deeptutor.services.courses_state",
+        "deeptutor.services.cron.executor",
+        "deeptutor.tools.question_bank"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/tools/question_bank.py",
+          "line": 132,
+          "func": "_resolve_store"
+        },
+        {
+          "file": "deeptutor/capabilities/mastery/tools.py",
+          "line": 330,
+          "func": "_resolve_pending_choice"
+        },
+        {
+          "file": "deeptutor/learning/assessment.py",
+          "line": 431,
+          "func": "record_assessment"
+        },
+        {
+          "file": "deeptutor/learning/assessment.py",
+          "line": 513,
+          "func": "reconcile_linked_assessments"
+        },
+        {
+          "file": "deeptutor/learning/topic_materials.py",
+          "line": 274,
+          "func": "_session_store"
+        },
+        {
+          "file": "deeptutor/agents/_shared/tool_composition.py",
+          "line": 349,
+          "func": "user_has_question_bank"
+        },
+        {
+          "file": "deeptutor/book/inputs.py",
+          "line": 104,
+          "func": "_resolve_chat_selections"
+        },
+        {
+          "file": "deeptutor/book/inputs.py",
+          "line": 239,
+          "func": "_resolve_question_notebook"
+        },
+        {
+          "file": "deeptutor/api/routers/reading_extensions.py",
+          "line": 353,
+          "func": "_persist_reading_quiz_pending"
+        },
+        {
+          "file": "deeptutor/api/routers/reading_extensions.py",
+          "line": 377,
+          "func": "submit_quiz_answers"
+        },
+        {
+          "file": "deeptutor/api/routers/reading_extensions.py",
+          "line": 492,
+          "func": "list_quiz_rewards"
+        },
+        {
+          "file": "deeptutor/api/routers/reading.py",
+          "line": 460,
+          "func": "list_library_materials"
+        },
+        {
+          "file": "deeptutor/api/routers/dashboard.py",
+          "line": 190,
+          "func": "get_learning_library.read"
+        },
+        {
+          "file": "deeptutor/api/routers/book.py",
+          "line": 1142,
+          "func": "quiz_attempt"
+        },
+        {
+          "file": "deeptutor/services/courses_state.py",
+          "line": 267,
+          "func": "_question_bank_state"
+        },
+        {
+          "file": "deeptutor/services/cron/executor.py",
+          "line": 131,
+          "func": "_execute_chat_job"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.knowledge.manager import KnowledgeBaseManager",
+      "count": 16,
+      "distinct_files": 11,
+      "files": [
+        "deeptutor.knowledge.add_documents",
+        "deeptutor.knowledge.initializer",
+        "deeptutor.knowledge.progress_tracker",
+        "deeptutor.services.github_source.sync",
+        "deeptutor.services.github_source.sync_service",
+        "deeptutor.services.partners.runtime",
+        "deeptutor.services.partners.workspace",
+        "deeptutor.services.rag.pipelines.lightrag.indexing_policy",
+        "deeptutor.services.rag.pipelines.lightrag.pipeline",
+        "deeptutor.services.web_source.scheduler",
+        "deeptutor.services.web_source.sync"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/knowledge/progress_tracker.py",
+          "line": 119,
+          "func": "_save_progress"
+        },
+        {
+          "file": "deeptutor/knowledge/progress_tracker.py",
+          "line": 312,
+          "func": "verify_terminal"
+        },
+        {
+          "file": "deeptutor/knowledge/progress_tracker.py",
+          "line": 334,
+          "func": "get_progress"
+        },
+        {
+          "file": "deeptutor/knowledge/initializer.py",
+          "line": 67,
+          "func": "_register_to_config"
+        },
+        {
+          "file": "deeptutor/knowledge/initializer.py",
+          "line": 333,
+          "func": "initialize_knowledge_base"
+        },
+        {
+          "file": "deeptutor/knowledge/add_documents.py",
+          "line": 614,
+          "func": "add_documents"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/lightrag/indexing_policy.py",
+          "line": 533,
+          "func": "effective_policy"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+          "line": 595,
+          "func": "_clear_pending_policy"
+        },
+        {
+          "file": "deeptutor/services/partners/runtime.py",
+          "line": 913,
+          "func": "_list_kb_names"
+        },
+        {
+          "file": "deeptutor/services/partners/workspace.py",
+          "line": 182,
+          "func": "_copy_knowledge_base"
+        },
+        {
+          "file": "deeptutor/services/github_source/sync.py",
+          "line": 66,
+          "func": "_record_sync_failure"
+        },
+        {
+          "file": "deeptutor/services/github_source/sync.py",
+          "line": 95,
+          "func": "_record_sync_success"
+        },
+        {
+          "file": "deeptutor/services/github_source/sync_service.py",
+          "line": 32,
+          "func": "_sync_one_cycle"
+        },
+        {
+          "file": "deeptutor/services/web_source/sync.py",
+          "line": 63,
+          "func": "_record_sync_failure"
+        },
+        {
+          "file": "deeptutor/services/web_source/sync.py",
+          "line": 177,
+          "func": "sync_source"
+        },
+        {
+          "file": "deeptutor/services/web_source/scheduler.py",
+          "line": 80,
+          "func": "_make_manager"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.llm.config import get_llm_config",
+      "count": 14,
+      "distinct_files": 12,
+      "files": [
+        "deeptutor.agents.math_animator.capability",
+        "deeptutor.agents.question.capability",
+        "deeptutor.agents.visualize.capability",
+        "deeptutor.api.routers.question",
+        "deeptutor.api.routers.system",
+        "deeptutor.book.blocks.animation",
+        "deeptutor.book.blocks.figure",
+        "deeptutor.book.blocks.interactive",
+        "deeptutor.capabilities.audio_overview.pipeline",
+        "deeptutor.tools.brainstorm",
+        "deeptutor.tools.builtin",
+        "deeptutor.tools.reason"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/tools/brainstorm.py",
+          "line": 58,
+          "func": "brainstorm"
+        },
+        {
+          "file": "deeptutor/tools/reason.py",
+          "line": 69,
+          "func": "reason"
+        },
+        {
+          "file": "deeptutor/tools/builtin/__init__.py",
+          "line": 721,
+          "func": "execute"
+        },
+        {
+          "file": "deeptutor/capabilities/audio_overview/pipeline.py",
+          "line": 366,
+          "func": "generate_script"
+        },
+        {
+          "file": "deeptutor/agents/visualize/capability.py",
+          "line": 124,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/agents/visualize/capability.py",
+          "line": 258,
+          "func": "_tool_calling_disabled_for"
+        },
+        {
+          "file": "deeptutor/agents/visualize/capability.py",
+          "line": 299,
+          "func": "_run_manim_path"
+        },
+        {
+          "file": "deeptutor/agents/question/capability.py",
+          "line": 40,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/agents/math_animator/capability.py",
+          "line": 52,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/book/blocks/figure.py",
+          "line": 72,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/book/blocks/animation.py",
+          "line": 76,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/book/blocks/interactive.py",
+          "line": 71,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/api/routers/system.py",
+          "line": 58,
+          "func": "get_llm_config"
+        },
+        {
+          "file": "deeptutor/api/routers/question.py",
+          "line": 364,
+          "func": "websocket_question_generate"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.learning.storage import LearningStore",
+      "count": 14,
+      "distinct_files": 11,
+      "files": [
+        "deeptutor.capabilities.mastery.binding",
+        "deeptutor.capabilities.mastery.capability",
+        "deeptutor.capabilities.mastery.pipeline",
+        "deeptutor.capabilities.mastery.tools",
+        "deeptutor.learning.assessment",
+        "deeptutor.learning.migration",
+        "deeptutor.services.mastery_hints",
+        "deeptutor.services.session._turn_runtime_shared",
+        "deeptutor.services.session.turns.executor",
+        "deeptutor.services.session.turns.learning_adapter",
+        "deeptutor.services.session.turns.request_preparer"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/capabilities/mastery/tools.py",
+          "line": 123,
+          "func": "_new_service"
+        },
+        {
+          "file": "deeptutor/capabilities/mastery/capability.py",
+          "line": 86,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/capabilities/mastery/pipeline.py",
+          "line": 78,
+          "func": "run"
+        },
+        {
+          "file": "deeptutor/capabilities/mastery/binding.py",
+          "line": 104,
+          "func": "leave_active_path"
+        },
+        {
+          "file": "deeptutor/learning/assessment.py",
+          "line": 295,
+          "func": "_get_learning_store"
+        },
+        {
+          "file": "deeptutor/learning/migration.py",
+          "line": 261,
+          "func": "_prepare_mastery_v2_root"
+        },
+        {
+          "file": "deeptutor/services/mastery_hints.py",
+          "line": 123,
+          "func": "_load_position"
+        },
+        {
+          "file": "deeptutor/services/session/_turn_runtime_shared.py",
+          "line": 477,
+          "func": "_topic_material_manifest"
+        },
+        {
+          "file": "deeptutor/services/session/_turn_runtime_shared.py",
+          "line": 546,
+          "func": "_mastery_action_context"
+        },
+        {
+          "file": "deeptutor/services/session/turns/request_preparer.py",
+          "line": 755,
+          "func": "start_turn"
+        },
+        {
+          "file": "deeptutor/services/session/turns/request_preparer.py",
+          "line": 815,
+          "func": "start_turn"
+        },
+        {
+          "file": "deeptutor/services/session/turns/learning_adapter.py",
+          "line": 53,
+          "func": "_release_superseded_lease"
+        },
+        {
+          "file": "deeptutor/services/session/turns/learning_adapter.py",
+          "line": 359,
+          "func": "_validate_mastery_session_topic"
+        },
+        {
+          "file": "deeptutor/services/session/turns/executor.py",
+          "line": 1388,
+          "func": "_run_turn"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.workspace.models import WorkspaceError",
+      "count": 14,
+      "distinct_files": 10,
+      "files": [
+        "deeptutor.api.routers.auth",
+        "deeptutor.api.routers.book",
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.api.routers.settings",
+        "deeptutor.app.container",
+        "deeptutor.app.facade",
+        "deeptutor.services.session.legacy_migration",
+        "deeptutor.services.storage.attachment_store",
+        "deeptutor.services.workspace.knowledge",
+        "deeptutor.services.workspace.migration"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/app/facade.py",
+          "line": 20,
+          "func": "_in_app_workspace"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 149,
+          "func": "recover_once"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 166,
+          "func": "_recover_user_workspaces"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 268,
+          "func": "migrate_all_workspace_preferences"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 301,
+          "func": "run_startup_data_migrations"
+        },
+        {
+          "file": "deeptutor/api/routers/auth.py",
+          "line": 474,
+          "func": "_install_request_workspace"
+        },
+        {
+          "file": "deeptutor/api/routers/settings.py",
+          "line": 2345,
+          "func": "get_usage_statistics"
+        },
+        {
+          "file": "deeptutor/api/routers/book.py",
+          "line": 1601,
+          "func": "book_websocket"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 3450,
+          "func": "create_knowledge_base"
+        },
+        {
+          "file": "deeptutor/services/workspace/migration.py",
+          "line": 38,
+          "func": "migrate_locations"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 90,
+          "func": "resolve_qualified"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 124,
+          "func": "knowledge_catalog"
+        },
+        {
+          "file": "deeptutor/services/storage/attachment_store.py",
+          "line": 309,
+          "func": "_attachment_root"
+        },
+        {
+          "file": "deeptutor/services/session/legacy_migration.py",
+          "line": 266,
+          "func": "migrate_all_legacy_chat_scopes"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.workspace.context import workspace_context",
+      "count": 14,
+      "distinct_files": 8,
+      "files": [
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.api.routers.partners",
+        "deeptutor.api.routers.settings",
+        "deeptutor.app.container",
+        "deeptutor.app.facade",
+        "deeptutor.learning.topic_materials",
+        "deeptutor.services.session.pocketbase_store",
+        "deeptutor.services.workspace.knowledge"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/app/facade.py",
+          "line": 192,
+          "func": "submit_user_reply"
+        },
+        {
+          "file": "deeptutor/app/container.py",
+          "line": 165,
+          "func": "_recover_user_workspaces"
+        },
+        {
+          "file": "deeptutor/learning/topic_materials.py",
+          "line": 476,
+          "func": "build_topic_materials"
+        },
+        {
+          "file": "deeptutor/api/routers/partners.py",
+          "line": 1265,
+          "func": "get_partner_workspaces"
+        },
+        {
+          "file": "deeptutor/api/routers/settings.py",
+          "line": 2344,
+          "func": "get_usage_statistics"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 995,
+          "func": "run_initialization_task"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1155,
+          "func": "run_upload_processing_task"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1894,
+          "func": "get_embedding_usage"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 3444,
+          "func": "create_knowledge_base"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 3752,
+          "func": "run_reindex_task"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 25,
+          "func": "workspace_id_for_kb_base_dir"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 80,
+          "func": "resolve_qualified"
+        },
+        {
+          "file": "deeptutor/services/workspace/knowledge.py",
+          "line": 111,
+          "func": "knowledge_catalog"
+        },
+        {
+          "file": "deeptutor/services/session/pocketbase_store.py",
+          "line": 58,
+          "func": "_captured_store_context.call"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.config import get_runtime_settings_service",
+      "count": 14,
+      "distinct_files": 3,
+      "files": [
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.services.rag.pipelines.ima.config",
+        "deeptutor.services.rag.pipelines.pageindex.config"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1470,
+          "func": "_pageindex_config_payload"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1493,
+          "func": "update_pageindex_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1520,
+          "func": "_ima_config_payload"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1546,
+          "func": "update_ima_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1590,
+          "func": "get_llamaindex_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1606,
+          "func": "update_llamaindex_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1630,
+          "func": "get_graphrag_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1642,
+          "func": "update_graphrag_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1693,
+          "func": "get_lightrag_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1718,
+          "func": "update_lightrag_pipeline_config"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1762,
+          "func": "_lightrag_server_config_payload"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 1788,
+          "func": "update_lightrag_server_pipeline_config"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/ima/config.py",
+          "line": 68,
+          "func": "get_account_credentials"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/pageindex/config.py",
+          "line": 25,
+          "func": "get_pageindex_config"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.workspace.context import current_workspace_id",
+      "count": 13,
+      "distinct_files": 10,
+      "files": [
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.api.routers.outputs",
+        "deeptutor.api.routers.practice",
+        "deeptutor.api.routers.workspace",
+        "deeptutor.knowledge.manager",
+        "deeptutor.multi_user.knowledge_access",
+        "deeptutor.services.session.artifact_attachments",
+        "deeptutor.services.session.scope",
+        "deeptutor.services.skill.runtime",
+        "deeptutor.services.workspace.service"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/multi_user/knowledge_access.py",
+          "line": 87,
+          "func": "resolve_kb"
+        },
+        {
+          "file": "deeptutor/multi_user/knowledge_access.py",
+          "line": 216,
+          "func": "list_visible_knowledge_bases"
+        },
+        {
+          "file": "deeptutor/knowledge/manager.py",
+          "line": 349,
+          "func": "_catalog_revision"
+        },
+        {
+          "file": "deeptutor/api/routers/practice.py",
+          "line": 168,
+          "func": "queue"
+        },
+        {
+          "file": "deeptutor/api/routers/workspace.py",
+          "line": 309,
+          "func": "_resolve_partner_item"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 2784,
+          "func": "_list_knowledge_bases"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 3473,
+          "func": "create_knowledge_base"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 3692,
+          "func": "_create_knowledge_base_owned"
+        },
+        {
+          "file": "deeptutor/api/routers/outputs.py",
+          "line": 56,
+          "func": "_resolve_partner_output"
+        },
+        {
+          "file": "deeptutor/services/skill/runtime.py",
+          "line": 48,
+          "func": "runtime_skills"
+        },
+        {
+          "file": "deeptutor/services/workspace/service.py",
+          "line": 373,
+          "func": "_presentation_root"
+        },
+        {
+          "file": "deeptutor/services/session/artifact_attachments.py",
+          "line": 152,
+          "func": "_resolve_artifact_path"
+        },
+        {
+          "file": "deeptutor/services/session/scope.py",
+          "line": 30,
+          "func": "pocketbase_scope"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.partners import get_partner_manager",
+      "count": 13,
+      "distinct_files": 8,
+      "files": [
+        "deeptutor.api.main",
+        "deeptutor.api.routers.multi_user",
+        "deeptutor.multi_user.partner_access",
+        "deeptutor.services.courses_state",
+        "deeptutor.services.cron.executor",
+        "deeptutor.services.session.source_inventory",
+        "deeptutor.services.subagent.partner",
+        "deeptutor_cli.partner"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/multi_user/partner_access.py",
+          "line": 38,
+          "func": "_manager"
+        },
+        {
+          "file": "deeptutor/api/main.py",
+          "line": 184,
+          "func": "lifespan._start_partners"
+        },
+        {
+          "file": "deeptutor/api/main.py",
+          "line": 191,
+          "func": "lifespan._stop_partners"
+        },
+        {
+          "file": "deeptutor/api/main.py",
+          "line": 239,
+          "func": "lifespan._handle_background_command"
+        },
+        {
+          "file": "deeptutor/api/routers/multi_user.py",
+          "line": 223,
+          "func": "_admin_partner_summary"
+        },
+        {
+          "file": "deeptutor/services/courses_state.py",
+          "line": 168,
+          "func": "_partner_index"
+        },
+        {
+          "file": "deeptutor/services/subagent/partner.py",
+          "line": 97,
+          "func": "consult"
+        },
+        {
+          "file": "deeptutor/services/cron/executor.py",
+          "line": 80,
+          "func": "_execute_partner_job"
+        },
+        {
+          "file": "deeptutor/services/session/source_inventory.py",
+          "line": 970,
+          "func": "_load_partner_session"
+        },
+        {
+          "file": "deeptutor_cli/partner.py",
+          "line": 20,
+          "func": "register.partner_list"
+        },
+        {
+          "file": "deeptutor_cli/partner.py",
+          "line": 52,
+          "func": "register.partner_start"
+        },
+        {
+          "file": "deeptutor_cli/partner.py",
+          "line": 67,
+          "func": "register.partner_stop"
+        },
+        {
+          "file": "deeptutor_cli/partner.py",
+          "line": 84,
+          "func": "register.partner_create"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.llm import complete",
+      "count": 11,
+      "distinct_files": 10,
+      "files": [
+        "deeptutor.api.routers.mastery_path",
+        "deeptutor.api.routers.system",
+        "deeptutor.learning.topic_naming",
+        "deeptutor.services.chat_hints",
+        "deeptutor.services.config.settings_spec",
+        "deeptutor.services.mastery_hints",
+        "deeptutor.services.rag.smart_retriever",
+        "deeptutor.services.reading_hints",
+        "deeptutor.services.suggestions",
+        "deeptutor.video_learning.marks"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/learning/topic_naming.py",
+          "line": 141,
+          "func": "suggest_topic_name"
+        },
+        {
+          "file": "deeptutor/api/routers/system.py",
+          "line": 70,
+          "func": "llm_complete"
+        },
+        {
+          "file": "deeptutor/api/routers/mastery_path.py",
+          "line": 1203,
+          "func": "generate_from_notebook"
+        },
+        {
+          "file": "deeptutor/services/reading_hints.py",
+          "line": 417,
+          "func": "_call_llm"
+        },
+        {
+          "file": "deeptutor/services/suggestions.py",
+          "line": 557,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/services/chat_hints.py",
+          "line": 241,
+          "func": "_call_llm"
+        },
+        {
+          "file": "deeptutor/services/mastery_hints.py",
+          "line": 324,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/services/config/settings_spec.py",
+          "line": 526,
+          "func": "_probe_llm"
+        },
+        {
+          "file": "deeptutor/services/rag/smart_retriever.py",
+          "line": 51,
+          "func": "_generate_queries"
+        },
+        {
+          "file": "deeptutor/services/rag/smart_retriever.py",
+          "line": 70,
+          "func": "_aggregate"
+        },
+        {
+          "file": "deeptutor/video_learning/marks.py",
+          "line": 360,
+          "func": "suggest_marks"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.multi_user.knowledge_access import resolve_kb_metadata",
+      "count": 11,
+      "distinct_files": 8,
+      "files": [
+        "deeptutor.agents.research.pipeline",
+        "deeptutor.api.routers.knowledge",
+        "deeptutor.book.agents.source_explorer",
+        "deeptutor.capabilities.ima.binding",
+        "deeptutor.capabilities.marginnote4.binding",
+        "deeptutor.capabilities.marginnote4.store",
+        "deeptutor.capabilities.obsidian.binding",
+        "deeptutor.capabilities.subagent.binding"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/capabilities/ima/binding.py",
+          "line": 96,
+          "func": "_resolve"
+        },
+        {
+          "file": "deeptutor/capabilities/marginnote4/store.py",
+          "line": 140,
+          "func": "_kb_metadata"
+        },
+        {
+          "file": "deeptutor/capabilities/marginnote4/binding.py",
+          "line": 31,
+          "func": "_resolve"
+        },
+        {
+          "file": "deeptutor/capabilities/marginnote4/binding.py",
+          "line": 53,
+          "func": "marginnote_kb_refs"
+        },
+        {
+          "file": "deeptutor/capabilities/obsidian/binding.py",
+          "line": 34,
+          "func": "_resolve"
+        },
+        {
+          "file": "deeptutor/capabilities/obsidian/binding.py",
+          "line": 56,
+          "func": "obsidian_vault_refs"
+        },
+        {
+          "file": "deeptutor/capabilities/subagent/binding.py",
+          "line": 49,
+          "func": "_resolve"
+        },
+        {
+          "file": "deeptutor/capabilities/subagent/binding.py",
+          "line": 89,
+          "func": "subagent_refs"
+        },
+        {
+          "file": "deeptutor/agents/research/pipeline.py",
+          "line": 369,
+          "func": "__init__"
+        },
+        {
+          "file": "deeptutor/book/agents/source_explorer.py",
+          "line": 374,
+          "func": "partition_knowledge_bases"
+        },
+        {
+          "file": "deeptutor/api/routers/knowledge.py",
+          "line": 2638,
+          "func": "search_kiwix_articles"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.services.model_selection.tasks import TaskKind, task_llm_scope",
+      "count": 10,
+      "distinct_files": 10,
+      "files": [
+        "deeptutor.learning.topic_naming",
+        "deeptutor.reading.quiz",
+        "deeptutor.reading.study_guidance",
+        "deeptutor.reading.translation",
+        "deeptutor.reading.vocabulary",
+        "deeptutor.services.chat_hints",
+        "deeptutor.services.mastery_hints",
+        "deeptutor.services.reading_hints",
+        "deeptutor.services.session.turns.title_service",
+        "deeptutor.services.suggestions"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/reading/quiz.py",
+          "line": 100,
+          "func": "run_action"
+        },
+        {
+          "file": "deeptutor/reading/study_guidance.py",
+          "line": 79,
+          "func": "run_action"
+        },
+        {
+          "file": "deeptutor/reading/translation.py",
+          "line": 108,
+          "func": "run_action"
+        },
+        {
+          "file": "deeptutor/reading/vocabulary.py",
+          "line": 105,
+          "func": "run_action"
+        },
+        {
+          "file": "deeptutor/learning/topic_naming.py",
+          "line": 142,
+          "func": "suggest_topic_name"
+        },
+        {
+          "file": "deeptutor/services/reading_hints.py",
+          "line": 418,
+          "func": "_call_llm"
+        },
+        {
+          "file": "deeptutor/services/suggestions.py",
+          "line": 558,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/services/chat_hints.py",
+          "line": 242,
+          "func": "_call_llm"
+        },
+        {
+          "file": "deeptutor/services/mastery_hints.py",
+          "line": 325,
+          "func": "_generate"
+        },
+        {
+          "file": "deeptutor/services/session/turns/title_service.py",
+          "line": 117,
+          "func": "_maybe_generate_session_title"
+        }
+      ]
+    },
+    {
+      "display": "msvcrt",
+      "count": 10,
+      "distinct_files": 9,
+      "files": [
+        "deeptutor.knowledge.manager",
+        "deeptutor.learning.migration",
+        "deeptutor.multi_user.grants",
+        "deeptutor.services.codex_auth.storage",
+        "deeptutor.services.cron.repository",
+        "deeptutor.services.partners.manager",
+        "deeptutor.services.partners.web_continuity",
+        "deeptutor.services.rag.pipelines.lightrag.write_lock",
+        "deeptutor.video_learning.service"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/multi_user/grants.py",
+          "line": 62,
+          "func": "_grant_write_lock"
+        },
+        {
+          "file": "deeptutor/learning/migration.py",
+          "line": 124,
+          "func": "_process_lock"
+        },
+        {
+          "file": "deeptutor/knowledge/manager.py",
+          "line": 132,
+          "func": "file_lock_shared"
+        },
+        {
+          "file": "deeptutor/services/codex_auth/storage.py",
+          "line": 68,
+          "func": "_locked_file"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/lightrag/write_lock.py",
+          "line": 36,
+          "func": "write_ownership"
+        },
+        {
+          "file": "deeptutor/services/partners/web_continuity.py",
+          "line": 38,
+          "func": "_state_lock"
+        },
+        {
+          "file": "deeptutor/services/partners/manager.py",
+          "line": 89,
+          "func": "_acquire_web_turn_lock"
+        },
+        {
+          "file": "deeptutor/services/partners/manager.py",
+          "line": 110,
+          "func": "_release_web_turn_lock"
+        },
+        {
+          "file": "deeptutor/services/cron/repository.py",
+          "line": 61,
+          "func": "_migration_lock"
+        },
+        {
+          "file": "deeptutor/video_learning/service.py",
+          "line": 386,
+          "func": "lock"
+        }
+      ]
+    },
+    {
+      "display": "fcntl",
+      "count": 10,
+      "distinct_files": 9,
+      "files": [
+        "deeptutor.knowledge.manager",
+        "deeptutor.learning.migration",
+        "deeptutor.multi_user.grants",
+        "deeptutor.services.codex_auth.storage",
+        "deeptutor.services.cron.repository",
+        "deeptutor.services.partners.manager",
+        "deeptutor.services.partners.web_continuity",
+        "deeptutor.services.rag.pipelines.lightrag.write_lock",
+        "deeptutor.video_learning.service"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/multi_user/grants.py",
+          "line": 66,
+          "func": "_grant_write_lock"
+        },
+        {
+          "file": "deeptutor/learning/migration.py",
+          "line": 137,
+          "func": "_process_lock"
+        },
+        {
+          "file": "deeptutor/knowledge/manager.py",
+          "line": 141,
+          "func": "file_lock_shared"
+        },
+        {
+          "file": "deeptutor/services/codex_auth/storage.py",
+          "line": 72,
+          "func": "_locked_file"
+        },
+        {
+          "file": "deeptutor/services/rag/pipelines/lightrag/write_lock.py",
+          "line": 41,
+          "func": "write_ownership"
+        },
+        {
+          "file": "deeptutor/services/partners/web_continuity.py",
+          "line": 42,
+          "func": "_state_lock"
+        },
+        {
+          "file": "deeptutor/services/partners/manager.py",
+          "line": 93,
+          "func": "_acquire_web_turn_lock"
+        },
+        {
+          "file": "deeptutor/services/partners/manager.py",
+          "line": 114,
+          "func": "_release_web_turn_lock"
+        },
+        {
+          "file": "deeptutor/services/cron/repository.py",
+          "line": 65,
+          "func": "_migration_lock"
+        },
+        {
+          "file": "deeptutor/video_learning/service.py",
+          "line": 390,
+          "func": "lock"
+        }
+      ]
+    },
+    {
+      "display": "from deeptutor.multi_user.paths import get_admin_path_service",
+      "count": 10,
+      "distinct_files": 9,
+      "files": [
+        "deeptutor.agents._shared.tool_composition",
+        "deeptutor.api.routers.partners",
+        "deeptutor.partners.config.paths",
+        "deeptutor.services.config.model_catalog",
+        "deeptutor.services.config.runtime_settings",
+        "deeptutor.services.cron.service",
+        "deeptutor.services.memory.snapshot.adapters",
+        "deeptutor.services.persona.service",
+        "deeptutor.services.setup.init"
+      ],
+      "sites": [
+        {
+          "file": "deeptutor/agents/_shared/tool_composition.py",
+          "line": 118,
+          "func": "admin_enabled_optional_tools"
+        },
+        {
+          "file": "deeptutor/partners/config/paths.py",
+          "line": 16,
+          "func": "_base_dir"
+        },
+        {
+          "file": "deeptutor/api/routers/partners.py",
+          "line": 540,
+          "func": "_load_persona_markdown"
+        },
+        {
+          "file": "deeptutor/api/routers/partners.py",
+          "line": 604,
+          "func": "soul_sources"
+        },
+        {
+          "file": "deeptutor/services/memory/snapshot/adapters.py",
+          "line": 312,
+          "func": "read_partner_entities"
+        },
+        {
+          "file": "deeptutor/services/config/runtime_settings.py",
+          "line": 1362,
+          "func": "_global_settings_dir"
+        },
+        {
+          "file": "deeptutor/services/config/model_catalog.py",
+          "line": 636,
+          "func": "get_model_catalog_service"
+        },
+        {
+          "file": "deeptutor/services/setup/init.py",
+          "line": 223,
+          "func": "_seed_default_personas"
+        },
+        {
+          "file": "deeptutor/services/persona/service.py",
+          "line": 380,
+          "func": "load_visible_for_context"
+        },
+        {
+          "file": "deeptutor/services/cron/service.py",
+          "line": 410,
+          "func": "get_cron_service"
+        }
+      ]
+    }
+  ],
+  "per_file_repeats": [
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.config import get_runtime_settings_service",
+      "count": 12,
+      "lines": [
+        1470,
+        1493,
+        1520,
+        1546,
+        1590,
+        1606,
+        1630,
+        1642,
+        1693,
+        1718,
+        1762,
+        1788
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.config import get_kb_config_service",
+      "count": 6,
+      "lines": [
+        1410,
+        1443,
+        2031,
+        2044,
+        2058,
+        2120
+      ]
+    },
+    {
+      "file": "deeptutor/capabilities/mastery/tools.py",
+      "import": "from deeptutor.learning.service import MasteryInteractionError",
+      "count": 5,
+      "lines": [
+        973,
+        1159,
+        1358,
+        1492,
+        1596
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/memory.py",
+      "import": "from deeptutor.services.memory.consolidator.runs import get_run_manager",
+      "count": 5,
+      "lines": [
+        184,
+        355,
+        365,
+        400,
+        417
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/reading.py",
+      "import": "from deeptutor.services.session import get_session_store",
+      "count": 5,
+      "lines": [
+        770,
+        833,
+        874,
+        915,
+        928
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from contextlib import nullcontext",
+      "count": 5,
+      "lines": [
+        283,
+        3354,
+        3440,
+        3554,
+        4036
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.workspace.context import workspace_context",
+      "count": 5,
+      "lines": [
+        995,
+        1155,
+        1894,
+        3444,
+        3752
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.embedding.config import embedding_config_scope",
+      "count": 5,
+      "lines": [
+        3356,
+        3540,
+        3556,
+        4001,
+        4038
+      ]
+    },
+    {
+      "file": "deeptutor/capabilities/reading/capability.py",
+      "import": "from deeptutor.multi_user.learning_access import learning_material_allowed",
+      "count": 4,
+      "lines": [
+        185,
+        202,
+        366,
+        440
+      ]
+    },
+    {
+      "file": "deeptutor/app/facade.py",
+      "import": "from deeptutor.services.workspace.context import current_workspace_id, workspace_context",
+      "count": 4,
+      "lines": [
+        71,
+        138,
+        160,
+        173
+      ]
+    },
+    {
+      "file": "deeptutor/app/container.py",
+      "import": "from deeptutor.services.workspace.models import WorkspaceError",
+      "count": 4,
+      "lines": [
+        149,
+        166,
+        268,
+        301
+      ]
+    },
+    {
+      "file": "deeptutor/learning/storage.py",
+      "import": "from deeptutor.learning.event_hub import publish_topic_signal",
+      "count": 4,
+      "lines": [
+        1082,
+        1199,
+        1239,
+        1746
+      ]
+    },
+    {
+      "file": "deeptutor/api/main.py",
+      "import": "from deeptutor.services.cron import get_cron_service",
+      "count": 4,
+      "lines": [
+        196,
+        201,
+        234,
+        270
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/multi_user.py",
+      "import": "from deeptutor.multi_user.book_access import admin_book_catalog",
+      "count": 4,
+      "lines": [
+        377,
+        497,
+        543,
+        574
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/memory.py",
+      "import": "from deeptutor.services.memory import snapshot",
+      "count": 4,
+      "lines": [
+        737,
+        754,
+        768,
+        782
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.workspace.knowledge import library_request",
+      "count": 4,
+      "lines": [
+        996,
+        1156,
+        2785,
+        3753
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.rag.service import RAGService",
+      "count": 4,
+      "lines": [
+        1411,
+        1444,
+        3562,
+        3804
+      ]
+    },
+    {
+      "file": "deeptutor/services/memory/consolidator/modes/update.py",
+      "import": "from deeptutor.services.memory.consolidator.modes.merge import run_merge",
+      "count": 4,
+      "lines": [
+        177,
+        340,
+        405,
+        569
+      ]
+    },
+    {
+      "file": "deeptutor/services/workspace/kb_move.py",
+      "import": "from deeptutor.services.workspace import get_content_workspace_service",
+      "count": 4,
+      "lines": [
+        88,
+        169,
+        194,
+        356
+      ]
+    },
+    {
+      "file": "deeptutor/services/embedding/client.py",
+      "import": "asyncio",
+      "count": 4,
+      "lines": [
+        65,
+        121,
+        247,
+        288
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/pipelines/lightrag/config.py",
+      "import": "from deeptutor.services.config import load_lightrag_settings",
+      "count": 4,
+      "lines": [
+        162,
+        176,
+        187,
+        201
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "import": "from deeptutor.services.embedding import get_embedding_config",
+      "count": 4,
+      "lines": [
+        292,
+        422,
+        507,
+        627
+      ]
+    },
+    {
+      "file": "deeptutor_cli/partner.py",
+      "import": "from deeptutor.services.partners import get_partner_manager",
+      "count": 4,
+      "lines": [
+        20,
+        52,
+        67,
+        84
+      ]
+    },
+    {
+      "file": "deeptutor/tools/partner_memory.py",
+      "import": "from deeptutor.services.partners.interaction import get_partner_turn_context",
+      "count": 3,
+      "lines": [
+        106,
+        174,
+        252
+      ]
+    },
+    {
+      "file": "deeptutor/capabilities/mastery/tools.py",
+      "import": "from deeptutor.learning.scheduler import SpacedRepetitionScheduler",
+      "count": 3,
+      "lines": [
+        1106,
+        1329,
+        1491
+      ]
+    },
+    {
+      "file": "deeptutor/agents/visualize/capability.py",
+      "import": "from deeptutor.services.llm.config import get_llm_config",
+      "count": 3,
+      "lines": [
+        124,
+        258,
+        299
+      ]
+    },
+    {
+      "file": "deeptutor/agents/loop/pipeline.py",
+      "import": "from deeptutor.multi_user.context import get_current_user",
+      "count": 3,
+      "lines": [
+        714,
+        1386,
+        1721
+      ]
+    },
+    {
+      "file": "deeptutor/knowledge/progress_tracker.py",
+      "import": "from deeptutor.knowledge.manager import KnowledgeBaseManager",
+      "count": 3,
+      "lines": [
+        119,
+        312,
+        334
+      ]
+    },
+    {
+      "file": "deeptutor/knowledge/manager.py",
+      "import": "from deeptutor.services.rag.embedding_binding import entry_signature",
+      "count": 3,
+      "lines": [
+        607,
+        1651,
+        1727
+      ]
+    },
+    {
+      "file": "deeptutor/api/main.py",
+      "import": "from deeptutor.services.partners import get_partner_manager",
+      "count": 3,
+      "lines": [
+        184,
+        191,
+        239
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/auth.py",
+      "import": "from deeptutor.multi_user.identity import delete_avatar_file",
+      "count": 3,
+      "lines": [
+        1274,
+        1345,
+        1813
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/reading_extensions.py",
+      "import": "from deeptutor.services.session import get_sqlite_session_store",
+      "count": 3,
+      "lines": [
+        353,
+        377,
+        492
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/subagents.py",
+      "import": "from deeptutor.services.subagent import get_backend",
+      "count": 3,
+      "lines": [
+        80,
+        127,
+        197
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/skills.py",
+      "import": "asyncio",
+      "count": 3,
+      "lines": [
+        162,
+        182,
+        252
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/memory.py",
+      "import": "from deeptutor.services.memory.consolidator.runs import RunBusyError, get_run_manager",
+      "count": 3,
+      "lines": [
+        322,
+        375,
+        461
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/practice.py",
+      "import": "from deeptutor.services.workspace.navigation import read_workspace_indexes",
+      "count": 3,
+      "lines": [
+        106,
+        144,
+        192
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/dashboard.py",
+      "import": "from deeptutor.services.workspace.navigation import read_workspace_indexes",
+      "count": 3,
+      "lines": [
+        85,
+        123,
+        163
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/dashboard.py",
+      "import": "from deeptutor.services.session.organization import list_all_sessions_snapshot",
+      "count": 3,
+      "lines": [
+        104,
+        131,
+        201
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.rag.preflight import engine_preflight",
+      "count": 3,
+      "lines": [
+        770,
+        800,
+        1814
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "traceback",
+      "count": 3,
+      "lines": [
+        1063,
+        1344,
+        3963
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.config import get_model_catalog_service",
+      "count": 3,
+      "lines": [
+        1677,
+        1834,
+        1979
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.rag.pipelines.lightrag_server.config import normalize_base_url",
+      "count": 3,
+      "lines": [
+        1789,
+        2350,
+        2378
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.rag.pipelines.kiwix.client import KiwixClient, KiwixError",
+      "count": 3,
+      "lines": [
+        2582,
+        2596,
+        2609
+      ]
+    },
+    {
+      "file": "deeptutor/api/routers/knowledge.py",
+      "import": "from deeptutor.services.workspace.context import current_workspace_id",
+      "count": 3,
+      "lines": [
+        2784,
+        3473,
+        3692
+      ]
+    },
+    {
+      "file": "deeptutor/services/config/settings_spec.py",
+      "import": "time",
+      "count": 3,
+      "lines": [
+        508,
+        523,
+        570
+      ]
+    },
+    {
+      "file": "deeptutor/services/workspace/resources.py",
+      "import": "from deeptutor.services.workspace import get_content_workspace_service",
+      "count": 3,
+      "lines": [
+        79,
+        166,
+        206
+      ]
+    },
+    {
+      "file": "deeptutor/services/workspace/knowledge.py",
+      "import": "from deeptutor.services.workspace.context import workspace_context",
+      "count": 3,
+      "lines": [
+        25,
+        80,
+        111
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/embedding_binding.py",
+      "import": "from .index_versioning import list_kb_versions",
+      "count": 3,
+      "lines": [
+        76,
+        165,
+        262
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/pipelines/llamaindex/vector_store.py",
+      "import": "faiss",
+      "count": 3,
+      "lines": [
+        58,
+        92,
+        107
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/pipelines/lightrag/config.py",
+      "import": "from deeptutor.services.llm import get_llm_client",
+      "count": 3,
+      "lines": [
+        272,
+        326,
+        383
+      ]
+    },
+    {
+      "file": "deeptutor/services/rag/pipelines/graphrag/pipeline.py",
+      "import": "from . import engine",
+      "count": 3,
+      "lines": [
+        76,
+        179,
+        211
+      ]
+    },
+    {
+      "file": "deeptutor/services/partners/sessions.py",
+      "import": "from deeptutor.services.session.provider_response_state import redact_private_message_metadata",
+      "count": 3,
+      "lines": [
+        294,
+        310,
+        397
+      ]
+    },
+    {
+      "file": "deeptutor/services/web_source/html_extractor.py",
+      "import": "from lxml import html",
+      "count": 3,
+      "lines": [
+        150,
+        326,
+        595
+      ]
+    },
+    {
+      "file": "deeptutor_cli/skill.py",
+      "import": "from deeptutor.services.skill import credentials",
+      "count": 3,
+      "lines": [
+        30,
+        198,
+        249
+      ]
+    },
+    {
+      "file": "deeptutor_cli/book.py",
+      "import": "from deeptutor.book import get_book_engine",
+      "count": 3,
+      "lines": [
+        20,
+        42,
+        54
+      ]
+    },
+    {
+      "file": "deeptutor/reading/store.py",
+      "import": "from deeptutor.reading.epub_bilingual import delete_epub_pairings_for_material",
+      "count": 2,
+      "lines": [
+        1172,
+        1197
+      ]
+    },
+    {
+      "file": "deeptutor/reading/page_render.py",
+      "import": "pymupdf",
+      "count": 2,
+      "lines": [
+        46,
+        85
+      ]
+    },
+    {
+      "file": "deeptutor/reading/page_render.py",
+      "import": "from deeptutor.reading import ReadingStore",
+      "count": 2,
+      "lines": [
+        48,
+        87
+      ]
+    },
+    {
+      "file": "deeptutor/tools/question_bank.py",
+      "import": "from deeptutor.services.partners.interaction import get_partner_turn_context",
+      "count": 2,
+      "lines": [
+        148,
+        385
+      ]
+    },
+    {
+      "file": "deeptutor/tools/exec_tool.py",
+      "import": "from deeptutor.services.sandbox.artifacts import snapshot_public_artifact_files",
+      "count": 2,
+      "lines": [
+        198,
+        231
+      ]
+    }
+  ]
+}
