@@ -4,7 +4,7 @@ Progress Tracker - Tracks knowledge base initialization progress
 
 import asyncio
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 import json
 import logging
@@ -209,7 +209,7 @@ class ProgressTracker:
             "total": total,
             "file_name": file_name,
             "progress_percent": int(current / total * 100) if total > 0 else 0,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         if indexed_count is not None:
             progress["indexed_count"] = indexed_count

@@ -2,7 +2,7 @@
 Task ID Manager - Assigns unique IDs to each background task
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 import threading
 from typing import Optional
@@ -57,7 +57,7 @@ class TaskIDManager:
             self._task_metadata[task_id] = {
                 "task_type": task_type,
                 "task_key": task_key,
-                "created_at": datetime.now().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "status": "running",
             }
 
@@ -75,7 +75,9 @@ class TaskIDManager:
                 self._task_metadata[task_id]["status"] = status
                 self._task_metadata[task_id].update(kwargs)
                 if status in ["completed", "error", "cancelled"]:
-                    self._task_metadata[task_id]["finished_at"] = datetime.now().isoformat()
+                    self._task_metadata[task_id]["finished_at"] = datetime.now(
+                        timezone.utc
+                    ).isoformat()
 
     def get_task_metadata(self, task_id: str) -> dict | None:
         """Get task metadata"""
@@ -85,7 +87,7 @@ class TaskIDManager:
     def cleanup_old_tasks(self, max_age_hours: int = 24):
         """Clean up old tasks (completed tasks older than specified hours)"""
         with self._lock:
-            cutoff = datetime.now() - timedelta(hours=max_age_hours)
+            cutoff = datetime.now(timezone.utc) - timedelta(hours=max_age_hours)
 
             to_remove = []
             for task_id, metadata in self._task_metadata.items():
@@ -94,9 +96,12 @@ class TaskIDManager:
                     if finished_at:
                         try:
                             finished_time = datetime.fromisoformat(finished_at)
+                            if finished_time.tzinfo is None:
+                                # Legacy metadata stored naive local time.
+                                finished_time = finished_time.astimezone()
                             if finished_time < cutoff:
                                 to_remove.append(task_id)
-                        except Exception:
+                        except (TypeError, ValueError):
                             logger.warning("Failed to parse finished_at for task %s", task_id)
 
             for task_id in to_remove:

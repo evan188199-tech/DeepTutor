@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 import json
 
 from deeptutor.knowledge.manager import KnowledgeBaseManager
@@ -119,3 +120,19 @@ def test_update_keeps_an_explicit_message_verbatim(tmp_path) -> None:
 
     assert seen[-1]["message"] == "already rendered"
     assert "message_key" not in seen[-1]
+
+
+def test_progress_snapshot_timestamp_is_aware_utc(tmp_path) -> None:
+    tracker = ProgressTracker("tz-kb", tmp_path)
+
+    tracker.update(
+        ProgressStage.PROCESSING_DOCUMENTS,
+        "Embedding batches: 1/2 complete",
+        current=1,
+        total=2,
+    )
+
+    payload = json.loads(tracker.progress_file.read_text(encoding="utf-8"))
+    parsed = datetime.fromisoformat(payload["timestamp"])
+    assert parsed.tzinfo is not None
+    assert parsed.utcoffset() == timedelta(0)

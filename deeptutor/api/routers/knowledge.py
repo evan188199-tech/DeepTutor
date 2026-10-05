@@ -7,7 +7,7 @@ Handles knowledge base CRUD operations, file uploads, and initialization.
 
 import asyncio
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 import mimetypes
@@ -301,7 +301,7 @@ def _mark_kb_queued_for_processing(
                     "message": message,
                     "percent": 0,
                     "task_id": task_id,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
             )
     except IndexingPolicyError as exc:
@@ -1045,7 +1045,7 @@ async def run_initialization_task(
                     "current": 1,
                     "total": 1,
                     "task_id": task_id,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "indexed_count": indexed_count,
                     "index_changed": True,
                     "index_action": "create",
@@ -1095,7 +1095,7 @@ async def run_initialization_task(
                     "error": error_msg,
                     **failure_metadata,
                     "task_id": task_id,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
             )
 
@@ -2098,7 +2098,7 @@ async def update_kb_config(kb_name: str, config: dict):
                         "re-index this knowledge base before use."
                     ),
                     "percent": 0,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             config["rag_provider"] = requested_provider
         else:
@@ -3664,7 +3664,7 @@ async def _create_knowledge_base_owned(
                     "percent": 100,
                     "current": 0,
                     "total": 0,
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "index_changed": True,
                     "index_action": "create",
                 },
@@ -4252,6 +4252,20 @@ async def clear_progress(kb_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _parse_progress_timestamp(raw: str) -> datetime:
+    """Parse a stored progress timestamp into an aware datetime.
+
+    Snapshots written by this server carry a UTC offset; legacy ones stored
+    naive local time, which is interpreted in the host timezone so both
+    formats can be compared against ``datetime.now(timezone.utc)`` without
+    mixing naive and aware values.
+    """
+    parsed = datetime.fromisoformat(raw)
+    if parsed.tzinfo is None:
+        parsed = parsed.astimezone()
+    return parsed
+
+
 @ws_router.websocket("/knowledge-bases/{kb_name}/progress")
 async def websocket_progress(websocket: WebSocket, kb_name: str):
     """WebSocket endpoint for real-time progress updates"""
@@ -4335,7 +4349,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                         "error_code": "knowledge_task_interrupted",
                         "retryable": True,
                         "progress_percent": 0,
-                        "timestamp": datetime.now().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 get_task_stream_manager().emit_failed(
                     expected_task_id,
@@ -4361,7 +4375,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                     "message": message,
                     "progress_percent": 100 if is_completed else 0,
                     "timestamp": str(
-                        task_metadata.get("finished_at") or datetime.now().isoformat()
+                        task_metadata.get("finished_at") or datetime.now(timezone.utc).isoformat()
                     ),
                 }
                 if not is_completed:
@@ -4384,9 +4398,11 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                 ts = initial_progress.get("timestamp")
                 if ts:
                     try:
-                        age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()
+                        age = (
+                            datetime.now(timezone.utc) - _parse_progress_timestamp(ts)
+                        ).total_seconds()
                         has_active_task = age < 120
-                    except Exception:
+                    except (TypeError, ValueError):
                         pass
 
         if not has_active_task and not expected_task_id:
@@ -4430,12 +4446,11 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                 should_send = True
             elif stage != "completed" and timestamp:
                 try:
-                    progress_time = datetime.fromisoformat(timestamp)
-                    now = datetime.now()
-                    age_seconds = (now - progress_time).total_seconds()
+                    progress_time = _parse_progress_timestamp(timestamp)
+                    age_seconds = (datetime.now(timezone.utc) - progress_time).total_seconds()
                     if age_seconds < 300:
                         should_send = True
-                except Exception:
+                except (TypeError, ValueError):
                     pass
 
             if should_send:
@@ -4496,7 +4511,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                                         "progress_percent": 100 if is_completed else 0,
                                         "timestamp": str(
                                             (task_metadata or {}).get("finished_at")
-                                            or datetime.now().isoformat()
+                                            or datetime.now(timezone.utc).isoformat()
                                         ),
                                     },
                                 }
