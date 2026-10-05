@@ -9,6 +9,7 @@ from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 import json
+import logging
 import os
 from pathlib import Path
 import re
@@ -37,6 +38,8 @@ from .event_preview import MAX_TRACE_PREVIEW_EVENTS, compact_trace_preview
 from .provider_response_state import redact_private_message_metadata
 from .search import bounded_search_excerpt, normalize_search_query
 from .workspace_preferences import upgrade_workspace_preferences
+
+logger = logging.getLogger(__name__)
 
 
 def _json_dumps(value: Any) -> str:
@@ -467,10 +470,26 @@ class SQLiteSessionStore:
             if "kind" in columns:
                 try:
                     conn.execute("ALTER TABLE sessions DROP COLUMN kind")
-                except sqlite3.OperationalError:
-                    # Older SQLite builds may not support DROP COLUMN. The
-                    # application no longer reads or writes this legacy field.
-                    pass
+                except sqlite3.OperationalError as exc:
+                    # Tolerable outcomes only: an old SQLite build without
+                    # DROP COLUMN support, or the column already gone (e.g.
+                    # a concurrent migration). The application no longer
+                    # reads or writes this legacy field, so startup proceeds.
+                    message = str(exc).lower()
+                    tolerable = "no such column" in message or (
+                        "syntax error" in message and "drop" in message
+                    )
+                    if not tolerable:
+                        logger.error(
+                            "Startup migration failed to drop legacy sessions.kind column: %s",
+                            exc,
+                        )
+                        raise
+                    logger.debug(
+                        "Kept legacy sessions.kind column (drop not "
+                        "supported or already applied): %s",
+                        exc,
+                    )
             message_columns = {
                 row[1] for row in conn.execute("PRAGMA table_info(messages)").fetchall()
             }
