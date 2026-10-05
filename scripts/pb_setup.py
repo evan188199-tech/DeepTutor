@@ -172,7 +172,11 @@ def main():
                 {"name": "status", "type": "text", "required": False},
                 {"name": "session_created_at", "type": "number", "required": False},
                 {"name": "session_updated_at", "type": "number", "required": False},
+                # Recycle bin: PocketBaseSessionStore soft-deletes/restores by
+                # writing this column and filters it for the active listing.
+                {"name": "deleted_at", "type": "number", "required": False},
             ],
+            "indexes": ["CREATE INDEX idx_sessions_user_deleted ON sessions (user_id, deleted_at)"],
             "listRule": "",
             "viewRule": "",
             "createRule": "",
