@@ -1,0 +1,3147 @@
+{
+ "call_sites": {
+  "deeptutor/agents/loop/prompt_blocks.py": [
+   {
+    "line": 253,
+    "call": "now.date().isoformat",
+    "src": "dt_str = now.date().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "now.date().isoformat",
+    "file": "deeptutor/agents/loop/prompt_blocks.py"
+   },
+   {
+    "line": 245,
+    "call": "datetime.now",
+    "src": "now = datetime.now().astimezone()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/loop/prompt_blocks.py"
+   }
+  ],
+  "deeptutor/agents/research/data_structures.py": [
+   {
+    "line": 207,
+    "call": "datetime.now().isoformat",
+    "src": "self.updated_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 259,
+    "call": "datetime.now().isoformat",
+    "src": "self.created_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 450,
+    "call": "datetime.now().isoformat",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 468,
+    "call": "datetime.now().isoformat",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 486,
+    "call": "datetime.now().isoformat",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 78,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 200,
+    "call": "datetime.now().isoformat",
+    "src": "created_at: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 201,
+    "call": "datetime.now().isoformat",
+    "src": "updated_at: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 207,
+    "call": "datetime.now",
+    "src": "self.updated_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 259,
+    "call": "datetime.now",
+    "src": "self.created_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 450,
+    "call": "datetime.now",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 468,
+    "call": "datetime.now",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 486,
+    "call": "datetime.now",
+    "src": "block.updated_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 78,
+    "call": "datetime.now",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 200,
+    "call": "datetime.now",
+    "src": "created_at: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   },
+   {
+    "line": 201,
+    "call": "datetime.now",
+    "src": "updated_at: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/data_structures.py"
+   }
+  ],
+  "deeptutor/agents/research/utils/citation_manager.py": [
+   {
+    "line": 207,
+    "call": "datetime.now().isoformat",
+    "src": "\"updated_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/utils/citation_manager.py"
+   },
+   {
+    "line": 207,
+    "call": "datetime.now",
+    "src": "\"updated_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/utils/citation_manager.py"
+   }
+  ],
+  "deeptutor/agents/research/utils/token_tracker.py": [
+   {
+    "line": 98,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/agents/research/utils/token_tracker.py"
+   },
+   {
+    "line": 98,
+    "call": "datetime.now",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/agents/research/utils/token_tracker.py"
+   }
+  ],
+  "deeptutor/api/routers/auth.py": [
+   {
+    "line": 1416,
+    "call": "datetime.now",
+    "src": "expires_at=datetime.now(timezone.utc) + timedelta(days=body.expires_in_days),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/api/routers/auth.py"
+   }
+  ],
+  "deeptutor/api/routers/co_writer.py": [
+   {
+    "line": 454,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/co_writer.py"
+   },
+   {
+    "line": 341,
+    "call": "datetime.now",
+    "src": "operation_id = datetime.now().strftime(\"%Y%m%d_%H%M%S\") + \"_\" + uuid.uuid4().hex[:6]",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/co_writer.py"
+   },
+   {
+    "line": 454,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/co_writer.py"
+   }
+  ],
+  "deeptutor/api/routers/knowledge.py": [
+   {
+    "line": 262,
+    "call": "datetime.now().isoformat",
+    "src": "task_key = f\"{task_key_prefix}_{datetime.now().isoformat()}_{uuid4().hex[:8]}\"",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 262,
+    "call": "datetime.now",
+    "src": "task_key = f\"{task_key_prefix}_{datetime.now().isoformat()}_{uuid4().hex[:8]}\"",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 2101,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 3846,
+    "call": "datetime.now().isoformat",
+    "src": "completed_at = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 304,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1048,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1190,
+    "call": "datetime.fromtimestamp(Path(source_path).stat().st_mtime).isoformat",
+    "src": "source_mtimes[source_path] = datetime.fromtimestamp(",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.fromtimestamp(Path(source_path).stat().st_mtime).isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 3667,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4338,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1098,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 2101,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 3846,
+    "call": "datetime.now",
+    "src": "completed_at = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4364,
+    "call": "datetime.now().isoformat",
+    "src": "task_metadata.get(\"finished_at\") or datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 304,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1048,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1190,
+    "call": "datetime.fromtimestamp",
+    "src": "source_mtimes[source_path] = datetime.fromtimestamp(",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 3667,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4338,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4433,
+    "call": "datetime.fromisoformat",
+    "src": "progress_time = datetime.fromisoformat(timestamp)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4434,
+    "call": "datetime.now",
+    "src": "now = datetime.now()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 1098,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4364,
+    "call": "datetime.now",
+    "src": "task_metadata.get(\"finished_at\") or datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4387,
+    "call": "datetime.now",
+    "src": "age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4387,
+    "call": "datetime.fromisoformat",
+    "src": "age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4499,
+    "call": "datetime.now().isoformat",
+    "src": "or datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/knowledge.py"
+   },
+   {
+    "line": 4499,
+    "call": "datetime.now",
+    "src": "or datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/knowledge.py"
+   }
+  ],
+  "deeptutor/api/routers/question.py": [
+   {
+    "line": 99,
+    "call": "datetime.now",
+    "src": "task_id = f\"question_mimic_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}\"",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/question.py"
+   },
+   {
+    "line": 201,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/question.py"
+   },
+   {
+    "line": 249,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/question.py"
+   },
+   {
+    "line": 142,
+    "call": "datetime.now().timestamp",
+    "src": "timestamp=datetime.now().timestamp(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().timestamp",
+    "file": "deeptutor/api/routers/question.py"
+   },
+   {
+    "line": 142,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().timestamp(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/question.py"
+   }
+  ],
+  "deeptutor/api/routers/settings.py": [
+   {
+    "line": 2340,
+    "call": "datetime(year, 1, 1, tzinfo=zone).timestamp",
+    "src": "start = datetime(year, 1, 1, tzinfo=zone).timestamp()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime(year, 1, 1, tzinfo=zone).timestamp",
+    "file": "deeptutor/api/routers/settings.py"
+   },
+   {
+    "line": 2341,
+    "call": "datetime(year + 1, 1, 1, tzinfo=zone).timestamp",
+    "src": "end = datetime(year + 1, 1, 1, tzinfo=zone).timestamp()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime(year + 1, 1, 1, tzinfo=zone).timestamp",
+    "file": "deeptutor/api/routers/settings.py"
+   }
+  ],
+  "deeptutor/api/routers/system.py": [
+   {
+    "line": 327,
+    "call": "datetime.now().isoformat",
+    "src": "\"backend\": {\"status\": \"online\", \"timestamp\": datetime.now().isoformat()},",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/routers/system.py"
+   },
+   {
+    "line": 327,
+    "call": "datetime.now",
+    "src": "\"backend\": {\"status\": \"online\", \"timestamp\": datetime.now().isoformat()},",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/routers/system.py"
+   }
+  ],
+  "deeptutor/api/utils/task_id_manager.py": [
+   {
+    "line": 60,
+    "call": "datetime.now().isoformat",
+    "src": "\"created_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 88,
+    "call": "datetime.now",
+    "src": "cutoff = datetime.now() - timedelta(hours=max_age_hours)",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 51,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 78,
+    "call": "datetime.now().isoformat",
+    "src": "self._task_metadata[task_id][\"finished_at\"] = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 60,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 78,
+    "call": "datetime.now",
+    "src": "self._task_metadata[task_id][\"finished_at\"] = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   },
+   {
+    "line": 96,
+    "call": "datetime.fromisoformat",
+    "src": "finished_time = datetime.fromisoformat(finished_at)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/api/utils/task_id_manager.py"
+   }
+  ],
+  "deeptutor/book/storage.py": [
+   {
+    "line": 370,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "ts = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(timespec=\"seconds\")",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/book/storage.py"
+   },
+   {
+    "line": 370,
+    "call": "datetime.now",
+    "src": "ts = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(timespec=\"seconds\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/book/storage.py"
+   }
+  ],
+  "deeptutor/capabilities/marginnote4/store.py": [
+   {
+    "line": 89,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/capabilities/marginnote4/store.py"
+   },
+   {
+    "line": 89,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/capabilities/marginnote4/store.py"
+   }
+  ],
+  "deeptutor/capabilities/obsidian/tools.py": [
+   {
+    "line": 69,
+    "call": "value.isoformat",
+    "src": "return value.isoformat()",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "value.isoformat",
+    "file": "deeptutor/capabilities/obsidian/tools.py"
+   }
+  ],
+  "deeptutor/co_writer/edit_agent.py": [
+   {
+    "line": 234,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 356,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 214,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 310,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 146,
+    "call": "datetime.now",
+    "src": "operation_id = datetime.now().strftime(\"%Y%m%d_%H%M%S\") + \"_\" + uuid.uuid4().hex[:6]",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 234,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 281,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 333,
+    "call": "datetime.now",
+    "src": "operation_id = datetime.now().strftime(\"%Y%m%d_%H%M%S\") + \"_\" + uuid.uuid4().hex[:6]",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 356,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 214,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 310,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   },
+   {
+    "line": 281,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/co_writer/edit_agent.py"
+   }
+  ],
+  "deeptutor/events/event_bus.py": [
+   {
+    "line": 54,
+    "call": "self.timestamp.isoformat",
+    "src": "\"timestamp\": self.timestamp.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "self.timestamp.isoformat",
+    "file": "deeptutor/events/event_bus.py"
+   }
+  ],
+  "deeptutor/knowledge/add_documents.py": [
+   {
+    "line": 498,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 568,
+    "call": "datetime.now",
+    "src": "ts = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 586,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 630,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 692,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 667,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 718,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 586,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 630,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 692,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 667,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   },
+   {
+    "line": 718,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/add_documents.py"
+   }
+  ],
+  "deeptutor/knowledge/initializer.py": [
+   {
+    "line": 104,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/initializer.py"
+   },
+   {
+    "line": 135,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/initializer.py"
+   },
+   {
+    "line": 358,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/initializer.py"
+   },
+   {
+    "line": 377,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/initializer.py"
+   },
+   {
+    "line": 358,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/initializer.py"
+   },
+   {
+    "line": 377,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/initializer.py"
+   }
+  ],
+  "deeptutor/knowledge/manager.py": [
+   {
+    "line": 542,
+    "call": "datetime.now().isoformat",
+    "src": "kb_config[\"updated_at\"] = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 873,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 918,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 968,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1013,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1070,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1145,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1189,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1229,
+    "call": "datetime.now().isoformat",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 104,
+    "call": "datetime.fromisoformat",
+    "src": "return datetime.fromisoformat(raw) > cutoff",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 678,
+    "call": "datetime.now",
+    "src": "grace_cutoff = datetime.now() - timedelta(seconds=_ORPHAN_PRUNE_GRACE_SECONDS)",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 752,
+    "call": "datetime.now().isoformat",
+    "src": "\"updated_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2010,
+    "call": "datetime.now().isoformat",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2139,
+    "call": "datetime.fromtimestamp",
+    "src": "file_mtime = datetime.fromtimestamp(file_path.stat().st_mtime)",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2259,
+    "call": "datetime.now().isoformat",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2354,
+    "call": "datetime.now().isoformat",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 542,
+    "call": "datetime.now",
+    "src": "kb_config[\"updated_at\"] = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 873,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 918,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 968,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1013,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1070,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1145,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1189,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1229,
+    "call": "datetime.now",
+    "src": "now = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2201,
+    "call": "datetime.now().isoformat",
+    "src": "folder[\"last_sync\"] = datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 573,
+    "call": "datetime.now().isoformat",
+    "src": "progress.get(\"timestamp\") or datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 752,
+    "call": "datetime.now",
+    "src": "\"updated_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2010,
+    "call": "datetime.now",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2145,
+    "call": "datetime.fromisoformat",
+    "src": "prev_mtime = datetime.fromisoformat(prev_mtime_str)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2259,
+    "call": "datetime.now",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2354,
+    "call": "datetime.now",
+    "src": "\"added_at\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 585,
+    "call": "datetime.now().isoformat",
+    "src": "kb_config[\"last_error_at\"] = progress.get(\"timestamp\") or datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 1939,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2201,
+    "call": "datetime.now",
+    "src": "folder[\"last_sync\"] = datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 573,
+    "call": "datetime.now",
+    "src": "progress.get(\"timestamp\") or datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 585,
+    "call": "datetime.now",
+    "src": "kb_config[\"last_error_at\"] = progress.get(\"timestamp\") or datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2213,
+    "call": "datetime.fromtimestamp",
+    "src": "mtime = datetime.fromtimestamp(p.stat().st_mtime)",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/knowledge/manager.py"
+   },
+   {
+    "line": 2214,
+    "call": "mtime.isoformat",
+    "src": "file_states[file_path] = mtime.isoformat()",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "mtime.isoformat",
+    "file": "deeptutor/knowledge/manager.py"
+   }
+  ],
+  "deeptutor/knowledge/progress_tracker.py": [
+   {
+    "line": 212,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/knowledge/progress_tracker.py"
+   },
+   {
+    "line": 212,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/knowledge/progress_tracker.py"
+   }
+  ],
+  "deeptutor/learning/migration.py": [
+   {
+    "line": 107,
+    "call": "datetime.now",
+    "src": "stamp = datetime.now(timezone.utc).strftime(\"%Y%m%dT%H%M%S\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/learning/migration.py"
+   }
+  ],
+  "deeptutor/logging/formatters.py": [
+   {
+    "line": 31,
+    "call": "datetime.fromtimestamp(record.created, timezone.utc).isoformat",
+    "src": "\"timestamp\": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromtimestamp(record.created, timezone.utc).isoformat",
+    "file": "deeptutor/logging/formatters.py"
+   },
+   {
+    "line": 31,
+    "call": "datetime.fromtimestamp",
+    "src": "\"timestamp\": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/logging/formatters.py"
+   }
+  ],
+  "deeptutor/logging/stats/llm_stats.py": [
+   {
+    "line": 72,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/logging/stats/llm_stats.py"
+   },
+   {
+    "line": 72,
+    "call": "datetime.now",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/logging/stats/llm_stats.py"
+   }
+  ],
+  "deeptutor/multi_user/audit.py": [
+   {
+    "line": 51,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/multi_user/audit.py"
+   },
+   {
+    "line": 76,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/multi_user/audit.py"
+   },
+   {
+    "line": 98,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/multi_user/audit.py"
+   },
+   {
+    "line": 51,
+    "call": "datetime.now",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/audit.py"
+   },
+   {
+    "line": 76,
+    "call": "datetime.now",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/audit.py"
+   },
+   {
+    "line": 98,
+    "call": "datetime.now",
+    "src": "\"time\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/audit.py"
+   }
+  ],
+  "deeptutor/multi_user/device_credentials.py": [
+   {
+    "line": 30,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc)",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/device_credentials.py"
+   },
+   {
+    "line": 34,
+    "call": "value.isoformat",
+    "src": "return value.isoformat()",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "value.isoformat",
+    "file": "deeptutor/multi_user/device_credentials.py"
+   },
+   {
+    "line": 167,
+    "call": "now.date().isoformat",
+    "src": "current_day = now.date().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "now.date().isoformat",
+    "file": "deeptutor/multi_user/device_credentials.py"
+   },
+   {
+    "line": 41,
+    "call": "datetime.fromisoformat",
+    "src": "parsed = datetime.fromisoformat(value)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/multi_user/device_credentials.py"
+   },
+   {
+    "line": 107,
+    "call": "datetime.strptime",
+    "src": "datetime.strptime(value, \"%Y-%m-%d\")",
+    "kind": "naive-or-aware",
+    "pattern": "strptime(no-%z)",
+    "file": "deeptutor/multi_user/device_credentials.py"
+   }
+  ],
+  "deeptutor/multi_user/guardians.py": [
+   {
+    "line": 26,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/multi_user/guardians.py"
+   },
+   {
+    "line": 26,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/guardians.py"
+   }
+  ],
+  "deeptutor/multi_user/identity.py": [
+   {
+    "line": 49,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/multi_user/identity.py"
+   },
+   {
+    "line": 49,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/multi_user/identity.py"
+   }
+  ],
+  "deeptutor/partners/channels/mochat.py": [
+   {
+    "line": 118,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"timestamp\": timestamp or datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/partners/channels/mochat.py"
+   },
+   {
+    "line": 222,
+    "call": "datetime.fromisoformat(value.replace('Z', '+00:00')).timestamp",
+    "src": "return int(datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).timestamp() * 1000)",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromisoformat(value.replace('Z', '+00:00')).timestamp",
+    "file": "deeptutor/partners/channels/mochat.py"
+   },
+   {
+    "line": 222,
+    "call": "datetime.fromisoformat",
+    "src": "return int(datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).timestamp() * 1000)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(Z-normalized)",
+    "file": "deeptutor/partners/channels/mochat.py"
+   },
+   {
+    "line": 118,
+    "call": "datetime.now",
+    "src": "\"timestamp\": timestamp or datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/partners/channels/mochat.py"
+   },
+   {
+    "line": 1013,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"updatedAt\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/partners/channels/mochat.py"
+   },
+   {
+    "line": 1013,
+    "call": "datetime.now",
+    "src": "\"updatedAt\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/partners/channels/mochat.py"
+   }
+  ],
+  "deeptutor/partners/helpers.py": [
+   {
+    "line": 29,
+    "call": "datetime.now().isoformat",
+    "src": "return datetime.now().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/partners/helpers.py"
+   },
+   {
+    "line": 29,
+    "call": "datetime.now",
+    "src": "return datetime.now().isoformat()",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/partners/helpers.py"
+   }
+  ],
+  "deeptutor/reading/epub_bilingual.py": [
+   {
+    "line": 205,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"confirmed_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/reading/epub_bilingual.py"
+   },
+   {
+    "line": 205,
+    "call": "datetime.now",
+    "src": "\"confirmed_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/reading/epub_bilingual.py"
+   }
+  ],
+  "deeptutor/services/app_update.py": [
+   {
+    "line": 151,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/app_update.py"
+   },
+   {
+    "line": 151,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/app_update.py"
+   }
+  ],
+  "deeptutor/services/auth.py": [
+   {
+    "line": 281,
+    "call": "datetime.now",
+    "src": "\"iat\": datetime.now(timezone.utc),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/auth.py"
+   },
+   {
+    "line": 120,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"created_at\": created_at or datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/auth.py"
+   },
+   {
+    "line": 280,
+    "call": "datetime.now",
+    "src": "\"exp\": datetime.now(timezone.utc) + timedelta(hours=TOKEN_EXPIRE_HOURS),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/auth.py"
+   },
+   {
+    "line": 120,
+    "call": "datetime.now",
+    "src": "\"created_at\": created_at or datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/auth.py"
+   }
+  ],
+  "deeptutor/services/base_sync.py": [
+   {
+    "line": 27,
+    "call": "datetime.fromisoformat",
+    "src": "dt = datetime.fromisoformat(last)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/services/base_sync.py"
+   },
+   {
+    "line": 32,
+    "call": "datetime.now",
+    "src": "age = (datetime.now(timezone.utc) - dt).total_seconds()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/base_sync.py"
+   }
+  ],
+  "deeptutor/services/cli_apps/state.py": [
+   {
+    "line": 133,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/cli_apps/state.py"
+   },
+   {
+    "line": 133,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/cli_apps/state.py"
+   }
+  ],
+  "deeptutor/services/config/context_window_detection.py": [
+   {
+    "line": 168,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "detected_at = datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/config/context_window_detection.py"
+   },
+   {
+    "line": 168,
+    "call": "datetime.now",
+    "src": "detected_at = datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/config/context_window_detection.py"
+   }
+  ],
+  "deeptutor/services/config/settings_draft.py": [
+   {
+    "line": 48,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/config/settings_draft.py"
+   },
+   {
+    "line": 48,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat(timespec=\"seconds\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/config/settings_draft.py"
+   }
+  ],
+  "deeptutor/services/config/settings_profile.py": [
+   {
+    "line": 259,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"generated_at\": datetime.now(timezone.utc).isoformat(timespec=\"seconds\"),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/config/settings_profile.py"
+   },
+   {
+    "line": 259,
+    "call": "datetime.now",
+    "src": "\"generated_at\": datetime.now(timezone.utc).isoformat(timespec=\"seconds\"),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/config/settings_profile.py"
+   }
+  ],
+  "deeptutor/services/cron/service.py": [
+   {
+    "line": 137,
+    "call": "datetime.fromtimestamp",
+    "src": "base = datetime.fromtimestamp(now_ms / 1000, tz=tz)",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/cron/service.py"
+   },
+   {
+    "line": 139,
+    "call": "next_dt.timestamp",
+    "src": "return int(next_dt.timestamp() * 1000)",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "next_dt.timestamp",
+    "file": "deeptutor/services/cron/service.py"
+   },
+   {
+    "line": 136,
+    "call": "datetime.now",
+    "src": "tz = ZoneInfo(schedule.tz) if schedule.tz else datetime.now().astimezone().tzinfo",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/cron/service.py"
+   }
+  ],
+  "deeptutor/services/github_source/sync.py": [
+   {
+    "line": 35,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/github_source/sync.py"
+   },
+   {
+    "line": 35,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/github_source/sync.py"
+   }
+  ],
+  "deeptutor/services/llm/error_mapping.py": [
+   {
+    "line": 82,
+    "call": "datetime.now",
+    "src": "current_time = now or datetime.now(timezone.utc)",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/llm/error_mapping.py"
+   }
+  ],
+  "deeptutor/services/memory/consolidator/meta.py": [
+   {
+    "line": 182,
+    "call": "datetime.now(tz=timezone.utc).isoformat",
+    "src": "return datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/consolidator/meta.py"
+   },
+   {
+    "line": 182,
+    "call": "datetime.now",
+    "src": "return datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/consolidator/meta.py"
+   }
+  ],
+  "deeptutor/services/memory/consolidator/modes/_runtime.py": [
+   {
+    "line": 304,
+    "call": "datetime.now(tz=timezone.utc).date().isoformat",
+    "src": "return datetime.now(tz=timezone.utc).date().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(tz=timezone.utc).date().isoformat",
+    "file": "deeptutor/services/memory/consolidator/modes/_runtime.py"
+   },
+   {
+    "line": 304,
+    "call": "datetime.now",
+    "src": "return datetime.now(tz=timezone.utc).date().isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/consolidator/modes/_runtime.py"
+   }
+  ],
+  "deeptutor/services/memory/consolidator/runs.py": [
+   {
+    "line": 383,
+    "call": "datetime.now(tz=timezone.utc).isoformat",
+    "src": "return datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/consolidator/runs.py"
+   },
+   {
+    "line": 383,
+    "call": "datetime.now",
+    "src": "return datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/consolidator/runs.py"
+   }
+  ],
+  "deeptutor/services/memory/paths.py": [
+   {
+    "line": 74,
+    "call": "day.isoformat",
+    "src": "return trace_dir(surface) / f\"{day.isoformat()}.jsonl\"",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "day.isoformat",
+    "file": "deeptutor/services/memory/paths.py"
+   }
+  ],
+  "deeptutor/services/memory/recall.py": [
+   {
+    "line": 67,
+    "call": "datetime.now",
+    "src": "return datetime.now(tz=timezone.utc)",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/recall.py"
+   },
+   {
+    "line": 74,
+    "call": "datetime.fromisoformat",
+    "src": "parsed = datetime.fromisoformat(str(ts).replace(\"Z\", \"+00:00\"))",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(Z-normalized)",
+    "file": "deeptutor/services/memory/recall.py"
+   }
+  ],
+  "deeptutor/services/memory/snapshot/__init__.py": [
+   {
+    "line": 89,
+    "call": "datetime.now(tz=timezone.utc).isoformat",
+    "src": "last_refresh=datetime.now(tz=timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/snapshot/__init__.py"
+   },
+   {
+    "line": 89,
+    "call": "datetime.now",
+    "src": "last_refresh=datetime.now(tz=timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/snapshot/__init__.py"
+   }
+  ],
+  "deeptutor/services/memory/snapshot/adapters.py": [
+   {
+    "line": 49,
+    "call": "datetime.fromisoformat",
+    "src": "datetime.fromisoformat(ts.replace(\"Z\", \"+00:00\"))",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(Z-normalized)",
+    "file": "deeptutor/services/memory/snapshot/adapters.py"
+   },
+   {
+    "line": 55,
+    "call": "datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat",
+    "src": "return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/snapshot/adapters.py"
+   },
+   {
+    "line": 55,
+    "call": "datetime.fromtimestamp",
+    "src": "return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/memory/snapshot/adapters.py"
+   }
+  ],
+  "deeptutor/services/memory/snapshot/diff.py": [
+   {
+    "line": 27,
+    "call": "datetime.now(tz=timezone.utc).isoformat",
+    "src": "ts = datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/snapshot/diff.py"
+   },
+   {
+    "line": 27,
+    "call": "datetime.now",
+    "src": "ts = datetime.now(tz=timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/snapshot/diff.py"
+   }
+  ],
+  "deeptutor/services/memory/store.py": [
+   {
+    "line": 284,
+    "call": "datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat",
+    "src": "updated_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/store.py"
+   },
+   {
+    "line": 346,
+    "call": "datetime.now",
+    "src": "ts = datetime.now(tz=timezone.utc).strftime(\"%Y%m%dT%H%M%SZ\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/store.py"
+   },
+   {
+    "line": 284,
+    "call": "datetime.fromtimestamp",
+    "src": "updated_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/memory/store.py"
+   },
+   {
+    "line": 294,
+    "call": "datetime.fromtimestamp",
+    "src": "cutoff = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/memory/store.py"
+   }
+  ],
+  "deeptutor/services/memory/trace.py": [
+   {
+    "line": 93,
+    "call": "since.isoformat",
+    "src": "cutoff_iso = since.isoformat() if since else \"\"",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "since.isoformat",
+    "file": "deeptutor/services/memory/trace.py"
+   },
+   {
+    "line": 94,
+    "call": "since.date().isoformat",
+    "src": "cutoff_date_iso = since.date().isoformat() if since else \"\"",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "since.date().isoformat",
+    "file": "deeptutor/services/memory/trace.py"
+   },
+   {
+    "line": 57,
+    "call": "datetime.now(tz=timezone.utc).isoformat",
+    "src": "ts=datetime.now(tz=timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(tz=timezone.utc).isoformat",
+    "file": "deeptutor/services/memory/trace.py"
+   },
+   {
+    "line": 69,
+    "call": "datetime.now",
+    "src": "path = trace_file(event.surface, datetime.now(tz=timezone.utc).date())",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/trace.py"
+   },
+   {
+    "line": 57,
+    "call": "datetime.now",
+    "src": "ts=datetime.now(tz=timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/memory/trace.py"
+   }
+  ],
+  "deeptutor/services/parsing/cache.py": [
+   {
+    "line": 88,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/services/parsing/cache.py"
+   },
+   {
+    "line": 88,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/parsing/cache.py"
+   }
+  ],
+  "deeptutor/services/partner_groups/models.py": [
+   {
+    "line": 11,
+    "call": "datetime.now(UTC).isoformat",
+    "src": "return datetime.now(UTC).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(UTC).isoformat",
+    "file": "deeptutor/services/partner_groups/models.py"
+   },
+   {
+    "line": 11,
+    "call": "datetime.now",
+    "src": "return datetime.now(UTC).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/partner_groups/models.py"
+   }
+  ],
+  "deeptutor/services/partner_groups/store.py": [
+   {
+    "line": 271,
+    "call": "datetime.fromtimestamp(timestamp, UTC).isoformat",
+    "src": "created_at = datetime.fromtimestamp(timestamp, UTC).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromtimestamp(timestamp, UTC).isoformat",
+    "file": "deeptutor/services/partner_groups/store.py"
+   },
+   {
+    "line": 271,
+    "call": "datetime.fromtimestamp",
+    "src": "created_at = datetime.fromtimestamp(timestamp, UTC).isoformat()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/partner_groups/store.py"
+   }
+  ],
+  "deeptutor/services/partners/channel_onboarding.py": [
+   {
+    "line": 122,
+    "call": "self.expires_at.isoformat",
+    "src": "\"expires_at\": self.expires_at.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "self.expires_at.isoformat",
+    "file": "deeptutor/services/partners/channel_onboarding.py"
+   },
+   {
+    "line": 379,
+    "call": "datetime.now",
+    "src": "expires_at=datetime.now(timezone.utc) + timedelta(seconds=lifetime),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/partners/channel_onboarding.py"
+   },
+   {
+    "line": 411,
+    "call": "datetime.now",
+    "src": "expires_at=datetime.now(timezone.utc) + timedelta(seconds=lifetime),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/partners/channel_onboarding.py"
+   }
+  ],
+  "deeptutor/services/partners/drafts.py": [
+   {
+    "line": 77,
+    "call": "datetime.now(UTC).isoformat",
+    "src": "created_at=datetime.now(UTC).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(UTC).isoformat",
+    "file": "deeptutor/services/partners/drafts.py"
+   },
+   {
+    "line": 77,
+    "call": "datetime.now",
+    "src": "created_at=datetime.now(UTC).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/partners/drafts.py"
+   }
+  ],
+  "deeptutor/services/partners/links.py": [
+   {
+    "line": 67,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc)",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/partners/links.py"
+   },
+   {
+    "line": 121,
+    "call": "(_now() + _CODE_TTL).isoformat",
+    "src": "expires_at = (_now() + _CODE_TTL).isoformat()",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "(_now() + _CODE_TTL).isoformat",
+    "file": "deeptutor/services/partners/links.py"
+   },
+   {
+    "line": 99,
+    "call": "datetime.fromisoformat",
+    "src": "return datetime.fromisoformat(str(record.get(\"expires_at\") or \"\"))",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/services/partners/links.py"
+   },
+   {
+    "line": 157,
+    "call": "_now().isoformat",
+    "src": "\"linked_at\": _now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "_now().isoformat",
+    "file": "deeptutor/services/partners/links.py"
+   }
+  ],
+  "deeptutor/services/partners/manager.py": [
+   {
+    "line": 477,
+    "call": "self.started_at.isoformat",
+    "src": "\"started_at\": self.started_at.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "self.started_at.isoformat",
+    "file": "deeptutor/services/partners/manager.py"
+   },
+   {
+    "line": 510,
+    "call": "instance.started_at.isoformat",
+    "src": "started_at=(instance.started_at.isoformat() if instance is not None else None),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "instance.started_at.isoformat",
+    "file": "deeptutor/services/partners/manager.py"
+   }
+  ],
+  "deeptutor/services/partners/sessions.py": [
+   {
+    "line": 178,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/partners/sessions.py"
+   },
+   {
+    "line": 413,
+    "call": "datetime.fromtimestamp(path.stat().st_mtime).isoformat",
+    "src": "\"updated_at\": datetime.fromtimestamp(path.stat().st_mtime).isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.fromtimestamp(path.stat().st_mtime).isoformat",
+    "file": "deeptutor/services/partners/sessions.py"
+   },
+   {
+    "line": 229,
+    "call": "datetime.now",
+    "src": "stamp = datetime.now().strftime(\"%Y%m%d-%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/partners/sessions.py"
+   },
+   {
+    "line": 178,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/partners/sessions.py"
+   },
+   {
+    "line": 413,
+    "call": "datetime.fromtimestamp",
+    "src": "\"updated_at\": datetime.fromtimestamp(path.stat().st_mtime).isoformat(),",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/services/partners/sessions.py"
+   }
+  ],
+  "deeptutor/services/practice/analytics.py": [
+   {
+    "line": 19,
+    "call": "datetime.combine(first, datetime.min.time(), zone).timestamp",
+    "src": "start = datetime.combine(first, datetime.min.time(), zone).timestamp()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.combine(first, datetime.min.time(), zone).timestamp",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 21,
+    "call": "(first + timedelta(days=i)).isoformat",
+    "src": "(first + timedelta(days=i)).isoformat(): {\"questions\": 0, \"mistakes\": 0, \"reviews\": 0}",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "(first + timedelta(days=i)).isoformat",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 61,
+    "call": "first.isoformat",
+    "src": "\"start_date\": first.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "first.isoformat",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 62,
+    "call": "today.isoformat",
+    "src": "\"end_date\": today.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "today.isoformat",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 17,
+    "call": "datetime.fromtimestamp",
+    "src": "today = datetime.fromtimestamp(now, zone).date()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 26,
+    "call": "datetime.fromtimestamp(ts, zone).date().isoformat",
+    "src": "\"practice_day\", 1, lambda ts: datetime.fromtimestamp(ts, zone).date().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.fromtimestamp(ts, zone).date().isoformat",
+    "file": "deeptutor/services/practice/analytics.py"
+   },
+   {
+    "line": 26,
+    "call": "datetime.fromtimestamp",
+    "src": "\"practice_day\", 1, lambda ts: datetime.fromtimestamp(ts, zone).date().isoformat()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/practice/analytics.py"
+   }
+  ],
+  "deeptutor/services/practice/scheduler.py": [
+   {
+    "line": 25,
+    "call": "datetime.combine(today, time.min, zone).timestamp",
+    "src": "datetime.combine(today, time.min, zone).timestamp(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.combine(today, time.min, zone).timestamp",
+    "file": "deeptutor/services/practice/scheduler.py"
+   },
+   {
+    "line": 26,
+    "call": "datetime.combine(today + timedelta(days=1), time.min, zone).timestamp",
+    "src": "datetime.combine(today + timedelta(days=1), time.min, zone).timestamp(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.combine(today + timedelta(days=1), time.min, zone).timestamp",
+    "file": "deeptutor/services/practice/scheduler.py"
+   },
+   {
+    "line": 22,
+    "call": "datetime.fromtimestamp",
+    "src": "today = datetime.fromtimestamp(now, zone).date()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/practice/scheduler.py"
+   }
+  ],
+  "deeptutor/services/rag/index_versioning.py": [
+   {
+    "line": 318,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/services/rag/index_versioning.py"
+   },
+   {
+    "line": 318,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/rag/index_versioning.py"
+   }
+  ],
+  "deeptutor/services/rag/pipelines/graphrag/storage.py": [
+   {
+    "line": 110,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/services/rag/pipelines/graphrag/storage.py"
+   },
+   {
+    "line": 110,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/rag/pipelines/graphrag/storage.py"
+   }
+  ],
+  "deeptutor/services/rag/pipelines/lightrag/storage.py": [
+   {
+    "line": 295,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "now = datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\"",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/services/rag/pipelines/lightrag/storage.py"
+   },
+   {
+    "line": 295,
+    "call": "datetime.now",
+    "src": "now = datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\"",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/rag/pipelines/lightrag/storage.py"
+   }
+  ],
+  "deeptutor/services/rag/pipelines/pageindex/storage.py": [
+   {
+    "line": 77,
+    "call": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now(timezone.utc).replace(tzinfo=None).isoformat",
+    "file": "deeptutor/services/rag/pipelines/pageindex/storage.py"
+   },
+   {
+    "line": 106,
+    "call": "datetime.now",
+    "src": "\"submitted_at\": datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\"),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/rag/pipelines/pageindex/storage.py"
+   },
+   {
+    "line": 77,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + \"Z\",",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/rag/pipelines/pageindex/storage.py"
+   }
+  ],
+  "deeptutor/services/search/__init__.py": [
+   {
+    "line": 109,
+    "call": "datetime.now().isoformat",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/__init__.py"
+   },
+   {
+    "line": 66,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/__init__.py"
+   },
+   {
+    "line": 109,
+    "call": "datetime.now",
+    "src": "\"timestamp\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/__init__.py"
+   }
+  ],
+  "deeptutor/services/search/providers/aliyun_iqs.py": [
+   {
+    "line": 36,
+    "call": "datetime.fromtimestamp",
+    "src": "return datetime.fromtimestamp(int(value) / 1000).strftime(\"%Y-%m-%d\")",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/services/search/providers/aliyun_iqs.py"
+   },
+   {
+    "line": 154,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/aliyun_iqs.py"
+   },
+   {
+    "line": 154,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/aliyun_iqs.py"
+   }
+  ],
+  "deeptutor/services/search/providers/bocha.py": [
+   {
+    "line": 127,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/bocha.py"
+   },
+   {
+    "line": 127,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/bocha.py"
+   }
+  ],
+  "deeptutor/services/search/providers/brave.py": [
+   {
+    "line": 72,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/brave.py"
+   },
+   {
+    "line": 72,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/brave.py"
+   }
+  ],
+  "deeptutor/services/search/providers/doubao.py": [
+   {
+    "line": 170,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/doubao.py"
+   },
+   {
+    "line": 170,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/doubao.py"
+   }
+  ],
+  "deeptutor/services/search/providers/duckduckgo.py": [
+   {
+    "line": 60,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/duckduckgo.py"
+   },
+   {
+    "line": 60,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/duckduckgo.py"
+   }
+  ],
+  "deeptutor/services/search/providers/firecrawl.py": [
+   {
+    "line": 130,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/firecrawl.py"
+   },
+   {
+    "line": 130,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/firecrawl.py"
+   }
+  ],
+  "deeptutor/services/search/providers/jina.py": [
+   {
+    "line": 162,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/jina.py"
+   },
+   {
+    "line": 162,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/jina.py"
+   }
+  ],
+  "deeptutor/services/search/providers/perplexity.py": [
+   {
+    "line": 147,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/perplexity.py"
+   },
+   {
+    "line": 147,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/perplexity.py"
+   }
+  ],
+  "deeptutor/services/search/providers/qianfan.py": [
+   {
+    "line": 144,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/qianfan.py"
+   },
+   {
+    "line": 144,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/qianfan.py"
+   }
+  ],
+  "deeptutor/services/search/providers/searxng.py": [
+   {
+    "line": 99,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/searxng.py"
+   },
+   {
+    "line": 99,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/searxng.py"
+   }
+  ],
+  "deeptutor/services/search/providers/serper.py": [
+   {
+    "line": 209,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/serper.py"
+   },
+   {
+    "line": 209,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/serper.py"
+   }
+  ],
+  "deeptutor/services/search/providers/serply.py": [
+   {
+    "line": 115,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/serply.py"
+   },
+   {
+    "line": 115,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/serply.py"
+   }
+  ],
+  "deeptutor/services/search/providers/tavily.py": [
+   {
+    "line": 154,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/tavily.py"
+   },
+   {
+    "line": 154,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/tavily.py"
+   }
+  ],
+  "deeptutor/services/search/providers/zhipu.py": [
+   {
+    "line": 137,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/providers/zhipu.py"
+   },
+   {
+    "line": 137,
+    "call": "datetime.now",
+    "src": "timestamp=datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/providers/zhipu.py"
+   }
+  ],
+  "deeptutor/services/search/types.py": [
+   {
+    "line": 54,
+    "call": "datetime.now().isoformat",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/services/search/types.py"
+   },
+   {
+    "line": 54,
+    "call": "datetime.now",
+    "src": "timestamp: str = field(default_factory=lambda: datetime.now().isoformat())",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/search/types.py"
+   }
+  ],
+  "deeptutor/services/session/legacy_migration.py": [
+   {
+    "line": 60,
+    "call": "datetime.now",
+    "src": "return datetime.now(UTC).strftime(\"%Y%m%dT%H%M%SZ\")",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/session/legacy_migration.py"
+   },
+   {
+    "line": 217,
+    "call": "datetime.now(UTC).isoformat",
+    "src": "\"completed_at\": datetime.now(UTC).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(UTC).isoformat",
+    "file": "deeptutor/services/session/legacy_migration.py"
+   },
+   {
+    "line": 217,
+    "call": "datetime.now",
+    "src": "\"completed_at\": datetime.now(UTC).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/session/legacy_migration.py"
+   }
+  ],
+  "deeptutor/services/session/pocketbase_store.py": [
+   {
+    "line": 98,
+    "call": "datetime.fromisoformat(value.replace('Z', '+00:00')).timestamp",
+    "src": "return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).timestamp()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.fromisoformat(value.replace('Z', '+00:00')).timestamp",
+    "file": "deeptutor/services/session/pocketbase_store.py"
+   },
+   {
+    "line": 98,
+    "call": "datetime.fromisoformat",
+    "src": "return datetime.fromisoformat(value.replace(\"Z\", \"+00:00\")).timestamp()",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(Z-normalized)",
+    "file": "deeptutor/services/session/pocketbase_store.py"
+   }
+  ],
+  "deeptutor/services/session/usage_statistics.py": [
+   {
+    "line": 169,
+    "call": "day.isoformat",
+    "src": "key = day.isoformat()",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "day.isoformat",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 181,
+    "call": "datetime.fromtimestamp(stamp, zone).date().isoformat",
+    "src": "key = datetime.fromtimestamp(stamp, zone).date().isoformat()",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.fromtimestamp(stamp, zone).date().isoformat",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 237,
+    "call": "datetime.now().timestamp",
+    "src": "updated_at=datetime.now().timestamp(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().timestamp",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 179,
+    "call": "start.timestamp",
+    "src": "if not start.timestamp() <= stamp < end.timestamp():",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "start.timestamp",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 179,
+    "call": "end.timestamp",
+    "src": "if not start.timestamp() <= stamp < end.timestamp():",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "end.timestamp",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 237,
+    "call": "datetime.now",
+    "src": "updated_at=datetime.now().timestamp(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   },
+   {
+    "line": 181,
+    "call": "datetime.fromtimestamp",
+    "src": "key = datetime.fromtimestamp(stamp, zone).date().isoformat()",
+    "kind": "aware",
+    "pattern": "fromtimestamp(tz)",
+    "file": "deeptutor/services/session/usage_statistics.py"
+   }
+  ],
+  "deeptutor/services/skill/hub.py": [
+   {
+    "line": 759,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"installed_at\": datetime.now(timezone.utc).isoformat(timespec=\"seconds\"),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/skill/hub.py"
+   },
+   {
+    "line": 759,
+    "call": "datetime.now",
+    "src": "\"installed_at\": datetime.now(timezone.utc).isoformat(timespec=\"seconds\"),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/skill/hub.py"
+   }
+  ],
+  "deeptutor/services/subagent/claude_models.py": [
+   {
+    "line": 88,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "fetched_at = datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/subagent/claude_models.py"
+   },
+   {
+    "line": 88,
+    "call": "datetime.now",
+    "src": "fetched_at = datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/subagent/claude_models.py"
+   }
+  ],
+  "deeptutor/services/task_board.py": [
+   {
+    "line": 101,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "now = datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/task_board.py"
+   },
+   {
+    "line": 101,
+    "call": "datetime.now",
+    "src": "now = datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/task_board.py"
+   },
+   {
+    "line": 130,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/task_board.py"
+   },
+   {
+    "line": 130,
+    "call": "datetime.now",
+    "src": "datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/task_board.py"
+   }
+  ],
+  "deeptutor/services/web_source/sync.py": [
+   {
+    "line": 46,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/web_source/sync.py"
+   },
+   {
+    "line": 46,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/web_source/sync.py"
+   }
+  ],
+  "deeptutor/services/workspace/catalog.py": [
+   {
+    "line": 36,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/workspace/catalog.py"
+   },
+   {
+    "line": 36,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/workspace/catalog.py"
+   }
+  ],
+  "deeptutor/services/workspace/data_migration.py": [
+   {
+    "line": 544,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/workspace/data_migration.py"
+   },
+   {
+    "line": 583,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"created_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/workspace/data_migration.py"
+   },
+   {
+    "line": 544,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/workspace/data_migration.py"
+   },
+   {
+    "line": 583,
+    "call": "datetime.now",
+    "src": "\"created_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/workspace/data_migration.py"
+   }
+  ],
+  "deeptutor/services/workspace/service.py": [
+   {
+    "line": 37,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/workspace/service.py"
+   },
+   {
+    "line": 37,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/workspace/service.py"
+   }
+  ],
+  "deeptutor/services/workspace/snapshot.py": [
+   {
+    "line": 112,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"generated_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/services/workspace/snapshot.py"
+   },
+   {
+    "line": 112,
+    "call": "datetime.now",
+    "src": "\"generated_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/services/workspace/snapshot.py"
+   }
+  ],
+  "deeptutor/tools/cron_tool.py": [
+   {
+    "line": 49,
+    "call": "datetime.fromisoformat",
+    "src": "parsed = datetime.fromisoformat(value)",
+    "kind": "naive-or-aware",
+    "pattern": "fromisoformat(unknown-tz)",
+    "file": "deeptutor/tools/cron_tool.py"
+   },
+   {
+    "line": 56,
+    "call": "parsed.timestamp",
+    "src": "return int(parsed.timestamp() * 1000)",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "parsed.timestamp",
+    "file": "deeptutor/tools/cron_tool.py"
+   },
+   {
+    "line": 27,
+    "call": "datetime.fromtimestamp",
+    "src": "return datetime.fromtimestamp(ms / 1000).astimezone().strftime(\"%Y-%m-%d %H:%M %Z\")",
+    "kind": "naive-local",
+    "pattern": "fromtimestamp(no-tz)",
+    "file": "deeptutor/tools/cron_tool.py"
+   }
+  ],
+  "deeptutor/tools/paper_search_tool.py": [
+   {
+    "line": 82,
+    "call": "datetime.now",
+    "src": "current_year = datetime.now().year",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/tools/paper_search_tool.py"
+   },
+   {
+    "line": 132,
+    "call": "published_date.isoformat",
+    "src": "\"published\": published_date.isoformat(),",
+    "kind": "serializer",
+    "tz": "unknown",
+    "pattern": "published_date.isoformat",
+    "file": "deeptutor/tools/paper_search_tool.py"
+   }
+  ],
+  "deeptutor/tools/question/question_extractor.py": [
+   {
+    "line": 301,
+    "call": "datetime.now().isoformat",
+    "src": "\"extraction_time\": datetime.now().isoformat(),",
+    "kind": "serializer",
+    "tz": "naive",
+    "pattern": "datetime.now().isoformat",
+    "file": "deeptutor/tools/question/question_extractor.py"
+   },
+   {
+    "line": 297,
+    "call": "datetime.now",
+    "src": "timestamp = datetime.now().strftime(\"%Y%m%d_%H%M%S\")",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/tools/question/question_extractor.py"
+   },
+   {
+    "line": 301,
+    "call": "datetime.now",
+    "src": "\"extraction_time\": datetime.now().isoformat(),",
+    "kind": "naive",
+    "pattern": "datetime.now()",
+    "file": "deeptutor/tools/question/question_extractor.py"
+   }
+  ],
+  "deeptutor/video_learning/invidious_account.py": [
+   {
+    "line": 186,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"connected_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/video_learning/invidious_account.py"
+   },
+   {
+    "line": 166,
+    "call": "datetime.now(timezone.utc).timestamp",
+    "src": "return not (isinstance(expire, int) and expire <= datetime.now(timezone.utc).timestamp())",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).timestamp",
+    "file": "deeptutor/video_learning/invidious_account.py"
+   },
+   {
+    "line": 186,
+    "call": "datetime.now",
+    "src": "\"connected_at\": datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/video_learning/invidious_account.py"
+   },
+   {
+    "line": 166,
+    "call": "datetime.now",
+    "src": "return not (isinstance(expire, int) and expire <= datetime.now(timezone.utc).timestamp())",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/video_learning/invidious_account.py"
+   }
+  ],
+  "deeptutor/video_learning/marks.py": [
+   {
+    "line": 31,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/video_learning/marks.py"
+   },
+   {
+    "line": 31,
+    "call": "datetime.now",
+    "src": "return datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/video_learning/marks.py"
+   }
+  ],
+  "deeptutor/video_learning/service.py": [
+   {
+    "line": 366,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "payload[\"updated_at\"] = datetime.now(timezone.utc).isoformat()",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/video_learning/service.py"
+   },
+   {
+    "line": 646,
+    "call": "datetime.now(timezone.utc).isoformat",
+    "src": "\"created_at\": existing.get(\"created_at\") or datetime.now(timezone.utc).isoformat(),",
+    "kind": "serializer",
+    "tz": "aware",
+    "pattern": "datetime.now(timezone.utc).isoformat",
+    "file": "deeptutor/video_learning/service.py"
+   },
+   {
+    "line": 366,
+    "call": "datetime.now",
+    "src": "payload[\"updated_at\"] = datetime.now(timezone.utc).isoformat()",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/video_learning/service.py"
+   },
+   {
+    "line": 646,
+    "call": "datetime.now",
+    "src": "\"created_at\": existing.get(\"created_at\") or datetime.now(timezone.utc).isoformat(),",
+    "kind": "aware",
+    "pattern": "datetime.now(tz)",
+    "file": "deeptutor/video_learning/service.py"
+   }
+  ]
+ },
+ "mixing_candidates": [
+  {
+   "file": "deeptutor/api/routers/knowledge.py",
+   "line": 4387,
+   "ops": [
+    "Sub"
+   ],
+   "sides": [
+    "datetime.now",
+    "datetime.fromisoformat"
+   ],
+   "src": "age = (datetime.now() - datetime.fromisoformat(ts)).total_seconds()"
+  }
+ ]
+}
