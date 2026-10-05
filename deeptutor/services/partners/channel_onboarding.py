@@ -47,6 +47,20 @@ class _InvalidProviderResponse(ChannelOnboardingError):
     """A provider response no longer matches the expected protocol."""
 
 
+@dataclass(frozen=True)
+class _PollOutcome:
+    """Result of one provider poll, committed later under the session lock.
+
+    A poll runs its network request without holding any lock, so its result
+    is applied to the session only in a later short critical section.
+    """
+
+    status: OnboardingStatus | None = None
+    error_code: str | None = None
+    credentials: dict[str, str] | None = None
+    feishu_domain: str | None = None
+
+
 _FEISHU_ACCOUNTS_URLS = {
     "feishu": "https://accounts.feishu.cn",
     "lark": "https://accounts.larksuite.com",
@@ -108,6 +122,7 @@ class OnboardingSession:
     error_code: str | None = None
     terminal_at: float | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
+    poll_in_flight: bool = field(default=False, repr=False)
 
     def public_dict(self) -> dict[str, Any]:
         return {
@@ -157,19 +172,34 @@ class ChannelOnboardingManager:
     async def start(self, partner_id: str, channel: ChannelName) -> dict[str, Any]:
         if channel not in ("feishu", "wecom"):
             raise ChannelOnboardingError("Unsupported onboarding channel")
+        key = (partner_id, channel)
         async with self._keys_lock:
             await self._purge_expired_locked()
-            key = (partner_id, channel)
+            existing: OnboardingSession | None = None
             active_id = self._active_by_key.get(key)
             if active_id:
                 session = self._sessions.get(active_id)
                 if session and self._now() < session.deadline_monotonic:
-                    return session.public_dict()
-                if session:
-                    session.finish("expired")
+                    existing = session
+                else:
+                    if session:
+                        session.finish("expired")
                     self._active_by_key.pop(key, None)
+        if existing is not None:
+            return existing.public_dict()
 
-            session = await self._start_session(partner_id, channel)
+        # Provider registration runs outside the registry lock so a slow or
+        # hung Feishu/WeCom request cannot stall every other partner.
+        session = await self._start_session(partner_id, channel)
+        async with self._keys_lock:
+            active_id = self._active_by_key.get(key)
+            current = self._sessions.get(active_id) if active_id else None
+            if current is not None and current is not session:
+                if self._now() < current.deadline_monotonic:
+                    # A concurrent start() already registered a live session.
+                    return current.public_dict()
+                if current.terminal_at is None:
+                    current.finish("expired")
             self._sessions[session.session_id] = session
             self._active_by_key[key] = session.session_id
             return session.public_dict()
@@ -184,10 +214,27 @@ class ChannelOnboardingManager:
                 session.finish("expired")
                 self._active_by_key.pop((session.partner_id, session.channel), None)
                 return session.public_dict()
-            if session.status == "pending_scan":
-                await self._poll(session)
+            poll_now = session.status == "pending_scan" and not session.poll_in_flight
+            if not poll_now:
+                # Another status call is already polling this session; report
+                # the current state instead of queueing behind its network I/O.
+                self._maybe_cleanup(session)
+                return session.public_dict()
+            session.poll_in_flight = True
+
+        # The poll performs its network request without holding the session
+        # lock; its result is committed below in a short critical section.
+        try:
+            outcome = await self._poll(session)
+        except BaseException:
+            async with session.lock:
+                session.poll_in_flight = False
+            raise
+        async with session.lock:
+            session.poll_in_flight = False
+            self._apply_poll(session, outcome)
             self._maybe_cleanup(session)
-            return session.public_dict()
+        return session.public_dict()
 
     async def cancel(self, partner_id: str, session_id: str) -> dict[str, Any]:
         session = self._get_session(partner_id, session_id)
@@ -412,13 +459,27 @@ class ChannelOnboardingManager:
             wecom_scode=scode,
         )
 
-    async def _poll(self, session: OnboardingSession) -> None:
+    async def _poll(self, session: OnboardingSession) -> _PollOutcome:
         if session.channel == "feishu":
-            await self._poll_feishu(session)
-        else:
-            await self._poll_wecom(session)
+            return await self._poll_feishu(session)
+        return await self._poll_wecom(session)
 
-    async def _poll_feishu(self, session: OnboardingSession) -> None:
+    def _apply_poll(self, session: OnboardingSession, outcome: _PollOutcome) -> None:
+        # Drop results that raced a concurrent transition (for example a
+        # cancel or expiry while the poll was in flight): terminal states and
+        # ready credentials must not be overwritten by a stale poll.
+        if session.status != "pending_scan":
+            return
+        if outcome.feishu_domain:
+            session.feishu_domain = outcome.feishu_domain
+        if outcome.status == "ready":
+            session.credentials = dict(outcome.credentials or {})
+            session.status = "ready"
+        elif outcome.status is not None:
+            session.finish(outcome.status, error_code=outcome.error_code)
+            self._active_by_key.pop((session.partner_id, session.channel), None)
+
+    async def _poll_feishu(self, session: OnboardingSession) -> _PollOutcome:
         assert session.feishu_device_code is not None
         base_url = _FEISHU_ACCOUNTS_URLS[session.feishu_domain]
         try:
@@ -435,44 +496,42 @@ class ChannelOnboardingManager:
         except _ProviderRequestError:
             # Hermes treats polling transport failures as retryable. The next
             # status request polls again.
-            return
+            return _PollOutcome()
         except ChannelOnboardingError:
-            session.finish("failed", error_code="invalid_response")
-            self._active_by_key.pop((session.partner_id, "feishu"), None)
-            return
+            return _PollOutcome(status="failed", error_code="invalid_response")
 
         user_info = result.get("user_info")
         user_info = user_info if isinstance(user_info, dict) else {}
-        if user_info.get("tenant_brand") == "lark":
-            session.feishu_domain = "lark"
+        domain = "lark" if user_info.get("tenant_brand") == "lark" else None
 
         app_id = str(result.get("client_id") or "")
         app_secret = str(result.get("client_secret") or "")
         open_id = str(user_info.get("open_id") or "")
         if app_id and app_secret:
             if not open_id:
-                session.finish("failed", error_code="missing_open_id")
-                self._active_by_key.pop((session.partner_id, "feishu"), None)
-                return
-            session.credentials = {
-                "app_id": app_id,
-                "app_secret": app_secret,
-                "open_id": open_id,
-            }
-            session.status = "ready"
-            return
+                return _PollOutcome(
+                    status="failed", error_code="missing_open_id", feishu_domain=domain
+                )
+            return _PollOutcome(
+                status="ready",
+                credentials={
+                    "app_id": app_id,
+                    "app_secret": app_secret,
+                    "open_id": open_id,
+                },
+                feishu_domain=domain,
+            )
 
         error = str(result.get("error") or "")
         if error == "access_denied":
-            session.finish("denied", error_code="access_denied")
-            self._active_by_key.pop((session.partner_id, "feishu"), None)
-        elif error == "expired_token":
-            session.finish("expired", error_code="expired_token")
-            self._active_by_key.pop((session.partner_id, "feishu"), None)
+            return _PollOutcome(status="denied", error_code="access_denied", feishu_domain=domain)
+        if error == "expired_token":
+            return _PollOutcome(status="expired", error_code="expired_token", feishu_domain=domain)
         # authorization_pending and unrecognized protocol values remain
         # retryable until Feishu returns credentials or a terminal error.
+        return _PollOutcome(feishu_domain=domain)
 
-    async def _poll_wecom(self, session: OnboardingSession) -> None:
+    async def _poll_wecom(self, session: OnboardingSession) -> _PollOutcome:
         assert session.wecom_scode is not None
         try:
             async with self._client_factory() as client:
@@ -489,38 +548,29 @@ class ChannelOnboardingManager:
                         "WeCom returned an unexpected response"
                     ) from None
         except httpx.HTTPStatusError:
-            session.finish("failed", error_code="provider_http_error")
-            self._active_by_key.pop((session.partner_id, "wecom"), None)
-            return
+            return _PollOutcome(status="failed", error_code="provider_http_error")
         except httpx.RequestError:
-            return
+            return _PollOutcome()
         except _InvalidProviderResponse:
-            session.finish("failed", error_code="invalid_response")
-            self._active_by_key.pop((session.partner_id, "wecom"), None)
-            return
+            return _PollOutcome(status="failed", error_code="invalid_response")
 
         data = result.get("data")
         data = data if isinstance(data, dict) else {}
         status = str(data.get("status") or "").lower()
         if not status:
-            session.finish("failed", error_code="invalid_response")
-            self._active_by_key.pop((session.partner_id, "wecom"), None)
-            return
+            return _PollOutcome(status="failed", error_code="invalid_response")
         if status != "success":
             # The console endpoint does not document its intermediate values;
             # anything other than success remains retryable until expiration.
-            return
+            return _PollOutcome()
 
         bot_info = data.get("bot_info")
         bot_info = bot_info if isinstance(bot_info, dict) else {}
         bot_id = str(bot_info.get("botid") or bot_info.get("bot_id") or "")
         secret = str(bot_info.get("secret") or "")
         if not bot_id or not secret:
-            session.finish("failed", error_code="missing_credentials")
-            self._active_by_key.pop((session.partner_id, "wecom"), None)
-            return
-        session.credentials = {"bot_id": bot_id, "secret": secret}
-        session.status = "ready"
+            return _PollOutcome(status="failed", error_code="missing_credentials")
+        return _PollOutcome(status="ready", credentials={"bot_id": bot_id, "secret": secret})
 
     async def _post_feishu(
         self, client: httpx.AsyncClient, base_url: str, form: dict[str, str]
