@@ -1,0 +1,1518 @@
+{
+ "date": "2026-10-05",
+ "repo": "HKUDS/DeepTutor",
+ "scope": "all up-* cards in backlog jsonl files",
+ "totals": {
+  "可用": 30,
+  "需改派": 3,
+  "已过时": 26
+ },
+ "by_file": {
+  "deeptour.auto.jsonl": {
+   "可用": 29,
+   "需改派": 3,
+   "已过时": 19,
+   "total": 51
+  },
+  "deeptour.jsonl": {
+   "可用": 1,
+   "需改派": 0,
+   "已过时": 7,
+   "total": 8
+  }
+ },
+ "cards": [
+  {
+   "key": "up-1410",
+   "file": "deeptour.auto.jsonl",
+   "line": 2,
+   "title": "fix(upstream): chat history lost inside session, only latest few remain (#1410)",
+   "primary_issue": 1410,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1723
+   ],
+   "pr_states": {
+    "1723": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1410 仍开放，无已合并修复；交叉引用中出现的开放 PR #1723 仅在描述里提及 #1410，并非其实现",
+   "consumed": false
+  },
+  {
+   "key": "up-1610",
+   "file": "deeptour.auto.jsonl",
+   "line": 33,
+   "title": "fix(upstream): 教材图表 grounding 突破 64 张上限，截断可配置可观测（#1610）",
+   "primary_issue": 1610,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1695
+   ],
+   "pr_states": {
+    "1695": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1610 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-575",
+   "file": "deeptour.auto.jsonl",
+   "line": 34,
+   "title": "fix(upstream): 聊天内出题与错题未写入题库（#575）",
+   "primary_issue": 575,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #575 仍开放，无关联 PR，无合并修复（注：myfork 已有分支 glm-reserve/up-575 在途）",
+   "consumed": false
+  },
+  {
+   "key": "up-440",
+   "file": "deeptour.auto.jsonl",
+   "line": 35,
+   "title": "fix(upstream): invalid_embedding_index 搜索失败给出可操作错误与重建指引（#440）",
+   "primary_issue": 440,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1702
+   ],
+   "pr_states": {
+    "1702": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #440 仍开放，无关联 PR，无合并修复（注：myfork 已有分支 glm-reserve/up-440 在途）",
+   "consumed": false
+  },
+  {
+   "key": "up-1481",
+   "file": "deeptour.auto.jsonl",
+   "line": 79,
+   "title": "verify(upstream): 验证空知识库首次上传修复 PR #1488 是否闭环 (#1481)",
+   "primary_issue": 1481,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1488
+   ],
+   "pr_states": {
+    "1488": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复 PR #1488 已合并(dev, 2026-09-23)，「是否真正闭环」的验证仍待执行；issue #1481 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1478",
+   "file": "deeptour.auto.jsonl",
+   "line": 80,
+   "title": "verify(upstream): 验证 LlamaIndex 超时泄漏进度修复 PR #1480 是否闭环 (#1478)",
+   "primary_issue": 1478,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1480
+   ],
+   "pr_states": {
+    "1480": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复 PR #1480 已合并(dev, 2026-09-23)，验证仍待执行；issue #1478 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1359",
+   "file": "deeptour.auto.jsonl",
+   "line": 81,
+   "title": "verify(upstream): 验证 ask_user 卡片锁死主对话修复链是否闭环 (#1359)",
+   "primary_issue": 1359,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1363,
+    1373,
+    1413
+   ],
+   "pr_states": {
+    "1373": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T02:23:18Z"
+    },
+    "1363": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1413": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-13T17:28:23Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复链 PR #1373(2026-09-23)/#1413(2026-09-13) 已合并，验证仍待执行；issue #1359 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1228",
+   "file": "deeptour.auto.jsonl",
+   "line": 82,
+   "title": "verify(upstream): 验证学习者课程 403 修复 PR #1231 是否闭环 (#1228)",
+   "primary_issue": 1228,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1231
+   ],
+   "pr_states": {
+    "1231": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-07T15:48:00Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复 PR #1231 已合并(dev, 2026-09-07)，验证仍待执行；issue #1228 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1223",
+   "file": "deeptour.auto.jsonl",
+   "line": 83,
+   "title": "verify(upstream): 验证聊天 PDF 附件工具报错修复链是否闭环 (#1223)",
+   "primary_issue": 1223,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1266,
+    1333,
+    1443
+   ],
+   "pr_states": {
+    "1266": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-07T15:57:34Z"
+    },
+    "1333": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-10T15:44:31Z"
+    },
+    "1443": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-13T17:43:31Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复链 PR #1266/#1333/#1443 均已合并(dev)，验证仍待执行；issue #1223 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1421",
+   "file": "deeptour.auto.jsonl",
+   "line": 84,
+   "title": "verify(upstream): 验证首句卡循环修复 PR #1436 是否闭环 (#1421)",
+   "primary_issue": 1421,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1436
+   ],
+   "pr_states": {
+    "1436": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-13T17:28:28Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "验证卡：修复 PR #1436 已合并(dev, 2026-09-13)，验证仍待执行；issue #1421 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1447",
+   "file": "deeptour.auto.jsonl",
+   "line": 95,
+   "title": "fix(upstream): EPUB 排版工具栏与阅读主题（#1447 未认领切片）",
+   "primary_issue": 1447,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1237,
+    1455,
+    1472
+   ],
+   "pr_states": {
+    "1237": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1472": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    },
+    "1455": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1447 仍开放；切片 PR #1472 已合并(2026-09-23)、#1237 已关闭未合并，剩余切片仍可执行",
+   "consumed": false
+  },
+  {
+   "key": "up-451",
+   "file": "deeptour.auto.jsonl",
+   "line": 97,
+   "title": "fix(upstream): 周期性 LLM 健康检查可禁用与可配置 (#451)",
+   "primary_issue": 451,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    458,
+    460,
+    560,
+    1221,
+    1724
+   ],
+   "pr_states": {
+    "1221": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    },
+    "458": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "460": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "560": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1724": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #451 仍开放；在途开放 PR #1221(base=dev) 与 #1724(我方分支, base=main)，开工前需协调避免重复",
+   "consumed": false
+  },
+  {
+   "key": "up-1209",
+   "file": "deeptour.auto.jsonl",
+   "line": 99,
+   "title": "fix(upstream): 设置 value-free profile 导出（#1209 切片）",
+   "primary_issue": 1209,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1381,
+    1383
+   ],
+   "pr_states": {
+    "1381": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    },
+    "1383": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1209(提案) 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1303",
+   "file": "deeptour.auto.jsonl",
+   "line": 100,
+   "title": "fix(upstream): .bib 结构化解析入知识库（#1303 切片一）",
+   "primary_issue": 1303,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1304,
+    1371
+   ],
+   "pr_states": {
+    "1304": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    },
+    "1371": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1303(提案) 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1220",
+   "file": "deeptour.auto.jsonl",
+   "line": 101,
+   "title": "review(upstream): 复核 init/doctor 探测 token 预算 PR #1221 与 #1694 (#1220)",
+   "primary_issue": 1220,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1221,
+    1285,
+    1401,
+    1694
+   ],
+   "pr_states": {
+    "1221": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    },
+    "1694": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T05:43:13Z"
+    },
+    "1285": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1401": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-13T17:43:27Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "复核卡：目标 PR #1221 仍开放；#1694 已合并(dev, 2026-10-04)，复核范围缩减至 #1221（#1694 可作对照）",
+   "consumed": false
+  },
+  {
+   "key": "up-1176",
+   "file": "deeptour.auto.jsonl",
+   "line": 102,
+   "title": "review(upstream): 复核回复语言与 UI locale 解耦 PR #1270 (#1176)",
+   "primary_issue": 1176,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1179,
+    1270,
+    1345
+   ],
+   "pr_states": {
+    "1270": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    },
+    "1179": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1345": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "可用",
+   "reason": "复核卡：目标 PR #1270 仍开放（另 #1345 已合并 2026-09-23 可作对照）；issue #1176 仍开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1696",
+   "file": "deeptour.auto.jsonl",
+   "line": 103,
+   "title": "review(upstream): 复核 Windows 路径分隔符契约测试修复 PR #1698 (#1696)",
+   "primary_issue": 1696,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1697,
+    1698
+   ],
+   "pr_states": {
+    "1698": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    },
+    "1697": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "复核卡：目标 PR #1698 仍开放（我方分支，base=dev）；issue #1696 已关闭(completed)",
+   "consumed": false
+  },
+  {
+   "key": "up-932",
+   "file": "deeptour.auto.jsonl",
+   "line": 133,
+   "title": "fix(upstream): 章节级角色/实体关系图谱（#932）",
+   "primary_issue": 932,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1061
+   ],
+   "pr_states": {
+    "1061": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #932(提案) 仍开放；前次 PR #1061 已关闭未合并(2026-10-04)，可重新执行",
+   "consumed": false
+  },
+  {
+   "key": "up-916",
+   "file": "deeptour.auto.jsonl",
+   "line": 134,
+   "title": "fix(upstream): 双语阅读移动端导航收敛与词典底部卡片（#916 剩余切片）",
+   "primary_issue": 916,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    917,
+    1464
+   ],
+   "pr_states": {
+    "1464": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    },
+    "917": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #916(提案) 仍开放；部分切片 PR #1464 已合并(2026-09-23)，剩余切片在途开放 PR #1734(我方分支)",
+   "consumed": false
+  },
+  {
+   "key": "up-860",
+   "file": "deeptour.auto.jsonl",
+   "line": 135,
+   "title": "fix(upstream): 双语 EPUB 共享进度与对齐选区展示（#860 剩余切片）",
+   "primary_issue": 860,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    917,
+    979
+   ],
+   "pr_states": {
+    "917": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    },
+    "979": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #860(提案) 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-961",
+   "file": "deeptour.auto.jsonl",
+   "line": 136,
+   "title": "fix(upstream): 词典类学习资源 provider 契约与生命周期（#961 切片一）",
+   "primary_issue": 961,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1309,
+    1377
+   ],
+   "pr_states": {
+    "1309": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1377": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #961(提案) 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1307",
+   "file": "deeptour.auto.jsonl",
+   "line": 137,
+   "title": "fix(upstream): 插件清单 schema 校验与注册表门控（#1307 切片一）",
+   "primary_issue": 1307,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1309
+   ],
+   "pr_states": {
+    "1309": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1307(提案) 仍开放；前次 PR #1309 已关闭未合并(2026-10-04)，可重新执行",
+   "consumed": false
+  },
+  {
+   "key": "up-403",
+   "file": "deeptour.auto.jsonl",
+   "line": 138,
+   "title": "fix(upstream): Projects 数据模型与 CRUD API（#403 切片一）",
+   "primary_issue": 403,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #403 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1611",
+   "file": "deeptour.auto.jsonl",
+   "line": 173,
+   "title": "fix(upstream): 图源教学与视觉练习垂直切片 (#1611)",
+   "primary_issue": 1611,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #1611 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-655",
+   "file": "deeptour.auto.jsonl",
+   "line": 174,
+   "title": "fix(upstream): 书籍/笔记章节逐章生成与断点续作 (#655)",
+   "primary_issue": 655,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #655 仍开放，无关联 PR，无合并修复（注：myfork 已有分支 glm-reserve/up-655 在途）",
+   "consumed": false
+  },
+  {
+   "key": "up-684",
+   "file": "deeptour.auto.jsonl",
+   "line": 175,
+   "title": "fix(upstream): 多语言集成切片：德语 UI 与提示语 locale (#684)",
+   "primary_issue": 684,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #684 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1236",
+   "file": "deeptour.auto.jsonl",
+   "line": 176,
+   "title": "fix(upstream): EPUB 响应式书页排版 (#1236)",
+   "primary_issue": 1236,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1237
+   ],
+   "pr_states": {
+    "1237": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "可用",
+   "reason": "issue #1236(提案) 仍开放；前次 PR #1237 已关闭未合并(2026-10-04)，可重新执行",
+   "consumed": false
+  },
+  {
+   "key": "up-1629",
+   "file": "deeptour.auto.jsonl",
+   "line": 177,
+   "title": "fix(upstream): 科研原语切片：arXiv 检索导入工具 (#1629)",
+   "primary_issue": 1629,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #1629 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1779",
+   "file": "deeptour.auto.jsonl",
+   "line": 213,
+   "title": "fix(upstream): EmbeddingClient 进程级全局锁在 batch_delay=0 时仍串行化所有 embedding 请求 (#1779)",
+   "primary_issue": 1779,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #1779 仍开放（2026-10 新增），无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1641",
+   "file": "deeptour.jsonl",
+   "line": 10,
+   "title": "fix(upstream): fresh .md uploads open as a single page in Immersive Reading (#1641)",
+   "primary_issue": 1641,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [],
+   "pr_states": {},
+   "verdict": "可用",
+   "reason": "issue #1641 仍开放，无关联 PR，无合并修复",
+   "consumed": false
+  },
+  {
+   "key": "up-1215",
+   "file": "deeptour.auto.jsonl",
+   "line": 78,
+   "title": "review(upstream): 复核 dev 路由预算恢复 PR #1216 (#1215)",
+   "primary_issue": 1215,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    15,
+    1185,
+    1214,
+    1216,
+    1219,
+    1239
+   ],
+   "pr_states": {
+    "1214": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1216": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "15": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    },
+    "1185": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1219": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    },
+    "1239": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "需改派",
+   "reason": "复核对象 PR #1216 已关闭未合并(2026-10-04)，跟踪 issue #1215 仍开放；存在后继 PR #1219（开放，base=dev）可改指",
+   "consumed": false
+  },
+  {
+   "key": "up-1389",
+   "file": "deeptour.auto.jsonl",
+   "line": 96,
+   "title": "fix(upstream): 聊天会话回收站（软删除/恢复/彻底删除）(#1389)",
+   "primary_issue": 1389,
+   "issue_state": "open",
+   "issue_state_reason": "reopened",
+   "referenced_prs": [
+    1398,
+    1615
+   ],
+   "pr_states": {
+    "1398": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-13T17:43:35Z"
+    },
+    "1615": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:02:15Z"
+    }
+   },
+   "verdict": "需改派",
+   "reason": "回收站主体已由 PR #1398(2026-09-13) 与 #1615(2026-10-04) 合并落地，但 issue #1389 关闭后又重开，仍有残留问题；卡面需按重开后范围改写",
+   "consumed": false
+  },
+  {
+   "key": "up-1419",
+   "file": "deeptour.auto.jsonl",
+   "line": 104,
+   "title": "review(upstream): 复核 age-aware 阅读按钮草稿 PR #1420 (#1419)",
+   "primary_issue": 1419,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1420
+   ],
+   "pr_states": {
+    "1420": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "需改派",
+   "reason": "复核对象 PR #1420 已关闭未合并(2026-10-04)，跟踪 issue #1419 仍开放；需重新定位草稿或放弃",
+   "consumed": false
+  },
+  {
+   "key": "up-1691",
+   "file": "deeptour.auto.jsonl",
+   "line": 1,
+   "title": "fix(upstream): Mastery quiz answers are all A (#1691)",
+   "primary_issue": 1691,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1692
+   ],
+   "pr_states": {
+    "1692": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T05:48:07Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1691 已关闭(completed)；修复 PR #1692 已合并(dev, 2026-10-04)",
+   "consumed": false
+  },
+  {
+   "key": "up-1390",
+   "file": "deeptour.auto.jsonl",
+   "line": 3,
+   "title": "feat(upstream): resend button for failed chat requests (#1390)",
+   "primary_issue": 1390,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1394
+   ],
+   "pr_states": {
+    "1394": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1390 仍开放但 PR #1394 已合并(dev, 2026-09-23)，正文含 Closes #1390（PR 合入 dev≠默认分支，issue 未自动关闭）",
+   "consumed": false
+  },
+  {
+   "key": "up-1336",
+   "file": "deeptour.auto.jsonl",
+   "line": 4,
+   "title": "feat(upstream): surface note edit entry in Notebook UI (#1336)",
+   "primary_issue": 1336,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1339
+   ],
+   "pr_states": {
+    "1339": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T02:23:01Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1336 仍开放但 PR #1339 已合并(dev, 2026-09-23)，正文含 Closes #1336",
+   "consumed": false
+  },
+  {
+   "key": "up-1244",
+   "file": "deeptour.auto.jsonl",
+   "line": 5,
+   "title": "feat(upstream): record Partner wrong questions into the Question Notebook (#1244)",
+   "primary_issue": 1244,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1341
+   ],
+   "pr_states": {
+    "1341": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-19T08:27:57Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1244 仍开放但 PR #1341 已合并(dev, 2026-09-19)，标题即「record wrong questions (#1244)」，与卡面意图一致（正文无 closing 关键字，建议人工抽查覆盖度）",
+   "consumed": false
+  },
+  {
+   "key": "up-1256",
+   "file": "deeptour.auto.jsonl",
+   "line": 6,
+   "title": "fix(upstream): watching notes keep capture timestamps and drafts across async saves (#1256)",
+   "primary_issue": 1256,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1257,
+    1350
+   ],
+   "pr_states": {
+    "1257": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1350": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-10T20:39:25Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1256 仍开放但 PR #1350 已合并(dev, 2026-09-10)，正文含 Closes #1256",
+   "consumed": false
+  },
+  {
+   "key": "up-1254",
+   "file": "deeptour.auto.jsonl",
+   "line": 7,
+   "title": "fix(upstream): align active transcript with video captions, centered on mobile (#1254)",
+   "primary_issue": 1254,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1255,
+    1351
+   ],
+   "pr_states": {
+    "1255": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1351": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-10T15:44:54Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1254 仍开放但 PR #1351 已合并(dev, 2026-09-10)，正文含 Closes #1254",
+   "consumed": false
+  },
+  {
+   "key": "up-1476",
+   "file": "deeptour.auto.jsonl",
+   "line": 8,
+   "title": "feat(upstream): persist mastery prerequisites and topic-source links, first slice (#1476)",
+   "primary_issue": 1476,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1477
+   ],
+   "pr_states": {
+    "1477": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1476 仍开放但首切片 PR #1477 已合并(dev, 2026-09-23)，正文含 Closes #1476；后续切片需基于新基线重立卡",
+   "consumed": false
+  },
+  {
+   "key": "up-1296",
+   "file": "deeptour.auto.jsonl",
+   "line": 9,
+   "title": "feat(upstream): auto-discover stable Codex client version for model catalog (#1296)",
+   "primary_issue": 1296,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1302,
+    1311,
+    1317
+   ],
+   "pr_states": {
+    "1302": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1311": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1317": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1296 仍开放但 PR #1317 已合并(dev, 2026-09-23)，正文含 Closes #1296",
+   "consumed": false
+  },
+  {
+   "key": "up-1329",
+   "file": "deeptour.auto.jsonl",
+   "line": 10,
+   "title": "feat(upstream): batch import and deletion for admin users (#1329)",
+   "primary_issue": 1329,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1330
+   ],
+   "pr_states": {
+    "1330": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1329 仍开放但 PR #1330 已合并(dev, 2026-09-23)，正文含 Closes #1329",
+   "consumed": false
+  },
+  {
+   "key": "up-1326",
+   "file": "deeptour.auto.jsonl",
+   "line": 11,
+   "title": "feat(upstream): expose folder linking and sync controls in Knowledge Center UI (#1326)",
+   "primary_issue": 1326,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1372
+   ],
+   "pr_states": {
+    "1372": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1326 仍开放但 PR #1372 已合并(dev, 2026-09-23)，正文含 Closes #1326",
+   "consumed": false
+  },
+  {
+   "key": "up-1405",
+   "file": "deeptour.auto.jsonl",
+   "line": 12,
+   "title": "feat(upstream): import ChatGPT conversation exports (#1405)",
+   "primary_issue": 1405,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1408
+   ],
+   "pr_states": {
+    "1408": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T02:23:40Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1405 仍开放但 PR #1408 已合并(dev, 2026-09-23)，正文含 Closes #1405",
+   "consumed": false
+  },
+  {
+   "key": "up-1676",
+   "file": "deeptour.auto.jsonl",
+   "line": 73,
+   "title": "review(upstream): 复核 LaTeX 复杂渲染下 Tutor 选区失效修复 PR #1682 (#1676)",
+   "primary_issue": 1676,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1682
+   ],
+   "pr_states": {
+    "1682": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:10:54Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "复核对象 PR #1682 已合并(dev, 2026-10-04)，跟踪 issue #1676 已关闭(completed)",
+   "consumed": false
+  },
+  {
+   "key": "up-1630",
+   "file": "deeptour.auto.jsonl",
+   "line": 74,
+   "title": "review(upstream): 复核伙伴/CLI 子代理配置保存修复 PR #1634 (#1630)",
+   "primary_issue": 1630,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1634,
+    1745
+   ],
+   "pr_states": {
+    "1634": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:03:16Z"
+    },
+    "1745": {
+     "state": "open",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "已过时",
+   "reason": "复核对象 PR #1634 已合并(dev, 2026-10-04)；如有后续可关注后继 PR #1745（开放，base=main）",
+   "consumed": false
+  },
+  {
+   "key": "up-1614",
+   "file": "deeptour.auto.jsonl",
+   "line": 75,
+   "title": "review(upstream): 复核长会话只渲染前 ~7 轮修复 PR #1619 (#1614)",
+   "primary_issue": 1614,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1619
+   ],
+   "pr_states": {
+    "1619": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:33:50Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "复核对象 PR #1619 已合并(dev, 2026-10-04)，跟踪 issue #1614 已关闭(completed)",
+   "consumed": false
+  },
+  {
+   "key": "up-1613",
+   "file": "deeptour.auto.jsonl",
+   "line": 76,
+   "title": "review(upstream): 复核自定义工作区子 Agent 失效修复 PR #1625 (#1613)",
+   "primary_issue": 1613,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1625
+   ],
+   "pr_states": {
+    "1625": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:17:28Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "复核对象 PR #1625 已合并(dev, 2026-10-04)，跟踪 issue #1613 已关闭(completed)",
+   "consumed": false
+  },
+  {
+   "key": "up-1222",
+   "file": "deeptour.auto.jsonl",
+   "line": 77,
+   "title": "review(upstream): 比较复核学习者策略落地双 PR #1225/#1652 (#1222)",
+   "primary_issue": 1222,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    15,
+    19,
+    1225,
+    1239,
+    1323,
+    1375,
+    1652
+   ],
+   "pr_states": {
+    "1225": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1323": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T02:25:29Z"
+    },
+    "15": {
+     "state": "missing",
+     "merged": false,
+     "merged_at": null
+    },
+    "19": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1239": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1375": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    },
+    "1652": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:16:45Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "比较复核前提已消失：#1652 已合并(dev, 2026-10-04)，#1225 已关闭未合并(2026-10-04)；跟踪 issue #1222 为长期跟踪、有意保持开放",
+   "consumed": false
+  },
+  {
+   "key": "up-1109",
+   "file": "deeptour.auto.jsonl",
+   "line": 93,
+   "title": "fix(upstream): Reading 进度与扩展活动写入账号学习记录 (#1109)",
+   "primary_issue": 1109,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    1110,
+    1368
+   ],
+   "pr_states": {
+    "1110": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "1368": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1109(提案) 仍开放但 PR #1368 已合并(dev, 2026-09-23)，正文含 Closes #1109",
+   "consumed": false
+  },
+  {
+   "key": "up-971",
+   "file": "deeptour.auto.jsonl",
+   "line": 94,
+   "title": "fix(upstream): 结构化内容与修订场景 selector 重锚定收尾 (#971)",
+   "primary_issue": 971,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    972,
+    974,
+    1376
+   ],
+   "pr_states": {
+    "972": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-08-25T16:48:52Z"
+    },
+    "974": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-08-25T16:58:35Z"
+    },
+    "1376": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-09-23T03:59:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #971(提案) 仍开放但收尾 PR #1376 已合并(dev, 2026-09-23)，正文含 Closes #971（另有 #972/#974 早前合并）；残余边界需重立卡",
+   "consumed": false
+  },
+  {
+   "key": "up-429",
+   "file": "deeptour.auto.jsonl",
+   "line": 98,
+   "title": "fix(upstream): 知识库支持 EPUB 文档摄入 (#429)",
+   "primary_issue": 429,
+   "issue_state": "open",
+   "issue_state_reason": null,
+   "referenced_prs": [
+    842,
+    843
+   ],
+   "pr_states": {
+    "842": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    },
+    "843": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-08-16T11:24:05Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #429 仍开放但 PR #843 已合并(dev, 2026-08-16)，正文含 Closes #429",
+   "consumed": false
+  },
+  {
+   "key": "up-1678",
+   "file": "deeptour.jsonl",
+   "line": 1,
+   "title": "fix(upstream): chat history search cannot match existing text (#1678)",
+   "primary_issue": 1678,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1683
+   ],
+   "pr_states": {
+    "1683": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:01:26Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1678 已关闭(completed)；修复 PR #1683 已合并(dev, 2026-10-04)",
+   "consumed": true
+  },
+  {
+   "key": "up-1647",
+   "file": "deeptour.jsonl",
+   "line": 2,
+   "title": "fix(upstream): KB labels on chat messages show internal resource IDs (#1647)",
+   "primary_issue": 1647,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1666
+   ],
+   "pr_states": {
+    "1666": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:06:25Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1647 已关闭(completed)；修复 PR #1666 已合并(dev, 2026-10-04)",
+   "consumed": true
+  },
+  {
+   "key": "up-1646",
+   "file": "deeptour.jsonl",
+   "line": 3,
+   "title": "fix(upstream): deleting a Mastery session leaves an orphaned turn holding the activity lock (#1646)",
+   "primary_issue": 1646,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1685
+   ],
+   "pr_states": {
+    "1685": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:19:37Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1646 已关闭(completed)；修复 PR #1685 已合并(dev, 2026-10-04)",
+   "consumed": true
+  },
+  {
+   "key": "up-1624",
+   "file": "deeptour.jsonl",
+   "line": 4,
+   "title": "fix(upstream): Mastery quiz answers trigger context-free KB retrieval with option letters (#1624)",
+   "primary_issue": 1624,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1626,
+    1642
+   ],
+   "pr_states": {
+    "1626": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:11:13Z"
+    },
+    "1642": {
+     "state": "closed",
+     "merged": false,
+     "merged_at": null
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1624 已关闭(completed)；修复 PR #1626 已合并(dev, 2026-10-04)（另一相关 PR #1642 已关闭未合并）",
+   "consumed": false
+  },
+  {
+   "key": "up-1673",
+   "file": "deeptour.jsonl",
+   "line": 9,
+   "title": "fix(upstream): EPUB reader loses TOC heading anchors and mislabels reading positions (#1673)",
+   "primary_issue": 1673,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1686
+   ],
+   "pr_states": {
+    "1686": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:20:41Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1673 已关闭(completed)；修复 PR #1686 已合并(dev, 2026-10-04)",
+   "consumed": false
+  },
+  {
+   "key": "up-1623",
+   "file": "deeptour.jsonl",
+   "line": 11,
+   "title": "fix(upstream): math formulas containing newlines sometimes fail to render (#1623)",
+   "primary_issue": 1623,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1627
+   ],
+   "pr_states": {
+    "1627": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:08:06Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1623 已关闭(completed)；修复 PR #1627 已合并(dev, 2026-10-04)",
+   "consumed": false
+  },
+  {
+   "key": "up-1648",
+   "file": "deeptour.jsonl",
+   "line": 12,
+   "title": "fix(upstream): ask_user submit gives up during WebSocket reconnect (#1648)",
+   "primary_issue": 1648,
+   "issue_state": "closed",
+   "issue_state_reason": "completed",
+   "referenced_prs": [
+    1668
+   ],
+   "pr_states": {
+    "1668": {
+     "state": "closed",
+     "merged": true,
+     "merged_at": "2026-10-04T06:09:37Z"
+    }
+   },
+   "verdict": "已过时",
+   "reason": "issue #1648 已关闭(completed)；修复 PR #1668 已合并(dev, 2026-10-04)",
+   "consumed": false
+  }
+ ]
+}
