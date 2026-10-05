@@ -118,6 +118,50 @@ def partner_workspace_api(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     return TestClient(app), scoped_path_service
 
 
+@pytest.fixture
+def multi_partner_workspace_api(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """The human caller plus two partners, probed in list order.
+
+    ``note-bot`` is probed before ``math-bot``, so resolving an item the
+    latter published always crosses a clean miss on the former first.
+    """
+    from deeptutor.multi_user.context import get_current_user_or_none
+    from deeptutor.services.partners.scope import partner_user_id
+
+    module = importlib.import_module("deeptutor.api.routers.workspace")
+    service_module = importlib.import_module("deeptutor.services.workspace.service")
+    human = PathService(workspace_root=tmp_path / "human")
+    scopes = {
+        partner_id: PathService(workspace_root=tmp_path / partner_id)
+        for partner_id in ("note-bot", "math-bot")
+    }
+    for paths in (human, *scopes.values()):
+        paths.ensure_all_directories()
+
+    def scoped_path_service() -> PathService:
+        current = get_current_user_or_none()
+        if current is not None:
+            for partner_id, paths in scopes.items():
+                if current.id == partner_user_id(partner_id):
+                    return paths
+        return human
+
+    monkeypatch.setattr(service_module, "get_path_service", scoped_path_service)
+    monkeypatch.setattr(module, "get_content_workspace_service", ContentWorkspaceService)
+    monkeypatch.setattr(
+        module,
+        "visible_partners",
+        lambda: [{"partner_id": "note-bot"}, {"partner_id": "math-bot"}],
+    )
+    monkeypatch.setenv("DEEPTUTOR_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("DEEPTUTOR_WORKSPACE_ROOT", raising=False)
+    monkeypatch.delenv("DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS", raising=False)
+
+    app = FastAPI()
+    app.include_router(module.files_router, prefix="/files/workspace-items")
+    return TestClient(app), scoped_path_service
+
+
 def _publish_in_partner_scope(paths: PathService, filename: str, body: str):
     from deeptutor.multi_user.paths import user_context
     from deeptutor.services.partners.scope import partner_user
@@ -148,24 +192,39 @@ def test_a_partner_chats_generated_file_downloads_for_the_person_who_asked(
     assert response.text == "godot notes"
 
 
-def test_an_unpublished_item_is_still_not_found(partner_workspace_api) -> None:
-    """The fallback widens the caller's reach, it does not open the store."""
+def test_an_unpublished_item_is_still_not_found(
+    partner_workspace_api, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The fallback widens the caller's reach, it does not open the store.
+
+    A miss is the expected outcome of every probe here, so the 404 must
+    arrive without warning noise.
+    """
+    import logging
+
     client, _ = partner_workspace_api
 
-    response = client.get(f"/files/workspace-items/ws_{'0' * 32}/wsi_{'0' * 32}")
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.workspace"):
+        response = client.get(f"/files/workspace-items/ws_{'0' * 32}/wsi_{'0' * 32}")
 
     assert response.status_code == 404
+    records = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.api.routers.workspace" and record.levelno >= logging.WARNING
+    ]
+    assert not records, [record.getMessage() for record in records]
 
 
 def test_a_failed_partner_resolution_is_logged_and_skipped(
     partner_workspace_api, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """A partner-side failure must stay visible: log it, still answer 404.
+    """A broken presentation must stay visible: log it, still answer 404.
 
     The fallback probes each partner in turn and skips the ones that cannot
     resolve the item. When the skip is caused by a broken presentation rather
     than a clean miss, an unlogged ``continue`` leaves a 404 with no trace of
-    why — the caller concludes their generated file was lost.
+    why the item was unreachable.
     """
     import logging
 
@@ -191,6 +250,69 @@ def test_a_failed_partner_resolution_is_logged_and_skipped(
     assert records, "a skipped broken partner item must leave a warning behind"
     message = records[-1].getMessage()
     assert "math-bot" in message
+    assert item.workspace_item_id in message
+
+
+def test_a_hit_on_a_later_partner_downloads_without_warning_noise(
+    multi_partner_workspace_api, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A clean miss on an earlier partner is part of a normal download.
+
+    The workspace id is bound to its owning partner, so probing ``note-bot``
+    for an item ``math-bot`` published is an expected miss of the probe, not
+    a failure: a successful download must leave no warning behind.
+    """
+    import logging
+
+    client, scoped = multi_partner_workspace_api
+    item = _publish_in_partner_scope(scoped(), "silent.md", "silent body")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.workspace"):
+        response = client.get(item.url)
+
+    assert response.status_code == 200
+    assert response.text == "silent body"
+    records = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.api.routers.workspace" and record.levelno >= logging.WARNING
+    ]
+    assert not records, [record.getMessage() for record in records]
+
+
+def test_a_broken_owner_item_warns_once_and_only_for_the_owner(
+    multi_partner_workspace_api, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Only the partner that owns the broken presentation gets a warning.
+
+    The earlier partner misses cleanly and stays silent; the owning
+    partner's broken manifest is the one skip that must stay visible.
+    """
+    import logging
+
+    client, scoped = multi_partner_workspace_api
+    item = _publish_in_partner_scope(scoped(), "corrupt.md", "corrupt body")
+    from deeptutor.multi_user.paths import user_context
+    from deeptutor.services.partners.scope import partner_user
+
+    with user_context(partner_user("math-bot")):
+        presentations = scoped().get_runtime_state_dir() / "workspace_presentations"
+        manifest = next(presentations.glob(f"*/items/{item.workspace_item_id}.json"))
+        manifest.write_text("{ not a manifest", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.workspace"):
+        response = client.get(item.url)
+
+    assert response.status_code == 404
+    records = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.api.routers.workspace" and record.levelno >= logging.WARNING
+    ]
+    assert len(records) == 1, [record.getMessage() for record in records]
+    message = records[0].getMessage()
+    assert "math-bot" in message
+    assert "note-bot" not in message
     assert item.workspace_item_id in message
 
 

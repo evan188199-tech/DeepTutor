@@ -18,6 +18,7 @@ from deeptutor.services.partners.scope import partner_user
 from deeptutor.services.workspace import (
     WorkspaceError,
     WorkspaceItem,
+    WorkspaceNotFoundError,
     get_content_workspace_service,
 )
 from deeptutor.services.workspace.resources import WorkspaceResources
@@ -322,10 +323,15 @@ def _resolve_partner_item(
                 return get_content_workspace_service().resolve_published_item(
                     workspace_id, workspace_item_id
                 )
+            except WorkspaceNotFoundError:
+                # The partner neither owns the workspace nor published the
+                # item: an expected miss of the probe, not a failure to log.
+                continue
             except WorkspaceError as exc:
-                # The probe skips partners that cannot resolve the item, but a
-                # broken presentation must not vanish with them: without this
-                # line the eventual 404 carries no trace of why.
+                # This partner owns the workspace but cannot serve the item
+                # (broken manifest, missing blob, unreadable registry): keep
+                # the skip visible, or the eventual 404 carries no trace of
+                # why the item was unreachable.
                 logger.warning(
                     "Skipping partner %s: resolving item %s in workspace %s failed: %s",
                     partner_id,

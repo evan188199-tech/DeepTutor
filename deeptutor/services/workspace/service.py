@@ -21,7 +21,12 @@ from deeptutor.multi_user.context import get_current_user
 from deeptutor.multi_user.paths import get_account_path_service as get_path_service
 from deeptutor.services.settings.interface_settings import atomic_update
 from deeptutor.services.workspace.catalog import WorkspaceCatalogMixin
-from deeptutor.services.workspace.models import WorkspaceBinding, WorkspaceError, WorkspaceItem
+from deeptutor.services.workspace.models import (
+    WorkspaceBinding,
+    WorkspaceError,
+    WorkspaceItem,
+    WorkspaceNotFoundError,
+)
 from deeptutor.utils.secret_files import ensure_private_directory
 
 _SETTINGS_VERSION = 1
@@ -188,7 +193,7 @@ class ContentWorkspaceService(WorkspaceCatalogMixin):
             # deployment path.
             if binding.workspace_id == workspace_id:
                 return binding
-        raise WorkspaceError("The workspace is no longer registered for this user.")
+        raise WorkspaceNotFoundError("The workspace is no longer registered for this user.")
 
     def _assert_allowed_root(self, root: Path) -> None:
         user = get_current_user()
@@ -768,7 +773,7 @@ class ContentWorkspaceService(WorkspaceCatalogMixin):
         self, workspace_id: str, workspace_item_id: str
     ) -> tuple[Path, WorkspaceItem]:
         if not re.fullmatch(r"wsi_[0-9a-f]{32}", workspace_item_id):
-            raise WorkspaceError("Invalid workspace item id.")
+            raise WorkspaceNotFoundError("Invalid workspace item id.")
         binding = self.binding_by_id(workspace_id)
         root = self._presentation_root(binding)
         for directory in (root / "items", root / "blobs"):
@@ -780,6 +785,8 @@ class ContentWorkspaceService(WorkspaceCatalogMixin):
         try:
             payload = json.loads(manifest_path.read_text(encoding="utf-8"))
             item = WorkspaceItem(**payload)
+        except FileNotFoundError as exc:
+            raise WorkspaceNotFoundError("The presented workspace item is unavailable.") from exc
         except (OSError, json.JSONDecodeError, TypeError) as exc:
             raise WorkspaceError("The presented workspace item is unavailable.") from exc
         if item.workspace_id != workspace_id or item.workspace_item_id != workspace_item_id:
@@ -810,5 +817,6 @@ __all__ = [
     "WorkspaceBinding",
     "WorkspaceError",
     "WorkspaceItem",
+    "WorkspaceNotFoundError",
     "get_content_workspace_service",
 ]

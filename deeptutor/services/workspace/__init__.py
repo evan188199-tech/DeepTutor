@@ -11,6 +11,7 @@ from .service import (
     WorkspaceBinding,
     WorkspaceError,
     WorkspaceItem,
+    WorkspaceNotFoundError,
     get_content_workspace_service,
 )
 
@@ -19,5 +20,6 @@ __all__ = [
     "WorkspaceBinding",
     "WorkspaceError",
     "WorkspaceItem",
+    "WorkspaceNotFoundError",
     "get_content_workspace_service",
 ]

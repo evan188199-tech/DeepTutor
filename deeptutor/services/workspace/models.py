@@ -11,6 +11,14 @@ class WorkspaceError(ValueError):
     """A workspace path, binding, or operation is not allowed."""
 
 
+class WorkspaceNotFoundError(WorkspaceError):
+    """A workspace or presented item is not registered for this user.
+
+    The caller's probe treats it as an expected miss, while other
+    :class:`WorkspaceError` failures signal a registered but broken state.
+    """
+
+
 @dataclass(frozen=True, slots=True)
 class WorkspaceBinding:
     workspace_id: str
