@@ -33,6 +33,7 @@ import logging
 import os
 from pathlib import Path
 import shutil
+import tempfile
 from typing import Protocol, runtime_checkable
 from urllib.parse import quote
 
@@ -176,12 +177,20 @@ class LocalDiskAttachmentStore:
     @staticmethod
     def _write_sync(target: Path, data: bytes) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
-        # Atomic-ish write: write to .tmp then rename. Avoids exposing a
-        # half-written file via the static handler.
-        tmp = target.with_suffix(target.suffix + ".tmp")
+        # Atomic + durable write: stage to a unique same-directory tmp
+        # file, fsync it, then rename over the target. Unique staging
+        # names keep concurrent writers from clobbering each other's
+        # tmp file, and fsync-before-rename means a crash never exposes
+        # an empty or half-written file via the static handler.
+        fd, tmp_name = tempfile.mkstemp(
+            dir=str(target.parent), prefix=f"{target.name}.", suffix=".tmp"
+        )
+        tmp = Path(tmp_name)
         try:
-            with tmp.open("wb") as fh:
+            with os.fdopen(fd, "wb") as fh:
                 fh.write(data)
+                fh.flush()
+                os.fsync(fh.fileno())
             os.replace(tmp, target)
         finally:
             if tmp.exists():

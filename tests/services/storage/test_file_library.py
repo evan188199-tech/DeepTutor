@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import os
 from pathlib import Path
 import tempfile
 
@@ -350,6 +351,83 @@ def test_resolve_path_nonexistent_returns_none(store: FileLibraryStore) -> None:
     """resolve_path must return None for a non-existent ID."""
     path = store.resolve_path("no_such_id")
     assert path is None
+
+
+@pytest.fixture
+def isolated_store(tmp_path: Path) -> FileLibraryStore:
+    """A store whose file root lives entirely inside tmp_path."""
+    return FileLibraryStore(db_path=tmp_path / "library.db", root=tmp_path / "files")
+
+
+# ---------------------------------------------------------------------------
+# Durable atomic write (_write_file)
+# ---------------------------------------------------------------------------
+
+
+def test_add_file_fsyncs_tmp_before_replacing_target(
+    isolated_store: FileLibraryStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The write path must fsync the staged file before renaming it into place."""
+    events: list[str] = []
+    real_fsync, real_replace = os.fsync, os.replace
+
+    def spy_fsync(fd: int) -> None:
+        events.append("fsync")
+        real_fsync(fd)
+
+    def spy_replace(src: str, dst: str) -> None:
+        events.append("replace")
+        real_replace(src, dst)
+
+    monkeypatch.setattr(os, "fsync", spy_fsync)
+    monkeypatch.setattr(os, "replace", spy_replace)
+
+    asyncio.run(isolated_store.add_file(data=b"durable", filename="d.txt", mime_type="text/plain"))
+
+    assert events == ["fsync", "replace"]
+
+
+def test_write_file_uses_unique_tmp_names(
+    isolated_store: FileLibraryStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Each write must stage through its own tmp name, not a shared fixed one."""
+    staged: list[Path] = []
+    real_replace = os.replace
+
+    def spy_replace(src: str, dst: str) -> None:
+        staged.append(Path(src))
+        real_replace(src, dst)
+
+    monkeypatch.setattr(os, "replace", spy_replace)
+
+    isolated_store._write_file("same-name.txt", b"first")
+    isolated_store._write_file("same-name.txt", b"second")
+
+    assert len(staged) == 2
+    assert staged[0] != staged[1]
+    for tmp in staged:
+        assert tmp.parent == isolated_store._root
+        assert tmp.name.startswith("same-name.txt.")
+        assert tmp.name.endswith(".tmp")
+    assert not list(isolated_store._root.glob("*.tmp"))
+    assert isolated_store._file_path("same-name.txt").read_bytes() == b"second"
+
+
+def test_write_file_cleans_up_tmp_and_row_when_fsync_fails(
+    isolated_store: FileLibraryStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A failed fsync must abort the add and leave neither tmp file nor DB row."""
+
+    def boom(fd: int) -> None:
+        raise OSError("fsync rejected")
+
+    monkeypatch.setattr(os, "fsync", boom)
+
+    with pytest.raises(OSError):
+        asyncio.run(isolated_store.add_file(data=b"data", filename="f.txt", mime_type="text/plain"))
+
+    assert not list(isolated_store._root.rglob("*.tmp"))
+    assert asyncio.run(isolated_store.list_files()) == []
 
 
 # ---------------------------------------------------------------------------

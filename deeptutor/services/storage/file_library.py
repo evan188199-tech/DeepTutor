@@ -29,6 +29,7 @@ import logging
 import os
 from pathlib import Path
 import sqlite3
+import tempfile
 import threading
 import time
 from typing import Any, Iterator
@@ -176,10 +177,20 @@ class FileLibraryStore:
         target = self._file_path(library_path)
         self._ensure_root()
         target.parent.mkdir(parents=True, exist_ok=True)
-        tmp = target.with_suffix(target.suffix + ".tmp")
+        # Atomic + durable write: stage to a unique same-directory tmp
+        # file, fsync it, then rename over the target. Unique staging
+        # names keep concurrent writers from clobbering each other's
+        # tmp file, and fsync-before-rename means a crash never leaves
+        # an empty or half-written library file behind.
+        fd, tmp_name = tempfile.mkstemp(
+            dir=str(target.parent), prefix=f"{target.name}.", suffix=".tmp"
+        )
+        tmp = Path(tmp_name)
         try:
-            with tmp.open("wb") as fh:
+            with os.fdopen(fd, "wb") as fh:
                 fh.write(data)
+                fh.flush()
+                os.fsync(fh.fileno())
             os.replace(tmp, target)
         finally:
             if tmp.exists():
