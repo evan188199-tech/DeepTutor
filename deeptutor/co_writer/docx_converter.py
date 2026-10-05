@@ -9,9 +9,12 @@ from __future__ import annotations
 
 from collections import deque
 from io import BytesIO
+import logging
 import re
 from typing import Any, Iterator
 import zipfile
+
+logger = logging.getLogger(__name__)
 
 _OOXML_MAGIC = b"PK\x03\x04"
 _OLE_MAGIC = b"\xd0\xcf\x11\xe0"
@@ -253,8 +256,11 @@ def _style_name(paragraph: Any) -> str:
     try:
         if paragraph.style is not None and paragraph.style.name:
             return str(paragraph.style.name)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug(
+            "DOCX paragraph style could not be read; falling back to the default (body) style (%s)",
+            exc,
+        )
     return ""
 
 
@@ -337,8 +343,11 @@ def _run_to_markdown(run: Any) -> str:
     try:
         if run.font.strike:
             out = f"~~{out}~~"
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug(
+            "DOCX run strikethrough could not be read; exporting without it (%s)",
+            exc,
+        )
     if run.bold and run.italic:
         return f"***{out}***"
     if run.bold:

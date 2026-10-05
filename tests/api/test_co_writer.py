@@ -594,3 +594,62 @@ def test_fenced_code_blocks_round_trip_as_fences_not_inline_code():
 
 def test_a_lone_monospaced_paragraph_stays_inline_code():
     assert docx_to_markdown(markdown_to_docx("`solo()`")) == "`solo()`"
+
+
+class _UnreadableStyleParagraph:
+    """Paragraph whose style lookup blows up (e.g. style id missing from styles.xml)."""
+
+    text = "Broken heading"
+    runs = []
+
+    @property
+    def style(self):
+        raise RuntimeError("style id not found in styles part")
+
+
+class _UnreadableStrikeFont:
+    name = None
+
+    @property
+    def strike(self):
+        raise RuntimeError("rPr reference could not be resolved")
+
+
+class _UnreadableStrikeRun:
+    text = "still here"
+    bold = False
+    italic = False
+    font = _UnreadableStrikeFont()
+
+
+def test_unreadable_paragraph_style_degrades_to_body_text_and_logs(caplog):
+    import logging
+
+    from deeptutor.co_writer.docx_converter import _paragraph_to_markdown
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.co_writer.docx_converter"):
+        markdown = _paragraph_to_markdown(_UnreadableStyleParagraph(), {})
+
+    assert markdown == "Broken heading"
+    debug_messages = [
+        record.getMessage() for record in caplog.records if record.levelno == logging.DEBUG
+    ]
+    assert debug_messages, "expected a debug log when the paragraph style is unreadable"
+    assert "style" in debug_messages[0].lower()
+
+
+def test_unreadable_strike_keeps_run_text_and_logs(caplog):
+    import logging
+
+    from deeptutor.co_writer.docx_converter import _run_to_markdown
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.co_writer.docx_converter"):
+        markdown = _run_to_markdown(_UnreadableStrikeRun())
+
+    assert markdown == "still here"
+    assert "~~" not in markdown
+    debug_messages = [
+        record.getMessage() for record in caplog.records if record.levelno == logging.DEBUG
+    ]
+    assert debug_messages, "expected a debug log when the run strikethrough is unreadable"
+    assert "strike" in debug_messages[0].lower()
