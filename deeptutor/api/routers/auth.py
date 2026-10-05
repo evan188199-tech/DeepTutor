@@ -651,6 +651,9 @@ def _learning_surface_for_path(
         # the router already scopes every record to the current account, so
         # all methods (including progress PATCH/POST) belong to "chat".
         ("/api/mastery-paths", "chat"),
+        # The learning journal overview is the learner's own cross-session
+        # state; the router is read-only and scopes to the current account.
+        ("/api/learning-journal", "chat"),
     ):
         if normalized == root or normalized.startswith(f"{root}/"):
             return surface

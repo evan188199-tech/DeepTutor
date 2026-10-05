@@ -4878,6 +4878,119 @@
         "title": "LearningCaptureUpdateRequest",
         "type": "object"
       },
+      "LearningJournalResponse": {
+        "description": "The full read-only snapshot; empty fields mean \"not set\".",
+        "properties": {
+          "is_empty": {
+            "default": true,
+            "title": "Is Empty",
+            "type": "boolean"
+          },
+          "last_session": {
+            "$ref": "#/components/schemas/LearningSessionView"
+          },
+          "mission": {
+            "$ref": "#/components/schemas/LearningMissionView"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/LearningRecordView"
+            },
+            "title": "Records",
+            "type": "array"
+          },
+          "updated_at": {
+            "default": "",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version": {
+            "default": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "title": "LearningJournalResponse",
+        "type": "object"
+      },
+      "LearningMissionView": {
+        "description": "Why the learner is studying — shown as-is from the store.",
+        "properties": {
+          "level": {
+            "default": "",
+            "title": "Level",
+            "type": "string"
+          },
+          "topic": {
+            "default": "",
+            "title": "Topic",
+            "type": "string"
+          },
+          "updated_at": {
+            "default": "",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "why": {
+            "default": "",
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "title": "LearningMissionView",
+        "type": "object"
+      },
+      "LearningRecordView": {
+        "description": "One durable insight that shapes the next lesson.",
+        "properties": {
+          "created_at": {
+            "default": "",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "insight": {
+            "default": "",
+            "title": "Insight",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "LearningRecordView",
+        "type": "object"
+      },
+      "LearningSessionView": {
+        "description": "Handoff between sessions: what happened and what to do next.",
+        "properties": {
+          "next_focus": {
+            "default": "",
+            "title": "Next Focus",
+            "type": "string"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "updated_at": {
+            "default": "",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "title": "LearningSessionView",
+        "type": "object"
+      },
       "LightRagConfigUpdate": {
         "description": "Partial update for LightRAG query + indexing knobs (omitted fields kept).",
         "properties": {
@@ -7188,8 +7301,6 @@
           },
           "percentage": {
             "default": 0.0,
-            "maximum": 1.0,
-            "minimum": 0.0,
             "title": "Percentage",
             "type": "number"
           },
@@ -7219,11 +7330,17 @@
             "type": "integer"
           },
           "percentage": {
-            "default": 0.0,
-            "maximum": 1.0,
-            "minimum": 0.0,
-            "title": "Percentage",
-            "type": "number"
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage"
           },
           "source_anchor": {
             "default": "",
@@ -20727,7 +20844,7 @@
     },
     "/api/knowledge-bases": {
       "get": {
-        "description": "List all available knowledge bases with their details.",
+        "description": "Disk probes must not block the async worker or its other requests (#1711).",
         "operationId": "list_knowledge_bases_api_knowledge_bases_get",
         "parameters": [
           {
@@ -21793,7 +21910,7 @@
     },
     "/api/knowledge-bases/health": {
       "get": {
-        "description": "Health check endpoint",
+        "description": "Count registered KBs without constructing/probing the catalog (#1711).",
         "operationId": "health_check_api_knowledge_bases_health_get",
         "parameters": [
           {
@@ -26763,6 +26880,72 @@
         "summary": "Get Web Sources",
         "tags": [
           "knowledge-bases"
+        ]
+      }
+    },
+    "/api/learning-journal": {
+      "get": {
+        "description": "Return the learner's journal snapshot, or an empty journal.",
+        "operationId": "get_learning_journal_api_learning_journal_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearningJournalResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Learning Journal",
+        "tags": [
+          "learning-journal"
         ]
       }
     },

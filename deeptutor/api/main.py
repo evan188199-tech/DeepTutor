@@ -536,6 +536,7 @@ from deeptutor.api.routers import (
     file_preview,
     imports,
     knowledge,
+    learning_journal,
     marginnote4,
     mastery_path,
     mcp_settings,
@@ -649,6 +650,12 @@ app.include_router(
     dependencies=_auth,
 )
 app.include_router(memory.router, prefix="/api/memory", tags=["memory"], dependencies=_auth)
+app.include_router(
+    learning_journal.router,
+    prefix="/api/learning-journal",
+    tags=["learning-journal"],
+    dependencies=_auth,
+)
 app.include_router(
     capabilities_settings.router,
     prefix="/api/capabilities",

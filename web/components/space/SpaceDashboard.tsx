@@ -14,6 +14,7 @@ import {
   History,
   NotebookPen,
   Plug,
+  ScrollText,
   Terminal,
   UserRound,
   Wand2,
@@ -24,6 +25,7 @@ import { SPACE_MCP_SURFACE, loadMcpSurface } from "@/components/mcp/surface";
 import { getCliApps } from "@/lib/cli-apps-api";
 import { listSessions } from "@/lib/session-api";
 import { listNotebooks, listNotebookEntries } from "@/lib/notebook-api";
+import { fetchLearningJournal } from "@/lib/journal-api";
 import { listPersonas } from "@/lib/personas-api";
 import { listKnowledgeBases } from "@/features/knowledge/api/catalog";
 import { listSkills } from "@/lib/skills-api";
@@ -45,6 +47,7 @@ type DashKey =
   | "chat_history"
   | "notebooks"
   | "question_bank"
+  | "learning_journal"
   | "personas"
   | "skills"
   | "mcp"
@@ -205,6 +208,19 @@ const GROUPS: DashboardGroup[] = [
         load: async () =>
           (await getCliApps()).apps.filter(app => app.granted && app.enabled)
             .length,
+      },
+      {
+        key: "learning_journal",
+        href: "/space/journal",
+        icon: ScrollText,
+        title: { zh: "学习日志", en: "Learning Journal" },
+        blurb: {
+          zh: "查看导师为你携带的当前任务与上次会话交接。",
+          en: "See the mission and last-session handoff your tutor carries.",
+        },
+        unit: { zh: "条记录", en: "records" },
+        tile: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
+        load: async () => (await fetchLearningJournal()).records.length,
       },
       {
         key: "memory",

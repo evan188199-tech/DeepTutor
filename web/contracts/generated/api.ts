@@ -1713,7 +1713,7 @@ export interface paths {
     };
     /**
      * List Knowledge Bases
-     * @description List all available knowledge bases with their details.
+     * @description Disk probes must not block the async worker or its other requests (#1711).
      */
     readonly get: operations["list_knowledge_bases_api_knowledge_bases_get"];
     readonly put?: never;
@@ -2686,7 +2686,7 @@ export interface paths {
     };
     /**
      * Health Check
-     * @description Health check endpoint
+     * @description Count registered KBs without constructing/probing the catalog (#1711).
      */
     readonly get: operations["health_check_api_knowledge_bases_health_get"];
     readonly put?: never;
@@ -3200,6 +3200,26 @@ export interface paths {
      * @description Stream task-specific logs for knowledge-base operations.
      */
     readonly get: operations["stream_task_logs_api_knowledge_bases_tasks__task_id__stream_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/learning-journal": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /**
+     * Get Learning Journal
+     * @description Return the learner's journal snapshot, or an empty journal.
+     */
+    readonly get: operations["get_learning_journal_api_learning_journal_get"];
     readonly put?: never;
     readonly post?: never;
     readonly delete?: never;
@@ -12794,6 +12814,101 @@ export interface components {
       readonly user_note?: string | null;
     };
     /**
+     * LearningJournalResponse
+     * @description The full read-only snapshot; empty fields mean "not set".
+     */
+    readonly LearningJournalResponse: {
+      /**
+       * Is Empty
+       * @default true
+       */
+      readonly is_empty: boolean;
+      readonly last_session?: components["schemas"]["LearningSessionView"];
+      readonly mission?: components["schemas"]["LearningMissionView"];
+      /** Records */
+      readonly records?: readonly components["schemas"]["LearningRecordView"][];
+      /**
+       * Updated At
+       * @default
+       */
+      readonly updated_at: string;
+      /**
+       * Version
+       * @default 1
+       */
+      readonly version: number;
+    };
+    /**
+     * LearningMissionView
+     * @description Why the learner is studying — shown as-is from the store.
+     */
+    readonly LearningMissionView: {
+      /**
+       * Level
+       * @default
+       */
+      readonly level: string;
+      /**
+       * Topic
+       * @default
+       */
+      readonly topic: string;
+      /**
+       * Updated At
+       * @default
+       */
+      readonly updated_at: string;
+      /**
+       * Why
+       * @default
+       */
+      readonly why: string;
+    };
+    /**
+     * LearningRecordView
+     * @description One durable insight that shapes the next lesson.
+     */
+    readonly LearningRecordView: {
+      /**
+       * Created At
+       * @default
+       */
+      readonly created_at: string;
+      /** Id */
+      readonly id: string;
+      /**
+       * Insight
+       * @default
+       */
+      readonly insight: string;
+      /**
+       * Title
+       * @default
+       */
+      readonly title: string;
+    };
+    /**
+     * LearningSessionView
+     * @description Handoff between sessions: what happened and what to do next.
+     */
+    readonly LearningSessionView: {
+      /**
+       * Next Focus
+       * @default
+       */
+      readonly next_focus: string;
+      /**
+       * Summary
+       * @default
+       */
+      readonly summary: string;
+      /**
+       * Updated At
+       * @default
+       */
+      readonly updated_at: string;
+    };
+    /**
      * LightRagConfigUpdate
      * @description Partial update for LightRAG query + indexing knobs (omitted fields kept).
      */
@@ -14017,11 +14132,8 @@ export interface components {
     readonly PositionPayload: {
       /** Locator */
       readonly locator: number;
-      /**
-       * Percentage
-       * @default 0
-       */
-      readonly percentage: number;
+      /** Percentage */
+      readonly percentage?: number | null;
       /**
        * Source Anchor
        * @default
@@ -16820,6 +16932,14 @@ export type SchemaLearningCaptureCreateRequest =
   components["schemas"]["LearningCaptureCreateRequest"];
 export type SchemaLearningCaptureUpdateRequest =
   components["schemas"]["LearningCaptureUpdateRequest"];
+export type SchemaLearningJournalResponse =
+  components["schemas"]["LearningJournalResponse"];
+export type SchemaLearningMissionView =
+  components["schemas"]["LearningMissionView"];
+export type SchemaLearningRecordView =
+  components["schemas"]["LearningRecordView"];
+export type SchemaLearningSessionView =
+  components["schemas"]["LearningSessionView"];
 export type SchemaLightRagConfigUpdate =
   components["schemas"]["LightRagConfigUpdate"];
 export type SchemaLightRagIndexingSelection =
@@ -23810,6 +23930,39 @@ export interface operations {
         };
         content: {
           readonly "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_learning_journal_api_learning_journal_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path?: never;
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["LearningJournalResponse"];
         };
       };
       /** @description Validation Error */
