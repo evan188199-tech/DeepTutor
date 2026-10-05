@@ -4,6 +4,7 @@ Provides notebook creation, querying, updating, deletion, and record management 
 """
 
 import json
+import logging
 from typing import AsyncGenerator, Literal
 
 from fastapi import APIRouter, HTTPException
@@ -14,6 +15,8 @@ from deeptutor.agents.notebook import NotebookSummarizeAgent
 from deeptutor.services.llm import clean_thinking_tags
 from deeptutor.services.notebook import notebook_manager
 from deeptutor.services.notebook.service import NotebookCorruptedError
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -36,6 +39,25 @@ def _unreadable(exc: NotebookCorruptedError) -> HTTPException:
             "code": "notebook_unreadable",
             "notebook_id": exc.notebook_id,
             "message": str(exc),
+        },
+    )
+
+
+def _internal_error(action: str) -> HTTPException:
+    """Translate an unexpected failure into a neutral, coded 500 response.
+
+    The caught exception can embed host paths or internal state, so its text
+    belongs in the server log (with traceback), never in the response body —
+    `str(e)` details used to leak both. Called from an `except` block, the
+    shared `notebook_internal_error` code lets clients tell this apart from
+    the 409 above without learning why it happened.
+    """
+    logger.exception("Notebook request failed while %s", action)
+    return HTTPException(
+        status_code=500,
+        detail={
+            "code": "notebook_internal_error",
+            "message": "The notebook service hit an unexpected error. Please retry.",
         },
     )
 
@@ -203,7 +225,7 @@ async def list_notebooks():
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("listing notebooks") from e
 
 
 @router.get("/notebooks/statistics")
@@ -220,7 +242,7 @@ async def get_statistics():
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("collecting notebook statistics") from e
 
 
 @router.post("/notebooks")
@@ -245,7 +267,7 @@ async def create_notebook(request: CreateNotebookRequest):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("creating a notebook") from e
 
 
 @router.get("/notebooks/{notebook_id}")
@@ -269,7 +291,7 @@ async def get_notebook(notebook_id: str):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"reading notebook {notebook_id!r}") from e
 
 
 @router.put("/notebooks/{notebook_id}")
@@ -300,7 +322,7 @@ async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"updating notebook {notebook_id!r}") from e
 
 
 @router.delete("/notebooks/{notebook_id}")
@@ -324,7 +346,7 @@ async def delete_notebook(notebook_id: str):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"deleting notebook {notebook_id!r}") from e
 
 
 @router.post("/notebooks/actions/add-record")
@@ -359,7 +381,7 @@ async def add_record(request: AddRecordRequest):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("adding a record") from e
 
 
 @router.post("/notebooks/actions/add-record-with-summary")
@@ -394,7 +416,7 @@ async def remove_record(notebook_id: str, record_id: str):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"removing record {record_id!r} from notebook {notebook_id!r}") from e
 
 
 @router.put("/notebooks/{notebook_id}/records/{record_id}")
@@ -422,7 +444,7 @@ async def update_record(notebook_id: str, record_id: str, request: UpdateRecordR
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"updating record {record_id!r} in notebook {notebook_id!r}") from e
 
 
 @router.post("/notebooks/{notebook_id}/records/{record_id}/actions/copy")
@@ -438,7 +460,7 @@ async def copy_record(notebook_id: str, record_id: str, request: MoveRecordReque
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"copying record {record_id!r} from notebook {notebook_id!r}") from e
 
 
 @router.post("/notebooks/{notebook_id}/records/{record_id}/actions/move")
@@ -454,7 +476,7 @@ async def move_record(notebook_id: str, record_id: str, request: MoveRecordReque
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"moving record {record_id!r} from notebook {notebook_id!r}") from e
 
 
 @router.get("/notebooks/{notebook_id}/export", response_class=PlainTextResponse)
@@ -474,4 +496,4 @@ async def export_notebook(notebook_id: str):
     except NotebookCorruptedError as exc:
         raise _unreadable(exc)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"exporting notebook {notebook_id!r}") from e

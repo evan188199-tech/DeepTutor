@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import importlib
 import json
+import logging
 
 import pytest
 
@@ -312,3 +313,81 @@ def test_every_notebook_endpoint_reports_damage_as_409(manager: NotebookManager)
             assert resp.json()["detail"]["code"] == "notebook_unreadable", (
                 f"{method} {url} lost the structured reason"
             )
+
+
+def test_unexpected_failures_return_a_neutral_coded_500(
+    manager: NotebookManager,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Unexpected exceptions must never reach the client as `detail=str(e)`.
+
+    Every endpoint used to echo the raw exception text, which can name host
+    paths or internal state. The contract now is: 500 with a coded, neutral
+    message, and the traceback (only) in the server log. This walks the full
+    request surface so an endpoint that regresses to echoing fails here.
+    """
+    boom = RuntimeError("KERNEL_PANIC at /Users/secret/.deeptutor/state.db")
+
+    def raise_boom(*_args, **_kwargs):
+        raise boom
+
+    for attr in (
+        "list_notebooks",
+        "get_statistics",
+        "create_notebook",
+        "get_notebook",
+        "update_notebook",
+        "delete_notebook",
+        "add_record",
+        "remove_record",
+        "update_record",
+        "copy_record",
+        "move_record",
+        "export_markdown",
+    ):
+        monkeypatch.setattr(manager, attr, raise_boom)
+
+    add_record_body = {
+        "notebook_ids": ["nb1"],
+        "record_type": "chat",
+        "title": "Draft",
+        "summary": "Precomputed summary",
+        "user_query": "q",
+        "output": "o",
+    }
+    requests = [
+        ("GET", "/api/notebooks", None),
+        ("GET", "/api/notebooks/statistics", None),
+        ("POST", "/api/notebooks", {"name": "N"}),
+        ("GET", "/api/notebooks/nb1", None),
+        ("PUT", "/api/notebooks/nb1", {"name": "Renamed"}),
+        ("DELETE", "/api/notebooks/nb1", None),
+        ("POST", "/api/notebooks/actions/add-record", add_record_body),
+        ("DELETE", "/api/notebooks/nb1/records/r1", None),
+        ("PUT", "/api/notebooks/nb1/records/r1", {"title": "x"}),
+        ("POST", "/api/notebooks/nb1/records/r1/actions/copy", {"target_notebook_id": "nb2"}),
+        ("POST", "/api/notebooks/nb1/records/r1/actions/move", {"target_notebook_id": "nb2"}),
+        ("GET", "/api/notebooks/nb1/export", None),
+    ]
+
+    with (
+        TestClient(_build_app(manager)) as client,
+        caplog.at_level(logging.ERROR, logger="deeptutor.api.routers.notebook"),
+    ):
+        for method, url, body in requests:
+            resp = client.request(method, url, json=body)
+            assert resp.status_code == 500, f"{method} {url} returned {resp.status_code}"
+            detail = resp.json()["detail"]
+            assert detail["code"] == "notebook_internal_error", (
+                f"{method} {url} lost the error code"
+            )
+            assert detail["message"] == (
+                "The notebook service hit an unexpected error. Please retry."
+            ), f"{method} {url} changed the neutral wording"
+            assert "KERNEL_PANIC" not in resp.text, f"{method} {url} leaked the exception"
+            assert "/Users/secret" not in resp.text, f"{method} {url} leaked a host path"
+
+    logged = [r for r in caplog.records if r.name == "deeptutor.api.routers.notebook"]
+    assert logged, "the unexpected failure was never logged"
+    assert any(r.exc_info for r in logged), "the log entry carries no traceback"
