@@ -244,11 +244,15 @@ async def run_in_worker_loop(
                     controller.cancel()
         # Retrieve the terminal exception so the completion Future never emits
         # an "exception was never retrieved" warning.  The caller's
-        # cancellation remains authoritative.
+        # cancellation remains authoritative: expected cancellations stay
+        # silent, while a genuine worker failure racing the cancellation is
+        # reported at ERROR level before the CancelledError propagates.
         try:
             worker.result()
-        except BaseException:
+        except (asyncio.CancelledError, concurrent.futures.CancelledError):
             pass
+        except BaseException:
+            logger.exception("LightRAG worker failed while handling cancellation")
         raise
 
 
