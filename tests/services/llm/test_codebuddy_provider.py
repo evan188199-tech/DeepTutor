@@ -462,5 +462,160 @@ def test_codebuddy_ignores_deeptutor_no_key_placeholder() -> None:
     assert provider.api_key is None
 
 
+@pytest.mark.asyncio
+async def test_codebuddy_one_shot_turns_stream_concurrently_with_env_injection(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("CODEBUDDY_API_KEY", raising=False)
+    constructed: list[tuple[str, str | None]] = []
+    timeline: list[str] = []
+    second_stream_started = asyncio.Event()
+
+    async def stream_for(prompt: str):
+        tag = "one" if prompt.endswith("one") else "two"
+        timeline.append(f"stream-start:{tag}")
+        if tag == "one":
+            await asyncio.wait_for(second_stream_started.wait(), timeout=5.0)
+        else:
+            second_stream_started.set()
+        timeline.append(f"stream-end:{tag}")
+        yield FakeResultMessage(f"done:{tag}")
+
+    def fake_query(**kwargs):
+        prompt = str(kwargs["prompt"])
+        constructed.append((prompt, os.environ.get("CODEBUDDY_API_KEY")))
+        return stream_for(prompt)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "codebuddy_agent_sdk",
+        SimpleNamespace(query=fake_query),
+    )
+
+    provider_one = CodeBuddyProvider(api_key="key-one")
+    provider_two = CodeBuddyProvider(api_key="key-two")
+    task_one = asyncio.create_task(provider_one.chat([{"role": "user", "content": "one"}]))
+    task_two = asyncio.create_task(provider_two.chat([{"role": "user", "content": "two"}]))
+    response_one = await asyncio.wait_for(task_one, timeout=10.0)
+    response_two = await asyncio.wait_for(task_two, timeout=10.0)
+
+    assert response_one.content == "done:one"
+    assert response_two.content == "done:two"
+    env_by_prompt = dict(constructed)
+    assert env_by_prompt["User:\none"] == "key-one"
+    assert env_by_prompt["User:\ntwo"] == "key-two"
+    assert timeline.index("stream-start:two") < timeline.index("stream-end:one")
+    assert "CODEBUDDY_API_KEY" not in os.environ
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_session_start_does_not_block_other_sessions(monkeypatch) -> None:
+    connect_started: list[int] = []
+    release_first_connect = asyncio.Event()
+
+    class SlowStartClient:
+        counter = 0
+
+        def __init__(self, options):
+            type(self).counter += 1
+            self.client_id = type(self).counter
+
+        async def connect(self):
+            connect_started.append(self.client_id)
+            if self.client_id == 1:
+                await asyncio.wait_for(release_first_connect.wait(), timeout=5.0)
+
+        async def query(self, _prompt):
+            pass
+
+        async def receive_response(self):
+            yield FakeResultMessage(f"done:{self.client_id}")
+
+        async def interrupt(self):
+            pass
+
+        async def disconnect(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "codebuddy_agent_sdk",
+        SimpleNamespace(
+            query=lambda **_kwargs: None,
+            CodeBuddySDKClient=SlowStartClient,
+        ),
+    )
+    provider = CodeBuddyProvider()
+
+    async def turn(session_id: str) -> str:
+        response = await provider.chat(
+            [{"role": "user", "content": "hi"}],
+            deeptutor_session_id=session_id,
+        )
+        return response.content
+
+    task_one = asyncio.create_task(turn("session-a"))
+    for _ in range(500):
+        if connect_started:
+            break
+        await asyncio.sleep(0.01)
+    assert connect_started == [1]
+
+    task_two = asyncio.create_task(turn("session-b"))
+    second_content = await asyncio.wait_for(task_two, timeout=10.0)
+    assert second_content == "done:2"
+    assert not task_one.done()
+
+    release_first_connect.set()
+    first_content = await asyncio.wait_for(task_one, timeout=10.0)
+    assert first_content == "done:1"
+    assert connect_started == [1, 2]
+    await provider.aclose()
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_session_connect_sees_injected_env_key(monkeypatch) -> None:
+    monkeypatch.delenv("CODEBUDDY_API_KEY", raising=False)
+    connect_env: list[str | None] = []
+
+    class EnvProbeClient:
+        def __init__(self, options):
+            pass
+
+        async def connect(self):
+            connect_env.append(os.environ.get("CODEBUDDY_API_KEY"))
+
+        async def query(self, _prompt):
+            pass
+
+        async def receive_response(self):
+            yield FakeResultMessage("ok")
+
+        async def interrupt(self):
+            pass
+
+        async def disconnect(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "codebuddy_agent_sdk",
+        SimpleNamespace(
+            query=lambda **_kwargs: None,
+            CodeBuddySDKClient=EnvProbeClient,
+        ),
+    )
+    provider = CodeBuddyProvider(api_key="session-key")
+    response = await provider.chat(
+        [{"role": "user", "content": "hi"}],
+        deeptutor_session_id="env-probe",
+    )
+
+    assert response.content == "ok"
+    assert connect_env == ["session-key"]
+    assert "CODEBUDDY_API_KEY" not in os.environ
+    await provider.aclose()
+
+
 async def _append_async(items: list[str], text: str) -> None:
     items.append(text)

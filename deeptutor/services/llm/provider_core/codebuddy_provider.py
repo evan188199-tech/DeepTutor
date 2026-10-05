@@ -54,6 +54,7 @@ class _CodeBuddySession:
     client: Any = None
     _ops: asyncio.Queue[_SessionTurn | None] = field(default_factory=asyncio.Queue)
     _owner: asyncio.Task[None] | None = None
+    _ready: asyncio.Future[None] | None = None
 
     @classmethod
     async def start(
@@ -66,12 +67,12 @@ class _CodeBuddySession:
     ) -> "_CodeBuddySession":
         session = cls(signature=signature)
         loop = asyncio.get_running_loop()
-        ready: asyncio.Future[None] = loop.create_future()
+        ready = loop.create_future()
+        session._ready = ready
         session._owner = asyncio.create_task(
             session._owner_loop(sdk, options, env_api_key, ready),
             name="codebuddy-session-owner",
         )
-        await ready
         return session
 
     async def _owner_loop(
@@ -120,7 +121,11 @@ class _CodeBuddySession:
         prompt: str,
         on_content_delta: Callable[[str], Awaitable[None]] | None,
     ) -> LLMResponse:
-        if self._owner is None or self._owner.done():
+        ready = self._ready
+        if self._owner is None or ready is None:
+            raise RuntimeError("CodeBuddy session owner is not running")
+        await ready
+        if self._owner.done():
             raise RuntimeError("CodeBuddy session owner is not running")
         loop = asyncio.get_running_loop()
         future: asyncio.Future[LLMResponse] = loop.create_future()
@@ -259,18 +264,17 @@ class CodeBuddyProvider(LLMProvider):
     ) -> LLMResponse:
         options = _build_options(sdk, model, max_tokens, self.api_key, reasoning_effort, tools)
         env_api_key = None if _options_has_api_key_env(options) else self.api_key
-        stream: Any | None = None
+        kwargs: dict[str, Any] = {"prompt": _messages_to_prompt(messages)}
+        if options is not None:
+            kwargs["options"] = options
         async with _temporary_codebuddy_api_key(env_api_key):
-            kwargs: dict[str, Any] = {"prompt": _messages_to_prompt(messages)}
-            if options is not None:
-                kwargs["options"] = options
             stream = sdk.query(**kwargs)
-            try:
-                return await _consume_messages(stream, on_content_delta=on_content_delta)
-            finally:
-                close = getattr(stream, "aclose", None)
-                if callable(close):
-                    await close()
+        try:
+            return await _consume_messages(stream, on_content_delta=on_content_delta)
+        finally:
+            close = getattr(stream, "aclose", None)
+            if callable(close):
+                await close()
 
     async def _run_session(
         self,
