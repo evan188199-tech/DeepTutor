@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 import threading
 
 import pytest
@@ -18,6 +19,14 @@ def _restore_transport():
     yield
     lark_oapi_transport.requests = original
     lark_http._INSTALLED = original_installed
+
+
+def test_install_returns_false_when_sdk_transport_unavailable(monkeypatch) -> None:
+    # A missing/halted submodule import exercises the guarded except path.
+    monkeypatch.setitem(sys.modules, "lark_oapi.core.http.transport", None)
+
+    assert lark_http.install_keep_alive() is False
+    assert lark_http._INSTALLED is False
 
 
 def test_install_routes_the_sdk_transport_through_the_shim() -> None:
