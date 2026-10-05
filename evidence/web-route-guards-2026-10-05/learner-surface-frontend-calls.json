@@ -1,0 +1,1960 @@
+[
+ {
+  "literal": "/api/",
+  "surface": "",
+  "call_sites": [
+   "web/lib/proxy-policy.ts:31"
+  ]
+ },
+ {
+  "literal": "/api/...",
+  "surface": "",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:718",
+   "web/features/knowledge/api/client.ts:729"
+  ]
+ },
+ {
+  "literal": "/api/auth/avatar/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/profile-api.ts:112"
+  ]
+ },
+ {
+  "literal": "/api/auth/is_first_user",
+  "surface": "",
+  "call_sites": [
+   "web/lib/auth.ts:165"
+  ]
+ },
+ {
+  "literal": "/api/auth/login",
+  "surface": "",
+  "call_sites": [
+   "web/lib/auth.ts:91"
+  ]
+ },
+ {
+  "literal": "/api/auth/logout",
+  "surface": "",
+  "call_sites": [
+   "web/lib/auth.ts:179"
+  ]
+ },
+ {
+  "literal": "/api/auth/openai-codex/callback",
+  "surface": "",
+  "call_sites": [
+   "web/lib/proxy-policy.ts:13"
+  ]
+ },
+ {
+  "literal": "/api/auth/profile",
+  "surface": "",
+  "call_sites": [
+   "web/lib/profile-api.ts:57",
+   "web/lib/profile-api.ts:68"
+  ]
+ },
+ {
+  "literal": "/api/auth/profile/avatar",
+  "surface": "",
+  "call_sites": [
+   "web/lib/profile-api.ts:85",
+   "web/lib/profile-api.ts:99"
+  ]
+ },
+ {
+  "literal": "/api/auth/profile/learner-profile",
+  "surface": "",
+  "call_sites": [
+   "web/lib/profile-api.ts:14",
+   "web/lib/profile-api.ts:25",
+   "web/lib/settings-extensions.ts:21"
+  ]
+ },
+ {
+  "literal": "/api/auth/register",
+  "surface": "",
+  "call_sites": [
+   "web/lib/auth.ts:140"
+  ]
+ },
+ {
+  "literal": "/api/auth/session-handoff",
+  "surface": "",
+  "call_sites": [
+   "web/lib/session-handoff-api.ts:13"
+  ]
+ },
+ {
+  "literal": "/api/auth/session-handoff/complete",
+  "surface": "",
+  "call_sites": [
+   "web/lib/session-handoff-api.ts:41"
+  ]
+ },
+ {
+  "literal": "/api/auth/session-handoff/exchange",
+  "surface": "",
+  "call_sites": [
+   "web/lib/session-handoff-api.ts:27"
+  ]
+ },
+ {
+  "literal": "/api/auth/status",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useAuthStatus.ts:31",
+   "web/lib/auth.ts:3",
+   "web/lib/auth.ts:56"
+  ]
+ },
+ {
+  "literal": "/api/auth/users",
+  "surface": "",
+  "call_sites": [
+   "web/lib/admin-api.ts:67",
+   "web/lib/admin-api.ts:175"
+  ]
+ },
+ {
+  "literal": "/api/auth/users/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/admin-api.ts:35",
+   "web/lib/admin-api.ts:49",
+   "web/lib/admin-api.ts:74",
+   "web/lib/admin-api.ts:149"
+  ]
+ },
+ {
+  "literal": "/api/auth/users/batch-delete",
+  "surface": "",
+  "call_sites": [
+   "web/lib/admin-api.ts:128"
+  ]
+ },
+ {
+  "literal": "/api/auth/users/import",
+  "surface": "",
+  "call_sites": [
+   "web/lib/admin-api.ts:110"
+  ]
+ },
+ {
+  "literal": "/api/books/${encodeURIComponent",
+  "surface": "books",
+  "call_sites": [
+   "web/hooks/useTopicSourceLibrary.ts:380"
+  ]
+ },
+ {
+  "literal": "/api/capabilities/registered",
+  "surface": "",
+  "call_sites": [
+   "web/features/capabilities/api.ts:15"
+  ]
+ },
+ {
+  "literal": "/api/capabilities/settings",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-extensions.ts:28"
+  ]
+ },
+ {
+  "literal": "/api/courses",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:178",
+   "web/lib/courses-api.ts:198"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:224",
+   "web/lib/courses-api.ts:236"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}/resources",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:248"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}/resources/${resourceId}",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:266"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}/state",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:281"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}/syllabus",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:318"
+  ]
+ },
+ {
+  "literal": "/api/courses/${courseId}/syllabus/${unitId}",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:335"
+  ]
+ },
+ {
+  "literal": "/api/courses/resource-candidates",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/courses-api.ts:302"
+  ]
+ },
+ {
+  "literal": "/api/dashboard/learning-index",
+  "surface": "",
+  "call_sites": [
+   "web/components/learning/LearningDashboard.tsx:52"
+  ]
+ },
+ {
+  "literal": "/api/dashboard/learning-library/${kind}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/learning-library.ts:12"
+  ]
+ },
+ {
+  "literal": "/api/dashboard/source-library/${kind}",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useTopicSourceLibrary.ts:108"
+  ]
+ },
+ {
+  "literal": "/api/dashboard/suggestions",
+  "surface": "",
+  "call_sites": [
+   "web/components/chat/home/StarterSuggestions.tsx:92"
+  ]
+ },
+ {
+  "literal": "/api/dashboard/suggestions/refresh",
+  "surface": "",
+  "call_sites": [
+   "web/components/chat/home/StarterSuggestions.tsx:164"
+  ]
+ },
+ {
+  "literal": "/api/documents/actions/automark",
+  "surface": "",
+  "call_sites": [
+   "web/features/co-writer/components/CoWriterWorkspace.tsx:1166"
+  ]
+ },
+ {
+  "literal": "/api/documents/actions/edit",
+  "surface": "",
+  "call_sites": [
+   "web/features/co-writer/components/CoWriterWorkspace.tsx:1118"
+  ]
+ },
+ {
+  "literal": "/api/documents/actions/edit-react/stream",
+  "surface": "",
+  "call_sites": [
+   "web/features/co-writer/components/CoWriterWorkspace.tsx:995"
+  ]
+ },
+ {
+  "literal": "/api/file-preview/pdf",
+  "surface": "",
+  "call_sites": [
+   "web/components/chat/preview/previewers/OfficePdfPreview.tsx:71",
+   "web/components/chat/preview/previewers/OfficePdfPreview.tsx:114"
+  ]
+ },
+ {
+  "literal": "/api/imports/chat-history",
+  "surface": "",
+  "call_sites": [
+   "web/lib/chat-import/types.ts:76",
+   "web/lib/imports-api.ts:30",
+   "web/lib/imports-api.ts:91"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:15",
+   "web/features/knowledge/api/client.ts:792"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/${encodeURIComponent",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/components/knowledge/KnowledgePage.tsx:190",
+   "web/features/knowledge/api/client.ts:695",
+   "web/features/knowledge/api/client.ts:723",
+   "web/features/knowledge/api/client.ts:734",
+   "web/features/knowledge/api/client.ts:1028",
+   "web/features/knowledge/api/client.ts:1047",
+   "web/features/knowledge/api/client.ts:1069",
+   "web/features/knowledge/api/client.ts:1087",
+   "web/features/knowledge/api/client.ts:1360",
+   "web/features/knowledge/api/client.ts:1378",
+   "web/features/knowledge/api/client.ts:1397",
+   "web/features/knowledge/api/client.ts:1459",
+   "web/features/knowledge/api/client.ts:1484",
+   "web/features/knowledge/api/client.ts:1504",
+   "web/features/knowledge/api/client.ts:1581",
+   "web/features/knowledge/api/client.ts:1599",
+   "web/features/knowledge/api/client.ts:1626",
+   "web/features/knowledge/api/client.ts:1645",
+   "web/features/knowledge/api/client.ts:1733",
+   "web/features/knowledge/api/client.ts:1751",
+   "web/features/knowledge/api/client.ts:1771",
+   "web/features/knowledge/api/client.ts:1797",
+   "web/features/knowledge/api/client.ts:1815",
+   "web/features/knowledge/api/client.ts:1834",
+   "web/features/knowledge/api/client.ts:1857",
+   "web/features/knowledge/api/client.ts:1874",
+   "web/features/knowledge/api/client.ts:1887",
+   "web/hooks/useTopicSourceLibrary.ts:266"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-folder",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:999"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-ima",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1200"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-kiwix",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:842"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-lightrag-server",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1265"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-marginnote4",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:908"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-obsidian",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:885"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/connect-weknora",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1323"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/default/${encodeURIComponent",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1432"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/delete",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1529"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/embedding-usage",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:30"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/kiwix-articles",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:856"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/kiwix-catalog",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:817"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/list",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:296",
+   "web/features/knowledge/api/client.ts:297"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/list-ima",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1146"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/probe-folder",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:974"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/probe-ima",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1170"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/probe-kiwix",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:828"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/probe-lightrag-server",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1234"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/probe-weknora",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:1296"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/${provider}/config",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:506",
+   "web/features/knowledge/api/client.ts:525"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/${provider}/preflight",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:586"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/active-model",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:638"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/graphrag/model-compatibility",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:617"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/ima/config",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:415"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/lightrag/model-options",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:551"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/llamaindex/config",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:458"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/model-options",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:602"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-pipelines/pageindex/config",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:374"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-providers",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:326"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/rag-providers/${encodeURIComponent",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:658"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/supported-file-types",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:350"
+  ]
+ },
+ {
+  "literal": "/api/knowledge-bases/tasks/${encodeURIComponent",
+  "surface": "reading-if-GET-template",
+  "call_sites": [
+   "web/hooks/useKnowledgeProgress.ts:298"
+  ]
+ },
+ {
+  "literal": "/api/marginnote4",
+  "surface": "",
+  "call_sites": [
+   "web/lib/marginnote4-api.ts:18"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/progress",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:338"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/progress/${bookId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:46"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/progress/${bookId}/init-modules",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:53"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/progress/${encodeURIComponent",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:167",
+   "web/lib/learning-api.ts:180",
+   "web/lib/learning-api.ts:191",
+   "web/lib/learning-api.ts:224",
+   "web/lib/learning-api.ts:314",
+   "web/lib/learning-api.ts:345",
+   "web/lib/learning-api.ts:354",
+   "web/lib/learning-api.ts:365",
+   "web/lib/learning-api.ts:379",
+   "web/lib/learning-api.ts:398",
+   "web/lib/reading-workspace-api.ts:478"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/reading/records",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-records-api.ts:28"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/topics",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:598",
+   "web/lib/learning-api.ts:712"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/topics/${encodeURIComponent",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:643",
+   "web/lib/learning-api.ts:655",
+   "web/lib/learning-api.ts:666",
+   "web/lib/learning-api.ts:683",
+   "web/lib/learning-api.ts:727",
+   "web/lib/learning-api.ts:744",
+   "web/lib/learning-api.ts:762"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/topics/draft",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:698"
+  ]
+ },
+ {
+  "literal": "/api/mastery-paths/topics/index",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/learning-api.ts:628"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${layer}/${docKey}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryWorkbench.tsx:228",
+   "web/components/memory/MemoryWorkbench.tsx:314"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${layer}/${docKey}/lines",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryWorkbench.tsx:236"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${layer}/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryRunPanel.tsx:237"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${layer}/${key}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:336"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${selected.layer}/${selected.key}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:351"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/${selected.layer}/${selected.key}/update",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:381"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/L2/${s}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/memory-graph.ts:254"
+  ]
+ },
+ {
+  "literal": "/api/memory/doc/L3/${slot}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/memory-graph.ts:265"
+  ]
+ },
+ {
+  "literal": "/api/memory/overview",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryHub.tsx:61",
+   "web/components/memory/MemorySection.tsx:311",
+   "web/components/memory/MemoryWorkbench.tsx:218"
+  ]
+ },
+ {
+  "literal": "/api/memory/resolve_entry/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/app/(utility)/memory/resolve/page.tsx:35"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:134"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs/${runId}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:128",
+   "web/components/memory/useMemoryRun.ts:187",
+   "web/components/memory/useMemoryRun.ts:222"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs/${runId}/events",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:246"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs/${state.run.id}/cancel",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:384"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs/${state.run.id}/undo",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:396"
+  ]
+ },
+ {
+  "literal": "/api/memory/runs/start",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/useMemoryRun.ts:347"
+  ]
+ },
+ {
+  "literal": "/api/memory/settings",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryRunPanel.tsx:112",
+   "web/lib/settings-extensions.ts:29"
+  ]
+ },
+ {
+  "literal": "/api/memory/snapshot/${key}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryL1Workbench.tsx:85"
+  ]
+ },
+ {
+  "literal": "/api/memory/snapshot/${surface}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:692"
+  ]
+ },
+ {
+  "literal": "/api/memory/snapshot/${surface}/changes",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:706"
+  ]
+ },
+ {
+  "literal": "/api/memory/snapshot/${surface}/refresh",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:781"
+  ]
+ },
+ {
+  "literal": "/api/memory/snapshot/${s}",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemoryHub.tsx:63",
+   "web/lib/memory-graph.ts:244"
+  ]
+ },
+ {
+  "literal": "/api/memory/trace/kb",
+  "surface": "",
+  "call_sites": [
+   "web/components/memory/MemorySection.tsx:721"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/admin/books",
+  "surface": "",
+  "call_sites": [
+   "web/features/multi-user/api.ts:56"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/admin/resources",
+  "surface": "",
+  "call_sites": [
+   "web/features/multi-user/api.ts:19"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/guardians",
+  "surface": "",
+  "call_sites": [
+   "web/lib/guardian-api.ts:75",
+   "web/lib/guardian-api.ts:86"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/guardians/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/guardian-api.ts:104"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/learners/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/guardian-api.ts:120",
+   "web/lib/guardian-api.ts:129",
+   "web/lib/guardian-api.ts:142",
+   "web/lib/guardian-api.ts:152",
+   "web/lib/guardian-api.ts:166",
+   "web/lib/guardian-api.ts:175",
+   "web/lib/settings-extensions.ts:59"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/me/guardianships",
+  "surface": "",
+  "call_sites": [
+   "web/lib/guardian-api.ts:66"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/me/guardianships/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/guardian-api.ts:113"
+  ]
+ },
+ {
+  "literal": "/api/multi-user/users/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/features/multi-user/api.ts:29",
+   "web/features/multi-user/api.ts:42",
+   "web/features/multi-user/api.ts:68",
+   "web/features/multi-user/api.ts:83"
+  ]
+ },
+ {
+  "literal": "/api/notebooks",
+  "surface": "",
+  "call_sites": [
+   "web/lib/notebook-api.ts:53",
+   "web/lib/notebook-api.ts:75"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/",
+  "surface": "",
+  "call_sites": [
+   "web/components/notebook/useNotebookSelection.ts:12"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useTopicSourceLibrary.ts:402"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/${notebookId}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/notebook-api.ts:62",
+   "web/lib/notebook-api.ts:99",
+   "web/lib/notebook-api.ts:110"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/${notebookId}/export",
+  "surface": "",
+  "call_sites": [
+   "web/lib/notebook-api.ts:184"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/${notebookId}/records/${recordId}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/notebook-api.ts:121",
+   "web/lib/notebook-api.ts:147"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/${notebookId}/records/${recordId}/actions/${mode}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/notebook-api.ts:167"
+  ]
+ },
+ {
+  "literal": "/api/notebooks/actions/add-record-with-summary",
+  "surface": "",
+  "call_sites": [
+   "web/components/notebook/SaveToNotebookModal.tsx:333"
+  ]
+ },
+ {
+  "literal": "/api/partner-groups",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partner-groups-api.ts:103",
+   "web/lib/partner-groups-api.ts:122"
+  ]
+ },
+ {
+  "literal": "/api/partner-groups/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partner-groups-api.ts:110",
+   "web/lib/partner-groups-api.ts:136",
+   "web/lib/partner-groups-api.ts:149",
+   "web/lib/partner-groups-api.ts:165",
+   "web/lib/partner-groups-api.ts:177",
+   "web/lib/partner-groups-api.ts:191",
+   "web/lib/partner-groups-api.ts:221",
+   "web/lib/partner-groups-api.ts:234"
+  ]
+ },
+ {
+  "literal": "/api/partner-groups/discussion-modes",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partner-groups-api.ts:265"
+  ]
+ },
+ {
+  "literal": "/api/partners",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:195",
+   "web/lib/partners-api.ts:214"
+  ]
+ },
+ {
+  "literal": "/api/partners/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:11",
+   "web/lib/partners-api.ts:205",
+   "web/lib/partners-api.ts:245",
+   "web/lib/partners-api.ts:256",
+   "web/lib/partners-api.ts:265",
+   "web/lib/partners-api.ts:273",
+   "web/lib/partners-api.ts:282",
+   "web/lib/partners-api.ts:294",
+   "web/lib/partners-api.ts:338",
+   "web/lib/partners-api.ts:353",
+   "web/lib/partners-api.ts:371",
+   "web/lib/partners-api.ts:418",
+   "web/lib/partners-api.ts:462",
+   "web/lib/partners-api.ts:480",
+   "web/lib/partners-api.ts:494",
+   "web/lib/partners-api.ts:508",
+   "web/lib/partners-api.ts:536",
+   "web/lib/partners-api.ts:552",
+   "web/lib/partners-api.ts:564",
+   "web/lib/partners-api.ts:576",
+   "web/lib/partners-api.ts:591",
+   "web/lib/partners-api.ts:605",
+   "web/lib/partners-api.ts:635",
+   "web/lib/partners-api.ts:670",
+   "web/lib/partners-api.ts:681",
+   "web/lib/partners-api.ts:694",
+   "web/lib/partners-api.ts:729",
+   "web/lib/partners-api.ts:743"
+  ]
+ },
+ {
+  "literal": "/api/partners/${partnerId}",
+  "surface": "",
+  "call_sites": [
+   "web/components/partners/PartnerChannels.tsx:83",
+   "web/components/partners/PartnerChannels.tsx:148"
+  ]
+ },
+ {
+  "literal": "/api/partners/channels/schema",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:519"
+  ]
+ },
+ {
+  "literal": "/api/partners/commands/palette",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:328"
+  ]
+ },
+ {
+  "literal": "/api/partners/consultation-session",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:753"
+  ]
+ },
+ {
+  "literal": "/api/partners/drafts/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:228"
+  ]
+ },
+ {
+  "literal": "/api/partners/soul-sources",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:305"
+  ]
+ },
+ {
+  "literal": "/api/partners/souls",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:314"
+  ]
+ },
+ {
+  "literal": "/api/partners/tool-options",
+  "surface": "",
+  "call_sites": [
+   "web/lib/partners-api.ts:323"
+  ]
+ },
+ {
+  "literal": "/api/personas",
+  "surface": "",
+  "call_sites": [
+   "web/lib/personas-api.ts:56",
+   "web/lib/personas-api.ts:84"
+  ]
+ },
+ {
+  "literal": "/api/personas/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/personas-api.ts:69",
+   "web/lib/personas-api.ts:103",
+   "web/lib/personas-api.ts:117"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/categories",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:636"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/categories${query}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:629"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/categories/${categoryId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:649",
+   "web/lib/notebook-api.ts:661"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries${query",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:373"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/${entryId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:383",
+   "web/lib/notebook-api.ts:442",
+   "web/lib/notebook-api.ts:514"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/${entryId}/categories",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:529"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/${entryId}/categories/${categoryId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:615"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/categories/bulk",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:558"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/lookup/by-question",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:405",
+   "web/lib/notebook-api.ts:426"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/entries/upsert",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:497"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/materials${query}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:603"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/practice",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/practice-api.ts:5"
+  ]
+ },
+ {
+  "literal": "/api/question-notebook/stats${query}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/notebook-api.ts:592"
+  ]
+ },
+ {
+  "literal": "/api/reading",
+  "surface": "reading",
+  "call_sites": [
+   "web/lib/reading-api.ts:211",
+   "web/lib/reading-workspace-api.ts:5"
+  ]
+ },
+ {
+  "literal": "/api/reading/library/import-zim-article",
+  "surface": "reading",
+  "call_sites": [
+   "web/features/knowledge/api/client.ts:868"
+  ]
+ },
+ {
+  "literal": "/api/sessions",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:214"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:302",
+   "web/lib/session-api.ts:339",
+   "web/lib/session-api.ts:411"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/ask-hint",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:320"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/branch-selection",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:453"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/messages/${messageId}",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:440"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/messages/${messageId}/events",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:375"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/organization",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:397"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/quiz-results",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:425"
+  ]
+ },
+ {
+  "literal": "/api/sessions/${sessionId}/reply-language",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:355"
+  ]
+ },
+ {
+  "literal": "/api/sessions/search",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/session-api.ts:262"
+  ]
+ },
+ {
+  "literal": "/api/settings",
+  "surface": "",
+  "call_sites": [
+   "web/components/access/CapabilityAccessContext.tsx:62",
+   "web/components/settings/ChatResponseTimeoutSection.tsx:38",
+   "web/features/settings/store/SettingsStore.tsx:751",
+   "web/hooks/useVoiceAutoplay.ts:25",
+   "web/hooks/useVoiceMathSpeak.ts:15"
+  ]
+ },
+ {
+  "literal": "/api/settings/apply",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1765"
+  ]
+ },
+ {
+  "literal": "/api/settings/apply/provider",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1646"
+  ]
+ },
+ {
+  "literal": "/api/settings/apply/registry",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1561"
+  ]
+ },
+ {
+  "literal": "/api/settings/apply/service",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1501"
+  ]
+ },
+ {
+  "literal": "/api/settings/chat-attachments",
+  "surface": "",
+  "call_sites": [
+   "web/lib/attachment-limits.ts:43",
+   "web/lib/settings-extensions.ts:26"
+  ]
+ },
+ {
+  "literal": "/api/settings/chat-response-timeout",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/ChatResponseTimeoutSection.tsx:74",
+   "web/lib/settings-extensions.ts:27"
+  ]
+ },
+ {
+  "literal": "/api/settings/chat-starters",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-extensions.ts:25"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:84",
+   "web/lib/settings-extensions.ts:22"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/docling/test",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:406"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/install",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:1255"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/job/cancel",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:1143"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/job/status",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:1076"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/models/download",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:1304"
+  ]
+ },
+ {
+  "literal": "/api/settings/document-parsing/tika/test",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DocumentParsingSettingsSection.tsx:696"
+  ]
+ },
+ {
+  "literal": "/api/settings/draft",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:791",
+   "web/features/settings/store/SettingsStore.tsx:1471",
+   "web/features/settings/store/SettingsStore.tsx:1745",
+   "web/features/settings/store/SettingsStore.tsx:1784",
+   "web/features/settings/store/SettingsStore.tsx:1863"
+  ]
+ },
+ {
+  "literal": "/api/settings/enabled-tools",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-extensions.ts:18"
+  ]
+ },
+ {
+  "literal": "/api/settings/fetch-models",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/ServiceConfigEditor.tsx:384"
+  ]
+ },
+ {
+  "literal": "/api/settings/llm-options",
+  "surface": "",
+  "call_sites": [
+   "web/lib/llm-options.ts:58"
+  ]
+ },
+ {
+  "literal": "/api/settings/mcp",
+  "surface": "",
+  "call_sites": [
+   "web/lib/mcp-api.ts:107"
+  ]
+ },
+ {
+  "literal": "/api/settings/mineru",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MinerUEngineSettings.tsx:113",
+   "web/lib/settings-extensions.ts:23"
+  ]
+ },
+ {
+  "literal": "/api/settings/mineru/models/download",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MinerUEngineSettings.tsx:223"
+  ]
+ },
+ {
+  "literal": "/api/settings/mineru/models/download/cancel",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MinerUEngineSettings.tsx:257"
+  ]
+ },
+ {
+  "literal": "/api/settings/mineru/models/download/status",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MinerUEngineSettings.tsx:191"
+  ]
+ },
+ {
+  "literal": "/api/settings/mineru/test",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MinerUEngineSettings.tsx:155"
+  ]
+ },
+ {
+  "literal": "/api/settings/model-capabilities",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/ModelCapabilityFields.tsx:59"
+  ]
+ },
+ {
+  "literal": "/api/settings/network",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/NetworkSettingsSection.tsx:114",
+   "web/features/settings/sections/NetworkSettingsSection.tsx:169",
+   "web/lib/settings-extensions.ts:30"
+  ]
+ },
+ {
+  "literal": "/api/settings/presets",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-presets.ts:20"
+  ]
+ },
+ {
+  "literal": "/api/settings/presets/${presetId}/draft",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1811"
+  ]
+ },
+ {
+  "literal": "/api/settings/providers/codebuddy/auth",
+  "surface": "",
+  "call_sites": [
+   "web/lib/codebuddy-auth.ts:11"
+  ]
+ },
+ {
+  "literal": "/api/settings/providers/openai-codex",
+  "surface": "",
+  "call_sites": [
+   "web/lib/codex-oauth.ts:63"
+  ]
+ },
+ {
+  "literal": "/api/settings/readiness",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/SettingsReadinessPanel.tsx:138",
+   "web/lib/settings-readiness.ts:213"
+  ]
+ },
+ {
+  "literal": "/api/settings/test-provider",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/ProviderModelDiscovery.tsx:77",
+   "web/components/settings/RegistryControls.tsx:162"
+  ]
+ },
+ {
+  "literal": "/api/settings/tests/${service}/${payload.run_id}/events",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1995"
+  ]
+ },
+ {
+  "literal": "/api/settings/tests/${service}/start",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:1980"
+  ]
+ },
+ {
+  "literal": "/api/settings/ui",
+  "surface": "",
+  "call_sites": [
+   "web/context/AppShellContext.tsx:141",
+   "web/features/settings/store/SettingsStore.tsx:154",
+   "web/hooks/useSetupSync.ts:60",
+   "web/lib/settings-extensions.ts:17"
+  ]
+ },
+ {
+  "literal": "/api/settings/usage",
+  "surface": "",
+  "call_sites": [
+   "web/lib/usage-statistics.ts:13"
+  ]
+ },
+ {
+  "literal": "/api/settings/video-learning",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-extensions.ts:20",
+   "web/lib/video-learning-api.ts:372",
+   "web/lib/video-learning-api.ts:382"
+  ]
+ },
+ {
+  "literal": "/api/settings/video-learning/test-invidious",
+  "surface": "",
+  "call_sites": [
+   "web/lib/video-learning-api.ts:394"
+  ]
+ },
+ {
+  "literal": "/api/settings/voice-autoplay",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useVoiceAutoplay.ts:103"
+  ]
+ },
+ {
+  "literal": "/api/settings/voice-math-speak",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useVoiceMathSpeak.ts:66"
+  ]
+ },
+ {
+  "literal": "/api/settings/voice/preview",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/VoicePreviewPanel.tsx:77"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace",
+  "surface": "",
+  "call_sites": [
+   "web/lib/settings-extensions.ts:19"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/data",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/DataMigrationSettingsSection.tsx:36"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/knowledge-bases/move",
+  "surface": "",
+  "call_sites": [
+   "web/lib/workspaces-api.ts:186"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/knowledge-bases/preview-move",
+  "surface": "",
+  "call_sites": [
+   "web/lib/workspaces-api.ts:178"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/registrations",
+  "surface": "",
+  "call_sites": [
+   "web/lib/workspaces-api.ts:46"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/resource-usage",
+  "surface": "",
+  "call_sites": [
+   "web/lib/workspaces-api.ts:158"
+  ]
+ },
+ {
+  "literal": "/api/settings/workspace/resources",
+  "surface": "",
+  "call_sites": [
+   "web/lib/workspaces-api.ts:29"
+  ]
+ },
+ {
+  "literal": "/api/skills/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:98",
+   "web/lib/skills-api.ts:268",
+   "web/lib/skills-api.ts:286"
+  ]
+ },
+ {
+  "literal": "/api/skills/create",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:244"
+  ]
+ },
+ {
+  "literal": "/api/skills/hub/catalog${qs",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:207"
+  ]
+ },
+ {
+  "literal": "/api/skills/hub/detail",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:229"
+  ]
+ },
+ {
+  "literal": "/api/skills/install",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:130"
+  ]
+ },
+ {
+  "literal": "/api/skills/list",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:71"
+  ]
+ },
+ {
+  "literal": "/api/skills/tags/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:327",
+   "web/lib/skills-api.ts:341"
+  ]
+ },
+ {
+  "literal": "/api/skills/tags/create",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:312"
+  ]
+ },
+ {
+  "literal": "/api/skills/tags/list",
+  "surface": "",
+  "call_sites": [
+   "web/lib/skills-api.ts:301"
+  ]
+ },
+ {
+  "literal": "/api/space/cli-apps",
+  "surface": "",
+  "call_sites": [
+   "web/lib/cli-apps-api.ts:4"
+  ]
+ },
+ {
+  "literal": "/api/space/mcp",
+  "surface": "",
+  "call_sites": [
+   "web/lib/mcp-api.ts:110"
+  ]
+ },
+ {
+  "literal": "/api/subagents/backends/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:109"
+  ]
+ },
+ {
+  "literal": "/api/subagents/backends/options",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:92"
+  ]
+ },
+ {
+  "literal": "/api/subagents/connections",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:35",
+   "web/lib/subagents-api.ts:48"
+  ]
+ },
+ {
+  "literal": "/api/subagents/connections/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:65",
+   "web/lib/subagents-api.ts:167"
+  ]
+ },
+ {
+  "literal": "/api/subagents/detect",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:26"
+  ]
+ },
+ {
+  "literal": "/api/subagents/settings",
+  "surface": "",
+  "call_sites": [
+   "web/lib/subagents-api.ts:209",
+   "web/lib/subagents-api.ts:222"
+  ]
+ },
+ {
+  "literal": "/api/system/memory",
+  "surface": "",
+  "call_sites": [
+   "web/components/settings/MemoryUsageItem.tsx:14",
+   "web/components/settings/MemoryUsageItem.tsx:87"
+  ]
+ },
+ {
+  "literal": "/api/system/runtime",
+  "surface": "",
+  "call_sites": [
+   "web/features/runtime-status/api.ts:4",
+   "web/shared/api/runtime.ts:8"
+  ]
+ },
+ {
+  "literal": "/api/system/status",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/store/SettingsStore.tsx:840",
+   "web/features/settings/store/SettingsStore.tsx:1532",
+   "web/features/settings/store/SettingsStore.tsx:1777"
+  ]
+ },
+ {
+  "literal": "/api/system/update",
+  "surface": "",
+  "call_sites": [
+   "web/lib/app-update.ts:107",
+   "web/lib/app-update.ts:135"
+  ]
+ },
+ {
+  "literal": "/api/system/update/check",
+  "surface": "",
+  "call_sites": [
+   "web/lib/app-update.ts:116"
+  ]
+ },
+ {
+  "literal": "/api/system/update/job",
+  "surface": "",
+  "call_sites": [
+   "web/lib/app-update.ts:147"
+  ]
+ },
+ {
+  "literal": "/api/system/update/settings",
+  "surface": "",
+  "call_sites": [
+   "web/lib/app-update.ts:126",
+   "web/lib/settings-extensions.ts:24"
+  ]
+ },
+ {
+  "literal": "/api/task-board",
+  "surface": "chat",
+  "call_sites": [
+   "web/lib/task-board-api.ts:19"
+  ]
+ },
+ {
+  "literal": "/api/tools",
+  "surface": "",
+  "call_sites": [
+   "web/features/settings/sections/ToolsSettingsSection.tsx:96",
+   "web/lib/tools-settings.ts:10"
+  ]
+ },
+ {
+  "literal": "/api/video-learning/invidious/account/${action}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/video-learning-api.ts:426"
+  ]
+ },
+ {
+  "literal": "/api/video-learning/invidious/browse/${kind}",
+  "surface": "",
+  "call_sites": [
+   "web/lib/video-learning-api.ts:445"
+  ]
+ },
+ {
+  "literal": "/api/video-learning/materials/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/lib/video-learning-api.ts:145",
+   "web/lib/video-learning-api.ts:160",
+   "web/lib/video-learning-api.ts:175",
+   "web/lib/video-learning-api.ts:190",
+   "web/lib/video-learning-api.ts:208",
+   "web/lib/video-learning-api.ts:238",
+   "web/lib/video-learning-api.ts:252",
+   "web/lib/video-learning-api.ts:267",
+   "web/lib/video-learning-api.ts:287",
+   "web/lib/video-learning-api.ts:308",
+   "web/lib/video-learning-api.ts:326",
+   "web/lib/video-learning-api.ts:344",
+   "web/lib/video-learning-api.ts:358"
+  ]
+ },
+ {
+  "literal": "/api/video-learning/materials/resolve",
+  "surface": "",
+  "call_sites": [
+   "web/lib/video-learning-api.ts:221"
+  ]
+ },
+ {
+  "literal": "/api/visualizers",
+  "surface": "",
+  "call_sites": [
+   "web/lib/visualizers-api.ts:3"
+  ]
+ },
+ {
+  "literal": "/api/voice/stt",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useVoiceRecorder.ts:12",
+   "web/hooks/useVoiceRecorder.ts:71"
+  ]
+ },
+ {
+  "literal": "/api/voice/tts",
+  "surface": "",
+  "call_sites": [
+   "web/features/chat/messages/ChatMessageList.tsx:1365"
+  ]
+ },
+ {
+  "literal": "/files/",
+  "surface": "",
+  "call_sites": [
+   "web/lib/proxy-policy.ts:33"
+  ]
+ },
+ {
+  "literal": "/files/outputs/",
+  "surface": "",
+  "call_sites": [
+   "web/lib/session-activity.ts:18",
+   "web/lib/session-activity.ts:19"
+  ]
+ },
+ {
+  "literal": "/ws/",
+  "surface": "",
+  "call_sites": [
+   "web/lib/proxy-policy.ts:38"
+  ]
+ },
+ {
+  "literal": "/ws/books",
+  "surface": "",
+  "call_sites": [
+   "web/lib/book-api.ts:23",
+   "web/lib/use-book-stream.ts:8"
+  ]
+ },
+ {
+  "literal": "/ws/knowledge-bases/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/hooks/useKnowledgeProgress.ts:175"
+  ]
+ },
+ {
+  "literal": "/ws/mastery-paths",
+  "surface": "",
+  "call_sites": [
+   "web/lib/mastery-ws.ts:8"
+  ]
+ },
+ {
+  "literal": "/ws/partner-groups/${encodeURIComponent",
+  "surface": "",
+  "call_sites": [
+   "web/components/partners/group/useGroupSession.ts:320"
+  ]
+ },
+ {
+  "literal": "/ws/partners/${partnerId}",
+  "surface": "",
+  "call_sites": [
+   "web/components/partners/PartnerChat.tsx:869"
+  ]
+ },
+ {
+  "literal": "/ws/questions/judge",
+  "surface": "",
+  "call_sites": [
+   "web/lib/quiz-judge.ts:40"
+  ]
+ }
+]
