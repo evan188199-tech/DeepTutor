@@ -2619,10 +2619,14 @@ def _revise_points(
             [],
             {},
         )
-    if len(points) > _MAX_POINTS_PER_MODULE:
+    # The cap limits growth, not existence: a module saved with more waypoints
+    # than the cap — built before it, or by a path that never enforced it — can
+    # be rewritten or trimmed, just not grown past the size it already has.
+    revision_cap = max(_MAX_POINTS_PER_MODULE, len(module.knowledge_points))
+    if len(points) > revision_cap:
         return (
             [],
-            f"A module may hold at most {_MAX_POINTS_PER_MODULE} knowledge points; "
+            f"A module may hold at most {revision_cap} knowledge points; "
             f"this revision would give {module.name!r} {len(points)}. Drop some, or "
             "split the material across modules with mastery_build.",
             [],

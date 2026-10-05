@@ -74,6 +74,70 @@ def test_new_objective_never_reuses_an_existing_or_deleted_position_id() -> None
     assert ids[0].startswith("topic_m0_kp_")
 
 
+def test_edit_keeps_a_legacy_region_with_more_waypoints_than_the_cap() -> None:
+    point_ids = [f"topic_m0_kp{index}" for index in range(8)]
+    raw = [
+        _module(
+            "topic_m0",
+            *((point_id, f"Objective {point_id}") for point_id in point_ids),
+        )
+    ]
+    # A type-only edit: every id stays, one waypoint changes type.
+    raw[0]["knowledge_points"][3]["type"] = "procedure"
+
+    modules = materialize_modules(
+        "topic",
+        raw,
+        strict=True,
+        existing_module_ids={"topic_m0"},
+        existing_objective_ids=set(point_ids),
+    )
+
+    assert [point.id for point in modules[0].knowledge_points] == point_ids
+    assert modules[0].knowledge_points[3].type.value == "procedure"
+
+
+def test_edit_cannot_grow_a_legacy_region_past_its_current_waypoints() -> None:
+    point_ids = [f"topic_m0_kp{index}" for index in range(8)]
+    raw = [
+        _module(
+            "topic_m0",
+            *((point_id, f"Objective {point_id}") for point_id in point_ids),
+        )
+    ]
+    raw[0]["knowledge_points"].append({"name": "A ninth waypoint", "type": "concept"})
+
+    with pytest.raises(TopicGenerationError, match="at most 8 waypoints"):
+        materialize_modules(
+            "topic",
+            raw,
+            strict=True,
+            existing_module_ids={"topic_m0"},
+            existing_objective_ids=set(point_ids),
+        )
+
+
+def test_edit_still_rejects_a_new_region_over_the_waypoint_cap() -> None:
+    raw = [
+        {
+            "id": "topic_m1",
+            "name": "Crowded new region",
+            "knowledge_points": [
+                {"name": f"Objective {index}", "type": "concept"} for index in range(8)
+            ],
+        }
+    ]
+
+    with pytest.raises(TopicGenerationError, match="at most 7 waypoints"):
+        materialize_modules(
+            "topic",
+            raw,
+            strict=True,
+            existing_module_ids={"topic_m0"},
+            existing_objective_ids={"topic_m0_kp0"},
+        )
+
+
 @pytest.mark.parametrize(
     "raw, message",
     [

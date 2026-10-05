@@ -327,6 +327,12 @@ def materialize_modules(
     holds fourteen documents cannot be covered by eight regions, and the old
     fixed cap is why generated routes stopped part-way through a library.
 
+    The waypoint cap is a growth limit, not a migration order: a module that
+    already holds more waypoints than ``_MAX_OBJECTIVES_PER_MODULE`` — saved
+    before the cap, or built by a tool that never enforced it — may be
+    resubmitted with every waypoint id preserved. It may not grow past the
+    size it already has, and a module of new waypoints still gets the cap.
+
     Position is presentation state, not identity. Existing ids are accepted
     only when the caller proves they belong to this topic; every new entity gets
     a collision-proof id so a deleted objective's evidence can never be reused.
@@ -384,12 +390,16 @@ def materialize_modules(
             raise TopicGenerationError(
                 f"Route region {module_index + 1} needs at least one waypoint"
             )
-        if strict and len(raw_kps) > _MAX_OBJECTIVES_PER_MODULE:
+        preserved_waypoint_ids = {
+            str(raw.get("id") or "").strip() for raw in raw_kps if isinstance(raw, dict)
+        } & allowed_objectives
+        waypoint_cap = max(_MAX_OBJECTIVES_PER_MODULE, len(preserved_waypoint_ids))
+        if strict and len(raw_kps) > waypoint_cap:
             raise TopicGenerationError(
                 f"Route region {module_index + 1} may have at most "
-                f"{_MAX_OBJECTIVES_PER_MODULE} waypoints; it has {len(raw_kps)}"
+                f"{waypoint_cap} waypoints; it has {len(raw_kps)}"
             )
-        for kp_index, raw_kp in enumerate(raw_kps[:_MAX_OBJECTIVES_PER_MODULE]):
+        for kp_index, raw_kp in enumerate(raw_kps[:waypoint_cap]):
             if not isinstance(raw_kp, dict):
                 if strict:
                     raise TopicGenerationError(

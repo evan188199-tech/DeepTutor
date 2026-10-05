@@ -10,7 +10,9 @@ import pytest
 
 from deeptutor.api.routers.mastery_path import router, ws_router
 from deeptutor.learning.models import (
+    KnowledgePoint,
     KnowledgeType,
+    LearningModule,
     LearningProgress,
     PendingQuestion,
     QuizAttempt,
@@ -389,6 +391,118 @@ class TestTopicProductApi:
 
         assert response.status_code == 422
         assert "at least one waypoint" in response.json()["detail"]
+
+    def test_edit_topic_map_keeps_a_legacy_region_with_more_than_seven_waypoints(self, client, app):
+        module_id = "topic_m0"
+        point_ids = [f"topic_m0_kp{index}" for index in range(8)]
+        progress = LearningProgress(book_id="legacy-path", name="Legacy path")
+        progress.modules = [
+            LearningModule(
+                id=module_id,
+                name="Legacy region",
+                order=0,
+                knowledge_points=[
+                    KnowledgePoint(
+                        id=point_id,
+                        name=f"Objective {index}",
+                        type=KnowledgeType.CONCEPT,
+                        module_id=module_id,
+                    )
+                    for index, point_id in enumerate(point_ids)
+                ],
+            )
+        ]
+        LearningStore(root=app.state.learning_root).save(progress)
+
+        # A shape-preserving edit: same waypoints, module renamed — every
+        # waypoint id survives.
+        waypoints = [
+            {
+                "id": point_id,
+                "name": f"Objective {index}",
+                "type": "concept",
+                "module_id": module_id,
+            }
+            for index, point_id in enumerate(point_ids)
+        ]
+        response = client.put(
+            "/api/mastery-paths/topics/legacy-path/map",
+            json={
+                "modules": [
+                    {
+                        "id": module_id,
+                        "name": "Legacy region, renamed",
+                        "knowledge_points": waypoints,
+                    }
+                ]
+            },
+        )
+
+        assert response.status_code == 200
+        points = response.json()["map"]["modules"][0]["knowledge_points"]
+        assert [point["id"] for point in points] == point_ids
+        assert response.json()["map"]["modules"][0]["name"] == "Legacy region, renamed"
+
+        # A type-only edit is accepted too; the retyped waypoint gets a fresh
+        # id so its old evidence is not claimed for a changed learning target.
+        waypoints[5]["type"] = "procedure"
+        retyped = client.put(
+            "/api/mastery-paths/topics/legacy-path/map",
+            json={
+                "modules": [
+                    {
+                        "id": module_id,
+                        "name": "Legacy region, renamed",
+                        "knowledge_points": waypoints,
+                    }
+                ]
+            },
+        )
+
+        assert retyped.status_code == 200
+        retyped_points = retyped.json()["map"]["modules"][0]["knowledge_points"]
+        assert len(retyped_points) == 8
+        assert retyped_points[5]["type"] == "procedure"
+        assert retyped_points[5]["id"] != point_ids[5]
+        assert [point["id"] for point in retyped_points[:5]] == point_ids[:5]
+        assert [point["id"] for point in retyped_points[6:]] == point_ids[6:]
+
+    def test_edit_topic_map_still_rejects_a_new_region_over_the_waypoint_cap(self, client, app):
+        progress = LearningProgress(book_id="legacy-path", name="Legacy path")
+        progress.modules = [
+            LearningModule(
+                id="topic_m0",
+                name="Legacy region",
+                order=0,
+                knowledge_points=[
+                    KnowledgePoint(
+                        id=f"topic_m0_kp{index}",
+                        name=f"Objective {index}",
+                        type=KnowledgeType.CONCEPT,
+                        module_id="topic_m0",
+                    )
+                    for index in range(8)
+                ],
+            )
+        ]
+        LearningStore(root=app.state.learning_root).save(progress)
+
+        response = client.put(
+            "/api/mastery-paths/topics/legacy-path/map",
+            json={
+                "modules": [
+                    {
+                        "name": "Crowded new region",
+                        "knowledge_points": [
+                            {"name": f"Objective {index}", "type": "concept"} for index in range(8)
+                        ],
+                    }
+                ]
+            },
+        )
+
+        assert response.status_code == 422
+        assert "at most 7 waypoints" in response.json()["detail"]
 
     def test_topic_sessions_include_message_count_and_latest_preview(self, client, monkeypatch):
         created = client.post(

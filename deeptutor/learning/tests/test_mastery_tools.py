@@ -1670,6 +1670,53 @@ async def test_revise_rewrites_a_waypoint_and_resets_only_its_progress(path_id):
 
 
 @pytest.mark.asyncio
+async def test_revise_rewrites_a_waypoint_in_a_region_over_the_cap(path_id):
+    """A region saved with more waypoints than the cap stays revisable.
+
+    Rewriting one waypoint keeps the region's size, so it must pass; only
+    growing such a region further is refused.
+    """
+    from deeptutor.tools.mastery_tool import MasteryReviseTool
+
+    built = await MasteryBuildTool().execute(
+        _mastery_path_id=path_id,
+        path_name="命题逻辑",
+        modules=[
+            {
+                "name": "布尔基础",
+                "objective": "读懂一个真值表并判断两个命题是否等价",
+                "knowledge_points": [
+                    {"name": f"要点 {index}", "type": "concept"} for index in range(8)
+                ],
+            }
+        ],
+    )
+    module = json.loads(built.content)["map"]["modules"][0]
+    target = module["knowledge_points"][3]
+
+    revised = await MasteryReviseTool().execute(
+        _mastery_path_id=path_id,
+        module_id=module["id"],
+        rewrite=[{"knowledge_point_id": target["id"], "name": "改写后的要点", "type": "procedure"}],
+    )
+
+    payload = json.loads(revised.content)
+    assert payload["status"] == "revised"
+    assert len(payload["knowledge_points"]) == 8
+    assert payload["knowledge_points"][3]["id"] != target["id"]
+    assert payload["knowledge_points"][3]["type"] == "procedure"
+
+    grown = await MasteryReviseTool().execute(
+        _mastery_path_id=path_id,
+        module_id=module["id"],
+        add=[{"name": "额外要点", "type": "memory"}],
+    )
+
+    assert grown.success is False
+    assert "at most 8 knowledge points" in grown.content
+
+
+@pytest.mark.asyncio
 async def test_build_append_resolves_client_refs_to_final_map_ids(path_id):
     from deeptutor.tools.mastery_tool import MasteryBuildTool
 
