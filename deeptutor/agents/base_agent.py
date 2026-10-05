@@ -330,8 +330,9 @@ class BaseAgent(ABC):
                     user_prompt=user_prompt,
                     response_text=response,
                 )
-            except Exception:
-                pass  # Don't let tracking errors affect main flow
+            except Exception as e:
+                # Don't let tracking errors affect main flow, but keep them visible
+                self.logger.warning(f"Token tracker add_usage failed for {self.agent_name}: {e}")
 
         # 2. Always use shared LLMStats
         stats = self.get_stats(self.module_name)
