@@ -16,7 +16,7 @@ import uuid
 
 from deeptutor.capabilities.protocol import AGENT_OUTPUT, EVENT_METADATA
 from deeptutor.core.context import UnifiedContext
-from deeptutor.core.stream import StreamEvent, StreamEventType
+from deeptutor.core.stream import StreamEvent, StreamEventType, neutral_turn_error_message
 from deeptutor.events.event_bus import Event, EventType, get_event_bus
 from deeptutor.runtime.registry.capability_registry import get_capability_registry
 from deeptutor.runtime.registry.tool_registry import get_tool_registry
@@ -147,8 +147,10 @@ class ChatOrchestrator:
                     "status": status,
                 }
                 error_code = getattr(exc, "error_code", None)
-                if isinstance(error_code, str) and error_code:
-                    error_metadata["error_code"] = error_code
+                resolved_code = (
+                    error_code if isinstance(error_code, str) and error_code else "internal_error"
+                )
+                error_metadata["error_code"] = resolved_code
                 retryable = getattr(exc, "retryable", None)
                 if isinstance(retryable, bool):
                     error_metadata["retryable"] = retryable
@@ -161,7 +163,7 @@ class ChatOrchestrator:
                     if key in error_metadata
                 }
                 await bus.error(
-                    str(exc),
+                    neutral_turn_error_message(resolved_code),
                     source=cap_name,
                     metadata=error_metadata,
                 )

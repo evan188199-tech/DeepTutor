@@ -9,7 +9,7 @@ from contextvars import Token
 import logging
 from typing import TYPE_CHECKING, Any
 
-from deeptutor.core.stream import StreamEvent, StreamEventType
+from deeptutor.core.stream import StreamEvent, StreamEventType, neutral_turn_error_message
 from deeptutor.services.session.artifact_attachments import (
     artifact_attachments,
     fill_preview_text,
@@ -1319,6 +1319,11 @@ class TurnExecutor:
             retryable = retryable_attr if isinstance(retryable_attr, bool) else False
             resolved_failure_code = failure_code or "internal_error"
             resolved_retryable = retryable if failure_code else True
+            # The raw exception text can embed provider URLs, request ids and
+            # provider response bodies; it stays in the log lines above and
+            # below, never in the user-visible error event or the persisted
+            # turn error (surfaced again by orphaned-failed-turn reconcile).
+            neutral_error = neutral_turn_error_message(resolved_failure_code)
             if stream_done_sent:
                 logger.error(
                     "Post-stream persistence for turn %s failed: %s",
@@ -1335,7 +1340,7 @@ class TurnExecutor:
                     await self._transition_execution(
                         execution,
                         "failed",
-                        str(exc),
+                        neutral_error,
                         failure_code=resolved_failure_code,
                         retryable=resolved_retryable,
                     )
@@ -1346,7 +1351,7 @@ class TurnExecutor:
                     StreamEvent(
                         type=StreamEventType.ERROR,
                         source=capability_name,
-                        content=str(exc),
+                        content=neutral_error,
                         metadata={
                             "turn_terminal": True,
                             "status": "failed",
@@ -1372,7 +1377,7 @@ class TurnExecutor:
                 await self._transition_execution(
                     execution,
                     "failed",
-                    str(exc),
+                    neutral_error,
                     failure_code=resolved_failure_code,
                     retryable=resolved_retryable,
                 )
