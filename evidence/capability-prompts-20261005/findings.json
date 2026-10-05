@@ -1,0 +1,216 @@
+{
+  "audited_repo_commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+  "generated": "2026-10-05",
+  "capability_rows": [
+    {
+      "capability": "ask_questions",
+      "dir": "deeptutor/capabilities/ask_questions/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    },
+    {
+      "capability": "course_study",
+      "dir": "deeptutor/capabilities/course_study/prompts",
+      "en_files": [
+        "course_study.yaml"
+      ],
+      "zh_files": [
+        "course_study.yaml"
+      ]
+    },
+    {
+      "capability": "explore_context",
+      "dir": "deeptutor/capabilities/explore_context/prompts",
+      "en_files": [
+        "explore_context.yaml"
+      ],
+      "zh_files": [
+        "explore_context.yaml"
+      ]
+    },
+    {
+      "capability": "ima",
+      "dir": "deeptutor/capabilities/ima/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    },
+    {
+      "capability": "marginnote4",
+      "dir": "deeptutor/capabilities/marginnote4/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    },
+    {
+      "capability": "mastery",
+      "dir": "deeptutor/capabilities/mastery/prompts",
+      "en_files": [
+        "mastery_loop.yaml"
+      ],
+      "zh_files": [
+        "mastery_loop.yaml"
+      ]
+    },
+    {
+      "capability": "obsidian",
+      "dir": "deeptutor/capabilities/obsidian/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    },
+    {
+      "capability": "partner_authoring",
+      "dir": "deeptutor/capabilities/partner_authoring/prompts",
+      "en_files": [
+        "heuristic.md",
+        "system.md"
+      ],
+      "zh_files": [
+        "heuristic.md",
+        "system.md"
+      ]
+    },
+    {
+      "capability": "partner_group",
+      "dir": "deeptutor/capabilities/partner_group/prompts",
+      "en_files": [
+        "invoke_other.md",
+        "system.md"
+      ],
+      "zh_files": [
+        "invoke_other.md",
+        "system.md"
+      ]
+    },
+    {
+      "capability": "audio_overview (shared dir)",
+      "dir": "deeptutor/capabilities/prompts",
+      "en_files": [
+        "audio_overview.yaml"
+      ],
+      "zh_files": [
+        "audio_overview.yaml"
+      ]
+    },
+    {
+      "capability": "reading",
+      "dir": "deeptutor/capabilities/reading/prompts",
+      "en_files": [
+        "reading.yaml"
+      ],
+      "zh_files": [
+        "reading.yaml"
+      ]
+    },
+    {
+      "capability": "setup",
+      "dir": "deeptutor/capabilities/setup/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    },
+    {
+      "capability": "solve",
+      "dir": "deeptutor/capabilities/solve/prompts",
+      "en_files": [
+        "system.md"
+      ],
+      "zh_files": [
+        "system.md"
+      ]
+    }
+  ],
+  "md_char_ratios": [
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/ask_questions/prompts/en/system.md",
+      "chars_en": 1770,
+      "chars_zh": 608,
+      "ratio_zh_per_en": 0.34
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/ima/prompts/en/system.md",
+      "chars_en": 1799,
+      "chars_zh": 720,
+      "ratio_zh_per_en": 0.4
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/marginnote4/prompts/en/system.md",
+      "chars_en": 2505,
+      "chars_zh": 1136,
+      "ratio_zh_per_en": 0.45
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/obsidian/prompts/en/system.md",
+      "chars_en": 1501,
+      "chars_zh": 783,
+      "ratio_zh_per_en": 0.52
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/partner_authoring/prompts/en/heuristic.md",
+      "chars_en": 441,
+      "chars_zh": 186,
+      "ratio_zh_per_en": 0.42
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/partner_authoring/prompts/en/system.md",
+      "chars_en": 756,
+      "chars_zh": 271,
+      "ratio_zh_per_en": 0.36
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/partner_group/prompts/en/invoke_other.md",
+      "chars_en": 498,
+      "chars_zh": 179,
+      "ratio_zh_per_en": 0.36
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/partner_group/prompts/en/system.md",
+      "chars_en": 452,
+      "chars_zh": 178,
+      "ratio_zh_per_en": 0.39
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/setup/prompts/en/system.md",
+      "chars_en": 3687,
+      "chars_zh": 1423,
+      "ratio_zh_per_en": 0.39
+    },
+    {
+      "file": "/Users/Shared/DeepTutor/dt-agen797-wt/deeptutor/capabilities/solve/prompts/en/system.md",
+      "chars_en": 1378,
+      "chars_zh": 519,
+      "ratio_zh_per_en": 0.38
+    }
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "kind": "C1",
+      "path": "deeptutor/capabilities/explore_context/prompts",
+      "detail": "code-referenced key path missing in en yaml: 'labels.tool_call' (call passes default= — zh users silently get the default text)"
+    },
+    {
+      "severity": "P3",
+      "kind": "C1",
+      "path": "deeptutor/capabilities/mastery/prompts",
+      "detail": "dormant override hook: lookup path 'mastery.system' is provided by neither the capability yaml nor the base pack (always falls back)"
+    }
+  ]
+}
