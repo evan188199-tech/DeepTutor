@@ -1,0 +1,43 @@
+=== focused suite ===
+============================= test session starts ==============================
+platform darwin -- Python 3.13.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/Shared/DeepTutor/.venv/bin/python
+rootdir: /Users/Shared/DeepTutor-worktrees/agen645-email-channel
+configfile: pyproject.toml
+plugins: cov-7.1.0, devtools-0.12.2, asyncio-1.4.0, anyio-4.14.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collecting ... collected 21 items
+
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_fetch_new_messages_parses_sender_subject_body_metadata PASSED [  4%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_mark_seen_disabled_skips_store_flag_write PASSED [  9%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_uid_dedupe_skips_repeated_uids PASSED [ 14%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_limit_keeps_most_recent_ids PASSED [ 19%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_empty_body_gets_placeholder PASSED [ 23%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_body_truncated_to_max_body_chars PASSED [ 28%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_multipart_plain_preferred_and_attachments_skipped PASSED [ 33%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_html_only_body_converted_to_text PASSED [ 38%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_fetch_between_dates_uses_imap_dates_and_limit PASSED [ 42%]
+tests/services/partners/test_email_channel.py::TestFetchAndParse::test_fetch_between_dates_empty_range_never_connects PASSED [ 47%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_logout_failure_is_swallowed_and_messages_returned PASSED [ 52%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_select_failure_returns_empty_and_still_logs_out PASSED [ 57%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_search_failure_returns_empty_and_still_logs_out PASSED [ 61%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_failed_fetch_and_missing_sender_are_skipped PASSED [ 66%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_login_failure_propagates_but_logout_still_called PASSED [ 71%]
+tests/services/partners/test_email_channel.py::TestFailureAndSwallowPaths::test_non_ssl_config_uses_plain_imap PASSED [ 76%]
+tests/services/partners/test_email_channel.py::TestStartStopLifecycle::test_start_without_consent_never_connects PASSED [ 80%]
+tests/services/partners/test_email_channel.py::TestStartStopLifecycle::test_start_with_missing_config_sets_action_required PASSED [ 85%]
+tests/services/partners/test_email_channel.py::TestStartStopLifecycle::test_connection_failure_degrades_to_error_state_and_keeps_retrying PASSED [ 90%]
+tests/services/partners/test_email_channel.py::TestStartStopLifecycle::test_start_polls_inbound_and_publishes_to_bus PASSED [ 95%]
+tests/services/partners/test_email_channel.py::TestStartStopLifecycle::test_stop_exits_loop_and_releases_client PASSED [100%]
+
+============================== 21 passed in 0.26s ==============================
+=== partners suite (neighbors) ===
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+........................................................................ [ 68%]
+........................................................................ [ 79%]
+........................................................................ [ 91%]
+........................................................                 [100%]
+632 passed, 2 warnings in 8.12s
