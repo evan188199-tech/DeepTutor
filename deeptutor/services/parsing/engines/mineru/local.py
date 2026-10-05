@@ -78,37 +78,35 @@ class LocalParseResult:
 
 
 def check_mineru_installed():
-    """Check if MinerU is installed"""
-    try:
-        # Security: Using partial path is intentional here - we need to find
-        # the command in user's PATH. These are trusted CLI tools, not user input.
-        result = subprocess.run(
-            ["mineru", "--version"],  # nosec B607
-            check=False,
-            capture_output=True,
-            text=True,
-            shell=False,
-        )
-        if result.returncode == 0:
-            return "mineru"
-    except FileNotFoundError:
-        pass
+    """Report the best MinerU CLI available on PATH.
 
-    try:
-        # Security: Same as above - intentionally using PATH lookup for CLI tool.
-        result = subprocess.run(
-            ["magic-pdf", "--version"],  # nosec B607
-            check=False,
-            capture_output=True,
-            text=True,
-            shell=False,
-        )
-        if result.returncode == 0:
-            return "magic-pdf"
-    except FileNotFoundError:
-        pass
-
-    return None
+    A healthy probe (``--version`` exits 0) wins outright; a candidate that
+    launches but fails its probe is installed-yet-broken and is remembered
+    as the fallback so callers do not tell users to reinstall a CLI that is
+    already on PATH (#1612); ``None`` means no candidate even launched.
+    """
+    fallback = None
+    for candidate in ("mineru", "magic-pdf"):
+        try:
+            # Security: Using partial path is intentional here - we need to find
+            # the command in user's PATH. These are trusted CLI tools, not user input.
+            result = subprocess.run(
+                [candidate, "--version"],  # nosec B607
+                check=False,
+                capture_output=True,
+                text=True,
+                shell=False,
+            )
+            if result.returncode == 0:
+                return candidate
+            if fallback is None:
+                fallback = candidate
+        except OSError:
+            # FileNotFoundError (not on PATH) and sibling launch errors such
+            # as PermissionError or NotADirectoryError make this candidate
+            # unusable; degrade to the next candidate instead of crashing.
+            continue
+    return fallback
 
 
 def parse_document_with_mineru_result(
