@@ -1,0 +1,7558 @@
+[
+ {
+  "line": 97,
+  "lock": "semaphore",
+  "is_async": true,
+  "end_line": 110,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    98,
+    "asyncio.to_thread"
+   ],
+   [
+    "call",
+    98,
+    "asyncio.to_thread"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    98,
+    "asyncio.to_thread"
+   ],
+   [
+    "await",
+    100,
+    "asyncio.wait_for"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 7,
+  "file": "deeptutor/reading/captions.py"
+ },
+ {
+  "line": 78,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 192,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    167,
+    "conn.execute"
+   ],
+   [
+    "call",
+    170,
+    "conn.execute"
+   ],
+   [
+    "call",
+    176,
+    "conn.execute"
+   ],
+   [
+    "call",
+    179,
+    "conn.execute"
+   ],
+   [
+    "call",
+    184,
+    "conn.execute"
+   ],
+   [
+    "call",
+    188,
+    "conn.execute"
+   ],
+   [
+    "call",
+    192,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    182,
+    "self._content_id_is_unique"
+   ],
+   [
+    "call",
+    183,
+    "self._remove_content_id_unique_constraint"
+   ]
+  ],
+  "ncalls": 14,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 291,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 333,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    292,
+    "conn.execute"
+   ],
+   [
+    "call",
+    332,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 13,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 540,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 553,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    541,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 564,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 567,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    566,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 586,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 613,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    588,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    587,
+    "self._require_materials"
+   ],
+   [
+    "call",
+    599,
+    "_collection_color"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 681,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 684,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    682,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 694,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 697,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    696,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 707,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 734,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    710,
+    "conn.execute"
+   ],
+   [
+    "call",
+    721,
+    "conn.execute"
+   ],
+   [
+    "call",
+    716,
+    "conn.execute"
+   ],
+   [
+    "call",
+    726,
+    "conn.execute"
+   ],
+   [
+    "call",
+    731,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    708,
+    "self._require_workspace"
+   ],
+   [
+    "call",
+    709,
+    "self._require_materials"
+   ]
+  ],
+  "ncalls": 10,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 739,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 774,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    741,
+    "conn.execute"
+   ],
+   [
+    "call",
+    748,
+    "conn.execute"
+   ],
+   [
+    "call",
+    754,
+    "conn.execute"
+   ],
+   [
+    "call",
+    759,
+    "conn.execute"
+   ],
+   [
+    "call",
+    764,
+    "conn.execute"
+   ],
+   [
+    "call",
+    771,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    740,
+    "self._require_workspace"
+   ]
+  ],
+  "ncalls": 13,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 782,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 805,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    785,
+    "conn.execute"
+   ],
+   [
+    "call",
+    793,
+    "conn.execute"
+   ],
+   [
+    "call",
+    798,
+    "conn.execute"
+   ],
+   [
+    "call",
+    803,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 11,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 811,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 826,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    812,
+    "conn.execute"
+   ],
+   [
+    "call",
+    819,
+    "conn.execute"
+   ],
+   [
+    "call",
+    824,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 842,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 877,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    846,
+    "conn.execute"
+   ],
+   [
+    "call",
+    854,
+    "conn.execute"
+   ],
+   [
+    "call",
+    860,
+    "conn.execute"
+   ],
+   [
+    "call",
+    876,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    843,
+    "self._require_workspace"
+   ]
+  ],
+  "ncalls": 11,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 894,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 908,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    895,
+    "conn.execute"
+   ],
+   [
+    "call",
+    905,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 915,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 920,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    917,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 926,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 930,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    927,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 935,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 938,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    936,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 946,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 958,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    947,
+    "conn.execute"
+   ],
+   [
+    "call",
+    954,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 973,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 979,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    975,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/reading/catalog_store.py"
+ },
+ {
+  "line": 207,
+  "lock": "_PAIRING_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 210,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    210,
+    "_atomic_write"
+   ],
+   [
+    "call",
+    210,
+    "_pairing_path"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/reading/epub_bilingual.py"
+ },
+ {
+  "line": 216,
+  "lock": "_PAIRING_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 222,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    221,
+    "_atomic_write"
+   ],
+   [
+    "call",
+    221,
+    "_pairing_path"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/reading/epub_bilingual.py"
+ },
+ {
+  "line": 228,
+  "lock": "_PAIRING_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 239,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    238,
+    "_atomic_write"
+   ],
+   [
+    "call",
+    238,
+    "_pairing_path"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/reading/epub_bilingual.py"
+ },
+ {
+  "line": 137,
+  "lock": "self._execution_lock",
+  "is_async": false,
+  "end_line": 143,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    142,
+    "self._active.add"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/reading/extensions.py"
+ },
+ {
+  "line": 146,
+  "lock": "self._execution_lock",
+  "is_async": false,
+  "end_line": 147,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    147,
+    "self._active.discard"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/reading/extensions.py"
+ },
+ {
+  "line": 151,
+  "lock": "self._execution_lock",
+  "is_async": false,
+  "end_line": 152,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    152,
+    "self._timed_out.add"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/reading/extensions.py"
+ },
+ {
+  "line": 156,
+  "lock": "self._execution_lock",
+  "is_async": false,
+  "end_line": 164,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    157,
+    "self._executors.get"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/reading/extensions.py"
+ },
+ {
+  "line": 168,
+  "lock": "self._execution_lock",
+  "is_async": false,
+  "end_line": 170,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    169,
+    "self._executors.values"
+   ],
+   [
+    "call",
+    170,
+    "self._executors.clear"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/reading/extensions.py"
+ },
+ {
+  "line": 249,
+  "lock": "lock",
+  "is_async": false,
+  "end_line": 250,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/reading/store.py"
+ },
+ {
+  "line": 254,
+  "lock": "_DEVICE_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 257,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    255,
+    "_load_records"
+   ],
+   [
+    "call",
+    257,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/multi_user/device_credentials.py"
+ },
+ {
+  "line": 281,
+  "lock": "_DEVICE_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 323,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    282,
+    "_load_records"
+   ],
+   [
+    "call",
+    289,
+    "_active_account"
+   ],
+   [
+    "call",
+    294,
+    "_parse_iso"
+   ],
+   [
+    "call",
+    297,
+    "_parse_iso"
+   ],
+   [
+    "call",
+    304,
+    "_write_records"
+   ],
+   [
+    "call",
+    303,
+    "_iso"
+   ],
+   [
+    "call",
+    308,
+    "_charge_previous_lease"
+   ],
+   [
+    "call",
+    310,
+    "_write_records"
+   ],
+   [
+    "call",
+    313,
+    "_hash_session_nonce"
+   ],
+   [
+    "call",
+    314,
+    "_iso"
+   ],
+   [
+    "call",
+    315,
+    "_iso"
+   ],
+   [
+    "call",
+    316,
+    "_write_records"
+   ],
+   [
+    "call",
+    319,
+    "_public_record"
+   ]
+  ],
+  "ncalls": 20,
+  "file": "deeptutor/multi_user/device_credentials.py"
+ },
+ {
+  "line": 354,
+  "lock": "_DEVICE_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 388,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    355,
+    "_load_records"
+   ],
+   [
+    "call",
+    362,
+    "_hash_session_nonce"
+   ],
+   [
+    "call",
+    368,
+    "_is_usable"
+   ],
+   [
+    "call",
+    372,
+    "_parse_iso"
+   ],
+   [
+    "call",
+    376,
+    "_usage_for"
+   ],
+   [
+    "call",
+    382,
+    "_iso"
+   ],
+   [
+    "call",
+    383,
+    "_write_records"
+   ],
+   [
+    "call",
+    385,
+    "_public_record"
+   ]
+  ],
+  "ncalls": 18,
+  "file": "deeptutor/multi_user/device_credentials.py"
+ },
+ {
+  "line": 395,
+  "lock": "_DEVICE_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 404,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    396,
+    "_load_records"
+   ],
+   [
+    "call",
+    404,
+    "_public_record"
+   ],
+   [
+    "call",
+    401,
+    "_iso"
+   ],
+   [
+    "call",
+    403,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/multi_user/device_credentials.py"
+ },
+ {
+  "line": 414,
+  "lock": "_DEVICE_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 425,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    415,
+    "_load_records"
+   ],
+   [
+    "call",
+    420,
+    "_iso"
+   ],
+   [
+    "call",
+    425,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/multi_user/device_credentials.py"
+ },
+ {
+  "line": 52,
+  "lock": "thread_lock",
+  "is_async": false,
+  "end_line": 76,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    54,
+    "lock_path.parent.mkdir"
+   ],
+   [
+    "call",
+    55,
+    "lock_path.open"
+   ],
+   [
+    "call",
+    59,
+    "handle.flush"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 17,
+  "file": "deeptutor/multi_user/grants.py"
+ },
+ {
+  "line": 276,
+  "lock": "_grant_write_lock",
+  "is_async": false,
+  "end_line": 282,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    277,
+    "path.read_text"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    280,
+    "_file_identity"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/multi_user/grants.py"
+ },
+ {
+  "line": 304,
+  "lock": "_grant_write_lock",
+  "is_async": false,
+  "end_line": 312,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    307,
+    "path.read_text"
+   ],
+   [
+    "call",
+    310,
+    "path.unlink"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    305,
+    "_file_identity"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/multi_user/grants.py"
+ },
+ {
+  "line": 108,
+  "lock": "_GUARDIANS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 135,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    109,
+    "_load_records"
+   ],
+   [
+    "call",
+    129,
+    "_utc_now"
+   ],
+   [
+    "call",
+    135,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/multi_user/guardians.py"
+ },
+ {
+  "line": 167,
+  "lock": "_GUARDIANS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 177,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    168,
+    "_load_records"
+   ],
+   [
+    "call",
+    173,
+    "_utc_now"
+   ],
+   [
+    "call",
+    176,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/multi_user/guardians.py"
+ },
+ {
+  "line": 182,
+  "lock": "_GUARDIANS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 199,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    183,
+    "_load_records"
+   ],
+   [
+    "call",
+    185,
+    "_utc_now"
+   ],
+   [
+    "call",
+    199,
+    "_write_records"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/multi_user/guardians.py"
+ },
+ {
+  "line": 232,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 260,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    236,
+    "_env_bootstrap_admin"
+   ],
+   [
+    "call",
+    260,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 22,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 306,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 317,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    316,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 325,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 331,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    331,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 344,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 363,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    363,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 15,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 370,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 377,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    377,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 393,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 400,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    399,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 407,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 412,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    412,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 482,
+  "lock": "_USERS_WRITE_LOCK",
+  "is_async": false,
+  "end_line": 492,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    492,
+    "_write_users"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/multi_user/identity.py"
+ },
+ {
+  "line": 61,
+  "lock": "_legacy_migration_lock",
+  "is_async": false,
+  "end_line": 86,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    74,
+    "target.parent.mkdir"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 16,
+  "file": "deeptutor/multi_user/paths.py"
+ },
+ {
+  "line": 69,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 71,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    70,
+    "self._key"
+   ],
+   [
+    "call",
+    71,
+    "self._subscriptions.setdefault"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/learning/event_hub.py"
+ },
+ {
+  "line": 74,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 81,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    75,
+    "self._key"
+   ],
+   [
+    "call",
+    76,
+    "self._subscriptions.get"
+   ],
+   [
+    "call",
+    81,
+    "self._subscriptions.pop"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/learning/event_hub.py"
+ },
+ {
+  "line": 91,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 98,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    98,
+    "self._subscriptions.get"
+   ],
+   [
+    "call",
+    98,
+    "self._key"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/learning/event_hub.py"
+ },
+ {
+  "line": 198,
+  "lock": "_migration_lock",
+  "is_async": false,
+  "end_line": 311,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    215,
+    "archive_root.mkdir"
+   ],
+   [
+    "call",
+    220,
+    "staging.mkdir"
+   ],
+   [
+    "call",
+    302,
+    "legacy_db.unlink"
+   ],
+   [
+    "call",
+    211,
+    "v2_root.mkdir"
+   ],
+   [
+    "call",
+    240,
+    "v2_root.mkdir"
+   ],
+   [
+    "call",
+    306,
+    "source.unlink"
+   ],
+   [
+    "call",
+    308,
+    "shutil.rmtree"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    199,
+    "_process_lock"
+   ],
+   [
+    "call",
+    309,
+    "_finish_staging_archive"
+   ],
+   [
+    "call",
+    225,
+    "_checkpoint_database"
+   ],
+   [
+    "call",
+    226,
+    "_copy_atomic"
+   ],
+   [
+    "call",
+    233,
+    "_copy_atomic"
+   ],
+   [
+    "call",
+    286,
+    "_row_counts"
+   ],
+   [
+    "call",
+    265,
+    "_copy_json_archive"
+   ],
+   [
+    "call",
+    285,
+    "_sha256"
+   ]
+  ],
+  "ncalls": 56,
+  "file": "deeptutor/learning/migration.py"
+ },
+ {
+  "line": 199,
+  "lock": "_process_lock",
+  "is_async": false,
+  "end_line": 311,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    211,
+    "v2_root.mkdir"
+   ],
+   [
+    "call",
+    215,
+    "archive_root.mkdir"
+   ],
+   [
+    "call",
+    220,
+    "staging.mkdir"
+   ],
+   [
+    "call",
+    240,
+    "v2_root.mkdir"
+   ],
+   [
+    "call",
+    302,
+    "legacy_db.unlink"
+   ],
+   [
+    "call",
+    306,
+    "source.unlink"
+   ],
+   [
+    "call",
+    308,
+    "shutil.rmtree"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    225,
+    "_checkpoint_database"
+   ],
+   [
+    "call",
+    226,
+    "_copy_atomic"
+   ],
+   [
+    "call",
+    233,
+    "_copy_atomic"
+   ],
+   [
+    "call",
+    265,
+    "_copy_json_archive"
+   ],
+   [
+    "call",
+    286,
+    "_row_counts"
+   ],
+   [
+    "call",
+    285,
+    "_sha256"
+   ],
+   [
+    "call",
+    309,
+    "_finish_staging_archive"
+   ]
+  ],
+  "ncalls": 56,
+  "file": "deeptutor/learning/migration.py"
+ },
+ {
+  "line": 397,
+  "lock": "_schema_lock",
+  "is_async": false,
+  "end_line": 590,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    588,
+    "conn.commit"
+   ],
+   [
+    "call",
+    553,
+    "conn.execute"
+   ],
+   [
+    "call",
+    584,
+    "conn.execute"
+   ],
+   [
+    "call",
+    544,
+    "conn.execute"
+   ],
+   [
+    "call",
+    568,
+    "conn.execute"
+   ],
+   [
+    "call",
+    573,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    402,
+    "self._connect"
+   ],
+   [
+    "call",
+    539,
+    "self._converge_single_membership"
+   ],
+   [
+    "call",
+    583,
+    "self._sync_evidence_projection"
+   ],
+   [
+    "call",
+    562,
+    "self._default_map_seed"
+   ],
+   [
+    "call",
+    577,
+    "self._progress_from_row"
+   ]
+  ],
+  "ncalls": 25,
+  "file": "deeptutor/learning/storage.py"
+ },
+ {
+  "line": 51,
+  "lock": "_reclaim_tasks_lock",
+  "is_async": false,
+  "end_line": 54,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/runtime/memory_reclaim.py"
+ },
+ {
+  "line": 61,
+  "lock": "_reclaim_tasks_lock",
+  "is_async": false,
+  "end_line": 62,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/runtime/memory_reclaim.py"
+ },
+ {
+  "line": 65,
+  "lock": "_reclaim_tasks_lock",
+  "is_async": false,
+  "end_line": 67,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/runtime/memory_reclaim.py"
+ },
+ {
+  "line": 37,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 40,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    38,
+    "self._pending.append"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/journal.py"
+ },
+ {
+  "line": 47,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 51,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/runtime/coordination/journal.py"
+ },
+ {
+  "line": 59,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 60,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/runtime/coordination/journal.py"
+ },
+ {
+  "line": 40,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 56,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    41,
+    "self._session_turns.get"
+   ],
+   [
+    "call",
+    42,
+    "self._turn_leases.get"
+   ],
+   [
+    "call",
+    43,
+    "self._active"
+   ],
+   [
+    "call",
+    51,
+    "self._expires_at"
+   ],
+   [
+    "call",
+    55,
+    "self._known_turns.add"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 59,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 71,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    69,
+    "replace"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    60,
+    "self._turn_leases.get"
+   ],
+   [
+    "call",
+    61,
+    "self._active"
+   ],
+   [
+    "call",
+    69,
+    "self._expires_at"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 74,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 83,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    75,
+    "self._turn_leases.get"
+   ],
+   [
+    "call",
+    80,
+    "self._turn_leases.pop"
+   ],
+   [
+    "call",
+    81,
+    "self._session_turns.get"
+   ],
+   [
+    "call",
+    82,
+    "self._session_turns.pop"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 86,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 88,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    87,
+    "self._turn_leases.get"
+   ],
+   [
+    "call",
+    88,
+    "self._active"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 91,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 95,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    95,
+    "self._active"
+   ],
+   [
+    "call",
+    95,
+    "self._turn_leases.get"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 99,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 105,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    100,
+    "self._known_turns.discard"
+   ],
+   [
+    "call",
+    101,
+    "self._turn_leases.get"
+   ],
+   [
+    "call",
+    103,
+    "self._turn_leases.pop"
+   ],
+   [
+    "call",
+    102,
+    "self._active"
+   ],
+   [
+    "call",
+    104,
+    "self._session_turns.get"
+   ],
+   [
+    "call",
+    105,
+    "self._session_turns.pop"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 108,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 125,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    109,
+    "self._events.setdefault"
+   ]
+  ],
+  "ncalls": 14,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 128,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 132,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    131,
+    "self._events.get"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 144,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 151,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    147,
+    "self._command_ids.add"
+   ],
+   [
+    "call",
+    148,
+    "self._commands.setdefault"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 160,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 164,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    163,
+    "self._commands.get"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 175,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 181,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    178,
+    "self._background_command_ids.add"
+   ],
+   [
+    "call",
+    180,
+    "self._background_commands.append"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 192,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 197,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 203,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 214,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    208,
+    "self._active"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 217,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 222,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    218,
+    "self._active"
+   ],
+   [
+    "call",
+    221,
+    "self._expires_at"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 225,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 232,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    231,
+    "replace"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    227,
+    "self._active"
+   ],
+   [
+    "call",
+    231,
+    "self._expires_at"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 235,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 242,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 245,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 246,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    246,
+    "self._active"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/runtime/coordination/memory.py"
+ },
+ {
+  "line": 254,
+  "lock": "_agentic_client_pool_lock",
+  "is_async": false,
+  "end_line": 269,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    260,
+    "_build_openai_client"
+   ],
+   [
+    "call",
+    268,
+    "_schedule_client_close"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/runtime/agentic/client.py"
+ },
+ {
+  "line": 273,
+  "lock": "_agentic_client_pool_lock",
+  "is_async": false,
+  "end_line": 275,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/agentic/client.py"
+ },
+ {
+  "line": 281,
+  "lock": "_agentic_client_pool_lock",
+  "is_async": false,
+  "end_line": 283,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/runtime/agentic/client.py"
+ },
+ {
+  "line": 298,
+  "lock": "_agentic_client_pool_lock",
+  "is_async": false,
+  "end_line": 299,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/runtime/agentic/client.py"
+ },
+ {
+  "line": 864,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 865,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/agents/research/utils/citation_manager.py"
+ },
+ {
+  "line": 877,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 878,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/agents/research/utils/citation_manager.py"
+ },
+ {
+  "line": 891,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 892,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/agents/research/utils/citation_manager.py"
+ },
+ {
+  "line": 903,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 904,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/agents/research/utils/citation_manager.py"
+ },
+ {
+  "line": 26,
+  "lock": "cls._lock",
+  "is_async": false,
+  "end_line": 29,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/utils/config_manager.py"
+ },
+ {
+  "line": 56,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 67,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    64,
+    "self._read_yaml"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/utils/config_manager.py"
+ },
+ {
+  "line": 70,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 97,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    74,
+    "self.config_path.parent.mkdir"
+   ],
+   [
+    "call",
+    88,
+    "os.replace"
+   ],
+   [
+    "call",
+    86,
+    "tmp.flush"
+   ],
+   [
+    "call",
+    95,
+    "os.remove"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    72,
+    "self._deep_update"
+   ]
+  ],
+  "ncalls": 15,
+  "file": "deeptutor/utils/config_manager.py"
+ },
+ {
+  "line": 128,
+  "lock": "cls._lock",
+  "is_async": false,
+  "end_line": 129,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/utils/config_manager.py"
+ },
+ {
+  "line": 29,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 40,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/utils/network/circuit_breaker.py"
+ },
+ {
+  "line": 46,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 52,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/utils/network/circuit_breaker.py"
+ },
+ {
+  "line": 56,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 63,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/utils/network/circuit_breaker.py"
+ },
+ {
+  "line": 368,
+  "lock": "self._catalog_lock",
+  "is_async": false,
+  "end_line": 379,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    369,
+    "self._catalog_revision"
+   ],
+   [
+    "call",
+    373,
+    "self._read_and_reconcile_config"
+   ],
+   [
+    "call",
+    375,
+    "self._catalog_revision"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/knowledge/manager.py"
+ },
+ {
+  "line": 469,
+  "lock": "self._catalog_lock",
+  "is_async": false,
+  "end_line": 472,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    472,
+    "self._info_cache.clear"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/knowledge/manager.py"
+ },
+ {
+  "line": 646,
+  "lock": "self._catalog_lock",
+  "is_async": false,
+  "end_line": 647,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    647,
+    "self._list_knowledge_bases"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/knowledge/manager.py"
+ },
+ {
+  "line": 1432,
+  "lock": "self._catalog_lock",
+  "is_async": false,
+  "end_line": 1454,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1435,
+    "self._catalog_revision"
+   ],
+   [
+    "call",
+    1442,
+    "self._info_cache.get"
+   ],
+   [
+    "call",
+    1445,
+    "self._get_info"
+   ],
+   [
+    "call",
+    1448,
+    "self._info_cache.clear"
+   ]
+  ],
+  "ncalls": 15,
+  "file": "deeptutor/knowledge/manager.py"
+ },
+ {
+  "line": 673,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 674,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    674,
+    "self._model_pickers.clear"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 2024,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 2107,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    2025,
+    "self._prune_model_pickers"
+   ],
+   [
+    "call",
+    2026,
+    "self._model_pickers.get"
+   ],
+   [
+    "call",
+    2033,
+    "self._provider_picker_card"
+   ],
+   [
+    "call",
+    2042,
+    "self._model_picker_card"
+   ],
+   [
+    "call",
+    2039,
+    "self._provider_option_indices"
+   ],
+   [
+    "call",
+    2046,
+    "self._provider_option_indices"
+   ],
+   [
+    "call",
+    2054,
+    "self._model_picker_card"
+   ],
+   [
+    "call",
+    2074,
+    "self._model_label"
+   ],
+   [
+    "call",
+    2076,
+    "self._model_picker_card"
+   ],
+   [
+    "call",
+    2081,
+    "self._model_label"
+   ],
+   [
+    "call",
+    2087,
+    "self._queue_model_choice"
+   ]
+  ],
+  "ncalls": 44,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 2103,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 2107,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    2104,
+    "self._model_pickers.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 2141,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 2169,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    2142,
+    "self._model_pickers.get"
+   ],
+   [
+    "call",
+    2166,
+    "self._provider_option_indices"
+   ],
+   [
+    "call",
+    2168,
+    "self._model_picker_card"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 2229,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 2231,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    2231,
+    "self._prune_model_pickers"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 2245,
+  "lock": "self._model_picker_lock",
+  "is_async": false,
+  "end_line": 2246,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    2246,
+    "self._model_pickers.pop"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/partners/channels/feishu.py"
+ },
+ {
+  "line": 66,
+  "lock": "_LOCK",
+  "is_async": false,
+  "end_line": 76,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    74,
+    "_KeepAliveRequests"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/partners/channels/lark_http.py"
+ },
+ {
+  "line": 758,
+  "lock": "lock",
+  "is_async": true,
+  "end_line": 782,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    782,
+    "self._process_inbound_event"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    759,
+    "self._session_cursor.get"
+   ],
+   [
+    "call",
+    762,
+    "self._mark_session_cursor"
+   ],
+   [
+    "call",
+    768,
+    "self._cold_sessions.discard"
+   ],
+   [
+    "call",
+    780,
+    "self._mark_session_cursor"
+   ],
+   [
+    "call",
+    778,
+    "self._session_cursor.get"
+   ],
+   [
+    "call",
+    782,
+    "self._process_inbound_event"
+   ]
+  ],
+  "ncalls": 16,
+  "file": "deeptutor/partners/channels/mochat.py"
+ },
+ {
+  "line": 859,
+  "lock": "state.lock",
+  "is_async": true,
+  "end_line": 863,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    863,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    863,
+    "self._delay_flush_after"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/partners/channels/mochat.py"
+ },
+ {
+  "line": 878,
+  "lock": "state.lock",
+  "is_async": true,
+  "end_line": 886,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/partners/channels/mochat.py"
+ },
+ {
+  "line": 793,
+  "lock": "self._refs_file_lock",
+  "is_async": false,
+  "end_line": 815,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    794,
+    "self._merge_refs_from_disk_locked"
+   ],
+   [
+    "call",
+    796,
+    "self._prune_conversation_refs"
+   ],
+   [
+    "call",
+    806,
+    "self._conversation_refs.items"
+   ],
+   [
+    "call",
+    810,
+    "self._safe_float"
+   ],
+   [
+    "call",
+    812,
+    "self._conversation_refs.items"
+   ],
+   [
+    "call",
+    814,
+    "self._write_json_atomically"
+   ],
+   [
+    "call",
+    815,
+    "self._write_json_atomically"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/partners/channels/msteams.py"
+ },
+ {
+  "line": 207,
+  "lock": "sem",
+  "is_async": true,
+  "end_line": 216,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    208,
+    "self._generate_block"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    208,
+    "self._generate_block"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/book/compiler.py"
+ },
+ {
+  "line": 1003,
+  "lock": "runtime.lock",
+  "is_async": true,
+  "end_line": 1023,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 13,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1026,
+  "lock": "self._global_lock",
+  "is_async": true,
+  "end_line": 1028,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1027,
+    "self._runtimes.get"
+   ],
+   [
+    "call",
+    1028,
+    "self._runtimes.pop"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1236,
+  "lock": "runtime.lock",
+  "is_async": true,
+  "end_line": 1253,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    1239,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1240,
+    "self._compile_page_now"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1359,
+  "lock": "runtime.lock",
+  "is_async": true,
+  "end_line": 1377,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    1375,
+    "runtime.queue.put"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    1365,
+    "self._runtimes.get"
+   ],
+   [
+    "call",
+    1376,
+    "self._ensure_worker"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1364,
+  "lock": "self._global_lock",
+  "is_async": true,
+  "end_line": 1366,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1365,
+    "self._runtimes.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1380,
+  "lock": "self._global_lock",
+  "is_async": true,
+  "end_line": 1385,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1381,
+    "self._runtimes.get"
+   ],
+   [
+    "call",
+    1383,
+    "_BookRuntime"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1450,
+  "lock": "runtime.lock",
+  "is_async": true,
+  "end_line": 1459,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1454,
+    "self._runtimes.get"
+   ],
+   [
+    "call",
+    1455,
+    "self._runtimes.pop"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 1453,
+  "lock": "self._global_lock",
+  "is_async": true,
+  "end_line": 1455,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1454,
+    "self._runtimes.get"
+   ],
+   [
+    "call",
+    1455,
+    "self._runtimes.pop"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/book/engine.py"
+ },
+ {
+  "line": 806,
+  "lock": "send_lock",
+  "is_async": true,
+  "end_line": 807,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    807,
+    "ws.send_json"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/api/routers/mastery_path.py"
+ },
+ {
+  "line": 366,
+  "lock": "send_lock",
+  "is_async": true,
+  "end_line": 367,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    367,
+    "ws.send_json"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/api/routers/partner_groups.py"
+ },
+ {
+  "line": 200,
+  "lock": "lock",
+  "is_async": true,
+  "end_line": 212,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    207,
+    "mgr.start_partner"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 10,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 850,
+  "lock": "lock",
+  "is_async": true,
+  "end_line": 851,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    851,
+    "_confirm_partner_draft"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    851,
+    "_confirm_partner_draft"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1423,
+  "lock": "mgr.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1430,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1451,
+  "lock": "mgr.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1461,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1477,
+  "lock": "mgr.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1485,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1508,
+  "lock": "mgr.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1519,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1509,
+  "lock": "mgr.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1519,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1654,
+  "lock": "lock",
+  "is_async": false,
+  "end_line": 1663,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    1657,
+    "mgr.send_message"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    1656,
+    "_assert_selected_web_session"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 1712,
+  "lock": "lock",
+  "is_async": false,
+  "end_line": 1722,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    1715,
+    "mgr.send_message"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    1714,
+    "_assert_selected_web_session"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/api/routers/partners.py"
+ },
+ {
+  "line": 246,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 254,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    254,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 9,
+  "file": "deeptutor/api/routers/video_learning.py"
+ },
+ {
+  "line": 340,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 343,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    343,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/api/routers/video_learning.py"
+ },
+ {
+  "line": 356,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 359,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    359,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/api/routers/video_learning.py"
+ },
+ {
+  "line": 369,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 372,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    372,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/api/routers/video_learning.py"
+ },
+ {
+  "line": 30,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 35,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/api/utils/progress_broadcaster.py"
+ },
+ {
+  "line": 40,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 45,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/api/utils/progress_broadcaster.py"
+ },
+ {
+  "line": 49,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 69,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    58,
+    "websocket.send_json"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 7,
+  "file": "deeptutor/api/utils/progress_broadcaster.py"
+ },
+ {
+  "line": 28,
+  "lock": "cls._lock",
+  "is_async": false,
+  "end_line": 30,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 45,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 64,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 6,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 68,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 69,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    69,
+    "self._task_ids.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 73,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 78,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 82,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 83,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    83,
+    "self._task_metadata.get"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 87,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 120,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    91,
+    "self._task_metadata.items"
+   ],
+   [
+    "call",
+    103,
+    "self._task_metadata.pop"
+   ],
+   [
+    "call",
+    106,
+    "self._task_ids.pop"
+   ],
+   [
+    "call",
+    111,
+    "self._task_metadata.items"
+   ],
+   [
+    "call",
+    117,
+    "self._task_metadata.pop"
+   ],
+   [
+    "call",
+    120,
+    "self._task_ids.pop"
+   ]
+  ],
+  "ncalls": 24,
+  "file": "deeptutor/api/utils/task_id_manager.py"
+ },
+ {
+  "line": 48,
+  "lock": "cls._instance_lock",
+  "is_async": false,
+  "end_line": 50,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 54,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 64,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    55,
+    "self._prune_locked"
+   ],
+   [
+    "call",
+    57,
+    "self._terminal_tombstones.pop"
+   ],
+   [
+    "call",
+    62,
+    "self._append_locked"
+   ],
+   [
+    "call",
+    64,
+    "self._subscribers.setdefault"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 68,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 75,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    69,
+    "self._buffers.setdefault"
+   ],
+   [
+    "call",
+    70,
+    "self._buffer_bytes.setdefault"
+   ],
+   [
+    "call",
+    71,
+    "self._append_locked"
+   ],
+   [
+    "call",
+    74,
+    "self._subscribers.get"
+   ],
+   [
+    "call",
+    75,
+    "self._prune_locked"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 126,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 137,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    127,
+    "self._prune_locked"
+   ],
+   [
+    "call",
+    129,
+    "self._terminal_tombstones.pop"
+   ],
+   [
+    "call",
+    134,
+    "self._append_locked"
+   ],
+   [
+    "call",
+    136,
+    "self._subscribers.setdefault"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 143,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 154,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    144,
+    "self._subscribers.get"
+   ],
+   [
+    "call",
+    153,
+    "self._subscribers.pop"
+   ],
+   [
+    "call",
+    154,
+    "self._prune_locked"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 240,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 242,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    241,
+    "self._prune_locked"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/api/utils/task_log_stream.py"
+ },
+ {
+  "line": 319,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 331,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    322,
+    "self._fetch"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    322,
+    "self._fetch"
+   ],
+   [
+    "call",
+    326,
+    "_now"
+   ],
+   [
+    "call",
+    330,
+    "self._clock"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/app_update.py"
+ },
+ {
+  "line": 33,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 37,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    36,
+    "self._probe_locked"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    34,
+    "self._task.done"
+   ],
+   [
+    "call",
+    36,
+    "self._probe_locked"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 41,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 62,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    59,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    44,
+    "self._probe_local_login"
+   ],
+   [
+    "await",
+    47,
+    "_start_sdk_authenticate"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    42,
+    "self._task.done"
+   ],
+   [
+    "call",
+    44,
+    "self._probe_local_login"
+   ],
+   [
+    "call",
+    47,
+    "_start_sdk_authenticate"
+   ],
+   [
+    "call",
+    50,
+    "self._mark_connected"
+   ],
+   [
+    "call",
+    59,
+    "self._wait_for_login"
+   ],
+   [
+    "call",
+    61,
+    "self._mark_error"
+   ]
+  ],
+  "ncalls": 15,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 65,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 73,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 89,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 93,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 111,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 123,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 173,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 177,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    177,
+    "self._mark_error"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 180,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 184,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    184,
+    "self._mark_connected"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/codebuddy_auth.py"
+ },
+ {
+  "line": 329,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 331,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    331,
+    "self._load"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 336,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 339,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    337,
+    "self._load"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 352,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 370,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    353,
+    "self._load"
+   ],
+   [
+    "call",
+    354,
+    "self._clean_name"
+   ],
+   [
+    "call",
+    355,
+    "self._assert_unique"
+   ],
+   [
+    "call",
+    360,
+    "self._clean_description"
+   ],
+   [
+    "call",
+    361,
+    "self._clean_color"
+   ],
+   [
+    "call",
+    364,
+    "_clip"
+   ],
+   [
+    "call",
+    369,
+    "self._save"
+   ]
+  ],
+  "ncalls": 16,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 384,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 405,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    385,
+    "self._load"
+   ],
+   [
+    "call",
+    390,
+    "self._clean_name"
+   ],
+   [
+    "call",
+    391,
+    "self._assert_unique"
+   ],
+   [
+    "call",
+    394,
+    "self._clean_description"
+   ],
+   [
+    "call",
+    396,
+    "self._clean_color"
+   ],
+   [
+    "call",
+    398,
+    "_clip"
+   ],
+   [
+    "call",
+    404,
+    "self._save"
+   ]
+  ],
+  "ncalls": 14,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 429,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 455,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    430,
+    "self._load"
+   ],
+   [
+    "call",
+    454,
+    "self._save"
+   ]
+  ],
+  "ncalls": 12,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 461,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 473,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    462,
+    "self._load"
+   ],
+   [
+    "call",
+    473,
+    "self._save"
+   ]
+  ],
+  "ncalls": 10,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 486,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 505,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    487,
+    "self._load"
+   ],
+   [
+    "call",
+    504,
+    "self._save"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 520,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 528,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    521,
+    "self._load"
+   ],
+   [
+    "call",
+    525,
+    "_parse_syllabus"
+   ],
+   [
+    "call",
+    527,
+    "self._save"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 534,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 545,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    535,
+    "self._load"
+   ],
+   [
+    "call",
+    544,
+    "self._save"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 558,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 568,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    559,
+    "self._load"
+   ],
+   [
+    "call",
+    567,
+    "self._save"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 572,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 577,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    573,
+    "self._load"
+   ],
+   [
+    "call",
+    577,
+    "self._save"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/services/courses.py"
+ },
+ {
+  "line": 39,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 51,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 7,
+  "file": "deeptutor/services/keypool.py"
+ },
+ {
+  "line": 55,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 60,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/keypool.py"
+ },
+ {
+  "line": 235,
+  "lock": "_settings_lock",
+  "is_async": false,
+  "end_line": 263,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    239,
+    "open"
+   ],
+   [
+    "call",
+    240,
+    "json.load"
+   ],
+   [
+    "call",
+    249,
+    "settings_file.parent.mkdir"
+   ],
+   [
+    "call",
+    260,
+    "os.replace"
+   ],
+   [
+    "call",
+    262,
+    "temp_path.unlink"
+   ],
+   [
+    "call",
+    256,
+    "json.dump"
+   ],
+   [
+    "call",
+    258,
+    "f.flush"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 17,
+  "file": "deeptutor/services/settings/interface_settings.py"
+ },
+ {
+  "line": 388,
+  "lock": "_catalog_overrides_lock",
+  "is_async": false,
+  "end_line": 390,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/llm/capabilities.py"
+ },
+ {
+  "line": 402,
+  "lock": "_catalog_overrides_lock",
+  "is_async": false,
+  "end_line": 407,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 8,
+  "file": "deeptutor/services/llm/capabilities.py"
+ },
+ {
+  "line": 47,
+  "lock": "_ssl_warning_lock",
+  "is_async": false,
+  "end_line": 53,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/llm/cloud_provider.py"
+ },
+ {
+  "line": 39,
+  "lock": "_warning_lock",
+  "is_async": false,
+  "end_line": 45,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/llm/openai_http_client.py"
+ },
+ {
+  "line": 69,
+  "lock": "_sanitized_lock",
+  "is_async": false,
+  "end_line": 81,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 8,
+  "file": "deeptutor/services/llm/openai_http_client.py"
+ },
+ {
+  "line": 158,
+  "lock": "_provider_pool_lock",
+  "is_async": false,
+  "end_line": 170,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    164,
+    "_build_runtime_provider"
+   ],
+   [
+    "call",
+    169,
+    "_schedule_close"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/llm/provider_factory.py"
+ },
+ {
+  "line": 175,
+  "lock": "_provider_pool_lock",
+  "is_async": false,
+  "end_line": 177,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/llm/provider_factory.py"
+ },
+ {
+  "line": 184,
+  "lock": "_provider_pool_lock",
+  "is_async": false,
+  "end_line": 186,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/llm/provider_factory.py"
+ },
+ {
+  "line": 202,
+  "lock": "_provider_pool_lock",
+  "is_async": false,
+  "end_line": 203,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/llm/provider_factory.py"
+ },
+ {
+  "line": 53,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 69,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/llm/traffic_control.py"
+ },
+ {
+  "line": 291,
+  "lock": "session.lock",
+  "is_async": true,
+  "end_line": 296,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    294,
+    "session.run_turn"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    292,
+    "_incremental_prompt"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py"
+ },
+ {
+  "line": 313,
+  "lock": "self._sessions_lock",
+  "is_async": true,
+  "end_line": 341,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    331,
+    "_CodeBuddySession.start"
+   ],
+   [
+    "call",
+    331,
+    "_CodeBuddySession.start"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    331,
+    "_CodeBuddySession.start"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    314,
+    "self._sessions.get"
+   ],
+   [
+    "call",
+    321,
+    "self._sessions.move_to_end"
+   ],
+   [
+    "call",
+    324,
+    "self._sessions.pop"
+   ],
+   [
+    "call",
+    327,
+    "_build_options"
+   ],
+   [
+    "call",
+    330,
+    "_options_has_api_key_env"
+   ],
+   [
+    "call",
+    339,
+    "self._sessions.popitem"
+   ]
+  ],
+  "ncalls": 13,
+  "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py"
+ },
+ {
+  "line": 347,
+  "lock": "self._sessions_lock",
+  "is_async": true,
+  "end_line": 349,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    348,
+    "self._sessions.get"
+   ],
+   [
+    "call",
+    349,
+    "self._sessions.pop"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py"
+ },
+ {
+  "line": 353,
+  "lock": "self._sessions_lock",
+  "is_async": true,
+  "end_line": 355,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    354,
+    "self._sessions.values"
+   ],
+   [
+    "call",
+    355,
+    "self._sessions.clear"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py"
+ },
+ {
+  "line": 771,
+  "lock": "_API_KEY_ENV_LOCK",
+  "is_async": true,
+  "end_line": 780,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py"
+ },
+ {
+  "line": 174,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 191,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    186,
+    "_now_iso"
+   ],
+   [
+    "call",
+    189,
+    "self._order.append"
+   ],
+   [
+    "call",
+    191,
+    "self._evict_if_needed"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/memory/consolidator/runs.py"
+ },
+ {
+  "line": 297,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 316,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    300,
+    "self.path.parent.mkdir"
+   ],
+   [
+    "call",
+    313,
+    "os.replace"
+   ],
+   [
+    "call",
+    315,
+    "temp_path.unlink"
+   ],
+   [
+    "call",
+    309,
+    "json.dump"
+   ],
+   [
+    "call",
+    311,
+    "handle.flush"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    299,
+    "self._normalize"
+   ]
+  ],
+  "ncalls": 13,
+  "file": "deeptutor/services/config/model_catalog.py"
+ },
+ {
+  "line": 319,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 322,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    320,
+    "self.load"
+   ],
+   [
+    "call",
+    322,
+    "self.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/config/model_catalog.py"
+ },
+ {
+  "line": 86,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 107,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    93,
+    "self.path.parent.mkdir"
+   ],
+   [
+    "call",
+    104,
+    "os.replace"
+   ],
+   [
+    "call",
+    106,
+    "temp_path.unlink"
+   ],
+   [
+    "call",
+    100,
+    "json.dump"
+   ],
+   [
+    "call",
+    102,
+    "handle.flush"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    87,
+    "_empty_draft"
+   ],
+   [
+    "call",
+    92,
+    "_now"
+   ]
+  ],
+  "ncalls": 17,
+  "file": "deeptutor/services/config/settings_draft.py"
+ },
+ {
+  "line": 110,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 111,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    111,
+    "self.path.unlink"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/config/settings_draft.py"
+ },
+ {
+  "line": 64,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 65,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/config/test_runner.py"
+ },
+ {
+  "line": 68,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 69,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/config/test_runner.py"
+ },
+ {
+  "line": 91,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 92,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/config/test_runner.py"
+ },
+ {
+  "line": 98,
+  "lock": "_whiteboard_lock",
+  "is_async": false,
+  "end_line": 107,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    106,
+    "self.path.open"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    99,
+    "self._entries_unlocked"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/partner_groups/memory.py"
+ },
+ {
+  "line": 112,
+  "lock": "_whiteboard_lock",
+  "is_async": false,
+  "end_line": 117,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    113,
+    "self._entries_unlocked"
+   ],
+   [
+    "call",
+    116,
+    "self._append_tombstones_unlocked"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/partner_groups/memory.py"
+ },
+ {
+  "line": 120,
+  "lock": "_whiteboard_lock",
+  "is_async": false,
+  "end_line": 127,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    123,
+    "self._entries_unlocked"
+   ],
+   [
+    "call",
+    126,
+    "self._append_tombstones_unlocked"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/services/partner_groups/memory.py"
+ },
+ {
+  "line": 130,
+  "lock": "_whiteboard_lock",
+  "is_async": false,
+  "end_line": 131,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    131,
+    "self._entries_unlocked"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/partner_groups/memory.py"
+ },
+ {
+  "line": 154,
+  "lock": "EmbeddingClient._hold_spacing_lock",
+  "is_async": true,
+  "end_line": 160,
+  "sleeps": [
+   [
+    "await",
+    158,
+    "asyncio.sleep"
+   ],
+   [
+    "call",
+    158,
+    "asyncio.sleep"
+   ]
+  ],
+  "spawns": [],
+  "io": [
+   [
+    "await",
+    160,
+    "self.adapter.embed"
+   ],
+   [
+    "call",
+    160,
+    "self.adapter.embed"
+   ]
+  ],
+  "awaits": [
+   [
+    "await",
+    158,
+    "asyncio.sleep"
+   ],
+   [
+    "await",
+    160,
+    "self.adapter.embed"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    156,
+    "_mono"
+   ],
+   [
+    "call",
+    159,
+    "_mono"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/embedding/client.py"
+ },
+ {
+  "line": 481,
+  "lock": "self._operation_lock",
+  "is_async": true,
+  "end_line": 505,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    504,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    487,
+    "self._callback_factory"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    482,
+    "self._operation_is_active"
+   ],
+   [
+    "call",
+    483,
+    "self._login_start_payload"
+   ],
+   [
+    "call",
+    487,
+    "self._callback_factory"
+   ],
+   [
+    "call",
+    489,
+    "_LoginOperation"
+   ],
+   [
+    "call",
+    501,
+    "self._store.current_generation"
+   ],
+   [
+    "call",
+    500,
+    "self._clock"
+   ],
+   [
+    "call",
+    504,
+    "self._run_login"
+   ],
+   [
+    "call",
+    505,
+    "self._login_start_payload"
+   ]
+  ],
+  "ncalls": 14,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 557,
+  "lock": "self._operation_lock",
+  "is_async": true,
+  "end_line": 571,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    559,
+    "self._operation_is_active"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 612,
+  "lock": "self._catalog_sync_lock",
+  "is_async": true,
+  "end_line": 628,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    613,
+    "self._model_catalog.load"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    613,
+    "self._model_catalog.load"
+   ],
+   [
+    "call",
+    616,
+    "_managed_profile_indexes"
+   ],
+   [
+    "call",
+    618,
+    "self._store.commit_credentials"
+   ],
+   [
+    "call",
+    622,
+    "_codex_account_binding"
+   ]
+  ],
+  "ncalls": 12,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 633,
+  "lock": "self._catalog_sync_lock",
+  "is_async": true,
+  "end_line": 637,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 684,
+  "lock": "self._operation_lock",
+  "is_async": true,
+  "end_line": 692,
+  "sleeps": [
+   [
+    "await",
+    689,
+    "asyncio.sleep"
+   ],
+   [
+    "call",
+    689,
+    "asyncio.sleep"
+   ]
+  ],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    688,
+    "operation.callback.cancel"
+   ],
+   [
+    "await",
+    689,
+    "asyncio.sleep"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    686,
+    "self._operation_is_active"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 698,
+  "lock": "self._catalog_sync_lock",
+  "is_async": true,
+  "end_line": 719,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    699,
+    "self.get_token"
+   ],
+   [
+    "await",
+    708,
+    "self._catalog.get"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    700,
+    "self._store.load_credentials"
+   ],
+   [
+    "call",
+    708,
+    "self._catalog.get"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 722,
+  "lock": "self._refresh_lock",
+  "is_async": true,
+  "end_line": 743,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    742,
+    "self._refresh_credentials"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    723,
+    "self._store.load_credentials"
+   ],
+   [
+    "call",
+    730,
+    "self._reauth_required"
+   ],
+   [
+    "call",
+    740,
+    "self._clock"
+   ],
+   [
+    "call",
+    742,
+    "self._refresh_credentials"
+   ]
+  ],
+  "ncalls": 10,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 828,
+  "lock": "self._refresh_lock",
+  "is_async": true,
+  "end_line": 838,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    838,
+    "self._refresh_credentials"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    829,
+    "self._store.load_credentials"
+   ],
+   [
+    "call",
+    838,
+    "self._refresh_credentials"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 842,
+  "lock": "self._inference_lock",
+  "is_async": true,
+  "end_line": 849,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 853,
+  "lock": "self._inference_lock",
+  "is_async": true,
+  "end_line": 854,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 857,
+  "lock": "self._inference_lock",
+  "is_async": true,
+  "end_line": 864,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 867,
+  "lock": "self._catalog_sync_lock",
+  "is_async": true,
+  "end_line": 887,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    871,
+    "self._oauth.revoke"
+   ],
+   [
+    "await",
+    881,
+    "self._catalog.invalidate"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    868,
+    "self._store.load_credentials"
+   ],
+   [
+    "call",
+    874,
+    "self._store.clear_credentials"
+   ],
+   [
+    "call",
+    876,
+    "self._store.clear_credentials"
+   ],
+   [
+    "call",
+    871,
+    "self._oauth.revoke"
+   ],
+   [
+    "call",
+    877,
+    "self._store.current_generation"
+   ],
+   [
+    "call",
+    881,
+    "self._catalog.invalidate"
+   ],
+   [
+    "call",
+    886,
+    "self._clear_reauth_required"
+   ]
+  ],
+  "ncalls": 11,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 889,
+  "lock": "self._inference_lock",
+  "is_async": true,
+  "end_line": 890,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 897,
+  "lock": "self._catalog_sync_lock",
+  "is_async": true,
+  "end_line": 944,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    943,
+    "self._model_catalog.update"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/codex_auth/service.py"
+ },
+ {
+  "line": 140,
+  "lock": "self._thread_lock",
+  "is_async": false,
+  "end_line": 143,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    141,
+    "self._ensure_root"
+   ],
+   [
+    "call",
+    142,
+    "_locked_file"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/codex_auth/storage.py"
+ },
+ {
+  "line": 104,
+  "lock": "lock",
+  "is_async": true,
+  "end_line": 105,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    105,
+    "asyncio.to_thread"
+   ],
+   [
+    "call",
+    105,
+    "asyncio.to_thread"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    105,
+    "asyncio.to_thread"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/cli_apps/installer.py"
+ },
+ {
+  "line": 116,
+  "lock": "lock",
+  "is_async": true,
+  "end_line": 117,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    117,
+    "asyncio.to_thread"
+   ],
+   [
+    "call",
+    117,
+    "asyncio.to_thread"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    117,
+    "asyncio.to_thread"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/cli_apps/installer.py"
+ },
+ {
+  "line": 360,
+  "lock": "semaphore",
+  "is_async": true,
+  "end_line": 369,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    362,
+    "asyncio.wait_for"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    361,
+    "self._load_image_payload"
+   ],
+   [
+    "call",
+    363,
+    "self._describe_image"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py"
+ },
+ {
+  "line": 425,
+  "lock": "semaphore",
+  "is_async": true,
+  "end_line": 446,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    430,
+    "asyncio.to_thread"
+   ],
+   [
+    "call",
+    430,
+    "asyncio.to_thread"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    430,
+    "asyncio.to_thread"
+   ],
+   [
+    "await",
+    439,
+    "asyncio.wait_for"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 9,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py"
+ },
+ {
+  "line": 62,
+  "lock": "_INDEX_WORKERS_LOCK",
+  "is_async": false,
+  "end_line": 65,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    65,
+    "_worker_busy_error"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py"
+ },
+ {
+  "line": 71,
+  "lock": "_INDEX_WORKERS_LOCK",
+  "is_async": false,
+  "end_line": 77,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    74,
+    "_worker_busy_error"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py"
+ },
+ {
+  "line": 84,
+  "lock": "_INDEX_WORKERS_LOCK",
+  "is_async": false,
+  "end_line": 86,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py"
+ },
+ {
+  "line": 22,
+  "lock": "_RERANKER_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 23,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/rerank.py"
+ },
+ {
+  "line": 37,
+  "lock": "_RERANKER_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 41,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/rerank.py"
+ },
+ {
+  "line": 60,
+  "lock": "_RERANKER_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 64,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/rerank.py"
+ },
+ {
+  "line": 257,
+  "lock": "_INDEX_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 263,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    258,
+    "_prune_index_cache_locked"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/storage.py"
+ },
+ {
+  "line": 268,
+  "lock": "_INDEX_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 275,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    272,
+    "_CachedIndex"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/storage.py"
+ },
+ {
+  "line": 281,
+  "lock": "_INDEX_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 282,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/storage.py"
+ },
+ {
+  "line": 287,
+  "lock": "_INDEX_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 290,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    289,
+    "_prune_index_cache_locked"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/rag/pipelines/llamaindex/storage.py"
+ },
+ {
+  "line": 37,
+  "lock": "_WORKER_LOOP_LOCK",
+  "is_async": false,
+  "end_line": 57,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    46,
+    "threading.Thread"
+   ],
+   [
+    "call",
+    51,
+    "thread.start"
+   ]
+  ],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 6,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 75,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 78,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    78,
+    "self._cancel_requested.is_set"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 84,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 86,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 93,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 95,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 122,
+  "lock": "self._pending_lock",
+  "is_async": false,
+  "end_line": 123,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 147,
+  "lock": "self._pending_lock",
+  "is_async": false,
+  "end_line": 151,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    148,
+    "self._cancelled.is_set"
+   ],
+   [
+    "call",
+    151,
+    "self._pending.add"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 158,
+  "lock": "self._pending_lock",
+  "is_async": false,
+  "end_line": 159,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    159,
+    "self._pending.discard"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/lightrag/worker.py"
+ },
+ {
+  "line": 36,
+  "lock": "_CAPABILITY_LOCK",
+  "is_async": false,
+  "end_line": 37,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    37,
+    "_capability_key"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py"
+ },
+ {
+  "line": 41,
+  "lock": "_CAPABILITY_LOCK",
+  "is_async": false,
+  "end_line": 42,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    42,
+    "_capability_key"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py"
+ },
+ {
+  "line": 68,
+  "lock": "_CAPABILITY_LOCK",
+  "is_async": false,
+  "end_line": 69,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py"
+ },
+ {
+  "line": 192,
+  "lock": "_CAPABILITY_LOCK",
+  "is_async": false,
+  "end_line": 240,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py"
+ },
+ {
+  "line": 54,
+  "lock": "_extension_registration_lock",
+  "is_async": false,
+  "end_line": 65,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    64,
+    "_unregister_stale_extension_types"
+   ],
+   [
+    "call",
+    62,
+    "_is_duplicate_registration_error"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/rag/pipelines/graphrag/pandas_compat.py"
+ },
+ {
+  "line": 128,
+  "lock": "_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 129,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/ima/inventory.py"
+ },
+ {
+  "line": 183,
+  "lock": "_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 191,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/rag/pipelines/ima/inventory.py"
+ },
+ {
+  "line": 195,
+  "lock": "_CACHE_LOCK",
+  "is_async": false,
+  "end_line": 196,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/rag/pipelines/ima/inventory.py"
+ },
+ {
+  "line": 237,
+  "lock": "self._add_lock",
+  "is_async": false,
+  "end_line": 290,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    239,
+    "conn.execute"
+   ],
+   [
+    "call",
+    256,
+    "conn.execute"
+   ],
+   [
+    "call",
+    265,
+    "conn.commit"
+   ],
+   [
+    "call",
+    272,
+    "conn.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    244,
+    "self._row_to_entry"
+   ],
+   [
+    "call",
+    252,
+    "self._ensure_root"
+   ],
+   [
+    "call",
+    253,
+    "self._write_file"
+   ],
+   [
+    "call",
+    271,
+    "self._delete_file"
+   ],
+   [
+    "call",
+    277,
+    "self._row_to_entry"
+   ]
+  ],
+  "ncalls": 18,
+  "file": "deeptutor/services/storage/file_library.py"
+ },
+ {
+  "line": 296,
+  "lock": "_web_risk_cache_lock",
+  "is_async": false,
+  "end_line": 309,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 7,
+  "file": "deeptutor/services/search/source_filter.py"
+ },
+ {
+  "line": 331,
+  "lock": "_web_risk_cache_lock",
+  "is_async": false,
+  "end_line": 339,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 7,
+  "file": "deeptutor/services/search/source_filter.py"
+ },
+ {
+  "line": 54,
+  "lock": "self._health_lock",
+  "is_async": true,
+  "end_line": 67,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    57,
+    "self._backend.health"
+   ],
+   [
+    "await",
+    67,
+    "self._try_subprocess_fallback"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    57,
+    "self._backend.health"
+   ],
+   [
+    "call",
+    67,
+    "self._try_subprocess_fallback"
+   ]
+  ],
+  "ncalls": 6,
+  "file": "deeptutor/services/sandbox/service.py"
+ },
+ {
+  "line": 160,
+  "lock": "self._keys_lock",
+  "is_async": true,
+  "end_line": 175,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    161,
+    "self._purge_expired_locked"
+   ],
+   [
+    "await",
+    172,
+    "self._start_session"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    161,
+    "self._purge_expired_locked"
+   ],
+   [
+    "call",
+    163,
+    "self._active_by_key.get"
+   ],
+   [
+    "call",
+    165,
+    "self._sessions.get"
+   ],
+   [
+    "call",
+    170,
+    "self._active_by_key.pop"
+   ],
+   [
+    "call",
+    166,
+    "self._now"
+   ],
+   [
+    "call",
+    172,
+    "self._start_session"
+   ]
+  ],
+  "ncalls": 11,
+  "file": "deeptutor/services/partners/channel_onboarding.py"
+ },
+ {
+  "line": 179,
+  "lock": "session.lock",
+  "is_async": true,
+  "end_line": 190,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    188,
+    "self._poll"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    185,
+    "self._active_by_key.pop"
+   ],
+   [
+    "call",
+    180,
+    "self._now"
+   ],
+   [
+    "call",
+    188,
+    "self._poll"
+   ],
+   [
+    "call",
+    189,
+    "self._maybe_cleanup"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/partners/channel_onboarding.py"
+ },
+ {
+  "line": 194,
+  "lock": "session.lock",
+  "is_async": true,
+  "end_line": 198,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    197,
+    "self._active_by_key.pop"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/partners/channel_onboarding.py"
+ },
+ {
+  "line": 209,
+  "lock": "session.lock",
+  "is_async": true,
+  "end_line": 270,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    260,
+    "partner_manager.reload_channels"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    234,
+    "self._feishu_config"
+   ],
+   [
+    "call",
+    242,
+    "self._wecom_config"
+   ],
+   [
+    "call",
+    267,
+    "self._active_by_key.pop"
+   ]
+  ],
+  "ncalls": 28,
+  "file": "deeptutor/services/partners/channel_onboarding.py"
+ },
+ {
+  "line": 107,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 111,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    108,
+    "_drop_expired"
+   ],
+   [
+    "call",
+    108,
+    "_read"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/partners/links.py"
+ },
+ {
+  "line": 966,
+  "lock": "instance.reload_lock",
+  "is_async": true,
+  "end_line": 1004,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    993,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    967,
+    "self._teardown_channel_listeners"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    967,
+    "self._teardown_channel_listeners"
+   ],
+   [
+    "call",
+    970,
+    "self._build_channel_manager"
+   ],
+   [
+    "call",
+    979,
+    "self._publish_runtime_status"
+   ],
+   [
+    "call",
+    994,
+    "channel_manager._start_channel"
+   ],
+   [
+    "call",
+    1003,
+    "self._publish_runtime_status"
+   ]
+  ],
+  "ncalls": 14,
+  "file": "deeptutor/services/partners/manager.py"
+ },
+ {
+  "line": 1343,
+  "lock": "self.web_session_idle_lock",
+  "is_async": false,
+  "end_line": 1344,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/partners/manager.py"
+ },
+ {
+  "line": 87,
+  "lock": "self._write_lock",
+  "is_async": false,
+  "end_line": 89,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    88,
+    "self._index_path.write_text"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    88,
+    "self._index_path.write_text"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/partners/sessions.py"
+ },
+ {
+  "line": 134,
+  "lock": "self._write_lock",
+  "is_async": false,
+  "end_line": 135,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    135,
+    "path.unlink"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/sessions.py"
+ },
+ {
+  "line": 152,
+  "lock": "self._write_lock",
+  "is_async": false,
+  "end_line": 155,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    153,
+    "open"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/partners/sessions.py"
+ },
+ {
+  "line": 202,
+  "lock": "self._write_lock",
+  "is_async": false,
+  "end_line": 204,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    203,
+    "open"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    203,
+    "self._path"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/partners/sessions.py"
+ },
+ {
+  "line": 238,
+  "lock": "self._write_lock",
+  "is_async": false,
+  "end_line": 241,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    241,
+    "path.replace"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/partners/sessions.py"
+ },
+ {
+  "line": 29,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 52,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    31,
+    "lock_path.open"
+   ],
+   [
+    "call",
+    35,
+    "handle.flush"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 16,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 102,
+  "lock": "_state_lock",
+  "is_async": false,
+  "end_line": 103,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    103,
+    "_read"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 119,
+  "lock": "_state_lock",
+  "is_async": false,
+  "end_line": 129,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    120,
+    "_read"
+   ],
+   [
+    "call",
+    129,
+    "_write"
+   ],
+   [
+    "call",
+    127,
+    "_write"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 126,
+  "lock": "idle_lock",
+  "is_async": false,
+  "end_line": 127,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    127,
+    "_write"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 144,
+  "lock": "_state_lock",
+  "is_async": false,
+  "end_line": 162,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    145,
+    "_read"
+   ],
+   [
+    "call",
+    161,
+    "_write"
+   ],
+   [
+    "call",
+    159,
+    "_write"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 158,
+  "lock": "idle_lock",
+  "is_async": false,
+  "end_line": 159,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    159,
+    "_write"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/web_continuity.py"
+ },
+ {
+  "line": 161,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 163,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    162,
+    "_prune"
+   ],
+   [
+    "call",
+    162,
+    "_now"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/partners/weixin_onboarding.py"
+ },
+ {
+  "line": 177,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 179,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    178,
+    "_prune"
+   ],
+   [
+    "call",
+    178,
+    "_now"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/partners/weixin_onboarding.py"
+ },
+ {
+  "line": 274,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 275,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/weixin_onboarding.py"
+ },
+ {
+  "line": 314,
+  "lock": "_lock",
+  "is_async": false,
+  "end_line": 315,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/partners/weixin_onboarding.py"
+ },
+ {
+  "line": 299,
+  "lock": "sem",
+  "is_async": true,
+  "end_line": 300,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    300,
+    "_fetch_page"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    300,
+    "_fetch_page"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/web_source/crawler.py"
+ },
+ {
+  "line": 61,
+  "lock": "semaphore",
+  "is_async": true,
+  "end_line": 62,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    62,
+    "resolved_fetcher"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/web_source/snapshot_assets.py"
+ },
+ {
+  "line": 125,
+  "lock": "lock",
+  "is_async": false,
+  "end_line": 126,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/notebook/service.py"
+ },
+ {
+  "line": 227,
+  "lock": "self._index_lock",
+  "is_async": false,
+  "end_line": 239,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    228,
+    "self._load_index"
+   ],
+   [
+    "call",
+    230,
+    "self._index_row"
+   ],
+   [
+    "call",
+    239,
+    "self._save_index"
+   ]
+  ],
+  "ncalls": 10,
+  "file": "deeptutor/services/notebook/service.py"
+ },
+ {
+  "line": 269,
+  "lock": "self._index_lock",
+  "is_async": false,
+  "end_line": 277,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    270,
+    "self._load_index"
+   ],
+   [
+    "call",
+    274,
+    "self._load_notebook"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/notebook/service.py"
+ },
+ {
+  "line": 289,
+  "lock": "self._index_lock",
+  "is_async": false,
+  "end_line": 316,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    290,
+    "self._load_index"
+   ],
+   [
+    "call",
+    306,
+    "self._load_notebook"
+   ],
+   [
+    "call",
+    313,
+    "self._index_row"
+   ],
+   [
+    "call",
+    316,
+    "self._save_index"
+   ]
+  ],
+  "ncalls": 18,
+  "file": "deeptutor/services/notebook/service.py"
+ },
+ {
+  "line": 388,
+  "lock": "self._index_lock",
+  "is_async": false,
+  "end_line": 393,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    389,
+    "self._load_index"
+   ],
+   [
+    "call",
+    393,
+    "self._save_index"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/notebook/service.py"
+ },
+ {
+  "line": 153,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 161,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/services/parsing/engines/_install.py"
+ },
+ {
+  "line": 165,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 169,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/parsing/engines/_install.py"
+ },
+ {
+  "line": 190,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 224,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    219,
+    "threading.Thread"
+   ],
+   [
+    "call",
+    222,
+    "thread.start"
+   ]
+  ],
+  "io": [
+   [
+    "call",
+    197,
+    "subprocess.Popen"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 5,
+  "file": "deeptutor/services/parsing/engines/_install.py"
+ },
+ {
+  "line": 248,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 258,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/parsing/engines/_install.py"
+ },
+ {
+  "line": 264,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 269,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    265,
+    "self._lines.append"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/parsing/engines/_install.py"
+ },
+ {
+  "line": 115,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 144,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    141,
+    "threading.Thread"
+   ],
+   [
+    "call",
+    142,
+    "thread.start"
+   ]
+  ],
+  "io": [
+   [
+    "call",
+    123,
+    "subprocess.Popen"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 6,
+  "file": "deeptutor/services/parsing/engines/mineru/models.py"
+ },
+ {
+  "line": 147,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 153,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/services/parsing/engines/mineru/models.py"
+ },
+ {
+  "line": 157,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 161,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/parsing/engines/mineru/models.py"
+ },
+ {
+  "line": 192,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 202,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 0,
+  "file": "deeptutor/services/parsing/engines/mineru/models.py"
+ },
+ {
+  "line": 206,
+  "lock": "self._lock",
+  "is_async": false,
+  "end_line": 211,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    207,
+    "self._lines.append"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/parsing/engines/mineru/models.py"
+ },
+ {
+  "line": 85,
+  "lock": "_lock",
+  "is_async": true,
+  "end_line": 96,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    94,
+    "_spawn"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    86,
+    "_reap_stale"
+   ],
+   [
+    "call",
+    92,
+    "_terminate_sync"
+   ],
+   [
+    "call",
+    94,
+    "_spawn"
+   ]
+  ],
+  "ncalls": 7,
+  "file": "deeptutor/services/subagent/opencode_server.py"
+ },
+ {
+  "line": 182,
+  "lock": "_lock",
+  "is_async": true,
+  "end_line": 184,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/services/subagent/opencode_server.py"
+ },
+ {
+  "line": 86,
+  "lock": "self._migration_lock",
+  "is_async": false,
+  "end_line": 104,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    94,
+    "source.read_text"
+   ],
+   [
+    "call",
+    103,
+    "source.replace"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    87,
+    "self._is_sqlite"
+   ]
+  ],
+  "ncalls": 17,
+  "file": "deeptutor/services/cron/repository.py"
+ },
+ {
+  "line": 114,
+  "lock": "self._migration_lock",
+  "is_async": false,
+  "end_line": 148,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    115,
+    "connection.execute"
+   ],
+   [
+    "call",
+    126,
+    "connection.execute"
+   ],
+   [
+    "call",
+    129,
+    "connection.execute"
+   ],
+   [
+    "call",
+    137,
+    "connection.execute"
+   ],
+   [
+    "call",
+    140,
+    "connection.execute"
+   ],
+   [
+    "call",
+    144,
+    "connection.execute"
+   ],
+   [
+    "call",
+    145,
+    "connection.execute"
+   ],
+   [
+    "call",
+    147,
+    "connection.execute"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    143,
+    "self._upsert_row"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/services/cron/repository.py"
+ },
+ {
+  "line": 139,
+  "lock": "_migration_lock",
+  "is_async": false,
+  "end_line": 140,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    140,
+    "self._migrate_locked"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    140,
+    "self._migrate_locked"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/legacy_migration.py"
+ },
+ {
+  "line": 257,
+  "lock": "_migration_lock",
+  "is_async": false,
+  "end_line": 258,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    258,
+    "self._initialize"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/sqlite_store.py"
+ },
+ {
+  "line": 552,
+  "lock": "_migration_lock",
+  "is_async": false,
+  "end_line": 554,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    554,
+    "conn.commit"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    553,
+    "self._migrate_workspace_preferences"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/sqlite_store.py"
+ },
+ {
+  "line": 1101,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 1102,
+  "sleeps": [],
+  "spawns": [
+   [
+    "await",
+    1102,
+    "asyncio.to_thread"
+   ],
+   [
+    "call",
+    1102,
+    "asyncio.to_thread"
+   ]
+  ],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    1102,
+    "asyncio.to_thread"
+   ]
+  ],
+  "calls_private": [],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/sqlite_store.py"
+ },
+ {
+  "line": 49,
+  "lock": "_runtime_lock",
+  "is_async": false,
+  "end_line": 52,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turn_runtime.py"
+ },
+ {
+  "line": 1398,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 1404,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    1399,
+    "self._executions.get"
+   ],
+   [
+    "call",
+    1404,
+    "self._executions.pop"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/session/turns/executor.py"
+ },
+ {
+  "line": 37,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 39,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    38,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/learning_adapter.py"
+ },
+ {
+  "line": 73,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 77,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    75,
+    "self._executions.values"
+   ],
+   [
+    "call",
+    76,
+    "self._reply_queues.values"
+   ],
+   [
+    "call",
+    77,
+    "self._reply_queues.clear"
+   ]
+  ],
+  "ncalls": 5,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 99,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 100,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    100,
+    "self._executions.clear"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 124,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 127,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    127,
+    "self._executions.values"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 141,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 149,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    144,
+    "self._executions.values"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 176,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 179,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    177,
+    "self._turns_blocked_for_update_locked"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 184,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 191,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    185,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 306,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 307,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    307,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 387,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 392,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    388,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 4,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 490,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 494,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    491,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 667,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 682,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    668,
+    "self._executions.get"
+   ]
+  ],
+  "ncalls": 9,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 695,
+  "lock": "execution.flush_lock",
+  "is_async": true,
+  "end_line": 696,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [
+   [
+    "await",
+    696,
+    "self._flush_buffered_events_once"
+   ]
+  ],
+  "calls_private": [
+   [
+    "call",
+    696,
+    "self._flush_buffered_events_once"
+   ]
+  ],
+  "ncalls": 2,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 700,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 701,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/lifecycle.py"
+ },
+ {
+  "line": 705,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 708,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    706,
+    "self._turns_blocked_for_update_locked"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/request_preparer.py"
+ },
+ {
+  "line": 740,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 741,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    741,
+    "self._executions.pop"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/request_preparer.py"
+ },
+ {
+  "line": 757,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 758,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    758,
+    "self._executions.pop"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/request_preparer.py"
+ },
+ {
+  "line": 797,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 809,
+  "sleeps": [],
+  "spawns": [
+   [
+    "call",
+    802,
+    "asyncio.create_task"
+   ],
+   [
+    "call",
+    808,
+    "asyncio.create_task"
+   ]
+  ],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    802,
+    "self._run_turn"
+   ],
+   [
+    "call",
+    809,
+    "self._coordinate_execution"
+   ]
+  ],
+  "ncalls": 8,
+  "file": "deeptutor/services/session/turns/request_preparer.py"
+ },
+ {
+  "line": 812,
+  "lock": "self._lock",
+  "is_async": true,
+  "end_line": 813,
+  "sleeps": [],
+  "spawns": [],
+  "io": [],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    813,
+    "self._executions.pop"
+   ]
+  ],
+  "ncalls": 1,
+  "file": "deeptutor/services/session/turns/request_preparer.py"
+ },
+ {
+  "line": 357,
+  "lock": "self.lock",
+  "is_async": false,
+  "end_line": 361,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    360,
+    "self.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [
+   [
+    "call",
+    358,
+    "self._load"
+   ],
+   [
+    "call",
+    359,
+    "self._repair_transcript_text"
+   ]
+  ],
+  "ncalls": 3,
+  "file": "deeptutor/video_learning/service.py"
+ },
+ {
+  "line": 680,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 689,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    689,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 4,
+  "file": "deeptutor/video_learning/service.py"
+ },
+ {
+  "line": 771,
+  "lock": "store.lock",
+  "is_async": false,
+  "end_line": 775,
+  "sleeps": [],
+  "spawns": [],
+  "io": [
+   [
+    "call",
+    775,
+    "store.save"
+   ]
+  ],
+  "awaits": [],
+  "calls_private": [],
+  "ncalls": 3,
+  "file": "deeptutor/video_learning/service.py"
+ }
+]
