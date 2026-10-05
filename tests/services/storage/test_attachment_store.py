@@ -17,8 +17,8 @@ Covers ``LocalDiskAttachmentStore`` write/cleanup/read-back/delete semantics:
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
 import os
+from pathlib import Path
 
 import pytest
 
@@ -156,9 +156,7 @@ class TestPutOverwrite:
         )
 
         assert first_url == second_url
-        resolved = store.resolve_path(
-            session_id="sess-1", attachment_id="a1", filename="notes.txt"
-        )
+        resolved = store.resolve_path(session_id="sess-1", attachment_id="a1", filename="notes.txt")
         assert resolved is not None
         assert resolved.read_bytes() == b"second-payload"
         session_files = list((tmp_path / "attachments" / "sess-1").iterdir())
@@ -173,9 +171,7 @@ class TestPutOverwrite:
 
         session_dir = tmp_path / "attachments" / "sess-1"
         assert sorted(p.name for p in session_dir.iterdir()) == ["a1_notes.txt", "a2_notes.txt"]
-        resolved = store.resolve_path(
-            session_id="sess-1", attachment_id="a2", filename="notes.txt"
-        )
+        resolved = store.resolve_path(session_id="sess-1", attachment_id="a2", filename="notes.txt")
         assert resolved is not None
         assert resolved.read_bytes() == b"two"
 
@@ -205,9 +201,7 @@ class TestReadBack:
         assert resolved is not None
         assert resolved.read_bytes() == payload
 
-    def test_legacy_root_is_only_used_when_primary_copy_is_missing(
-        self, tmp_path: Path
-    ) -> None:
+    def test_legacy_root_is_only_used_when_primary_copy_is_missing(self, tmp_path: Path) -> None:
         primary_root = tmp_path / "attachments"
         legacy_root = tmp_path / "legacy"
         store = LocalDiskAttachmentStore(root=primary_root, legacy_root=legacy_root)
@@ -216,9 +210,7 @@ class TestReadBack:
         legacy_target.parent.mkdir(parents=True)
         legacy_target.write_bytes(b"legacy bytes")
 
-        resolved = store.resolve_path(
-            session_id="sess-1", attachment_id="a9", filename="old.txt"
-        )
+        resolved = store.resolve_path(session_id="sess-1", attachment_id="a9", filename="old.txt")
         assert resolved == legacy_target
 
 
@@ -228,9 +220,7 @@ class TestReadBack:
 
 
 class TestDelete:
-    def test_delete_attachment_removes_only_matching_prefix(
-        self, tmp_path: Path
-    ) -> None:
+    def test_delete_attachment_removes_only_matching_prefix(self, tmp_path: Path) -> None:
         store = _store(tmp_path)
         _put(store, session_id="sess-1", attachment_id="a1", filename="one.txt", data=b"1")
         _put(store, session_id="sess-1", attachment_id="a2", filename="two.txt", data=b"2")
@@ -240,17 +230,14 @@ class TestDelete:
         session_dir = tmp_path / "attachments" / "sess-1"
         assert [p.name for p in session_dir.iterdir()] == ["a2_two.txt"]
         assert (
-            store.resolve_path(session_id="sess-1", attachment_id="a1", filename="one.txt")
-            is None
+            store.resolve_path(session_id="sess-1", attachment_id="a1", filename="one.txt") is None
         )
         assert (
             store.resolve_path(session_id="sess-1", attachment_id="a2", filename="two.txt")
             is not None
         )
 
-    def test_delete_last_attachment_removes_empty_session_dir(
-        self, tmp_path: Path
-    ) -> None:
+    def test_delete_last_attachment_removes_empty_session_dir(self, tmp_path: Path) -> None:
         store = _store(tmp_path)
         _put(store, session_id="sess-1", attachment_id="a1", filename="one.txt", data=b"1")
 
@@ -272,8 +259,7 @@ class TestDelete:
         assert not (tmp_path / "attachments" / "sess-1").exists()
         assert not legacy_dir.exists()
         assert (
-            store.resolve_path(session_id="sess-1", attachment_id="a1", filename="one.txt")
-            is None
+            store.resolve_path(session_id="sess-1", attachment_id="a1", filename="one.txt") is None
         )
 
     def test_delete_session_on_unknown_session_is_noop(self, tmp_path: Path) -> None:
