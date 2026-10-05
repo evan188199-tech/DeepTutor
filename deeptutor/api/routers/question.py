@@ -383,7 +383,7 @@ async def websocket_question_generate(websocket: WebSocket):
             try:
                 await websocket.send_json({"type": "error", "content": "Requirement is required"})
             except (RuntimeError, WebSocketDisconnect):
-                pass
+                logger.debug("WebSocket closed, cannot send missing-requirement error")
             return
 
         # Generate task ID
@@ -435,8 +435,8 @@ async def websocket_question_generate(websocket: WebSocket):
         async def ws_callback(data: dict):
             try:
                 await log_queue.put(data)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Question log queue put failed: {e}")
 
         coordinator.set_ws_callback(ws_callback)
 
@@ -503,7 +503,7 @@ async def websocket_question_generate(websocket: WebSocket):
                             }
                         )
                     except (RuntimeError, WebSocketDisconnect):
-                        pass
+                        logger.debug("WebSocket closed, cannot send batch summary")
 
                     if not batch_result.get("success"):
                         logger.warning(
