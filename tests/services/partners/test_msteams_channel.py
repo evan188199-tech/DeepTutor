@@ -184,6 +184,29 @@ class TestSanitizeInboundText:
         )
         assert out.startswith("User is replying to: Alice")
         assert "User reply: follow-up" in out
+        assert out == "User is replying to: Alice\nUser reply: follow-up"
+
+    def test_reply_wrapper_blank_line_form_normalized(self, state_dir):
+        ch = _make_channel()
+        out = ch._sanitize_inbound_text(
+            _activity(text="Reply wrapper\nWhat was our answer?\n\nThe answer is 42.")
+        )
+        assert out == (
+            "User is replying to: What was our answer?\nUser reply: The answer is 42."
+        )
+
+    def test_reply_wrapper_compact_fallback_normalized(self, state_dir):
+        ch = _make_channel()
+        out = ch._sanitize_inbound_text(
+            _activity(
+                text="Reply wrapper Bob asked about limits. The limit is 10 pages.",
+                replyToId="act-0",
+            )
+        )
+        assert out == (
+            "User is replying to: Bob asked about limits.\n"
+            "User reply: The limit is 10 pages."
+        )
 
     def test_empty_text_returns_empty(self, state_dir):
         ch = _make_channel()
@@ -218,6 +241,8 @@ class TestHandleActivity:
         ch = _make_channel()
         await ch._handle_activity(_activity(type="conversationUpdate"))
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
 
     @pytest.mark.asyncio
     async def test_untrusted_service_url_ignored(self, state_dir):
@@ -233,6 +258,8 @@ class TestHandleActivity:
             _activity(**{"from": {"id": "28:bot"}, "recipient": {"id": "28:bot"}})
         )
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
 
     @pytest.mark.asyncio
     async def test_non_personal_conversation_ignored(self, state_dir):
@@ -241,12 +268,32 @@ class TestHandleActivity:
             _activity(conversation={"id": "19:thread", "conversationType": "groupChat"})
         )
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
 
     @pytest.mark.asyncio
     async def test_missing_sender_ignored(self, state_dir):
         ch = _make_channel()
         await ch._handle_activity(_activity(**{"from": {}}))
         ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
+
+    @pytest.mark.asyncio
+    async def test_missing_conversation_id_ignored(self, state_dir):
+        ch = _make_channel()
+        await ch._handle_activity(_activity(conversation={}))
+        ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
+
+    @pytest.mark.asyncio
+    async def test_empty_text_without_fallback_ignored(self, state_dir):
+        ch = _make_channel(mention_only_response="   ")
+        await ch._handle_activity(_activity(text="   "))
+        ch.bus.publish_inbound.assert_not_awaited()
+        assert ch._conversation_refs == {}
+        assert not (state_dir / MSTEAMS_REF_FILENAME).exists()
 
     @pytest.mark.asyncio
     async def test_denied_sender_not_dispatched_and_no_ref_stored(self, state_dir):
@@ -262,6 +309,9 @@ class TestHandleActivity:
         await ch._handle_activity(_activity(text="<at>DeepTutor</at>"))
         msg = ch.bus.publish_inbound.call_args[0][0]
         assert msg.content == ch.config.mention_only_response
+        assert msg.chat_id == "a:conv-1"
+        assert msg.sender_id == "aad-user-1"
+        assert msg.metadata["msteams"]["conversation_type"] == "personal"
 
 
 class TestConversationRefs:
@@ -276,10 +326,14 @@ class TestConversationRefs:
         assert ref.bot_id == "28:bot"
         assert ref.tenant_id == "tenant-1"
         assert ref.conversation_type == "personal"
+        assert ref.conversation_id == "a:conv-1"
+        assert ref.updated_at is not None
+        assert ref.updated_at <= time.time() + 5
 
         refs_on_disk = json.loads((state_dir / MSTEAMS_REF_FILENAME).read_text())
         assert "a:conv-1" in refs_on_disk
         assert refs_on_disk["a:conv-1"]["conversation_id"] == "a:conv-1"
+        assert refs_on_disk["a:conv-1"]["activity_id"] == "act-1"
 
         meta_on_disk = json.loads((state_dir / MSTEAMS_REF_META_FILENAME).read_text())
         assert meta_on_disk["a:conv-1"]["updated_at"] is not None
@@ -294,6 +348,16 @@ class TestConversationRefs:
         assert ch2._conversation_refs["a:conv-1"].service_url == (
             "https://smba.trafficmanager.net/amer/"
         )
+
+    @pytest.mark.asyncio
+    async def test_repeat_inbound_updates_ref_activity_id(self, state_dir):
+        ch = _make_channel()
+        await ch._handle_activity(_activity(id="act-1"))
+        await ch._handle_activity(_activity(id="act-2"))
+
+        ref = ch._conversation_refs["a:conv-1"]
+        assert ref.activity_id == "act-2"
+        assert len(ch._conversation_refs) == 1
 
     @pytest.mark.asyncio
     async def test_stale_ref_pruned_by_ttl_on_load(self, state_dir):
@@ -326,8 +390,15 @@ class TestConversationRefs:
             conversation_type="personal",
             updated_at=time.time(),
         )
+        ch._conversation_refs["wc2"] = ConversationRef(
+            service_url="https://eu.webchat.botframework.com/",
+            conversation_id="wc2",
+            conversation_type="personal",
+            updated_at=time.time(),
+        )
         assert ch._prune_conversation_refs() is True
         assert "wc" not in ch._conversation_refs
+        assert "wc2" not in ch._conversation_refs
 
     def test_prune_drops_non_personal_refs(self, state_dir):
         ch = _make_channel()
@@ -384,16 +455,20 @@ class TestSend:
     async def test_send_without_http_client_raises(self, state_dir):
         ch = _make_channel()
         msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="hi")
-        with pytest.raises(RuntimeError, match="not initialized"):
+        with pytest.raises(RuntimeError, match="not initialized") as excinfo:
             await ch.send(msg)
+        assert "HTTP client" in str(excinfo.value)
+        assert ch._token is None  # failed before any token acquisition
 
     @pytest.mark.asyncio
     async def test_send_without_ref_raises(self, state_dir):
         ch = _make_channel()
         ch._http = AsyncMock()
         msg = OutboundMessage(channel="msteams", chat_id="a:unknown", content="hi")
-        with pytest.raises(RuntimeError, match="ref not found"):
+        with pytest.raises(RuntimeError, match="ref not found") as excinfo:
             await ch.send(msg)
+        assert "a:unknown" in str(excinfo.value)
+        ch._http.post.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_send_untrusted_ref_raises(self, state_dir):
@@ -404,8 +479,11 @@ class TestSend:
             conversation_id="a:conv-1",
         )
         msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="hi")
-        with pytest.raises(RuntimeError, match="untrusted service_url"):
+        with pytest.raises(RuntimeError, match="untrusted service_url") as excinfo:
             await ch.send(msg)
+        assert "a:conv-1" in str(excinfo.value)
+        ch._http.post.assert_not_awaited()
+        assert ch._token is None  # untrusted refs fail before token acquisition
 
     @pytest.mark.asyncio
     async def test_send_posts_to_activities_endpoint(self, state_dir):
@@ -428,8 +506,47 @@ class TestSend:
             "https://smba.trafficmanager.net/amer/v3/conversations/a:conv-1/activities"
         )
         assert call.kwargs["headers"]["Authorization"] == "Bearer cached-token"
+        assert call.kwargs["headers"]["Content-Type"] == "application/json"
+        assert call.kwargs["json"]["type"] == "message"
         assert call.kwargs["json"]["text"] == "Answer"
         assert call.kwargs["json"]["replyToId"] == "act-1"  # reply_in_thread default
+
+    @pytest.mark.asyncio
+    async def test_send_without_thread_reply_omits_reply_to_id(self, state_dir):
+        ch = _make_channel(reply_in_thread=False)
+        await ch._handle_activity(_activity())
+
+        ch._http = AsyncMock()
+        ch._token = "cached-token"
+        ch._token_expires_at = time.time() + 3600
+        resp = MagicMock()
+        resp.raise_for_status = MagicMock()
+        ch._http.post.return_value = resp
+
+        msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="Answer")
+        await ch.send(msg)
+
+        call = ch._http.post.call_args
+        assert "replyToId" not in call.kwargs["json"]
+        assert call.kwargs["json"]["text"] == "Answer"
+
+    @pytest.mark.asyncio
+    async def test_send_empty_content_sends_space_payload(self, state_dir):
+        ch = _make_channel()
+        await ch._handle_activity(_activity())
+
+        ch._http = AsyncMock()
+        ch._token = "cached-token"
+        ch._token_expires_at = time.time() + 3600
+        resp = MagicMock()
+        resp.raise_for_status = MagicMock()
+        ch._http.post.return_value = resp
+
+        msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="")
+        await ch.send(msg)
+
+        call = ch._http.post.call_args
+        assert call.kwargs["json"]["text"] == " "  # Teams rejects empty text
 
     @pytest.mark.asyncio
     async def test_send_failure_raises_for_manager_retry(self, state_dir):
@@ -444,6 +561,8 @@ class TestSend:
         msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="Answer")
         with pytest.raises(RuntimeError, match="boom"):
             await ch.send(msg)
+        ch._http.post.assert_awaited_once()
+        assert "a:conv-1" in ch._conversation_refs  # ref kept for the retry
 
 
 class TestSupportsStreaming:
@@ -459,20 +578,97 @@ class TestValidateInboundAuth:
     async def test_missing_deps_raises_clear_error(self, state_dir, monkeypatch):
         ch = _make_channel()
         monkeypatch.setattr(msteams_mod, "MSTEAMS_AVAILABLE", False)
-        with pytest.raises(RuntimeError, match=r"PyJWT\[crypto\]"):
+        with pytest.raises(RuntimeError, match=r"PyJWT\[crypto\]") as excinfo:
             await ch._validate_inbound_auth("Bearer abc", _activity())
+        assert "pip install" in str(excinfo.value)
+        assert ch._botframework_jwks is None  # no JWKS lookup attempted
 
     @pytest.mark.asyncio
     async def test_missing_bearer_rejected(self, state_dir):
         ch = _make_channel()
         with pytest.raises(ValueError, match="missing bearer token"):
             await ch._validate_inbound_auth("", _activity())
+        assert ch._botframework_jwks is None
 
     @pytest.mark.asyncio
     async def test_empty_bearer_rejected(self, state_dir):
         ch = _make_channel()
         with pytest.raises(ValueError, match="empty bearer token"):
             await ch._validate_inbound_auth("Bearer   ", _activity())
+        assert ch._botframework_jwks is None
+
+    @pytest.mark.asyncio
+    async def test_token_without_kid_rejected(self, state_dir):
+        pytest.importorskip("jwt")
+        ch = _make_channel()
+        token = msteams_mod.jwt.encode({"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256")
+        with pytest.raises(ValueError, match="missing token kid"):
+            await ch._validate_inbound_auth(f"Bearer {token}", _activity())
+        assert ch._botframework_jwks is None
+
+    @pytest.mark.asyncio
+    async def test_unknown_kid_rejected_before_key_import(self, state_dir):
+        pytest.importorskip("jwt")
+        ch = _make_channel()
+        ch._http = AsyncMock()
+        openid_resp = MagicMock()
+        openid_resp.raise_for_status = MagicMock()
+        openid_resp.json = MagicMock(
+            return_value={"jwks_uri": "https://login.botframework.com/v1/.well-known/keys"}
+        )
+        jwks_resp = MagicMock()
+        jwks_resp.raise_for_status = MagicMock()
+        jwks_resp.json = MagicMock(return_value={"keys": [{"kid": "other-key"}]})
+        ch._http.get = AsyncMock(side_effect=[openid_resp, jwks_resp])
+
+        token = msteams_mod.jwt.encode(
+            {"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256", headers={"kid": "kid-1"}
+        )
+        with pytest.raises(ValueError, match="signing key not found") as excinfo:
+            await ch._validate_inbound_auth(f"Bearer {token}", _activity())
+        assert "kid-1" in str(excinfo.value)
+        assert ch._botframework_jwks["keys"][0]["kid"] == "other-key"
+        assert ch._http.get.await_count == 2
+
+    @pytest.mark.asyncio
+    async def test_service_url_claim_mismatch_rejected(self, state_dir, monkeypatch):
+        pytest.importorskip("jwt")
+        ch = _make_channel()
+        ch._http = AsyncMock()
+        openid_resp = MagicMock()
+        openid_resp.raise_for_status = MagicMock()
+        openid_resp.json = MagicMock(
+            return_value={"jwks_uri": "https://login.botframework.com/v1/.well-known/keys"}
+        )
+        jwks_resp = MagicMock()
+        jwks_resp.raise_for_status = MagicMock()
+        jwks_resp.json = MagicMock(return_value={"keys": [{"kid": "kid-1"}]})
+        ch._http.get = AsyncMock(side_effect=[openid_resp, jwks_resp])
+
+        fake_key = object()
+        monkeypatch.setattr(
+            msteams_mod.jwt.algorithms.RSAAlgorithm,
+            "from_jwk",
+            staticmethod(lambda jwk_json: fake_key),
+        )
+        monkeypatch.setattr(
+            msteams_mod.jwt,
+            "decode",
+            MagicMock(
+                return_value={
+                    "aud": "app-123",
+                    "iss": "https://api.botframework.com",
+                    "serviceurl": "https://attacker.example.com/",
+                }
+            ),
+        )
+
+        token = msteams_mod.jwt.encode(
+            {"sub": "bot"}, "secret-secret-secret-secret-secret", algorithm="HS256", headers={"kid": "kid-1"}
+        )
+        with pytest.raises(ValueError, match="serviceUrl claim mismatch") as excinfo:
+            await ch._validate_inbound_auth(f"Bearer {token}", _activity())
+        assert ch._botframework_jwks["keys"][0]["kid"] == "kid-1"  # signature stage passed
 
 
 class TestStop:
