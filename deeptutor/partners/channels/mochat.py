@@ -115,7 +115,7 @@ def _make_synthetic_event(
         payload["authorInfo"] = _safe_dict(author_info)
     return {
         "type": "message.add",
-        "timestamp": timestamp or datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
+        "timestamp": timestamp or datetime.now(timezone.utc).isoformat(),
         "payload": payload,
     }
 
@@ -215,13 +215,20 @@ def build_buffered_body(entries: list[MochatBufferedEntry], is_group: bool) -> s
 
 
 def parse_timestamp(value: Any) -> int | None:
-    """Parse event timestamp to epoch milliseconds."""
+    """Parse event timestamp to epoch milliseconds.
+
+    Naive strings (legacy writes stripped the UTC offset) are read as UTC
+    rather than in the host's local timezone.
+    """
     if not isinstance(value, str) or not value.strip():
         return None
     try:
-        return int(datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp() * 1000)
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return int(parsed.timestamp() * 1000)
 
 
 # ---------------------------------------------------------------------------
@@ -1010,7 +1017,7 @@ class MochatChannel(BaseChannel):
                 json.dumps(
                     {
                         "schemaVersion": 1,
-                        "updatedAt": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
+                        "updatedAt": datetime.now(timezone.utc).isoformat(),
                         "cursors": self._session_cursor,
                     },
                     ensure_ascii=False,
