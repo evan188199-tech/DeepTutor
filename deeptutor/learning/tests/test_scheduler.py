@@ -110,10 +110,19 @@ class TestWrongRetreats:
         assert (state.next_review_at - state.last_review_at) < due_after_success
 
     def test_two_consecutive_wrong_resets(self, scheduler):
-        state = scheduler.get_initial_state(KnowledgeType.MEMORY)
-        state = scheduler.schedule_next(state, KnowledgeType.MEMORY, True)
-        state = scheduler.schedule_next(state, KnowledgeType.MEMORY, False)
-        state = scheduler.schedule_next(state, KnowledgeType.MEMORY, False)
+        start = 1_700_000_000.0
+        state = scheduler.get_initial_state(KnowledgeType.MEMORY, now=start)
+        scheduler.schedule_review(state, KnowledgeType.MEMORY, _evidence(quality=1.0, ts=start))
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.MEMORY,
+            _evidence(quality=0.0, result="incorrect", ts=start + 86400),
+        )
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.MEMORY,
+            _evidence(quality=0.0, result="incorrect", ts=start + 2 * 86400),
+        )
         assert state.consecutive_wrong == 0
         assert state.lapse_count == 2
 
@@ -342,6 +351,162 @@ class TestBuildReviewQueue:
         assert task.evidence_id == "reading-attempt-42"
         assert "latest Reading assessment: correct" in task.reason
         assert "reading-attempt-42" not in task.reason
+
+
+# ── same-repair failure merging (#1781) ──────────────────────────────────
+
+
+def _qualitative_evidence(*, passed: bool, ts: float) -> LearningEvidence:
+    return LearningEvidence(
+        knowledge_point_id="kp1",
+        timestamp=ts,
+        assessment_type="qualitative",
+        result="correct" if passed else "partial",
+        quality=1.0 if passed else 0.2,
+    )
+
+
+def _due_concept_state(start: float) -> RepetitionState:
+    return RepetitionState(
+        next_review_at=start,
+        difficulty=0.4,
+        stability=2.0,
+        retrievability=0.7,
+        desired_retention=0.7,
+        review_count=3,
+        lapse_count=0,
+        last_review_at=start - 2 * 86400,
+        last_scheduled_at=start - 2 * 86400,
+        scheduled_after_failure=False,
+    )
+
+
+class TestSameRepairFailureMerging:
+    def test_repair_partials_then_success_match_single_failure(self, scheduler):
+        start = 1_700_000_000.0
+        single = _due_concept_state(start)
+        scheduler.schedule_review(
+            single,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start),
+            now=start,
+        )
+        scheduler.schedule_review(
+            single,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=True, ts=start + 8 * 60),
+            now=start + 8 * 60,
+        )
+
+        repaired = _due_concept_state(start)
+        scheduler.schedule_review(
+            repaired,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start),
+            now=start,
+        )
+        scheduler.schedule_review(
+            repaired,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start + 4 * 60),
+            now=start + 4 * 60,
+        )
+        scheduler.schedule_review(
+            repaired,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=True, ts=start + 8 * 60),
+            now=start + 8 * 60,
+        )
+
+        assert repaired.lapse_count == single.lapse_count == 1
+        assert repaired.stability == single.stability
+        assert repaired.next_review_at == single.next_review_at
+        assert repaired.scheduled_after_failure == single.scheduled_after_failure
+        assert repaired.difficulty == single.difficulty
+        assert repaired.interval_index == single.interval_index
+        assert repaired.review_count == single.review_count + 1
+        assert repaired.consecutive_wrong == single.consecutive_wrong == 0
+
+    def test_merged_partial_still_counts_as_distinct_turn(self, scheduler):
+        start = 1_700_000_000.0
+        state = _due_concept_state(start)
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start),
+            now=start,
+        )
+        due_after_failure = state.next_review_at
+        review_count_after_failure = state.review_count
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start + 4 * 60),
+            now=start + 4 * 60,
+        )
+        assert state.review_count == review_count_after_failure + 1
+        assert state.last_review_at == start + 4 * 60
+        assert state.lapse_count == 1
+        assert state.next_review_at == due_after_failure
+
+    def test_later_independent_failure_records_new_lapse(self, scheduler):
+        start = 1_700_000_000.0
+        state = _due_concept_state(start)
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start),
+            now=start,
+        )
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start + 4 * 60),
+            now=start + 4 * 60,
+        )
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start + 86400),
+            now=start + 86400,
+        )
+        assert state.lapse_count == 2
+        assert state.consecutive_wrong == 0
+
+    def test_failure_after_success_is_not_merged(self, scheduler):
+        start = 1_700_000_000.0
+        state = _due_concept_state(start)
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=True, ts=start),
+            now=start,
+        )
+        scheduler.schedule_review(
+            state,
+            KnowledgeType.CONCEPT,
+            _qualitative_evidence(passed=False, ts=start + 4 * 60),
+            now=start + 4 * 60,
+        )
+        assert state.lapse_count == 1
+        assert state.scheduled_after_failure is True
+
+    def test_replay_matches_live_for_same_repair_sequence(self, scheduler):
+        start = 1_700_000_000.0
+        events = [
+            _qualitative_evidence(passed=False, ts=start),
+            _qualitative_evidence(passed=False, ts=start + 4 * 60),
+            _qualitative_evidence(passed=False, ts=start + 9 * 60),
+            _qualitative_evidence(passed=True, ts=start + 14 * 60),
+        ]
+        live = _due_concept_state(start)
+        for event in events:
+            scheduler.schedule_review(live, KnowledgeType.CONCEPT, event, now=event.timestamp)
+        replayed = scheduler.replay(
+            KnowledgeType.CONCEPT, events, initial_state=_due_concept_state(start)
+        )
+        assert replayed.model_dump() == live.model_dump()
+        assert replayed.lapse_count == 1
 
 
 # ── adaptive retention baseline ──────────────────────────────────────────

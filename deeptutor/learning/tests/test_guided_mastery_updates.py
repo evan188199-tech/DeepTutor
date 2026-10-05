@@ -397,6 +397,52 @@ def test_qualitative_live_state_matches_evidence_replay(tmp_path, monkeypatch):
     assert live.model_dump() == pytest.approx(replayed.model_dump())
 
 
+def test_qualitative_repair_partials_merge_into_single_lapse(tmp_path, monkeypatch):
+    """#1781: partial follow-ups within one repair are one forgetting episode.
+
+    Two failed explanations a few minutes apart, then the eventual correct
+    explanation, must leave the same failure schedule as a single failed
+    explanation followed by the correct one. Every distinct turn still lands
+    in the raw evidence trail.
+    """
+    store = LearningStore(root=tmp_path)
+    service = LearningService(store)
+    scheduler = SpacedRepetitionScheduler()
+    single = _make_progress("single")
+    repeated = _make_progress("repeated")
+    start = 1_700_000_000.0
+    moment = [start]
+    monkeypatch.setattr("deeptutor.learning.service.time.time", lambda: moment[0])
+
+    service.record_qualitative_in_memory(single, "kp1", passed=False, scheduler=scheduler)
+    moment[0] = start + 8 * 60
+    service.record_qualitative_in_memory(
+        single, "kp1", passed=True, evidence="clear", scheduler=scheduler
+    )
+
+    moment[0] = start
+    service.record_qualitative_in_memory(repeated, "kp1", passed=False, scheduler=scheduler)
+    moment[0] = start + 4 * 60
+    service.record_qualitative_in_memory(repeated, "kp1", passed=False, scheduler=scheduler)
+    moment[0] = start + 8 * 60
+    service.record_qualitative_in_memory(
+        repeated, "kp1", passed=True, evidence="clear", scheduler=scheduler
+    )
+
+    single_state = single.repetition_states["kp1"]
+    repeated_state = repeated.repetition_states["kp1"]
+    assert repeated_state.lapse_count == single_state.lapse_count == 1
+    assert repeated_state.stability == single_state.stability
+    assert repeated_state.next_review_at == single_state.next_review_at
+    assert repeated_state.scheduled_after_failure == single_state.scheduled_after_failure
+    assert repeated_state.review_count == single_state.review_count + 1
+    assert [event.result for event in repeated.learning_evidence] == [
+        "partial",
+        "partial",
+        "correct",
+    ]
+
+
 def test_grade_and_record_retry_correct_uses_weaker_quality(tmp_path):
     store = LearningStore(root=tmp_path)
     service = LearningService(store)

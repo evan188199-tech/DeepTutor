@@ -276,6 +276,20 @@ class SpacedRepetitionScheduler:
             state.retrievability = 1.0
             state.consecutive_wrong = 0
             return state
+        if (
+            quality < _FAIL_QUALITY
+            and state.last_review_at is not None
+            and elapsed_days < same_session_days
+            and state.scheduled_after_failure
+        ):
+            # A failed follow-up inside the repair the previous failure
+            # opened is formative evidence about the same forgetting
+            # episode, not another independent lapse (#1781). Keep that
+            # failure's stability, schedule, and lapse accounting; the
+            # raw assessment trail still records every distinct turn.
+            state.review_count += 1
+            state.last_review_at = moment
+            return state
         spacing_ratio = min(elapsed_days / previous_stability, 4.0)
 
         # Difficulty is an item/learner estimate, not the knowledge-type
