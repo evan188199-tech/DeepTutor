@@ -1,0 +1,450 @@
+{
+  "scanned_at": "2026-10-05T06:51:39.785Z",
+  "repo_commit": "/Users/Shared/DeepTutor/.git/worktrees/dt-agen664-tstypes-wt",
+  "scope": "web/**/*.{ts,tsx} (exclude node_modules, .next; vendor + contracts/generated + tests + *.d.ts tagged separately)",
+  "files_scanned": 1237,
+  "totals": {
+    "ts_ignore": 0,
+    "ts_expect_error": 0,
+    "ts_nocheck": 0,
+    "explicit_any": 145,
+    "nonnull_assertion": 133,
+    "as_cast": 1433,
+    "as_const": 200,
+    "as_any": 23,
+    "as_unknown_chain": 287,
+    "type_assertion_angle": 0
+  },
+  "product_only_totals": {
+    "all": 1178,
+    "byKind": {
+      "as": 1004,
+      "any": 108,
+      "nonnull": 66
+    }
+  },
+  "top_dirs_3seg": {
+    "web/components/common/…": 128,
+    "web/features/settings/…": 100,
+    "web/features/chat/…": 87,
+    "web/components/chat/…": 65,
+    "web/components/memory/…": 58,
+    "web/app/(workspace)/…": 50,
+    "web/components/reading/…": 50,
+    "web/features/knowledge/…": 48,
+    "web/components/partners/…": 30,
+    "web/components/settings/…": 30,
+    "web/features/multi-user/…": 21,
+    "web/lib/mcp-api.ts": 21,
+    "web/lib/chat-import/…": 17,
+    "web/lib/memory-graph.ts": 17,
+    "web/components/sidebar/…": 16,
+    "web/features/co-writer/…": 15,
+    "web/components/space/…": 14,
+    "web/contracts/parse/…": 13,
+    "web/lib/reading-api.ts": 13,
+    "web/components/quiz/…": 12,
+    "web/components/knowledge/…": 11,
+    "web/components/visualize/…": 11,
+    "web/lib/book-progress.ts": 11,
+    "web/lib/cli-apps-api.ts": 11,
+    "web/hooks/useKnowledgeProgress.ts": 10,
+    "web/hooks/useTopicSourceLibrary.ts": 10,
+    "web/lib/subagents-api.ts": 10,
+    "web/lib/quiz-types.ts": 9,
+    "web/components/workspaces/…": 8,
+    "web/lib/learning-api.ts": 8,
+    "web/components/learning/…": 7,
+    "web/lib/admin-api.ts": 7,
+    "web/lib/failed-submissions.ts": 7,
+    "web/lib/notebook-api.ts": 7,
+    "web/lib/provider-registry.ts": 7,
+    "web/shared/api/…": 7,
+    "web/components/courses/…": 6,
+    "web/lib/markdown-display.ts": 6,
+    "web/lib/mastery-ws.ts": 6,
+    "web/lib/settings-readiness.ts": 6,
+    "web/lib/use-book-stream.ts": 6,
+    "web/components/notebook/…": 5,
+    "web/components/watching/…": 5,
+    "web/context/AppShellContext.tsx": 5,
+    "web/context/app-shell-storage.ts": 5,
+    "web/lib/book-activity.ts": 5,
+    "web/context/QuizFollowupContext.tsx": 4,
+    "web/features/capabilities/…": 4,
+    "web/hooks/useKnowledgeBases.ts": 4,
+    "web/lib/app-update.ts": 4,
+    "web/lib/doc-attachments.ts": 4,
+    "web/lib/learning-dashboard.ts": 4,
+    "web/lib/math-animator-types.ts": 4,
+    "web/lib/reading-location-history.ts": 4,
+    "web/lib/setup-signals.ts": 4,
+    "web/lib/video-learning-api.ts": 4,
+    "web/app/(utility)/…": 3,
+    "web/components/research/…": 3,
+    "web/features/runtime-status/…": 3,
+    "web/hooks/useSetupSync.ts": 3,
+    "web/hooks/useVoiceAutoplay.ts": 3,
+    "web/lib/course-handoff.ts": 3,
+    "web/lib/courses-api.ts": 3,
+    "web/lib/knowledge-helpers.ts": 3,
+    "web/lib/marginnote4-api.ts": 3,
+    "web/lib/mastery-mode.ts": 3,
+    "web/lib/profile-api.ts": 3,
+    "web/lib/settings-extensions.ts": 3,
+    "web/lib/sidebar-layout.ts": 3,
+    "web/shared/storage/…": 3,
+    "web/shared/ui/…": 3,
+    "web/components/agents/…": 2,
+    "web/components/math-animator/…": 2,
+    "web/hooks/useContextBudget.ts": 2,
+    "web/hooks/useMasteryPathActivity.ts": 2,
+    "web/hooks/useVoiceRecorder.ts": 2,
+    "web/lib/book-ws-operation.ts": 2,
+    "web/lib/codex-oauth.ts": 2,
+    "web/lib/guardian-api.ts": 2,
+    "web/lib/imports-api.ts": 2,
+    "web/lib/message-content.ts": 2,
+    "web/lib/model-settings.ts": 2,
+    "web/lib/partner-groups-api.ts": 2,
+    "web/lib/partners-api.ts": 2,
+    "web/lib/reading-citations.ts": 2,
+    "web/lib/reading-display-preferences.ts": 2,
+    "web/lib/reading-workspace-api.ts": 2,
+    "web/lib/visualize-types.ts": 2,
+    "web/lib/visualizers-api.ts": 2,
+    "web/lib/workspace-mode.ts": 2,
+    "web/app/(admin)/…": 1,
+    "web/components/UserAvatar.tsx": 1,
+    "web/components/access/…": 1,
+    "web/components/activity/…": 1,
+    "web/components/mcp/…": 1,
+    "web/context/ReadingContext.tsx": 1,
+    "web/hooks/use-outside-click.ts": 1,
+    "web/hooks/useDevice.ts": 1,
+    "web/hooks/useDragSort.ts": 1,
+    "web/hooks/useKnowledgeHistory.ts": 1,
+    "web/hooks/useMasteryStudySession.ts": 1,
+    "web/hooks/useVoiceMathSpeak.ts": 1,
+    "web/i18n/languages.ts": 1,
+    "web/lib/ask-user-state.ts": 1,
+    "web/lib/attachment-limits.ts": 1,
+    "web/lib/auth.ts": 1,
+    "web/lib/book-api.ts": 1,
+    "web/lib/book-references.ts": 1,
+    "web/lib/chat-markdown-note.ts": 1,
+    "web/lib/client-cache.ts": 1,
+    "web/lib/clipboard.ts": 1,
+    "web/lib/co-writer-api.ts": 1,
+    "web/lib/codebuddy-auth.ts": 1,
+    "web/lib/conversation-notebook-save.ts": 1,
+    "web/lib/deep-research-report.ts": 1,
+    "web/lib/epub-page-turn.ts": 1,
+    "web/lib/learning-library.ts": 1,
+    "web/lib/learning-records-api.ts": 1,
+    "web/lib/llm-options.ts": 1,
+    "web/lib/mastery-handoff.ts": 1,
+    "web/lib/mastery-question.ts": 1,
+    "web/lib/message-branches.ts": 1,
+    "web/lib/partner-draft.ts": 1,
+    "web/lib/practice-api.ts": 1,
+    "web/lib/reading-age-presentation.ts": 1,
+    "web/lib/reading-passage-prompts.ts": 1,
+    "web/lib/reading-quote-locator.ts": 1,
+    "web/lib/reading-reader-action.ts": 1,
+    "web/lib/reading-references.ts": 1,
+    "web/lib/reading-selection.ts": 1,
+    "web/lib/reconnecting-websocket.ts": 1,
+    "web/lib/resource-reuse.ts": 1,
+    "web/lib/selection-tutor.ts": 1,
+    "web/lib/session-activity.ts": 1,
+    "web/lib/session-api.ts": 1,
+    "web/lib/session-handoff-api.ts": 1,
+    "web/lib/settings-presets.ts": 1,
+    "web/lib/stream.ts": 1,
+    "web/lib/task-board-api.ts": 1,
+    "web/lib/tool-event.ts": 1,
+    "web/lib/tools-settings.ts": 1,
+    "web/lib/video-learning-marks.ts": 1,
+    "web/lib/video-player-controller.ts": 1,
+    "web/lib/workspaces-api.ts": 1
+  },
+  "top_dirs_4seg": {
+    "web/components/common/RichMarkdownRenderer.tsx": 59,
+    "web/components/chat/home": 53,
+    "web/features/settings/sections": 52,
+    "web/components/common/SimpleMarkdownRenderer.tsx": 48,
+    "web/features/knowledge/api": 47,
+    "web/app/(workspace)/learning": 43,
+    "web/features/settings/navigation": 24,
+    "web/features/settings/store": 24,
+    "web/features/chat/ChatStateAdapter.tsx": 23,
+    "web/features/chat/messages": 21,
+    "web/lib/mcp-api.ts": 21,
+    "web/features/chat/trace": 19,
+    "web/lib/memory-graph.ts": 17,
+    "web/features/multi-user/components": 15,
+    "web/components/memory/MemorySection.tsx": 14,
+    "web/features/chat/transport": 14,
+    "web/components/reading/library": 13,
+    "web/lib/reading-api.ts": 13,
+    "web/contracts/parse/turn-event.ts": 12,
+    "web/components/memory/useMemoryRun.ts": 11,
+    "web/features/co-writer/components": 11,
+    "web/lib/book-progress.ts": 11,
+    "web/lib/cli-apps-api.ts": 11,
+    "web/components/memory/MemoryGraph.tsx": 10,
+    "web/hooks/useKnowledgeProgress.ts": 10
+  },
+  "top_files": [
+    {
+      "file": "web/components/common/RichMarkdownRenderer.tsx",
+      "count": 59,
+      "breakdown": "any:55, as:4",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/common/SimpleMarkdownRenderer.tsx",
+      "count": 48,
+      "breakdown": "any:48",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/knowledge/api/client.ts",
+      "count": 47,
+      "breakdown": "as:47",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/chat/home/AskUserOptions.tsx",
+      "count": 26,
+      "breakdown": "as:26",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "count": 23,
+      "breakdown": "as:23",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/settings/navigation/settings-nav.ts",
+      "count": 22,
+      "breakdown": "as:22",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/mcp-api.ts",
+      "count": 21,
+      "breakdown": "as:21",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "count": 20,
+      "breakdown": "as:20",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/memory-graph.ts",
+      "count": 17,
+      "breakdown": "as:11, nonnull:6",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/memory/MemorySection.tsx",
+      "count": 14,
+      "breakdown": "as:14",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/reading-api.ts",
+      "count": 13,
+      "breakdown": "as:13",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/reading/library/AddMaterialsDialog.tsx",
+      "count": 12,
+      "breakdown": "as:9, nonnull:3",
+      "ts_catch_overlap_file": true
+    },
+    {
+      "file": "web/contracts/parse/turn-event.ts",
+      "count": 12,
+      "breakdown": "as:12",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "count": 12,
+      "breakdown": "as:12",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/memory/useMemoryRun.ts",
+      "count": 11,
+      "breakdown": "as:11",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "count": 11,
+      "breakdown": "as:11",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/book-progress.ts",
+      "count": 11,
+      "breakdown": "as:11",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/cli-apps-api.ts",
+      "count": 11,
+      "breakdown": "as:11",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/memory/MemoryGraph.tsx",
+      "count": 10,
+      "breakdown": "as:10",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "count": 10,
+      "breakdown": "as:10",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/hooks/useTopicSourceLibrary.ts",
+      "count": 10,
+      "breakdown": "as:10",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/subagents-api.ts",
+      "count": 10,
+      "breakdown": "as:10",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/chat/home/ChatComposer.tsx",
+      "count": 9,
+      "breakdown": "nonnull:7, as:2",
+      "ts_catch_overlap_file": true
+    },
+    {
+      "file": "web/components/common/InlineFileCard.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/partners/PartnerChannels.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/quiz/QuizConfigPanel.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/settings/MinerUEngineSettings.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/visualize/VisualizationViewer.tsx",
+      "count": 9,
+      "breakdown": "as:8, nonnull:1",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/chat/trace/TracePresentation.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/chat/trace/memory.ts",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/lib/quiz-types.ts",
+      "count": 9,
+      "breakdown": "as:9",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/memory/MemoryL1Workbench.tsx",
+      "count": 8,
+      "breakdown": "as:8",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/memory/MemoryRunPanel.tsx",
+      "count": 8,
+      "breakdown": "as:8",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/reading/ReaderPane.tsx",
+      "count": 8,
+      "breakdown": "as:8",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "count": 8,
+      "breakdown": "as:8",
+      "ts_catch_overlap_file": true
+    },
+    {
+      "file": "web/lib/learning-api.ts",
+      "count": 8,
+      "breakdown": "as:8",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "count": 7,
+      "breakdown": "as:7",
+      "ts_catch_overlap_file": true
+    },
+    {
+      "file": "web/features/chat/transport/UnifiedTurnClient.ts",
+      "count": 7,
+      "breakdown": "as:7",
+      "ts_catch_overlap_file": false
+    },
+    {
+      "file": "web/features/multi-user/components/GrantEditor.tsx",
+      "count": 7,
+      "breakdown": "as:6, nonnull:1",
+      "ts_catch_overlap_file": false
+    }
+  ],
+  "dedup": {
+    "ts_catch_source": "AGEN-421 scan-ts-catch @ agent/agen421-ts-catch-scan (41 items, ef2d9e5c3 / v1.6.12)",
+    "exact_line_matches_findings": [
+      "web/hooks/useVoiceRecorder.ts:76 (as)",
+      "web/lib/attachment-limits.ts:46 (as)"
+    ],
+    "exact_line_matches_directives": [],
+    "same_file_overlap_files": []
+  }
+}
