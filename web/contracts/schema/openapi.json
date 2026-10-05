@@ -622,7 +622,7 @@
           "llm_selection": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/LLMSelectionPayload"
+                "$ref": "#/components/schemas/deeptutor__api__routers__memory__LLMSelectionPayload"
               },
               {
                 "type": "null"
@@ -725,6 +725,16 @@
       },
       "AutoMarkRequest": {
         "properties": {
+          "llm_selection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/deeptutor__api__routers__co_writer__LLMSelectionPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "text": {
             "maxLength": 600000,
             "title": "Text",
@@ -753,6 +763,59 @@
           "operation_id"
         ],
         "title": "AutoMarkResponse",
+        "type": "object"
+      },
+      "BilingualPairingInfo": {
+        "properties": {
+          "pairing_id": {
+            "title": "Pairing Id",
+            "type": "string"
+          },
+          "pairing_method": {
+            "default": "hreflang",
+            "title": "Pairing Method",
+            "type": "string"
+          },
+          "source_file": {
+            "default": "",
+            "title": "Source File",
+            "type": "string"
+          },
+          "source_lang": {
+            "default": "",
+            "title": "Source Lang",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "target_file": {
+            "default": "",
+            "title": "Target File",
+            "type": "string"
+          },
+          "target_lang": {
+            "default": "",
+            "title": "Target Lang",
+            "type": "string"
+          },
+          "target_url": {
+            "title": "Target Url",
+            "type": "string"
+          },
+          "updated_at": {
+            "default": 0,
+            "title": "Updated At",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pairing_id",
+          "source_url",
+          "target_url"
+        ],
+        "title": "BilingualPairingInfo",
         "type": "object"
       },
       "Body_admin_import_users_api_auth_users_import_post": {
@@ -3066,7 +3129,7 @@
           "llm_selection": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/LLMSelectionPayload"
+                "$ref": "#/components/schemas/deeptutor__api__routers__memory__LLMSelectionPayload"
               },
               {
                 "type": "null"
@@ -3402,6 +3465,16 @@
               }
             ],
             "title": "Image Caption"
+          },
+          "image_description_model": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ImageDescriptionModelSelection"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "title": "DocumentParsingUpdate",
@@ -3551,6 +3624,16 @@
               }
             ],
             "title": "Kb Name"
+          },
+          "llm_selection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/deeptutor__api__routers__co_writer__LLMSelectionPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "source": {
             "anyOf": [
@@ -4215,6 +4298,28 @@
         "title": "ImaKnowledgeBaseSummary",
         "type": "object"
       },
+      "ImageDescriptionModelSelection": {
+        "additionalProperties": false,
+        "description": "Reference a configured vision model without changing the chat default.",
+        "properties": {
+          "model_id": {
+            "minLength": 1,
+            "title": "Model Id",
+            "type": "string"
+          },
+          "profile_id": {
+            "minLength": 1,
+            "title": "Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_id",
+          "model_id"
+        ],
+        "title": "ImageDescriptionModelSelection",
+        "type": "object"
+      },
       "ImportFromBookRequest": {
         "properties": {
           "chapters": {
@@ -4745,24 +4850,6 @@
         "title": "LLMSelection",
         "type": "object"
       },
-      "LLMSelectionPayload": {
-        "properties": {
-          "model_id": {
-            "title": "Model Id",
-            "type": "string"
-          },
-          "profile_id": {
-            "title": "Profile Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "profile_id",
-          "model_id"
-        ],
-        "title": "LLMSelectionPayload",
-        "type": "object"
-      },
       "LanguageUpdate": {
         "properties": {
           "language": {
@@ -4771,7 +4858,8 @@
               "zh",
               "fr",
               "de",
-              "uk"
+              "uk",
+              "pl"
             ],
             "title": "Language",
             "type": "string"
@@ -5534,6 +5622,17 @@
               }
             ],
             "title": "Hnsw M"
+          },
+          "image_description_batch_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Description Batch Size"
           },
           "image_description_concurrency": {
             "anyOf": [
@@ -7379,8 +7478,6 @@
           },
           "percentage": {
             "default": 0.0,
-            "maximum": 1.0,
-            "minimum": 0.0,
             "title": "Percentage",
             "type": "number"
           },
@@ -7410,11 +7507,17 @@
             "type": "integer"
           },
           "percentage": {
-            "default": 0.0,
-            "maximum": 1.0,
-            "minimum": 0.0,
-            "title": "Percentage",
-            "type": "number"
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage"
           },
           "source_anchor": {
             "default": "",
@@ -7887,6 +7990,11 @@
             ],
             "title": "Profile Id"
           },
+          "proxy": {
+            "default": "",
+            "title": "Proxy",
+            "type": "string"
+          },
           "service": {
             "default": "llm",
             "enum": [
@@ -8205,6 +8313,16 @@
             ],
             "title": "Kb Name"
           },
+          "llm_selection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/deeptutor__api__routers__co_writer__LLMSelectionPayload"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "mode": {
             "default": "rewrite",
             "enum": [
@@ -8264,6 +8382,20 @@
           "operation_id"
         ],
         "title": "ReactEditResponse",
+        "type": "object"
+      },
+      "ReadAloudAudioPayload": {
+        "properties": {
+          "locator": {
+            "minimum": 1.0,
+            "title": "Locator",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "locator"
+        ],
+        "title": "ReadAloudAudioPayload",
         "type": "object"
       },
       "ReadingActivityRecord": {
@@ -9064,7 +9196,7 @@
           "llm_selection": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/LLMSelectionPayload"
+                "$ref": "#/components/schemas/deeptutor__api__routers__memory__LLMSelectionPayload"
               },
               {
                 "type": "null"
@@ -11468,7 +11600,8 @@
                   "zh",
                   "fr",
                   "de",
-                  "uk"
+                  "uk",
+                  "pl"
                 ],
                 "type": "string"
               },
@@ -12256,7 +12389,7 @@
           "llm_selection": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/LLMSelectionPayload"
+                "$ref": "#/components/schemas/deeptutor__api__routers__memory__LLMSelectionPayload"
               },
               {
                 "type": "null"
@@ -12983,6 +13116,14 @@
             "title": "Auto Sync Enabled",
             "type": "boolean"
           },
+          "bilingual_pairings": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Bilingual Pairings",
+            "type": "array"
+          },
           "enabled": {
             "default": true,
             "title": "Enabled",
@@ -13501,6 +13642,54 @@
           "page_id"
         ],
         "title": "ProgressRequest",
+        "type": "object"
+      },
+      "deeptutor__api__routers__co_writer__LLMSelectionPayload": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "reasoning_effort": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning Effort"
+          }
+        },
+        "required": [
+          "profile_id",
+          "model_id"
+        ],
+        "title": "LLMSelectionPayload",
+        "type": "object"
+      },
+      "deeptutor__api__routers__memory__LLMSelectionPayload": {
+        "properties": {
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_id",
+          "model_id"
+        ],
+        "title": "LLMSelectionPayload",
         "type": "object"
       },
       "deeptutor__api__routers__video_learning__ProgressRequest": {
@@ -21311,7 +21500,7 @@
     },
     "/api/knowledge-bases": {
       "get": {
-        "description": "List all available knowledge bases with their details.",
+        "description": "Disk probes must not block the async worker or its other requests (#1711).",
         "operationId": "list_knowledge_bases_api_knowledge_bases_get",
         "parameters": [
           {
@@ -22377,7 +22566,7 @@
     },
     "/api/knowledge-bases/health": {
       "get": {
-        "description": "Health check endpoint",
+        "description": "Count registered KBs without constructing/probing the catalog (#1711).",
         "operationId": "health_check_api_knowledge_bases_health_get",
         "parameters": [
           {
@@ -27006,6 +27195,93 @@
           }
         },
         "summary": "Cancel Web Source Sync",
+        "tags": [
+          "knowledge-bases"
+        ]
+      }
+    },
+    "/api/knowledge-bases/{kb_name}/web-source/{source_id}/pairings": {
+      "get": {
+        "operationId": "get_web_source_pairings_api_knowledge_bases__kb_name__web_source__source_id__pairings_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kb_name",
+            "required": true,
+            "schema": {
+              "title": "Kb Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "source_id",
+            "required": true,
+            "schema": {
+              "title": "Source Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BilingualPairingInfo"
+                  },
+                  "title": "Response Get Web Source Pairings Api Knowledge Bases  Kb Name  Web Source  Source Id  Pairings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Web Source Pairings",
         "tags": [
           "knowledge-bases"
         ]
@@ -44834,6 +45110,82 @@
         ]
       }
     },
+    "/api/reading/materials/{material_id}/quiz/rewards": {
+      "get": {
+        "operationId": "list_quiz_rewards_api_reading_materials__material_id__quiz_rewards_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Quiz Rewards Api Reading Materials  Material Id  Quiz Rewards Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Quiz Rewards",
+        "tags": [
+          "reading-extensions"
+        ]
+      }
+    },
     "/api/reading/materials/{material_id}/raw": {
       "get": {
         "description": "The original bytes, for the faithful viewer. Serves Range requests.",
@@ -44904,6 +45256,89 @@
         "summary": "Get Raw",
         "tags": [
           "reading"
+        ]
+      }
+    },
+    "/api/reading/materials/{material_id}/read-aloud": {
+      "post": {
+        "description": "Synthesize one assigned material unit with the active server voice.",
+        "operationId": "read_material_aloud_api_reading_materials__material_id__read_aloud_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadAloudAudioPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Material Aloud",
+        "tags": [
+          "reading-extensions"
         ]
       }
     },
@@ -60273,6 +60708,83 @@
       }
     },
     "/api/video-learning/materials/{material_id}/marks": {
+      "get": {
+        "operationId": "list_video_marks_api_video_learning_materials__material_id__marks_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response List Video Marks Api Video Learning Materials  Material Id  Marks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Video Marks",
+        "tags": [
+          "video-learning"
+        ]
+      },
       "post": {
         "operationId": "create_video_mark_api_video_learning_materials__material_id__marks_post",
         "parameters": [
@@ -60440,6 +60952,89 @@
           }
         },
         "summary": "Delete Video Mark",
+        "tags": [
+          "video-learning"
+        ]
+      },
+      "get": {
+        "operationId": "get_video_mark_api_video_learning_materials__material_id__marks__mark_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "material_id",
+            "required": true,
+            "schema": {
+              "title": "Material Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "mark_id",
+            "required": true,
+            "schema": {
+              "title": "Mark Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "in": "cookie",
+            "name": "dt_token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dt Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Video Mark Api Video Learning Materials  Material Id  Marks  Mark Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Video Mark",
         "tags": [
           "video-learning"
         ]

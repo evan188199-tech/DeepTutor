@@ -1793,7 +1793,7 @@ export interface paths {
     };
     /**
      * List Knowledge Bases
-     * @description List all available knowledge bases with their details.
+     * @description Disk probes must not block the async worker or its other requests (#1711).
      */
     readonly get: operations["list_knowledge_bases_api_knowledge_bases_get"];
     readonly put?: never;
@@ -2393,6 +2393,23 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/knowledge-bases/{kb_name}/web-source/{source_id}/pairings": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** Get Web Source Pairings */
+    readonly get: operations["get_web_source_pairings_api_knowledge_bases__kb_name__web_source__source_id__pairings_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/knowledge-bases/{kb_name}/web-source/{source_id}/retry": {
     readonly parameters: {
       readonly query?: never;
@@ -2783,7 +2800,7 @@ export interface paths {
     };
     /**
      * Health Check
-     * @description Health check endpoint
+     * @description Count registered KBs without constructing/probing the catalog (#1711).
      */
     readonly get: operations["health_check_api_knowledge_bases_health_get"];
     readonly put?: never;
@@ -6726,6 +6743,23 @@ export interface paths {
     readonly patch?: never;
     readonly trace?: never;
   };
+  readonly "/api/reading/materials/{material_id}/quiz/rewards": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    /** List Quiz Rewards */
+    readonly get: operations["list_quiz_rewards_api_reading_materials__material_id__quiz_rewards_get"];
+    readonly put?: never;
+    readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
   readonly "/api/reading/materials/{material_id}/raw": {
     readonly parameters: {
       readonly query?: never;
@@ -6740,6 +6774,26 @@ export interface paths {
     readonly get: operations["get_raw_api_reading_materials__material_id__raw_get"];
     readonly put?: never;
     readonly post?: never;
+    readonly delete?: never;
+    readonly options?: never;
+    readonly head?: never;
+    readonly patch?: never;
+    readonly trace?: never;
+  };
+  readonly "/api/reading/materials/{material_id}/read-aloud": {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: never;
+      readonly path?: never;
+      readonly cookie?: never;
+    };
+    readonly get?: never;
+    readonly put?: never;
+    /**
+     * Read Material Aloud
+     * @description Synthesize one assigned material unit with the active server voice.
+     */
+    readonly post: operations["read_material_aloud_api_reading_materials__material_id__read_aloud_post"];
     readonly delete?: never;
     readonly options?: never;
     readonly head?: never;
@@ -10103,7 +10157,8 @@ export interface paths {
       readonly path?: never;
       readonly cookie?: never;
     };
-    readonly get?: never;
+    /** List Video Marks */
+    readonly get: operations["list_video_marks_api_video_learning_materials__material_id__marks_get"];
     readonly put?: never;
     /** Create Video Mark */
     readonly post: operations["create_video_mark_api_video_learning_materials__material_id__marks_post"];
@@ -10120,7 +10175,8 @@ export interface paths {
       readonly path?: never;
       readonly cookie?: never;
     };
-    readonly get?: never;
+    /** Get Video Mark */
+    readonly get: operations["get_video_mark_api_video_learning_materials__material_id__marks__mark_id__get"];
     readonly put?: never;
     readonly post?: never;
     /** Delete Video Mark */
@@ -11289,7 +11345,8 @@ export interface components {
        */
       readonly language: string;
       readonly llm_selection?:
-        components["schemas"]["LLMSelectionPayload"] | null;
+        | components["schemas"]["deeptutor__api__routers__memory__LLMSelectionPayload"]
+        | null;
     };
     /**
      * AuthStatusResponse
@@ -11325,6 +11382,9 @@ export interface components {
     };
     /** AutoMarkRequest */
     readonly AutoMarkRequest: {
+      readonly llm_selection?:
+        | components["schemas"]["deeptutor__api__routers__co_writer__LLMSelectionPayload"]
+        | null;
       /** Text */
       readonly text: string;
     };
@@ -11334,6 +11394,45 @@ export interface components {
       readonly marked_text: string;
       /** Operation Id */
       readonly operation_id: string;
+    };
+    /** BilingualPairingInfo */
+    readonly BilingualPairingInfo: {
+      /** Pairing Id */
+      readonly pairing_id: string;
+      /**
+       * Pairing Method
+       * @default hreflang
+       */
+      readonly pairing_method: string;
+      /**
+       * Source File
+       * @default
+       */
+      readonly source_file: string;
+      /**
+       * Source Lang
+       * @default
+       */
+      readonly source_lang: string;
+      /** Source Url */
+      readonly source_url: string;
+      /**
+       * Target File
+       * @default
+       */
+      readonly target_file: string;
+      /**
+       * Target Lang
+       * @default
+       */
+      readonly target_lang: string;
+      /** Target Url */
+      readonly target_url: string;
+      /**
+       * Updated At
+       * @default 0
+       */
+      readonly updated_at: number;
     };
     /** Body_admin_import_users_api_auth_users_import_post */
     readonly Body_admin_import_users_api_auth_users_import_post: {
@@ -12390,7 +12489,8 @@ export interface components {
        */
       readonly language: string;
       readonly llm_selection?:
-        components["schemas"]["LLMSelectionPayload"] | null;
+        | components["schemas"]["deeptutor__api__routers__memory__LLMSelectionPayload"]
+        | null;
     };
     /** DeepDiveRequest */
     readonly DeepDiveRequest: {
@@ -12416,6 +12516,22 @@ export interface components {
       readonly book_id: string;
       /** Page Id */
       readonly page_id: string;
+    };
+    /** LLMSelectionPayload */
+    readonly deeptutor__api__routers__co_writer__LLMSelectionPayload: {
+      /** Model Id */
+      readonly model_id: string;
+      /** Profile Id */
+      readonly profile_id: string;
+      /** Reasoning Effort */
+      readonly reasoning_effort?: string | null;
+    };
+    /** LLMSelectionPayload */
+    readonly deeptutor__api__routers__memory__LLMSelectionPayload: {
+      /** Model Id */
+      readonly model_id: string;
+      /** Profile Id */
+      readonly profile_id: string;
     };
     /** ProgressRequest */
     readonly deeptutor__api__routers__video_learning__ProgressRequest: {
@@ -12542,6 +12658,8 @@ export interface components {
       } | null;
       /** Image Caption */
       readonly image_caption?: boolean | null;
+      readonly image_description_model?:
+        components["schemas"]["ImageDescriptionModelSelection"] | null;
     };
     /** DocumentResponse */
     readonly DocumentResponse: {
@@ -12619,6 +12737,9 @@ export interface components {
       readonly instruction: string;
       /** Kb Name */
       readonly kb_name?: string | null;
+      readonly llm_selection?:
+        | components["schemas"]["deeptutor__api__routers__co_writer__LLMSelectionPayload"]
+        | null;
       /** Source */
       readonly source?: ("rag" | "web") | null;
       /** Text */
@@ -12859,6 +12980,16 @@ export interface components {
       readonly api_key?: string | null;
       /** Client Id */
       readonly client_id?: string | null;
+    };
+    /**
+     * ImageDescriptionModelSelection
+     * @description Reference a configured vision model without changing the chat default.
+     */
+    readonly ImageDescriptionModelSelection: {
+      /** Model Id */
+      readonly model_id: string;
+      /** Profile Id */
+      readonly profile_id: string;
     };
     /** ImaKnowledgeBaseSummary */
     readonly ImaKnowledgeBaseSummary: {
@@ -13102,7 +13233,7 @@ export interface components {
        * Language
        * @enum {string}
        */
-      readonly language: "en" | "zh" | "fr" | "de" | "uk";
+      readonly language: "en" | "zh" | "fr" | "de" | "uk" | "pl";
     };
     /** LearnerOverrideRequest */
     readonly LearnerOverrideRequest: {
@@ -13418,6 +13549,8 @@ export interface components {
       readonly hnsw_ef_search?: number | null;
       /** Hnsw M */
       readonly hnsw_m?: number | null;
+      /** Image Description Batch Size */
+      readonly image_description_batch_size?: number | null;
       /** Image Description Concurrency */
       readonly image_description_concurrency?: number | null;
       /** Image Description Timeout Seconds */
@@ -13437,13 +13570,6 @@ export interface components {
     };
     /** LLMSelection */
     readonly LLMSelection: {
-      /** Model Id */
-      readonly model_id: string;
-      /** Profile Id */
-      readonly profile_id: string;
-    };
-    /** LLMSelectionPayload */
-    readonly LLMSelectionPayload: {
       /** Model Id */
       readonly model_id: string;
       /** Profile Id */
@@ -14462,11 +14588,8 @@ export interface components {
     readonly PositionPayload: {
       /** Locator */
       readonly locator: number;
-      /**
-       * Percentage
-       * @default 0
-       */
-      readonly percentage: number;
+      /** Percentage */
+      readonly percentage?: number | null;
       /**
        * Source Anchor
        * @default
@@ -14685,6 +14808,11 @@ export interface components {
       /** Profile Id */
       readonly profile_id?: string | null;
       /**
+       * Proxy
+       * @default
+       */
+      readonly proxy: string;
+      /**
        * Service
        * @default llm
        * @enum {string}
@@ -14865,6 +14993,9 @@ export interface components {
       readonly instruction: string;
       /** Kb Name */
       readonly kb_name?: string | null;
+      readonly llm_selection?:
+        | components["schemas"]["deeptutor__api__routers__co_writer__LLMSelectionPayload"]
+        | null;
       /**
        * Mode
        * @default rewrite
@@ -14890,6 +15021,11 @@ export interface components {
        * @default []
        */
       readonly tools_used: readonly string[];
+    };
+    /** ReadAloudAudioPayload */
+    readonly ReadAloudAudioPayload: {
+      /** Locator */
+      readonly locator: number;
     };
     /**
      * ReadingActivityRecord
@@ -15211,7 +15347,8 @@ export interface components {
       /** Layer */
       readonly layer: string;
       readonly llm_selection?:
-        components["schemas"]["LLMSelectionPayload"] | null;
+        | components["schemas"]["deeptutor__api__routers__memory__LLMSelectionPayload"]
+        | null;
       /**
        * Mode
        * @enum {string}
@@ -16286,7 +16423,7 @@ export interface components {
       /** Code Block Wrap Long Lines */
       readonly code_block_wrap_long_lines?: boolean | null;
       /** Language */
-      readonly language?: ("en" | "zh" | "fr" | "de" | "uk") | null;
+      readonly language?: ("en" | "zh" | "fr" | "de" | "uk" | "pl") | null;
       /** Response Language */
       readonly response_language?:
         | (
@@ -16493,7 +16630,8 @@ export interface components {
        */
       readonly language: string;
       readonly llm_selection?:
-        components["schemas"]["LLMSelectionPayload"] | null;
+        | components["schemas"]["deeptutor__api__routers__memory__LLMSelectionPayload"]
+        | null;
     };
     /** UpdateSettingsRequest */
     readonly UpdateSettingsRequest: {
@@ -16862,6 +17000,10 @@ export interface components {
        * @default true
        */
       readonly auto_sync_enabled: boolean;
+      /** Bilingual Pairings */
+      readonly bilingual_pairings?: readonly {
+        readonly [key: string]: unknown;
+      }[];
       /**
        * Enabled
        * @default true
@@ -17131,6 +17273,8 @@ export type SchemaAuthStatusResponse =
   components["schemas"]["AuthStatusResponse"];
 export type SchemaAutoMarkRequest = components["schemas"]["AutoMarkRequest"];
 export type SchemaAutoMarkResponse = components["schemas"]["AutoMarkResponse"];
+export type SchemaBilingualPairingInfo =
+  components["schemas"]["BilingualPairingInfo"];
 export type SchemaBodyAdminImportUsersApiAuthUsersImportPost =
   components["schemas"]["Body_admin_import_users_api_auth_users_import_post"];
 export type SchemaBodyConsumeTunnelHandoffApiAuthHandoffConsumePost =
@@ -17262,6 +17406,10 @@ export type SchemaDedupRequest = components["schemas"]["DedupRequest"];
 export type SchemaDeepDiveRequest = components["schemas"]["DeepDiveRequest"];
 export type SchemaDeeptutorApiRoutersBookProgressRequest =
   components["schemas"]["deeptutor__api__routers__book__ProgressRequest"];
+export type SchemaDeeptutorApiRoutersCoWriterLlmSelectionPayload =
+  components["schemas"]["deeptutor__api__routers__co_writer__LLMSelectionPayload"];
+export type SchemaDeeptutorApiRoutersMemoryLlmSelectionPayload =
+  components["schemas"]["deeptutor__api__routers__memory__LLMSelectionPayload"];
 export type SchemaDeeptutorApiRoutersVideoLearningProgressRequest =
   components["schemas"]["deeptutor__api__routers__video_learning__ProgressRequest"];
 export type SchemaDeleteBlockRequest =
@@ -17330,6 +17478,8 @@ export type SchemaGuardianRestrictionsPayload =
 export type SchemaHttpValidationError =
   components["schemas"]["HTTPValidationError"];
 export type SchemaImaConfigUpdate = components["schemas"]["ImaConfigUpdate"];
+export type SchemaImageDescriptionModelSelection =
+  components["schemas"]["ImageDescriptionModelSelection"];
 export type SchemaImaKnowledgeBaseSummary =
   components["schemas"]["ImaKnowledgeBaseSummary"];
 export type SchemaImportedMessage = components["schemas"]["ImportedMessage"];
@@ -17389,8 +17539,6 @@ export type SchemaListImaResponse = components["schemas"]["ListImaResponse"];
 export type SchemaLlamaIndexConfigUpdate =
   components["schemas"]["LlamaIndexConfigUpdate"];
 export type SchemaLlmSelection = components["schemas"]["LLMSelection"];
-export type SchemaLlmSelectionPayload =
-  components["schemas"]["LLMSelectionPayload"];
 export type SchemaLoginRequest = components["schemas"]["LoginRequest"];
 export type SchemaManagedUpdateRequest =
   components["schemas"]["ManagedUpdateRequest"];
@@ -17489,6 +17637,8 @@ export type SchemaQuizResultsRequest =
 export type SchemaReactEditRequest = components["schemas"]["ReactEditRequest"];
 export type SchemaReactEditResponse =
   components["schemas"]["ReactEditResponse"];
+export type SchemaReadAloudAudioPayload =
+  components["schemas"]["ReadAloudAudioPayload"];
 export type SchemaReadingActivityRecord =
   components["schemas"]["ReadingActivityRecord"];
 export type SchemaReadingLearningRecords =
@@ -22820,6 +22970,42 @@ export interface operations {
         };
         content: {
           readonly "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_web_source_pairings_api_knowledge_bases__kb_name__web_source__source_id__pairings_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly kb_name: string;
+        readonly source_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": readonly components["schemas"]["BilingualPairingInfo"][];
         };
       };
       /** @description Validation Error */
@@ -32637,6 +32823,43 @@ export interface operations {
       };
     };
   };
+  readonly list_quiz_rewards_api_reading_materials__material_id__quiz_rewards_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly get_raw_api_reading_materials__material_id__raw_get: {
     readonly parameters: {
       readonly query?: never;
@@ -32651,6 +32874,45 @@ export interface operations {
       };
     };
     readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly read_material_aloud_api_reading_materials__material_id__read_aloud_post: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody: {
+      readonly content: {
+        readonly "application/json": components["schemas"]["ReadAloudAudioPayload"];
+      };
+    };
     readonly responses: {
       /** @description Successful Response */
       readonly 200: {
@@ -40090,6 +40352,43 @@ export interface operations {
       };
     };
   };
+  readonly list_video_marks_api_video_learning_materials__material_id__marks_get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": readonly {
+            readonly [key: string]: unknown;
+          }[];
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   readonly create_video_mark_api_video_learning_materials__material_id__marks_post: {
     readonly parameters: {
       readonly query?: never;
@@ -40111,6 +40410,44 @@ export interface operations {
     readonly responses: {
       /** @description Successful Response */
       readonly 201: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": {
+            readonly [key: string]: unknown;
+          };
+        };
+      };
+      /** @description Validation Error */
+      readonly 422: {
+        headers: {
+          readonly [name: string]: unknown;
+        };
+        content: {
+          readonly "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  readonly get_video_mark_api_video_learning_materials__material_id__marks__mark_id__get: {
+    readonly parameters: {
+      readonly query?: never;
+      readonly header?: {
+        readonly Authorization?: string | null;
+      };
+      readonly path: {
+        readonly mark_id: string;
+        readonly material_id: string;
+      };
+      readonly cookie?: {
+        readonly dt_token?: string | null;
+      };
+    };
+    readonly requestBody?: never;
+    readonly responses: {
+      /** @description Successful Response */
+      readonly 200: {
         headers: {
           readonly [name: string]: unknown;
         };

@@ -100,8 +100,8 @@ test("legacy web sync client resolves durable jobs to their result", async () =>
     assert.equal(result.ok, true);
     assert.equal(result.total_pages, 3);
     assert.deepEqual(calls, [
-      "POST /api/knowledge-bases/docs/sync-web",
-      "GET /api/knowledge-bases/docs/web-sync-jobs/job-1",
+      "POST /api/knowledge-bases/docs/sync-web?dt_workspace=",
+      "GET /api/knowledge-bases/docs/web-sync-jobs/job-1?dt_workspace=",
     ]);
   } finally {
     globalThis.fetch = originalFetch;

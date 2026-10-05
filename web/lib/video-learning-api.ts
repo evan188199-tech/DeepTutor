@@ -34,6 +34,9 @@ export interface YouTubeSessionStatus {
   next_prefetch_at: string | null;
 }
 
+export type VideoMark = VideoLearningMark;
+export type SuggestedVideoMark = VideoMarkSuggestion;
+
 export interface TimedSegment extends TranscriptCue {
   locator: number;
 }
@@ -267,6 +270,41 @@ export async function getVideoMaterial(
   );
 }
 
+export async function refreshInvidiousTranscript(
+  materialId: string,
+): Promise<TimedMediaMaterial> {
+  return unwrap(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/transcript/refresh`,
+      ),
+      { method: "POST" },
+    ),
+  );
+}
+
+export async function saveVideoProgress(
+  materialId: string,
+  timeSeconds: number,
+  durationSeconds: number,
+): Promise<void> {
+  await unwrap(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/progress`,
+      ),
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          time_seconds: Math.max(0, timeSeconds),
+          duration_seconds: Math.max(0, durationSeconds),
+        }),
+      },
+    ),
+  );
+}
+
 export async function getYouTubeSessionStatus(): Promise<YouTubeSessionStatus> {
   return unwrap(
     await apiFetch(
@@ -310,37 +348,15 @@ export async function requestSubtitlePrefetch(
   return payload.fetch;
 }
 
-export async function refreshInvidiousTranscript(
+export async function listVideoMarks(
   materialId: string,
-): Promise<TimedMediaMaterial> {
+): Promise<VideoLearningMark[]> {
   return unwrap(
     await apiFetch(
       apiUrl(
-        `/api/video-learning/materials/${encodeURIComponent(materialId)}/transcript/refresh`,
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/marks`,
       ),
-      { method: "POST" },
-    ),
-  );
-}
-
-export async function saveVideoProgress(
-  materialId: string,
-  timeSeconds: number,
-  durationSeconds: number,
-): Promise<void> {
-  await unwrap(
-    await apiFetch(
-      apiUrl(
-        `/api/video-learning/materials/${encodeURIComponent(materialId)}/progress`,
-      ),
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          time_seconds: Math.max(0, timeSeconds),
-          duration_seconds: Math.max(0, durationSeconds),
-        }),
-      },
+      { cache: "no-store" },
     ),
   );
 }

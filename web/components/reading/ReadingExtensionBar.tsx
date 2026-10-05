@@ -1,24 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpenText,
   Loader2,
   PencilLine,
   Sparkles,
   Square,
+  Star,
   Volume2,
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { apiFetch, apiUrl } from "@/lib/api";
 import { fetchAuthStatus } from "@/lib/auth";
+import { randomUuid } from "@/lib/random-uuid";
 import { getOwnLearnerProfile } from "@/lib/profile-api";
-import {
-  inferSpeechLocale,
-  selectSpeechVoice,
-  type SpeechVoiceCandidate,
-} from "@/lib/read-aloud-speech";
 import {
   primaryReadingActionRank,
   readingActionClass,
@@ -31,8 +27,10 @@ import {
   submitReadingQuizAnswers,
   type ReadingExtensionManifest,
   type ReadingExtensionResult,
+  type ReadingQuizReward,
 } from "@/lib/reading-api";
 import { useReadingActions } from "./reading-actions-context";
+import { useReadAloudSpeech } from "./use-read-aloud-speech";
 import Tooltip from "@/shared/ui/Tooltip";
 
 type VocabularyTerm = {
@@ -102,39 +100,8 @@ function ExtensionToolbar({
   const [busy, setBusy] = useState("");
   const [result, setResult] = useState<ReadingExtensionResult | null>(null);
   const [resultLocator, setResultLocator] = useState(locator);
-  const [speaking, setSpeaking] = useState(false);
   const [ageMode, setAgeMode] = useState<ReadingAgeMode>("default");
-  const [speechVoices, setSpeechVoices] = useState<SpeechVoiceCandidate[]>([]);
-  const speechTokenRef = useRef(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrlRef = useRef<string | null>(null);
-
-  function disposeAudio(audio: HTMLAudioElement | null, url: string | null) {
-    audio?.pause();
-    if (url) URL.revokeObjectURL(url);
-  }
-
-  const stopSpeaking = useCallback(() => {
-    speechTokenRef.current += 1;
-    disposeAudio(audioRef.current, audioUrlRef.current);
-    audioRef.current = null;
-    audioUrlRef.current = null;
-    window.speechSynthesis?.cancel();
-    setSpeaking(false);
-  }, []);
-
-  useEffect(() => {
-    const synthesis = window.speechSynthesis;
-    if (!synthesis?.addEventListener) return;
-
-    function updateVoices() {
-      setSpeechVoices(synthesis.getVoices() ?? []);
-    }
-
-    updateVoices();
-    synthesis.addEventListener("voiceschanged", updateVoices);
-    return () => synthesis.removeEventListener("voiceschanged", updateVoices);
-  }, []);
+  const { speak, speaking, stop: stopSpeaking } = useReadAloudSpeech();
 
   useEffect(() => {
     let active = true;
@@ -184,9 +151,7 @@ function ExtensionToolbar({
 
   // Speech, on the other hand, must stop the moment the reader navigates
   // away from the passage being read aloud — so this one keeps both keys.
-  useEffect(() => {
-    return () => stopSpeaking();
-  }, [locator, materialId, stopSpeaking]);
+  useEffect(() => stopSpeaking, [locator, materialId, stopSpeaking]);
 
   const actions = useMemo(
     () =>
@@ -199,77 +164,6 @@ function ExtensionToolbar({
         }),
     [extensions],
   );
-
-  async function playServerSpeech(text: string, token: number): Promise<boolean> {
-    let url: string | null = null;
-    let audio: HTMLAudioElement | null = null;
-    try {
-      const response = await apiFetch(apiUrl("/api/voice/tts"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      if (!response.ok) return false;
-
-      const blob = await response.blob();
-      if (!blob.size) return false;
-      url = URL.createObjectURL(blob);
-      audio = new Audio(url);
-      const activeAudio = audio;
-      const activeUrl = url;
-      const dispose = () => {
-        disposeAudio(activeAudio, activeUrl);
-        if (audioRef.current === activeAudio) audioRef.current = null;
-        if (audioUrlRef.current === activeUrl) audioUrlRef.current = null;
-      };
-      audio.onended = () => {
-        if (speechTokenRef.current === token) {
-          dispose();
-          setSpeaking(false);
-        }
-      };
-      audio.onerror = () => {
-        if (speechTokenRef.current === token) {
-          dispose();
-          setSpeaking(false);
-        }
-      };
-      audioRef.current = audio;
-      audioUrlRef.current = url;
-      await audio.play();
-      if (speechTokenRef.current !== token) {
-        dispose();
-        return true;
-      }
-      setSpeaking(true);
-      return true;
-    } catch {
-      disposeAudio(audio, url);
-      if (audioRef.current === audio) audioRef.current = null;
-      if (audioUrlRef.current === url) audioUrlRef.current = null;
-      return false;
-    }
-  }
-
-  function speakBrowserSpeech(text: string, locale: string, token: number): boolean {
-    if (!("speechSynthesis" in window) || !text) return false;
-
-    const speechLocale = inferSpeechLocale(text, locale);
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voice = selectSpeechVoice(speechVoices, speechLocale);
-    if (voice) utterance.voice = voice as SpeechSynthesisVoice;
-    utterance.lang = voice?.lang || speechLocale;
-    utterance.onend = () => {
-      if (speechTokenRef.current === token) setSpeaking(false);
-    };
-    utterance.onerror = () => {
-      if (speechTokenRef.current === token) setSpeaking(false);
-    };
-    window.speechSynthesis.speak(utterance);
-    setSpeaking(true);
-    return true;
-  }
 
   async function run(
     extension: ReadingExtensionManifest,
@@ -288,11 +182,13 @@ function ExtensionToolbar({
       setResultLocator(requestedLocator);
       if (next.type === "browser_speech") {
         const text = String(next.payload.text || "");
-        const locale = String(next.payload.locale || i18n.language);
-        const token = ++speechTokenRef.current;
-        if (await playServerSpeech(text, token)) return;
-        if (speechTokenRef.current !== token) return;
-        if (!speakBrowserSpeech(text, locale, token)) {
+        const played = await speak({
+          materialId,
+          locator: requestedLocator,
+          locale: String(next.payload.locale || i18n.language),
+          fallbackText: text,
+        });
+        if (!played) {
           onError(t("No speech voice is available in this browser."));
         }
       }
@@ -582,6 +478,7 @@ function QuizQuestions({
   const { t } = useTranslation();
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [verdicts, setVerdicts] = useState<Record<string, boolean>>({});
+  const [reward, setReward] = useState<ReadingQuizReward | null>(null);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const pendingSubmissions = useRef<Record<string, { selected: number; id: string }>>({});
 
@@ -589,7 +486,7 @@ function QuizQuestions({
     const questionId = question.id || `q_${index + 1}`;
     const key = question.id || String(index);
     const pending = pendingSubmissions.current[key];
-    const submissionId = pending?.selected === choiceIndex ? pending.id : crypto.randomUUID();
+    const submissionId = pending?.selected === choiceIndex ? pending.id : randomUuid();
     pendingSubmissions.current[key] = { selected: choiceIndex, id: submissionId };
     setSaving((current) => ({ ...current, [key]: true }));
     try {
@@ -599,10 +496,11 @@ function QuizQuestions({
         submission_id: submissionId,
         answers: [{ question_id: questionId, selected_index: choiceIndex }],
       });
-      const verdict = results.find((item) => item.question_id === questionId);
+      const verdict = results.answers.find((item) => item.question_id === questionId);
       if (!verdict) throw new Error(t("Failed to save answer. Please try again."));
       setAnswers((current) => ({ ...current, [key]: choiceIndex }));
       setVerdicts((current) => ({ ...current, [key]: verdict.is_correct }));
+      setReward(results.reward ?? null);
       delete pendingSubmissions.current[key];
     } catch (error) {
       onError(error instanceof Error ? error.message : String(error));
@@ -611,57 +509,70 @@ function QuizQuestions({
     }
   }
 
-  return questions.map((question, index) => {
-    const key = question.id || String(index);
-    const selected = answers[key];
-    const correctChoiceIndex = Number.isInteger(question.correct_choice_index)
-      ? Number(question.correct_choice_index)
-      : -1;
-    const canGrade = correctChoiceIndex >= 0 && correctChoiceIndex < question.choices.length;
-    if (!canGrade) {
-      return (
-        <div key={key} className="mt-3">
-          <p className="font-medium">{question.prompt}</p>
-          <ol className="mt-1 list-inside list-[upper-alpha] space-y-0.5 text-[var(--muted-foreground)]">
-            {question.choices.map((choice) => (
-              <li key={choice}>{choice}</li>
-            ))}
-          </ol>
-        </div>
-      );
-    }
-    return (
-      <fieldset key={key} className="mt-3">
-        <legend className="font-medium">{question.prompt}</legend>
-        <div className="mt-1 grid gap-1">
-          {question.choices.map((choice, choiceIndex) => (
-            <button
-              key={choice}
-              type="button"
-              aria-pressed={selected === choiceIndex}
-              disabled={Boolean(saving[key])}
-              onClick={() => {
-                void persistAnswer(question, index, choiceIndex);
-              }}
-              className="rounded-md border border-[var(--border)] px-2 py-1.5 text-left text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] aria-pressed:bg-[var(--muted)] aria-pressed:text-[var(--foreground)]"
-            >
-              {String.fromCharCode(65 + choiceIndex)}. {choice}
-            </button>
-          ))}
-        </div>
-        {selected !== undefined ? (
-          <p
-            role="status"
-            className={`mt-1 font-medium ${
-              verdicts[key]
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-amber-600 dark:text-amber-400"
-            }`}
-          >
-            {verdicts[key] ? t("Correct") : t("Incorrect")}
-          </p>
-        ) : null}
-      </fieldset>
-    );
-  });
+  return (
+    <>
+      {questions.map((question, index) => {
+        const key = question.id || String(index);
+        const selected = answers[key];
+        const correctChoiceIndex = Number.isInteger(question.correct_choice_index)
+          ? Number(question.correct_choice_index)
+          : -1;
+        const canGrade = correctChoiceIndex >= 0 && correctChoiceIndex < question.choices.length;
+        if (!canGrade) {
+          return (
+            <div key={key} className="mt-3">
+              <p className="font-medium">{question.prompt}</p>
+              <ol className="mt-1 list-inside list-[upper-alpha] space-y-0.5 text-[var(--muted-foreground)]">
+                {question.choices.map((choice) => (
+                  <li key={choice}>{choice}</li>
+                ))}
+              </ol>
+            </div>
+          );
+        }
+        return (
+          <fieldset key={key} className="mt-3">
+            <legend className="font-medium">{question.prompt}</legend>
+            <div className="mt-1 grid gap-1">
+              {question.choices.map((choice, choiceIndex) => (
+                <button
+                  key={choice}
+                  type="button"
+                  aria-pressed={selected === choiceIndex}
+                  disabled={Boolean(saving[key])}
+                  onClick={() => {
+                    void persistAnswer(question, index, choiceIndex);
+                  }}
+                  className="rounded-md border border-[var(--border)] px-2 py-1.5 text-left text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] aria-pressed:bg-[var(--muted)] aria-pressed:text-[var(--foreground)]"
+                >
+                  {String.fromCharCode(65 + choiceIndex)}. {choice}
+                </button>
+              ))}
+            </div>
+            {selected !== undefined ? (
+              <p
+                role="status"
+                className={`mt-1 font-medium ${
+                  verdicts[key]
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-amber-600 dark:text-amber-400"
+                }`}
+              >
+                {verdicts[key] ? t("Correct") : t("Incorrect")}
+              </p>
+            ) : null}
+          </fieldset>
+        );
+      })}
+      {reward ? (
+        <p
+          role="status"
+          className="mt-3 flex items-center gap-1.5 font-medium text-amber-600 dark:text-amber-400"
+        >
+          <Star size={14} fill="currentColor" aria-hidden="true" />
+          {t("Quiz stars: {{count}}", { count: reward.stars })}
+        </p>
+      ) : null}
+    </>
+  );
 }

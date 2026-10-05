@@ -157,7 +157,10 @@ def test_store_repairs_legacy_caption_entities(isolated: Path) -> None:
             "segments": [
                 {"locator": 7, "start": 0, "end": 1, "text": "Learn&nbsp;&nbsp;&amp; apply"}
             ],
-            "learning": {"last_position": 0},
+            "learning": {
+                "last_position": 0,
+                "marks": [{"locator": 7, "quote": "Learn&nbsp;&nbsp;&amp; apply"}],
+            },
         }
     )
 
@@ -166,6 +169,9 @@ def test_store_repairs_legacy_caption_entities(isolated: Path) -> None:
 
     assert repaired["transcript"]["cues"][0]["text"] == "Learn & apply"
     assert repaired["segments"] == [{"locator": 7, "start": 0, "end": 1, "text": "Learn & apply"}]
+    assert repaired["learning"]["marks"] == [
+        {"locator": 7, "quote": "Learn&nbsp;&nbsp;&amp; apply"}
+    ]
     persisted = json.loads(store._path(material_id).read_text(encoding="utf-8"))
     assert persisted["transcript"]["cues"][0]["text"] == "Learn & apply"
     assert store.get(material_id)["segments"][0]["text"] == "Learn & apply"

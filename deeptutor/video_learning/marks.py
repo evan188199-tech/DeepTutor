@@ -27,6 +27,7 @@ class MarkNotFound(TimedMediaNotFound):
 
 
 def utcnow() -> str:
+    """Return the current UTC timestamp formatted as ISO-8601 string."""
     return datetime.now(timezone.utc).isoformat()
 
 
@@ -70,6 +71,7 @@ def _cues(material: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def locators_for_range(material: dict[str, Any], start: float, end: float) -> tuple[int, int]:
+    """Find start and end segment locators overlapping the specified time span."""
     overlapping = [
         row
         for row in _segments(material)
@@ -83,6 +85,7 @@ def locators_for_range(material: dict[str, Any], start: float, end: float) -> tu
 
 
 def quote_for_range(material: dict[str, Any], start: float, end: float) -> str:
+    """Concatenate subtitle cue text within the specified time span."""
     selected = [
         str(row.get("text") or "").strip()
         for row in _cues(material)
@@ -96,12 +99,14 @@ def quote_for_range(material: dict[str, Any], start: float, end: float) -> str:
 def nearby_cues(
     material: dict[str, Any], time_seconds: float, window: float = NEARBY_WINDOW_SECONDS
 ) -> list[dict[str, Any]]:
+    """Return subtitle cues whose start is within the window of time_seconds."""
     return [
         row for row in _cues(material) if abs(float(row.get("start") or 0) - time_seconds) <= window
     ]
 
 
 def current_segment(material: dict[str, Any], time_seconds: float) -> dict[str, Any] | None:
+    """Find the material segment containing time_seconds."""
     return next(
         (
             row
@@ -113,6 +118,7 @@ def current_segment(material: dict[str, Any], time_seconds: float) -> dict[str, 
 
 
 def marks_list(material: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return the mutable marks list in material learning state."""
     learning = material.setdefault("learning", {})
     marks = learning.get("marks")
     if not isinstance(marks, list):
@@ -122,6 +128,7 @@ def marks_list(material: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def get_mark(material: dict[str, Any], mark_id: str) -> dict[str, Any]:
+    """Retrieve a mark by ID from the material or raise MarkNotFound."""
     for mark in marks_list(material):
         if isinstance(mark, dict) and str(mark.get("mark_id") or "") == mark_id:
             return mark
@@ -134,6 +141,7 @@ def normalize_mark(
     *,
     existing: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    """Validate and normalize mark fields for creation or update."""
     kind = str(payload.get("kind") or (existing or {}).get("kind") or "").strip()
     if kind not in MARK_KINDS:
         raise TimedMediaError("Mark kind must be key_point, question, or review.")
@@ -225,6 +233,7 @@ def normalize_mark(
 
 
 def create_mark(material: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any]:
+    """Create a new mark on the material."""
     marks = marks_list(material)
     if len(marks) >= MAX_MARKS_PER_MATERIAL:
         raise TimedMediaError("This video already has the maximum number of marks.")
@@ -234,6 +243,7 @@ def create_mark(material: dict[str, Any], payload: dict[str, Any]) -> dict[str, 
 
 
 def update_mark(material: dict[str, Any], mark_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Update fields on an existing mark."""
     if not payload:
         raise TimedMediaError("No mark fields to update.")
     current = get_mark(material, mark_id)
@@ -247,6 +257,7 @@ def update_mark(material: dict[str, Any], mark_id: str, payload: dict[str, Any])
 
 
 def delete_mark(material: dict[str, Any], mark_id: str) -> dict[str, Any]:
+    """Delete a mark from the material by mark_id."""
     marks = marks_list(material)
     for index, row in enumerate(marks):
         if isinstance(row, dict) and str(row.get("mark_id") or "") == mark_id:
@@ -273,6 +284,9 @@ def _public_suggestion(material: dict[str, Any], payload: dict[str, Any]) -> dic
     except TimedMediaError:
         return None
     mark.pop("mark_id", None)
+    mark["quote"] = quote_for_range(material, mark["start_seconds"], mark["end_seconds"])
+    if not mark["quote"]:
+        return None
     mark.pop("created_at", None)
     mark.pop("updated_at", None)
     mark.pop("reviewed_at", None)
@@ -280,6 +294,7 @@ def _public_suggestion(material: dict[str, Any], payload: dict[str, Any]) -> dic
 
 
 def heuristic_suggestions(material: dict[str, Any], time_seconds: float) -> list[dict[str, Any]]:
+    """Generate heuristic candidate marks based on the current segment or nearby cues."""
     segment = current_segment(material, time_seconds)
     if segment is None:
         nearby = nearby_cues(material, time_seconds)
@@ -371,6 +386,12 @@ async def suggest_marks(material: dict[str, Any], time_seconds: float) -> list[d
 __all__ = [
     "MARK_AUTHORS",
     "MARK_KINDS",
+    "MARK_SOURCES",
+    "MAX_MARKS_PER_MATERIAL",
+    "MAX_NOTE_CHARS",
+    "MAX_QUOTE_CHARS",
+    "MAX_SUGGESTIONS",
+    "NEARBY_WINDOW_SECONDS",
     "MarkNotFound",
     "create_mark",
     "current_segment",
@@ -381,6 +402,8 @@ __all__ = [
     "marks_list",
     "nearby_cues",
     "normalize_mark",
+    "quote_for_range",
     "suggest_marks",
     "update_mark",
+    "utcnow",
 ]

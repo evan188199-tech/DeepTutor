@@ -14,10 +14,8 @@ import {
   Trash2,
 } from "lucide-react";
 import {
-  cancelWebSourceSync,
   addWebSource,
-  cancelWebSync,
-  getWebSyncJob,
+  cancelWebSourceSync,
   listWebSources,
   removeWebSource,
   retryWebSourceSync,
@@ -270,14 +268,16 @@ export default function KbWebSourcesSection({
             {syncing ? t("Syncing…") : t("Sync now")}
           </button>
           {syncing && syncJob && (
-            <button
-              type="button"
-              onClick={() => void handleCancelSync()}
-              title={t("Cancel sync")}
-              className="rounded-md border border-[var(--border)] p-1.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-red-600"
-            >
-              <Square className="h-3 w-3" />
-            </button>
+            <Tooltip label={t("Cancel sync")} side="top">
+              <button
+                type="button"
+                onClick={() => void handleCancelSync()}
+                aria-label={t("Cancel sync")}
+                className="rounded-md border border-[var(--border)] p-1.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-red-600"
+              >
+                <Square className="h-3 w-3" />
+              </button>
+            </Tooltip>
           )}
           <button
             type="button"
@@ -378,7 +378,7 @@ export default function KbWebSourcesSection({
             <input
               value={documentVersion}
               onChange={(e) => setDocumentVersion(e.target.value)}
-              placeholder={t("v1.2")}
+              placeholder="v1.2"
               className="w-full rounded-md border border-[var(--border)] bg-[var(--card)] px-2.5 py-1.5 text-[12.5px] text-[var(--foreground)] outline-none focus:border-[var(--primary)]"
             />
           </label>
@@ -546,6 +546,19 @@ function WebSourceCard({
           {source.page_count > 0 && (
             <span>
               {t("Pages")}: {source.page_count}
+            </span>
+          )}
+          {source.bilingual_pairings && source.bilingual_pairings.length > 0 && (
+            <span
+              className="font-medium text-emerald-600 dark:text-emerald-400"
+              title={source.bilingual_pairings
+                .map(
+                  (p) =>
+                    `${p.source_lang.toUpperCase()} ↔ ${p.target_lang.toUpperCase()}: ${p.source_url} ↔ ${p.target_url}`,
+                )
+                .join("\n")}
+            >
+              {t("Bilingual pairs")}: {source.bilingual_pairings.length}
             </span>
           )}
           {lastSync && (

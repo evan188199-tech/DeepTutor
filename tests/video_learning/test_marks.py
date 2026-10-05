@@ -159,6 +159,16 @@ def test_router_mark_crud_and_isolation(client_and_store) -> None:
     assert created.status_code == 201
     mark_id = created.json()["mark_id"]
 
+    point = client.post(
+        f"/api/video-learning/materials/{material_id}/marks",
+        json={"kind": "question", "start_seconds": 18, "end_seconds": 18},
+    )
+    assert point.status_code == 201
+    assert point.json()["end_seconds"] == 18
+    listed = client.get(f"/api/video-learning/materials/{material_id}/marks")
+    assert listed.status_code == 200
+    assert [row["mark_id"] for row in listed.json()] == [mark_id, point.json()["mark_id"]]
+
     patched = client.patch(
         f"/api/video-learning/materials/{material_id}/marks/{mark_id}",
         json={"note": "core claim"},
@@ -174,7 +184,9 @@ def test_router_mark_crud_and_isolation(client_and_store) -> None:
 
     deleted = client.delete(f"/api/video-learning/materials/{material_id}/marks/{mark_id}")
     assert deleted.status_code == 200
-    assert store.get(material_id)["learning"]["marks"] == []
+    assert [row["mark_id"] for row in store.get(material_id)["learning"]["marks"]] == [
+        point.json()["mark_id"]
+    ]
 
 
 def test_router_suggestions_are_ephemeral(client_and_store, monkeypatch) -> None:
@@ -182,7 +194,7 @@ def test_router_suggestions_are_ephemeral(client_and_store, monkeypatch) -> None
     material = _material(store)
 
     async def fake_complete(*_args: object, **_kwargs: object) -> str:
-        return '[{"kind":"review","start_seconds":40,"end_seconds":55,"quote":"This example is worth reviewing later."}]'
+        return '[{"kind":"review","start_seconds":40,"end_seconds":55,"quote":"invented quote"}]'
 
     monkeypatch.setattr("deeptutor.services.llm.complete", fake_complete)
     response = client.post(
@@ -191,4 +203,5 @@ def test_router_suggestions_are_ephemeral(client_and_store, monkeypatch) -> None
     )
     assert response.status_code == 200
     assert response.json()["suggestions"]
+    assert response.json()["suggestions"][0]["quote"] == "This example is worth reviewing later."
     assert store.get(material["material_id"])["learning"].get("marks", []) == []

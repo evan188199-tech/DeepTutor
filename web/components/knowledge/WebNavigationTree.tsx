@@ -18,6 +18,7 @@ import type {
   WebNavNode,
   WebNavigationSource,
 } from "@/features/knowledge/api/client";
+import Tooltip from "@/shared/ui/Tooltip";
 import { docIconFor } from "@/lib/doc-attachments";
 
 interface WebNavigationTreeProps {
@@ -93,15 +94,16 @@ export default function WebNavigationTree({
     const allLeaves = sources.flatMap((s) => s.nodes).filter((n) => n.file_path);
     return (
       <aside className="flex h-full w-[44px] shrink-0 flex-col items-center gap-1 border-r border-[var(--border)] bg-[var(--card)]/40 py-2">
-        <button
-          type="button"
-          onClick={onToggleCollapsed}
-          title={t("Expand")}
-          aria-label={t("Expand")}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-        >
-          <PanelLeftOpen size={13} strokeWidth={1.7} />
-        </button>
+        <Tooltip label={t("Expand")} side="right">
+          <button
+            type="button"
+            onClick={onToggleCollapsed}
+            aria-label={t("Expand")}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            <PanelLeftOpen size={13} strokeWidth={1.7} />
+          </button>
+        </Tooltip>
         <div className="my-1 h-px w-6 bg-[var(--border)]/60" />
         <div className="flex w-full flex-1 flex-col items-center gap-0.5 overflow-y-auto pb-2">
           {allLeaves.map((node) => {
@@ -109,23 +111,23 @@ export default function WebNavigationTree({
             const Icon = spec.Icon;
             const active = selectedFile === node.file_path;
             return (
-              <button
-                key={node.id}
-                type="button"
-                onClick={() => onSelect(node.file_path)}
-                title={node.title}
-                aria-label={node.title}
-                className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
-                  active
-                    ? "bg-[var(--primary)]/12 ring-1 ring-[var(--primary)]/40"
-                    : "hover:bg-[var(--muted)]/60"
-                }`}
-              >
-                {active && (
-                  <span className="absolute -left-1 top-1/2 h-4 w-[2.5px] -translate-y-1/2 rounded-full bg-[var(--primary)]" />
-                )}
-                <Icon size={13} strokeWidth={1.6} className={spec.tint} />
-              </button>
+              <Tooltip key={node.id} label={node.title} side="right">
+                <button
+                  type="button"
+                  onClick={() => onSelect(node.file_path)}
+                  aria-label={node.title}
+                  className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors ${
+                    active
+                      ? "bg-[var(--primary)]/12 ring-1 ring-[var(--primary)]/40"
+                      : "hover:bg-[var(--muted)]/60"
+                  }`}
+                >
+                  {active && (
+                    <span className="absolute -left-1 top-1/2 h-4 w-[2.5px] -translate-y-1/2 rounded-full bg-[var(--primary)]" />
+                  )}
+                  <Icon size={13} strokeWidth={1.6} className={spec.tint} />
+                </button>
+              </Tooltip>
             );
           })}
         </div>
@@ -182,14 +184,16 @@ export default function WebNavigationTree({
               </span>
             </button>
             {node.file_path && (
-              <button
-                type="button"
-                onClick={() => onSelect(node.file_path)}
-                className="shrink-0 rounded p-0.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-                title={t("Open page")}
-              >
-                <FileText size={11} strokeWidth={1.5} />
-              </button>
+              <Tooltip label={t("Open page")} side="top">
+                <button
+                  type="button"
+                  onClick={() => onSelect(node.file_path)}
+                  aria-label={t("Open page")}
+                  className="shrink-0 rounded p-0.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+                >
+                  <FileText size={11} strokeWidth={1.5} />
+                </button>
+              </Tooltip>
             )}
           </div>
           {isOpen && (
@@ -260,15 +264,17 @@ export default function WebNavigationTree({
               </span>
             </div>
           )}
-          <a
-            href={node.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 rounded p-0.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-            title={t("Open original")}
-          >
-            <ExternalLink size={10} strokeWidth={1.5} />
-          </a>
+          <Tooltip label={t("Open original")} side="top">
+            <a
+              href={node.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("Open original")}
+              className="shrink-0 rounded p-0.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            >
+              <ExternalLink size={10} strokeWidth={1.5} />
+            </a>
+          </Tooltip>
         </div>
       </li>
     );
@@ -281,24 +287,26 @@ export default function WebNavigationTree({
           {t("Contents")}
         </span>
         <div className="flex shrink-0 items-center gap-0.5">
-          <button
-            type="button"
-            onClick={onRefresh}
-            title={t("Refresh")}
-            aria-label={t("Refresh")}
-            className="rounded-md p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-          >
-            <RefreshCw size={12} strokeWidth={1.7} />
-          </button>
-          <button
-            type="button"
-            onClick={onToggleCollapsed}
-            title={t("Collapse")}
-            aria-label={t("Collapse")}
-            className="rounded-md p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
-          >
-            <PanelLeftClose size={12} strokeWidth={1.7} />
-          </button>
+          <Tooltip label={t("Refresh")} side="bottom">
+            <button
+              type="button"
+              onClick={onRefresh}
+              aria-label={t("Refresh")}
+              className="rounded-md p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            >
+              <RefreshCw size={12} strokeWidth={1.7} />
+            </button>
+          </Tooltip>
+          <Tooltip label={t("Collapse")} side="bottom">
+            <button
+              type="button"
+              onClick={onToggleCollapsed}
+              aria-label={t("Collapse")}
+              className="rounded-md p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+            >
+              <PanelLeftClose size={12} strokeWidth={1.7} />
+            </button>
+          </Tooltip>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto px-1.5 pb-2.5">

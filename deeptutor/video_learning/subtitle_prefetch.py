@@ -78,7 +78,7 @@ class SubtitlePrefetchService:
     ) -> dict[str, Any]:
         key = (owner_id, material_id)
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             if (material.get("transcript") or {}).get("cues"):
                 return _fetch_state(material)
             existing = _fetch_state(material)
@@ -126,7 +126,7 @@ class SubtitlePrefetchService:
         try:
             async with self._lock:
                 with store.lock(material_id):
-                    material = store.get(material_id)
+                    material = store.get(material_id, lock_held=True)
                     if (material.get("transcript") or {}).get("cues"):
                         return
                     if not HostChromeSessionStore.enabled(owner_id):
@@ -146,7 +146,7 @@ class SubtitlePrefetchService:
                     video_id, preferred_language=preferred
                 )
                 with store.lock(material_id):
-                    latest = store.get(material_id)
+                    latest = store.get(material_id, lock_held=True)
                     if (latest.get("transcript") or {}).get("cues"):
                         return
                     if cues:
