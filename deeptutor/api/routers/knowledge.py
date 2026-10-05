@@ -1190,8 +1190,15 @@ async def run_upload_processing_task(
                         source_mtimes[source_path] = datetime.fromtimestamp(
                             Path(source_path).stat().st_mtime
                         ).isoformat()
-                    except OSError:
-                        pass
+                    except OSError as exc:
+                        # A missing timestamp makes the next linked-folder sync
+                        # treat this file as changed (or miss it), so the gap
+                        # must be visible instead of silently swallowed.
+                        _task_log(
+                            task_id,
+                            f"Could not record source mtime for '{source_path}': {exc}",
+                            level="warning",
+                        )
             _task_log(task_id, f"Processing {len(uploaded_file_paths)} file(s) for KB '{kb_name}'")
             progress_tracker.update(
                 ProgressStage.PROCESSING_DOCUMENTS,

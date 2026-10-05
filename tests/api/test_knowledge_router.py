@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import importlib
 import json
+import logging
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -1196,6 +1197,89 @@ def test_upload_task_with_folder_root_preserves_subfolder_structure(
 
     assert (raw_dir / "sub" / "note.md").read_text(encoding="utf-8") == "hello"
     assert not (raw_dir / "note.md").exists()
+
+
+def test_upload_task_warns_when_source_mtime_stat_fails(
+    monkeypatch, tmp_path: Path, caplog
+) -> None:
+    """A linked-folder sync whose source mtime snapshot fails must log a
+    warning and still finish the upload, keeping the sync-state update."""
+    base_dir = tmp_path / "knowledge_bases"
+    kb_dir = base_dir / "kb"
+    raw_dir = kb_dir / "raw"
+    raw_dir.mkdir(parents=True)
+    _write_ready_llamaindex_version(kb_dir)
+    (base_dir / "kb_config.json").write_text(
+        json.dumps(
+            {
+                "knowledge_bases": {
+                    "kb": {
+                        "path": "kb",
+                        "rag_provider": "llamaindex",
+                        "status": "ready",
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    source = tmp_path / "note.md"
+    source.write_text("hello", encoding="utf-8")
+
+    class _SucceedingRagService:
+        def __init__(self, *_args, **_kwargs) -> None:
+            pass
+
+        async def add_documents(self, *_args, **_kwargs) -> bool:
+            return True
+
+    monkeypatch.setattr(
+        "deeptutor.knowledge.add_documents.RAGService",
+        _SucceedingRagService,
+    )
+
+    sync_calls = []
+
+    class _SyncCapturingManager:
+        def update_folder_sync_state(self, kb_name, folder_id, paths, mtimes):
+            sync_calls.append((kb_name, folder_id, list(paths), dict(mtimes)))
+
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: _SyncCapturingManager())
+
+    class _StatFailsForSourcePath(type(Path())):
+        def stat(self, *args, **kwargs):
+            if str(self) == str(source):
+                raise OSError("stat unavailable")
+            return super().stat(*args, **kwargs)
+
+    monkeypatch.setattr(knowledge_router_module, "Path", _StatFailsForSourcePath)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.knowledge"):
+        asyncio.run(
+            knowledge_router_module.run_upload_processing_task(
+                kb_name="kb",
+                base_dir=str(base_dir),
+                uploaded_file_paths=[str(source)],
+                task_id="upload-mtime-stat-failure",
+                rag_provider="llamaindex",
+                folder_id="folder-1",
+            )
+        )
+
+    warnings = [
+        record.getMessage()
+        for record in caplog.records
+        if record.levelno >= logging.WARNING and "source mtime" in record.getMessage()
+    ]
+    assert any(str(source) in message for message in warnings)
+
+    assert sync_calls and sync_calls[0][:3] == ("kb", "folder-1", [str(source)])
+    assert sync_calls[0][3] == {}
+
+    persisted = json.loads((base_dir / "kb_config.json").read_text(encoding="utf-8"))
+    entry = persisted["knowledge_bases"]["kb"]
+    assert entry["status"] == "ready"
+    assert entry.get("last_indexed_count") == 1
 
 
 def test_list_files_accepts_default_alias(monkeypatch, tmp_path: Path) -> None:
