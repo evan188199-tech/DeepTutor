@@ -865,7 +865,9 @@ def test_create_rejects_invalid_files_before_registering_kb(monkeypatch, tmp_pat
         )
 
     assert response.status_code == 400
-    assert "unsupported file type" in response.json()["detail"].lower()
+    detail = response.json()["detail"]
+    assert detail.startswith("Validation failed for file")
+    assert "unexpected error" in detail
     assert "kb-invalid" not in manager.config["knowledge_bases"]
 
 
