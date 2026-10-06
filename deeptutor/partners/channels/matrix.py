@@ -364,7 +364,11 @@ class MatrixChannel(BaseChannel):
         }
         if self.config.e2ee_enabled:
             kwargs["ignore_unverified_devices"] = True
-        await self.client.room_send(**kwargs)
+        response = await self.client.room_send(**kwargs)
+        if isinstance(response, RoomSendError):
+            # Delivery contract: raise so the channel manager's retry applies;
+            # the registered response callback only logs, which is not enough.
+            raise RuntimeError(f"Matrix send failed for room {room_id}: {response}")
 
     async def _resolve_server_upload_limit_bytes(self) -> int | None:
         """Query homeserver upload limit once per channel lifecycle."""

@@ -113,12 +113,12 @@ class TestDiscordStreaming:
         await ch.send_delta("42", "Hello", _meta("s1"))
         method, url = ch._http.request.await_args_list[0].args[:2]
         assert method == "POST" and url.endswith("/channels/42/messages")
-        assert ch._stream_bufs["42"].message_id == "555"
+        assert ch._stream_bufs["s1"].message_id == "555"
 
         await ch.send_delta("42", "", _meta("s1", end=True))
         method, url = ch._http.request.await_args_list[-1].args[:2]
         assert method == "PATCH" and url.endswith("/messages/555")
-        assert "42" not in ch._stream_bufs
+        assert "s1" not in ch._stream_bufs
 
     @pytest.mark.asyncio
     async def test_new_stream_id_opens_new_message(self):
@@ -127,7 +127,7 @@ class TestDiscordStreaming:
         await ch.send_delta("42", "second", _meta("s2"))
         posts = [c for c in ch._http.request.await_args_list if c.args[0] == "POST"]
         assert len(posts) == 2
-        assert ch._stream_bufs["42"].text == "second"
+        assert ch._stream_bufs["s2"].text == "second"
 
     @pytest.mark.asyncio
     async def test_api_error_raises_for_manager_retry(self):

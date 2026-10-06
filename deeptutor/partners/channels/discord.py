@@ -65,7 +65,7 @@ class DiscordChannel(BaseChannel):
         self._heartbeat_task: asyncio.Task | None = None
         self._typing_tasks: dict[str, asyncio.Task] = {}
         self._http: httpx.AsyncClient | None = None
-        self._stream_bufs: dict[str, _StreamBuf] = {}  # chat_id -> streaming state
+        self._stream_bufs: dict[str, _StreamBuf] = {}  # stream key -> streaming state
         self._bot_user_id: str | None = None
 
     async def start(self) -> None:
@@ -183,23 +183,31 @@ class DiscordChannel(BaseChannel):
             return response.json()
         raise RuntimeError("Discord API rate limit retries exhausted")
 
+    @staticmethod
+    def _stream_key(chat_id: str, metadata: dict[str, Any] | None = None) -> str:
+        """Scope streaming buffers to the stream segment when available."""
+        meta = metadata or {}
+        return str(meta.get("_stream_id") or chat_id)
+
     async def send_delta(
         self, chat_id: str, delta: str, metadata: dict[str, Any] | None = None
     ) -> None:
-        """Progressive Discord delivery: send once, then edit until the stream ends."""
+        """Progressive Discord delivery: send once, then edit until the stream ends.
+
+        Buffers are keyed by ``_stream_id`` so concurrent streams in the same
+        chat accumulate independently (base channel streaming contract).
+        """
         if not self._http:
             logger.warning("Discord HTTP client not initialized; dropping stream delta")
             return
 
         meta = metadata or {}
-        stream_id = meta.get("_stream_id")
+        stream_key = self._stream_key(chat_id, meta)
         create_url = f"{DISCORD_API_BASE}/channels/{chat_id}/messages"
 
         if meta.get("_stream_end"):
-            buf = self._stream_bufs.get(chat_id)
+            buf = self._stream_bufs.pop(stream_key, None)
             if not buf or buf.message_id is None or not buf.text:
-                return
-            if stream_id is not None and buf.stream_id is not None and buf.stream_id != stream_id:
                 return
             await self._stop_typing(chat_id)
             # Final render: edit in the full text, splitting overflow into
@@ -209,17 +217,12 @@ class DiscordChannel(BaseChannel):
             await self._api_request("PATCH", edit_url, {"content": chunks[0]})
             for chunk in chunks[1:]:
                 await self._api_request("POST", create_url, {"content": chunk})
-            self._stream_bufs.pop(chat_id, None)
             return
 
-        buf = self._stream_bufs.get(chat_id)
-        if buf is None or (
-            stream_id is not None and buf.stream_id is not None and buf.stream_id != stream_id
-        ):
-            buf = _StreamBuf(stream_id=stream_id)
-            self._stream_bufs[chat_id] = buf
-        elif buf.stream_id is None:
-            buf.stream_id = stream_id
+        buf = self._stream_bufs.get(stream_key)
+        if buf is None:
+            buf = _StreamBuf(stream_id=meta.get("_stream_id"))
+            self._stream_bufs[stream_key] = buf
         buf.text += delta
 
         if not buf.text.strip():

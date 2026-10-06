@@ -748,6 +748,7 @@ class ZulipChannel(BaseChannel):
         )
         if result.get("result") != "success":
             logger.error("Zulip send failed: {}", result.get("msg", "unknown"))
+            raise RuntimeError(f"Zulip send failed: {result.get('msg', 'unknown')}")
 
     def _resolve_media_path(self, media_path: str) -> str | None:
         if Path(media_path).exists():
@@ -782,7 +783,7 @@ class ZulipChannel(BaseChannel):
             )
         if result.get("result") != "success":
             logger.error("Zulip upload failed: {}", result.get("msg", "unknown"))
-            return
+            raise RuntimeError(f"Zulip upload failed: {result.get('msg', 'unknown')}")
 
         uri = result.get("uri", "")
         filename = Path(media_path).name
