@@ -325,7 +325,7 @@ class PositionPayload(BaseModel):
 
 
 class PositionInfo(PositionPayload):
-    percentage: float = 0.0
+    percentage: float = Field(default=0.0, ge=0.0, le=1.0)
     updated_at: float = 0.0
 
 
