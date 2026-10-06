@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 class CodeBuddyAuthService:
@@ -76,8 +79,15 @@ class CodeBuddyAuthService:
         if flow is not None:
             try:
                 await flow.cancel()
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 - converted to stable public state
+                logger.warning("CodeBuddy login cancel failed: %s", exc)
+                async with self._lock:
+                    # A newer login may have taken over while the cancel was
+                    # awaited; only report the failure if nothing did.
+                    if self._operation_state == "cancelled":
+                        self._connection = "error"
+                        self._operation_state = "failed"
+                        self._error_code = "cancel_failed"
         return self.public_status()
 
     async def logout(self) -> dict[str, Any]:
@@ -93,11 +103,13 @@ class CodeBuddyAuthService:
             self._task = None
         if task and not task.done():
             task.cancel()
+        flow_cancel_error: Exception | None = None
         if flow is not None:
             try:
                 await flow.cancel()
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 - converted to stable public state
+                flow_cancel_error = exc
+                logger.warning("CodeBuddy logout flow cancel failed: %s", exc)
 
         # DeepTutor does not own this credential: it is the session the IDE
         # plugin and the `codebuddy` CLI share on this host. Ending it from a
@@ -116,10 +128,10 @@ class CodeBuddyAuthService:
                 self._error_code = "logout_external"
                 return self.public_status()
             self._connection = "disconnected"
-            self._operation_state = None
+            self._operation_state = "failed" if flow_cancel_error is not None else None
             self._authorize_url = None
             self._user_label = None
-            self._error_code = None
+            self._error_code = "logout_failed" if flow_cancel_error is not None else None
             return self.public_status()
 
     async def _probe_locked(self) -> None:

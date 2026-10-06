@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from types import SimpleNamespace
 
 import pytest
@@ -151,6 +152,71 @@ async def test_logout_explains_that_an_ide_session_ends_in_the_ide(tmp_path, mon
     assert status["error_code"] == "logout_external"
 
 
+@pytest.mark.asyncio
+async def test_cancel_login_reports_flow_cancel_failure(monkeypatch, caplog) -> None:
+    """A failed SDK flow cancel must not look like a clean cancellation."""
+    flow = FakeFlow("https://codebuddy.example/login")
+    monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
+    service = CodeBuddyAuthService()
+    await service.start_login()
+
+    async def broken_cancel():
+        raise RuntimeError("flow cancel failed")
+
+    flow.cancel = broken_cancel
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.cancel_login()
+    await asyncio.sleep(0)
+
+    assert status["connection"] == "error"
+    assert status["operation_state"] == "failed"
+    assert status["error_code"] == "cancel_failed"
+    assert any("login cancel failed" in record.message for record in caplog.records)
+
+
+@pytest.mark.asyncio
+async def test_logout_reports_flow_cancel_failure(tmp_path, monkeypatch, caplog) -> None:
+    """A failed SDK flow cancel during logout must stay visible in the status."""
+    monkeypatch.setenv("DEEPTUTOR_CODEBUDDY_AUTH_FILE", str(tmp_path / "missing-session.info"))
+    flow = FakeFlow("https://codebuddy.example/login")
+    monkeypatch.setattr(codebuddy_auth, "_start_sdk_authenticate", lambda: _value(flow))
+    service = CodeBuddyAuthService()
+    await service.start_login()
+
+    async def broken_cancel():
+        raise RuntimeError("flow cancel failed")
+
+    flow.cancel = broken_cancel
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.logout()
+    await asyncio.sleep(0)
+
+    assert status["connection"] == "disconnected"
+    assert status["operation_state"] == "failed"
+    assert status["error_code"] == "logout_failed"
+    assert any("logout" in record.message for record in caplog.records)
+
+
+@pytest.mark.asyncio
+async def test_logout_keeps_external_reason_when_flow_cancel_fails(
+    tmp_path, monkeypatch, caplog
+) -> None:
+    """The IDE-owned session reason outranks the flow-cancel failure."""
+    _write_ide_session(tmp_path, monkeypatch)
+    service = CodeBuddyAuthService()
+    service._flow = SimpleNamespace(
+        cancel=_raise_runtime_error, auth_url="https://codebuddy.example/login"
+    )
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.codebuddy_auth"):
+        status = await service.logout()
+
+    assert status["connection"] == "connected"
+    assert status["operation_state"] == "failed"
+    assert status["error_code"] == "logout_external"
+    assert any("logout" in record.message for record in caplog.records)
+
+
 def _write_ide_session(tmp_path, monkeypatch) -> None:
     import json
 
@@ -173,3 +239,7 @@ async def _account_label(credentials):
 
 async def _value(value):
     return value
+
+
+async def _raise_runtime_error():
+    raise RuntimeError("flow cancel failed")
