@@ -53,8 +53,18 @@ def main(argv: list[str] | None = None) -> int:
         request = pickle.loads(request_path.read_bytes())  # noqa: S301 - parent-owned file
         envelope = _execute(request)
         staged = result_path.with_suffix(".tmp")
-        staged.write_bytes(pickle.dumps(envelope, protocol=pickle.HIGHEST_PROTOCOL))
-        os.replace(staged, result_path)
+        payload = pickle.dumps(envelope, protocol=pickle.HIGHEST_PROTOCOL)
+        try:
+            with staged.open("wb") as handle:
+                handle.write(payload)
+                handle.flush()
+                try:
+                    os.fsync(handle.fileno())
+                except OSError:
+                    pass
+            os.replace(staged, result_path)
+        finally:
+            staged.unlink(missing_ok=True)
         return 0
     except BaseException:
         traceback.print_exc()
