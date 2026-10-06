@@ -32,6 +32,22 @@ def _make_channel(**overrides) -> ZulipChannel:
     return ZulipChannel(config, bus)
 
 
+_POLL_ATTEMPTS = 200
+_POLL_INTERVAL_S = 0.005
+
+
+async def _poll_publish_inbound(ch: ZulipChannel) -> None:
+    for _ in range(_POLL_ATTEMPTS):
+        if ch.bus.publish_inbound.await_count:
+            return
+        await asyncio.sleep(_POLL_INTERVAL_S)
+
+
+async def _settle_publish_window() -> None:
+    for _ in range(_POLL_ATTEMPTS):
+        await asyncio.sleep(_POLL_INTERVAL_S)
+
+
 class TestZulipConfig:
     def test_default_values(self):
         cfg = ZulipConfig()
@@ -532,7 +548,7 @@ class TestOnMessage:
         msg = self._make_msg()
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
         ch.bus.publish_inbound.assert_awaited_once()
         call_args = ch.bus.publish_inbound.call_args[0][0]
         assert call_args.channel == "zulip"
@@ -551,7 +567,7 @@ class TestOnMessage:
         msg = self._make_msg(sender_email="bot@example.com", sender_id=100)
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _settle_publish_window()
         ch.bus.publish_inbound.assert_not_awaited()
 
     @pytest.mark.asyncio
@@ -564,11 +580,12 @@ class TestOnMessage:
 
         msg = self._make_msg(id=200)
         ch._on_message(msg)
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
+        ch.bus.publish_inbound.assert_awaited_once()
 
         ch.bus.publish_inbound.reset_mock()
         ch._on_message(msg)
-        await asyncio.sleep(0.1)
+        await _settle_publish_window()
         ch.bus.publish_inbound.assert_not_awaited()
 
     @pytest.mark.asyncio
@@ -587,7 +604,7 @@ class TestOnMessage:
         )
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _settle_publish_window()
         ch.bus.publish_inbound.assert_not_awaited()
 
     @pytest.mark.asyncio
@@ -606,7 +623,7 @@ class TestOnMessage:
         )
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
         ch.bus.publish_inbound.assert_awaited_once()
 
     @pytest.mark.asyncio
@@ -625,7 +642,7 @@ class TestOnMessage:
         )
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
         ch.bus.publish_inbound.assert_awaited_once()
 
     @pytest.mark.asyncio
@@ -645,7 +662,7 @@ class TestOnMessage:
         )
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
         call_args = ch.bus.publish_inbound.call_args[0][0]
         assert call_args.chat_id == "stream:general:test topic"
         assert call_args.session_key_override == "zulip:stream:general:test topic"
@@ -668,7 +685,7 @@ class TestOnMessage:
         )
         ch._on_message(msg)
 
-        await asyncio.sleep(0.1)
+        await _poll_publish_inbound(ch)
         call_args = ch.bus.publish_inbound.call_args[0][0]
         assert call_args.chat_id == "stream:general:(no topic)"
         assert call_args.session_key_override == "zulip:stream:general:(no topic)"
