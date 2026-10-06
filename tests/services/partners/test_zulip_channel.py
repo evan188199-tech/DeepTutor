@@ -1241,3 +1241,70 @@ class TestStart:
             await ch.start()
 
         assert ch._running is False
+
+
+class TestTypingLoopErrorVisibility:
+    @pytest.mark.asyncio
+    async def test_start_and_stop_failures_logged_loop_continues(self):
+        import deeptutor.partners.channels.zulip as zulip_module
+
+        ch = _make_channel()
+        ch._bot_user_id = 100
+        ch._running = True
+        mock_client = MagicMock()
+        ops: list[str] = []
+
+        def failing_set_typing(payload):
+            ops.append(payload["op"])
+            raise RuntimeError("typing unavailable")
+
+        mock_client.set_typing_status.side_effect = failing_set_typing
+        ch._client = mock_client
+
+        sleeps: list[float] = []
+
+        async def fast_sleep(delay: float) -> None:
+            sleeps.append(delay)
+            if len(sleeps) >= 2:
+                ch._running = False
+
+        fake_asyncio = SimpleNamespace(sleep=fast_sleep, CancelledError=asyncio.CancelledError)
+        with (
+            patch.object(zulip_module, "asyncio", fake_asyncio),
+            patch("deeptutor.partners.channels.zulip.logger.debug") as mock_debug,
+        ):
+            await ch._typing_loop("pm:42")
+
+        # start failed twice yet the loop kept iterating; the final stop failed too
+        assert ops == ["start", "start", "stop"]
+        assert mock_debug.call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_stop_failure_after_clean_loop_logged(self):
+        import deeptutor.partners.channels.zulip as zulip_module
+
+        ch = _make_channel()
+        ch._bot_user_id = 100
+        ch._running = True
+        mock_client = MagicMock()
+
+        def flaky_set_typing(payload):
+            if payload["op"] == "stop":
+                raise RuntimeError("stop rejected")
+
+        mock_client.set_typing_status.side_effect = flaky_set_typing
+        ch._client = mock_client
+
+        async def fast_sleep(delay: float) -> None:
+            ch._running = False
+
+        fake_asyncio = SimpleNamespace(sleep=fast_sleep, CancelledError=asyncio.CancelledError)
+        with (
+            patch.object(zulip_module, "asyncio", fake_asyncio),
+            patch("deeptutor.partners.channels.zulip.logger.debug") as mock_debug,
+        ):
+            await ch._typing_loop("pm:42")
+
+        assert mock_client.set_typing_status.call_count == 2
+        mock_debug.assert_called_once()
+        assert "typing stop error" in str(mock_debug.call_args)

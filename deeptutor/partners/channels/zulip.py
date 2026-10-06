@@ -855,5 +855,5 @@ class ZulipChannel(BaseChannel):
                             "to": [int(recipient_user_id)],
                         }
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug("Zulip typing stop error: {}", e)
