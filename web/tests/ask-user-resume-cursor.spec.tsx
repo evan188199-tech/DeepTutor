@@ -134,7 +134,7 @@ it("keeps a reply queued through a long reconnect without ending the turn (#1648
   expect(reply).toMatchObject({ turn_id: "turn-quiz", text: "Overwrite" });
   acknowledge(resumed, reply.command_id);
   await act(async () => { await vi.advanceTimersByTimeAsync(35_000); });
-  expect(screen.queryByText(/Check your connection and retry/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/check your connection and retry/i)).not.toBeInTheDocument();
 });
 
 it("allows an unconfirmed reply to retry with the same command id (#1648)", async () => {
@@ -142,7 +142,7 @@ it("allows an unconfirmed reply to retry with the same command id (#1648)", asyn
   fireEvent.click(screen.getByRole("button", { name: "Submit" }));
   const reply = socket.sent.find((m) => m.type === "submit_user_reply")!;
   await act(async () => { await vi.advanceTimersByTimeAsync(30_001); });
-  expect(screen.getByText("Couldn't confirm your answer. Check your connection and retry.")).toBeVisible();
+  expect(screen.getByText("Couldn't reach the server. Please check your connection and retry.")).toBeVisible();
   expect(screen.queryByText(/This question is no longer active/)).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: /Overwrite/ })).toHaveAttribute("aria-pressed", "true");
   fireEvent.click(screen.getByRole("button", { name: "Submit" }));

@@ -24,6 +24,7 @@
     "i18n:audit": "node ./scripts/i18n_audit.mjs",
     "i18n:audit:strict": "node ./scripts/i18n_audit.mjs --strict",
     "i18n:check": "npm run i18n:parity && npm run i18n:audit",
+    "check:error-copy": "node ./scripts/check-unified-error-copy.mjs",
     "architecture:check": "depcruise --config .dependency-cruiser.cjs app components context contracts features hooks lib shared",
     "audit": "playwright test --project=ui-audit",
     "audit:ui": "playwright test --ui --project=ui-audit",

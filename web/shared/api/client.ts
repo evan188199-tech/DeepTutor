@@ -1,5 +1,6 @@
 import { ApiError, type AppError, type AppErrorScope } from "./errors";
 import { browserReturnPath, loginHref } from "../auth/return-url";
+import { networkFailureMessage } from "../messages";
 import { scopedUrl } from "@/lib/workspace-scope";
 
 export interface RequestOptions extends RequestInit {
@@ -138,7 +139,7 @@ async function performRequest(
         code: aborted ? "request_aborted" : "network_error",
         message: aborted
           ? "Request was cancelled"
-          : "Unable to reach the server",
+          : networkFailureMessage(),
         retryable: !aborted,
         scope,
       },
@@ -193,7 +194,7 @@ export async function requestBlob(
         code: aborted ? "request_aborted" : "network_error",
         message: aborted
           ? "Request was cancelled"
-          : "Unable to reach the server",
+          : networkFailureMessage(),
         retryable: !aborted,
         scope,
       },

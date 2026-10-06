@@ -5744,7 +5744,6 @@
   "Select a vision model for image descriptions in documents.": "Sélectionnez un modèle de vision pour décrire les images des documents.",
   "Failed to load image description models.": "Impossible de charger les modèles de description des images.",
   "Could not play this reply. Check Text-to-Speech in Settings.": "Impossible de lire cette réponse. Vérifiez la synthèse vocale dans les paramètres.",
-  "Couldn't confirm your answer. Check your connection and retry.": "Impossible de confirmer votre réponse. Vérifiez votre connexion et réessayez.",
   "Speech synthesis timed out. Increase Request timeout (seconds) in the speech model settings or try shorter text.": "La synthèse vocale a dépassé le délai. Augmentez le délai d’expiration des requêtes (secondes) dans les paramètres du modèle vocal ou raccourcissez le texte.",
   "The search endpoint returned an invalid response. Check that the address serves the SearXNG JSON search API.": "Le point de terminaison de recherche a renvoyé une réponse invalide. Vérifiez que cette adresse fournit l’API de recherche JSON de SearXNG.",
   "SearXNG rejected the JSON search request. Enable json in search.formats in its settings.yml and check access rules.": "SearXNG a refusé la requête de recherche JSON. Activez json dans search.formats de son fichier settings.yml et vérifiez les règles d’accès.",

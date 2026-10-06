@@ -30,7 +30,7 @@ interface KbDrift {
 const FAILURE_CAUSES: Record<string, string> = {
   quota: "Your model credit or quota ran out.",
   authentication: "The model credentials were rejected.",
-  rate_limit: "The model provider was rate-limiting the requests.",
+  rate_limit: "The provider is rate limiting requests. Try again later.",
   missing_dependency:
     "Some block types need an optional package that is not installed. Leave those types out of the book, or install the extra.",
   provider: "The model provider was unreachable or timed out.",

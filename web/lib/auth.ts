@@ -1,4 +1,5 @@
 import { apiFetch, apiUrl, setRuntimeAuthEnabled } from "@/lib/api";
+import { networkFailureMessage } from "@/shared/messages";
 
 // Auth state is resolved at runtime from the backend (`/api/auth/status`),
 // not from a build-time/env constant: the browser bundle never sees
@@ -105,7 +106,7 @@ export async function login(
     const data = await res.json().catch(() => ({}));
     return { ok: false, error: extractDetail(data.detail) ?? "Login failed" };
   } catch {
-    return { ok: false, error: "Could not reach the server" };
+    return { ok: false, error: networkFailureMessage() };
   }
 }
 
@@ -153,7 +154,7 @@ export async function register(
     }
     return { ok: false, error: extractDetail(data.detail) };
   } catch {
-    return { ok: false, error: "Could not reach the server" };
+    return { ok: false, error: networkFailureMessage() };
   }
 }
 
