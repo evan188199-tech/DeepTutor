@@ -1,0 +1,1257 @@
+{
+  "meta": {
+    "live_paths": 531,
+    "contract_paths": 531,
+    "live_operations": 643,
+    "contract_operations": 643
+  },
+  "path_level": [],
+  "method_level": [],
+  "response_drift": [
+    {
+      "op": "GET /api/reading/materials/{material_id}/position",
+      "kind": "response_fields_changed",
+      "schema": "PositionInfo",
+      "added_fields": [],
+      "removed_fields": [],
+      "changed_fields": {
+        "percentage": {
+          "contract": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          },
+          "live": {
+            "default": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          }
+        }
+      },
+      "api_ts_line": 6619,
+      "live_anchor": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/reading.py:1399"
+    },
+    {
+      "op": "PUT /api/reading/materials/{material_id}/position",
+      "kind": "response_fields_changed",
+      "schema": "PositionInfo",
+      "added_fields": [],
+      "removed_fields": [],
+      "changed_fields": {
+        "percentage": {
+          "contract": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          },
+          "live": {
+            "default": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          }
+        }
+      },
+      "api_ts_line": 6624,
+      "live_anchor": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/reading.py:1410"
+    }
+  ],
+  "request_drift": [
+    {
+      "op": "PUT /api/reading/materials/{material_id}/position",
+      "kind": "request_fields_changed",
+      "schema": "PositionPayload",
+      "added_fields": [],
+      "removed_fields": [],
+      "changed_fields": {
+        "percentage": {
+          "contract": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          },
+          "live": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage"
+          }
+        }
+      },
+      "api_ts_line": 6624
+    }
+  ],
+  "error_response_drift": [],
+  "description_drift": [
+    {
+      "op": "GET /api/knowledge-bases",
+      "kind": "description_only",
+      "contract_description": "List all available knowledge bases with their details.",
+      "live_description": "Disk probes must not block the async worker or its other requests (#1711).",
+      "api_ts_line": 1718,
+      "live_anchor": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/knowledge.py:2776"
+    },
+    {
+      "op": "GET /api/knowledge-bases/health",
+      "kind": "description_only",
+      "contract_description": "Health check endpoint",
+      "live_description": "Count registered KBs without constructing/probing the catalog (#1711).",
+      "api_ts_line": 2691,
+      "live_anchor": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/knowledge.py:1377"
+    }
+  ],
+  "schema_level": [
+    {
+      "schema": "PositionInfo",
+      "kind": "content_changed",
+      "added_fields": [],
+      "removed_fields": [],
+      "changed_fields": {
+        "percentage": {
+          "contract": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          },
+          "live": {
+            "default": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          }
+        }
+      },
+      "required_live": [
+        "locator"
+      ],
+      "required_contract": [
+        "locator"
+      ]
+    },
+    {
+      "schema": "PositionPayload",
+      "kind": "content_changed",
+      "added_fields": [],
+      "removed_fields": [],
+      "changed_fields": {
+        "percentage": {
+          "contract": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Percentage",
+            "type": "number"
+          },
+          "live": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage"
+          }
+        }
+      },
+      "required_live": [
+        "locator"
+      ],
+      "required_contract": [
+        "locator"
+      ]
+    }
+  ],
+  "structured_errors": {
+    "emit_sites": 14,
+    "distinct_operations": 44,
+    "operations_with_shape_documented_in_contract": 0,
+    "rows": [
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/book.py",
+        "line": 61,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_book_paused_http (def at line 58)",
+        "operations": [
+          "POST /api/books/compile-page",
+          "POST /api/books/regenerate-block",
+          "POST /api/books/insert-block",
+          "POST /api/books/change-block-type",
+          "POST /api/books/deep-dive",
+          "POST /api/books/supplement"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/books/compile-page",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/regenerate-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/insert-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/change-block-type",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/deep-dive",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/supplement",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/book.py",
+        "line": 335,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_claim_content_mutation (def at line 301)",
+        "operations": [
+          "POST /api/books/confirm-proposal",
+          "POST /api/books/confirm-spine",
+          "POST /api/books/compile-page",
+          "POST /api/books/regenerate-block",
+          "POST /api/books/insert-block",
+          "POST /api/books/delete-block",
+          "POST /api/books/move-block",
+          "POST /api/books/change-block-type",
+          "POST /api/books/deep-dive",
+          "POST /api/books/update-block",
+          "POST /api/books/{book_id}/refresh-fingerprints",
+          "POST /api/books/supplement",
+          "POST /api/books/resume",
+          "POST /api/books/pause",
+          "POST /api/books/rebuild"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/books/confirm-proposal",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/confirm-spine",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/compile-page",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/regenerate-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/insert-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/delete-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/move-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/change-block-type",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/deep-dive",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/update-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/{book_id}/refresh-fingerprints",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/supplement",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/resume",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/pause",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/rebuild",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/book.py",
+        "line": 344,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_claim_content_mutation (def at line 301)",
+        "operations": [
+          "POST /api/books/confirm-proposal",
+          "POST /api/books/confirm-spine",
+          "POST /api/books/compile-page",
+          "POST /api/books/regenerate-block",
+          "POST /api/books/insert-block",
+          "POST /api/books/delete-block",
+          "POST /api/books/move-block",
+          "POST /api/books/change-block-type",
+          "POST /api/books/deep-dive",
+          "POST /api/books/update-block",
+          "POST /api/books/{book_id}/refresh-fingerprints",
+          "POST /api/books/supplement",
+          "POST /api/books/resume",
+          "POST /api/books/pause",
+          "POST /api/books/rebuild"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/books/confirm-proposal",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/confirm-spine",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/compile-page",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/regenerate-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/insert-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/delete-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/move-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/change-block-type",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/deep-dive",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/update-block",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/{book_id}/refresh-fingerprints",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/supplement",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/resume",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/pause",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/books/rebuild",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/book.py",
+        "line": 1794,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "operations": null,
+        "note": "emit site not attributable to a route decorator in the same file"
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/notebook.py",
+        "line": 36,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_unreadable (def at line 21)",
+        "operations": [
+          "GET /api/notebooks",
+          "GET /api/notebooks/statistics",
+          "POST /api/notebooks",
+          "GET /api/notebooks/{notebook_id}",
+          "PUT /api/notebooks/{notebook_id}",
+          "DELETE /api/notebooks/{notebook_id}",
+          "POST /api/notebooks/actions/add-record",
+          "DELETE /api/notebooks/{notebook_id}/records/{record_id}",
+          "PUT /api/notebooks/{notebook_id}/records/{record_id}",
+          "POST /api/notebooks/{notebook_id}/records/{record_id}/actions/copy",
+          "POST /api/notebooks/{notebook_id}/records/{record_id}/actions/move",
+          "GET /api/notebooks/{notebook_id}/export"
+        ],
+        "per_operation": [
+          {
+            "operation": "GET /api/notebooks",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "GET /api/notebooks/statistics",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/notebooks",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "GET /api/notebooks/{notebook_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "PUT /api/notebooks/{notebook_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "DELETE /api/notebooks/{notebook_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/notebooks/actions/add-record",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "DELETE /api/notebooks/{notebook_id}/records/{record_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "PUT /api/notebooks/{notebook_id}/records/{record_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/notebooks/{notebook_id}/records/{record_id}/actions/copy",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/notebooks/{notebook_id}/records/{record_id}/actions/move",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "GET /api/notebooks/{notebook_id}/export",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/settings.py",
+        "line": 586,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_codex_http_exception (def at line 582)",
+        "operations": [
+          "POST /api/settings/providers/openai-codex/oauth/start",
+          "GET /api/settings/providers/openai-codex/oauth/status",
+          "POST /api/settings/providers/openai-codex/oauth/complete",
+          "POST /api/settings/providers/openai-codex/oauth/cancel",
+          "POST /api/settings/providers/openai-codex/oauth/logout",
+          "POST /api/settings/providers/openai-codex/models/refresh",
+          "POST /api/settings/providers/openai-codex/models/reasoning-effort"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/settings/providers/openai-codex/oauth/start",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "GET /api/settings/providers/openai-codex/oauth/status",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/settings/providers/openai-codex/oauth/complete",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/settings/providers/openai-codex/oauth/cancel",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/settings/providers/openai-codex/oauth/logout",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/settings/providers/openai-codex/models/refresh",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/settings/providers/openai-codex/models/reasoning-effort",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_cli_apps.py",
+        "line": 103,
+        "method": "PUT",
+        "route_literal": "/apps/{app_id}/enabled",
+        "decorator_line": 87,
+        "operations": [
+          "PUT /api/space/cli-apps/apps/{app_id}/enabled"
+        ],
+        "per_operation": [
+          {
+            "operation": "PUT /api/space/cli-apps/apps/{app_id}/enabled",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_cli_apps.py",
+        "line": 149,
+        "method": "POST",
+        "route_literal": "/catalog/{app_id}/install",
+        "decorator_line": 135,
+        "operations": [
+          "POST /api/space/cli-apps/catalog/{app_id}/install"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/space/cli-apps/catalog/{app_id}/install",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_mcp.py",
+        "line": 89,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_refuse (def at line 88)",
+        "operations": [
+          "PUT /api/space/mcp/servers/{name}",
+          "POST /api/space/mcp/catalog/{entry_id}/install"
+        ],
+        "per_operation": [
+          {
+            "operation": "PUT /api/space/mcp/servers/{name}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/space/mcp/catalog/{entry_id}/install",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_mcp.py",
+        "line": 185,
+        "method": "POST",
+        "route_literal": "/servers/{name}/authorize",
+        "decorator_line": 169,
+        "operations": [
+          "POST /api/space/mcp/servers/{name}/authorize"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/space/mcp/servers/{name}/authorize",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_mcp.py",
+        "line": 201,
+        "method": "POST",
+        "route_literal": "/servers/{name}/authorize",
+        "decorator_line": 169,
+        "operations": [
+          "POST /api/space/mcp/servers/{name}/authorize"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/space/mcp/servers/{name}/authorize",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_mcp.py",
+        "line": 330,
+        "method": "POST",
+        "route_literal": "/catalog/{entry_id}/install",
+        "decorator_line": 319,
+        "operations": [
+          "POST /api/space/mcp/catalog/{entry_id}/install"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/space/mcp/catalog/{entry_id}/install",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/space_mcp.py",
+        "line": 337,
+        "method": "POST",
+        "route_literal": "/catalog/{entry_id}/install",
+        "decorator_line": 319,
+        "operations": [
+          "POST /api/space/mcp/catalog/{entry_id}/install"
+        ],
+        "per_operation": [
+          {
+            "operation": "POST /api/space/mcp/catalog/{entry_id}/install",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      },
+      {
+        "file": "/Users/Shared/DeepTutor-worktrees/dt-agen837-openapi-wt/deeptutor/api/routers/video_learning.py",
+        "line": 120,
+        "method": null,
+        "route_literal": null,
+        "decorator_line": null,
+        "helper": "_note_error (def at line 115)",
+        "operations": [
+          "GET /api/video-learning/materials/{material_id}/notes",
+          "GET /api/video-learning/materials/{material_id}/notes.md",
+          "POST /api/video-learning/materials/{material_id}/notes",
+          "PUT /api/video-learning/materials/{material_id}/notes/{note_id}",
+          "DELETE /api/video-learning/materials/{material_id}/notes/{note_id}"
+        ],
+        "per_operation": [
+          {
+            "operation": "GET /api/video-learning/materials/{material_id}/notes",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "GET /api/video-learning/materials/{material_id}/notes.md",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "POST /api/video-learning/materials/{material_id}/notes",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "PUT /api/video-learning/materials/{material_id}/notes/{note_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          },
+          {
+            "operation": "DELETE /api/video-learning/materials/{material_id}/notes/{note_id}",
+            "live_documented_error_codes": [
+              "422"
+            ],
+            "contract_documented_error_codes": [
+              "422"
+            ],
+            "contract_block_has_code_message": false,
+            "contract_error_shape_documented": false
+          }
+        ]
+      }
+    ]
+  },
+  "coverage": {
+    "http_operations": 643,
+    "resolved_to_router_decorator": 643,
+    "unresolved": [],
+    "router_files_in_scope": [
+      "agent_config.py",
+      "attachments.py",
+      "auth.py",
+      "book.py",
+      "capabilities.py",
+      "capabilities_settings.py",
+      "co_writer.py",
+      "courses.py",
+      "dashboard.py",
+      "file_library.py",
+      "file_preview.py",
+      "imports.py",
+      "knowledge.py",
+      "marginnote4.py",
+      "mastery_path.py",
+      "mcp_settings.py",
+      "memory.py",
+      "multi_user.py",
+      "notebook.py",
+      "outputs.py",
+      "partner_groups.py",
+      "partners.py",
+      "personas.py",
+      "practice.py",
+      "question.py",
+      "question_notebook.py",
+      "quiz_judge.py",
+      "reading.py",
+      "reading_extensions.py",
+      "sessions.py",
+      "settings.py",
+      "skills.py",
+      "space_cli_apps.py",
+      "space_mcp.py",
+      "subagents.py",
+      "system.py",
+      "task_board.py",
+      "tools.py",
+      "unified_ws.py",
+      "video_learning.py",
+      "visualizers.py",
+      "voice.py",
+      "workspace.py",
+      "main.py (app-level routes)"
+    ],
+    "operations_per_router_file": {
+      "agent_config.py": 2,
+      "attachments.py": 1,
+      "auth.py": 30,
+      "book.py": 33,
+      "capabilities.py": 1,
+      "capabilities_settings.py": 2,
+      "co_writer.py": 14,
+      "courses.py": 10,
+      "dashboard.py": 7,
+      "file_library.py": 8,
+      "file_preview.py": 2,
+      "imports.py": 2,
+      "knowledge.py": 80,
+      "main.py": 3,
+      "marginnote4.py": 6,
+      "mastery_path.py": 28,
+      "mcp_settings.py": 5,
+      "memory.py": 27,
+      "multi_user.py": 18,
+      "notebook.py": 14,
+      "outputs.py": 2,
+      "partner_groups.py": 21,
+      "partners.py": 48,
+      "personas.py": 5,
+      "practice.py": 9,
+      "question_notebook.py": 15,
+      "reading.py": 51,
+      "reading_extensions.py": 5,
+      "sessions.py": 15,
+      "settings.py": 72,
+      "skills.py": 12,
+      "space_cli_apps.py": 5,
+      "space_mcp.py": 8,
+      "subagents.py": 9,
+      "system.py": 11,
+      "task_board.py": 3,
+      "tools.py": 1,
+      "video_learning.py": 26,
+      "visualizers.py": 7,
+      "voice.py": 2,
+      "workspace.py": 23
+    }
+  }
+}
