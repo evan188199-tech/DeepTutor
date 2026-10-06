@@ -370,8 +370,36 @@ export function invalidateKnowledgeCaches() {
   invalidateClientCache(KNOWLEDGE_CACHE_PREFIX);
 }
 
-const PAGEINDEX_CONFIG_PATH =
-  "/api/knowledge-bases/rag-pipelines/pageindex/config";
+export const RAG_PIPELINE_PROVIDERS = [
+  "graphrag",
+  "ima",
+  "lightrag-server",
+  "lightrag",
+  "llamaindex",
+  "pageindex",
+] as const;
+
+export type RagPipelineProvider = (typeof RAG_PIPELINE_PROVIDERS)[number];
+
+const RAG_PIPELINE_CONFIG_PATHS: Record<RagPipelineProvider, string> = {
+  graphrag: "/api/knowledge-bases/rag-pipelines/graphrag/config",
+  ima: "/api/knowledge-bases/rag-pipelines/ima/config",
+  "lightrag-server":
+    "/api/knowledge-bases/rag-pipelines/lightrag-server/config",
+  lightrag: "/api/knowledge-bases/rag-pipelines/lightrag/config",
+  llamaindex: "/api/knowledge-bases/rag-pipelines/llamaindex/config",
+  pageindex: "/api/knowledge-bases/rag-pipelines/pageindex/config",
+};
+
+export function ragPipelineConfigPath(provider: string): string {
+  const configPath = RAG_PIPELINE_CONFIG_PATHS[provider as RagPipelineProvider];
+  if (configPath === undefined) {
+    throw new Error(`Unknown RAG pipeline provider: ${provider}`);
+  }
+  return configPath;
+}
+
+const PAGEINDEX_CONFIG_PATH = RAG_PIPELINE_CONFIG_PATHS.pageindex;
 
 export async function getPageIndexConfig(options?: {
   force?: boolean;
@@ -412,7 +440,7 @@ export async function updatePageIndexConfig(payload: {
   return (await res.json()) as PageIndexConfig;
 }
 
-const IMA_CONFIG_PATH = "/api/knowledge-bases/rag-pipelines/ima/config";
+const IMA_CONFIG_PATH = RAG_PIPELINE_CONFIG_PATHS.ima;
 
 export async function getImaConfig(options?: {
   force?: boolean;
@@ -454,8 +482,7 @@ export async function updateImaConfig(payload: {
   return (await res.json()) as ImaAccountConfig;
 }
 
-const LLAMAINDEX_CONFIG_PATH =
-  "/api/knowledge-bases/rag-pipelines/llamaindex/config";
+const LLAMAINDEX_CONFIG_PATH = RAG_PIPELINE_CONFIG_PATHS.llamaindex;
 
 export async function getLlamaIndexConfig(options?: {
   force?: boolean;
@@ -495,7 +522,7 @@ export async function updateLlamaIndexConfig(
 }
 
 async function getEngineConfig<T>(
-  provider: string,
+  provider: RagPipelineProvider,
   cacheKey: string,
   options?: { force?: boolean },
 ): Promise<T> {
@@ -503,7 +530,7 @@ async function getEngineConfig<T>(
     `${KNOWLEDGE_CACHE_PREFIX}${cacheKey}`,
     async () => {
       const response = await apiFetch(
-        apiUrl(`/api/knowledge-bases/rag-pipelines/${provider}/config`),
+        apiUrl(ragPipelineConfigPath(provider)),
         { cache: "no-store" },
       );
       if (!response.ok) {
@@ -518,17 +545,14 @@ async function getEngineConfig<T>(
 }
 
 async function updateEngineConfig<T>(
-  provider: string,
+  provider: RagPipelineProvider,
   payload: Record<string, unknown>,
 ): Promise<T> {
-  const res = await apiFetch(
-    apiUrl(`/api/knowledge-bases/rag-pipelines/${provider}/config`),
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    },
-  );
+  const res = await apiFetch(apiUrl(ragPipelineConfigPath(provider)), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
   if (!res.ok) {
     throw new Error(
       await readErrorDetail(res, `Failed to update ${provider} config`),
