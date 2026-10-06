@@ -188,22 +188,32 @@ class FileLibraryStore:
                 except OSError:
                     pass
 
-    def _delete_file(self, library_path: str) -> None:
+    def _delete_file(self, library_path: str) -> bool:
+        """Remove *library_path* from disk (best-effort, never raises).
+
+        Returns True when the file is gone from disk (or never existed);
+        False when the unlink failed — the file is still on disk, so the
+        caller must not treat the delete as complete.
+        """
         target = self._file_path(library_path)
-        if target.exists():
-            try:
-                target.unlink()
-            except OSError as exc:
-                logger.warning("failed to delete library file %s: %s", target, exc)
-            # Try to remove now-empty parent dirs up to (but not including) root
-            try:
-                for parent in target.parents:
-                    if parent == self._root or not parent.is_relative_to(self._root):
-                        break
-                    if parent.is_dir() and not any(parent.iterdir()):
-                        parent.rmdir()
-            except Exception:
-                pass
+        if not target.exists():
+            return True
+        removed = True
+        try:
+            target.unlink()
+        except OSError as exc:
+            logger.warning("failed to delete library file %s: %s", target, exc)
+            removed = False
+        # Try to remove now-empty parent dirs up to (but not including) root
+        try:
+            for parent in target.parents:
+                if parent == self._root or not parent.is_relative_to(self._root):
+                    break
+                if parent.is_dir() and not any(parent.iterdir()):
+                    parent.rmdir()
+        except OSError as exc:
+            logger.warning("failed to prune empty parent directories of %s: %s", target, exc)
+        return removed
 
     # ------------------------------------------------------------------
     # Public API — add / get / delete
@@ -323,7 +333,12 @@ class FileLibraryStore:
             return True
 
     async def hard_delete_file(self, file_id: str) -> bool:
-        """Permanently delete — only succeeds for already-soft-deleted entries."""
+        """Permanently delete — only succeeds for already-soft-deleted entries.
+
+        Returns False (and keeps the soft-deleted row) when the on-disk file
+        cannot be removed, so the library never drops a row whose file is
+        still on disk; the failure is logged and the caller may retry.
+        """
         return await asyncio.to_thread(self._hard_delete_file_sync, file_id)
 
     def _hard_delete_file_sync(self, file_id: str) -> bool:
@@ -336,14 +351,24 @@ class FileLibraryStore:
             if row is None:
                 return False
 
-            library_path = row["library_path"]
+        library_path = row["library_path"]
 
-            # Delete from DB
+        # Remove the file from disk first (outside the with-block so we
+        # don't hold the conn).  If that fails, keep the DB row: dropping
+        # it now would orphan the file and hide the inconsistency from
+        # the caller.
+        if not self._delete_file(library_path):
+            logger.warning(
+                "hard_delete_file: keeping library entry %s (path %s) "
+                "because its file could not be removed from disk",
+                file_id,
+                library_path,
+            )
+            return False
+
+        with self._connect() as conn:
             conn.execute("DELETE FROM library_files WHERE id = ?", (file_id,))
             conn.commit()
-
-        # Delete file from disk (outside the with-block so we don't hold the conn)
-        self._delete_file(library_path)
         return True
 
     async def restore_file(self, file_id: str) -> bool:

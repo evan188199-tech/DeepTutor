@@ -266,6 +266,119 @@ def test_hard_delete_file_without_soft_delete_fails(store: FileLibraryStore) -> 
     assert result is False
 
 
+@pytest.fixture
+def rooted_store(tmp_db_path: Path, tmp_path: Path) -> FileLibraryStore:
+    """A store with an explicit library root under tmp_path.
+
+    ``_delete_file`` prunes empty parent directories up to (but not
+    including) the root, so failure-path tests need a root they control.
+    """
+    reset_file_library_store()
+    root = tmp_path / "library-files"
+    return FileLibraryStore(db_path=tmp_db_path, root=root)
+
+
+def test_delete_file_reports_unlink_failure_to_caller(
+    rooted_store: FileLibraryStore,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """DT-22: a failed unlink must be fed back to the caller (False) and
+    logged, not silently absorbed by a broad except."""
+    store = rooted_store
+    library_path = "stuck/report.txt"
+    store._write_file(library_path, b"payload")
+    target = store._root / "stuck" / "report.txt"
+
+    original_unlink = Path.unlink
+
+    def failing_unlink(self: Path, missing_ok: bool = False) -> None:
+        if self == target:
+            raise PermissionError(13, "simulated denial")
+        original_unlink(self, missing_ok=missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", failing_unlink)
+    with caplog.at_level("WARNING", logger="deeptutor.services.storage.file_library"):
+        result = store._delete_file(library_path)
+    monkeypatch.undo()
+
+    assert result is False  # failure visible to the caller
+    assert target.is_file()  # file still on disk
+    assert "failed to delete library file" in caplog.text
+    assert str(target) in caplog.text
+
+
+def test_hard_delete_surfaces_disk_failure_and_keeps_entry(
+    rooted_store: FileLibraryStore,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """DT-22: hard_delete must not drop the DB row while the file survives
+    on disk. On disk-deletion failure it returns False and keeps the
+    (soft-deleted) entry, so the library never loses track of a file that
+    still exists — list and disk stay consistent and the retry can succeed."""
+    store = rooted_store
+    entry = store._add_file_sync(b"payload", "report.pdf", "application/pdf")
+    assert asyncio.run(store.delete_file(entry["id"])) is True
+
+    disk_path = store._file_path(entry["library_path"])
+    assert disk_path.is_file()
+
+    original_unlink = Path.unlink
+
+    def failing_unlink(self: Path, missing_ok: bool = False) -> None:
+        if self == disk_path:
+            raise PermissionError(13, "simulated denial")
+        original_unlink(self, missing_ok=missing_ok)
+
+    monkeypatch.setattr(Path, "unlink", failing_unlink)
+    with caplog.at_level("WARNING", logger="deeptutor.services.storage.file_library"):
+        result = asyncio.run(store.hard_delete_file(entry["id"]))
+    monkeypatch.undo()
+
+    assert result is False  # failure visible to the caller
+    still = asyncio.run(store.get_file(entry["id"]))
+    assert still is not None  # row kept: no orphaned file
+    assert still["is_deleted"] is True
+    assert disk_path.is_file()  # row present <-> file present
+    assert "failed to delete library file" in caplog.text
+
+    # Once the disk issue clears, the retry completes.
+    assert asyncio.run(store.hard_delete_file(entry["id"])) is True
+    assert asyncio.run(store.get_file(entry["id"])) is None
+    assert not disk_path.exists()
+
+
+def test_delete_file_logs_parent_prune_failure(
+    rooted_store: FileLibraryStore,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """DT-22: an exception while pruning now-empty parent directories must
+    be logged instead of being swallowed by ``except Exception: pass``.
+    The delete itself still succeeds (best-effort cleanup)."""
+    store = rooted_store
+    library_path = "locked/report.txt"
+    store._write_file(library_path, b"payload")
+    locked_dir = store._root / "locked"
+
+    original_iterdir = Path.iterdir
+
+    def raising_iterdir(self: Path):
+        if self == locked_dir:
+            raise PermissionError(13, "simulated denial")
+        return original_iterdir(self)
+
+    monkeypatch.setattr(Path, "iterdir", raising_iterdir)
+    with caplog.at_level("WARNING", logger="deeptutor.services.storage.file_library"):
+        result = store._delete_file(library_path)
+    monkeypatch.undo()
+
+    assert result is True  # the file itself was removed
+    assert not (locked_dir / "report.txt").exists()
+    assert "failed to prune" in caplog.text  # no longer silent
+
+
 # ---------------------------------------------------------------------------
 # restore_file
 # ---------------------------------------------------------------------------
