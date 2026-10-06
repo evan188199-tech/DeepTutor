@@ -6,6 +6,7 @@ import asyncio
 from contextlib import asynccontextmanager, suppress
 import html
 import json
+import logging
 import re
 import time
 import uuid
@@ -42,6 +43,8 @@ from deeptutor.utils.json_parser import parse_json_response
 router = APIRouter()
 ws_router = APIRouter()
 
+logger = logging.getLogger(__name__)
+
 #: Signals that change what a topic screen shows without advancing the path's
 #: revision, so they are forwarded even when the durable event tail is empty.
 #: A conversation joining or leaving the topic changes its session list; a
@@ -75,18 +78,25 @@ def _parse_modules(body_modules: list[dict]) -> list[LearningModule]:
         try:
             kps = [KnowledgePoint(**kp) for kp in kps_data]
         except PydanticValidationError as exc:
+            logger.warning(
+                f"_parse_modules: invalid knowledge_point data in modules[{i}]: {exc.errors()}"
+            )
             raise HTTPException(
                 status_code=422,
-                detail=f"Invalid knowledge_point data in modules[{i}]: {exc.errors()}",
+                detail=(
+                    f"Invalid knowledge_point data in modules[{i}] — "
+                    "check the knowledge point fields."
+                ),
             ) from exc
         # Remove knowledge_points from m to avoid duplicate argument to LearningModule.
         m_clean = {k: v for k, v in m.items() if k != "knowledge_points"}
         try:
             modules.append(LearningModule(knowledge_points=kps, **m_clean))
         except PydanticValidationError as exc:
+            logger.warning(f"_parse_modules: invalid module data in modules[{i}]: {exc.errors()}")
             raise HTTPException(
                 status_code=422,
-                detail=f"Invalid module data in modules[{i}]: {exc.errors()}",
+                detail=(f"Invalid module data in modules[{i}] — check the module fields."),
             ) from exc
     return modules
 

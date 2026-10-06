@@ -854,7 +854,13 @@ async def confirm_proposal(req: ConfirmProposalRequest) -> dict[str, Any]:
         try:
             edited = BookProposal.model_validate(req.proposal)
         except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Invalid proposal: {exc}")
+            logger.warning(f"confirm_proposal: invalid edited proposal payload: {exc}")
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "The edited proposal is invalid — check chapter titles and source references."
+                ),
+            )
     try:
         book, spine = await engine.confirm_proposal(book_id=req.book_id, edited_proposal=edited)
     except ValueError as exc:
@@ -885,7 +891,13 @@ async def confirm_spine(req: ConfirmSpineRequest) -> dict[str, Any]:
         try:
             edited = Spine.model_validate(req.spine)
         except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Invalid spine: {exc}")
+            logger.warning(f"confirm_spine: invalid edited spine payload: {exc}")
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "The edited spine is invalid — check chapter titles and source references."
+                ),
+            )
     _persist_requested_block_types(resolved, req.book_id, req.block_types)
     try:
         pages = await engine.confirm_spine(
