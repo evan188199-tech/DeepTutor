@@ -2,8 +2,8 @@
 Configuration Settings for DeepTutor
 
 Environment Variables:
-    LLM_RETRY__MAX_RETRIES: Maximum retry attempts for LLM calls (default: 3)
-    LLM_RETRY__BASE_DELAY: Base delay between retries in seconds (default: 1.0)
+    LLM_RETRY__MAX_RETRIES: Maximum retry attempts for LLM calls (default: 8)
+    LLM_RETRY__BASE_DELAY: Base delay between retries in seconds (default: 5.0)
     LLM_RETRY__EXPONENTIAL_BACKOFF: Whether to use exponential backoff (default: True)
 
 Examples:
