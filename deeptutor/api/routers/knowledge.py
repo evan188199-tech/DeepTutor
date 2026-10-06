@@ -117,6 +117,27 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 ws_router = APIRouter()
 
+
+def _internal_error(action: str) -> HTTPException:
+    """Translate an unexpected failure into a neutral, coded 500 response.
+
+    The caught exception can embed host paths, provider payloads, or other
+    internal state, so its text belongs in the server log (with traceback),
+    never in the response body — ``str(e)`` details used to leak both. Called
+    from an ``except`` block; the shared ``knowledge_internal_error`` code
+    lets clients tell this apart from the deliberate 4xx answers without
+    learning why it happened.
+    """
+    logger.exception("Knowledge request failed while %s", action)
+    return HTTPException(
+        status_code=500,
+        detail={
+            "code": "knowledge_internal_error",
+            "message": "The knowledge service hit an unexpected error. Please retry.",
+        },
+    )
+
+
 _DEFAULT_EXTRACT_TEXT_FROM_PATH = extract_text_from_path
 
 # Constants for byte conversions
@@ -1423,8 +1444,7 @@ async def get_rag_providers():
             provider["linkable"] = provider.get("id") in LINKABLE_PROVIDERS
         return {"providers": providers}
     except Exception as e:
-        logger.error(f"Error getting RAG providers: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("listing RAG providers") from e
 
 
 class ProviderModeUpdate(BaseModel):
@@ -1482,8 +1502,7 @@ async def get_pageindex_pipeline_config():
     try:
         return _pageindex_config_payload()
     except Exception as e:
-        logger.error(f"Error reading PageIndex config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the PageIndex config") from e
 
 
 @router.put("/knowledge-bases/rag-pipelines/pageindex/config")
@@ -1503,8 +1522,7 @@ async def update_pageindex_pipeline_config(payload: PageIndexConfigUpdate):
 
         return _pageindex_config_payload()
     except Exception as e:
-        logger.error(f"Error updating PageIndex config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the PageIndex config") from e
 
 
 class ImaConfigUpdate(BaseModel):
@@ -1535,8 +1553,7 @@ async def get_ima_pipeline_config():
     try:
         return _ima_config_payload()
     except Exception as e:
-        logger.error(f"Error reading IMA config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the IMA config") from e
 
 
 @router.put("/knowledge-bases/rag-pipelines/ima/config")
@@ -1559,8 +1576,7 @@ async def update_ima_pipeline_config(payload: ImaConfigUpdate):
         service.save_ima({"client_id": client_id, "api_key": api_key})
         return _ima_config_payload()
     except Exception as e:
-        logger.error(f"Error updating IMA config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the IMA config") from e
 
 
 class LlamaIndexConfigUpdate(BaseModel):
@@ -1591,8 +1607,7 @@ async def get_llamaindex_pipeline_config():
 
         return get_runtime_settings_service().load_llamaindex()
     except Exception as e:
-        logger.error(f"Error reading LlamaIndex config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the LlamaIndex config") from e
 
 
 @router.put("/knowledge-bases/rag-pipelines/llamaindex/config")
@@ -1611,8 +1626,7 @@ async def update_llamaindex_pipeline_config(payload: LlamaIndexConfigUpdate):
         updates = payload.model_dump(exclude_none=True)
         return service.save_llamaindex({**current, **updates})
     except Exception as e:
-        logger.error(f"Error updating LlamaIndex config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the LlamaIndex config") from e
 
 
 class GraphRagConfigUpdate(BaseModel):
@@ -1631,8 +1645,7 @@ async def get_graphrag_pipeline_config():
 
         return get_runtime_settings_service().load_graphrag()
     except Exception as e:
-        logger.error(f"Error reading GraphRAG config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the GraphRAG config") from e
 
 
 @router.put("/knowledge-bases/rag-pipelines/graphrag/config")
@@ -1646,8 +1659,7 @@ async def update_graphrag_pipeline_config(payload: GraphRagConfigUpdate):
         updates = payload.model_dump(exclude_none=True)
         return service.save_graphrag({**current, **updates})
     except Exception as e:
-        logger.error(f"Error updating GraphRAG config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the GraphRAG config") from e
 
 
 class LightRagConfigUpdate(BaseModel):
@@ -1694,8 +1706,7 @@ async def get_lightrag_pipeline_config():
 
         return get_runtime_settings_service().load_lightrag()
     except Exception as e:
-        logger.error(f"Error reading LightRAG config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the LightRAG config") from e
 
 
 @router.get("/knowledge-bases/rag-pipelines/lightrag/model-options", response_model=None)
@@ -1747,8 +1758,7 @@ async def update_lightrag_pipeline_config(payload: LightRagConfigUpdate):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating LightRAG config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the LightRAG config") from e
 
 
 class LightRagServerConfigUpdate(BaseModel):
@@ -1777,8 +1787,7 @@ async def get_lightrag_server_pipeline_config():
     try:
         return _lightrag_server_config_payload()
     except Exception as e:
-        logger.error(f"Error reading LightRAG Server config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the LightRAG Server config") from e
 
 
 @router.put("/knowledge-bases/rag-pipelines/lightrag-server/config")
@@ -1799,8 +1808,7 @@ async def update_lightrag_server_pipeline_config(payload: LightRagServerConfigUp
         service.save_lightrag_server({"server_url": server_url, "api_key": api_key})
         return _lightrag_server_config_payload()
     except Exception as e:
-        logger.error(f"Error updating LightRAG Server config: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("updating the LightRAG Server config") from e
 
 
 @router.get("/knowledge-bases/rag-pipelines/{provider}/preflight")
@@ -1815,8 +1823,7 @@ async def get_rag_pipeline_preflight(provider: str):
 
         return engine_preflight(provider)
     except Exception as e:
-        logger.error(f"Error running preflight for '{provider}': {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"running the '{provider}' engine preflight") from e
 
 
 # Model kinds an engine page is allowed to read/switch. ``vision`` is not a
@@ -1875,8 +1882,7 @@ async def get_rag_model_options(kinds: str = "llm,embedding"):
         ] or list(_ENGINE_MODEL_KINDS)
         return _model_options_payload(requested)
     except Exception as e:
-        logger.error(f"Error reading model options: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the engine model options") from e
 
 
 @router.get("/knowledge-bases/embedding-usage")
@@ -1997,8 +2003,7 @@ async def set_rag_active_model(payload: ActiveModelUpdate):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error setting active model: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"setting the active {payload.kind} model") from e
 
 
 @router.get("/knowledge-bases/supported-file-types", response_model=SupportedFileTypesInfo)
@@ -2033,8 +2038,7 @@ async def get_all_kb_configs():
         service = get_kb_config_service()
         return service.get_all_configs()
     except Exception as e:
-        logger.error(f"Error getting KB configs: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("listing KB configs") from e
 
 
 @router.get("/knowledge-bases/{kb_name}/config")
@@ -2047,8 +2051,7 @@ async def get_kb_config(kb_name: str):
         config = service.get_kb_config(kb_name)
         return {"kb_name": kb_name, "config": config}
     except Exception as e:
-        logger.error(f"Error getting config for KB '{kb_name}': {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"reading the config for KB '{kb_name}'") from e
 
 
 @router.put("/knowledge-bases/{kb_name}/config")
@@ -2109,8 +2112,7 @@ async def update_kb_config(kb_name: str, config: dict):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating config for KB '{kb_name}': {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"updating the config for KB '{kb_name}'") from e
 
 
 @router.post("/knowledge-bases/configs/sync")
@@ -2123,8 +2125,7 @@ async def sync_configs_from_metadata():
         service.sync_all_from_metadata(_current_kb_base_dir())
         return {"status": "success", "message": "Configurations synced from metadata files"}
     except Exception as e:
-        logger.error(f"Error syncing configs: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("syncing KB configs from metadata") from e
 
 
 @router.get("/knowledge-bases/default")
@@ -2135,8 +2136,7 @@ async def get_default_kb():
         default_kb = manager.get_default()
         return {"default_kb": default_kb}
     except Exception as e:
-        logger.error(f"Error getting default KB: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("reading the default KB") from e
 
 
 @router.put("/knowledge-bases/default/{kb_name}")
@@ -2154,8 +2154,7 @@ async def set_default_kb(kb_name: str):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error setting default KB: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"setting the default KB to '{kb_name}'") from e
 
 
 class ConnectObsidianRequest(BaseModel):
@@ -2186,8 +2185,7 @@ async def connect_obsidian_vault(payload: ConnectObsidianRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error connecting Obsidian vault: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("connecting the Obsidian vault") from e
 
 
 class ConnectMarginNote4Request(BaseModel):
@@ -2221,8 +2219,7 @@ async def connect_marginnote4(payload: ConnectMarginNote4Request):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        logger.error(f"Error connecting MarginNote 4 library: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("connecting the MarginNote 4 library") from e
 
 
 class ProbeFolderRequest(BaseModel):
@@ -2294,8 +2291,7 @@ async def connect_linked_folder_route(payload: ConnectFolderRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error connecting linked folder: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("linking the folder") from e
 
     return {
         "status": "connected",
@@ -2404,8 +2400,7 @@ async def connect_lightrag_server_route(payload: ConnectLightRagServerRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error connecting LightRAG server: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("connecting the LightRAG server") from e
 
     return {
         "status": "connected",
@@ -2473,8 +2468,7 @@ async def connect_weknora_route(payload: ConnectWeKnoraRequest):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error connecting WeKnora knowledge base: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("connecting the WeKnora knowledge base") from e
 
     return {
         "status": "connected",
@@ -3000,7 +2994,7 @@ async def get_knowledge_base_details(kb_name: str):
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"reading the details of KB '{kb_name}'") from e
 
 
 def _resolve_kb_raw_dir(kb_name: str, *, allow_unsupported: bool = False) -> Path | None:
@@ -3260,7 +3254,7 @@ def _delete_kb(kb_name: str) -> dict[str, str]:
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"deleting KB '{kb_name}'") from e
     if not success:
         raise HTTPException(status_code=400, detail="Failed to delete knowledge base")
     logger.info(f"KB '{kb_name}' deleted")
@@ -3710,9 +3704,7 @@ async def _create_knowledge_base_owned(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to create KB: {e}")
-        logger.debug(traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"creating KB '{name}'") from e
 
 
 async def run_reindex_task(
@@ -4235,7 +4227,7 @@ async def get_progress(kb_name: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"reading the initialization progress for KB '{kb_name}'") from e
 
 
 @router.post("/knowledge-bases/{kb_name}/progress/clear")
@@ -4249,7 +4241,7 @@ async def clear_progress(kb_name: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"clearing the initialization progress for KB '{kb_name}'") from e
 
 
 @ws_router.websocket("/knowledge-bases/{kb_name}/progress")
@@ -4555,7 +4547,7 @@ async def link_folder(kb_name: str, request: LinkFolderRequest):
             raise HTTPException(status_code=404, detail=error_msg)
         raise HTTPException(status_code=400, detail=error_msg)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"linking the folder to KB '{kb_name}'") from e
 
 
 @router.get("/knowledge-bases/{kb_name}/linked-folders", response_model=list[LinkedFolderInfo])
@@ -4571,7 +4563,7 @@ async def get_linked_folders(kb_name: str):
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"listing the linked folders for KB '{kb_name}'") from e
 
 
 @router.delete("/knowledge-bases/{kb_name}/linked-folders/{folder_id}")
@@ -4590,7 +4582,7 @@ async def unlink_folder(kb_name: str, folder_id: str):
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"unlinking folder '{folder_id}' from KB '{kb_name}'") from e
 
 
 @router.post(
@@ -4687,7 +4679,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"syncing folder '{folder_id}' into KB '{kb_name}'") from e
 
 
 class AddGitHubSourceRequest(BaseModel):
