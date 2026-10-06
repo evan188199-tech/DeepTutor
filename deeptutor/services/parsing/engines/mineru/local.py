@@ -29,6 +29,39 @@ _ON_OUTPUT_MIN_INTERVAL = 0.5
 #: a useful stderr tail, short enough to fit inside an error message.
 _FAILURE_DETAIL_MAX_CHARS = 400
 
+#: How many ``.mineru-attempt-*`` directories survive for diagnostics.
+#: Failed/interrupted attempts stay on disk on purpose (#1612), but only the
+#: newest few: older ones are recycled after each parse so repeated failures
+#: cannot grow the output base directory without bound.
+_ATTEMPT_RETENTION_LIMIT = 5
+
+
+def _prune_stale_attempts(base_dir: Path, keep: int | None = None) -> None:
+    """Recycle the oldest attempt directories beyond the retention limit.
+
+    Failure keeps an attempt for diagnostics and success removes its own, but
+    neither bounds how many older attempts linger. This keeps the newest
+    ``keep`` (default :data:`_ATTEMPT_RETENTION_LIMIT`) and deletes the rest.
+    Best effort: attempts owned by concurrent parses may vanish at any moment,
+    so filesystem errors are ignored.
+    """
+    if keep is None:
+        keep = _ATTEMPT_RETENTION_LIMIT
+    try:
+        attempts = [path for path in base_dir.glob(".mineru-attempt-*") if path.is_dir()]
+    except OSError:
+        return
+
+    def _mtime(path: Path) -> float:
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return -1.0
+
+    attempts.sort(key=_mtime, reverse=True)
+    for stale in attempts[keep:]:
+        shutil.rmtree(stale, ignore_errors=True)
+
 
 def _bounded_detail(text: str) -> str:
     """One failure excerpt, trimmed to ``_FAILURE_DETAIL_MAX_CHARS``."""
@@ -332,6 +365,9 @@ def parse_document_with_mineru_result(
             except OSError:
                 # A diagnostic write must not hide the original failure.
                 pass
+        # Diagnostics are retained, not hoarded: every parse recycles the
+        # attempts that fell out of the retention window.
+        _prune_stale_attempts(base_dir)
 
 
 def parse_document_with_mineru(
