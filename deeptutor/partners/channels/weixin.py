@@ -388,6 +388,12 @@ class WeixinChannel(BaseChannel):
                     await asyncio.sleep(RETRY_DELAY_S)
 
     async def stop(self) -> None:
+        if self._client is None and not self._running:
+            # Never started (or already stopped): nothing to tear down, and
+            # saving now would overwrite the persisted account state with the
+            # empty in-memory defaults.
+            self.logger.debug("stop() ignored; channel was never started")
+            return
         self._running = False
         self.set_setup_state("disconnected")
         self._pending_tool_hints.clear()

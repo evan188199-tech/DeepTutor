@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import time
 from unittest.mock import AsyncMock, MagicMock
 
@@ -255,6 +256,47 @@ class TestLifecycle:
         await ch.start()
 
         ch._poll_once.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_stop_without_start_keeps_account_file_unchanged(self, state_dir):
+        """Stopping a channel that never started must not rewrite account.json."""
+        seeded = _make_channel(token="", state_dir=str(state_dir))
+        seeded._token = "persisted-token"
+        seeded._get_updates_buf = "cursor"
+        seeded._context_tokens = {"wx-user-1": "ctx-1"}
+        seeded._typing_tickets = {"wx-user-1": {"ticket": "typing"}}
+        seeded._save_state()
+        state_file = state_dir / "account.json"
+        before = state_file.read_text(encoding="utf-8")
+
+        ch = _make_channel(token="", state_dir=str(state_dir))
+        await ch.stop()
+
+        assert ch.is_running is False
+        assert state_file.read_text(encoding="utf-8") == before
+
+    @pytest.mark.asyncio
+    async def test_stop_after_start_still_persists_state(self, state_dir, monkeypatch):
+        """The not-started guard must not skip the state save of a real session."""
+        ch = _make_channel(token="token", state_dir=str(state_dir))
+        fake_client = MagicMock()
+        fake_client.aclose = AsyncMock()
+        monkeypatch.setattr(weixin_mod.httpx, "AsyncClient", lambda *args, **kwargs: fake_client)
+
+        async def one_poll():
+            ch._running = False
+
+        ch._poll_once = AsyncMock(side_effect=one_poll)
+
+        await ch.start()
+        ch._token = "session-token"
+        ch._get_updates_buf = "session-cursor"
+        await ch.stop()
+
+        fake_client.aclose.assert_awaited_once()
+        saved = json.loads((state_dir / "account.json").read_text(encoding="utf-8"))
+        assert saved["token"] == "session-token"
+        assert saved["get_updates_buf"] == "session-cursor"
 
 
 class TestInboundProcessing:
