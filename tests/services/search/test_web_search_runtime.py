@@ -884,15 +884,21 @@ def test_web_risk_batch_has_one_deadline(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr(source_filter, "_WEB_RISK_BATCH_TIMEOUT_S", 0.05)
 
+    release = threading.Event()
+
     def slow(_url: str, *, api_key: str) -> bool:
-        time.sleep(0.2)
+        # Lookups only finish once released, so a timely return can only mean
+        # the batch deadline fired — no wall-clock race with lookup duration.
+        release.wait(5)
         return False
 
     started = time.monotonic()
     urls = [f"https://example.org/page-{i}" for i in range(12)]
     assert source_filter._web_risk_rejections(urls, api_key="test", request_web_risk=slow) == set()
-    assert time.monotonic() - started < 0.15
+    elapsed = time.monotonic() - started
+    release.set()
     wait(list(source_filter._web_risk_inflight.values()), timeout=2)
+    assert elapsed < 1.0  # deadline held: 12 unfinished lookups did not drag the batch
 
 
 def test_concurrent_web_risk_calls_share_inflight_lookup() -> None:

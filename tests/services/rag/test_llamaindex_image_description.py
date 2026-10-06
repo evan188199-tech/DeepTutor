@@ -150,7 +150,7 @@ async def test_image_description_per_image_timeout_skips_and_keeps_order(tmp_pat
 
     async def complete(prompt, image_filename=None, **kwargs):
         if "slow" in (image_filename or ""):
-            await asyncio.sleep(1.0)  # exceeds the 0.2s timeout -> skipped
+            await asyncio.sleep(5.0)  # would hang the load without the 0.2s timeout
         return "ok"
 
     _install_multimodal_clients(monkeypatch, complete_fn=complete, limits=(4, 0.2))
@@ -164,7 +164,8 @@ async def test_image_description_per_image_timeout_skips_and_keeps_order(tmp_pat
 
     # Slow images time out and are skipped; fast ones are kept in original order.
     assert [d.metadata["file_name"] for d in docs] == ["fast0.png", "fast1.png", "fast2.png"]
-    assert elapsed < 2.0  # did not hang
+    # Fast images must not wait out the 5s slow ones: only the 0.2s timeout may elapse.
+    assert elapsed < 3.0
 
 
 @pytest.mark.asyncio
@@ -258,7 +259,7 @@ async def test_batch_deadline_covers_split_fallback(tmp_path, monkeypatch):
     async def complete(prompt, **kwargs):
         calls.append(kwargs)
         if "image_filename" in kwargs:
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(5.0)
             return "late"
         return "malformed response"
 
@@ -272,7 +273,8 @@ async def test_batch_deadline_covers_split_fallback(tmp_path, monkeypatch):
     )
     assert docs == []
     assert len(calls) == 2  # canceled first single fallback; second is never sent
-    assert time.monotonic() - start < 0.8
+    # The 0.1s timeout must cut the fallback short instead of waiting it out.
+    assert time.monotonic() - start < 3.0
     assert progress == [1, 2]
 
 

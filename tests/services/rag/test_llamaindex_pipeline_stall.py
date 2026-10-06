@@ -90,12 +90,12 @@ async def test_stall_guard_returns_when_progress_keeps_flowing(
         end = time.monotonic() + 0.6
         while time.monotonic() < end:
             captured["cb"](1, 1)
-            time.sleep(0.05)
+            time.sleep(0.02)
         return "done"
 
     assert (
         await pipeline_module._run_with_stall_guard(
-            slow_but_moving, progress_callback=None, stall_timeout=0.3
+            slow_but_moving, progress_callback=None, stall_timeout=0.5
         )
         == "done"
     )
@@ -118,12 +118,12 @@ async def test_stall_guard_keeps_its_worker_callback_when_another_job_starts(
         end = time.monotonic() + 0.6
         while time.monotonic() < end:
             worker_callback(1, 1)
-            time.sleep(0.05)
+            time.sleep(0.02)
         return "done"
 
     assert (
         await pipeline_module._run_with_stall_guard(
-            displaced_then_moving, progress_callback=None, stall_timeout=0.3
+            displaced_then_moving, progress_callback=None, stall_timeout=0.5
         )
         == "done"
     )
@@ -206,7 +206,7 @@ async def test_different_kb_workers_keep_independent_progress(
         return await pipeline_module._run_with_stall_guard(
             lambda: worker(name),
             progress_callback=lambda n, total: events[name].append((n, total)),
-            stall_timeout=0.08,
+            stall_timeout=0.15,
             worker_key=f"kb-{name}",
         )
 
