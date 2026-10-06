@@ -62,6 +62,26 @@ def _book_paused_http(exc: BookPausedError) -> HTTPException:
     )
 
 
+def _internal_error(action: str) -> HTTPException:
+    """Translate an unexpected failure into a neutral, coded 500 response.
+
+    The caught exception can embed host paths, provider payloads, or other
+    internal state, so its text belongs in the server log (with traceback),
+    never in the response body — `str(e)` details used to leak both. Called
+    from an `except` block; the shared `book_internal_error` code lets
+    clients tell this apart from the 409 above without learning why it
+    happened.
+    """
+    logger.exception("Book request failed while %s", action)
+    return HTTPException(
+        status_code=500,
+        detail={
+            "code": "book_internal_error",
+            "message": "The book engine hit an unexpected error. Please retry.",
+        },
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Request / response models
 # ─────────────────────────────────────────────────────────────────────────────
@@ -830,8 +850,7 @@ async def create_book(req: CreateBookRequest) -> dict[str, Any]:
             depth=req.depth,
         )
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"create_book failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error("creating the book") from exc
     return {
         "book": book.model_dump(mode="json"),
         "proposal": proposal.model_dump(mode="json"),
@@ -860,8 +879,7 @@ async def confirm_proposal(req: ConfirmProposalRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"confirm_proposal failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"confirming the proposal for book {req.book_id!r}") from exc
     return {
         "book": book.model_dump(mode="json"),
         "spine": spine.model_dump(mode="json"),
@@ -896,8 +914,7 @@ async def confirm_spine(req: ConfirmSpineRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"confirm_spine failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"confirming the spine for book {req.book_id!r}") from exc
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
@@ -922,8 +939,7 @@ async def compile_page(req: CompilePageRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"compile_page failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"compiling page {req.page_id!r} of book {req.book_id!r}") from exc
     return {"page": page.model_dump(mode="json"), "book_revision": revision}
 
 
@@ -948,8 +964,9 @@ async def regenerate_block(req: RegenerateBlockRequest) -> dict[str, Any]:
     except BookPausedError as exc:
         raise _book_paused_http(exc)
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"regenerate_block failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(
+            f"regenerating block {req.block_id!r} on page {req.page_id!r} of book {req.book_id!r}"
+        ) from exc
     if block is None:
         raise HTTPException(status_code=404, detail="Block not found")
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
@@ -993,8 +1010,9 @@ async def insert_block(req: InsertBlockRequest) -> dict[str, Any]:
     except BookPausedError as exc:
         raise _book_paused_http(exc)
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"insert_block failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(
+            f"inserting a block on page {req.page_id!r} of book {req.book_id!r}"
+        ) from exc
     if block is None:
         raise HTTPException(status_code=404, detail="Page or chapter not found")
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
@@ -1062,8 +1080,9 @@ async def change_block_type(req: ChangeBlockTypeRequest) -> dict[str, Any]:
     except BookPausedError as exc:
         raise _book_paused_http(exc)
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"change_block_type failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(
+            f"changing the type of block {req.block_id!r} on page {req.page_id!r} of book {req.book_id!r}"
+        ) from exc
     if block is None:
         raise HTTPException(status_code=404, detail="Block not found")
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
@@ -1092,8 +1111,9 @@ async def deep_dive(req: DeepDiveRequest) -> dict[str, Any]:
     except BookPausedError as exc:
         raise _book_paused_http(exc)
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"deep_dive failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(
+            f"creating the deep-dive for block {req.block_id!r} of book {req.book_id!r}"
+        ) from exc
     if page is None:
         raise HTTPException(status_code=404, detail="Parent page not found")
     return {"page": page.model_dump(mode="json"), "book_revision": revision}
@@ -1363,8 +1383,9 @@ async def supplement(req: SupplementRequest) -> dict[str, Any]:
     except BookPausedError as exc:
         raise _book_paused_http(exc)
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"supplement failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(
+            f"supplementing page {req.page_id!r} of book {req.book_id!r}"
+        ) from exc
     if block is None:
         raise HTTPException(status_code=404, detail="Page not found")
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
@@ -1411,8 +1432,7 @@ async def resume_book(req: ResumeBookRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"resume_book failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"resuming book {req.book_id!r}") from exc
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
@@ -1433,8 +1453,7 @@ async def pause_book(req: PauseBookRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"pause_book failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"pausing book {req.book_id!r}") from exc
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
@@ -1454,8 +1473,7 @@ async def rebuild_book(req: RebuildBookRequest) -> dict[str, Any]:
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        logger.error(f"rebuild_book failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise _internal_error(f"rebuilding book {req.book_id!r}") from exc
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
