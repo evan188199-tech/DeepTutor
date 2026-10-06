@@ -6,6 +6,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from deeptutor.learning.options_text import parse_options
+
 _KNOWLEDGE_TYPE_LEGACY: dict[str, str] = {
     "记忆型": "memory",
     "概念型": "concept",
@@ -281,8 +283,6 @@ class PendingQuestion(BaseModel):
             return value
         if not all(isinstance(entry, str) for entry in value):
             return value
-        from deeptutor.learning.pending import parse_options
-
         return [{"label": label, "body": body} for label, body in parse_options(value).items()]
 
     @property
