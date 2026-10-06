@@ -348,6 +348,51 @@ def test_language_model_errors_are_reported_distinctly(material, monkeypatch):
     detail = response.json()["detail"]
     assert detail["recoverable"] is True
     assert "language model" in detail["message"].lower()
+    assert detail["reason"] == "model_unavailable"
+    assert "Invalid API key" not in str(detail)
+
+
+def test_denied_material_returns_neutral_detail(material, monkeypatch):
+    monkeypatch.setattr(
+        reading_extensions,
+        "assert_learning_material",
+        lambda material_id: (_ for _ in ()).throw(
+            PermissionError("This reading material is not assigned to this learning account.")
+        ),
+    )
+    client = _client(
+        monkeypatch,
+        _extension(lambda *_: ReadingExtensionResult(type="card", payload={"body": "ok"})),
+    )
+    response = client.post(
+        f"/api/reading/materials/{material.material_id}/extensions/sample/actions/open",
+        json={"locator": 1},
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "You don't have access to this material."
+    assert "not assigned" not in response.json()["detail"]
+
+
+def test_unit_load_failure_returns_neutral_detail(material, monkeypatch):
+    class _BrokenStore:
+        def unit_text(self, *_args, **_kwargs):
+            raise OSError("unit store read failure marker")
+
+        def position(self, *_args, **_kwargs):
+            raise AssertionError("unit_text failure must short-circuit")
+
+    monkeypatch.setattr(reading_extensions, "ReadingStore", _BrokenStore)
+    client = _client(
+        monkeypatch,
+        _extension(lambda *_: ReadingExtensionResult(type="card", payload={"body": "ok"})),
+    )
+    response = client.post(
+        f"/api/reading/materials/{material.material_id}/extensions/sample/actions/open",
+        json={"locator": 1},
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "That reading unit could not be loaded."
+    assert "failure marker" not in response.json()["detail"]
 
 
 def test_timed_out_async_extension_can_retry(material, monkeypatch):
@@ -403,7 +448,7 @@ def test_async_extension_ignores_stale_circuit(material, monkeypatch):
     assert response.json()["type"] == "card"
 
 
-def test_plugin_exception_reason_is_returned(material, monkeypatch):
+def test_plugin_exception_reason_is_neutral(material, monkeypatch):
     client = _client(
         monkeypatch,
         _extension(lambda *_: (_ for _ in ()).throw(RuntimeError("broken plugin"))),
@@ -413,4 +458,6 @@ def test_plugin_exception_reason_is_returned(material, monkeypatch):
         json={"locator": 1},
     )
     assert response.status_code == 503
-    assert response.json()["detail"]["reason"] == "broken plugin"
+    detail = response.json()["detail"]
+    assert detail["reason"] == "action_failed"
+    assert "broken plugin" not in str(detail)

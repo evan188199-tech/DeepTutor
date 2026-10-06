@@ -260,7 +260,10 @@ def test_quiz_rewards_require_material_and_extension_access(
         lambda material_id: (_ for _ in ()).throw(PermissionError("not assigned")),
     )
     with TestClient(_build_app(store)) as client:
-        assert client.get(f"/api/reading/materials/{MATERIAL_ID}/quiz/rewards").status_code == 403
+        denied = client.get(f"/api/reading/materials/{MATERIAL_ID}/quiz/rewards")
+        assert denied.status_code == 403
+        assert denied.json()["detail"] == "You don't have access to this material."
+        assert "not assigned" not in denied.json()["detail"]
 
     monkeypatch.setattr(
         "deeptutor.api.routers.reading_extensions.assert_learning_material",
@@ -404,3 +407,44 @@ def test_standalone_submission_retry_keeps_one_origin_and_one_record(store):
             )
             assert response.status_code == 200
     assert asyncio.run(store.list_notebook_entries())["total"] == 1
+
+
+def test_quiz_answers_denied_material_returns_neutral_detail(
+    store: SQLiteSessionStore,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "deeptutor.api.routers.reading_extensions.assert_learning_material",
+        lambda material_id: (_ for _ in ()).throw(PermissionError("not assigned")),
+    )
+    with TestClient(_build_app(store)) as client:
+        response = client.post(
+            f"/api/reading/materials/{MATERIAL_ID}/extensions/quiz/answers",
+            json=_payload(),
+        )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "You don't have access to this material."
+    assert "not assigned" not in response.json()["detail"]
+
+
+def test_quiz_answers_save_failure_returns_neutral_detail(
+    store: SQLiteSessionStore,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.learning.assessment import RecordAssessmentError
+
+    asyncio.run(store.create_session(title="Reading", session_id="reading-session"))
+    asyncio.run(store.put_reading_quiz_pending(MATERIAL_ID, LOCATOR, _quiz_questions()))
+
+    async def fail_record(*_args, **_kwargs):
+        raise RecordAssessmentError("persistence failure marker")
+
+    monkeypatch.setattr("deeptutor.learning.assessment.record_assessment", fail_record)
+    with TestClient(_build_app(store)) as client:
+        response = client.post(
+            f"/api/reading/materials/{MATERIAL_ID}/extensions/quiz/answers",
+            json=_payload(),
+        )
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Your quiz answers could not be saved. Please try again."
+    assert "failure marker" not in response.json()["detail"]

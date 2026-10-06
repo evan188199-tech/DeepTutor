@@ -174,6 +174,34 @@ def test_read_aloud_audio_requires_the_extension_grant(monkeypatch, tmp_path):
     assert "not allowed" in response.json()["detail"]
 
 
+def test_read_aloud_audio_denied_material_returns_neutral_detail(monkeypatch):
+    monkeypatch.setattr(
+        reading_extensions,
+        "assert_learning_material",
+        lambda material_id: (_ for _ in ()).throw(
+            PermissionError("This reading material is not assigned to this learning account.")
+        ),
+    )
+    client = _audio_client(monkeypatch, lambda *_: None)
+    response = client.post("/api/reading/materials/mat/read-aloud", json={"locator": 1})
+    assert response.status_code == 403
+    assert response.json()["detail"] == "You don't have access to this material."
+    assert "not assigned" not in response.json()["detail"]
+
+
+def test_read_aloud_audio_unit_load_failure_returns_neutral_detail(monkeypatch):
+    class _BrokenStore:
+        def unit_text(self, *_args, **_kwargs):
+            raise OSError("unit store read failure marker")
+
+    monkeypatch.setattr(reading_extensions, "ReadingStore", _BrokenStore)
+    client = _audio_client(monkeypatch, lambda *_: None)
+    response = client.post("/api/reading/materials/mat/read-aloud", json={"locator": 1})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "That reading unit could not be loaded."
+    assert "failure marker" not in response.json()["detail"]
+
+
 @pytest.mark.parametrize(
     ("error", "status_code"),
     [

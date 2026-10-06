@@ -6,7 +6,7 @@ import asyncio
 import inspect
 import logging
 import re
-from typing import Any
+from typing import Any, NoReturn
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, Response, status
@@ -49,6 +49,15 @@ def _unavailable_detail(
     if reason:
         detail["reason"] = reason[:500]
     return detail
+
+
+def _deny_material_access(material_id: str, exc: PermissionError) -> NoReturn:
+    """Map a material PermissionError to a fixed client detail, logging the cause."""
+    logger.warning("Reading access to material %s denied: %s", material_id, exc)
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="You don't have access to this material.",
+    ) from exc
 
 
 class ActionPayload(BaseModel):
@@ -154,7 +163,7 @@ async def read_material_aloud(material_id: str, payload: ReadAloudAudioPayload) 
     try:
         assert_learning_material(material_id)
     except PermissionError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        _deny_material_access(material_id, exc)
 
     allowed = allowed_reading_extensions()
     if allowed is not None and "read_aloud" not in allowed:
@@ -171,7 +180,13 @@ async def read_material_aloud(material_id: str, payload: ReadAloudAudioPayload) 
     try:
         text = ReadingStore().unit_text(material_id, payload.locator)
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        logger.warning(
+            "Reading unit %s of material %s failed to load: %s", payload.locator, material_id, exc
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="That reading unit could not be loaded.",
+        ) from exc
 
     try:
         audio, content_type = await synthesize_speech(text)
@@ -202,7 +217,7 @@ async def run_extension_action(
     try:
         assert_learning_material(material_id)
     except PermissionError as exc:
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
+        _deny_material_access(material_id, exc)
 
     allowed = allowed_reading_extensions()
     if allowed is not None and extension_id not in allowed:
@@ -220,7 +235,13 @@ async def run_extension_action(
         unit_text = store.unit_text(material_id, payload.locator)
         position = store.position(material_id)
     except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        logger.warning(
+            "Reading unit %s of material %s failed to load: %s", payload.locator, material_id, exc
+        )
+        raise HTTPException(
+            status_code=400,
+            detail="That reading unit could not be loaded.",
+        ) from exc
     selection = _verified_selection(payload.selection, unit_text)
     if "selection" in declared_action.requires and not selection:
         raise HTTPException(status_code=400, detail="Select text from the visible unit first.")
@@ -292,7 +313,7 @@ async def run_extension_action(
         raise HTTPException(
             status_code=503,
             detail=_unavailable_detail(
-                reason=str(exc),
+                reason="model_unavailable",
                 message="This reading action needs a working language model.",
             ),
         ) from exc
@@ -300,7 +321,7 @@ async def run_extension_action(
         logger.exception("Reading extension %s action %s failed", extension_id, action)
         raise HTTPException(
             status_code=503,
-            detail=_unavailable_detail(reason=str(exc)),
+            detail=_unavailable_detail(reason="action_failed"),
         ) from exc
     finally:
         if worker is not None and not worker.done():
@@ -366,7 +387,7 @@ async def submit_quiz_answers(material_id: str, payload: QuizAnswersPayload) -> 
         assert_learning_material(material_id)
         _assert_quiz_extension_allowed()
     except PermissionError as exc:
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
+        _deny_material_access(material_id, exc)
 
     from deeptutor.learning.assessment import (
         AssessmentRecord,
@@ -458,7 +479,11 @@ async def submit_quiz_answers(material_id: str, payload: QuizAnswersPayload) -> 
                 )
             )
         except RecordAssessmentError as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from exc
+            logger.exception("Recording reading quiz answers for %s failed", material_id)
+            raise HTTPException(
+                status_code=500,
+                detail="Your quiz answers could not be saved. Please try again.",
+            ) from exc
         graded.append(
             {
                 "question_id": item.question_id.strip(),
@@ -487,7 +512,7 @@ async def list_quiz_rewards(material_id: str) -> dict[str, Any]:
         assert_learning_material(material_id)
         _assert_quiz_extension_allowed()
     except PermissionError as exc:
-        raise HTTPException(status_code=403, detail=str(exc)) from exc
+        _deny_material_access(material_id, exc)
 
     from deeptutor.services.session import get_sqlite_session_store
 
