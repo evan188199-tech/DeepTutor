@@ -1,4 +1,5 @@
 import { ApiError, type AppError, type AppErrorScope } from "./errors";
+import { parseErrorDetail } from "./error-detail";
 import { browserReturnPath, loginHref } from "../auth/return-url";
 import { scopedUrl } from "@/lib/workspace-scope";
 
@@ -206,15 +207,17 @@ export async function requestBlob(
  * Parse a response, throwing FastAPI's ``detail`` as the message on failure.
  *
  * The status line alone ("500 Internal Server Error") tells a reader nothing;
- * the backend's own detail is what names the actual problem. Callers wanting
- * structured refusals (an error code, a log tail) parse the body themselves.
+ * the backend's own detail is what names the actual problem. A structured
+ * `{code, message}` detail surfaces its message (or, message-less, the code)
+ * instead of the "[object Object]" a bare String() produced; malformed or
+ * absent bodies fall back to the status line.
  */
 export async function asJsonOrThrow(response: Response): Promise<any> {
   if (!response.ok) {
     let detail = `${response.status} ${response.statusText}`;
     try {
-      const body = await response.json();
-      if (body?.detail) detail = String(body.detail);
+      const parsed = parseErrorDetail(await response.json());
+      detail = parsed.message || parsed.code || detail;
     } catch {
       /* the body was not JSON; the status line is all we have */
     }

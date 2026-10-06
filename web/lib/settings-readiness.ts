@@ -1,4 +1,5 @@
 import { apiFetch, apiUrl } from "@/lib/api";
+import { normalizeErrorCode } from "@/shared/api/error-detail";
 import { settingsAnchorHref } from "@/features/settings/navigation/settings-nav";
 
 export const READINESS_STATES = [
@@ -209,9 +210,30 @@ export function readinessRowHref(rowId: string): string | null {
   return null;
 }
 
+/**
+ * Enforce the snapshot's `detail_code: string` contract at the boundary.
+ *
+ * The body is read as a blind cast, so a malformed row (null, number, object)
+ * would otherwise flow straight into the panel's `readiness.detail.<code>`
+ * i18n keys. Valid codes pass through verbatim — copy is never rewritten.
+ */
+export function normalizeReadinessSnapshot(
+  snapshot: SettingsReadinessSnapshot,
+): SettingsReadinessSnapshot {
+  return {
+    ...snapshot,
+    rows: snapshot.rows.map((row) => ({
+      ...row,
+      detail_code: normalizeErrorCode(row.detail_code),
+    })),
+  };
+}
+
 export async function fetchSettingsReadiness(): Promise<SettingsReadinessSnapshot> {
   const response = await apiFetch(apiUrl("/api/settings/readiness"));
   if (!response.ok)
     throw new Error("Capability readiness could not be loaded.");
-  return (await response.json()) as SettingsReadinessSnapshot;
+  return normalizeReadinessSnapshot(
+    (await response.json()) as SettingsReadinessSnapshot,
+  );
 }

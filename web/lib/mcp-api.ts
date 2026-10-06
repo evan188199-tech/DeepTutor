@@ -1,4 +1,5 @@
 import { apiFetch, apiUrl } from "@/lib/api";
+import { parseErrorDetail } from "@/shared/api/error-detail";
 
 export type McpTransport = "stdio" | "sse" | "streamableHttp";
 
@@ -293,17 +294,12 @@ async function asJson(response: Response) {
     let message = `${response.status} ${response.statusText}`;
     let code = "";
     try {
-      const body = await response.json();
-      const detail = (body as { detail?: unknown } | null)?.detail;
-      if (detail && typeof detail === "object") {
-        const shaped = detail as { code?: unknown; message?: unknown };
-        code = String(shaped.code ?? "");
-        // Stringifying the object itself is how a refusal used to reach the UI
-        // as "[object Object]".
-        if (shaped.message) message = String(shaped.message);
-      } else if (detail) {
-        message = String(detail);
-      }
+      // Shared envelope walk: a string detail is the message, a structured
+      // one splits into code + message, anything malformed falls through to
+      // the status line.
+      const parsed = parseErrorDetail(await response.json());
+      if (parsed.message) message = parsed.message;
+      code = parsed.code;
     } catch {
       /* ignore */
     }

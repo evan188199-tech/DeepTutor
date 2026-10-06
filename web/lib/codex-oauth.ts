@@ -1,4 +1,5 @@
 import { apiFetch, apiUrl } from "@/lib/api";
+import { parseErrorDetail } from "@/shared/api/error-detail";
 
 export type CodexReasoningModel = {
   model: string;
@@ -157,11 +158,12 @@ export async function requestCodex<T>(
   let code = `http_${response.status}`;
   let message = "Codex request failed.";
   try {
-    const payload = (await response.json()) as {
-      detail?: { code?: string; message?: string };
-    };
-    if (payload.detail?.code) code = payload.detail.code;
-    if (payload.detail?.message) message = payload.detail.message;
+    // Shared envelope walk: a structured `{code, message}` detail overrides
+    // the defaults field by field; a plain-string detail is the backend's own
+    // wording and beats the generic fallback.
+    const parsed = parseErrorDetail(await response.json());
+    if (parsed.code) code = parsed.code;
+    if (parsed.message) message = parsed.message;
   } catch {
     // The UI renders only the stable code mapping below.
   }
