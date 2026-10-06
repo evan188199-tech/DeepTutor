@@ -3,7 +3,7 @@
 Agent Configuration API - Provides agent metadata for data-driven UI.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
@@ -54,6 +54,13 @@ async def get_single_agent_config(agent_type: str):
     Returns:
         Agent UI metadata or 404 if not found
     """
-    if agent_type in AGENT_REGISTRY:
-        return AGENT_REGISTRY[agent_type]
-    return {"error": f"Agent type '{agent_type}' not found"}
+    config = AGENT_REGISTRY.get(agent_type)
+    if config is None:
+        raise HTTPException(
+            status_code=404,
+            detail={
+                "code": "agent_not_found",
+                "message": f"Agent type '{agent_type}' not found",
+            },
+        )
+    return config
