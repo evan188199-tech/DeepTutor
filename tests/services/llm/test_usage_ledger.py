@@ -1,6 +1,9 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from datetime import datetime, timezone
 import json
+import sqlite3
 from types import SimpleNamespace as NS
 
 import pytest
@@ -191,3 +194,151 @@ def test_doubao_search_records_response_api_tokens(monkeypatch):
     record = usage_ledger.usage_records(0, 9999999999)[0]
     assert record["summaries"][0]["total_tokens"] == 100
     assert record["summaries"][0]["call_details"][0]["model"] == "doubao-test"
+
+
+# ---------------------------------------------------------------------------
+# Focused supplements: malformed entries, window boundaries, write concurrency.
+# ---------------------------------------------------------------------------
+
+
+def _ledger_call(call_id: str, **overrides):
+    call = {
+        "call_id": call_id,
+        "model": "m",
+        "provider": "p",
+        "status": "completed",
+        "estimated": False,
+        "prompt_tokens": 10,
+        "completion_tokens": 5,
+        "total_tokens": 15,
+    }
+    call.update(overrides)
+    return call
+
+
+def test_record_call_filters_unknown_fields_and_is_idempotent(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    call = _ledger_call("c1", prompts="secret prompt", response_text="secret answer")
+    usage_ledger.record_call(path, call, started_at=1.0, session_id="s", turn_id="t", source="api")
+    usage_ledger.record_call(path, call, started_at=9.0)  # replay of the same call_id
+    records = usage_ledger.usage_records(0, 10, path=path)
+    assert len(records) == 1
+    stored = records[0]["summaries"][0]["call_details"][0]
+    assert stored["total_tokens"] == 15
+    assert "prompts" not in stored and "response_text" not in stored
+    assert records[0]["session_id"] == "s" and records[0]["source"] == "api"
+    raw = path.read_bytes()
+    assert b"secret prompt" not in raw and b"secret answer" not in raw
+
+
+def test_record_call_rejects_unwritable_usage_without_partial_row(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    with pytest.raises(ValueError):  # non-finite numbers are not JSON compliant
+        usage_ledger.record_call(
+            path, _ledger_call("nan", total_tokens=float("nan")), started_at=1.0
+        )
+    with pytest.raises(TypeError):  # non-serializable measurement value
+        usage_ledger.record_call(path, _ledger_call("obj", model=object()), started_at=2.0)
+    assert path.exists()
+    assert usage_ledger.usage_records(0, 10, path=path) == []
+
+
+def test_usage_records_window_is_half_open_and_ordered(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    for stamp, call_id, turn in [(2.0, "b", "tb"), (2.0, "a", "ta"), (1.0, "z", "tz")]:
+        usage_ledger.record_call(
+            path, _ledger_call(call_id), started_at=stamp, turn_id=turn
+        )
+    first = usage_ledger.usage_records(1.0, 2.0, path=path)
+    assert [r["activity_id"] for r in first] == ["tz"]
+    second = usage_ledger.usage_records(2.0, 3.0, path=path)
+    assert [r["activity_id"] for r in second] == ["ta", "tb"]
+
+
+def test_usage_records_missing_db_or_table_returns_empty(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    assert usage_ledger.usage_records(0, 10, path=path) == []
+    path.write_bytes(b"")  # exists but never gained the llm_calls table
+    assert usage_ledger.usage_records(0, 10, path=path) == []
+
+
+def test_usage_records_passes_through_unknown_stored_fields(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    usage_ledger.record_call(path, _ledger_call("known"), started_at=1.0)
+    drifted = json.dumps({**_ledger_call("drifted"), "future_field": 7, "total_tokens": 42})
+    with closing(sqlite3.connect(path)) as conn, conn:
+        conn.execute(
+            "INSERT INTO llm_calls VALUES (?, ?, ?, ?, ?, ?)",
+            ("drifted", 2.0, "s2", "t2", "api", drifted),
+        )
+    records = usage_ledger.usage_records(0, 10, path=path)
+    summary = records[1]["summaries"][0]
+    assert summary["total_tokens"] == 42
+    assert summary["call_details"][0]["future_field"] == 7
+
+
+def test_usage_records_surfaces_corrupt_rows_instead_of_silent_loss(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    usage_ledger.record_call(path, _ledger_call("ok"), started_at=1.0)
+    with closing(sqlite3.connect(path)) as conn, conn:
+        conn.execute("UPDATE llm_calls SET usage_json = '{broken' WHERE call_id = 'ok'")
+    with pytest.raises(json.JSONDecodeError):
+        usage_ledger.usage_records(0, 10, path=path)
+
+
+def test_concurrent_record_call_writes_all_survive(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+
+    def write(worker: int) -> None:
+        for i in range(5):
+            usage_ledger.record_call(
+                path,
+                _ledger_call(f"w{worker}-c{i}", total_tokens=i),
+                started_at=1.0 + i,
+                session_id=f"s{worker}",
+            )
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(write, range(8)))
+    records = usage_ledger.usage_records(0, 100, path=path)
+    assert len(records) == 40
+    assert sum(s["total_tokens"] for r in records for s in r["summaries"]) == 80
+
+
+def test_concurrent_duplicate_calls_collapse_to_one_row(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    call = _ledger_call("dup", total_tokens=9)
+
+    def write(_: int) -> None:
+        usage_ledger.record_call(path, call, started_at=1.0)
+
+    with ThreadPoolExecutor(max_workers=10) as pool:
+        list(pool.map(write, range(10)))
+    records = usage_ledger.usage_records(0, 10, path=path)
+    assert len(records) == 1
+    assert records[0]["summaries"][0]["total_tokens"] == 9
+
+
+def test_combined_usage_records_drops_history_calls_already_persisted(tmp_path):
+    path = tmp_path / "usage.sqlite3"
+    persisted = _ledger_call("persisted", total_tokens=100)
+    usage_ledger.record_call(path, persisted, started_at=1.0, turn_id="t1")
+    collector = metrics.TurnUsage(turn_id="t1")
+    collector.calls = [persisted, _ledger_call("history-only", total_tokens=7)]
+    history = [{"created_at": 2.0, "turn_id": "t1", "summaries": [collector.summary()]}]
+    merged = usage_ledger.combined_usage_records(history, 0, 10)
+    ids = sorted(
+        c["call_id"] for r in merged for s in r["summaries"] for c in s["call_details"]
+    )
+    assert ids == ["history-only", "persisted"]
+    assert sum(s["total_tokens"] for r in merged for s in r["summaries"]) == 107
+
+
+def test_combined_usage_records_keeps_history_when_ledger_absent(tmp_path, monkeypatch):
+    monkeypatch.setattr(usage_ledger, "ledger_path", lambda: tmp_path / "absent.sqlite3")
+    collector = metrics.TurnUsage(turn_id="t")
+    collector.calls = [_ledger_call("h1", total_tokens=5)]
+    history = [{"created_at": 1.0, "turn_id": "t", "summaries": [collector.summary()]}]
+    merged = usage_ledger.combined_usage_records(history, 0, 10)
+    ids = [c["call_id"] for s in merged[0]["summaries"] for c in s["call_details"]]
+    assert ids == ["h1"]
