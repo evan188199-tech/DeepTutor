@@ -27,18 +27,36 @@ def transport(monkeypatch, handler):
     )
 
 
-def tts(**kwargs):
-    return TTSConfig(
-        model="seed-tts-2.0",
-        api_key="speech-secret",
-        base_url="https://openspeech.bytedance.com/api/v3",
-        voice="zh_female_vv_uranus_bigtts",
-        **kwargs,
-    )
+def tts(**overrides):
+    values = {
+        "model": "seed-tts-2.0",
+        "api_key": "speech-secret",
+        "base_url": "https://openspeech.bytedance.com/api/v3",
+        "voice": "zh_female_vv_uranus_bigtts",
+    }
+    return TTSConfig(**(values | overrides))
+
+
+def stt(**overrides):
+    values = {
+        "model": "bigmodel",
+        "api_key": "speech-secret",
+        "base_url": "https://openspeech.bytedance.com/api/v3",
+    }
+    return STTConfig(**(values | overrides))
 
 
 def event(code=0, data=None):
     return "data: " + json.dumps({"code": code, "data": data}) + "\n\n"
+
+
+def failing(exc):
+    """A transport handler that raises without producing a response."""
+
+    def handle(request):
+        raise exc
+
+    return handle
 
 
 @pytest.mark.asyncio
@@ -157,6 +175,176 @@ async def test_stt_checks_business_status_even_on_http_200(monkeypatch, code, su
     else:
         with pytest.raises(VoiceProviderError):
             await call
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "overrides,fragment",
+    [
+        ({"voice": ""}, "speaker ID"),
+        ({"response_format": "flac"}, "mp3, wav, pcm, or ogg_opus"),
+        ({"sample_rate": 11025}, "sample rate"),
+        ({"speed": 3}, "between 0.5 and 2"),
+        ({"speed": 0.1}, "between 0.5 and 2"),
+        ({"speed": float("nan")}, "between 0.5 and 2"),
+    ],
+)
+async def test_tts_rejects_invalid_voice_format_sample_rate_and_speed(
+    monkeypatch, overrides, fragment
+):
+    transport(monkeypatch, lambda r: pytest.fail("no HTTP request expected"))
+    with pytest.raises(VoiceProviderError, match=fragment):
+        await VolcengineTTSAdapter().synthesize("hello", tts(**overrides))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("api_key", ["", "***"])
+async def test_missing_speech_credentials_are_rejected_before_any_request(monkeypatch, api_key):
+    transport(monkeypatch, lambda r: pytest.fail("no HTTP request expected"))
+    with pytest.raises(VoiceProviderError, match="API key"):
+        await VolcengineTTSAdapter().synthesize("hello", tts(api_key=api_key))
+    with pytest.raises(VoiceProviderError, match="API key"):
+        await VolcengineSTTAdapter().transcribe(pcm_to_wav(b"\0\0", 16000), stt(api_key=api_key))
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fmt,mime",
+    [
+        ("mp3", "audio/mpeg"),
+        ("pcm", "audio/pcm;rate=24000;channels=1"),
+        ("ogg_opus", "audio/ogg"),
+    ],
+)
+async def test_tts_audio_params_resource_override_and_content_type_mapping(monkeypatch, fmt, mime):
+    pcm = b"\x01\x02\x03\x04"
+
+    def handle(request):
+        assert request.headers["X-Api-Resource-Id"] == "custom-resource"
+        req = json.loads(request.content)["req_params"]
+        assert req["audio_params"] == {"format": fmt, "sample_rate": 24000}
+        assert "additions" not in req
+        return httpx.Response(
+            200, text=event(data=base64.b64encode(pcm).decode()) + event(20000000)
+        )
+
+    transport(monkeypatch, handle)
+    audio, content_type = await VolcengineTTSAdapter().synthesize(
+        "hello", tts(response_format=fmt, resource_id="custom-resource")
+    )
+    assert (audio, content_type) == (pcm, mime)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "respond,fragment",
+    [
+        (lambda r: httpx.Response(401, text="private speech-secret body"), "code 401"),
+        (lambda r: httpx.Response(500, json={"error": "private speech-secret body"}), "code 500"),
+        (failing(httpx.ConnectError("connection refused")), "connection failed or timed out"),
+        (failing(httpx.ReadTimeout("too slow")), "connection failed or timed out"),
+    ],
+)
+async def test_tts_http_and_transport_failures_do_not_leak_details(monkeypatch, respond, fragment):
+    transport(monkeypatch, respond)
+    with pytest.raises(VoiceProviderError, match=fragment) as caught:
+        await VolcengineTTSAdapter().synthesize("private text", tts())
+    assert "speech-secret" not in str(caught.value)
+    assert "private text" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_stt_rejects_empty_audio_before_any_request(monkeypatch):
+    transport(monkeypatch, lambda r: pytest.fail("no HTTP request expected"))
+    with pytest.raises(VoiceProviderError, match="No audio data"):
+        await VolcengineSTTAdapter().transcribe(b"", stt())
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "respond,fragment",
+    [
+        (lambda r: httpx.Response(403, text="private speech-secret body"), "code 403"),
+        (failing(httpx.ReadTimeout("too slow")), "connection failed or timed out"),
+        (
+            lambda r: httpx.Response(
+                200, headers={"X-Api-Status-Code": "20000000"}, text="{not-json"
+            ),
+            "Malformed Volcengine STT response",
+        ),
+        (
+            lambda r: httpx.Response(
+                200, headers={"X-Api-Status-Code": "20000000"}, json={"result": {}}
+            ),
+            "no transcript",
+        ),
+    ],
+)
+async def test_stt_http_transport_and_payload_failures_do_not_leak_details(
+    monkeypatch, respond, fragment
+):
+    transport(monkeypatch, respond)
+    with pytest.raises(VoiceProviderError, match=fragment) as caught:
+        await VolcengineSTTAdapter().transcribe(pcm_to_wav(b"\0\0", 16000), stt())
+    assert "speech-secret" not in str(caught.value)
+    assert "private speech-secret body" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_stt_cues_skip_unusable_timestamp_rows(monkeypatch):
+    def handle(request):
+        return httpx.Response(
+            200,
+            headers={"X-Api-Status-Code": "20000000"},
+            json={
+                "result": {
+                    "text": "keep drop",
+                    "utterances": [
+                        {"start_time": 120, "end_time": 1200, "text": "keep"},
+                        {"start_time": 2000, "end_time": 500, "text": "backwards"},
+                        {"start_time": 300, "text": "no-end"},
+                        {"text": "no-times"},
+                        {"start_time": "x", "end_time": "y", "text": "junk"},
+                        "not-a-dict",
+                    ],
+                }
+            },
+        )
+
+    transport(monkeypatch, handle)
+    cues = await VolcengineSTTAdapter().transcribe_cues(pcm_to_wav(b"\0\0", 16000), stt())
+    assert [(c.start_seconds, c.end_seconds, c.text, c.timed) for c in cues] == [
+        (0.12, 1.2, "keep", True)
+    ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "text,utterances,expected",
+    [
+        ("hello", [], [(0.0, 0.0, "hello", False)]),
+        ("", [], []),
+        ("   ", [{"start_time": 2000, "end_time": 500, "text": "backwards"}], []),
+        (
+            "hello",
+            [{"start_time": 2000, "end_time": 500, "text": "backwards"}],
+            [(0.0, 0.0, "hello", False)],
+        ),
+    ],
+)
+async def test_stt_cues_fall_back_to_one_untimed_cue_without_usable_timestamps(
+    monkeypatch, text, utterances, expected
+):
+    def handle(request):
+        return httpx.Response(
+            200,
+            headers={"X-Api-Status-Code": "20000000"},
+            json={"result": {"text": text, "utterances": utterances}},
+        )
+
+    transport(monkeypatch, handle)
+    cues = await VolcengineSTTAdapter().transcribe_cues(pcm_to_wav(b"\0\0", 16000), stt())
+    assert [(c.start_seconds, c.end_seconds, c.text, c.timed) for c in cues] == expected
 
 
 def catalog(provider="volcengine_speech", model="seed-tts-2.0"):
