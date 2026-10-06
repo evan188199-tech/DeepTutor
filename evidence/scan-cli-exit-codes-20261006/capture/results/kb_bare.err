@@ -1,0 +1,5 @@
+Usage: python -m deeptutor_cli kb [OPTIONS] COMMAND [ARGS]...
+Try 'python -m deeptutor_cli kb --help' for help.
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ Missing command.                                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯

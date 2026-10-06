@@ -9,7 +9,7 @@
 ## 0. 运行环境
 
 - typer 0.26.8 / click 8.4.2（`/Users/Shared/DeepTutor/.venv`；pyproject.toml:35 只约束 `typer>=0.9.0`，click 版本未钉）。
-- 动态用例 14 个：`data/cases.tsv`（逐用例 exit / stdout / stderr 字节数）；原始捕获在 `data/results/`；脚本在 `scripts/`。
+- 动态用例 14 个：`capture/cases.tsv`（逐用例 exit / stdout / stderr 字节数）；原始捕获在 `capture/results/`；脚本在 `scripts/`。
 
 ## 1. 全量命令退出码表（静态，path:line 可复核）
 
@@ -160,7 +160,7 @@
 | `session show bogus-id` | 1 | 36B | 0 | ✗ 错误在 stdout |
 | `doctor --format json` | 1 | 1179B | 0 | ✔（沙箱无 LLM 配置，必检失败→1，与 doctor.py:74-75 一致；本次输出为纯 JSON，无日志混入） |
 
-原始数据：`data/results/*.{code,out,err}`、汇总 `data/cases.tsv`。
+原始数据：`capture/results/*.{code,out,err}`、汇总 `capture/cases.tsv`。
 
 ## 3. `--json` 污染分析
 
@@ -168,7 +168,7 @@
 
 - CLI 入口 import 时即 `configure_logging()`（deeptutor_cli/main.py:29）。
 - `console_output` 默认 True（deeptutor/logging/config.py:12），处理器挂 **sys.stdout**（deeptutor/logging/configure.py:55）；loguru 桥接后同样进 stdlib→stdout（loguru_bridge.py:16-27）。
-- 动态证明 `scripts/pollution_probe.py`（结果 `data/probe_stdout_log_pollution.out`）：任一库代码 `logging.warning(...)` 的日志行与命令数据同流混排：
+- 动态证明 `scripts/pollution_probe.py`（结果 `capture/probe_stdout_log_pollution.out`）：任一库代码 `logging.warning(...)` 的日志行与命令数据同流混排：
   ```
   WARNING deeptutor.test - POLLUTION-PROBE log line on stdout
   {} JSON-DATA-MARKER
@@ -178,7 +178,7 @@
 
 ### 3.2 JSON 被 Rich markup 吞字符 ✗ `[dyn]`
 
-`console.print(json.dumps(...))`（默认 markup=True）会静默删除 `[...]`、`[/]` 序列。Rich 层实测（`scripts/markup_probe.py`，输出 `data/markup_probe.txt`）：
+`console.print(json.dumps(...))`（默认 markup=True）会静默删除 `[...]`、`[/]` 序列。Rich 层实测（`scripts/markup_probe.py`，输出 `capture/markup_probe.txt`）：
 
 - 输入 `{"title": "quiz [review] draft", "note": "x[/]y", "ok": true}`
 - `console.print` 输出 → `{"title": "quiz  draft", "note": "xy", "ok": true}`（**数据损坏**）
@@ -235,7 +235,7 @@
 
 ```bash
 cd <沙箱CWD>
-DEEPTUTOR_HOME=$PWD/home PYTHONPATH=<worktree> bash scripts/run_cases.sh   # 14 用例 → data/results/
+DEEPTUTOR_HOME=$PWD/home PYTHONPATH=<worktree> bash scripts/run_cases.sh   # 14 用例 → capture/results/
 DEEPTUTOR_HOME=$PWD/home PYTHONPATH=<worktree> python scripts/pollution_probe.py
 python scripts/markup_probe.py
 sha256sum -c SHA256SUMS

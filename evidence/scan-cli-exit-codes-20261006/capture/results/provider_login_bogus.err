@@ -1,0 +1,6 @@
+Usage: python -m deeptutor_cli provider login [OPTIONS] PROVIDER
+Try 'python -m deeptutor_cli provider login --help' for help.
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ Invalid value: Unknown provider `bogus`. Supported: openai-codex,            │
+│ github-copilot, codebuddy                                                    │
+╰──────────────────────────────────────────────────────────────────────────────╯

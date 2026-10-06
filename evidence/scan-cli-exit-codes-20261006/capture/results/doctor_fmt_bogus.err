@@ -1,0 +1,5 @@
+Usage: python -m deeptutor_cli doctor [OPTIONS] [TARGET]
+Try 'python -m deeptutor_cli doctor --help' for help.
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ Invalid value for --format: must be 'rich' or 'json'                         │
+╰──────────────────────────────────────────────────────────────────────────────╯

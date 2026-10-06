@@ -1,0 +1,5 @@
+Usage: python -m deeptutor_cli [OPTIONS] COMMAND [ARGS]...
+Try 'python -m deeptutor_cli --help' for help.
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ No such command 'bogus-cmd'.                                                 │
+╰──────────────────────────────────────────────────────────────────────────────╯

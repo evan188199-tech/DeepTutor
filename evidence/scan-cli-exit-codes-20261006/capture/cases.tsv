@@ -1,0 +1,15 @@
+case	exit	stdout_bytes	stderr_bytes	intent
+bogus_cmd	2	0	659	unknown top-level command -> usage error
+chat_bad_config_json	2	0	754	chat --config-json invalid -> clean usage error
+doctor_fmt_bogus	2	0	664	doctor --format invalid -> BadParameter
+doctor_json	1	1179	0	doctor --format json offline; required check fails in sandbox
+help	0	3123	0	--help
+kb_bare	2	0	665	bare group (missing command)
+kb_bogus_sub	2	0	665	unknown subcommand
+kb_list_json	0	3	0	kb list --format json, empty sandbox
+memory_show_bogus	1	149	0	memory show unknown doc
+noargs	2	3122	0	bare app, no_args_is_help
+plugin_info_bogus	1	19	0	plugin info unknown name
+provider_login_bogus	2	0	765	provider login unknown provider
+run_bad_config_json	1	0	7820	run --config-json invalid -> uncaught traceback
+session_show_bogus	1	36	0	session show nonexistent id

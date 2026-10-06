@@ -1,0 +1,88 @@
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /Users/Shared/DeepTutor/dt-agen897-exitcodes-wt/deeptutor_cli/common.py:107  │
+│ in parse_json_object                                                         │
+│                                                                              │
+│   104 │   if not normalized:                                                 │
+│   105 │   │   return {}                                                      │
+│   106 │   try:                                                               │
+│ ❱ 107 │   │   value = json.loads(normalized)                                 │
+│   108 │   except (json.JSONDecodeError, TypeError) as exc:                   │
+│   109 │   │   raise ValueError(f"Invalid JSON config: {exc}") from exc       │
+│   110 │   if not isinstance(value, dict):                                    │
+│                                                                              │
+│ /Users/xzh/.local/share/uv/python/cpython-3.13.13-macos-aarch64-none/lib/pyt │
+│ hon3.13/json/__init__.py:352 in loads                                        │
+│                                                                              │
+│   349 │   if (cls is None and object_hook is None and                        │
+│   350 │   │   │   parse_int is None and parse_float is None and              │
+│   351 │   │   │   parse_constant is None and object_pairs_hook is None and   │
+│       not kw):                                                               │
+│ ❱ 352 │   │   return _default_decoder.decode(s)                              │
+│   353 │   if cls is None:                                                    │
+│   354 │   │   cls = JSONDecoder                                              │
+│   355 │   if object_hook is not None:                                        │
+│                                                                              │
+│ /Users/xzh/.local/share/uv/python/cpython-3.13.13-macos-aarch64-none/lib/pyt │
+│ hon3.13/json/decoder.py:345 in decode                                        │
+│                                                                              │
+│   342 │   │   containing a JSON document).                                   │
+│   343 │   │                                                                  │
+│   344 │   │   """                                                            │
+│ ❱ 345 │   │   obj, end = self.raw_decode(s, idx=_w(s, 0).end())              │
+│   346 │   │   end = _w(s, end).end()                                         │
+│   347 │   │   if end != len(s):                                              │
+│   348 │   │   │   raise JSONDecodeError("Extra data", s, end)                │
+│                                                                              │
+│ /Users/xzh/.local/share/uv/python/cpython-3.13.13-macos-aarch64-none/lib/pyt │
+│ hon3.13/json/decoder.py:361 in raw_decode                                    │
+│                                                                              │
+│   358 │   │                                                                  │
+│   359 │   │   """                                                            │
+│   360 │   │   try:                                                           │
+│ ❱ 361 │   │   │   obj, end = self.scan_once(s, idx)                          │
+│   362 │   │   except StopIteration as err:                                   │
+│   363 │   │   │   raise JSONDecodeError("Expecting value", s, err.value)     │
+│       from None                                                              │
+│   364 │   │   return obj, end                                                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+JSONDecodeError: Expecting property name enclosed in double quotes: line 1 
+column 2 (char 1)
+
+The above exception was the direct cause of the following exception:
+
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /Users/Shared/DeepTutor/dt-agen897-exitcodes-wt/deeptutor_cli/main.py:111 in │
+│ run_capability                                                               │
+│                                                                              │
+│   108 │                                                                      │
+│   109 │   from .common import run_turn_and_render                            │
+│   110 │                                                                      │
+│ ❱ 111 │   request = build_turn_request(                                      │
+│   112 │   │   content=message,                                               │
+│   113 │   │   capability=capability,                                         │
+│   114 │   │   session_id=session,                                            │
+│                                                                              │
+│ /Users/Shared/DeepTutor/dt-agen897-exitcodes-wt/deeptutor_cli/common.py:842  │
+│ in build_turn_request                                                        │
+│                                                                              │
+│   839 │   notebook_refs: list[str],                                          │
+│   840 │   history_refs: list[str],                                           │
+│   841 ) -> TurnRequest:                                                      │
+│ ❱ 842 │   config = parse_json_object(config_json)                            │
+│   843 │   config.update(parse_config_items(config_items))                    │
+│   844 │   return TurnRequest(                                                │
+│   845 │   │   content=content,                                               │
+│                                                                              │
+│ /Users/Shared/DeepTutor/dt-agen897-exitcodes-wt/deeptutor_cli/common.py:109  │
+│ in parse_json_object                                                         │
+│                                                                              │
+│   106 │   try:                                                               │
+│   107 │   │   value = json.loads(normalized)                                 │
+│   108 │   except (json.JSONDecodeError, TypeError) as exc:                   │
+│ ❱ 109 │   │   raise ValueError(f"Invalid JSON config: {exc}") from exc       │
+│   110 │   if not isinstance(value, dict):                                    │
+│   111 │   │   raise ValueError("JSON config must be an object.")             │
+│   112 │   return value                                                       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+ValueError: Invalid JSON config: Expecting property name enclosed in double 
+quotes: line 1 column 2 (char 1)

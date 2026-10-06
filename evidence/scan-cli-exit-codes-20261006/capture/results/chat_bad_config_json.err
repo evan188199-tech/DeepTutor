@@ -1,0 +1,6 @@
+Usage: python -m deeptutor_cli chat [OPTIONS] COMMAND [ARGS]...
+Try 'python -m deeptutor_cli chat --help' for help.
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ Invalid value: Invalid JSON config: Expecting property name enclosed in      │
+│ double quotes: line 1 column 2 (char 1)                                      │
+╰──────────────────────────────────────────────────────────────────────────────╯

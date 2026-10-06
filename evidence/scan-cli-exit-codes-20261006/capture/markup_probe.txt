@@ -1,0 +1,2 @@
+console.print(json): OK -> '{"title": "quiz  draft", "note": "xy", "ok": true}\n'
+console.print_json : OK -> '{\n  "title": "quiz [review] draft",\n  "note": "x[/]y",\n  "ok": true\n}\n'
