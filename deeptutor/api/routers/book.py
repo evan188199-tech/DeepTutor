@@ -12,11 +12,12 @@ import asyncio
 import hashlib
 import logging
 import time
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
+from deeptutor.api.error_models import ErrorDetail
 from deeptutor.api.utils.http_headers import content_disposition
 from deeptutor.book import progress as progress_ops
 from deeptutor.book.errors import BookPausedError
@@ -60,6 +61,67 @@ def _book_paused_http(exc: BookPausedError) -> HTTPException:
         status_code=409,
         detail={"code": "book_paused", "message": str(exc)},
     )
+
+
+class BookPausedErrorDetail(ErrorDetail):
+    """409 body when a paused book rejects generation work (``book_paused``)."""
+
+    code: Literal["book_paused"]
+
+
+class BookRevisionRequiredErrorDetail(ErrorDetail):
+    """409 body when a shared edit omits ``expected_revision``."""
+
+    code: Literal["book_revision_required"]
+    current_revision: int
+
+
+class BookRevisionConflictErrorDetail(ErrorDetail):
+    """409 body when ``expected_revision`` is behind the shared book."""
+
+    code: Literal["book_revision_conflict"]
+    expected_revision: int
+    current_revision: int
+
+
+class BookPausedErrorResponse(BaseModel):
+    """``{"detail": BookPausedErrorDetail}`` — endpoints with only the paused guard."""
+
+    detail: BookPausedErrorDetail
+
+
+class BookRevisionErrorResponse(BaseModel):
+    """``{"detail": ...}`` for the strict shared-revision guard."""
+
+    detail: BookRevisionRequiredErrorDetail | BookRevisionConflictErrorDetail
+
+
+class BookMutationErrorResponse(BaseModel):
+    """``{"detail": ...}`` for endpoints that hit the paused *and* revision guards."""
+
+    detail: (
+        BookPausedErrorDetail | BookRevisionRequiredErrorDetail | BookRevisionConflictErrorDetail
+    )
+
+
+_PAUSED_409 = {
+    409: {
+        "model": BookPausedErrorResponse,
+        "description": "Book is paused: generation work was rejected; resume it first.",
+    }
+}
+_REVISION_409 = {
+    409: {
+        "model": BookRevisionErrorResponse,
+        "description": "Shared-book revision guard: missing or stale `expected_revision`.",
+    }
+}
+_MUTATION_409 = {
+    409: {
+        "model": BookMutationErrorResponse,
+        "description": "Shared-book revision guard, or the book is paused.",
+    }
+}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -838,7 +900,7 @@ async def create_book(req: CreateBookRequest) -> dict[str, Any]:
     }
 
 
-@router.post("/books/confirm-proposal")
+@router.post("/books/confirm-proposal", responses=_REVISION_409)
 async def confirm_proposal(req: ConfirmProposalRequest) -> dict[str, Any]:
     """Stage 2: user confirms (and possibly edits) the proposal → SpineAgent."""
     resolved = _resolve_book_or_404(req.book_id, edit=True)
@@ -869,7 +931,7 @@ async def confirm_proposal(req: ConfirmProposalRequest) -> dict[str, Any]:
     }
 
 
-@router.post("/books/confirm-spine")
+@router.post("/books/confirm-spine", responses=_REVISION_409)
 async def confirm_spine(req: ConfirmSpineRequest) -> dict[str, Any]:
     """Stage 3: user confirms the spine → create pending page shells."""
     resolved = _resolve_book_or_404(req.book_id, edit=True)
@@ -901,7 +963,7 @@ async def confirm_spine(req: ConfirmSpineRequest) -> dict[str, Any]:
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
-@router.post("/books/compile-page")
+@router.post("/books/compile-page", responses=_PAUSED_409)
 async def compile_page(req: CompilePageRequest) -> dict[str, Any]:
     """Drive the compiler for the page the user just opened (current-page priority)."""
     resolved = _resolve_book_or_404(req.book_id, edit=True)
@@ -927,7 +989,7 @@ async def compile_page(req: CompilePageRequest) -> dict[str, Any]:
     return {"page": page.model_dump(mode="json"), "book_revision": revision}
 
 
-@router.post("/books/regenerate-block")
+@router.post("/books/regenerate-block", responses=_MUTATION_409)
 async def regenerate_block(req: RegenerateBlockRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -969,7 +1031,7 @@ def _coerce_content_type(name: str) -> ContentType:
         raise HTTPException(status_code=400, detail=f"Unknown content type: {name}") from exc
 
 
-@router.post("/books/insert-block")
+@router.post("/books/insert-block", responses=_MUTATION_409)
 async def insert_block(req: InsertBlockRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1000,7 +1062,7 @@ async def insert_block(req: InsertBlockRequest) -> dict[str, Any]:
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
 
 
-@router.post("/books/delete-block")
+@router.post("/books/delete-block", responses=_REVISION_409)
 async def delete_block(req: DeleteBlockRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1017,7 +1079,7 @@ async def delete_block(req: DeleteBlockRequest) -> dict[str, Any]:
     return {"ok": True, "book_revision": revision}
 
 
-@router.post("/books/move-block")
+@router.post("/books/move-block", responses=_REVISION_409)
 async def move_block(req: MoveBlockRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1039,7 +1101,7 @@ async def move_block(req: MoveBlockRequest) -> dict[str, Any]:
     return {"ok": True, "book_revision": revision}
 
 
-@router.post("/books/change-block-type")
+@router.post("/books/change-block-type", responses=_MUTATION_409)
 async def change_block_type(req: ChangeBlockTypeRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1069,7 +1131,7 @@ async def change_block_type(req: ChangeBlockTypeRequest) -> dict[str, Any]:
     return {"block": block.model_dump(mode="json"), "book_revision": revision}
 
 
-@router.post("/books/deep-dive")
+@router.post("/books/deep-dive", responses=_MUTATION_409)
 async def deep_dive(req: DeepDiveRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1218,7 +1280,7 @@ async def quiz_attempt(req: QuizAttemptRequest) -> dict[str, Any]:
     return {"progress": progress.model_dump(mode="json")}
 
 
-@router.post("/books/update-block")
+@router.post("/books/update-block", responses=_REVISION_409)
 async def update_block(req: UpdateBlockRequest) -> dict[str, Any]:
     """Edit a block's prose in place.
 
@@ -1313,7 +1375,7 @@ async def book_health(book_id: str) -> dict[str, Any]:
     return {"kb_drift": drift, "log_health": log, "generation": generation}
 
 
-@router.post("/books/{book_id}/refresh-fingerprints")
+@router.post("/books/{book_id}/refresh-fingerprints", responses=_REVISION_409)
 async def refresh_fingerprints(
     book_id: str,
     force: bool = False,
@@ -1343,7 +1405,7 @@ async def refresh_fingerprints(
     return {**result, "book_revision": revision}
 
 
-@router.post("/books/supplement")
+@router.post("/books/supplement", responses=_MUTATION_409)
 async def supplement(req: SupplementRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
@@ -1438,7 +1500,7 @@ async def pause_book(req: PauseBookRequest) -> dict[str, Any]:
     return {"pages": [p.model_dump(mode="json") for p in pages], "book_revision": revision}
 
 
-@router.post("/books/rebuild")
+@router.post("/books/rebuild", responses=_REVISION_409)
 async def rebuild_book(req: RebuildBookRequest) -> dict[str, Any]:
     resolved = _resolve_book_or_404(req.book_id, edit=True)
     engine = resolved.engine
