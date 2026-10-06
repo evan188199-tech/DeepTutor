@@ -1,0 +1,1074 @@
+{
+  "runs": {
+    "A_baseline": {
+      "total_errors": 489,
+      "precommit_surface_errors": 321,
+      "error_codes_total": {
+        "union-attr": 191,
+        "arg-type": 121,
+        "assignment": 41,
+        "import-untyped": 36,
+        "index": 23,
+        "return-value": 16,
+        "var-annotated": 13,
+        "attr-defined": 12,
+        "misc": 8,
+        "dict-item": 8,
+        "override": 5,
+        "operator": 4,
+        "list-item": 4,
+        "no-redef": 4,
+        "type-var": 2,
+        "str-bytes-safe": 1
+      },
+      "per_directory": {
+        "deeptutor/services": {
+          "errors": 212,
+          "error_files": 81,
+          "codes": {
+            "union-attr": 81,
+            "arg-type": 53,
+            "import-untyped": 25,
+            "assignment": 10,
+            "return-value": 9
+          },
+          "gate_would_surface": 171
+        },
+        "deeptutor/api": {
+          "errors": 65,
+          "error_files": 20,
+          "codes": {
+            "arg-type": 29,
+            "union-attr": 10,
+            "assignment": 8,
+            "var-annotated": 6,
+            "attr-defined": 4
+          },
+          "gate_would_surface": 1
+        },
+        "deeptutor/agents": {
+          "errors": 63,
+          "error_files": 16,
+          "codes": {
+            "union-attr": 21,
+            "arg-type": 19,
+            "assignment": 12,
+            "override": 5,
+            "no-redef": 4
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/partners": {
+          "errors": 36,
+          "error_files": 9,
+          "codes": {
+            "union-attr": 21,
+            "arg-type": 6,
+            "assignment": 4,
+            "return-value": 3,
+            "import-untyped": 2
+          },
+          "gate_would_surface": 36
+        },
+        "deeptutor/tools": {
+          "errors": 26,
+          "error_files": 8,
+          "codes": {
+            "index": 9,
+            "arg-type": 6,
+            "assignment": 4,
+            "attr-defined": 3,
+            "import-untyped": 2
+          },
+          "gate_would_surface": 26
+        },
+        "deeptutor/learning": {
+          "errors": 26,
+          "error_files": 7,
+          "codes": {
+            "union-attr": 17,
+            "index": 6,
+            "import-untyped": 2,
+            "arg-type": 1
+          },
+          "gate_would_surface": 26
+        },
+        "deeptutor/video_learning": {
+          "errors": 18,
+          "error_files": 4,
+          "codes": {
+            "union-attr": 17,
+            "arg-type": 1
+          },
+          "gate_would_surface": 18
+        },
+        "deeptutor/multi_user": {
+          "errors": 10,
+          "error_files": 5,
+          "codes": {
+            "union-attr": 9,
+            "index": 1
+          },
+          "gate_would_surface": 10
+        },
+        "deeptutor/capabilities": {
+          "errors": 9,
+          "error_files": 8,
+          "codes": {
+            "import-untyped": 4,
+            "union-attr": 3,
+            "misc": 1,
+            "index": 1
+          },
+          "gate_would_surface": 9
+        },
+        "deeptutor/book": {
+          "errors": 6,
+          "error_files": 6,
+          "codes": {
+            "return-value": 3,
+            "assignment": 1,
+            "union-attr": 1,
+            "dict-item": 1
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/co_writer": {
+          "errors": 6,
+          "error_files": 1,
+          "codes": {
+            "union-attr": 5,
+            "arg-type": 1
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/runtime": {
+          "errors": 5,
+          "error_files": 3,
+          "codes": {
+            "union-attr": 3,
+            "assignment": 1,
+            "arg-type": 1
+          },
+          "gate_would_surface": 5
+        },
+        "deeptutor/reading": {
+          "errors": 3,
+          "error_files": 2,
+          "codes": {
+            "arg-type": 2,
+            "assignment": 1
+          },
+          "gate_would_surface": 3
+        },
+        "deeptutor_cli": {
+          "errors": 2,
+          "error_files": 1,
+          "codes": {
+            "arg-type": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/utils": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "import-untyped": 1
+          },
+          "gate_would_surface": 1
+        },
+        "deeptutor/knowledge": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "union-attr": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    },
+    "B_firststep": {
+      "total_errors": 946,
+      "precommit_surface_errors": 647,
+      "error_codes_total": {
+        "no-any-return": 374,
+        "union-attr": 226,
+        "arg-type": 128,
+        "index": 53,
+        "assignment": 48,
+        "import-untyped": 36,
+        "var-annotated": 15,
+        "return-value": 15,
+        "attr-defined": 14,
+        "misc": 8,
+        "dict-item": 8,
+        "override": 5,
+        "operator": 4,
+        "list-item": 4,
+        "no-redef": 4,
+        "type-var": 2,
+        "str-bytes-safe": 1,
+        "return": 1
+      },
+      "per_directory": {
+        "deeptutor/services": {
+          "errors": 385,
+          "error_files": 127,
+          "codes": {
+            "no-any-return": 169,
+            "union-attr": 81,
+            "arg-type": 55,
+            "import-untyped": 25,
+            "assignment": 12
+          },
+          "gate_would_surface": 322
+        },
+        "deeptutor/api": {
+          "errors": 138,
+          "error_files": 28,
+          "codes": {
+            "no-any-return": 36,
+            "arg-type": 30,
+            "index": 30,
+            "assignment": 12,
+            "union-attr": 11
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/agents": {
+          "errors": 100,
+          "error_files": 28,
+          "codes": {
+            "no-any-return": 36,
+            "union-attr": 21,
+            "arg-type": 19,
+            "assignment": 13,
+            "override": 5
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/learning": {
+          "errors": 87,
+          "error_files": 18,
+          "codes": {
+            "union-attr": 51,
+            "no-any-return": 20,
+            "index": 9,
+            "arg-type": 5,
+            "import-untyped": 2
+          },
+          "gate_would_surface": 87
+        },
+        "deeptutor/partners": {
+          "errors": 67,
+          "error_files": 19,
+          "codes": {
+            "no-any-return": 31,
+            "union-attr": 21,
+            "arg-type": 6,
+            "assignment": 4,
+            "return-value": 3
+          },
+          "gate_would_surface": 67
+        },
+        "deeptutor/tools": {
+          "errors": 30,
+          "error_files": 10,
+          "codes": {
+            "index": 9,
+            "arg-type": 6,
+            "assignment": 4,
+            "no-any-return": 4,
+            "attr-defined": 3
+          },
+          "gate_would_surface": 30
+        },
+        "deeptutor/video_learning": {
+          "errors": 22,
+          "error_files": 4,
+          "codes": {
+            "union-attr": 17,
+            "no-any-return": 4,
+            "arg-type": 1
+          },
+          "gate_would_surface": 22
+        },
+        "deeptutor/multi_user": {
+          "errors": 19,
+          "error_files": 10,
+          "codes": {
+            "union-attr": 9,
+            "no-any-return": 9,
+            "index": 1
+          },
+          "gate_would_surface": 19
+        },
+        "deeptutor/book": {
+          "errors": 16,
+          "error_files": 9,
+          "codes": {
+            "no-any-return": 10,
+            "return-value": 3,
+            "assignment": 1,
+            "union-attr": 1,
+            "dict-item": 1
+          },
+          "gate_would_surface": 16
+        },
+        "deeptutor/capabilities": {
+          "errors": 15,
+          "error_files": 11,
+          "codes": {
+            "no-any-return": 6,
+            "import-untyped": 4,
+            "union-attr": 3,
+            "misc": 1,
+            "index": 1
+          },
+          "gate_would_surface": 15
+        },
+        "deeptutor/runtime": {
+          "errors": 13,
+          "error_files": 6,
+          "codes": {
+            "no-any-return": 8,
+            "union-attr": 3,
+            "assignment": 1,
+            "arg-type": 1
+          },
+          "gate_would_surface": 13
+        },
+        "deeptutor/reading": {
+          "errors": 11,
+          "error_files": 7,
+          "codes": {
+            "no-any-return": 8,
+            "arg-type": 2,
+            "assignment": 1
+          },
+          "gate_would_surface": 11
+        },
+        "deeptutor/co_writer": {
+          "errors": 11,
+          "error_files": 2,
+          "codes": {
+            "no-any-return": 5,
+            "union-attr": 5,
+            "arg-type": 1
+          },
+          "gate_would_surface": 11
+        },
+        "deeptutor/app": {
+          "errors": 11,
+          "error_files": 2,
+          "codes": {
+            "no-any-return": 11
+          },
+          "gate_would_surface": 11
+        },
+        "deeptutor/knowledge": {
+          "errors": 8,
+          "error_files": 2,
+          "codes": {
+            "no-any-return": 7,
+            "union-attr": 1
+          },
+          "gate_would_surface": 8
+        },
+        "deeptutor_cli": {
+          "errors": 6,
+          "error_files": 3,
+          "codes": {
+            "no-any-return": 4,
+            "arg-type": 2
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/visualizers": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "no-any-return": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/plugins": {
+          "errors": 2,
+          "error_files": 1,
+          "codes": {
+            "no-any-return": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/textbook_struct": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "no-any-return": 1
+          },
+          "gate_would_surface": 1
+        },
+        "deeptutor/core": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "no-any-return": 1
+          },
+          "gate_would_surface": 1
+        },
+        "deeptutor/utils": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "import-untyped": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    },
+    "C_annotations": {
+      "total_errors": 1940,
+      "precommit_surface_errors": 1231,
+      "error_codes_total": {
+        "no-untyped-def": 1451,
+        "union-attr": 191,
+        "arg-type": 121,
+        "assignment": 41,
+        "import-untyped": 36,
+        "index": 23,
+        "return-value": 16,
+        "var-annotated": 13,
+        "attr-defined": 12,
+        "misc": 8,
+        "dict-item": 8,
+        "override": 5,
+        "operator": 4,
+        "list-item": 4,
+        "no-redef": 4,
+        "type-var": 2,
+        "str-bytes-safe": 1
+      },
+      "per_directory": {
+        "deeptutor/learning": {
+          "errors": 584,
+          "error_files": 26,
+          "codes": {
+            "no-untyped-def": 558,
+            "union-attr": 17,
+            "index": 6,
+            "import-untyped": 2,
+            "arg-type": 1
+          },
+          "gate_would_surface": 584
+        },
+        "deeptutor/api": {
+          "errors": 504,
+          "error_files": 34,
+          "codes": {
+            "no-untyped-def": 439,
+            "arg-type": 29,
+            "union-attr": 10,
+            "assignment": 8,
+            "var-annotated": 6
+          },
+          "gate_would_surface": 27
+        },
+        "deeptutor/services": {
+          "errors": 491,
+          "error_files": 165,
+          "codes": {
+            "no-untyped-def": 279,
+            "union-attr": 81,
+            "arg-type": 53,
+            "import-untyped": 25,
+            "assignment": 10
+          },
+          "gate_would_surface": 354
+        },
+        "deeptutor/agents": {
+          "errors": 95,
+          "error_files": 22,
+          "codes": {
+            "no-untyped-def": 32,
+            "union-attr": 21,
+            "arg-type": 19,
+            "assignment": 12,
+            "override": 5
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/partners": {
+          "errors": 62,
+          "error_files": 14,
+          "codes": {
+            "no-untyped-def": 26,
+            "union-attr": 21,
+            "arg-type": 6,
+            "assignment": 4,
+            "return-value": 3
+          },
+          "gate_would_surface": 62
+        },
+        "deeptutor/tools": {
+          "errors": 48,
+          "error_files": 18,
+          "codes": {
+            "no-untyped-def": 22,
+            "index": 9,
+            "arg-type": 6,
+            "assignment": 4,
+            "attr-defined": 3
+          },
+          "gate_would_surface": 48
+        },
+        "deeptutor/knowledge": {
+          "errors": 28,
+          "error_files": 4,
+          "codes": {
+            "no-untyped-def": 27,
+            "union-attr": 1
+          },
+          "gate_would_surface": 28
+        },
+        "deeptutor/capabilities": {
+          "errors": 24,
+          "error_files": 15,
+          "codes": {
+            "no-untyped-def": 15,
+            "import-untyped": 4,
+            "union-attr": 3,
+            "misc": 1,
+            "index": 1
+          },
+          "gate_would_surface": 24
+        },
+        "deeptutor/video_learning": {
+          "errors": 19,
+          "error_files": 4,
+          "codes": {
+            "union-attr": 17,
+            "no-untyped-def": 1,
+            "arg-type": 1
+          },
+          "gate_would_surface": 19
+        },
+        "deeptutor/co_writer": {
+          "errors": 16,
+          "error_files": 2,
+          "codes": {
+            "no-untyped-def": 10,
+            "union-attr": 5,
+            "arg-type": 1
+          },
+          "gate_would_surface": 16
+        },
+        "deeptutor/runtime": {
+          "errors": 14,
+          "error_files": 11,
+          "codes": {
+            "no-untyped-def": 9,
+            "union-attr": 3,
+            "assignment": 1,
+            "arg-type": 1
+          },
+          "gate_would_surface": 14
+        },
+        "deeptutor/multi_user": {
+          "errors": 13,
+          "error_files": 7,
+          "codes": {
+            "union-attr": 9,
+            "no-untyped-def": 3,
+            "index": 1
+          },
+          "gate_would_surface": 13
+        },
+        "deeptutor/book": {
+          "errors": 12,
+          "error_files": 11,
+          "codes": {
+            "no-untyped-def": 6,
+            "return-value": 3,
+            "assignment": 1,
+            "union-attr": 1,
+            "dict-item": 1
+          },
+          "gate_would_surface": 12
+        },
+        "deeptutor/reading": {
+          "errors": 8,
+          "error_files": 5,
+          "codes": {
+            "no-untyped-def": 5,
+            "arg-type": 2,
+            "assignment": 1
+          },
+          "gate_would_surface": 8
+        },
+        "deeptutor/app": {
+          "errors": 6,
+          "error_files": 1,
+          "codes": {
+            "no-untyped-def": 6
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/logging": {
+          "errors": 4,
+          "error_files": 1,
+          "codes": {
+            "no-untyped-def": 4
+          },
+          "gate_would_surface": 4
+        },
+        "deeptutor_cli": {
+          "errors": 4,
+          "error_files": 3,
+          "codes": {
+            "no-untyped-def": 2,
+            "arg-type": 2
+          },
+          "gate_would_surface": 4
+        },
+        "deeptutor/utils": {
+          "errors": 3,
+          "error_files": 2,
+          "codes": {
+            "no-untyped-def": 2,
+            "import-untyped": 1
+          },
+          "gate_would_surface": 3
+        },
+        "deeptutor/core": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "no-untyped-def": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/visualizers": {
+          "errors": 2,
+          "error_files": 1,
+          "codes": {
+            "no-untyped-def": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/config": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "no-untyped-def": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    },
+    "D_baseline_no_strict_optional": {
+      "total_errors": 144,
+      "precommit_surface_errors": 46,
+      "error_codes_total": {
+        "arg-type": 41,
+        "import-untyped": 36,
+        "assignment": 21,
+        "var-annotated": 14,
+        "attr-defined": 12,
+        "override": 5,
+        "union-attr": 4,
+        "no-redef": 4,
+        "dict-item": 3,
+        "misc": 2,
+        "index": 1,
+        "return-value": 1
+      },
+      "per_directory": {
+        "deeptutor/api": {
+          "errors": 46,
+          "error_files": 14,
+          "codes": {
+            "arg-type": 23,
+            "var-annotated": 6,
+            "assignment": 6,
+            "attr-defined": 4,
+            "dict-item": 3
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/services": {
+          "errors": 43,
+          "error_files": 35,
+          "codes": {
+            "import-untyped": 25,
+            "var-annotated": 6,
+            "attr-defined": 5,
+            "union-attr": 2,
+            "misc": 2
+          },
+          "gate_would_surface": 24
+        },
+        "deeptutor/agents": {
+          "errors": 33,
+          "error_files": 11,
+          "codes": {
+            "arg-type": 13,
+            "assignment": 9,
+            "override": 5,
+            "no-redef": 4,
+            "var-annotated": 2
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/tools": {
+          "errors": 13,
+          "error_files": 6,
+          "codes": {
+            "assignment": 4,
+            "arg-type": 4,
+            "attr-defined": 3,
+            "import-untyped": 2
+          },
+          "gate_would_surface": 13
+        },
+        "deeptutor/capabilities": {
+          "errors": 4,
+          "error_files": 4,
+          "codes": {
+            "import-untyped": 4
+          },
+          "gate_would_surface": 4
+        },
+        "deeptutor/partners": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "import-untyped": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/learning": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "import-untyped": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/utils": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "import-untyped": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    },
+    "E_truegate_no_stubs": {
+      "total_errors": 131,
+      "precommit_surface_errors": 33,
+      "error_codes_total": {
+        "arg-type": 37,
+        "import-untyped": 34,
+        "assignment": 17,
+        "var-annotated": 14,
+        "attr-defined": 9,
+        "override": 5,
+        "union-attr": 4,
+        "no-redef": 4,
+        "dict-item": 3,
+        "misc": 2,
+        "index": 1,
+        "return-value": 1
+      },
+      "per_directory": {
+        "deeptutor/api": {
+          "errors": 46,
+          "error_files": 14,
+          "codes": {
+            "arg-type": 23,
+            "var-annotated": 6,
+            "assignment": 6,
+            "attr-defined": 4,
+            "dict-item": 3
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/services": {
+          "errors": 43,
+          "error_files": 35,
+          "codes": {
+            "import-untyped": 25,
+            "var-annotated": 6,
+            "attr-defined": 5,
+            "union-attr": 2,
+            "misc": 2
+          },
+          "gate_would_surface": 24
+        },
+        "deeptutor/agents": {
+          "errors": 33,
+          "error_files": 11,
+          "codes": {
+            "arg-type": 13,
+            "assignment": 9,
+            "override": 5,
+            "no-redef": 4,
+            "var-annotated": 2
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/capabilities": {
+          "errors": 4,
+          "error_files": 4,
+          "codes": {
+            "import-untyped": 4
+          },
+          "gate_would_surface": 4
+        },
+        "deeptutor/partners": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "import-untyped": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/learning": {
+          "errors": 2,
+          "error_files": 2,
+          "codes": {
+            "import-untyped": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/utils": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "import-untyped": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    },
+    "F_hookenv": {
+      "total_errors": 97,
+      "precommit_surface_errors": 0,
+      "error_codes_total": {
+        "arg-type": 37,
+        "assignment": 17,
+        "var-annotated": 14,
+        "attr-defined": 9,
+        "override": 5,
+        "union-attr": 4,
+        "no-redef": 4,
+        "dict-item": 3,
+        "misc": 2,
+        "index": 1,
+        "return-value": 1
+      },
+      "per_directory": {
+        "deeptutor/api": {
+          "errors": 46,
+          "error_files": 14,
+          "codes": {
+            "arg-type": 23,
+            "var-annotated": 6,
+            "assignment": 6,
+            "attr-defined": 4,
+            "dict-item": 3
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/agents": {
+          "errors": 33,
+          "error_files": 11,
+          "codes": {
+            "arg-type": 13,
+            "assignment": 9,
+            "override": 5,
+            "no-redef": 4,
+            "var-annotated": 2
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/services": {
+          "errors": 18,
+          "error_files": 10,
+          "codes": {
+            "var-annotated": 6,
+            "attr-defined": 5,
+            "union-attr": 2,
+            "misc": 2,
+            "assignment": 2
+          },
+          "gate_would_surface": 0
+        }
+      }
+    },
+    "G_hookenv_strict_optional": {
+      "total_errors": 429,
+      "precommit_surface_errors": 262,
+      "error_codes_total": {
+        "union-attr": 189,
+        "arg-type": 115,
+        "assignment": 37,
+        "return-value": 16,
+        "index": 14,
+        "var-annotated": 13,
+        "attr-defined": 9,
+        "misc": 8,
+        "dict-item": 8,
+        "override": 5,
+        "operator": 4,
+        "list-item": 4,
+        "no-redef": 4,
+        "type-var": 2,
+        "str-bytes-safe": 1
+      },
+      "per_directory": {
+        "deeptutor/services": {
+          "errors": 187,
+          "error_files": 60,
+          "codes": {
+            "union-attr": 81,
+            "arg-type": 53,
+            "assignment": 10,
+            "return-value": 9,
+            "misc": 7
+          },
+          "gate_would_surface": 147
+        },
+        "deeptutor/api": {
+          "errors": 65,
+          "error_files": 20,
+          "codes": {
+            "arg-type": 29,
+            "union-attr": 10,
+            "assignment": 8,
+            "var-annotated": 6,
+            "attr-defined": 4
+          },
+          "gate_would_surface": 1
+        },
+        "deeptutor/agents": {
+          "errors": 63,
+          "error_files": 16,
+          "codes": {
+            "union-attr": 21,
+            "arg-type": 19,
+            "assignment": 12,
+            "override": 5,
+            "no-redef": 4
+          },
+          "gate_would_surface": 0
+        },
+        "deeptutor/partners": {
+          "errors": 34,
+          "error_files": 8,
+          "codes": {
+            "union-attr": 21,
+            "arg-type": 6,
+            "assignment": 4,
+            "return-value": 3
+          },
+          "gate_would_surface": 34
+        },
+        "deeptutor/learning": {
+          "errors": 24,
+          "error_files": 5,
+          "codes": {
+            "union-attr": 17,
+            "index": 6,
+            "arg-type": 1
+          },
+          "gate_would_surface": 24
+        },
+        "deeptutor/video_learning": {
+          "errors": 18,
+          "error_files": 4,
+          "codes": {
+            "union-attr": 17,
+            "arg-type": 1
+          },
+          "gate_would_surface": 18
+        },
+        "deeptutor/multi_user": {
+          "errors": 10,
+          "error_files": 5,
+          "codes": {
+            "union-attr": 9,
+            "index": 1
+          },
+          "gate_would_surface": 10
+        },
+        "deeptutor/book": {
+          "errors": 6,
+          "error_files": 6,
+          "codes": {
+            "return-value": 3,
+            "assignment": 1,
+            "union-attr": 1,
+            "dict-item": 1
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/co_writer": {
+          "errors": 6,
+          "error_files": 1,
+          "codes": {
+            "union-attr": 5,
+            "arg-type": 1
+          },
+          "gate_would_surface": 6
+        },
+        "deeptutor/runtime": {
+          "errors": 5,
+          "error_files": 3,
+          "codes": {
+            "union-attr": 3,
+            "assignment": 1,
+            "arg-type": 1
+          },
+          "gate_would_surface": 5
+        },
+        "deeptutor/capabilities": {
+          "errors": 5,
+          "error_files": 4,
+          "codes": {
+            "union-attr": 3,
+            "misc": 1,
+            "index": 1
+          },
+          "gate_would_surface": 5
+        },
+        "deeptutor/reading": {
+          "errors": 3,
+          "error_files": 2,
+          "codes": {
+            "arg-type": 2,
+            "assignment": 1
+          },
+          "gate_would_surface": 3
+        },
+        "deeptutor_cli": {
+          "errors": 2,
+          "error_files": 1,
+          "codes": {
+            "arg-type": 2
+          },
+          "gate_would_surface": 2
+        },
+        "deeptutor/knowledge": {
+          "errors": 1,
+          "error_files": 1,
+          "codes": {
+            "union-attr": 1
+          },
+          "gate_would_surface": 1
+        }
+      }
+    }
+  }
+}

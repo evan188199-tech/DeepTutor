@@ -1,0 +1,202 @@
+{
+  "deeptutor": {
+    "files": 3,
+    "loc": 17,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/agents": {
+    "files": 67,
+    "loc": 18855,
+    "type_ignores": 9,
+    "type_ignores_per_kloc": 0.48,
+    "in_precommit_gate": false,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/api": {
+    "files": 53,
+    "loc": 26928,
+    "type_ignores": 7,
+    "type_ignores_per_kloc": 0.26,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/app": {
+    "files": 6,
+    "loc": 897,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/book": {
+    "files": 43,
+    "loc": 10591,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/capabilities": {
+    "files": 71,
+    "loc": 14601,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/co_writer": {
+    "files": 4,
+    "loc": 1318,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/config": {
+    "files": 2,
+    "loc": 50,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/core": {
+    "files": 9,
+    "loc": 1084,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/events": {
+    "files": 2,
+    "loc": 220,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/i18n": {
+    "files": 3,
+    "loc": 183,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/knowledge": {
+    "files": 9,
+    "loc": 4498,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/learning": {
+    "files": 39,
+    "loc": 14869,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/logging": {
+    "files": 11,
+    "loc": 685,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/multi_user": {
+    "files": 20,
+    "loc": 3897,
+    "type_ignores": 3,
+    "type_ignores_per_kloc": 0.77,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/partners": {
+    "files": 31,
+    "loc": 12751,
+    "type_ignores": 5,
+    "type_ignores_per_kloc": 0.39,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/plugins": {
+    "files": 2,
+    "loc": 174,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/reading": {
+    "files": 20,
+    "loc": 6728,
+    "type_ignores": 9,
+    "type_ignores_per_kloc": 1.34,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/runtime": {
+    "files": 51,
+    "loc": 10750,
+    "type_ignores": 8,
+    "type_ignores_per_kloc": 0.74,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/services": {
+    "files": 428,
+    "loc": 105654,
+    "type_ignores": 44,
+    "type_ignores_per_kloc": 0.42,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/tools": {
+    "files": 34,
+    "loc": 9506,
+    "type_ignores": 2,
+    "type_ignores_per_kloc": 0.21,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/utils": {
+    "files": 9,
+    "loc": 2181,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/video_learning": {
+    "files": 11,
+    "loc": 3210,
+    "type_ignores": 3,
+    "type_ignores_per_kloc": 0.93,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor/visualizers": {
+    "files": 7,
+    "loc": 1273,
+    "type_ignores": 0,
+    "type_ignores_per_kloc": 0.0,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  },
+  "deeptutor_cli": {
+    "files": 23,
+    "loc": 5712,
+    "type_ignores": 1,
+    "type_ignores_per_kloc": 0.18,
+    "in_precommit_gate": true,
+    "note": "tools.* has pyproject override ignore_errors; services/rag, api/routers, agents, tests, scripts excluded by pre-commit"
+  }
+}
