@@ -280,6 +280,9 @@ jobs:
           YAML
           cp tests/fixtures/ci_model_catalog.json data/user/settings/model_catalog.json
 
+      - name: Check frontend contracts for app-to-schema drift
+        run: python scripts/export_frontend_contracts.py --check
+
       - name: Run Python tests
         run: |
           echo "🧪 Running Python tests on Python ${{ matrix.python-version }}"
