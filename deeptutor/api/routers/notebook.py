@@ -11,6 +11,11 @@ from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import BaseModel
 
 from deeptutor.agents.notebook import NotebookSummarizeAgent
+from deeptutor.api.routers._error_envelope import (
+    NotebookUnreadableErrorResponse,
+    envelope_ref_response,
+    envelope_responses,
+)
 from deeptutor.services.llm import clean_thinking_tags
 from deeptutor.services.notebook import notebook_manager
 from deeptutor.services.notebook.service import NotebookCorruptedError
@@ -189,7 +194,7 @@ async def health_check():
     return {"status": "healthy", "service": "notebook"}
 
 
-@router.get("/notebooks")
+@router.get("/notebooks", responses=envelope_responses(409, model=NotebookUnreadableErrorResponse))
 async def list_notebooks():
     """
     Get all notebook list
@@ -206,7 +211,10 @@ async def list_notebooks():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/notebooks/statistics")
+@router.get(
+    "/notebooks/statistics",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def get_statistics():
     """
     Get notebook statistics
@@ -223,7 +231,7 @@ async def get_statistics():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/notebooks")
+@router.post("/notebooks", responses=envelope_responses(409, model=NotebookUnreadableErrorResponse))
 async def create_notebook(request: CreateNotebookRequest):
     """
     Create new notebook
@@ -248,7 +256,10 @@ async def create_notebook(request: CreateNotebookRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/notebooks/{notebook_id}")
+@router.get(
+    "/notebooks/{notebook_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def get_notebook(notebook_id: str):
     """
     Get notebook details
@@ -272,7 +283,10 @@ async def get_notebook(notebook_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/notebooks/{notebook_id}")
+@router.put(
+    "/notebooks/{notebook_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
     """
     Update notebook information
@@ -303,7 +317,10 @@ async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/notebooks/{notebook_id}")
+@router.delete(
+    "/notebooks/{notebook_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def delete_notebook(notebook_id: str):
     """
     Delete notebook
@@ -327,7 +344,10 @@ async def delete_notebook(notebook_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/notebooks/actions/add-record")
+@router.post(
+    "/notebooks/actions/add-record",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def add_record(request: AddRecordRequest):
     """
     Add record to notebook
@@ -372,7 +392,10 @@ async def add_record_with_summary(request: AddRecordRequest):
     )
 
 
-@router.delete("/notebooks/{notebook_id}/records/{record_id}")
+@router.delete(
+    "/notebooks/{notebook_id}/records/{record_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def remove_record(notebook_id: str, record_id: str):
     """
     Remove record from notebook
@@ -397,7 +420,10 @@ async def remove_record(notebook_id: str, record_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/notebooks/{notebook_id}/records/{record_id}")
+@router.put(
+    "/notebooks/{notebook_id}/records/{record_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def update_record(notebook_id: str, record_id: str, request: UpdateRecordRequest):
     """Update an existing notebook record in place."""
     try:
@@ -425,7 +451,10 @@ async def update_record(notebook_id: str, record_id: str, request: UpdateRecordR
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/notebooks/{notebook_id}/records/{record_id}/actions/copy")
+@router.post(
+    "/notebooks/{notebook_id}/records/{record_id}/actions/copy",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def copy_record(notebook_id: str, record_id: str, request: MoveRecordRequest):
     """Duplicate a record into another notebook under a fresh id."""
     try:
@@ -441,7 +470,10 @@ async def copy_record(notebook_id: str, record_id: str, request: MoveRecordReque
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/notebooks/{notebook_id}/records/{record_id}/actions/move")
+@router.post(
+    "/notebooks/{notebook_id}/records/{record_id}/actions/move",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def move_record(notebook_id: str, record_id: str, request: MoveRecordRequest):
     """Move a record from this notebook into another one."""
     try:
@@ -457,7 +489,11 @@ async def move_record(notebook_id: str, record_id: str, request: MoveRecordReque
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/notebooks/{notebook_id}/export", response_class=PlainTextResponse)
+@router.get(
+    "/notebooks/{notebook_id}/export",
+    response_class=PlainTextResponse,
+    responses=envelope_ref_response(409, model=NotebookUnreadableErrorResponse),
+)
 async def export_notebook(notebook_id: str):
     """Render the whole notebook as a single Markdown document."""
     try:

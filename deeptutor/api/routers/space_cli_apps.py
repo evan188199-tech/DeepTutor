@@ -30,6 +30,10 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from deeptutor.api.routers._error_envelope import (
+    CliInstallErrorResponse,
+    envelope_responses,
+)
 from deeptutor.api.routers.auth import require_admin
 from deeptutor.multi_user.paths import current_owner_id
 from deeptutor.multi_user.tool_access import allowed_cli_apps, exec_override
@@ -84,7 +88,7 @@ async def list_apps() -> dict[str, Any]:
     }
 
 
-@router.put("/apps/{app_id}/enabled")
+@router.put("/apps/{app_id}/enabled", responses=envelope_responses(403))
 async def set_enabled(app_id: str, payload: EnabledPayload) -> dict[str, Any]:
     """Switch one app on or off for the calling account.
 
@@ -132,7 +136,11 @@ async def get_catalog(
     }
 
 
-@router.post("/catalog/{app_id}/install", dependencies=[Depends(require_admin)])
+@router.post(
+    "/catalog/{app_id}/install",
+    dependencies=[Depends(require_admin)],
+    responses=envelope_responses(400, model=CliInstallErrorResponse),
+)
 async def install(app_id: str) -> dict[str, Any]:
     """Install one app for the deployment. Administrator only."""
     entry = get_entry(app_id)

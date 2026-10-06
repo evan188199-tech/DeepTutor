@@ -12,6 +12,10 @@ import httpx
 from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
+from deeptutor.api.routers._error_envelope import (
+    NotebookUnreadableErrorResponse,
+    envelope_responses,
+)
 from deeptutor.multi_user.paths import current_owner_id
 from deeptutor.services.notebook.service import NotebookCorruptedError
 from deeptutor.video_learning import (
@@ -257,7 +261,10 @@ async def save_video_progress(material_id: str, payload: ProgressRequest) -> dic
         raise _http_error(exc) from exc
 
 
-@router.get("/materials/{material_id}/notes")
+@router.get(
+    "/materials/{material_id}/notes",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def list_video_notes(material_id: str) -> list[dict[str, Any]]:
     try:
         return video_notes.list_notes(video_notes.get_notebook_manager(), material_id)
@@ -265,7 +272,10 @@ async def list_video_notes(material_id: str) -> list[dict[str, Any]]:
         raise _note_error(exc) from exc
 
 
-@router.get("/materials/{material_id}/notes.md")
+@router.get(
+    "/materials/{material_id}/notes.md",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def export_video_notes(material_id: str) -> Response:
     try:
         markdown = video_notes.export_notes(video_notes.get_notebook_manager(), material_id)
@@ -281,7 +291,10 @@ async def export_video_notes(material_id: str) -> Response:
         raise _note_error(exc) from exc
 
 
-@router.post("/materials/{material_id}/notes")
+@router.post(
+    "/materials/{material_id}/notes",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def create_video_note(material_id: str, payload: CreateVideoNoteRequest) -> dict[str, Any]:
     try:
         return video_notes.create_note(
@@ -294,7 +307,10 @@ async def create_video_note(material_id: str, payload: CreateVideoNoteRequest) -
         raise _note_error(exc) from exc
 
 
-@router.put("/materials/{material_id}/notes/{note_id}")
+@router.put(
+    "/materials/{material_id}/notes/{note_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def update_video_note(
     material_id: str, note_id: str, payload: UpdateVideoNoteRequest
 ) -> dict[str, Any]:
@@ -306,7 +322,10 @@ async def update_video_note(
         raise _note_error(exc) from exc
 
 
-@router.delete("/materials/{material_id}/notes/{note_id}")
+@router.delete(
+    "/materials/{material_id}/notes/{note_id}",
+    responses=envelope_responses(409, model=NotebookUnreadableErrorResponse),
+)
 async def delete_video_note(material_id: str, note_id: str) -> dict[str, str]:
     try:
         deleted = video_notes.delete_note(video_notes.get_notebook_manager(), material_id, note_id)

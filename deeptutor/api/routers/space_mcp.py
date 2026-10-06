@@ -31,6 +31,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field, ValidationError
 
+from deeptutor.api.routers._error_envelope import envelope_responses
 from deeptutor.multi_user.paths import current_owner_id
 from deeptutor.services.i18n import t
 from deeptutor.services.mcp import MCPServerConfig, get_mcp_manager, load_mcp_config, oauth
@@ -135,7 +136,7 @@ async def list_servers() -> dict[str, Any]:
     }
 
 
-@router.put("/servers/{name}")
+@router.put("/servers/{name}", responses=envelope_responses(400))
 async def upsert_server(name: str, payload: ServerPayload) -> dict[str, Any]:
     owner = current_owner_id()
     try:
@@ -166,7 +167,7 @@ async def remove_server(name: str) -> dict[str, Any]:
     return await list_servers()
 
 
-@router.post("/servers/{name}/authorize")
+@router.post("/servers/{name}/authorize", responses=envelope_responses(400))
 async def authorize_server(name: str, request: Request) -> dict[str, Any]:
     """Begin an OAuth consent for one of the caller's servers.
 
@@ -316,7 +317,7 @@ async def get_catalog(
     }
 
 
-@router.post("/catalog/{entry_id}/install")
+@router.post("/catalog/{entry_id}/install", responses=envelope_responses(400, 403))
 async def install_catalog_entry(entry_id: str, payload: InstallPayload) -> dict[str, Any]:
     owner = current_owner_id()
     entry = get_entry(entry_id)

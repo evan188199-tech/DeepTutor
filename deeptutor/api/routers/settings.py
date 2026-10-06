@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
+from deeptutor.api.routers._error_envelope import envelope_responses
 from deeptutor.multi_user.context import get_current_user
 from deeptutor.multi_user.model_access import allowed_llm_options
 from deeptutor.services.codebuddy_auth import get_codebuddy_auth_service
@@ -589,6 +590,14 @@ def _codex_http_exception(error: CodexAuthError) -> HTTPException:
     )
 
 
+#: Documented 4xx refusals for the Codex OAuth lifecycle routes: every
+#: ``CodexAuthError`` reaches the client as the structured envelope above.
+#: ``403`` is deliberately absent — on these routes it is the plain-string
+#: partner refusal from ``_require_codex_oauth_actor``, not an envelope — and
+#: ``422`` stays FastAPI's request-validation shape.
+_CODEX_ERROR_RESPONSES = envelope_responses(400, 401, 404, 408, 409, 429)
+
+
 def _provider_choices() -> dict[str, list[dict[str, Any]]]:
     """Build dropdown options for provider selection, keyed by service type."""
     from deeptutor.services.config.provider_runtime import (
@@ -910,7 +919,7 @@ async def get_settings():
     }
 
 
-@router.post("/providers/openai-codex/oauth/start")
+@router.post("/providers/openai-codex/oauth/start", responses=_CODEX_ERROR_RESPONSES)
 async def start_openai_codex_oauth() -> dict[str, Any]:
     _require_codex_oauth_actor()
     try:
@@ -919,7 +928,7 @@ async def start_openai_codex_oauth() -> dict[str, Any]:
         raise _codex_http_exception(exc) from None
 
 
-@router.get("/providers/openai-codex/oauth/status")
+@router.get("/providers/openai-codex/oauth/status", responses=_CODEX_ERROR_RESPONSES)
 async def get_openai_codex_oauth_status() -> dict[str, Any]:
     _require_codex_oauth_actor()
     try:
@@ -932,7 +941,7 @@ class CodexOAuthCallbackPayload(BaseModel):
     callback_url: str
 
 
-@router.post("/providers/openai-codex/oauth/complete")
+@router.post("/providers/openai-codex/oauth/complete", responses=_CODEX_ERROR_RESPONSES)
 async def complete_openai_codex_oauth(payload: CodexOAuthCallbackPayload) -> dict[str, Any]:
     """Finish a waiting Codex login from a callback address the user pasted.
 
@@ -952,7 +961,7 @@ async def complete_openai_codex_oauth(payload: CodexOAuthCallbackPayload) -> dic
         raise _codex_http_exception(exc) from None
 
 
-@router.post("/providers/openai-codex/oauth/cancel")
+@router.post("/providers/openai-codex/oauth/cancel", responses=_CODEX_ERROR_RESPONSES)
 async def cancel_openai_codex_oauth() -> dict[str, Any]:
     _require_codex_oauth_actor()
     try:
@@ -961,7 +970,7 @@ async def cancel_openai_codex_oauth() -> dict[str, Any]:
         raise _codex_http_exception(exc) from None
 
 
-@router.post("/providers/openai-codex/oauth/logout")
+@router.post("/providers/openai-codex/oauth/logout", responses=_CODEX_ERROR_RESPONSES)
 async def logout_openai_codex_oauth() -> dict[str, Any]:
     _require_codex_oauth_actor()
     try:
@@ -970,7 +979,7 @@ async def logout_openai_codex_oauth() -> dict[str, Any]:
         raise _codex_http_exception(exc) from None
 
 
-@router.post("/providers/openai-codex/models/refresh")
+@router.post("/providers/openai-codex/models/refresh", responses=_CODEX_ERROR_RESPONSES)
 async def refresh_openai_codex_models() -> dict[str, Any]:
     _require_codex_oauth_actor()
     try:
@@ -1003,7 +1012,7 @@ async def logout_codebuddy_auth() -> dict[str, Any]:
     return await get_codebuddy_auth_service().logout()
 
 
-@router.post("/providers/openai-codex/models/reasoning-effort")
+@router.post("/providers/openai-codex/models/reasoning-effort", responses=_CODEX_ERROR_RESPONSES)
 async def update_openai_codex_reasoning_effort(
     payload: CodexReasoningEffortUpdate,
 ) -> dict[str, Any]:
