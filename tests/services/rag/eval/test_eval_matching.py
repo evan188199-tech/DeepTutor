@@ -5,6 +5,8 @@ from __future__ import annotations
 import pytest
 
 from deeptutor.services.rag.eval import (
+    DEFAULT_MIN_RATIO,
+    DEFAULT_MIN_TOKENS,
     MatchPolicy,
     MatchResult,
     RelevanceMatcher,
@@ -143,3 +145,68 @@ def test_source_text_reads_the_engines_citation_shape() -> None:
     assert source_text({}) == ""
     assert source_text("not a mapping") == ""
     assert source_text(None) == ""
+
+
+def test_repeated_chunk_tokens_cannot_inflate_the_overlap() -> None:
+    chunk = "alpha alpha beta gamma"
+
+    assert not RelevanceMatcher([GOLD_TOKENS]).match(chunk)
+
+
+def test_an_overlap_exactly_at_both_floors_is_accepted() -> None:
+    chunk = "alpha beta gamma delta iota kappa lambda mu"
+    result = RelevanceMatcher([GOLD_TOKENS]).match(chunk)
+
+    assert result.indices == (0,)
+    assert result.ratio == pytest.approx(0.5)
+
+
+def test_a_chunk_without_any_tokens_never_matches() -> None:
+    matcher = RelevanceMatcher([GOLD_TOKENS])
+
+    assert not matcher.match("!!! ??? ...")
+    assert not matcher.match("123")
+
+
+def test_blank_and_non_string_gold_entries_keep_their_indices() -> None:
+    matcher = RelevanceMatcher(["  ", 42, GOLD])
+
+    assert matcher.gold_count == 1
+    assert matcher.match(GOLD).indices == (2,)
+
+
+def test_a_partial_cjk_overlap_below_the_token_floor_is_rejected() -> None:
+    gold = "注意力机制让模型对每个词加权"
+    matcher = RelevanceMatcher([gold])
+
+    assert not matcher.match("检索注意力")
+    assert matcher.match("加权检索机制").indices == (0,)
+
+
+def test_the_reported_ratio_is_the_best_across_passages() -> None:
+    matcher = RelevanceMatcher(["alpha beta gamma", "alpha beta gamma delta omega mu"])
+    chunk = "alpha beta gamma delta epsilon zeta eta theta"
+
+    result = matcher.match(chunk)
+
+    assert result.indices == (0, 1)
+    assert result.ratio == 1.0
+
+
+def test_source_text_skips_blank_and_non_string_values() -> None:
+    assert source_text({"excerpt": "excerpt wins"}) == "excerpt wins"
+    assert source_text({"content": 5, "text": "real text"}) == "real text"
+    assert source_text({"content": "   "}) == ""
+
+
+def test_default_policy_boundaries_are_valid() -> None:
+    policy = MatchPolicy(min_ratio=1.0, min_tokens=1)
+
+    assert policy.min_ratio == 1.0
+    assert policy.min_tokens == 1
+    assert MatchPolicy().min_ratio == DEFAULT_MIN_RATIO
+    assert MatchPolicy().min_tokens == DEFAULT_MIN_TOKENS
+
+
+def test_tokens_mix_ascii_words_and_cjk_characters() -> None:
+    assert tokenize("RAG检索 engine") == ["rag", "检", "索", "engine"]

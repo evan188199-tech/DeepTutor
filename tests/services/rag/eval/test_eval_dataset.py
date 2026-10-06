@@ -221,3 +221,109 @@ def test_from_cases_fills_ids_and_validates() -> None:
 
     assert dataset.name == "inline"
     assert dataset.cases[0].id == "q1"
+
+
+def test_directory_path_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(tmp_path)
+
+    assert "must be a file, not a directory" in str(excinfo.value)
+
+
+def test_non_utf8_file_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "set.jsonl"
+    path.write_bytes(b'{"query": "q", "gold": ["p"]}\n\xff\xfe')
+
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(path)
+
+    assert "is not UTF-8 text" in str(excinfo.value)
+
+
+def test_a_single_string_gold_becomes_a_one_passage_list(tmp_path: Path) -> None:
+    path = _write_jsonl(tmp_path / "set.jsonl", [{"query": "q", "gold": "only passage"}])
+
+    assert load_dataset(path).cases[0].gold == ["only passage"]
+
+
+def test_an_empty_gold_list_is_rejected(tmp_path: Path) -> None:
+    path = _write_jsonl(tmp_path / "set.jsonl", [{"query": "q", "gold": []}])
+
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(path)
+
+    message = str(excinfo.value)
+    assert "case #1" in message
+    assert "gold" in message
+
+
+def test_null_and_non_string_labels_are_coerced(tmp_path: Path) -> None:
+    path = _write_jsonl(
+        tmp_path / "set.jsonl",
+        [{"id": 42, "query": "q", "gold": ["p"], "notes": None}],
+    )
+
+    case = load_dataset(path).cases[0]
+
+    assert case.id == "42"
+    assert case.notes == ""
+
+
+def test_invalid_json_object_form_reports_the_file(tmp_path: Path) -> None:
+    path = tmp_path / "set.json"
+    path.write_text('{"cases": [', encoding="utf-8")
+
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(path)
+
+    assert "is not valid JSON" in str(excinfo.value)
+
+
+def test_a_scalar_json_payload_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "set.json"
+    path.write_text("42", encoding="utf-8")
+
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(path)
+
+    assert "must hold a list of cases or an object with 'cases'" in str(excinfo.value)
+
+
+def test_ndjson_and_uppercase_suffixes_are_accepted(tmp_path: Path) -> None:
+    ndjson = _write_jsonl(tmp_path / "set.ndjson", [{"query": "q", "gold": ["p"]}])
+    upper = tmp_path / "SET.JSON"
+    upper.write_text(json.dumps([{"query": "q", "gold": ["p"]}]), encoding="utf-8")
+
+    assert len(load_dataset(ndjson)) == 1
+    assert len(load_dataset(upper)) == 1
+
+
+def test_json_object_without_a_name_falls_back_to_the_stem(tmp_path: Path) -> None:
+    path = tmp_path / "chapter-five.json"
+    path.write_text(json.dumps({"cases": [{"query": "q", "gold": ["p"]}]}), encoding="utf-8")
+
+    assert load_dataset(path).name == "chapter-five"
+
+
+def test_validation_error_quotes_the_offending_query(tmp_path: Path) -> None:
+    path = _write_jsonl(
+        tmp_path / "set.jsonl",
+        [{"query": "  what makes a good  ", "gold": ["   "]}],
+    )
+
+    with pytest.raises(EvalDatasetError) as excinfo:
+        load_dataset(path)
+
+    message = str(excinfo.value)
+    assert "case #1 (query: 'what makes a good')" in message
+    assert "gold must hold at least one non-empty passage" in message
+
+
+def test_limit_zero_empties_and_from_cases_defaults() -> None:
+    dataset = EvalDataset.from_cases(
+        [{"query": "a", "gold": ["p1"]}, {"query": "b", "gold": ["p2"]}]
+    )
+
+    assert dataset.name == "eval-set"
+    assert len(dataset.limited(0)) == 0
+    assert [case.id for case in dataset.cases] == ["q1", "q2"]
