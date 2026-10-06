@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 import threading
-import time
 from types import SimpleNamespace
 
 import pytest
@@ -20,23 +19,50 @@ class TestMigrationLock:
 
     def test_mutually_excludes_concurrent_holders(self, tmp_path):
         repo = repository.SQLiteCronRepository(tmp_path / "cron.db")
-        entered = threading.Event()
+        holder_entered = threading.Event()
+        release_holder = threading.Event()
+        second_entered = threading.Event()
+        acquired_order: list[str] = []
 
         def holder():
             with repo._migration_lock():
-                entered.set()
-                time.sleep(0.3)
+                acquired_order.append("holder")
+                holder_entered.set()
+                release_holder.wait(5)
 
-        t = threading.Thread(target=holder)
-        t.start()
-        assert entered.wait(2)
-        started = time.monotonic()
+        holder_thread = threading.Thread(target=holder)
+        holder_thread.start()
+        assert holder_entered.wait(2)
+
+        def second():
+            with repo._migration_lock():
+                acquired_order.append("second")
+                second_entered.set()
+
+        second_thread = threading.Thread(target=second)
+        second_thread.start()
+
+        # While the holder keeps the lock, the second acquirer is locked out;
+        # it can only enter after the holder releases. Recording the
+        # acquisition order proves the blocking actually happened without
+        # relying on wall-clock durations.
+        assert not second_entered.wait(0.2)
+        release_holder.set()
+        assert second_entered.wait(5)
+
+        holder_thread.join(timeout=5)
+        second_thread.join(timeout=5)
+        assert not holder_thread.is_alive()
+        assert not second_thread.is_alive()
+        assert acquired_order == ["holder", "second"]
+
+    def test_acquire_while_held_fails(self, tmp_path):
+        fcntl = pytest.importorskip("fcntl")
+        repo = repository.SQLiteCronRepository(tmp_path / "cron.db")
         with repo._migration_lock():
-            waited = time.monotonic() - started
-        t.join(timeout=5)
-        assert not t.is_alive()
-        # A second acquirer must block until the holder releases its lock.
-        assert waited >= 0.2
+            with repo._migration_lock_path.open("a+b") as probe:
+                with pytest.raises(OSError):
+                    fcntl.flock(probe.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
 
     def test_module_does_not_bind_fcntl_at_import(self):
         # Top-level ``import fcntl`` breaks cron startup on Windows (#1183).
