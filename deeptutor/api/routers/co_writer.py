@@ -7,7 +7,6 @@ import json
 import logging
 from pathlib import Path
 import re
-import traceback
 from typing import TYPE_CHECKING, AsyncGenerator, Literal
 import urllib.parse
 import uuid
@@ -150,6 +149,26 @@ def _selected_edit_agent(
         yield agent
     finally:
         reset_llm_selection(token)
+
+
+def _internal_error(action: str) -> HTTPException:
+    """Translate an unexpected failure into a neutral, coded 500 response.
+
+    The caught exception can embed host paths, provider payloads, or other
+    internal state, so its text belongs in the server log (with traceback),
+    never in the response body — `str(e)` details used to leak both. Called
+    from an `except` block; the shared `co_writer_internal_error` code lets
+    clients tell this apart from the deliberate 400/404 responses without
+    learning why it happened.
+    """
+    logger.exception("Co-Writer request failed while %s", action)
+    return HTTPException(
+        status_code=500,
+        detail={
+            "code": "co_writer_internal_error",
+            "message": "The Co-Writer service hit an unexpected error. Please retry.",
+        },
+    )
 
 
 # Generous ceilings — they exist to stop runaway payloads (OOM / surprise
@@ -542,8 +561,7 @@ async def edit_text(request: EditRequest):
         return result
 
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("editing the text") from e
 
 
 @router.post("/documents/actions/edit-react", response_model=ReactEditResponse)
@@ -557,8 +575,7 @@ async def edit_text_react(request: ReactEditRequest):
     except HTTPException:
         raise
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("running the reactive edit") from e
 
 
 @router.post("/documents/actions/edit-react/stream")
@@ -593,8 +610,7 @@ async def auto_mark_text(request: AutoMarkRequest):
 
         return result
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("auto-marking the text") from e
 
 
 @router.get("/documents/history")
@@ -606,7 +622,7 @@ async def get_history():
         history = load_history()
         return {"history": history, "total": len(history)}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("loading the operation history") from e
 
 
 @router.get("/documents/history/{operation_id}")
@@ -623,7 +639,7 @@ async def get_operation(operation_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"loading operation {operation_id!r}") from e
 
 
 @router.get("/documents/tool-calls/{operation_id}")
@@ -640,7 +656,7 @@ async def get_tool_call(operation_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"loading the tool call for operation {operation_id!r}") from e
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -712,8 +728,7 @@ async def list_documents() -> dict[str, list[DocumentSummaryResponse]]:
         summaries = storage.list_documents()
         return {"documents": [DocumentSummaryResponse.from_summary(s) for s in summaries]}
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("listing the documents") from e
 
 
 @router.post("/documents", response_model=DocumentResponse)
@@ -724,8 +739,7 @@ async def create_document(request: CreateDocumentRequest) -> DocumentResponse:
         document = storage.create_document(title=request.title, content=request.content)
         return DocumentResponse.from_model(document)
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error("creating the document") from e
 
 
 class ExportDocxRequest(BaseModel):
@@ -793,8 +807,7 @@ async def import_docx(file: UploadFile = File(...)) -> DocumentResponse:
     except DocxConversionError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _internal_error(f"converting the upload {filename!r}") from exc
 
     title = Path(filename).stem.strip()[:120] or None
     try:
@@ -802,8 +815,7 @@ async def import_docx(file: UploadFile = File(...)) -> DocumentResponse:
         document = storage.create_document(title=title, content=markdown)
         return DocumentResponse.from_model(document)
     except Exception as exc:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _internal_error(f"storing the imported document {filename!r}") from exc
 
 
 @router.post("/documents/export/docx")
@@ -813,8 +825,7 @@ async def export_docx(request: ExportDocxRequest) -> Response:
     except DocxConversionError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        raise _internal_error("converting the document to DOCX") from exc
     filename = _docx_download_filename(request.title)
     return Response(
         content=data,
@@ -835,8 +846,7 @@ async def get_document(doc_id: str) -> DocumentResponse:
     except HTTPException:
         raise
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"loading document {doc_id!r}") from e
 
 
 @router.put("/documents/{doc_id}", response_model=DocumentResponse)
@@ -853,8 +863,7 @@ async def update_document(doc_id: str, request: UpdateDocumentRequest) -> Docume
     except HTTPException:
         raise
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"updating document {doc_id!r}") from e
 
 
 @router.delete("/documents/{doc_id}")
@@ -870,5 +879,4 @@ async def delete_document(doc_id: str) -> dict[str, bool]:
     except HTTPException:
         raise
     except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise _internal_error(f"deleting document {doc_id!r}") from e
