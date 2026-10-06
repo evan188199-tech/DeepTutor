@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 from pathlib import Path
+import threading
 import time
 
 import pytest
@@ -712,8 +714,6 @@ async def test_two_users_never_see_each_others_suggestions(
 
 @pytest.mark.asyncio
 async def test_material_collection_does_not_block_the_event_loop(monkeypatch):
-    import threading
-
     entered = threading.Event()
     release = threading.Event()
 
@@ -766,16 +766,44 @@ async def test_manual_refresh_joins_background_generation_and_reports_failure(mo
 
 @pytest.mark.asyncio
 async def test_total_generation_deadline_includes_material_collection(monkeypatch):
+    """The deadline covers the whole generation, material collection included.
+
+    The slow collector blocks on a released-on-exit event rather than a fixed
+    sleep, so the timeout is guaranteed to fire while collection still runs no
+    matter how the machine loads; the thread is retired by handle instead of a
+    timed fallback wait before the test's loop closes.
+    """
+    release = threading.Event()
+    collected = threading.Event()
+
     def collect(_):
-        time.sleep(0.05)
+        release.wait(2)
+        collected.set()
         return suggestions._Material(profile="", topics=[])
 
     monkeypatch.setattr(suggestions, "_collect_material", collect)
     monkeypatch.setattr(suggestions, "_REFRESH_TIMEOUT", 0.005)
-    result = await suggestions.refresh_suggestions()
+    refresh = asyncio.ensure_future(suggestions.refresh_suggestions())
+    try:
+        result = await asyncio.wait_for(refresh, timeout=5)
+    finally:
+        release.set()
     assert result.status == "error"
     assert suggestions._load() is None
-    await asyncio.sleep(0.06)
+    # Retire any in-flight job by handle: the deadline path must leave no
+    # background work that could survive into the next test.
+    pending = suggestions._inflight.get(suggestions._scope_key())
+    if pending is not None and not pending.done():
+        pending.cancel()
+    if pending is not None:
+        with contextlib.suppress(asyncio.CancelledError):
+            await pending
+    # Let the collector thread finish before this test's loop closes.
+    for _ in range(200):
+        if collected.is_set():
+            break
+        await asyncio.sleep(0.005)
+    assert collected.is_set()
 
 
 @pytest.mark.asyncio

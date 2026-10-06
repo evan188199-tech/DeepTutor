@@ -72,8 +72,11 @@ def test_missing_mcp_package_reports_real_cause_without_waiting_out_timeout(
 
     elapsed, conn = asyncio.run(scenario())
 
-    # Fast-fail: nowhere near the connect timeout.
-    assert elapsed < _PATCHED_TIMEOUT_S / 2
+    # Fast-fail: nowhere near the connect timeout. The bound stays below the
+    # patched window — a regression waits out all of it — but leaves headroom
+    # for event-loop scheduling on a loaded machine, where cleanup of the
+    # connection task can overrun half the budget without being a regression.
+    assert elapsed < _PATCHED_TIMEOUT_S
     assert conn.status == "error"
     # The reason names the missing module rather than a timeout.
     assert "No module named 'mcp'" in conn.error

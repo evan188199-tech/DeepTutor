@@ -454,13 +454,39 @@ def test_the_heartbeat_stops_when_the_run_finishes(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A leaked beat task would keep writing into a sub-trace that has closed."""
+    import deeptutor.services.cli_apps.provider as provider_module
+    from deeptutor.services.sandbox.spec import ExecResult
+
+    monkeypatch.setattr(provider_module, "_HEARTBEAT_SCHEDULE_S", (0.02, 0.02))
+
+    beats: list[asyncio.Task] = []
+    real_create_task = asyncio.create_task
+
+    def _capture(coro, **kwargs):
+        task = real_create_task(coro, **kwargs)
+        if getattr(coro, "__qualname__", "").endswith("_beat"):
+            beats.append(task)
+        return task
+
+    monkeypatch.setattr(asyncio, "create_task", _capture)
+
+    async def _slow_run(app, args, **kwargs):
+        await asyncio.sleep(0.07)
+        return ExecResult(stdout="finished")
+
+    monkeypatch.setattr(provider_module, "run_app", _slow_run)
     sink = _Sink()
-    _run_with_heartbeat(monkeypatch, seconds=0.07, sink=sink)
-    before = len(sink.events)
+    tool = build_app_tools((_install(),))[0]
+    asyncio.run(tool.execute(args=["render"], event_sink=sink))
 
-    asyncio.run(asyncio.sleep(0.10))
-
-    assert len(sink.events) == before
+    # The beat task is joined explicitly: it must be done — cancelled by the
+    # run's teardown — before any "nothing leaked afterwards" claim is made.
+    # A fixed sleep window here would only ever make the claim probable.
+    assert len(beats) == 1
+    assert beats[0].done()
+    assert beats[0].cancelled()
+    assert sink.events, "a multi-beat run published nothing"
+    assert all(kind == "tool_progress" for kind, _msg, _meta in sink.events)
 
 
 def test_the_apps_own_bin_comes_first_and_the_host_path_is_not_discarded(

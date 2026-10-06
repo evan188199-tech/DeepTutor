@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import threading
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -32,23 +31,32 @@ def test_oauth_start_url_carries_port_and_state() -> None:
     assert q["cli_state"] == ["nonce"]
 
 
-def _await_url(box: dict[str, str], key: str = "url", tries: int = 200) -> str:
-    for _ in range(tries):
-        if key in box:
-            return box[key]
-        time.sleep(0.02)
-    raise AssertionError("run_login never produced an authorize URL")
+def _await_url(box: dict[str, str], url_ready: threading.Event, timeout: float = 15.0) -> str:
+    """Wait for the authorize URL on the callback's own signal.
+
+    Event-driven rather than a polling loop: the bound only has to cover a slow
+    machine bringing the loopback server up, not a fixed retry budget that a
+    loaded CI can exhaust before the worker has said anything.
+    """
+    if not url_ready.wait(timeout):
+        raise AssertionError("run_login never produced an authorize URL")
+    return box["url"]
 
 
 def test_run_login_captures_token_and_rejects_bad_state() -> None:
     seen: dict[str, str] = {}
     result: dict[str, object] = {}
+    url_ready = threading.Event()
+
+    def on_url(url: str) -> None:
+        seen["url"] = url
+        url_ready.set()
 
     def worker() -> None:
         result["r"] = run_login(
             "https://hub.test",
             "github",
-            on_url=lambda u: seen.update(url=u),
+            on_url=on_url,
             open_browser=False,
             timeout=10,
         )
@@ -56,7 +64,7 @@ def test_run_login_captures_token_and_rejects_bad_state() -> None:
     thread = threading.Thread(target=worker)
     thread.start()
 
-    url = _await_url(seen)
+    url = _await_url(seen, url_ready)
     q = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
     port = int(q["cli_port"][0])
     state = q["cli_state"][0]
