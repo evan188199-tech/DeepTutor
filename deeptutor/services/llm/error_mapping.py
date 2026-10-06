@@ -113,22 +113,33 @@ def retry_after_seconds(
 def _rate_limit_error(exc: Exception, provider: str | None) -> LLMRateLimitError:
     """Map rate-limit errors without discarding their server retry hint."""
     return LLMRateLimitError(
-        str(exc),
+        "Rate limit exceeded",
         retry_after=retry_after_seconds(exc),
         provider=provider,
+    )
+
+
+def _log_mapped_error(exc: Exception, mapped: LLMError, provider: str | None) -> None:
+    """Log the raw provider exception server-side; its text never reaches users."""
+    logger.warning(
+        "Mapped provider error (%s -> %s, provider=%s): %s",
+        type(exc).__name__,
+        type(mapped).__name__,
+        provider,
+        exc,
     )
 
 
 _GLOBAL_RULES: list[MappingRule] = [
     MappingRule(
         classifier=_instance_of(asyncio.TimeoutError, TimeoutError),
-        factory=lambda exc, provider: LLMTimeoutError(
-            str(exc) or "Request timed out", provider=provider
-        ),
+        factory=lambda exc, provider: LLMTimeoutError("Request timed out", provider=provider),
     ),
     MappingRule(
         classifier=_class_named("AuthenticationError", "AuthenticationStatusError"),
-        factory=lambda exc, provider: LLMAuthenticationError(str(exc), provider=provider),
+        factory=lambda exc, provider: LLMAuthenticationError(
+            "Authentication failed", provider=provider
+        ),
     ),
     MappingRule(
         classifier=_class_named("RateLimitError"),
@@ -140,7 +151,9 @@ _GLOBAL_RULES: list[MappingRule] = [
     ),
     MappingRule(
         classifier=_message_contains("context length", "maximum context"),
-        factory=lambda exc, provider: ProviderContextWindowError(str(exc), provider=provider),
+        factory=lambda exc, provider: ProviderContextWindowError(
+            "Context window exceeded", provider=provider
+        ),
     ),
 ]
 
@@ -155,6 +168,11 @@ def map_error(exc: Exception, provider: str | None = None) -> LLMError:
     compare identity. Filling in ``provider`` when the raiser did not know it is
     therefore an in-place write on the caller's exception — deliberate, and the
     only field this function mutates.
+
+    Mapped messages are fixed neutral wording: provider SDK error text can
+    embed URLs and request IDs that must not reach end users. The raw
+    exception is logged server-side instead, while structured fields such as
+    ``status_code`` and ``retry_after`` stay on the mapped error.
     """
     if isinstance(exc, LLMError):
         if exc.provider is None:
@@ -164,12 +182,20 @@ def map_error(exc: Exception, provider: str | None = None) -> LLMError:
     # Heuristic check for status codes before rules
     status_code = getattr(exc, "status_code", None)
     if status_code == 401:
-        return LLMAuthenticationError(str(exc), provider=provider)
-    if status_code == 429:
-        return _rate_limit_error(exc, provider)
+        mapped = LLMAuthenticationError("Authentication failed", provider=provider)
+    elif status_code == 429:
+        mapped = _rate_limit_error(exc, provider)
+    else:
+        for rule in _GLOBAL_RULES:
+            if rule.classifier(exc):
+                mapped = rule.factory(exc, provider)
+                break
+        else:
+            mapped = LLMAPIError(
+                "Provider API request failed",
+                status_code=status_code,
+                provider=provider,
+            )
 
-    for rule in _GLOBAL_RULES:
-        if rule.classifier(exc):
-            return rule.factory(exc, provider)
-
-    return LLMAPIError(str(exc), status_code=status_code, provider=provider)
+    _log_mapped_error(exc, mapped, provider)
+    return mapped

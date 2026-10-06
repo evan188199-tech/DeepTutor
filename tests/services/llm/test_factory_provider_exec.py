@@ -377,7 +377,7 @@ async def test_stream_raises_when_provider_reports_error_before_any_output(monke
     )
 
     chunks = []
-    with pytest.raises(LLMAPIError, match="boom"):
+    with pytest.raises(LLMAPIError, match="Provider API request failed"):
         async for chunk in stream("hello"):
             chunks.append(chunk)
 

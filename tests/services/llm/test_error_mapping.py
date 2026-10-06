@@ -1,6 +1,7 @@
 """Tests for LLM error mapping helpers."""
 
 from datetime import datetime, timezone
+import logging
 
 import pytest
 
@@ -14,6 +15,7 @@ from deeptutor.services.llm.exceptions import (
     LLMAuthenticationError,
     LLMProviderTransportError,
     LLMRateLimitError,
+    LLMTimeoutError,
     ProviderContextWindowError,
 )
 
@@ -93,3 +95,98 @@ def test_map_error_preserves_structured_transport_error() -> None:
 
     assert mapped is error
     assert mapped.provider == "openai_codex"
+
+
+_PROVIDER_ERROR_TEXT = (
+    "Error code: 429 - rate limit reached for requests, please try again in "
+    "12s. Contact us at https://help.example.com/ if the issue persists. "
+    "(Request ID: req_9f8e7d6c5b4a.)"
+)
+
+
+def test_map_error_rate_limit_message_is_neutral() -> None:
+    """Rate-limit mapping keeps retry semantics but drops provider error text."""
+    error = DummyError(_PROVIDER_ERROR_TEXT, status_code=429)
+    error.response = type(
+        "Response",
+        (),
+        {"headers": {"Retry-After": "12.5"}},
+    )()
+
+    mapped = map_error(error, provider="openai")
+
+    assert isinstance(mapped, LLMRateLimitError)
+    assert "https://" not in str(mapped)
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+    assert "rate limit reached" not in str(mapped)
+    assert mapped.retry_after == 12.5
+    assert mapped.status_code == 429
+
+
+def test_map_error_authentication_message_is_neutral() -> None:
+    error = DummyError(
+        "401 Incorrect API key provided (Key: sk-****). "
+        "See https://help.example.com/ (Request ID: req_9f8e7d6c5b4a).",
+        status_code=401,
+    )
+
+    mapped = map_error(error, provider="openai")
+
+    assert isinstance(mapped, LLMAuthenticationError)
+    assert "https://" not in str(mapped)
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+    assert "sk-" not in str(mapped)
+
+
+def test_map_error_timeout_message_is_neutral() -> None:
+    error = TimeoutError(
+        "Read from https://api.example.com/v1 timed out (Request ID: req_9f8e7d6c5b4a)."
+    )
+
+    mapped = map_error(error, provider="openai")
+
+    assert isinstance(mapped, LLMTimeoutError)
+    assert "https://" not in str(mapped)
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+
+
+def test_map_error_context_window_message_is_neutral() -> None:
+    error = DummyError(
+        "This model's maximum context length is 128000 tokens. "
+        "See https://help.example.com/ (Request ID: req_9f8e7d6c5b4a)."
+    )
+
+    mapped = map_error(error, provider="openai")
+
+    assert isinstance(mapped, ProviderContextWindowError)
+    assert "https://" not in str(mapped)
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+
+
+def test_map_error_fallback_message_is_neutral() -> None:
+    error = DummyError(
+        "The server had an error while processing your request. "
+        "See https://help.example.com/ (Request ID: req_9f8e7d6c5b4a).",
+        status_code=500,
+    )
+
+    mapped = map_error(error, provider="openai")
+
+    assert isinstance(mapped, LLMAPIError)
+    assert "https://" not in str(mapped)
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+    assert mapped.status_code == 500
+
+
+def test_map_error_logs_original_exception_server_side(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The raw provider text is preserved in server logs, not user messages."""
+    with caplog.at_level(
+        logging.WARNING,
+        logger="deeptutor.services.llm.error_mapping",
+    ):
+        mapped = map_error(DummyError(_PROVIDER_ERROR_TEXT, status_code=429), provider="openai")
+
+    assert "req_9f8e7d6c5b4a" not in str(mapped)
+    assert any("req_9f8e7d6c5b4a" in record.getMessage() for record in caplog.records)
