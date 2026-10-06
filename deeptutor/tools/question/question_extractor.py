@@ -329,14 +329,14 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
     Returns:
         Whether extraction was successful
     """
-    paper_dir = Path(paper_dir).resolve()
-    if not paper_dir.exists():
-        print(f"✗ Error: Directory does not exist: {paper_dir}")
+    paper_path = Path(paper_dir).resolve()
+    if not paper_path.exists():
+        print(f"✗ Error: Directory does not exist: {paper_path}")
         return False
 
-    print(f"📁 Paper directory: {paper_dir}")
+    print(f"📁 Paper directory: {paper_path}")
 
-    markdown_content, content_list, images_dir = load_parsed_paper(paper_dir)
+    markdown_content, content_list, images_dir = load_parsed_paper(paper_path)
 
     if not markdown_content:
         print("✗ Error: Unable to load paper content")
@@ -353,7 +353,7 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
         markdown_content=markdown_content,
         content_list=content_list,
         images_dir=images_dir,
-        api_key=llm_config.api_key,
+        api_key=llm_config.get_api_key(),
         base_url=llm_config.base_url,
         model=llm_config.model,
         api_version=getattr(llm_config, "api_version", None),
@@ -365,12 +365,12 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
         return False
 
     if output_dir is None:
-        output_dir = paper_dir
+        output_path = paper_path
     else:
-        output_dir = Path(output_dir)
+        output_path = Path(output_dir)
 
-    paper_name = paper_dir.name
-    output_file = save_questions_json(questions, output_dir, paper_name)
+    paper_name = paper_path.name
+    output_file = save_questions_json(questions, output_path, paper_name)
 
     print("\n✓ Question extraction completed!")
     print(f"📄 View results: {output_file}")

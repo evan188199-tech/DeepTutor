@@ -520,6 +520,18 @@ ignore_errors = true
 module = "deeptutor.tools.*"
 ignore_errors = true  # Some tools may have dynamic imports
 
+# Pilot: re-enable error reporting for the question tools subpackage.
+# This narrows the blanket tools override above; keep it last so it wins.
+[[tool.mypy.overrides]]
+module = "deeptutor.tools.question.*"
+ignore_errors = false
+
+# Keep learning tests out of the gate, matching the top-level tests override
+# and the pre-commit exclude intent.
+[[tool.mypy.overrides]]
+module = "deeptutor.learning.tests.*"
+ignore_errors = true
+
 # ============================================
 # Bandit security linting configuration
 # ============================================
