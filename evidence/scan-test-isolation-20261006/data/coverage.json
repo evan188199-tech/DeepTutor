@@ -1,0 +1,49 @@
+{
+  "by_category": {
+    "FIXTURE_SCOPE_RISK": 1,
+    "GLOBAL_MUTATION": 27,
+    "MONKEYPATCH_UNDO": 1,
+    "TMP_LITERAL_WRITE": 4,
+    "TMP_UNMANAGED": 2
+  },
+  "by_directory_top15": {
+    "deeptutor/learning/tests": 1,
+    "tests/api": 3,
+    "tests/core": 5,
+    "tests/logging": 8,
+    "tests/services/cli_apps": 2,
+    "tests/services/llm": 1,
+    "tests/services/partners": 2,
+    "tests/services/rag": 3,
+    "tests/services/rag/eval": 1,
+    "tests/services/skill": 1,
+    "tests/tools": 1,
+    "tests/utils": 7
+  },
+  "by_severity": {
+    "high": 9,
+    "low": 1,
+    "medium": 25
+  },
+  "files_with_findings": 17,
+  "findings_total": 35,
+  "hygiene_signals": {
+    "cache_clear() calls": 14,
+    "monkeypatch.setattr": 3112,
+    "monkeypatch.setenv": 132,
+    "patch.dict": 0,
+    "tmp_path referenced lines": 4974
+  },
+  "out_of_scope": [
+    "timing/sleep flakiness (scan-flaky-tests)",
+    "dangling async tasks (scan-async-tasks)"
+  ],
+  "path_convention": "paths relative to scanned worktree root",
+  "prod_or_harness_files_skipped": [
+    "deeptutor/services/config/test_runner.py",
+    "tests/services/llm/test_llm_live.py"
+  ],
+  "python_files_total": 1818,
+  "test_code_lines": 182959,
+  "test_files_scanned": 727
+}
