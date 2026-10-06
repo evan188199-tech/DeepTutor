@@ -253,7 +253,10 @@ class SQLiteSessionStore:
         self.db_path = db_path or path_service.get_chat_history_db()
         ensure_private_directory(self.db_path.parent)
         self._migrate_legacy_db(path_service)
-        self._lock = asyncio.Lock()
+        # Serializes write-path calls only (see ``_run``); reads take no
+        # in-process lock (see ``_run_read``) so a slow query cannot block
+        # every other session's operations.
+        self._write_lock = asyncio.Lock()
         with _migration_lock(self.db_path):
             self._initialize()
         ensure_private_file(self.db_path)
@@ -1098,8 +1101,25 @@ class SQLiteSessionStore:
         )
 
     async def _run(self, fn, *args):
-        async with self._lock:
+        """Run one write-path store call under the in-process write lock.
+
+        A single in-process writer keeps multi-statement read-modify-write
+        sequences (turn fencing, event ``seq`` assignment) safe without
+        relying on SQLite busy-retry alone; other processes are serialized
+        by WAL plus ``busy_timeout`` at the database level.
+        """
+        async with self._write_lock:
             return await asyncio.to_thread(fn, *args)
+
+    async def _run_read(self, fn, *args):
+        """Run one read-only store call without the in-process lock.
+
+        Every read opens its own connection, so under WAL it gets an
+        isolated snapshot and never blocks (nor is blocked by) the single
+        writer or other readers. Read helpers must stay single-connection
+        and side-effect free to keep that snapshot self-consistent.
+        """
+        return await asyncio.to_thread(fn, *args)
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
@@ -1245,7 +1265,7 @@ class SQLiteSessionStore:
         return payload
 
     async def get_session(self, session_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_session_sync, session_id)
+        return await self._run_read(self._get_session_sync, session_id)
 
     async def ensure_session(
         self,
@@ -1392,7 +1412,7 @@ class SQLiteSessionStore:
         return self._serialize_turn(row)
 
     async def get_turn(self, turn_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_turn_sync, turn_id)
+        return await self._run_read(self._get_turn_sync, turn_id)
 
     def _get_active_turn_sync(self, session_id: str) -> dict[str, Any] | None:
         with self._connect() as conn:
@@ -1414,7 +1434,7 @@ class SQLiteSessionStore:
         return self._serialize_turn(row)
 
     async def get_active_turn(self, session_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_active_turn_sync, session_id)
+        return await self._run_read(self._get_active_turn_sync, session_id)
 
     def _list_active_turns_sync(self, session_id: str) -> list[dict[str, Any]]:
         with self._connect() as conn:
@@ -1433,7 +1453,7 @@ class SQLiteSessionStore:
         return [self._serialize_turn(row) for row in rows]
 
     async def list_active_turns(self, session_id: str) -> list[dict[str, Any]]:
-        return await self._run(self._list_active_turns_sync, session_id)
+        return await self._run_read(self._list_active_turns_sync, session_id)
 
     def _list_orphaned_failed_turns_sync(self, session_id: str) -> list[dict[str, Any]]:
         with self._connect() as conn:
@@ -1450,7 +1470,7 @@ class SQLiteSessionStore:
         return [self._serialize_turn(row) for row in rows]
 
     async def list_orphaned_failed_turns(self, session_id: str) -> list[dict[str, Any]]:
-        return await self._run(self._list_orphaned_failed_turns_sync, session_id)
+        return await self._run_read(self._list_orphaned_failed_turns_sync, session_id)
 
     def _list_nonterminal_turns_sync(self) -> list[dict[str, Any]]:
         with self._connect() as conn:
@@ -1468,7 +1488,7 @@ class SQLiteSessionStore:
         return [self._serialize_turn(row) for row in rows]
 
     async def list_nonterminal_turns(self) -> list[dict[str, Any]]:
-        return await self._run(self._list_nonterminal_turns_sync)
+        return await self._run_read(self._list_nonterminal_turns_sync)
 
     def _transition_turn_sync(
         self,
@@ -1699,7 +1719,7 @@ class SQLiteSessionStore:
         ]
 
     async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
-        return await self._run(self._get_turn_events_sync, turn_id, after_seq)
+        return await self._run_read(self._get_turn_events_sync, turn_id, after_seq)
 
     async def get_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         return await self.get_turn_events(turn_id, after_seq)
@@ -1801,7 +1821,7 @@ class SQLiteSessionStore:
             resolved_message_id = int(message_id)
         except (TypeError, ValueError):
             return None
-        return await self._run(
+        return await self._run_read(
             self._get_message_trace_sync,
             session_id,
             resolved_message_id,
@@ -1885,7 +1905,7 @@ class SQLiteSessionStore:
         limit: int = 50,
         offset: int = 0,
     ) -> list[dict[str, Any]]:
-        return await self._run(self._list_deleted_sessions_sync, limit, offset)
+        return await self._run_read(self._list_deleted_sessions_sync, limit, offset)
 
     def _add_message_sync(
         self,
@@ -2305,7 +2325,7 @@ class SQLiteSessionStore:
     async def get_last_message(
         self, session_id: str, role: str | None = None
     ) -> dict[str, Any] | None:
-        return await self._run(self._get_last_message_sync, session_id, role)
+        return await self._run_read(self._get_last_message_sync, session_id, role)
 
     def _serialize_message(
         self,
@@ -2501,7 +2521,7 @@ class SQLiteSessionStore:
         return chain
 
     async def get_message_path(self, session_id: str, leaf_message_id: int) -> list[dict[str, Any]]:
-        return await self._run(self._get_message_path_sync, session_id, int(leaf_message_id))
+        return await self._run_read(self._get_message_path_sync, session_id, int(leaf_message_id))
 
     async def usage_records(self, start_at: float, end_at: float) -> list[dict[str, Any]]:
         """Read usage from canonical turn events, with legacy message fallback."""
@@ -2552,10 +2572,10 @@ class SQLiteSessionStore:
                         record["summaries"] = canonical
                 return list(records.values())
 
-        return await self._run(read)
+        return await self._run_read(read)
 
     async def get_messages(self, session_id: str) -> list[dict[str, Any]]:
-        return await self._run(self._get_messages_sync, session_id)
+        return await self._run_read(self._get_messages_sync, session_id)
 
     def _get_messages_for_context_sync(
         self, session_id: str, leaf_message_id: int | None = None
@@ -2628,7 +2648,9 @@ class SQLiteSessionStore:
     async def get_messages_for_context(
         self, session_id: str, leaf_message_id: int | None = None
     ) -> list[dict[str, Any]]:
-        return await self._run(self._get_messages_for_context_sync, session_id, leaf_message_id)
+        return await self._run_read(
+            self._get_messages_for_context_sync, session_id, leaf_message_id
+        )
 
     # Imported conversations live in the same tables as native chats (so the
     # chat loop can re-open and continue them) but carry an ``imported_`` id
@@ -2762,7 +2784,7 @@ class SQLiteSessionStore:
         *,
         workspace_id: str | None = None,
     ) -> list[dict[str, Any]]:
-        return await self._run(self._list_sessions_sync, limit, offset, workspace_id)
+        return await self._run_read(self._list_sessions_sync, limit, offset, workspace_id)
 
     def _search_sessions_sync(
         self,
@@ -2890,20 +2912,20 @@ class SQLiteSessionStore:
         offset: int = 0,
     ) -> dict[str, Any]:
         """Return a bounded page of native sessions matching a literal query."""
-        return await self._run(self._search_sessions_sync, query, limit, offset)
+        return await self._run_read(self._search_sessions_sync, query, limit, offset)
 
     async def get_session_summaries(
         self,
         session_ids: list[str],
     ) -> list[dict[str, Any]]:
-        return await self._run(self._get_session_summaries_sync, session_ids)
+        return await self._run_read(self._get_session_summaries_sync, session_ids)
 
     async def list_imported_sessions(
         self,
         limit: int = 50,
         offset: int = 0,
     ) -> list[dict[str, Any]]:
-        return await self._run(self._list_imported_sessions_sync, limit, offset)
+        return await self._run_read(self._list_imported_sessions_sync, limit, offset)
 
     def _update_summary_sync(self, session_id: str, summary: str, up_to_msg_id: int) -> bool:
         with self._connect() as conn:
@@ -3385,7 +3407,7 @@ class SQLiteSessionStore:
         return value if isinstance(value, dict) else None
 
     async def get_assessment_attempt(self, attempt_id: str) -> dict[str, Any] | None:
-        return await self._run(self._get_assessment_attempt_sync, attempt_id)
+        return await self._run_read(self._get_assessment_attempt_sync, attempt_id)
 
     def _mark_assessment_link_applied_sync(self, attempt_id: str) -> None:
         with self._connect() as conn:
@@ -3412,7 +3434,7 @@ class SQLiteSessionStore:
         ]
 
     async def pending_linked_assessments(self) -> list[dict[str, Any]]:
-        return await self._run(self._pending_linked_assessments_sync)
+        return await self._run_read(self._pending_linked_assessments_sync)
 
     def _list_assessment_attempts_sync(
         self,
@@ -3439,7 +3461,7 @@ class SQLiteSessionStore:
         question_id: str = "",
     ) -> list[dict[str, Any]]:
         """Return immutable attempts in replay order for one session."""
-        return await self._run(
+        return await self._run_read(
             self._list_assessment_attempts_sync,
             session_id,
             question_id,
@@ -3519,7 +3541,7 @@ class SQLiteSessionStore:
         question_ids: Sequence[str] | None = None,
     ) -> dict[str, dict[str, Any]]:
         """Return stored reading-quiz items keyed by question id (includes answer keys)."""
-        return await self._run(
+        return await self._run_read(
             self._get_reading_quiz_pending_sync,
             material_id,
             locator,
@@ -3564,7 +3586,7 @@ class SQLiteSessionStore:
         self, material_id: str, locator: int, question_ids: Sequence[str]
     ) -> dict[str, dict[str, bool]]:
         """Return the best immutable result for each current quiz question."""
-        return await self._run(
+        return await self._run_read(
             self._best_reading_quiz_results_sync,
             material_id,
             locator,
@@ -3634,7 +3656,7 @@ class SQLiteSessionStore:
         ]
 
     async def list_reading_quiz_rewards(self, material_id: str) -> list[dict[str, Any]]:
-        return await self._run(self._list_reading_quiz_rewards_sync, material_id)
+        return await self._run_read(self._list_reading_quiz_rewards_sync, material_id)
 
     def _reading_quiz_reward_totals_sync(self, material_ids: Sequence[str]) -> dict[str, int]:
         wanted = list(
@@ -3660,7 +3682,7 @@ class SQLiteSessionStore:
 
     async def reading_quiz_reward_totals(self, material_ids: Sequence[str]) -> dict[str, int]:
         """Return total reward stars for a library page in one query."""
-        return await self._run(self._reading_quiz_reward_totals_sync, tuple(material_ids))
+        return await self._run_read(self._reading_quiz_reward_totals_sync, tuple(material_ids))
 
     @staticmethod
     def _serialize_notebook_entry(row: sqlite3.Row) -> dict[str, Any]:
@@ -3930,7 +3952,7 @@ class SQLiteSessionStore:
         sort: str = "recent",
     ) -> dict[str, Any]:
         """List question-bank entries. Every row carries its categories."""
-        return await self._run(
+        return await self._run_read(
             self._list_notebook_entries_sync,
             QuestionBankQuery(
                 category_id=category_id,
@@ -4021,7 +4043,7 @@ class SQLiteSessionStore:
         session_ids: Sequence[str] | None = None,
     ) -> dict[str, int]:
         """Counts behind the bank's filter chips (and the agent's overview)."""
-        return await self._run(
+        return await self._run_read(
             self._question_bank_stats_sync,
             None if session_ids is None else tuple(session_ids),
         )
@@ -4061,7 +4083,7 @@ class SQLiteSessionStore:
         session_ids: Sequence[str] | None = None,
     ) -> list[dict[str, Any]]:
         """Distinct materials for review filters, with wrong-review counts."""
-        return await self._run(
+        return await self._run_read(
             self._list_question_bank_materials_sync,
             None if session_ids is None else tuple(session_ids),
         )
@@ -4096,7 +4118,7 @@ class SQLiteSessionStore:
         return entry
 
     async def get_notebook_entry(self, entry_id: int) -> dict[str, Any] | None:
-        return await self._run(self._get_notebook_entry_sync, entry_id)
+        return await self._run_read(self._get_notebook_entry_sync, entry_id)
 
     def _find_notebook_entry_sync(
         self,
@@ -4123,7 +4145,9 @@ class SQLiteSessionStore:
         question_id: str,
         turn_id: str | None = None,
     ) -> dict[str, Any] | None:
-        return await self._run(self._find_notebook_entry_sync, session_id, question_id, turn_id)
+        return await self._run_read(
+            self._find_notebook_entry_sync, session_id, question_id, turn_id
+        )
 
     def _find_notebook_entry_by_origin_sync(
         self,
@@ -4156,7 +4180,7 @@ class SQLiteSessionStore:
         question_id: str,
         turn_id: str | None = None,
     ) -> dict[str, Any] | None:
-        return await self._run(
+        return await self._run_read(
             self._find_notebook_entry_by_origin_sync,
             origin_type,
             origin_ref,
@@ -4280,7 +4304,7 @@ class SQLiteSessionStore:
         self,
         session_ids: Sequence[str] | None = None,
     ) -> list[dict[str, Any]]:
-        return await self._run(
+        return await self._run_read(
             self._list_categories_sync,
             None if session_ids is None else tuple(session_ids),
         )
@@ -4352,7 +4376,7 @@ class SQLiteSessionStore:
         return [{"id": r["id"], "name": r["name"]} for r in rows]
 
     async def get_entry_categories(self, entry_id: int) -> list[dict[str, Any]]:
-        return await self._run(self._get_entry_categories_sync, entry_id)
+        return await self._run_read(self._get_entry_categories_sync, entry_id)
 
     def _link_entries_to_category_sync(
         self, entry_ids: list[int], category_id: int, link: bool
@@ -4416,7 +4440,7 @@ class SQLiteSessionStore:
 
     async def find_category_by_name(self, name: str) -> dict[str, Any] | None:
         """Look a category up by display name — the only handle an agent has."""
-        return await self._run(self._find_category_by_name_sync, name)
+        return await self._run_read(self._find_category_by_name_sync, name)
 
 
 _instances: dict[str, SQLiteSessionStore] = {}
