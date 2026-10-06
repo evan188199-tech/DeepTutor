@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from copy import deepcopy
 from dataclasses import dataclass, field
 import json
+import logging
 import os
 import re
 import shutil
@@ -28,6 +29,8 @@ _API_KEY_ENV_LOCK = asyncio.Lock()
 _SESSION_POOL_MAXSIZE = 4
 _MCP_SERVER_NAME = "deeptutor"
 _MCP_TOOL_PREFIX = f"mcp__{_MCP_SERVER_NAME}__"
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -112,8 +115,13 @@ class _CodeBuddySession:
             self.client = client
             try:
                 await client.disconnect()
-            except BaseException:
-                pass
+            except Exception as exc:
+                logger.debug(
+                    "CodeBuddy session owner disconnect failed (%s: %s); "
+                    "SDK connection may not have been released",
+                    type(exc).__name__,
+                    exc,
+                )
 
     async def run_turn(
         self,
@@ -141,8 +149,12 @@ class _CodeBuddySession:
                 owner.cancel()
         try:
             await owner
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug(
+                "CodeBuddy session owner exited with an error during close (%s: %s)",
+                type(exc).__name__,
+                exc,
+            )
 
 
 class CodeBuddyProvider(LLMProvider):
@@ -357,11 +369,19 @@ class CodeBuddyProvider(LLMProvider):
             try:
                 await session.close()
             except asyncio.CancelledError:
+                logger.debug(
+                    "CodeBuddy session close was cancelled; "
+                    "continuing with the remaining sessions"
+                )
                 task = asyncio.current_task()
                 if task is not None:
                     task.uncancel()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug(
+                    "CodeBuddy session close failed during aclose (%s: %s)",
+                    type(exc).__name__,
+                    exc,
+                )
 
     def get_default_model(self) -> str:
         return self.default_model

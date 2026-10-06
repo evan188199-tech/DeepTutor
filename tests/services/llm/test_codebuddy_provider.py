@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import shutil
 import sys
@@ -10,9 +11,14 @@ import pytest
 
 from deeptutor.services.llm.config import LLMConfig
 from deeptutor.services.llm.provider_core import CodeBuddyProvider
-from deeptutor.services.llm.provider_core.codebuddy_provider import fetch_codebuddy_models
+from deeptutor.services.llm.provider_core.codebuddy_provider import (
+    _CodeBuddySession,
+    fetch_codebuddy_models,
+)
 from deeptutor.services.llm.provider_factory import get_runtime_provider
 from deeptutor.services.provider_registry import find_by_name
+
+_CODEBUDDY_LOGGER_NAME = "deeptutor.services.llm.provider_core.codebuddy_provider"
 
 
 class FakeOptions:
@@ -460,6 +466,169 @@ def test_codebuddy_ignores_deeptutor_no_key_placeholder() -> None:
     provider = CodeBuddyProvider(api_key="sk-no-key-required")
 
     assert provider.api_key is None
+
+
+class _CloseFailingClient:
+    """SDK client double whose disconnect raises the given error type."""
+
+    def __init__(self, options, error: BaseException):
+        self.options = options
+        self.error = error
+        self.disconnected = 0
+
+    async def connect(self):
+        pass
+
+    async def query(self, _prompt):
+        pass
+
+    async def receive_response(self):
+        yield FakeResultMessage("ok")
+
+    async def interrupt(self):
+        pass
+
+    async def disconnect(self):
+        self.disconnected += 1
+        if self.error is not None:
+            raise self.error
+
+
+def _install_sdk(monkeypatch, client_cls) -> None:
+    monkeypatch.setitem(
+        sys.modules,
+        "codebuddy_agent_sdk",
+        SimpleNamespace(
+            query=lambda **_kwargs: None,
+            CodeBuddyAgentOptions=FakeOptions,
+            CodeBuddySDKClient=client_cls,
+        ),
+    )
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_disconnect_failure_is_logged_at_debug(monkeypatch, caplog) -> None:
+    clients: list[_CloseFailingClient] = []
+
+    def make_client(options):
+        client = _CloseFailingClient(options, RuntimeError("disconnect refused"))
+        clients.append(client)
+        return client
+
+    _install_sdk(monkeypatch, make_client)
+    provider = CodeBuddyProvider()
+    response = await provider.chat(
+        [{"role": "user", "content": "hi"}],
+        deeptutor_session_id="close-disconnect-log",
+    )
+
+    assert response.content == "ok"
+    with caplog.at_level(logging.DEBUG, logger=_CODEBUDDY_LOGGER_NAME):
+        await provider.aclose()
+
+    assert clients[0].disconnected == 1
+    assert any(
+        record.levelno == logging.DEBUG and "disconnect" in record.getMessage()
+        for record in caplog.records
+    )
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_owner_does_not_swallow_disconnect_cancellation(monkeypatch) -> None:
+    clients: list[_CloseFailingClient] = []
+
+    def make_client(options):
+        client = _CloseFailingClient(options, asyncio.CancelledError())
+        clients.append(client)
+        return client
+
+    _install_sdk(monkeypatch, make_client)
+    provider = CodeBuddyProvider()
+    await provider.chat(
+        [{"role": "user", "content": "hi"}],
+        deeptutor_session_id="close-disconnect-cancel",
+    )
+    session = provider._sessions["close-disconnect-cancel"]
+
+    with pytest.raises(asyncio.CancelledError):
+        await session.close()
+
+    assert clients[0].disconnected == 1
+    await provider.aclose()
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_close_logs_owner_exit_failure(caplog) -> None:
+    async def _boom() -> None:
+        raise RuntimeError("owner exploded")
+
+    session = _CodeBuddySession(signature="sig")
+    owner = asyncio.create_task(_boom())
+    session._owner = owner
+    await asyncio.sleep(0)
+
+    with caplog.at_level(logging.DEBUG, logger=_CODEBUDDY_LOGGER_NAME):
+        await session.close()
+
+    assert owner.done()
+    assert any(
+        record.levelno == logging.DEBUG and "owner" in record.getMessage()
+        for record in caplog.records
+    )
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_session_close_is_idempotent(monkeypatch) -> None:
+    clients: list[_CloseFailingClient] = []
+
+    def make_client(options):
+        client = _CloseFailingClient(options, None)
+        clients.append(client)
+        return client
+
+    _install_sdk(monkeypatch, make_client)
+    provider = CodeBuddyProvider()
+    await provider.chat(
+        [{"role": "user", "content": "hi"}],
+        deeptutor_session_id="close-twice",
+    )
+    session = provider._sessions["close-twice"]
+
+    await session.close()
+    await session.close()
+    await provider.aclose()
+
+    assert clients[0].disconnected == 1
+
+
+@pytest.mark.asyncio
+async def test_codebuddy_aclose_logs_session_close_failures_and_continues(caplog) -> None:
+    class FailingSession:
+        async def close(self) -> None:
+            raise RuntimeError("close boom")
+
+    class GoodSession:
+        def __init__(self) -> None:
+            self.closed = False
+
+        async def close(self) -> None:
+            self.closed = True
+
+    provider = CodeBuddyProvider()
+    failing = FailingSession()
+    good = GoodSession()
+    provider._sessions["failing"] = failing
+    provider._sessions["good"] = good
+
+    with caplog.at_level(logging.DEBUG, logger=_CODEBUDDY_LOGGER_NAME):
+        await provider.aclose()
+
+    assert good.closed
+    assert not provider._sessions
+    assert any(
+        record.levelno == logging.DEBUG and "close" in record.getMessage()
+        for record in caplog.records
+    )
 
 
 async def _append_async(items: list[str], text: str) -> None:
