@@ -222,9 +222,12 @@ async def test_scheduler_renews_lease_during_a_long_sync(tmp_path: Path, monkeyp
 
     with patch("deeptutor.services.web_source.sync.sync_source", slow_sync):
         running = asyncio.create_task(scheduler._run_job(job))
-        await asyncio.sleep(0.25)
+        deadline = time.monotonic() + 5
         current = repository.get(repository.key(job))
-        assert current is not None and current.state == "running"
+        while not (current is not None and current.state == "running"):
+            assert time.monotonic() < deadline, "job never reached the running state"
+            await asyncio.sleep(0.01)
+            current = repository.get(repository.key(job))
         assert current.lease_until_ms is not None and current.lease_until_ms > int(
             time.time() * 1000
         )
