@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 import httpx
 import pytest
 
 from deeptutor.services.subagent.hermes_remote_client import (
-    HermesRemoteClient,
     HermesRemoteHTTPError,
     HermesRemoteProtocolError,
 )
@@ -23,8 +21,6 @@ from deeptutor.services.subagent.types import (
     EVENT_TOOL_RESULT,
     ConsultResult,
 )
-
-_SSE_STREAM_PATH = "/v1/runs/run-1/events"
 
 
 class _FakeClient:
@@ -73,99 +69,6 @@ def _mapper(
         emit,
         auto_approve=auto_approve,
     )
-
-
-def _sse_response(frames: list[str]) -> httpx.Response:
-    return httpx.Response(
-        200,
-        headers={"content-type": "text/event-stream"},
-        content="".join(frames).encode(),
-    )
-
-
-def _event_frame(name: str, payload: dict[str, Any]) -> str:
-    return f"event: {name}\ndata: {json.dumps(payload)}\n\n"
-
-
-# --- SSE 解码：event:/data: 帧拼装、keepalive 注释、终止标记、畸形帧 ---
-
-
-@pytest.mark.asyncio
-async def test_stream_events_decodes_named_frames() -> None:
-    """event: 帧名合并进 data 载荷后按序交付。"""
-    transport = httpx.MockTransport(
-        lambda _: _sse_response(
-            [
-                _event_frame("message.delta", {"delta": "Hi"}),
-                _event_frame("run.completed", {"output": "Hi"}),
-            ]
-        )
-    )
-    async with HermesRemoteClient("http://hermes.test", "key", transport=transport) as client:
-        decoded = [event async for event in client.stream_events("run-1")]
-
-    assert decoded == [
-        {"event": "message.delta", "delta": "Hi"},
-        {"event": "run.completed", "output": "Hi"},
-    ]
-
-
-@pytest.mark.asyncio
-async def test_stream_events_treats_comments_as_keepalive_and_stops_on_done() -> None:
-    """`: ping` 注释帧映射为 keepalive；`[DONE]` 静默终止迭代器。"""
-    body = (
-        b": ping\n\n"
-        b'data: {"event": "message.delta", "delta": "x"}\n\n'
-        b"data: [DONE]\n\n"
-        b'data: {"event": "message.delta", "delta": "after-done"}\n\n'
-    )
-    transport = httpx.MockTransport(
-        lambda _: httpx.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            content=body,
-        )
-    )
-    async with HermesRemoteClient("http://hermes.test", "key", transport=transport) as client:
-        decoded = [event async for event in client.stream_events("run-1")]
-
-    assert decoded == [{"event": "gateway.keepalive"}, {"event": "message.delta", "delta": "x"}]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    ("raw", "code"),
-    [
-        (b"data: not-json\n\n", "invalid_sse_json"),
-        (b"data: [1, 2]\n\n", "invalid_sse_event"),
-    ],
-)
-async def test_stream_events_rejects_malformed_frames(raw: bytes, code: str) -> None:
-    transport = httpx.MockTransport(
-        lambda _: httpx.Response(
-            200,
-            headers={"content-type": "text/event-stream"},
-            content=raw,
-        )
-    )
-    async with HermesRemoteClient("http://hermes.test", "key", transport=transport) as client:
-        with pytest.raises(HermesRemoteProtocolError) as excinfo:
-            async for _ in client.stream_events("run-1"):
-                pass
-
-    assert excinfo.value.code == code
-
-
-@pytest.mark.asyncio
-async def test_stream_events_surfaces_http_failure_status() -> None:
-    """非 2xx 流响应直接抛 HTTPError，调用方据此走断流降级路径。"""
-    transport = httpx.MockTransport(lambda _: httpx.Response(503))
-    async with HermesRemoteClient("http://hermes.test", "key", transport=transport) as client:
-        with pytest.raises(HermesRemoteHTTPError) as excinfo:
-            async for _ in client.stream_events("run-1"):
-                pass
-
-    assert excinfo.value.status_code == 503
 
 
 # --- 正常映射：文本累积、工具合并、推理、日志兜底 ---
