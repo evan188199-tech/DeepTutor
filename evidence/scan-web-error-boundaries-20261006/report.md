@@ -9,9 +9,9 @@
 
 | 轴 | 内容 | 数据 |
 |---|---|---|
-| A 边界覆盖 | Next.js 约定边界（`error.tsx`/`global-error.tsx`）、React 类边界（`componentDidCatch`/`getDerivedStateFromError`）、第三方库（`react-error-boundary`）、路由清单逐一标注覆盖边界、Suspense、全局 window 错误监听 | `data/boundaries.json` |
-| B 失败呈现 | web/ 下全部 `catch` 块按"用户可见呈现面"分型：toast_error / toast_other / inline_state / banner / rethrow / degrade_default / console_only / silent / unclassified | `data/surfacing.json` |
-| C 恢复动作 | retry/reload/resend/reconnect 文案或 aria-label、`.retryable` 消费点、专用恢复模块与横幅组件、`window.location.reload` 兜底 | `data/recovery.json` |
+| A 边界覆盖 | Next.js 约定边界（`error.tsx`/`global-error.tsx`）、React 类边界（`componentDidCatch`/`getDerivedStateFromError`）、第三方库（`react-error-boundary`）、路由清单逐一标注覆盖边界、Suspense、全局 window 错误监听 | `datasets/boundaries.json` |
+| B 失败呈现 | web/ 下全部 `catch` 块按"用户可见呈现面"分型：toast_error / toast_other / inline_state / banner / rethrow / degrade_default / console_only / silent / unclassified | `datasets/surfacing.json` |
+| C 恢复动作 | retry/reload/resend/reconnect 文案或 aria-label、`.retryable` 消费点、专用恢复模块与横幅组件、`window.location.reload` 兜底 | `datasets/recovery.json` |
 
 - 范围：`web/` 下 `.ts/.tsx` 共 1240 个文件（排除 node_modules/.next/coverage/dist；B/C 轴另排除 tests、e2e）。
 - 分型优先级：notify(error) > setError 类 state > setToast/Notice > banner > rethrow > 降级默认值 > 纯 console > 空/注释体 > 其他逻辑。
@@ -49,7 +49,7 @@
 
 ### P0-1 全应用零错误边界，任何渲染期异常 = 整页白屏
 
-- 证据：`data/boundaries.json` → `a1_next_convention_boundaries: []`、`a2_class_boundary_signals: []`、`a3_route_summary.routes_uncovered=61`。
+- 证据：`datasets/boundaries.json` → `a1_next_convention_boundaries: []`、`a2_class_boundary_signals: []`、`a3_route_summary.routes_uncovered=61`。
 - 影响：生产模式下任意 `page.tsx`/子组件渲染抛错时没有自定义降级 UI（Next.js 默认整页失败），用户无任何提示与出路；也拿不到 `AppError` 已建模的 `retryable` 信息。
 - 建议：
   1. 先补 `web/app/global-error.tsx`（最低成本兜底，含"重新加载"按钮）；
@@ -58,19 +58,19 @@
 
 ### P0-2 无全局 `unhandledrejection`/`window.onerror` 兜底
 
-- 证据：`data/boundaries.json` → `a4_global_window_handlers` 仅 2 处非全局监听。
+- 证据：`datasets/boundaries.json` → `a4_global_window_handlers` 仅 2 处非全局监听。
 - 影响：漏网异步错误完全不可观测，也无法统一转成 toast。
 - 建议：在根 layout 挂一个 `unhandledrejection` 监听，把未处理拒绝以 `notify(t('Unexpected error'), { tone: 'error' })` 呈现（可与 P0-1 一并做）。
 
 ### P1-1 toast 系统无恢复动作，error toast 也会自动消失
 
 - 证据：`web/lib/notifications.ts:30`（`notify` 只有 message/tone/durationMs，无 action 回调）、`web/components/common/ToastViewport.tsx:47`（仅 message + 关闭按钮）；error toast 默认 4000ms 自动消失（个别调用延长到 8000–10000ms，如 `web/app/(workspace)/learning/books/BooksRoute.tsx:182`、`web/features/chat/ChatStateAdapter.tsx:1962`）。
-- 影响：`AppError.retryable`（`web/shared/api/errors.ts:11`）已建模可重试，但消费点只集中在 chat/knowledge/books 传输层（`data/recovery.json` → c2_retryable_consumer_files 共 10 文件），toast 这条最通用的呈现面没有任何"重试"出口。
+- 影响：`AppError.retryable`（`web/shared/api/errors.ts:11`）已建模可重试，但消费点只集中在 chat/knowledge/books 传输层（`datasets/recovery.json` → c2_retryable_consumer_files 共 10 文件），toast 这条最通用的呈现面没有任何"重试"出口。
 - 建议：给 `notify()` 增加 `action?: { label, onClick }` 选项，error toast 默认不自动消失（或延长至 ≥10s）；`apiFetch` 包装层在 `retryable=true` 时附带重试 action。
 
 ### P1-2 用户可达表面上的"console-only / 静默"失败路径
 
-这 9 处 catch 只写 console，用户侧看到的是空面板/无响应（清单全文见 `data/surfacing.json` category=console_only）：
+这 9 处 catch 只写 console，用户侧看到的是空面板/无响应（清单全文见 `datasets/surfacing.json` category=console_only）：
 
 | 位置 | 现象 | 建议 |
 |---|---|---|
@@ -97,7 +97,7 @@ retry UI（文案/aria）命中的 55 个文件集中在 chat/knowledge/settings
 
 ### P2-1 silent catch 共 117 处，绝大多数为带注释的合理 best-effort
 
-抽样核对（全量见 `data/surfacing.json`）：localStorage/sessionStorage 不可用、剪贴板权限、流式帧解析、轮询瞬断等都有说明性注释，属可接受模式；其中与 scan-ts-catch 重叠的条目已打标。建议保持现状，但把注释规范（"为什么可吞"）纳入 review checklist。
+抽样核对（全量见 `datasets/surfacing.json`）：localStorage/sessionStorage 不可用、剪贴板权限、流式帧解析、轮询瞬断等都有说明性注释，属可接受模式；其中与 scan-ts-catch 重叠的条目已打标。建议保持现状，但把注释规范（"为什么可吞"）纳入 review checklist。
 
 ### P2-2 命名陷阱：`WorkspaceRuntimeBoundary` 不是错误边界
 
@@ -118,7 +118,7 @@ retry UI（文案/aria）命中的 55 个文件集中在 chat/knowledge/settings
 ```bash
 cd <repo-root>
 bash evidence/scan-web-error-boundaries-20261006/scripts/run_scan.sh . \
-  evidence/scan-web-error-boundaries-20261006/data
-shasum -a 256 evidence/scan-web-error-boundaries-20261006/data/*.json
+  evidence/scan-web-error-boundaries-20261006/datasets
+shasum -a 256 evidence/scan-web-error-boundaries-20261006/datasets/*.json
 # 输出应与 evidence/scan-web-error-boundaries-20261006/SHA256SUMS 一致
 ```

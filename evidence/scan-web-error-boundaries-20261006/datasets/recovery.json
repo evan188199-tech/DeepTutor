@@ -1,0 +1,1319 @@
+{
+  "c1_affordance_file_count": 55,
+  "c1_affordance_files": [
+    "web/app/(workspace)/kanban/page.tsx",
+    "web/app/(workspace)/learning/books/components/BookChatPanel.tsx",
+    "web/app/(workspace)/learning/books/components/PageReader.tsx",
+    "web/app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+    "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+    "web/app/(workspace)/partners/[partnerId]/page.tsx",
+    "web/components/chat/home/SessionLoadingView.tsx",
+    "web/components/chat/home/StarterSuggestions.tsx",
+    "web/components/chat/home/SubagentTabBody.tsx",
+    "web/components/knowledge/IndexingModelSelector.tsx",
+    "web/components/knowledge/KbDocumentList.tsx",
+    "web/components/knowledge/KbDocumentsSection.tsx",
+    "web/components/knowledge/KbIndexFailureBanner.tsx",
+    "web/components/knowledge/KbIndexVersionsSection.tsx",
+    "web/components/knowledge/KbLinkedFoldersSection.tsx",
+    "web/components/knowledge/KbWebSourcesSection.tsx",
+    "web/components/knowledge/KnowledgeBaseDetail.tsx",
+    "web/components/knowledge/KnowledgePage.tsx",
+    "web/components/learning/LearningShell.tsx",
+    "web/components/learning/practice/PracticeInsights.tsx",
+    "web/components/learning/practice/PracticeSession.tsx",
+    "web/components/notebook/NotebookConsole.tsx",
+    "web/components/partners/ChannelOnboardingPanel.tsx",
+    "web/components/partners/PartnerChannels.tsx",
+    "web/components/partners/PartnerChat.tsx",
+    "web/components/partners/PartnerWorkspacePicker.tsx",
+    "web/components/quiz/QuizViewer.tsx",
+    "web/components/reading/ReadingExtensionBar.tsx",
+    "web/components/reading/library/MaterialLibrary.tsx",
+    "web/components/reading/library/ReadingLibrary.tsx",
+    "web/components/reading/workspace/ReadingActionCards.tsx",
+    "web/components/reading/workspace/WorkspaceChrome.tsx",
+    "web/components/research/ResearchOutlineEditor.tsx",
+    "web/components/settings/CodexOAuthCard.tsx",
+    "web/components/settings/EmbeddingModelUsage.tsx",
+    "web/components/settings/SettingsLoadStatusBanner.tsx",
+    "web/components/space/ChatHistorySection.tsx",
+    "web/components/space/ImportWizard.tsx",
+    "web/components/space/learning/CreateTopicWizard.tsx",
+    "web/components/space/learning/SessionCamp.tsx",
+    "web/components/space/question-bank/QuestionBankSection.tsx",
+    "web/components/watching/WatchingBrowser.tsx",
+    "web/components/watching/WatchingPane.tsx",
+    "web/components/workspaces/WorkspaceResourcePicker.tsx",
+    "web/features/chat/ChatStateAdapter.tsx",
+    "web/features/chat/components/ChatWorkspace.tsx",
+    "web/features/chat/components/turn/ProtocolMismatchNotice.tsx",
+    "web/features/chat/messages/ChatMessageList.tsx",
+    "web/features/co-writer/components/CoWriterWorkspace.tsx",
+    "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+    "web/features/settings/sections/CapabilitiesSettingsSection.tsx",
+    "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+    "web/features/settings/sections/UsageSettingsSection.tsx",
+    "web/features/settings/sections/WorkspaceSettingsSection.tsx",
+    "web/lib/reading-failure.ts"
+  ],
+  "c1_affordances_visible_text": [
+    {
+      "file": "web/app/(workspace)/kanban/page.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 165,
+      "text": "{t('kanban.retry'"
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 293,
+      "text": "t(\"Connection failed. Please try again.\""
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/components/PageReader.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 642,
+      "text": "{t(\"Retry block\""
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 138,
+      "text": "{t(\"not retryable\""
+    },
+    {
+      "file": "web/app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 149,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 219,
+      "text": "(t(\"Could not save review target. Try again.\""
+    },
+    {
+      "file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 560,
+      "text": "{t(\"Try again\""
+    },
+    {
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 448,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 644,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/chat/home/SessionLoadingView.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 89,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/chat/home/StarterSuggestions.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 244,
+      "text": "{t(\"Suggestions could not be generated. Please try again.\""
+    },
+    {
+      "file": "web/components/chat/home/SubagentTabBody.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 94,
+      "text": "(t(\"Agent response timed out. Please try again.\""
+    },
+    {
+      "file": "web/components/knowledge/IndexingModelSelector.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 144,
+      "text": "{t( \"The model catalog could not be loaded. Check model settings and try again.\""
+    },
+    {
+      "file": "web/components/knowledge/IndexingModelSelector.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 225,
+      "text": "{t( \"The LightRAG query-model setting could not be loaded. Choose an indexing model or try again.\""
+    },
+    {
+      "file": "web/components/knowledge/KbDocumentList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 562,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/knowledge/KbDocumentsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 221,
+      "text": "t(\"Retrying\u2026\""
+    },
+    {
+      "file": "web/components/knowledge/KbIndexFailureBanner.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 31,
+      "text": "t( \"Indexing failed. Review the error details, update the configuration if needed, then retry.\""
+    },
+    {
+      "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 216,
+      "text": "t( \"Retry indexing from the documents already stored in this knowledge base.\""
+    },
+    {
+      "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 244,
+      "text": "t(\"Retrying\u2026\""
+    },
+    {
+      "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 247,
+      "text": "t(\"Retry indexing\""
+    },
+    {
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 190,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 257,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 75,
+      "text": "t(\"Timed out loading linked folders. Click retry.\""
+    },
+    {
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 175,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 468,
+      "text": "{t(\"Retry sync\""
+    },
+    {
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 473,
+      "text": "{t(\"Retry sync\""
+    },
+    {
+      "file": "web/components/knowledge/KnowledgeBaseDetail.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 262,
+      "text": "{t( \"Retry indexing from the documents already stored in this knowledge base.\""
+    },
+    {
+      "file": "web/components/knowledge/KnowledgeBaseDetail.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 277,
+      "text": "t(\"Retrying\u2026\""
+    },
+    {
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 405,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/learning/LearningShell.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 120,
+      "text": "{t('Retry'"
+    },
+    {
+      "file": "web/components/learning/practice/PracticeInsights.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 180,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/learning/practice/PracticeSession.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 238,
+      "text": "{t('Reload question'"
+    },
+    {
+      "file": "web/components/notebook/NotebookConsole.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 546,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/partners/ChannelOnboardingPanel.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 269,
+      "text": "t(\"Try again\""
+    },
+    {
+      "file": "web/components/partners/PartnerChannels.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 213,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/partners/PartnerChat.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1196,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/partners/PartnerChat.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 722,
+      "text": "(t(\"Conversation changed in another browser. Please retry.\""
+    },
+    {
+      "file": "web/components/partners/PartnerWorkspacePicker.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 119,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1233,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/reading/ReadingExtensionBar.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 500,
+      "text": "(t(\"Failed to save answer. Please try again.\""
+    },
+    {
+      "file": "web/components/reading/library/MaterialLibrary.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 499,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/reading/library/ReadingLibrary.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 517,
+      "text": "t(\"Retry\""
+    },
+    {
+      "file": "web/components/reading/library/ReadingLibrary.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 517,
+      "text": "t(\"Retrying\u2026\""
+    },
+    {
+      "file": "web/components/reading/workspace/ReadingActionCards.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 154,
+      "text": "{t(\"Try again\""
+    },
+    {
+      "file": "web/components/reading/workspace/WorkspaceChrome.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 233,
+      "text": "t(\"Retry\""
+    },
+    {
+      "file": "web/components/reading/workspace/WorkspaceChrome.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 233,
+      "text": "t(\"Retrying\u2026\""
+    },
+    {
+      "file": "web/components/research/ResearchOutlineEditor.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 88,
+      "text": "t(\"Research failed. You can retry.\""
+    },
+    {
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 143,
+      "text": "(t(\"codex.oauth.reloadDeferred\""
+    },
+    {
+      "file": "web/components/settings/EmbeddingModelUsage.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 57,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/settings/SettingsLoadStatusBanner.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 62,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/space/ChatHistorySection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 370,
+      "text": "{t(\"Could not search chat history. Try again.\""
+    },
+    {
+      "file": "web/components/space/ChatHistorySection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 377,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/space/ImportWizard.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 426,
+      "text": "t(\"Something went wrong while importing. Please try again.\""
+    },
+    {
+      "file": "web/components/space/ImportWizard.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 560,
+      "text": "{t(\"Try again\""
+    },
+    {
+      "file": "web/components/space/learning/CreateTopicWizard.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 102,
+      "text": "t(\"Creation failed. Please retry.\""
+    },
+    {
+      "file": "web/components/space/learning/SessionCamp.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 56,
+      "text": "{t(\"Could not refresh \u2014 retry\""
+    },
+    {
+      "file": "web/components/space/question-bank/QuestionBankSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 205,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 151,
+      "text": "(t('Could not connect to Invidious. Please retry.'"
+    },
+    {
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 173,
+      "text": "(t('Could not disconnect. Please retry when the instance is available.'"
+    },
+    {
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 92,
+      "text": "(t('Could not load the Invidious account. Please retry.'"
+    },
+    {
+      "file": "web/components/watching/WatchingPane.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1258,
+      "text": "{t('Retry'"
+    },
+    {
+      "file": "web/components/watching/WatchingPane.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 976,
+      "text": "{t('Retry captions'"
+    },
+    {
+      "file": "web/components/workspaces/WorkspaceResourcePicker.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 68,
+      "text": "{t('Retry'"
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2214,
+      "text": ".t(\"Connection lost while generating. Please retry your message.\""
+    },
+    {
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2220,
+      "text": ".t( \"Connection lost while generating. Please retry your message.\""
+    },
+    {
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2732,
+      "text": "{t(\"Resend\""
+    },
+    {
+      "file": "web/features/chat/components/turn/ProtocolMismatchNotice.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 25,
+      "text": "{t(\"Reload\""
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2237,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2340,
+      "text": "t(\"No response was generated. Please try again.\""
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2348,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2357,
+      "text": "{t(\"Resend\""
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 2392,
+      "text": "{t(\"Resend\""
+    },
+    {
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1075,
+      "text": "t( \"The draft changed before AI edit finished. Please reselect the text and try again.\""
+    },
+    {
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1135,
+      "text": "t(\"The draft changed while AI edit was running. Please try again.\""
+    },
+    {
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1181,
+      "text": "t(\"The draft changed while AI edit was running. Please try again.\""
+    },
+    {
+      "file": "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 111,
+      "text": "t(\"Some changes could not be completed. Please refresh and try again.\""
+    },
+    {
+      "file": "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 66,
+      "text": "(t(\"Unable to load archived chats. Please try again.\""
+    },
+    {
+      "file": "web/features/settings/sections/CapabilitiesSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 281,
+      "text": "{t(\"Retry\""
+    },
+    {
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1283,
+      "text": "{t(\"Installed. Reloading\u2026\""
+    },
+    {
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 1329,
+      "text": "{t(\"Downloaded. Reloading\u2026\""
+    },
+    {
+      "file": "web/features/settings/sections/UsageSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 99,
+      "text": "{t('Retry'"
+    },
+    {
+      "file": "web/features/settings/sections/WorkspaceSettingsSection.tsx",
+      "kind": "visible_or_aria_text",
+      "line": 125,
+      "text": "{t('Retry'"
+    },
+    {
+      "file": "web/lib/reading-failure.ts",
+      "kind": "visible_or_aria_text",
+      "line": 16,
+      "text": "t( \"Audio and video need a speech-to-text model. Choose one in Settings \u2192 Voice, then retry.\""
+    }
+  ],
+  "c1_handler_identifiers": {
+    "by_file": [
+      {
+        "file": "web/app/(workspace)/kanban/page.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/app/(workspace)/kanban/page.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx",
+        "identifier": "retryTimers"
+      },
+      {
+        "file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx",
+        "identifier": "retryTimersRef"
+      },
+      {
+        "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/app/(workspace)/whisper/page.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/app/(workspace)/whisper/page.tsx",
+        "identifier": "retryTimers"
+      },
+      {
+        "file": "web/app/(workspace)/whisper/page.tsx",
+        "identifier": "retryTimersRef"
+      },
+      {
+        "file": "web/components/chat/home/AskUserOptions.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/chat/home/AskUserOptions.tsx",
+        "identifier": "reloaded"
+      },
+      {
+        "file": "web/components/chat/home/SessionLoadingView.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/cli-apps/CliAppsSection.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/courses/OrganizedSessionList.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/components/knowledge/KbDocumentsSection.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KbDocumentsSection.tsx",
+        "identifier": "retrySubmitting"
+      },
+      {
+        "file": "web/components/knowledge/KbIndexFailureBanner.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+        "identifier": "retryWebSourceSync"
+      },
+      {
+        "file": "web/components/knowledge/KnowledgeBaseDetail.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/knowledge/KnowledgeBaseDetail.tsx",
+        "identifier": "retrySubmitting"
+      },
+      {
+        "file": "web/components/knowledge/KnowledgePage.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/learning/LearningDashboard.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/learning/practice/PracticeInsights.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/learning/practice/PracticeSession.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/mcp/McpServerRow.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/memory/MemoryWorkbench.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/components/memory/useMemoryRun.ts",
+        "identifier": "reconnectTimerRef"
+      },
+      {
+        "file": "web/components/memory/useMemoryRun.ts",
+        "identifier": "reconnecting"
+      },
+      {
+        "file": "web/components/memory/useMemoryRun.ts",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/components/notebook/NotebookConsole.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/notebook/useNotebookLibrary.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/partners/PartnerChannels.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/partners/PartnerChannels.tsx",
+        "identifier": "reloadError"
+      },
+      {
+        "file": "web/components/partners/PartnerChat.tsx",
+        "identifier": "reconnecting"
+      },
+      {
+        "file": "web/components/partners/PartnerChat.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/partners/PartnerChat.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/partners/WeixinQrLogin.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/components/partners/group/GroupSessionPicker.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/components/partners/group/PartnerGroupChat.tsx",
+        "identifier": "reconnecting"
+      },
+      {
+        "file": "web/components/partners/group/useGroupSession.ts",
+        "identifier": "reconnecting"
+      },
+      {
+        "file": "web/components/quiz/QuizFollowupTabBody.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/quiz/QuizViewer.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/quiz/QuizViewer.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/reading/library/MaterialLibrary.tsx",
+        "identifier": "retryReadingMaterial"
+      },
+      {
+        "file": "web/components/reading/library/ReadingLibrary.tsx",
+        "identifier": "retryReadingMaterial"
+      },
+      {
+        "file": "web/components/reading/workspace/ReadingWorkspace.tsx",
+        "identifier": "retryReadingMaterial"
+      },
+      {
+        "file": "web/components/reading/workspace/WorkspaceChrome.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/reading/workspace/WorkspaceChrome.tsx",
+        "identifier": "retryError"
+      },
+      {
+        "file": "web/components/research/ResearchOutlineEditor.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/settings/CodexOAuthCard.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/settings/CodexOAuthCard.tsx",
+        "identifier": "reloadDeferred"
+      },
+      {
+        "file": "web/components/settings/CodexOAuthCard.tsx",
+        "identifier": "reloadSettings"
+      },
+      {
+        "file": "web/components/settings/CodexOAuthCard.tsx",
+        "identifier": "reloadedOperation"
+      },
+      {
+        "file": "web/components/settings/ServiceConfigEditor.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/settings/SettingsLoadStatusBanner.tsx",
+        "identifier": "reloadSettings"
+      },
+      {
+        "file": "web/components/settings/SettingsTourOverlay.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/settings/codex-profile.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/space/ChatHistorySection.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/space/EduHubImportModal.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/space/learning/CreateTopicWizard.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/space/learning/MasteryComposer.tsx",
+        "identifier": "reloaded"
+      },
+      {
+        "file": "web/components/space/learning/MasteryStudy.tsx",
+        "identifier": "resendLastMessage"
+      },
+      {
+        "file": "web/components/space/learning/SessionCamp.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/space/question-bank/QuestionBankSection.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/watching/WatchingBrowser.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/components/watching/WatchingBrowser.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/components/watching/WatchingPane.tsx",
+        "identifier": "retryTranscript"
+      },
+      {
+        "file": "web/components/workspaces/WorkspaceChatGroups.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/context/GeogebraTabContext.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/context/QuizFollowupContext.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/context/ReadingContext.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/contracts/generated/api.ts",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/contracts/generated/api.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/contracts/generated/api.ts",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/contracts/generated/api.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "reconnection"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "resend"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "resendLastMessage"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "retryRequiresReview"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "retrySubmissionId"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "retryTimersRef"
+      },
+      {
+        "file": "web/features/chat/ChatStateAdapter.tsx",
+        "identifier": "retryUnsavedTail"
+      },
+      {
+        "file": "web/features/chat/components/ChatWorkspace.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/chat/components/ChatWorkspace.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/features/chat/components/ChatWorkspace.tsx",
+        "identifier": "resendLastMessage"
+      },
+      {
+        "file": "web/features/chat/components/ChatWorkspace.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/chat/components/ChatWorkspace.tsx",
+        "identifier": "retrySessionLoad"
+      },
+      {
+        "file": "web/features/chat/messages/ChatMessageList.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/chat/messages/ChatMessageList.tsx",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/chat/trace/TracePresentation.tsx",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+        "identifier": "reconnectAttempt"
+      },
+      {
+        "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+        "identifier": "reconnectDelay"
+      },
+      {
+        "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+        "identifier": "reconnectHandle"
+      },
+      {
+        "file": "web/features/chat/transport/command-delivery.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/chat/transport/reconnect-policy.ts",
+        "identifier": "reconnectDelay"
+      },
+      {
+        "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+        "identifier": "reloaded"
+      },
+      {
+        "file": "web/features/knowledge/api/catalog.ts",
+        "identifier": "retryKnowledgeBase"
+      },
+      {
+        "file": "web/features/knowledge/api/client.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/features/knowledge/api/client.ts",
+        "identifier": "retryKnowledgeBase"
+      },
+      {
+        "file": "web/features/knowledge/api/client.ts",
+        "identifier": "retryWebSourceSync"
+      },
+      {
+        "file": "web/features/knowledge/api/sources.ts",
+        "identifier": "retryWebSourceSync"
+      },
+      {
+        "file": "web/features/runtime-status/model.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/features/settings/store/SettingsStore.tsx",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/features/settings/store/SettingsStore.tsx",
+        "identifier": "reloadSettings"
+      },
+      {
+        "file": "web/features/settings/store/SettingsStore.tsx",
+        "identifier": "reloading"
+      },
+      {
+        "file": "web/hooks/useChatWorkspaces.ts",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/hooks/useConsultationReference.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/hooks/useKnowledgeBases.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/hooks/useKnowledgeBases.ts",
+        "identifier": "retryKbApi"
+      },
+      {
+        "file": "web/hooks/useKnowledgeBases.ts",
+        "identifier": "retryKnowledgeBase"
+      },
+      {
+        "file": "web/hooks/useKnowledgeProgress.ts",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/hooks/useKnowledgeProgress.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/hooks/useKnowledgeProgress.ts",
+        "identifier": "retryTimer"
+      },
+      {
+        "file": "web/hooks/useMasteryPathActivity.ts",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/hooks/useMasteryStudySession.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/hooks/useMcpServers.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/hooks/useSetupSync.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/book-activity.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/book-types.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/chat-resend.ts",
+        "identifier": "resend"
+      },
+      {
+        "file": "web/lib/chat-resend.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/failed-submissions.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/failed-submissions.ts",
+        "identifier": "retryRequiresReview"
+      },
+      {
+        "file": "web/lib/imports-api.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/invidious-account-result.ts",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/lib/learning-api.ts",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/lib/mastery-ws.ts",
+        "identifier": "reconnecting"
+      },
+      {
+        "file": "web/lib/mcp-api.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/message-branches.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/optimistic-id.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/reading-failure.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/reading-workspace-api.ts",
+        "identifier": "reloads"
+      },
+      {
+        "file": "web/lib/reading-workspace-api.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/lib/reading-workspace-api.ts",
+        "identifier": "retryReadingMaterial"
+      },
+      {
+        "file": "web/lib/reconnecting-websocket.ts",
+        "identifier": "reconnectDelayMs"
+      },
+      {
+        "file": "web/lib/reconnecting-websocket.ts",
+        "identifier": "retryAttempt"
+      },
+      {
+        "file": "web/lib/reconnecting-websocket.ts",
+        "identifier": "retryHandle"
+      },
+      {
+        "file": "web/lib/trace-timing.ts",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/lib/turn-reconcile.ts",
+        "identifier": "reload"
+      },
+      {
+        "file": "web/lib/use-book-stream.ts",
+        "identifier": "reconnect"
+      },
+      {
+        "file": "web/lib/use-book-stream.ts",
+        "identifier": "reconnectTimer"
+      },
+      {
+        "file": "web/lib/use-book-stream.ts",
+        "identifier": "reconnection"
+      },
+      {
+        "file": "web/lib/use-book-stream.ts",
+        "identifier": "reconnects"
+      },
+      {
+        "file": "web/lib/use-book-stream.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/playwright.config.ts",
+        "identifier": "retry"
+      },
+      {
+        "file": "web/proxy.ts",
+        "identifier": "resending"
+      }
+    ],
+    "count": 359
+  },
+  "c2_retryable_consumer_files": [
+    "web/app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+    "web/contracts/parse/turn-event.ts",
+    "web/features/chat/messages/ChatMessageList.tsx",
+    "web/features/chat/transport/TurnRuntimeClient.ts",
+    "web/features/chat/transport/UnifiedTurnClient.ts",
+    "web/hooks/useKnowledgeProgress.ts",
+    "web/lib/chat-resend.ts",
+    "web/lib/knowledge-helpers.ts",
+    "web/shared/api/client.ts",
+    "web/shared/api/errors.ts"
+  ],
+  "c2_retryable_consumers": [
+    {
+      "file": "web/app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "line": 138
+    },
+    {
+      "file": "web/contracts/parse/turn-event.ts",
+      "line": 140
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "line": 2231
+    },
+    {
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "line": 2263
+    },
+    {
+      "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+      "line": 336
+    },
+    {
+      "file": "web/features/chat/transport/UnifiedTurnClient.ts",
+      "line": 61
+    },
+    {
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 406
+    },
+    {
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 51
+    },
+    {
+      "file": "web/lib/chat-resend.ts",
+      "line": 31
+    },
+    {
+      "file": "web/lib/knowledge-helpers.ts",
+      "line": 428
+    },
+    {
+      "file": "web/shared/api/client.ts",
+      "line": 86
+    },
+    {
+      "file": "web/shared/api/client.ts",
+      "line": 87
+    },
+    {
+      "file": "web/shared/api/client.ts",
+      "line": 88
+    },
+    {
+      "file": "web/shared/api/client.ts",
+      "line": 89
+    },
+    {
+      "file": "web/shared/api/errors.ts",
+      "line": 31
+    }
+  ],
+  "c3_banner_components": [
+    "web/app/(workspace)/learning/books/components/BookHealthBanner.tsx",
+    "web/app/(workspace)/learning/books/components/BookPausedBanner.tsx",
+    "web/components/knowledge/KbIndexFailureBanner.tsx",
+    "web/components/memory/MemoryArchivedBanner.tsx",
+    "web/components/settings/SettingsLoadStatusBanner.tsx"
+  ],
+  "c3_infra_modules": [
+    {
+      "file": "web/lib/book-errors.ts",
+      "role": "book error taxonomy"
+    },
+    {
+      "file": "web/lib/chat-idle-recovery.ts",
+      "role": "chat idle recovery"
+    },
+    {
+      "file": "web/lib/chat-resend.ts",
+      "role": "chat message resend decision"
+    },
+    {
+      "file": "web/lib/failed-submissions.ts",
+      "role": "chat failed submission store"
+    },
+    {
+      "file": "web/lib/reading-failure.ts",
+      "role": "reading failure taxonomy"
+    },
+    {
+      "file": "web/lib/reconnecting-websocket.ts",
+      "role": "websocket reconnect wrapper"
+    },
+    {
+      "file": "web/lib/send-retry.ts",
+      "role": "chat send retry queue"
+    },
+    {
+      "file": "web/lib/session-load.ts",
+      "role": "session load retry"
+    }
+  ],
+  "c3_window_reload_calls": [
+    {
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 443
+    }
+  ],
+  "scan": "web-recovery-actions"
+}

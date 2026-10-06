@@ -5,7 +5,7 @@
 # no timestamps, sorted walks, sorted JSON keys.
 set -euo pipefail
 REPO="${1:?usage: run_scan.sh <repo-root> [out-dir]}"
-OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/data}"
+OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/datasets}"
 mkdir -p "$OUT"
 SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
 python3 "$SCRIPTS/scan_error_boundaries.py" "$REPO" > "$OUT/boundaries.json"

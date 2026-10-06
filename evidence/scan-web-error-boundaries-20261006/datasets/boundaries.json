@@ -1,0 +1,407 @@
+{
+  "a1_informational_convention_files": [],
+  "a1_next_convention_boundaries": [],
+  "a2_boundary_lib_dependency": {
+    "react-error-boundary": null
+  },
+  "a2_class_boundary_signals": [],
+  "a3_route_inventory": [
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(admin)/admin/users/page.tsx",
+      "route": "/admin/users"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(auth)/login/page.tsx",
+      "route": "/login"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(auth)/register/page.tsx",
+      "route": "/register"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(settings)/settings/[section]/page.tsx",
+      "route": "/settings/:section"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(settings)/settings/page.tsx",
+      "route": "/settings"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/agents/page.tsx",
+      "route": "/agents"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/avatar-preview/page.tsx",
+      "route": "/avatar-preview"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/courses/[courseId]/page.tsx",
+      "route": "/courses/:courseId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/courses/page.tsx",
+      "route": "/courses"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/knowledge-bases/[kbName]/page.tsx",
+      "route": "/knowledge-bases/:kbName"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/knowledge-bases/page.tsx",
+      "route": "/knowledge-bases"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/graph/page.tsx",
+      "route": "/memory/graph"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/l1/page.tsx",
+      "route": "/memory/l1"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/l2/[surface]/page.tsx",
+      "route": "/memory/l2/:surface"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/l2/page.tsx",
+      "route": "/memory/l2"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/l3/[slot]/page.tsx",
+      "route": "/memory/l3/:slot"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/l3/page.tsx",
+      "route": "/memory/l3"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/page.tsx",
+      "route": "/memory"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/memory/resolve/page.tsx",
+      "route": "/memory/resolve"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/notebooks/[notebookId]/page.tsx",
+      "route": "/notebooks/:notebookId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/notebooks/page.tsx",
+      "route": "/notebooks"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/profile/page.tsx",
+      "route": "/profile"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/session-handoff/page.tsx",
+      "route": "/session-handoff"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/settings/progress/page.tsx",
+      "route": "/settings/progress"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/chat-history/page.tsx",
+      "route": "/space/chat-history"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/cli-apps/page.tsx",
+      "route": "/space/cli-apps"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/mcp/page.tsx",
+      "route": "/space/mcp"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/page.tsx",
+      "route": "/space"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/personas/page.tsx",
+      "route": "/space/personas"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/questions/page.tsx",
+      "route": "/space/questions"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(utility)/space/skills/page.tsx",
+      "route": "/space/skills"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/chat/[sessionId]/page.tsx",
+      "route": "/chat/:sessionId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/chat/page.tsx",
+      "route": "/chat"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/co-writer/[docId]/page.tsx",
+      "route": "/co-writer/:docId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/co-writer/page.tsx",
+      "route": "/co-writer"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/kanban/page.tsx",
+      "route": "/kanban"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/books/[bookId]/page.tsx",
+      "route": "/learning/books/:bookId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/books/[bookId]/pages/[pageId]/page.tsx",
+      "route": "/learning/books/:bookId/pages/:pageId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/books/page.tsx",
+      "route": "/learning/books"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "route": "/learning/mastery/:pathId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/mastery/[pathId]/sessions/[sessionId]/page.tsx",
+      "route": "/learning/mastery/:pathId/sessions/:sessionId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/mastery/[pathId]/sessions/page.tsx",
+      "route": "/learning/mastery/:pathId/sessions"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/mastery/page.tsx",
+      "route": "/learning/mastery"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/page.tsx",
+      "route": "/learning"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/practice/page.tsx",
+      "route": "/learning/practice"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/[workspaceId]/page.tsx",
+      "route": "/learning/reading/:workspaceId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/[workspaceId]/sessions/[sessionId]/page.tsx",
+      "route": "/learning/reading/:workspaceId/sessions/:sessionId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/[workspaceId]/sessions/page.tsx",
+      "route": "/learning/reading/:workspaceId/sessions"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/folders/[folderId]/page.tsx",
+      "route": "/learning/reading/folders/:folderId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/materials/page.tsx",
+      "route": "/learning/reading/materials"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/reading/page.tsx",
+      "route": "/learning/reading"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/watching/[sessionId]/page.tsx",
+      "route": "/learning/watching/:sessionId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/learning/watching/page.tsx",
+      "route": "/learning/watching"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/page.tsx",
+      "route": "/"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "route": "/partners/:partnerId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/partners/groups/[groupId]/page.tsx",
+      "route": "/partners/groups/:groupId"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/partners/groups/new/page.tsx",
+      "route": "/partners/groups/new"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/partners/new/page.tsx",
+      "route": "/partners/new"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/partners/page.tsx",
+      "route": "/partners"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/(workspace)/whisper/page.tsx",
+      "route": "/whisper"
+    },
+    {
+      "covered_by_boundary": null,
+      "page_file": "web/app/handoff/page.tsx",
+      "route": "/handoff"
+    }
+  ],
+  "a3_route_summary": {
+    "routes_covered_by_boundary": 0,
+    "routes_total": 61,
+    "routes_uncovered": 61
+  },
+  "a4_global_window_handlers": [
+    {
+      "file": "web/components/Geogebra.tsx",
+      "line": 61
+    },
+    {
+      "file": "web/features/chat/transport/TurnRuntimeClient.ts",
+      "line": 165
+    }
+  ],
+  "a4_suspense_fallbacks": [
+    {
+      "count": 1,
+      "file": "web/app/(auth)/login/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/knowledge-bases/[kbName]/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/knowledge-bases/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/memory/l1/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/memory/l2/[surface]/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/memory/l3/[slot]/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/memory/resolve/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/notebooks/NotebooksRoute.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(utility)/space/questions/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/layout.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/learning/mastery/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/learning/practice/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/learning/reading/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/app/handoff/page.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/components/knowledge/KbFilePreview.tsx"
+    },
+    {
+      "count": 1,
+      "file": "web/shared/ui/Tooltip.tsx"
+    }
+  ],
+  "scan": "web-error-boundaries",
+  "source_file_count": 1240,
+  "web_root": "web"
+}

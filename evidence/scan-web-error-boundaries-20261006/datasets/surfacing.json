@@ -1,0 +1,5251 @@
+{
+  "catch_blocks_total": 629,
+  "entries": [
+    {
+      "category": "unclassified",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 51,
+      "overlap": "",
+      "snippet": "return \"\u2014\";"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 93,
+      "overlap": "",
+      "snippet": "setError(e instanceof Error ? e.message : t(\"Failed to load users\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 159,
+      "overlap": "",
+      "snippet": "setCreateError( e instanceof Error ? e.message : t(\"Failed to create user\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 192,
+      "overlap": "",
+      "snippet": "setConfirmTarget(null); setActionError( e instanceof Error ? e.message : confirmTarget.kind === \"delete\" ? t(\"Failed to delete user\") : t(\"Failed to update role"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 219,
+      "overlap": "",
+      "snippet": "setImportError( e instanceof Error ? e.message : t(\"Failed to import users\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(admin)/admin/users/page.tsx",
+      "line": 260,
+      "overlap": "",
+      "snippet": "setShowBatchDeleteConfirm(false); setActionError( e instanceof Error ? e.message : t(\"Failed to delete users\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/memory/resolve/page.tsx",
+      "line": 55,
+      "overlap": "",
+      "snippet": "if (cancelled) return; setError(e instanceof Error ? e.message : t(\"Resolver failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/app/(utility)/profile/page.tsx",
+      "line": 46,
+      "overlap": "",
+      "snippet": "// Older Safari: fall back to decoding via an <img> element. const url = URL.createObjectURL(file); try { const image = await new Promise<HTMLImageElement>((res"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/profile/page.tsx",
+      "line": 123,
+      "overlap": "",
+      "snippet": "if (!cancelled) setError(t(\"Failed to load profile\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/profile/page.tsx",
+      "line": 140,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/profile/page.tsx",
+      "line": 158,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/profile/page.tsx",
+      "line": 174,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/session-handoff/page.tsx",
+      "line": 38,
+      "overlap": "",
+      "snippet": "setHandoff(null); setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(utility)/session-handoff/page.tsx",
+      "line": 51,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/co-writer/page.tsx",
+      "line": 52,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/co-writer/page.tsx",
+      "line": 74,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); setCreating(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/co-writer/page.tsx",
+      "line": 91,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); setImporting(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/co-writer/page.tsx",
+      "line": 109,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/kanban/page.tsx",
+      "line": 68,
+      "overlap": "",
+      "snippet": "setError('kanban.saveError')"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 167,
+      "overlap": "",
+      "snippet": "if (err instanceof BookApiError && err.status === 409 && selectedBookId) { try { const latest = await bookApi.get(selectedBookId, { includeBlocks: false, }) rev"
+    },
+    {
+      "category": "silent",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 175,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep the original conflict as the actionable error."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 197,
+      "overlap": "",
+      "snippet": "setBooksError(t('Failed to load books'))"
+    },
+    {
+      "category": "console_only",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 243,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error('hydratePage failed:', err)"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 256,
+      "overlap": "",
+      "snippet": "const msg = err instanceof Error ? err.message : String(err) notify(t('Could not load learning captures: {{message}}', { message: msg }), { tone: 'error', durat"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 509,
+      "overlap": "",
+      "snippet": "const msg = bookErrorMessage(err, t) notify(t('Could not resume: {{message}}', { message: msg }), { tone: 'error', durationMs: 8000, })"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 528,
+      "overlap": "",
+      "snippet": "const msg = bookErrorMessage(err, t) notify(t('Could not pause: {{message}}', { message: msg }), { tone: 'error', durationMs: 8000, })"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 649,
+      "overlap": "",
+      "snippet": "// A stale token is not a failed compile, and telling the reader // \"generation failed\" for one is how the whole feature came to look // broken. Catch up on the"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 657,
+      "overlap": "",
+      "snippet": "const msg = bookErrorMessage(err, t) notify(t('Compile failed: {{message}}', { message: msg }), { tone: 'error', durationMs: 8000, }) console.error('compilePage"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 744,
+      "overlap": "",
+      "snippet": "const msg = err instanceof Error ? err.message : String(err) notify(t('Could not save your edit: {{message}}', { message: msg }), { tone: 'error', durationMs: 8"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 779,
+      "overlap": "",
+      "snippet": "const msg = err instanceof Error ? err.message : String(err) notify(t('Regenerate block failed: {{message}}', { message: msg }), { tone: 'error', durationMs: 80"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/app/(workspace)/learning/books/BooksRoute.tsx",
+      "line": 922,
+      "overlap": "",
+      "snippet": "const msg = err instanceof Error ? err.message : String(err) notify(t('Could not add extra practice: {{message}}', { message: msg }), { tone: 'error', durationM"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/books/components/BookCreator.tsx",
+      "line": 149,
+      "overlap": "",
+      "snippet": "setSourceError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "silent",
+      "file": "web/app/(workspace)/learning/books/components/BookHealthBanner.tsx",
+      "line": 84,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore \u2013 health is non-critical"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/books/components/BookHealthBanner.tsx",
+      "line": 174,
+      "overlap": "",
+      "snippet": "setAcknowledgeError(err instanceof Error ? err.message : String(err)); // The refusal is about pages still owed, not a transport failure. Stale // detection ove"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/app/(workspace)/learning/books/components/PageReader.tsx",
+      "line": 78,
+      "overlap": "",
+      "snippet": "browserStorage.removeRaw(\"session\", PENDING_CHAPTER_END_KEY); return false;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "line": 106,
+      "overlap": "",
+      "snippet": "setError( reason instanceof Error ? reason.message : t(\"The map could not be loaded\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "line": 123,
+      "overlap": "",
+      "snippet": "// Keep whatever we last showed. Blanking the list turns a network blip // into \"you have no sessions\", which is a different and alarming claim. setSessionsErro"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/mastery/[pathId]/page.tsx",
+      "line": 218,
+      "overlap": "",
+      "snippet": "setRetentionError(t(\"Could not save review target. Try again.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/learning/mastery/page.tsx",
+      "line": 53,
+      "overlap": "",
+      "snippet": "setError( reason instanceof Error ? reason.message : t(\"The atlas could not be loaded.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 157,
+      "overlap": "",
+      "snippet": "if (required) { setRuntimeContinuityError(true); setToast(error instanceof Error ? error.message : t(\"Load failed\")); }"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 212,
+      "overlap": "",
+      "snippet": "setToast(error instanceof Error ? error.message : t(\"Action failed\")); await reconcileSelection();"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 250,
+      "overlap": "",
+      "snippet": "setToast(error instanceof Error ? error.message : t(\"Action failed\")); await refreshAuthoritative(true);"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 343,
+      "overlap": "",
+      "snippet": "setToast(error instanceof Error ? error.message : t(\"Action failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 362,
+      "overlap": "",
+      "snippet": "setPartner(null);"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 388,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : t(\"Action failed\"));"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/app/(workspace)/partners/[partnerId]/page.tsx",
+      "line": 407,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : t(\"Delete failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/app/(workspace)/partners/groups/[groupId]/page.tsx",
+      "line": 73,
+      "overlap": "",
+      "snippet": "setGroup(null);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/groups/[groupId]/page.tsx",
+      "line": 274,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Action failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/groups/[groupId]/page.tsx",
+      "line": 285,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Action failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/groups/new/page.tsx",
+      "line": 69,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Create failed\")); setCreating(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/new/page.tsx",
+      "line": 98,
+      "overlap": "",
+      "snippet": "setLLMError(true);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/(workspace)/partners/new/page.tsx",
+      "line": 164,
+      "overlap": "",
+      "snippet": "setError(e instanceof Error ? e.message : t(\"Create failed\")); setCreating(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/app/handoff/page.tsx",
+      "line": 31,
+      "overlap": "",
+      "snippet": "setStatus(\"error\"); setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "console_only",
+      "file": "web/components/Geogebra.tsx",
+      "line": 175,
+      "overlap": "scan-console-noise",
+      "snippet": "failures.push(cmd); console.warn(\"[ggb] evalCommand failed\", { cmd, err });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/Geogebra.tsx",
+      "line": 190,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError(err instanceof Error ? err.message : String(err)); setLoading(false); }"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/Mermaid.tsx",
+      "line": 70,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/Mermaid.tsx",
+      "line": 123,
+      "overlap": "",
+      "snippet": "cleanupMermaidOrphans(id); if (!cancelled) { setError( err instanceof Error ? err.message : t(\"Failed to render diagram\"), ); }"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/ThemeScript.tsx",
+      "line": 37,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* localStorage may be disabled */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/access/CapabilityAccessContext.tsx",
+      "line": 74,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep last known state; the backend still enforces access on every call."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/agents/ConnectedAgents.tsx",
+      "line": 251,
+      "overlap": "",
+      "snippet": "setError(e instanceof Error ? e.message : String(e));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/HistorySessionPicker.tsx",
+      "line": 106,
+      "overlap": "",
+      "snippet": "if (!mounted) return; setSessions([]);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/MyAgentsPicker.tsx",
+      "line": 122,
+      "overlap": "",
+      "snippet": "if (mounted) { setSessions([]); setAgents([]); }"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/MyAgentsPicker.tsx",
+      "line": 300,
+      "overlap": "",
+      "snippet": "setPreview((cur) => cur && cur.row.id === row.id ? { ...cur, loading: false } : cur, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/PersonaPicker.tsx",
+      "line": 45,
+      "overlap": "",
+      "snippet": "if (mounted) setPersonas([]);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/QuestionBankPicker.tsx",
+      "line": 94,
+      "overlap": "",
+      "snippet": "if (mounted) { setCategories([]); setMaterials([]); }"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/QuestionBankPicker.tsx",
+      "line": 129,
+      "overlap": "",
+      "snippet": "if (!mounted) return; setEntries([]);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/home/ChatMarkdownNoteTab.tsx",
+      "line": 87,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/home/PartnerDraftCard.tsx",
+      "line": 52,
+      "overlap": "",
+      "snippet": "setError( err instanceof Error ? err.message : t(\"Failed to create partner\"), );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/home/SessionViewerPanel.tsx",
+      "line": 248,
+      "overlap": "",
+      "snippet": "return url.slice(0, 32);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/home/StandaloneComposer.tsx",
+      "line": 329,
+      "overlap": "",
+      "snippet": "if (!cancelled) setKnowledgeBases([]);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/home/StandaloneComposer.tsx",
+      "line": 377,
+      "overlap": "",
+      "snippet": "if (cancelled) return; setLLMOptionsError(true); setLLMOptions([]); setActiveLLMDefault(null);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/home/StarterSuggestions.tsx",
+      "line": 98,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/home/StarterSuggestions.tsx",
+      "line": 173,
+      "overlap": "",
+      "snippet": "if (!controller.signal.aborted && generation === generationRef.current) setView({ kind: \"idle\", note: \"error\" });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/home/SubagentTabBody.tsx",
+      "line": 112,
+      "overlap": "",
+      "snippet": "if ((err as Error).name !== \"AbortError\") { setError(err instanceof Error ? err.message : String(err)); }"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/chat/preview/FilePreviewDrawer.tsx",
+      "line": 157,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Clipboard rejected (insecure context / permission). Silently noop \u2014 // the user can still right-click the download link."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/preview/FilePreviewDrawer.tsx",
+      "line": 192,
+      "overlap": "",
+      "snippet": "setReaderError( caught instanceof Error ? caught.message : t(\"The attachment could not be opened in Immersive Reading.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/preview/previewers/DocxPreview.tsx",
+      "line": 94,
+      "overlap": "",
+      "snippet": "if (!cancelled) setFailed(true);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/preview/previewers/OfficePdfPreview.tsx",
+      "line": 87,
+      "overlap": "",
+      "snippet": "if (!controller.signal.aborted) { setState({ kind: \"fallback\", sourceUrl: url }); }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/chat/preview/previewers/XlsxPreview.tsx",
+      "line": 73,
+      "overlap": "",
+      "snippet": "if (!cancelled) setFailed(true);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/preview/previewers/useBinarySource.ts",
+      "line": 49,
+      "overlap": "",
+      "snippet": "if (controller.signal.aborted) return; if (reqIdRef.current !== reqId) return; const message = err instanceof Error ? err.message : \"Failed to load preview\"; se"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/chat/preview/previewers/useTextSource.ts",
+      "line": 65,
+      "overlap": "",
+      "snippet": "if (controller.signal.aborted) return; if (reqIdRef.current !== reqId) return; const message = err instanceof Error ? err.message : \"Failed to load preview\"; se"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/cli-apps/CliAppsSection.tsx",
+      "line": 168,
+      "overlap": "",
+      "snippet": "setError(messageOf(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/cli-apps/CliAppsSection.tsx",
+      "line": 410,
+      "overlap": "",
+      "snippet": "setError(messageOf(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/cli-apps/CliAppsSection.tsx",
+      "line": 617,
+      "overlap": "",
+      "snippet": "setError(messageOf(err)); // The log is the only actionable thing about a failed install. if (err instanceof CliAppError && err.log) setLog(err.log);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/common/InlineFileCard.tsx",
+      "line": 30,
+      "overlap": "",
+      "snippet": "return raw.trim();"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/courses/CourseDialog.tsx",
+      "line": 76,
+      "overlap": "",
+      "snippet": "setError( reason instanceof Error ? reason.message : t(\"Couldn't save this course.\"), );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/courses/CourseResources.tsx",
+      "line": 125,
+      "overlap": "",
+      "snippet": "// The picker is an addition, not the page: if the catalogue cannot be // read the attached list above still renders. setCandidates({});"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/courses/CourseScope.tsx",
+      "line": 98,
+      "overlap": "",
+      "snippet": "// Attaching is a courtesy on top of a creation that already succeeded. // Failing it must not take down the thing the learner actually asked // for; the course"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/courses/OrganizedSessionList.tsx",
+      "line": 141,
+      "overlap": "",
+      "snippet": "setWorkspaceMoveError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/ConnectKiwixModal.tsx",
+      "line": 37,
+      "overlap": "",
+      "snippet": "setArchives([]); setError(cause instanceof Error ? cause.message : t(\"Could not browse Kiwix archives\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/ConnectKiwixModal.tsx",
+      "line": 50,
+      "overlap": "",
+      "snippet": "setVerifiedTitle(\"\"); setError(cause instanceof Error ? cause.message : t(\"Could not reach Kiwix archive\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/ConnectKiwixModal.tsx",
+      "line": 63,
+      "overlap": "",
+      "snippet": "setError(cause instanceof Error ? cause.message : t(\"Could not connect Kiwix archive\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/CreateKbModal.tsx",
+      "line": 365,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setEngineDefaultSummary([]); if (provider === \"lightrag\") { setLightRagConfigLoaded(true); setLightRagConfigError(true); } }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/CreateKbModal.tsx",
+      "line": 489,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/CreateKbModal.tsx",
+      "line": 510,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/CreateKbModal.tsx",
+      "line": 535,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/CreateKbModal.tsx",
+      "line": 597,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbDocumentList.tsx",
+      "line": 141,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbDocumentList.tsx",
+      "line": 177,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbDocumentList.tsx",
+      "line": 204,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbDocumentList.tsx",
+      "line": 219,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/knowledge/KbFilePreview.tsx",
+      "line": 202,
+      "overlap": "scan-ts-catch",
+      "snippet": "// clipboard rejected; ignore"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbGitHubSourcesSection.tsx",
+      "line": 42,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbGitHubSourcesSection.tsx",
+      "line": 71,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbGitHubSourcesSection.tsx",
+      "line": 83,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbGitHubSourcesSection.tsx",
+      "line": 103,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+      "line": 111,
+      "overlap": "",
+      "snippet": "setDialogError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbIndexVersionsSection.tsx",
+      "line": 173,
+      "overlap": "",
+      "snippet": "setDialogError(error instanceof Error ? error.message : String(error)); if (isLightRag) await loadRebuildConfig();"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbKiwixArticlesSection.tsx",
+      "line": 30,
+      "overlap": "",
+      "snippet": "setResults([]); setError(cause instanceof Error ? cause.message : t(\"Kiwix search failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbKiwixArticlesSection.tsx",
+      "line": 48,
+      "overlap": "",
+      "snippet": "setError(cause instanceof Error ? cause.message : t(\"Could not open Kiwix article\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "line": 72,
+      "overlap": "",
+      "snippet": "let message: string; if (err instanceof DOMException && err.name === \"AbortError\") { message = t(\"Timed out loading linked folders. Click retry.\"); } else { mes"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "line": 130,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbLinkedFoldersSection.tsx",
+      "line": 159,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbMarginNoteDevicesSection.tsx",
+      "line": 60,
+      "overlap": "",
+      "snippet": "// An unpaired library has no store yet, which is not an error state \u2014 // report the failure but still render the empty case below. setDevices([]); setStatus(nu"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbMarginNoteDevicesSection.tsx",
+      "line": 86,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbMarginNoteDevicesSection.tsx",
+      "line": 99,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/knowledge/KbMarginNoteDevicesSection.tsx",
+      "line": 111,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Clipboard permission denied \u2014 the value stays selectable on screen."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbSettingsSection.tsx",
+      "line": 55,
+      "overlap": "",
+      "snippet": "setMoveError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbSettingsSection.tsx",
+      "line": 67,
+      "overlap": "",
+      "snippet": "setMoveError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "line": 63,
+      "overlap": "",
+      "snippet": "if (err instanceof DOMException && err.name === \"AbortError\") { setError(\"Timed out loading web sources. Click retry.\"); } else { setError(err instanceof Error "
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "line": 99,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "line": 111,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "line": 122,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KbWebSourcesSection.tsx",
+      "line": 135,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 248,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 262,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 274,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 300,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 311,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 323,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 335,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 347,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 363,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 375,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/KnowledgePage.tsx",
+      "line": 387,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/LinkFolderModal.tsx",
+      "line": 43,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/knowledge/PageIndexSettingsModal.tsx",
+      "line": 74,
+      "overlap": "",
+      "snippet": "const message = err instanceof Error ? err.message : String(err); setError(message); onError?.(message); return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/learning/LearningDashboard.tsx",
+      "line": 57,
+      "overlap": "",
+      "snippet": "failures = ['books', 'mastery', 'reading', 'watching']"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticeImport.tsx",
+      "line": 40,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticeImport.tsx",
+      "line": 55,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticeInsights.tsx",
+      "line": 64,
+      "overlap": "",
+      "snippet": "if (active && request === sequence) setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticePage.tsx",
+      "line": 54,
+      "overlap": "",
+      "snippet": "if (sequence === summarySequence.current) setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticePage.tsx",
+      "line": 91,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticeSession.tsx",
+      "line": 183,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/PracticeSession.tsx",
+      "line": 208,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)) if (err instanceof PracticeRequestError && err.status === 409) setConflict(true)"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/ReviewHome.tsx",
+      "line": 45,
+      "overlap": "",
+      "snippet": "if (request === sequence.current) setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/learning/practice/ReviewHome.tsx",
+      "line": 78,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/mcp/McpCatalogBrowser.tsx",
+      "line": 169,
+      "overlap": "",
+      "snippet": "setError(describeMcpError(err, t));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/mcp/McpCatalogBrowser.tsx",
+      "line": 202,
+      "overlap": "",
+      "snippet": "setInstallState((prev) => ({ ...prev, [entry.id]: { kind: \"error\", message: describeMcpError(err, t) }, })); return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/mcp/McpCatalogBrowser.tsx",
+      "line": 477,
+      "overlap": "",
+      "snippet": "setProbe({ ok: false, tools: [], error: describeMcpError(err, t) });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/mcp/McpServerForm.tsx",
+      "line": 155,
+      "overlap": "",
+      "snippet": "setTestError(describeMcpError(err, t));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemoryL1Workbench.tsx",
+      "line": 92,
+      "overlap": "",
+      "snippet": "return [key, 0, 0] as const;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/memory/MemoryRunPanel.tsx",
+      "line": 104,
+      "overlap": "",
+      "snippet": "setModelOptions([]); setModelError(true);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemoryRunPanel.tsx",
+      "line": 250,
+      "overlap": "",
+      "snippet": "if (typeof window !== \"undefined\") { window.alert( t(\"Reset failed: {{msg}}\", { msg: e instanceof Error ? e.message : t(\"unknown error\"), }), ); }"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 314,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : \"Failed to load overview\");"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 341,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : \"Failed to load document\");"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 362,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : \"Failed to save\");"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 407,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed chunk"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 416,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : \"Update failed\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 695,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : \"Failed to load snapshot\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 710,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : \"Failed to load changes\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 724,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : \"Failed to load queries\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/MemorySection.tsx",
+      "line": 793,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : \"Refresh failed\");"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/memory/MemoryWorkbench.tsx",
+      "line": 323,
+      "overlap": "",
+      "snippet": "setToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 148,
+      "overlap": "",
+      "snippet": "// best-effort recovery \u2014 if the API is unreachable we'll just start // a new run when the user clicks Run. } if (runId) { await attach(runId); } })(); return ("
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 215,
+      "overlap": "",
+      "snippet": "if ((error as Error).name !== \"AbortError\") scheduleReconnect();"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 239,
+      "overlap": "",
+      "snippet": "if ((error as Error).name !== \"AbortError\") scheduleReconnect(); return;"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 321,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed chunks"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 329,
+      "overlap": "",
+      "snippet": "if ((e as Error).name === \"AbortError\") return; setState((s) => ({ ...s, error: e instanceof Error ? e.message : i18n.t(\"stream failed\"), })); await reconcile()"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 370,
+      "overlap": "",
+      "snippet": "setState((s) => ({ ...s, status: \"error\", error: e instanceof Error ? e.message : i18n.t(\"start failed\"), }));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 387,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore: the server may already have terminated naturally."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/memory/useMemoryRun.ts",
+      "line": 434,
+      "overlap": "",
+      "snippet": "setState((s) => ({ ...s, error: e instanceof Error ? e.message : i18n.t(\"undo failed\"), })); return false;"
+    },
+    {
+      "category": "banner",
+      "file": "web/components/notebook/NotebookConsole.tsx",
+      "line": 166,
+      "overlap": "",
+      "snippet": "setBanner(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "banner",
+      "file": "web/components/notebook/NotebookConsole.tsx",
+      "line": 195,
+      "overlap": "",
+      "snippet": "setBanner(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "banner",
+      "file": "web/components/notebook/NotebookConsole.tsx",
+      "line": 210,
+      "overlap": "",
+      "snippet": "setBanner(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "banner",
+      "file": "web/components/notebook/NotebookConsole.tsx",
+      "line": 231,
+      "overlap": "",
+      "snippet": "setBanner(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/NotebookRecordRow.tsx",
+      "line": 184,
+      "overlap": "",
+      "snippet": "setFailure(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/NotebookRecordRow.tsx",
+      "line": 197,
+      "overlap": "",
+      "snippet": "setFailure(err instanceof Error ? err.message : String(err)); setBusy(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/NotebookRecordRow.tsx",
+      "line": 215,
+      "overlap": "",
+      "snippet": "setFailure(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/notebook/SaveToNotebookModal.tsx",
+      "line": 79,
+      "overlap": "",
+      "snippet": "continue;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/notebook/SaveToNotebookModal.tsx",
+      "line": 199,
+      "overlap": "",
+      "snippet": "setNotebooks([]);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/SaveToNotebookModal.tsx",
+      "line": 218,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/SaveToNotebookModal.tsx",
+      "line": 412,
+      "overlap": "",
+      "snippet": "if (controller.signal.aborted) return; setError( err instanceof Error ? err.message : t(\"Failed to save to notebook.\"), ); setIsLoading(false);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/useNotebookLibrary.ts",
+      "line": 110,
+      "overlap": "",
+      "snippet": "if (detailRequestRef.current !== requestId) return; setSelected(null); setDetailError(messageOf(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/notebook/useNotebookLibrary.ts",
+      "line": 129,
+      "overlap": "",
+      "snippet": "setError(messageOf(err));"
+    },
+    {
+      "category": "console_only",
+      "file": "web/components/notebook/useNotebookSelection.ts",
+      "line": 48,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"Failed to fetch notebooks:\", err); setNotebooks([]);"
+    },
+    {
+      "category": "console_only",
+      "file": "web/components/notebook/useNotebookSelection.ts",
+      "line": 78,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"Failed to fetch notebook records:\", err);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/ChannelOnboardingPanel.tsx",
+      "line": 66,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Connection failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/ChannelOnboardingPanel.tsx",
+      "line": 84,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Status check failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/ChannelOnboardingPanel.tsx",
+      "line": 113,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Connection failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/ChannelOnboardingPanel.tsx",
+      "line": 125,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : t(\"Cancel failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/ChannelRuntimeStatus.tsx",
+      "line": 38,
+      "overlap": "",
+      "snippet": "if (!cancelled) setEntry(null);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/FaceEditor.tsx",
+      "line": 112,
+      "overlap": "",
+      "snippet": "const code = e instanceof Error ? e.message : \"\"; setUploadError( code === \"unsupported-type\" ? t(\"Use a PNG, JPG, WebP, GIF, or SVG image.\") : code === \"svg-to"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerArchives.tsx",
+      "line": 94,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Load failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerArchives.tsx",
+      "line": 112,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Load failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerArchives.tsx",
+      "line": 127,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Delete failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerArchives.tsx",
+      "line": 185,
+      "overlap": "",
+      "snippet": "onToast(error instanceof Error ? error.message : t(\"Load failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerChannels.tsx",
+      "line": 67,
+      "overlap": "",
+      "snippet": "setSchemaCatalog(null); setCatalogError(true);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerChannels.tsx",
+      "line": 97,
+      "overlap": "",
+      "snippet": "setDetailError(true);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChannels.tsx",
+      "line": 185,
+      "overlap": "",
+      "snippet": "onToast(error instanceof Error ? error.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 509,
+      "overlap": "",
+      "snippet": "onToast?.(error instanceof Error ? error.message : t(\"Load failed\"));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 564,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep the visible transcript and retry on the next idle poll."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 618,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 988,
+      "overlap": "",
+      "snippet": "onToast?.(error instanceof Error ? error.message : t(\"Action failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 1008,
+      "overlap": "",
+      "snippet": "onToast?.(error instanceof Error ? error.message : t(\"Nothing to branch yet.\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 1026,
+      "overlap": "",
+      "snippet": "onToast?.(t(\"Session not found\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 1050,
+      "overlap": "",
+      "snippet": "onToast?.(t(\"Session not found\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerChat.tsx",
+      "line": 1078,
+      "overlap": "",
+      "snippet": "onToast?.(t(\"Load failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 143,
+      "overlap": "",
+      "snippet": "setLLMError(true);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 174,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 194,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 206,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 219,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 230,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 245,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 268,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerConfigure.tsx",
+      "line": 280,
+      "overlap": "",
+      "snippet": "onToast(e instanceof Error ? e.message : t(\"Remove failed\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/PartnerLinkModal.tsx",
+      "line": 46,
+      "overlap": "",
+      "snippet": "setLinks([]);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerLinkModal.tsx",
+      "line": 63,
+      "overlap": "",
+      "snippet": "setError(t(\"Couldn't create a code. Try again.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerLinkModal.tsx",
+      "line": 76,
+      "overlap": "",
+      "snippet": "setError(t(\"Couldn't copy \u2014 select the command and copy it by hand.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/PartnerLinkModal.tsx",
+      "line": 86,
+      "overlap": "",
+      "snippet": "setError(t(\"Couldn't disconnect that account. Try again.\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/SoulPicker.tsx",
+      "line": 74,
+      "overlap": "",
+      "snippet": "setSources({ library: [], personas: [] });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/SoulPicker.tsx",
+      "line": 131,
+      "overlap": "",
+      "snippet": "setSaveError(e instanceof Error ? e.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/WeixinQrLogin.tsx",
+      "line": 56,
+      "overlap": "",
+      "snippet": "setError(e instanceof Error ? e.message : String(e));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/partners/WeixinQrLogin.tsx",
+      "line": 75,
+      "overlap": "",
+      "snippet": "if (!cancelled) setError(e instanceof Error ? e.message : String(e));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/partners/group/GroupSessionPicker.tsx",
+      "line": 83,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep the row; the next open reloads the authoritative list."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/partners/group/PartnerSeat.tsx",
+      "line": 75,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Clipboard access can be denied; the button simply does nothing."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/partners/group/useGroupSession.ts",
+      "line": 333,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A malformed frame must not tear down the session."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/partners/schema-form.tsx",
+      "line": 134,
+      "overlap": "",
+      "snippet": "setInvalid(true);"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizConfigPanel.tsx",
+      "line": 718,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* pointer may already be released */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizFollowupTabBody.tsx",
+      "line": 110,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* best-effort \u2014 leave the thread empty so the user can re-ask */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 325,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* entry may not exist yet */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 349,
+      "overlap": "",
+      "snippet": "setBookmarked((prev) => ({ ...prev, [key]: !next }));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 357,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 370,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 531,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* best-effort */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 590,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* skip this file \u2014 user can retry */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/quiz/QuizViewer.tsx",
+      "line": 611,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "line": 459,
+      "overlap": "",
+      "snippet": "await rendition.display( fallbackHref ?? book.spine.get(0)?.href ?? refsRef.current[0]?.source_href, );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "line": 475,
+      "overlap": "",
+      "snippet": "if (cancelled) return; const message = error instanceof Error ? error.message : t(\"Could not load this section.\"); setLoadError(message); errorRef.current?.(mes"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "line": 575,
+      "overlap": "scan-ts-catch",
+      "snippet": "// An ambiguous legacy quote stays in the list without fake ink."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/EpubDocumentView.tsx",
+      "line": 626,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Reaching the requested locator is still useful if quote search fails."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/PdfDocumentView.tsx",
+      "line": 153,
+      "overlap": "",
+      "snippet": "if (cancelled) return; setLoadError({ materialId, message: caught instanceof Error ? caught.message : t(\"This document could not be opened.\"), });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/PdfPage.tsx",
+      "line": 136,
+      "overlap": "",
+      "snippet": "// pdf.js throws RenderingCancelledException on a cancelled task \u2014 that // is the normal path when scrolling, not a failure to report. const name = (error as { "
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/PdfPage.tsx",
+      "line": 150,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Already settled."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/PdfPage.tsx",
+      "line": 155,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Already settled."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/ReaderPane.tsx",
+      "line": 333,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Private mode / storage disabled \u2014 keep the default."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/ReaderPane.tsx",
+      "line": 343,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Non-fatal: the toggle still works for this session."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/ReaderPane.tsx",
+      "line": 601,
+      "overlap": "",
+      "snippet": "setError( caught instanceof Error ? caught.message : \"This citation's material could not be opened.\", ); return true;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/ReaderPane.tsx",
+      "line": 870,
+      "overlap": "",
+      "snippet": "setError(error instanceof Error ? error.message : t(\"Export failed.\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/ReadingActionsProvider.tsx",
+      "line": 201,
+      "overlap": "",
+      "snippet": "settle({ status: \"error\", error: error instanceof Error ? error.message : String(error), });"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/ReadingExtensionBar.tsx",
+      "line": 195,
+      "overlap": "",
+      "snippet": "onError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/ReadingExtensionBar.tsx",
+      "line": 505,
+      "overlap": "",
+      "snippet": "onError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/TextUnitView.tsx",
+      "line": 235,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError( loadError instanceof Error ? loadError.message : t(\"Could not load this section.\"), ); }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/AddMaterialsDialog.tsx",
+      "line": 150,
+      "overlap": "",
+      "snippet": "setError(caught instanceof Error ? caught.message : t(\"Import failed.\"));"
+    },
+    {
+      "category": "degrade_default",
+      "file": "web/components/reading/library/AddMaterialsDialog.tsx",
+      "line": 206,
+      "overlap": "",
+      "snippet": "// Duplicate detection is an assist, never a gate: on failure every item // just uploads as new. if (alive) { setItems((current) => current.map((item) => item.m"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/AddMaterialsDialog.tsx",
+      "line": 344,
+      "overlap": "",
+      "snippet": "setError(caught instanceof Error ? caught.message : t(\"Import failed.\"));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/library/LibraryShell.tsx",
+      "line": 55,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A missing tab count is not worth an error state; the tab still works."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/MaterialLibrary.tsx",
+      "line": 100,
+      "overlap": "",
+      "snippet": "setError( caught instanceof Error ? caught.message : t(\"Could not load your library.\") );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/ReadingFolder.tsx",
+      "line": 79,
+      "overlap": "",
+      "snippet": "setError( caught instanceof Error ? caught.message : t(\"Could not open this collection.\"), );"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/library/ReadingFolder.tsx",
+      "line": 114,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The reader still opens; it just starts on the last active file."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/ReadingFolder.tsx",
+      "line": 125,
+      "overlap": "",
+      "snippet": "setError(caught instanceof Error ? caught.message : t(\"Could not save.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/library/ReadingLibrary.tsx",
+      "line": 97,
+      "overlap": "",
+      "snippet": "// Keep whatever is on screen: an empty list would claim the user has no // collections, which is a different statement from \"the request failed\". setError( cau"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/use-read-aloud-speech.ts",
+      "line": 72,
+      "overlap": "",
+      "snippet": "disposeAudio(playback); if (tokenRef.current !== token) return true;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/workspace/ReadingWorkspace.tsx",
+      "line": 196,
+      "overlap": "",
+      "snippet": "return 380;"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/reading/workspace/ReadingWorkspace.tsx",
+      "line": 397,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A blocked or private store just resets to default next time."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/workspace/WorkspaceChrome.tsx",
+      "line": 202,
+      "overlap": "",
+      "snippet": "setRetryError( caught instanceof Error ? caught.message : t(\"Try importing this material again.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/workspace/dialogs.tsx",
+      "line": 315,
+      "overlap": "",
+      "snippet": "setError(caught instanceof Error ? caught.message : t(\"Save failed.\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/reading/workspace/useLearningMode.ts",
+      "line": 35,
+      "overlap": "",
+      "snippet": "return null"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 207,
+      "overlap": "",
+      "snippet": "setError( caught instanceof Error ? caught.message : t(\"The reading conversation could not be loaded.\"), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 321,
+      "overlap": "",
+      "snippet": "setNotice( caught instanceof Error ? caught.message : t(\"That bookmark could not be saved.\"), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 341,
+      "overlap": "",
+      "snippet": "setNotice( caught instanceof Error ? caught.message : t(\"That bookmark could not be removed.\"), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 364,
+      "overlap": "",
+      "snippet": "// Without this the tab click is a no-op with no explanation, which is // indistinguishable from the click not registering at all. setNotice( caught instanceof "
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 463,
+      "overlap": "",
+      "snippet": "setNotice( caught instanceof Error ? caught.message : t(\"Could not organize notes.\"), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/reading/workspace/useReadingWorkspace.ts",
+      "line": 482,
+      "overlap": "",
+      "snippet": "setNotice( caught instanceof Error ? caught.message : t(\"Mastery Path creation failed.\"), ); throw caught;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/settings/ChatResponseTimeoutSection.tsx",
+      "line": 54,
+      "overlap": "",
+      "snippet": "if (!cancelled) setMessage(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/components/settings/ChatResponseTimeoutSection.tsx",
+      "line": 85,
+      "overlap": "",
+      "snippet": "setMessage(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodeBuddyAuthCard.tsx",
+      "line": 36,
+      "overlap": "",
+      "snippet": "setRequestError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodeBuddyAuthCard.tsx",
+      "line": 65,
+      "overlap": "",
+      "snippet": "popup?.close(); setRequestError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodeBuddyAuthCard.tsx",
+      "line": 77,
+      "overlap": "",
+      "snippet": "setRequestError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodeBuddyAuthCard.tsx",
+      "line": 89,
+      "overlap": "",
+      "snippet": "setRequestError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 88,
+      "overlap": "",
+      "snippet": "if ( requestSequence !== statusRequestSequence.current || !shouldApply() ) { return null; } setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiErr"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 175,
+      "overlap": "",
+      "snippet": "authWindow?.close(); setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 195,
+      "overlap": "",
+      "snippet": "setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 222,
+      "overlap": "",
+      "snippet": "setToast(t(\"codex.oauth.copyFailed\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 239,
+      "overlap": "",
+      "snippet": "setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 260,
+      "overlap": "",
+      "snippet": "setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 281,
+      "overlap": "",
+      "snippet": "setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/CodexOAuthCard.tsx",
+      "line": 307,
+      "overlap": "",
+      "snippet": "setErrorKey( codexErrorMessageKey( error instanceof CodexOAuthApiError ? error.code : null, ), );"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/MemoryUsageItem.tsx",
+      "line": 90,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A failed probe is not worth a console entry every 10s; the strip // simply keeps the last reading until the next poll succeeds."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/MinerUEngineSettings.tsx",
+      "line": 128,
+      "overlap": "",
+      "snippet": "if (!cancelled) setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/settings/MinerUEngineSettings.tsx",
+      "line": 173,
+      "overlap": "",
+      "snippet": "setTestResult({ ok: false, message: err instanceof Error ? err.message : String(err), });"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/MinerUEngineSettings.tsx",
+      "line": 211,
+      "overlap": "scan-ts-catch",
+      "snippet": "// transient network error \u2014 keep polling"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/MinerUEngineSettings.tsx",
+      "line": 260,
+      "overlap": "scan-ts-catch",
+      "snippet": "// status polling will surface the final state either way"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/ModelCapabilityFields.tsx",
+      "line": 71,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Leave the Auto label without a value; the override still works."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/ProviderModelDiscovery.tsx",
+      "line": 93,
+      "overlap": "",
+      "snippet": "if (!request.signal.aborted) setError( cause instanceof Error ? cause.message : t(\"Could not reach provider.\"), );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/settings/RegistryControls.tsx",
+      "line": 100,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/settings/RegistryControls.tsx",
+      "line": 175,
+      "overlap": "",
+      "snippet": "if (!request.signal.aborted) setResult({ status: \"unreachable\", models: [] });"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/components/settings/ServiceConfigEditor.tsx",
+      "line": 443,
+      "overlap": "",
+      "snippet": "setToast(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/SettingsMain.tsx",
+      "line": 42,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Home is a safe fallback. */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/SettingsPresetsPanel.tsx",
+      "line": 27,
+      "overlap": "",
+      "snippet": "setError(true);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/SettingsReadinessPanel.tsx",
+      "line": 145,
+      "overlap": "",
+      "snippet": "setError(true);"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/settings/SettingsReturnTracker.tsx",
+      "line": 27,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Storage can be disabled. Returning home remains available. */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/SubagentSettingsEditor.tsx",
+      "line": 358,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/SubagentSettingsEditor.tsx",
+      "line": 375,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/settings/VoicePreviewPanel.tsx",
+      "line": 94,
+      "overlap": "",
+      "snippet": "if (!request.signal.aborted) setError(err instanceof Error ? err.message : 'Voice preview failed.') else if (controller.current === request) setError(SPEECH_TIM"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/settings/shared.tsx",
+      "line": 51,
+      "overlap": "",
+      "snippet": "return \"\";"
+    },
+    {
+      "category": "console_only",
+      "file": "web/components/sidebar/UtilitySidebar.tsx",
+      "line": 64,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"Failed to load sessions\", error);"
+    },
+    {
+      "category": "console_only",
+      "file": "web/components/sidebar/WorkspaceSidebar.tsx",
+      "line": 77,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"Failed to load sessions\", error);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/EduHubImportModal.tsx",
+      "line": 93,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/EduHubImportModal.tsx",
+      "line": 134,
+      "overlap": "",
+      "snippet": "setDetailError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/EduHubImportModal.tsx",
+      "line": 156,
+      "overlap": "",
+      "snippet": "setInstallState((s) => ({ ...s, [slug]: { kind: \"error\", message: err instanceof Error ? err.message : String(err), }, }));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/ImportWizard.tsx",
+      "line": 104,
+      "overlap": "",
+      "snippet": "if (err instanceof ImportScanError && err.code === \"aborted\") { setPhase(\"intro\"); return; } setErrorCode(err instanceof ImportScanError ? err.code : \"generic\")"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/ImportWizard.tsx",
+      "line": 128,
+      "overlap": "",
+      "snippet": "setErrorCode(err instanceof ImportScanError ? err.code : \"generic\"); setPhase(\"error\");"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/space/ImportWizard.tsx",
+      "line": 191,
+      "overlap": "scan-ts-catch",
+      "snippet": "// registry is best-effort"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/ImportWizard.tsx",
+      "line": 196,
+      "overlap": "",
+      "snippet": "setErrorCode(\"generic\"); setPhase(\"error\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/MyAgentsSection.tsx",
+      "line": 231,
+      "overlap": "",
+      "snippet": "setNote(t(\"Refresh failed \u2014 try re-adding the agent.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/PersonasSection.tsx",
+      "line": 78,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/PersonasSection.tsx",
+      "line": 125,
+      "overlap": "",
+      "snippet": "setEditor((prev) => prev ? { ...prev, saving: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/PersonasSection.tsx",
+      "line": 159,
+      "overlap": "",
+      "snippet": "setViewer((prev) => prev ? { ...prev, loading: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/PersonasSection.tsx",
+      "line": 206,
+      "overlap": "",
+      "snippet": "setEditor((prev) => prev ? { ...prev, saving: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/PersonasSection.tsx",
+      "line": 226,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/ScopeEditorModal.tsx",
+      "line": 75,
+      "overlap": "",
+      "snippet": "if (active) setPhase(\"error\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/ScopeEditorModal.tsx",
+      "line": 140,
+      "overlap": "",
+      "snippet": "setPhase(\"error\");"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 110,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 185,
+      "overlap": "",
+      "snippet": "setEditor((prev) => prev ? { ...prev, saving: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 219,
+      "overlap": "",
+      "snippet": "setViewer((prev) => prev ? { ...prev, loading: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 268,
+      "overlap": "",
+      "snippet": "setEditor((prev) => prev ? { ...prev, saving: false, error: err instanceof Error ? err.message : String(err), } : prev, );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 291,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 333,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* swallow \u2014 adding already-existing tag or invalid \u2014 editor still keeps it */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 348,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 367,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/SkillsSection.tsx",
+      "line": 379,
+      "overlap": "",
+      "snippet": "setErrorMsg(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/learning/CreateTopicWizard.tsx",
+      "line": 98,
+      "overlap": "",
+      "snippet": "setError( reason instanceof Error ? reason.message : t(\"Creation failed. Please retry.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/learning/EditTopicRouteDialog.tsx",
+      "line": 64,
+      "overlap": "",
+      "snippet": "setError(reason instanceof Error ? reason.message : t(\"Save failed\"));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/space/learning/MasteryStudy.tsx",
+      "line": 318,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Private mode / blocked storage: the default (open) stands."
+    },
+    {
+      "category": "silent",
+      "file": "web/components/space/learning/MasteryStudy.tsx",
+      "line": 327,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Preference is best-effort; the session still honours the toggle."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/learning/ModuleOutline.tsx",
+      "line": 246,
+      "overlap": "",
+      "snippet": "setError(reason instanceof Error ? reason.message : t(\"Update failed\"));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/space/learning/PathTitle.tsx",
+      "line": 71,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep the editor open with the text still in it \u2014 the alternative is // silently discarding what they typed."
+    },
+    {
+      "category": "toast_error",
+      "file": "web/components/space/question-bank/CategoryMenu.tsx",
+      "line": 83,
+      "overlap": "",
+      "snippet": "notify(err instanceof Error ? err.message : String(err), { tone: \"error\", }); return false;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/space/question-bank/useQuestionBank.ts",
+      "line": 210,
+      "overlap": "",
+      "snippet": "if (seq !== requestSeq.current) return; setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/components/space/question-bank/useQuestionBank.ts",
+      "line": 269,
+      "overlap": "",
+      "snippet": "notify(err instanceof Error ? err.message : String(err), { tone: \"error\", }); return false;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/visualize/VisualizationViewer.tsx",
+      "line": 38,
+      "overlap": "",
+      "snippet": "const jsonish = raw .replace(/([{,]\\s*)([A-Za-z_$][\\w$]*)\\s*:/g, '$1\"$2\":') .replace(/'([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'/g, (_match, value: string) => JSON.stringify(va"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/visualize/VisualizationViewer.tsx",
+      "line": 78,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError( err instanceof Error ? err.message : t(\"Failed to render chart\"), ); }"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/visualize/VisualizationViewer.tsx",
+      "line": 169,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* no-op */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/visualize/VisualizationViewer.tsx",
+      "line": 553,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* clipboard API may be unavailable */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/visualize/VisualizeConfigPanel.tsx",
+      "line": 61,
+      "overlap": "",
+      "snippet": "setCatalogError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/visualize/VisualizeConfigPanel.tsx",
+      "line": 91,
+      "overlap": "",
+      "snippet": "setCatalogError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 79,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Storage is optional. */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 116,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Optional. */"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 137,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Optional. */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 150,
+      "overlap": "",
+      "snippet": "setError(t('Could not connect to Invidious. Please retry.'))"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 169,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Optional. */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingBrowser.tsx",
+      "line": 172,
+      "overlap": "",
+      "snippet": "setError(t('Could not disconnect. Please retry when the instance is available.'))"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 259,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The context owns the user-facing error."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 296,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setNotesError(caught instanceof Error ? caught.message : t('Notes could not be loaded.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 329,
+      "overlap": "",
+      "snippet": "if (!cancelled && marksLoadRequestRef.current === requestId) { setMarksError(t('Marks could not be loaded.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 370,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current !== requestedMaterialId) return setNotesError(caught instanceof Error ? caught.message : t('Note was not saved.'))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 393,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current !== requestedMaterialId) return setNotesError(caught instanceof Error ? caught.message : t('Note was not saved.'))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 417,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current !== requestedMaterialId) return setDeleteError(caught instanceof Error ? caught.message : t('Note was not deleted.'))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 436,
+      "overlap": "",
+      "snippet": "if (notesExportRequestRef.current !== requestId) return setNotesError(caught instanceof Error ? caught.message : t('Notes could not be copied.'))"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 459,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The context owns the user-facing error."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 570,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current === requestedMaterialId) { setMarksError(t('Mark was not saved.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 587,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current === requestedMaterialId) { setMarksError(t('Mark was not deleted.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 608,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current === requestedMaterialId) { setMarksError(t('Mark was not updated.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 627,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current === requestedMaterialId) { setMarksError(t('Suggestions could not be loaded.')) }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/watching/WatchingPane.tsx",
+      "line": 655,
+      "overlap": "",
+      "snippet": "if (activeMaterialIdRef.current === requestedMaterialId) { setMarksError(t('Mark was not saved.')) }"
+    },
+    {
+      "category": "silent",
+      "file": "web/components/whisper/WhisperRoomChip.tsx",
+      "line": 20,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Clipboard may be denied; leave chip usable without toast noise."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/workspaces/SystemWorkspaceSnapshot.tsx",
+      "line": 22,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/components/workspaces/WorkspacePill.tsx",
+      "line": 238,
+      "overlap": "",
+      "snippet": "setCreateError(error instanceof Error ? error.message : String(error));"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/AppShellContext.tsx",
+      "line": 170,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Offline or unauthenticated: keep the local default."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/ReadingContext.tsx",
+      "line": 128,
+      "overlap": "",
+      "snippet": "if (token !== openTokenRef.current) return false; setErrorState( caught instanceof Error ? caught.message : \"This document could not be opened.\", ); return fals"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/ReadingContext.tsx",
+      "line": 166,
+      "overlap": "",
+      "snippet": "setAnnotations((current) => current.filter( (row) => row.annotation_id !== optimistic.annotation_id, ), ); setErrorState( caught instanceof Error ? caught.messa"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/ReadingContext.tsx",
+      "line": 195,
+      "overlap": "",
+      "snippet": "// Put it back: pretending a failed delete succeeded would lose the mark // on the next reload. setAnnotations(previous); setErrorState(\"That annotation could n"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/WatchingContext.tsx",
+      "line": 78,
+      "overlap": "",
+      "snippet": "if (request === generation.current) setError( caught instanceof Error ? caught.message : t(\"The player provider is unavailable.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/WatchingContext.tsx",
+      "line": 101,
+      "overlap": "",
+      "snippet": "if (request !== generation.current) return; setError( caught instanceof Error ? caught.message : t(\"This video could not be opened.\"), ); throw caught;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/WatchingContext.tsx",
+      "line": 124,
+      "overlap": "",
+      "snippet": "if (request !== generation.current) return; setError( caught instanceof Error ? caught.message : t(\"The player provider is unavailable.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/context/WatchingContext.tsx",
+      "line": 144,
+      "overlap": "",
+      "snippet": "if (request !== generation.current) return; setError( caught instanceof Error ? caught.message : t(\"The player provider is unavailable.\"), );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 112,
+      "overlap": "",
+      "snippet": "return DEFAULT_CHAT_RESPONSE_TIMEOUT_SECONDS;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 125,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 163,
+      "overlap": "",
+      "snippet": "return \"en\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 179,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 193,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 212,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 224,
+      "overlap": "",
+      "snippet": "return \"en\";"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 238,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 247,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 265,
+      "overlap": "scan-ts-catch",
+      "snippet": "// sessionStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 276,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 294,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 316,
+      "overlap": "",
+      "snippet": "return DEFAULT_CODE_BLOCK_THEME;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 334,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 356,
+      "overlap": "",
+      "snippet": "return DEFAULT_CODE_BLOCK_SHOW_LINE_NUMBERS;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 374,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 395,
+      "overlap": "",
+      "snippet": "return DEFAULT_CODE_BLOCK_WRAP_LONG_LINES;"
+    },
+    {
+      "category": "silent",
+      "file": "web/context/app-shell-storage.ts",
+      "line": 413,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage may be unavailable"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/contracts/parse/turn-event.ts",
+      "line": 61,
+      "overlap": "",
+      "snippet": "return { ok: false, reason: \"invalid\", diagnostic: `invalid JSON frame; length=${raw.length}`, };"
+    },
+    {
+      "category": "console_only",
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 2410,
+      "overlap": "scan-console-noise",
+      "snippet": "if (!(reason instanceof DOMException && reason.name === \"AbortError\")) { console.warn(\"Failed to load message trace\", reason); }"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3282,
+      "overlap": "",
+      "snippet": "notify(i18n.t(\"Couldn't reach the server. Please check your connection and retry.\"), { tone: \"error\", }); return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3537,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3611,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "console_only",
+      "file": "web/features/chat/ChatStateAdapter.tsx",
+      "line": 3619,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"Failed to delete turn:\", err);"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 528,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* corrupted entry \u2014 ignore */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 916,
+      "overlap": "",
+      "snippet": "console.error(\"Failed to rename session:\", error); setSessionTitleError(t(\"Rename failed\")); titleInputRef.current?.focus();"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 1286,
+      "overlap": "",
+      "snippet": "setKnowledgeBasesLoaded(false); setKnowledgeBases([]);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 1323,
+      "overlap": "",
+      "snippet": "setUserEnabledTools([]);"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/features/chat/components/ChatWorkspace.tsx",
+      "line": 1917,
+      "overlap": "",
+      "snippet": "notify(t(COMMAND_CONFIRMATION_FAILED), { tone: \"error\" }); prefillInputRef.current?.(content); return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/controllers/reply-language-save.ts",
+      "line": 11,
+      "overlap": "",
+      "snippet": "restoreDraft(content); return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "line": 1311,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* non-JSON error body */"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/features/chat/messages/ChatMessageList.tsx",
+      "line": 1411,
+      "overlap": "",
+      "snippet": "if (gen !== genRef.current) return; if (err instanceof Error && err.name === \"AbortError\") return; notify(t(SPEECH_PLAYBACK_FAILURE_MESSAGE), { tone: \"error\", }"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/trace/TracePresentation.tsx",
+      "line": 172,
+      "overlap": "",
+      "snippet": "return url;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/chat/trace/TracePresentation.tsx",
+      "line": 514,
+      "overlap": "",
+      "snippet": "return String(args);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 317,
+      "overlap": "",
+      "snippet": "if (cancelled) return; const msg = err instanceof Error ? err.message : String(err); if (msg.includes(\"404\")) { setDocNotFound(true); } else { setError(msg); }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 368,
+      "overlap": "",
+      "snippet": "if (isUnmountedRef.current) return; const msg = err instanceof Error ? err.message : String(err); setError(msg);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 413,
+      "overlap": "",
+      "snippet": "setKnowledgeBases([]);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 539,
+      "overlap": "",
+      "snippet": "if (isUnmountedRef.current) return; setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 833,
+      "overlap": "",
+      "snippet": "setError( err instanceof Error ? err.message : t(\"Failed to export Word document.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1083,
+      "overlap": "",
+      "snippet": "if (err instanceof DOMException && err.name === \"AbortError\") { return; } setError( err instanceof Error ? err.message : t(\"Failed to edit selected text.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1146,
+      "overlap": "",
+      "snippet": "setError( err instanceof Error ? err.message : t(\"Failed to edit document.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1187,
+      "overlap": "",
+      "snippet": "setError( err instanceof Error ? err.message : t(\"Failed to auto-mark document.\"), );"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/co-writer/hooks/useSplitPane.ts",
+      "line": 43,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Pointer capture is an enhancement; global listeners still complete the drag."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 48,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 67,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 89,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 99,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 109,
+      "overlap": "",
+      "snippet": "return 0.5;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 121,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 129,
+      "overlap": "",
+      "snippet": "return true;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/co-writer/storage/drafts.ts",
+      "line": 141,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/features/knowledge/api/client.ts",
+      "line": 754,
+      "overlap": "",
+      "snippet": "// body wasn't JSON; fall through } return fallback; } // A folder upload's File objects carry `webkitRelativePath` (e.g. // \"Papers/2024/a.pdf\"); single-file p"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 469,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 780,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1034,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1100,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1229,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1324,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1343,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1501,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1517,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1774,
+      "overlap": "",
+      "snippet": "onError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/multi-user/api.ts",
+      "line": 13,
+      "overlap": "",
+      "snippet": "return fallback;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/multi-user/components/BookPermissionEditor.tsx",
+      "line": 73,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/multi-user/components/GrantEditor.tsx",
+      "line": 393,
+      "overlap": "",
+      "snippet": "setSaveState(\"error\"); setMessage(error instanceof Error ? error.message : t(\"Failed to save\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "line": 112,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "line": 130,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "line": 147,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/multi-user/components/LearnerProfileEditor.tsx",
+      "line": 61,
+      "overlap": "",
+      "snippet": "setMessage( error instanceof Error ? error.message : t(\"Failed to save learner profile\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/runtime-status/TurnCoordinationSettings.tsx",
+      "line": 40,
+      "overlap": "",
+      "snippet": "setSecretError( error instanceof Error ? error.message : t(\"Failed to save.\"), );"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/navigation/settings-pages.ts",
+      "line": 163,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* malformed old URL */"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+      "line": 75,
+      "overlap": "",
+      "snippet": "setError( cause instanceof Error ? cause.message : (t(\"Unable to load version information.\") as string), );"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+      "line": 108,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The backend is expected to disappear while the launcher updates and // restarts it. Keep polling until it reconnects or the deadline passes."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+      "line": 135,
+      "overlap": "",
+      "snippet": "setError( cause instanceof Error ? cause.message : (t(\"Unable to check for updates.\") as string), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/AboutSettingsSection.tsx",
+      "line": 155,
+      "overlap": "",
+      "snippet": "setError( cause instanceof Error ? cause.message : (t(\"Unable to start the update.\") as string), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+      "line": 65,
+      "overlap": "",
+      "snippet": "setError(t(\"Unable to load archived chats. Please try again.\"));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/ArchivedChatsSettingsSection.tsx",
+      "line": 109,
+      "overlap": "",
+      "snippet": "setError( t(\"Some changes could not be completed. Please refresh and try again.\"), ); await load().catch(() => {});"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/AttachmentsSettingsSection.tsx",
+      "line": 84,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError(err instanceof Error ? err.message : String(err)); }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/AttachmentsSettingsSection.tsx",
+      "line": 138,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/CapabilitiesSettingsSection.tsx",
+      "line": 126,
+      "overlap": "",
+      "snippet": "setLoadError( err instanceof Error ? err.message : t(\"Failed to load capability settings.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/DataMigrationSettingsSection.tsx",
+      "line": 157,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/DataMigrationSettingsSection.tsx",
+      "line": 169,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err))"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 96,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 431,
+      "overlap": "",
+      "snippet": "setTestResult({ ok: false, message: err instanceof Error ? err.message : String(err), });"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 723,
+      "overlap": "",
+      "snippet": "setTestResult({ ok: false, message: err instanceof Error ? err.message : String(err), });"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 1104,
+      "overlap": "scan-ts-catch",
+      "snippet": "// transient network error \u2014 keep polling"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 1146,
+      "overlap": "scan-ts-catch",
+      "snippet": "// status polling surfaces the final state either way"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/GuardianSettingsSection.tsx",
+      "line": 123,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/GuardianSettingsSection.tsx",
+      "line": 149,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/GuardianSettingsSection.tsx",
+      "line": 170,
+      "overlap": "",
+      "snippet": "setError((reason as Error).message);"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/NetworkSettingsSection.tsx",
+      "line": 132,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError(err instanceof Error ? err.message : String(err)); }"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/NetworkSettingsSection.tsx",
+      "line": 190,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/StartersSettingsSection.tsx",
+      "line": 62,
+      "overlap": "",
+      "snippet": "if (!cancelled) setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/StartersSettingsSection.tsx",
+      "line": 111,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)); throw err;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/ToolsSettingsSection.tsx",
+      "line": 103,
+      "overlap": "",
+      "snippet": "if (!cancelled) { setError(err instanceof Error ? err.message : String(err)); }"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/sections/VideoLearningSettingsSection.tsx",
+      "line": 53,
+      "overlap": "",
+      "snippet": "setMessage( error instanceof Error ? error.message : t(\"Connection test failed.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/sections/WorkspaceSettingsSection.tsx",
+      "line": 115,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err)) return false"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 434,
+      "overlap": "",
+      "snippet": "return {};"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 826,
+      "overlap": "scan-ts-catch",
+      "snippet": "// No draft is the normal case and a failed read must not block the // page; the live settings above are already in hand."
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 831,
+      "overlap": "",
+      "snippet": "console.error(\"Failed to load settings:\", err); const message = err instanceof Error ? err.message : String(err); setSettingsError(message); // Resolve the load"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 844,
+      "overlap": "",
+      "snippet": "console.error(\"Failed to load system status:\", err); // Only surface this when settings itself loaded; otherwise the // settings-fetch error already explains th"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 896,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Session storage is an enhancement for cross-route feedback only."
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1484,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not save the draft: {{message}}\", { message: err instanceof Error ? err.message : String(err), }), ); return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1536,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The catalog is already live. A status refresh failure should not // turn a successful apply into a failure or keep the dialog open."
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1542,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not apply: {{message}}\", { message: err instanceof Error ? err.message : String(err), }), ); return false;"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1614,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not apply: {{message}}\", { message: error instanceof Error ? error.message : String(error), }), ); return false;"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1710,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not apply: {{message}}\", { message: error instanceof Error ? error.message : String(error), }), ); return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1780,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* Applying succeeded; diagnostics can be retried independently. */"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1794,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not apply: {{message}}\", { message: err instanceof Error ? err.message : String(err), }), );"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1845,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not load the preset: {{message}}\", { message: err instanceof Error ? err.message : String(err), }), ); return false;"
+    },
+    {
+      "category": "toast_other",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 1874,
+      "overlap": "",
+      "snippet": "setToast( t(\"Could not discard the draft: {{message}}\", { message: err instanceof Error ? err.message : String(err), }), );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 2047,
+      "overlap": "",
+      "snippet": "finish(\"failed\", t(\"Could not read the model test result.\"));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/features/settings/store/SettingsStore.tsx",
+      "line": 2053,
+      "overlap": "",
+      "snippet": "finish( \"failed\", error instanceof Error ? error.message : t(\"Could not start diagnostics.\"), );"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/use-card-submission.ts",
+      "line": 38,
+      "overlap": "",
+      "snippet": "setFailureMessage(COMMAND_CONFIRMATION_FAILED); accepted = false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useCollapsiblePanel.ts",
+      "line": 29,
+      "overlap": "scan-ts-catch",
+      "snippet": "// localStorage unavailable; keep default"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useCollapsiblePanel.ts",
+      "line": 46,
+      "overlap": "scan-ts-catch",
+      "snippet": "// quota / privacy mode; ignore"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useImaConnection.ts",
+      "line": 203,
+      "overlap": "",
+      "snippet": "if (requestVersionRef.current !== version) return; setLookup((current) => ({ ...current, status: current.knowledgeBases.length > 0 ? \"ready\" : \"error\", })); onE"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useImaConnection.ts",
+      "line": 261,
+      "overlap": "",
+      "snippet": "if (requestVersionRef.current !== version) return; setLookup((current) => ({ ...current, status: \"error\", manualVerification: null, })); setManualProbe(null); o"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useKnowledgeBases.ts",
+      "line": 143,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeHistory.ts",
+      "line": 40,
+      "overlap": "scan-ts-catch",
+      "snippet": "// corrupted or unavailable \u2014 fall through"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeHistory.ts",
+      "line": 50,
+      "overlap": "scan-ts-catch",
+      "snippet": "// quota exceeded; ignore"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 240,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed event"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 326,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed process log"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 359,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed progress"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useKnowledgeProgress.ts",
+      "line": 407,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore malformed failure event"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useLLMOptions.ts",
+      "line": 51,
+      "overlap": "",
+      "snippet": "if (!mountedRef.current || requestId !== latestRequestRef.current) return; dispatch({ type: \"refresh-failed\" });"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useMcpServers.ts",
+      "line": 64,
+      "overlap": "",
+      "snippet": "setLoadError(describeMcpError(err, t));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useMcpServers.ts",
+      "line": 89,
+      "overlap": "",
+      "snippet": "setSaveError(describeMcpError(err, t)); // A refused write may still have applied an earlier step of the diff. await load(); return false;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useMcpServers.ts",
+      "line": 132,
+      "overlap": "",
+      "snippet": "setSaveError(describeMcpError(err, t)); return;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useMcpServers.ts",
+      "line": 165,
+      "overlap": "",
+      "snippet": "setSaveError(describeMcpError(err, t));"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useMcpServers.ts",
+      "line": 192,
+      "overlap": "",
+      "snippet": "setSaveError(describeMcpError(err, t));"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useSetupSync.ts",
+      "line": 81,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A preference that failed to refresh is a cosmetic miss: the value is // stored server-side and the next load picks it up."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useTopicSourceLibrary.ts",
+      "line": 219,
+      "overlap": "",
+      "snippet": "setChildLists(previous => ({ ...previous, [parentKey]: { candidates: [], loading: false, error: reason instanceof Error ? reason.message : tr('\u65e0\u6cd5\u8bfb\u53d6\u5217\u8868', 'Could n"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useTopicSourceLibrary.ts",
+      "line": 461,
+      "overlap": "",
+      "snippet": "return { // Containers never reach hydration (they are filtered out of // `candidates`), so the cast is narrowing a type, not a guess. kind: candidate.kind as T"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useVoiceAutoplay.ts",
+      "line": 54,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useVoiceAutoplay.ts",
+      "line": 70,
+      "overlap": "scan-ts-catch",
+      "snippet": "// sessionStorage may be unavailable"
+    },
+    {
+      "category": "silent",
+      "file": "web/hooks/useVoiceAutoplay.ts",
+      "line": 174,
+      "overlap": "scan-ts-catch",
+      "snippet": "// ignore"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/hooks/useVoiceAutoplay.ts",
+      "line": 192,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useVoiceRecorder.ts",
+      "line": 43,
+      "overlap": "",
+      "snippet": "setError(\"Microphone permission denied.\"); return;"
+    },
+    {
+      "category": "inline_state",
+      "file": "web/hooks/useVoiceRecorder.ts",
+      "line": 86,
+      "overlap": "",
+      "snippet": "setError(err instanceof Error ? err.message : \"Transcription failed.\");"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/app-update.ts",
+      "line": 77,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Fall through to the status-only message for non-JSON responses."
+    },
+    {
+      "category": "rethrow",
+      "file": "web/lib/app-update.ts",
+      "line": 93,
+      "overlap": "",
+      "snippet": "const error = cause instanceof Error ? cause : new Error(\"Unable to read update status\"); publishAppUpdateStatus({ error: error.message }); throw error;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/auth.ts",
+      "line": 63,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/auth.ts",
+      "line": 107,
+      "overlap": "",
+      "snippet": "return { ok: false, error: \"Could not reach the server\" };"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/auth.ts",
+      "line": 155,
+      "overlap": "",
+      "snippet": "return { ok: false, error: \"Could not reach the server\" };"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/auth.ts",
+      "line": 169,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/auth.ts",
+      "line": 182,
+      "overlap": "",
+      "snippet": "// Ignore \u2014 we'll redirect regardless } finally { invalidateAuthStatusCache(); } }"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/book-api.ts",
+      "line": 81,
+      "overlap": "",
+      "snippet": "detail = res.statusText;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/book-ws-operation.ts",
+      "line": 74,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The operation result is authoritative even if cleanup fails."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/book-ws-operation.ts",
+      "line": 85,
+      "overlap": "",
+      "snippet": "finish( () => reject( error instanceof Error ? error : new Error(\"Failed to send Book WebSocket operation\"), ), true, );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/book-ws-operation.ts",
+      "line": 102,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/agent-store.ts",
+      "line": 134,
+      "overlap": "",
+      "snippet": "return [];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/agent-store.ts",
+      "line": 144,
+      "overlap": "",
+      "snippet": "return undefined;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/agent-store.ts",
+      "line": 165,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/lib/chat-import/chatgpt.ts",
+      "line": 250,
+      "overlap": "",
+      "snippet": "throw new ImportScanError( \"invalid_export\", \"The selected file is not valid JSON\", );"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/claude-code.ts",
+      "line": 148,
+      "overlap": "",
+      "snippet": "continue;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/codex.ts",
+      "line": 222,
+      "overlap": "",
+      "snippet": "continue;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-import/detect.ts",
+      "line": 10,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/lib/chat-import/index.ts",
+      "line": 46,
+      "overlap": "",
+      "snippet": "// User dismissed the picker. throw new ImportScanError(\"aborted\");"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/chat-import/index.ts",
+      "line": 129,
+      "overlap": "scan-ts-catch",
+      "snippet": "// skip this transcript"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/chat-import/streaming.ts",
+      "line": 46,
+      "overlap": "scan-ts-catch",
+      "snippet": "// partial/corrupt row \u2014 skip"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/chat-markdown-note.ts",
+      "line": 65,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/chat-markdown-note.ts",
+      "line": 90,
+      "overlap": "scan-ts-catch",
+      "snippet": "// If adoption cannot be persisted, return the pending draft so this // session still gets the content in memory."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/chat-markdown-note.ts",
+      "line": 110,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Storage can be unavailable or full. The in-memory draft remains usable."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/cli-apps-api.ts",
+      "line": 121,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* keep the status line */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/clipboard.ts",
+      "line": 54,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/clipboard.ts",
+      "line": 86,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Focus lost, permission denied, or a policy block. The selection path // sometimes still works, so it is worth one try before giving up."
+    },
+    {
+      "category": "rethrow",
+      "file": "web/lib/codex-oauth.ts",
+      "line": 149,
+      "overlap": "",
+      "snippet": "throw new CodexOAuthApiError( \"invalid_response\", \"DeepTutor returned an invalid Codex OAuth response.\", );"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/codex-oauth.ts",
+      "line": 165,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The UI renders only the stable code mapping below."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/epub-page-turn.ts",
+      "line": 52,
+      "overlap": "",
+      "snippet": "return withoutFragment.replace(/^\\.\\//, \"\");"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 81,
+      "overlap": "",
+      "snippet": "return [];"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 97,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A malformed or unavailable fallback cannot hide the local map."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 110,
+      "overlap": "",
+      "snippet": "return [];"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 128,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A malformed key cannot hide a valid submission."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 177,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* malformed entries cannot be recovered */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/failed-submissions.ts",
+      "line": 242,
+      "overlap": "",
+      "snippet": "browserStorage.removeRaw(\"session\", key); return [];"
+    },
+    {
+      "category": "console_only",
+      "file": "web/lib/iframe-html.ts",
+      "line": 22,
+      "overlap": "scan-console-noise",
+      "snippet": "console.error(\"[KaTeX] Error:\",e)"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/iframe-html.ts",
+      "line": 103,
+      "overlap": "scan-ts-catch",
+      "snippet": ""
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/iframe-html.ts",
+      "line": 121,
+      "overlap": "scan-ts-catch",
+      "snippet": ""
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/iframe-html.ts",
+      "line": 153,
+      "overlap": "",
+      "snippet": "reportHeight();"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/learning-api.ts",
+      "line": 586,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The status remains actionable when an upstream proxy returns HTML."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/learning-routes.ts",
+      "line": 52,
+      "overlap": "",
+      "snippet": "return null"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/markdown-display.ts",
+      "line": 238,
+      "overlap": "",
+      "snippet": "return value;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/markdown-display.ts",
+      "line": 898,
+      "overlap": "",
+      "snippet": "return escaped;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/mastery-ws.ts",
+      "line": 58,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/mcp-api.ts",
+      "line": 307,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/memory-graph.ts",
+      "line": 247,
+      "overlap": "",
+      "snippet": "return [s, []];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/memory-graph.ts",
+      "line": 257,
+      "overlap": "",
+      "snippet": "return [s, { title: \"\", entries: [] }];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/memory-graph.ts",
+      "line": 268,
+      "overlap": "",
+      "snippet": "return [slot, { title: \"\", entries: [] }];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/message-content.ts",
+      "line": 15,
+      "overlap": "",
+      "snippet": "return String(value);"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/notebook-api.ts",
+      "line": 301,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* non-JSON error body \u2014 fall back to the status line */"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/notifications.ts",
+      "line": 45,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* a misbehaving listener should not break siblings */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/partner-session.ts",
+      "line": 24,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/partner-session.ts",
+      "line": 32,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/partner-session.ts",
+      "line": 77,
+      "overlap": "",
+      "snippet": "return freshPartnerSessionKey();"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/partner-session.ts",
+      "line": 89,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* private mode / storage disabled \u2014 in-memory only */"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/pending-prompt.ts",
+      "line": 34,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Private-mode browsers reject sessionStorage; the user still lands on the // destination, just with an empty composer."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/pending-prompt.ts",
+      "line": 47,
+      "overlap": "",
+      "snippet": "return \"\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/proxy-policy.ts",
+      "line": 85,
+      "overlap": "",
+      "snippet": "return \"malformed\";"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/quiz-judge.ts",
+      "line": 68,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/quiz-judge.ts",
+      "line": 77,
+      "overlap": "",
+      "snippet": "finalize(\"error\", err instanceof Error ? err.message : String(err));"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/quiz-judge.ts",
+      "line": 87,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/quiz-judge.ts",
+      "line": 126,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* ignore */"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/reading-api.ts",
+      "line": 227,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Non-JSON error body (a proxy page, say) \u2014 keep the status line."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/reading-api.ts",
+      "line": 417,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Binary and proxy error bodies both fall back to the status message."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/reading-api.ts",
+      "line": 648,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Malformed percent-encoding \u2014 fall through to the plain form."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-display-preferences.ts",
+      "line": 80,
+      "overlap": "",
+      "snippet": "return DEFAULT_READER_DISPLAY_PREFERENCES;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-location-history.ts",
+      "line": 172,
+      "overlap": "",
+      "snippet": "return EMPTY_READING_HISTORY;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-location-history.ts",
+      "line": 187,
+      "overlap": "",
+      "snippet": "return EMPTY_READING_HISTORY;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/reading-location-history.ts",
+      "line": 203,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Storage may be unavailable or full; navigation still works in memory."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-passage-prompts.ts",
+      "line": 80,
+      "overlap": "",
+      "snippet": "return target;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-quote-locator.ts",
+      "line": 326,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-video-sources.ts",
+      "line": 42,
+      "overlap": "",
+      "snippet": "return \"\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-video-sources.ts",
+      "line": 53,
+      "overlap": "",
+      "snippet": "return 0;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-video-sources.ts",
+      "line": 86,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/reading-workspace-api.ts",
+      "line": 118,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Keep the HTTP status for proxy/non-JSON responses."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-workspace-api.ts",
+      "line": 174,
+      "overlap": "",
+      "snippet": "return \"\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-workspace-api.ts",
+      "line": 369,
+      "overlap": "",
+      "snippet": "// A missing hint is not a failure the reader should ever see. return \"\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reading-workspace-api.ts",
+      "line": 397,
+      "overlap": "",
+      "snippet": "// A sidebar that cannot name a collection still lists its conversations. return [];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reconnecting-websocket.ts",
+      "line": 113,
+      "overlap": "",
+      "snippet": "this.handlers.onError?.(error); this.socket.close(); return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/reconnecting-websocket.ts",
+      "line": 139,
+      "overlap": "",
+      "snippet": "this.handlers.onError?.(error); this.scheduleRetry(); return;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/resource-routes.ts",
+      "line": 18,
+      "overlap": "",
+      "snippet": "// Leave malformed external URLs usable instead of crashing the page. return candidate;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/selection-tutor.ts",
+      "line": 157,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/session-activity.ts",
+      "line": 32,
+      "overlap": "",
+      "snippet": "// A malformed escape sequence: the raw form is still a usable hint. return relative || null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/session-api.ts",
+      "line": 328,
+      "overlap": "",
+      "snippet": "// A missing hint is not a failure the composer should ever surface. return \"\";"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/sidebar-layout.ts",
+      "line": 250,
+      "overlap": "",
+      "snippet": "return fallback;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/sidebar-layout.ts",
+      "line": 259,
+      "overlap": "scan-ts-catch",
+      "snippet": "// A full or disabled store costs the preference, never the sidebar."
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/theme.ts",
+      "line": 48,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Silently fail - localStorage may be disabled"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/theme.ts",
+      "line": 63,
+      "overlap": "",
+      "snippet": "// Silently fail - localStorage may be disabled or full return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/use-book-stream.ts",
+      "line": 50,
+      "overlap": "",
+      "snippet": "scheduleReconnect(); return;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/use-book-stream.ts",
+      "line": 66,
+      "overlap": "scan-ts-catch",
+      "snippet": "// The close handler will schedule a reconnect."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/use-book-stream.ts",
+      "line": 75,
+      "overlap": "",
+      "snippet": "return;"
+    },
+    {
+      "category": "silent",
+      "file": "web/lib/use-book-stream.ts",
+      "line": 130,
+      "overlap": "scan-ts-catch",
+      "snippet": "// Already closing \u2014 nothing to do."
+    },
+    {
+      "category": "unclassified",
+      "file": "web/lib/visualize-types.ts",
+      "line": 132,
+      "overlap": "",
+      "snippet": "return String(value ?? \"\");"
+    },
+    {
+      "category": "toast_error",
+      "file": "web/lib/workspace-scope.ts",
+      "line": 42,
+      "overlap": "",
+      "snippet": "const { notify } = await import('./notifications') const { default: i18n } = await import('i18next') notify(i18n.t('Could not save the draft. Free browser stora"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/api/client.ts",
+      "line": 116,
+      "overlap": "",
+      "snippet": "return text;"
+    },
+    {
+      "category": "rethrow",
+      "file": "web/shared/api/client.ts",
+      "line": 132,
+      "overlap": "",
+      "snippet": "if (error instanceof ApiError) throw error; const aborted = error instanceof DOMException && error.name === \"AbortError\"; throw new ApiError( { code: aborted ? "
+    },
+    {
+      "category": "rethrow",
+      "file": "web/shared/api/client.ts",
+      "line": 187,
+      "overlap": "",
+      "snippet": "if (error instanceof ApiError) throw error; const aborted = error instanceof DOMException && error.name === \"AbortError\"; throw new ApiError( { code: aborted ? "
+    },
+    {
+      "category": "silent",
+      "file": "web/shared/api/client.ts",
+      "line": 218,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* the body was not JSON; the status line is all we have */"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/auth/return-url.ts",
+      "line": 36,
+      "overlap": "",
+      "snippet": "return fallback;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/schema.ts",
+      "line": 32,
+      "overlap": "",
+      "snippet": "return { ok: false, reason: \"corrupt\" };"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 54,
+      "overlap": "",
+      "snippet": "return key.fallback;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 65,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 76,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 84,
+      "overlap": "",
+      "snippet": "return null;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 103,
+      "overlap": "",
+      "snippet": "return [];"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 114,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 125,
+      "overlap": "",
+      "snippet": "return false;"
+    },
+    {
+      "category": "unclassified",
+      "file": "web/shared/storage/store.ts",
+      "line": 142,
+      "overlap": "",
+      "snippet": "return 0;"
+    },
+    {
+      "category": "silent",
+      "file": "web/shared/storage/store.ts",
+      "line": 173,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* unavailable */"
+    },
+    {
+      "category": "silent",
+      "file": "web/shared/storage/store.ts",
+      "line": 174,
+      "overlap": "scan-ts-catch",
+      "snippet": "/* unavailable */"
+    }
+  ],
+  "entries_by_file": {
+    "web/app/(admin)/admin/users/page.tsx": {
+      "inline_state": 5,
+      "unclassified": 1
+    },
+    "web/app/(utility)/memory/resolve/page.tsx": {
+      "inline_state": 1
+    },
+    "web/app/(utility)/profile/page.tsx": {
+      "inline_state": 4,
+      "unclassified": 1
+    },
+    "web/app/(utility)/session-handoff/page.tsx": {
+      "inline_state": 2
+    },
+    "web/app/(workspace)/co-writer/page.tsx": {
+      "inline_state": 4
+    },
+    "web/app/(workspace)/kanban/page.tsx": {
+      "inline_state": 1
+    },
+    "web/app/(workspace)/learning/books/BooksRoute.tsx": {
+      "console_only": 1,
+      "inline_state": 1,
+      "rethrow": 1,
+      "silent": 1,
+      "toast_error": 8
+    },
+    "web/app/(workspace)/learning/books/components/BookCreator.tsx": {
+      "inline_state": 1
+    },
+    "web/app/(workspace)/learning/books/components/BookHealthBanner.tsx": {
+      "inline_state": 1,
+      "silent": 1
+    },
+    "web/app/(workspace)/learning/books/components/PageReader.tsx": {
+      "unclassified": 1
+    },
+    "web/app/(workspace)/learning/mastery/[pathId]/page.tsx": {
+      "inline_state": 3
+    },
+    "web/app/(workspace)/learning/mastery/page.tsx": {
+      "inline_state": 1
+    },
+    "web/app/(workspace)/partners/[partnerId]/page.tsx": {
+      "inline_state": 1,
+      "toast_other": 5,
+      "unclassified": 1
+    },
+    "web/app/(workspace)/partners/groups/[groupId]/page.tsx": {
+      "inline_state": 2,
+      "unclassified": 1
+    },
+    "web/app/(workspace)/partners/groups/new/page.tsx": {
+      "inline_state": 1
+    },
+    "web/app/(workspace)/partners/new/page.tsx": {
+      "inline_state": 2
+    },
+    "web/app/handoff/page.tsx": {
+      "inline_state": 1
+    },
+    "web/components/Geogebra.tsx": {
+      "console_only": 1,
+      "inline_state": 1
+    },
+    "web/components/Mermaid.tsx": {
+      "inline_state": 1,
+      "silent": 1
+    },
+    "web/components/ThemeScript.tsx": {
+      "silent": 1
+    },
+    "web/components/access/CapabilityAccessContext.tsx": {
+      "silent": 1
+    },
+    "web/components/agents/ConnectedAgents.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/HistorySessionPicker.tsx": {
+      "unclassified": 1
+    },
+    "web/components/chat/MyAgentsPicker.tsx": {
+      "unclassified": 2
+    },
+    "web/components/chat/PersonaPicker.tsx": {
+      "unclassified": 1
+    },
+    "web/components/chat/QuestionBankPicker.tsx": {
+      "unclassified": 2
+    },
+    "web/components/chat/home/ChatMarkdownNoteTab.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/home/PartnerDraftCard.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/home/SessionViewerPanel.tsx": {
+      "unclassified": 1
+    },
+    "web/components/chat/home/StandaloneComposer.tsx": {
+      "inline_state": 1,
+      "unclassified": 1
+    },
+    "web/components/chat/home/StarterSuggestions.tsx": {
+      "unclassified": 2
+    },
+    "web/components/chat/home/SubagentTabBody.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/preview/FilePreviewDrawer.tsx": {
+      "inline_state": 1,
+      "silent": 1
+    },
+    "web/components/chat/preview/previewers/DocxPreview.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/preview/previewers/OfficePdfPreview.tsx": {
+      "unclassified": 1
+    },
+    "web/components/chat/preview/previewers/XlsxPreview.tsx": {
+      "inline_state": 1
+    },
+    "web/components/chat/preview/previewers/useBinarySource.ts": {
+      "unclassified": 1
+    },
+    "web/components/chat/preview/previewers/useTextSource.ts": {
+      "unclassified": 1
+    },
+    "web/components/cli-apps/CliAppsSection.tsx": {
+      "inline_state": 3
+    },
+    "web/components/common/InlineFileCard.tsx": {
+      "unclassified": 1
+    },
+    "web/components/courses/CourseDialog.tsx": {
+      "inline_state": 1
+    },
+    "web/components/courses/CourseResources.tsx": {
+      "unclassified": 1
+    },
+    "web/components/courses/CourseScope.tsx": {
+      "unclassified": 1
+    },
+    "web/components/courses/OrganizedSessionList.tsx": {
+      "inline_state": 1
+    },
+    "web/components/knowledge/ConnectKiwixModal.tsx": {
+      "inline_state": 3
+    },
+    "web/components/knowledge/CreateKbModal.tsx": {
+      "inline_state": 5
+    },
+    "web/components/knowledge/KbDocumentList.tsx": {
+      "inline_state": 4
+    },
+    "web/components/knowledge/KbFilePreview.tsx": {
+      "silent": 1
+    },
+    "web/components/knowledge/KbGitHubSourcesSection.tsx": {
+      "inline_state": 4
+    },
+    "web/components/knowledge/KbIndexVersionsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/components/knowledge/KbKiwixArticlesSection.tsx": {
+      "inline_state": 2
+    },
+    "web/components/knowledge/KbLinkedFoldersSection.tsx": {
+      "inline_state": 3
+    },
+    "web/components/knowledge/KbMarginNoteDevicesSection.tsx": {
+      "inline_state": 3,
+      "silent": 1
+    },
+    "web/components/knowledge/KbSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/components/knowledge/KbWebSourcesSection.tsx": {
+      "inline_state": 5
+    },
+    "web/components/knowledge/KnowledgePage.tsx": {
+      "inline_state": 11
+    },
+    "web/components/knowledge/LinkFolderModal.tsx": {
+      "inline_state": 1
+    },
+    "web/components/knowledge/PageIndexSettingsModal.tsx": {
+      "inline_state": 1
+    },
+    "web/components/learning/LearningDashboard.tsx": {
+      "unclassified": 1
+    },
+    "web/components/learning/practice/PracticeImport.tsx": {
+      "inline_state": 2
+    },
+    "web/components/learning/practice/PracticeInsights.tsx": {
+      "inline_state": 1
+    },
+    "web/components/learning/practice/PracticePage.tsx": {
+      "inline_state": 2
+    },
+    "web/components/learning/practice/PracticeSession.tsx": {
+      "inline_state": 2
+    },
+    "web/components/learning/practice/ReviewHome.tsx": {
+      "inline_state": 2
+    },
+    "web/components/mcp/McpCatalogBrowser.tsx": {
+      "inline_state": 1,
+      "unclassified": 2
+    },
+    "web/components/mcp/McpServerForm.tsx": {
+      "inline_state": 1
+    },
+    "web/components/memory/MemoryL1Workbench.tsx": {
+      "unclassified": 1
+    },
+    "web/components/memory/MemoryRunPanel.tsx": {
+      "inline_state": 1,
+      "unclassified": 1
+    },
+    "web/components/memory/MemorySection.tsx": {
+      "silent": 1,
+      "toast_other": 4,
+      "unclassified": 4
+    },
+    "web/components/memory/MemoryWorkbench.tsx": {
+      "toast_other": 1
+    },
+    "web/components/memory/useMemoryRun.ts": {
+      "rethrow": 1,
+      "silent": 2,
+      "unclassified": 5
+    },
+    "web/components/notebook/NotebookConsole.tsx": {
+      "banner": 4
+    },
+    "web/components/notebook/NotebookRecordRow.tsx": {
+      "inline_state": 3
+    },
+    "web/components/notebook/SaveToNotebookModal.tsx": {
+      "inline_state": 2,
+      "unclassified": 2
+    },
+    "web/components/notebook/useNotebookLibrary.ts": {
+      "inline_state": 2
+    },
+    "web/components/notebook/useNotebookSelection.ts": {
+      "console_only": 2
+    },
+    "web/components/partners/ChannelOnboardingPanel.tsx": {
+      "inline_state": 4
+    },
+    "web/components/partners/ChannelRuntimeStatus.tsx": {
+      "unclassified": 1
+    },
+    "web/components/partners/FaceEditor.tsx": {
+      "inline_state": 1
+    },
+    "web/components/partners/PartnerArchives.tsx": {
+      "unclassified": 4
+    },
+    "web/components/partners/PartnerChannels.tsx": {
+      "inline_state": 2,
+      "unclassified": 1
+    },
+    "web/components/partners/PartnerChat.tsx": {
+      "silent": 1,
+      "unclassified": 7
+    },
+    "web/components/partners/PartnerConfigure.tsx": {
+      "inline_state": 1,
+      "unclassified": 8
+    },
+    "web/components/partners/PartnerLinkModal.tsx": {
+      "inline_state": 3,
+      "unclassified": 1
+    },
+    "web/components/partners/SoulPicker.tsx": {
+      "inline_state": 1,
+      "unclassified": 1
+    },
+    "web/components/partners/WeixinQrLogin.tsx": {
+      "inline_state": 2
+    },
+    "web/components/partners/group/GroupSessionPicker.tsx": {
+      "silent": 1
+    },
+    "web/components/partners/group/PartnerSeat.tsx": {
+      "silent": 1
+    },
+    "web/components/partners/group/useGroupSession.ts": {
+      "silent": 1
+    },
+    "web/components/partners/schema-form.tsx": {
+      "unclassified": 1
+    },
+    "web/components/quiz/QuizConfigPanel.tsx": {
+      "silent": 1
+    },
+    "web/components/quiz/QuizFollowupTabBody.tsx": {
+      "silent": 1
+    },
+    "web/components/quiz/QuizViewer.tsx": {
+      "silent": 6,
+      "unclassified": 1
+    },
+    "web/components/reading/EpubDocumentView.tsx": {
+      "inline_state": 1,
+      "silent": 2,
+      "unclassified": 1
+    },
+    "web/components/reading/PdfDocumentView.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/PdfPage.tsx": {
+      "inline_state": 1,
+      "silent": 2
+    },
+    "web/components/reading/ReaderPane.tsx": {
+      "inline_state": 2,
+      "silent": 2
+    },
+    "web/components/reading/ReadingActionsProvider.tsx": {
+      "unclassified": 1
+    },
+    "web/components/reading/ReadingExtensionBar.tsx": {
+      "unclassified": 2
+    },
+    "web/components/reading/TextUnitView.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/library/AddMaterialsDialog.tsx": {
+      "degrade_default": 1,
+      "inline_state": 2
+    },
+    "web/components/reading/library/LibraryShell.tsx": {
+      "silent": 1
+    },
+    "web/components/reading/library/MaterialLibrary.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/library/ReadingFolder.tsx": {
+      "inline_state": 2,
+      "silent": 1
+    },
+    "web/components/reading/library/ReadingLibrary.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/use-read-aloud-speech.ts": {
+      "unclassified": 1
+    },
+    "web/components/reading/workspace/ReadingWorkspace.tsx": {
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/components/reading/workspace/WorkspaceChrome.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/workspace/dialogs.tsx": {
+      "inline_state": 1
+    },
+    "web/components/reading/workspace/useLearningMode.ts": {
+      "unclassified": 1
+    },
+    "web/components/reading/workspace/useReadingWorkspace.ts": {
+      "inline_state": 1,
+      "toast_other": 5
+    },
+    "web/components/settings/ChatResponseTimeoutSection.tsx": {
+      "rethrow": 1,
+      "unclassified": 1
+    },
+    "web/components/settings/CodeBuddyAuthCard.tsx": {
+      "inline_state": 4
+    },
+    "web/components/settings/CodexOAuthCard.tsx": {
+      "inline_state": 7,
+      "toast_other": 1
+    },
+    "web/components/settings/MemoryUsageItem.tsx": {
+      "silent": 1
+    },
+    "web/components/settings/MinerUEngineSettings.tsx": {
+      "inline_state": 1,
+      "silent": 2,
+      "unclassified": 1
+    },
+    "web/components/settings/ModelCapabilityFields.tsx": {
+      "silent": 1
+    },
+    "web/components/settings/ProviderModelDiscovery.tsx": {
+      "inline_state": 1
+    },
+    "web/components/settings/RegistryControls.tsx": {
+      "unclassified": 2
+    },
+    "web/components/settings/ServiceConfigEditor.tsx": {
+      "toast_other": 1
+    },
+    "web/components/settings/SettingsMain.tsx": {
+      "silent": 1
+    },
+    "web/components/settings/SettingsPresetsPanel.tsx": {
+      "inline_state": 1
+    },
+    "web/components/settings/SettingsReadinessPanel.tsx": {
+      "inline_state": 1
+    },
+    "web/components/settings/SettingsReturnTracker.tsx": {
+      "silent": 1
+    },
+    "web/components/settings/SubagentSettingsEditor.tsx": {
+      "inline_state": 2
+    },
+    "web/components/settings/VoicePreviewPanel.tsx": {
+      "inline_state": 1
+    },
+    "web/components/settings/shared.tsx": {
+      "unclassified": 1
+    },
+    "web/components/sidebar/UtilitySidebar.tsx": {
+      "console_only": 1
+    },
+    "web/components/sidebar/WorkspaceSidebar.tsx": {
+      "console_only": 1
+    },
+    "web/components/space/EduHubImportModal.tsx": {
+      "inline_state": 2,
+      "unclassified": 1
+    },
+    "web/components/space/ImportWizard.tsx": {
+      "inline_state": 3,
+      "silent": 1
+    },
+    "web/components/space/MyAgentsSection.tsx": {
+      "unclassified": 1
+    },
+    "web/components/space/PersonasSection.tsx": {
+      "inline_state": 2,
+      "unclassified": 3
+    },
+    "web/components/space/ScopeEditorModal.tsx": {
+      "unclassified": 2
+    },
+    "web/components/space/SkillsSection.tsx": {
+      "inline_state": 5,
+      "silent": 1,
+      "unclassified": 3
+    },
+    "web/components/space/learning/CreateTopicWizard.tsx": {
+      "inline_state": 1
+    },
+    "web/components/space/learning/EditTopicRouteDialog.tsx": {
+      "inline_state": 1
+    },
+    "web/components/space/learning/MasteryStudy.tsx": {
+      "silent": 2
+    },
+    "web/components/space/learning/ModuleOutline.tsx": {
+      "inline_state": 1
+    },
+    "web/components/space/learning/PathTitle.tsx": {
+      "silent": 1
+    },
+    "web/components/space/question-bank/CategoryMenu.tsx": {
+      "toast_error": 1
+    },
+    "web/components/space/question-bank/useQuestionBank.ts": {
+      "inline_state": 1,
+      "toast_error": 1
+    },
+    "web/components/visualize/VisualizationViewer.tsx": {
+      "inline_state": 2,
+      "silent": 2
+    },
+    "web/components/visualize/VisualizeConfigPanel.tsx": {
+      "inline_state": 2
+    },
+    "web/components/watching/WatchingBrowser.tsx": {
+      "inline_state": 2,
+      "silent": 4
+    },
+    "web/components/watching/WatchingPane.tsx": {
+      "inline_state": 11,
+      "silent": 2
+    },
+    "web/components/whisper/WhisperRoomChip.tsx": {
+      "silent": 1
+    },
+    "web/components/workspaces/SystemWorkspaceSnapshot.tsx": {
+      "inline_state": 1
+    },
+    "web/components/workspaces/WorkspacePill.tsx": {
+      "inline_state": 1
+    },
+    "web/context/AppShellContext.tsx": {
+      "silent": 1
+    },
+    "web/context/ReadingContext.tsx": {
+      "inline_state": 3
+    },
+    "web/context/WatchingContext.tsx": {
+      "inline_state": 4
+    },
+    "web/context/app-shell-storage.ts": {
+      "silent": 8,
+      "unclassified": 10
+    },
+    "web/contracts/parse/turn-event.ts": {
+      "unclassified": 1
+    },
+    "web/features/chat/ChatStateAdapter.tsx": {
+      "console_only": 2,
+      "toast_error": 1,
+      "unclassified": 2
+    },
+    "web/features/chat/components/ChatWorkspace.tsx": {
+      "inline_state": 1,
+      "silent": 1,
+      "toast_error": 1,
+      "unclassified": 2
+    },
+    "web/features/chat/controllers/reply-language-save.ts": {
+      "unclassified": 1
+    },
+    "web/features/chat/messages/ChatMessageList.tsx": {
+      "silent": 1,
+      "toast_error": 1
+    },
+    "web/features/chat/trace/TracePresentation.tsx": {
+      "unclassified": 2
+    },
+    "web/features/co-writer/components/CoWriterWorkspace.tsx": {
+      "inline_state": 7,
+      "unclassified": 1
+    },
+    "web/features/co-writer/hooks/useSplitPane.ts": {
+      "silent": 1
+    },
+    "web/features/co-writer/storage/drafts.ts": {
+      "unclassified": 8
+    },
+    "web/features/knowledge/api/client.ts": {
+      "rethrow": 1
+    },
+    "web/features/knowledge/components/engines/EngineDetail.tsx": {
+      "unclassified": 10
+    },
+    "web/features/multi-user/api.ts": {
+      "unclassified": 1
+    },
+    "web/features/multi-user/components/BookPermissionEditor.tsx": {
+      "inline_state": 1
+    },
+    "web/features/multi-user/components/GrantEditor.tsx": {
+      "unclassified": 1
+    },
+    "web/features/multi-user/components/GuardianRelationshipsEditor.tsx": {
+      "inline_state": 3
+    },
+    "web/features/multi-user/components/LearnerProfileEditor.tsx": {
+      "unclassified": 1
+    },
+    "web/features/runtime-status/TurnCoordinationSettings.tsx": {
+      "inline_state": 1
+    },
+    "web/features/settings/navigation/settings-pages.ts": {
+      "silent": 1
+    },
+    "web/features/settings/sections/AboutSettingsSection.tsx": {
+      "inline_state": 3,
+      "silent": 1
+    },
+    "web/features/settings/sections/ArchivedChatsSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/features/settings/sections/AttachmentsSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/features/settings/sections/CapabilitiesSettingsSection.tsx": {
+      "inline_state": 1
+    },
+    "web/features/settings/sections/DataMigrationSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/features/settings/sections/DocumentParsingSettingsSection.tsx": {
+      "inline_state": 1,
+      "silent": 2,
+      "unclassified": 2
+    },
+    "web/features/settings/sections/GuardianSettingsSection.tsx": {
+      "inline_state": 3
+    },
+    "web/features/settings/sections/NetworkSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/features/settings/sections/StartersSettingsSection.tsx": {
+      "inline_state": 2
+    },
+    "web/features/settings/sections/ToolsSettingsSection.tsx": {
+      "inline_state": 1
+    },
+    "web/features/settings/sections/VideoLearningSettingsSection.tsx": {
+      "unclassified": 1
+    },
+    "web/features/settings/sections/WorkspaceSettingsSection.tsx": {
+      "inline_state": 1
+    },
+    "web/features/settings/store/SettingsStore.tsx": {
+      "inline_state": 2,
+      "silent": 4,
+      "toast_other": 7,
+      "unclassified": 3
+    },
+    "web/hooks/use-card-submission.ts": {
+      "inline_state": 1
+    },
+    "web/hooks/useCollapsiblePanel.ts": {
+      "silent": 2
+    },
+    "web/hooks/useImaConnection.ts": {
+      "unclassified": 2
+    },
+    "web/hooks/useKnowledgeBases.ts": {
+      "inline_state": 1
+    },
+    "web/hooks/useKnowledgeHistory.ts": {
+      "silent": 2
+    },
+    "web/hooks/useKnowledgeProgress.ts": {
+      "silent": 4
+    },
+    "web/hooks/useLLMOptions.ts": {
+      "unclassified": 1
+    },
+    "web/hooks/useMcpServers.ts": {
+      "inline_state": 5
+    },
+    "web/hooks/useSetupSync.ts": {
+      "silent": 1
+    },
+    "web/hooks/useTopicSourceLibrary.ts": {
+      "unclassified": 2
+    },
+    "web/hooks/useVoiceAutoplay.ts": {
+      "silent": 2,
+      "unclassified": 2
+    },
+    "web/hooks/useVoiceRecorder.ts": {
+      "inline_state": 2
+    },
+    "web/lib/app-update.ts": {
+      "rethrow": 1,
+      "silent": 1
+    },
+    "web/lib/auth.ts": {
+      "unclassified": 5
+    },
+    "web/lib/book-api.ts": {
+      "unclassified": 1
+    },
+    "web/lib/book-ws-operation.ts": {
+      "silent": 1,
+      "unclassified": 2
+    },
+    "web/lib/chat-import/agent-store.ts": {
+      "unclassified": 3
+    },
+    "web/lib/chat-import/chatgpt.ts": {
+      "rethrow": 1
+    },
+    "web/lib/chat-import/claude-code.ts": {
+      "unclassified": 1
+    },
+    "web/lib/chat-import/codex.ts": {
+      "unclassified": 1
+    },
+    "web/lib/chat-import/detect.ts": {
+      "unclassified": 1
+    },
+    "web/lib/chat-import/index.ts": {
+      "rethrow": 1,
+      "silent": 1
+    },
+    "web/lib/chat-import/streaming.ts": {
+      "silent": 1
+    },
+    "web/lib/chat-markdown-note.ts": {
+      "silent": 2,
+      "unclassified": 1
+    },
+    "web/lib/cli-apps-api.ts": {
+      "silent": 1
+    },
+    "web/lib/clipboard.ts": {
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/lib/codex-oauth.ts": {
+      "rethrow": 1,
+      "silent": 1
+    },
+    "web/lib/epub-page-turn.ts": {
+      "unclassified": 1
+    },
+    "web/lib/failed-submissions.ts": {
+      "silent": 3,
+      "unclassified": 3
+    },
+    "web/lib/iframe-html.ts": {
+      "console_only": 1,
+      "silent": 2,
+      "unclassified": 1
+    },
+    "web/lib/learning-api.ts": {
+      "silent": 1
+    },
+    "web/lib/learning-routes.ts": {
+      "unclassified": 1
+    },
+    "web/lib/markdown-display.ts": {
+      "unclassified": 2
+    },
+    "web/lib/mastery-ws.ts": {
+      "unclassified": 1
+    },
+    "web/lib/mcp-api.ts": {
+      "silent": 1
+    },
+    "web/lib/memory-graph.ts": {
+      "unclassified": 3
+    },
+    "web/lib/message-content.ts": {
+      "unclassified": 1
+    },
+    "web/lib/notebook-api.ts": {
+      "silent": 1
+    },
+    "web/lib/notifications.ts": {
+      "silent": 1
+    },
+    "web/lib/partner-session.ts": {
+      "silent": 1,
+      "unclassified": 3
+    },
+    "web/lib/pending-prompt.ts": {
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/lib/proxy-policy.ts": {
+      "unclassified": 1
+    },
+    "web/lib/quiz-judge.ts": {
+      "silent": 2,
+      "unclassified": 2
+    },
+    "web/lib/reading-api.ts": {
+      "silent": 3
+    },
+    "web/lib/reading-display-preferences.ts": {
+      "unclassified": 1
+    },
+    "web/lib/reading-location-history.ts": {
+      "silent": 1,
+      "unclassified": 2
+    },
+    "web/lib/reading-passage-prompts.ts": {
+      "unclassified": 1
+    },
+    "web/lib/reading-quote-locator.ts": {
+      "unclassified": 1
+    },
+    "web/lib/reading-video-sources.ts": {
+      "unclassified": 3
+    },
+    "web/lib/reading-workspace-api.ts": {
+      "silent": 1,
+      "unclassified": 3
+    },
+    "web/lib/reconnecting-websocket.ts": {
+      "unclassified": 2
+    },
+    "web/lib/resource-routes.ts": {
+      "unclassified": 1
+    },
+    "web/lib/selection-tutor.ts": {
+      "unclassified": 1
+    },
+    "web/lib/session-activity.ts": {
+      "unclassified": 1
+    },
+    "web/lib/session-api.ts": {
+      "unclassified": 1
+    },
+    "web/lib/sidebar-layout.ts": {
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/lib/theme.ts": {
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/lib/use-book-stream.ts": {
+      "silent": 2,
+      "unclassified": 2
+    },
+    "web/lib/visualize-types.ts": {
+      "unclassified": 1
+    },
+    "web/lib/workspace-scope.ts": {
+      "toast_error": 1
+    },
+    "web/shared/api/client.ts": {
+      "rethrow": 2,
+      "silent": 1,
+      "unclassified": 1
+    },
+    "web/shared/auth/return-url.ts": {
+      "unclassified": 1
+    },
+    "web/shared/storage/schema.ts": {
+      "unclassified": 1
+    },
+    "web/shared/storage/store.ts": {
+      "silent": 2,
+      "unclassified": 8
+    }
+  },
+  "files_scanned": 889,
+  "scan": "web-failure-surfacing",
+  "summary_by_category": {
+    "banner": 4,
+    "console_only": 9,
+    "degrade_default": 1,
+    "inline_state": 244,
+    "rethrow": 10,
+    "silent": 117,
+    "toast_error": 14,
+    "toast_other": 24,
+    "unclassified": 206
+  }
+}
