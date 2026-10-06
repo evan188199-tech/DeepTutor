@@ -8,11 +8,14 @@ import asyncio
 from datetime import datetime
 import html
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from deeptutor.services.path_service import get_path_service
 from deeptutor.utils.json_parser import parse_json_response
+
+logger = logging.getLogger(__name__)
 
 _RAG_SOURCE_FIELDS = ("chunks", "documents", "sources", "context", "retrieved_docs")
 
@@ -430,8 +433,8 @@ class CitationManager:
                         if isinstance(value, list) and value:
                             candidate_lists.append(value)
                             break
-            except (json.JSONDecodeError, Exception):
-                pass
+            except (ValueError, TypeError) as exc:
+                logger.debug("no web citation list in raw answer: %s", exc)
 
         for result_list in candidate_lists:
             for result in result_list:

@@ -866,6 +866,23 @@ def test_duplicate_check_separates_same_content_from_same_name(
     assert [row["title"] for row in matches[0]["collections"]] == ["Close reading"]
 
 
+def test_duplicate_check_skips_malformed_urls_with_a_trace(
+    client: TestClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A malformed URL is not a match, and the skip is traced at debug level."""
+    import logging
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.api.routers.reading"):
+        response = client.post(
+            "/api/reading/library/duplicate-check",
+            json={"files": [], "urls": ["ftp://no-http-scheme.example", "http://"]},
+        )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["matches"] == []
+    assert "skipping malformed URL" in caplog.text
+
+
 def test_reuse_false_keeps_a_second_copy_with_its_own_annotations(
     client: TestClient,
 ) -> None:

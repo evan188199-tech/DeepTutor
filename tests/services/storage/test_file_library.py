@@ -365,6 +365,31 @@ def test_get_file_library_store_returns_singleton(store: FileLibraryStore) -> No
     assert s1 is s2
 
 
+def test_delete_file_logs_prune_failures_without_failing_the_delete(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """An OSError while pruning empty parents is traced; the delete itself succeeds."""
+    import logging
+
+    store = FileLibraryStore(db_path=tmp_path / "prune.db", root=tmp_path / "files")
+    shard = store._root / "legacy-shard" / "aa"
+    shard.mkdir(parents=True)
+    target = shard / "file.txt"
+    target.write_bytes(b"Content")
+
+    def _locked_rmdir(self: Path) -> None:
+        raise OSError("directory is locked")
+
+    monkeypatch.setattr(Path, "rmdir", _locked_rmdir)
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.services.storage.file_library"):
+        store._delete_file("legacy-shard/aa/file.txt")
+
+    assert not target.exists()
+    assert "failed to prune empty parent directories" in caplog.text
+
+
 def test_reset_clears_singleton() -> None:
     """reset_file_library_store must clear the singleton so a new instance is created."""
     reset_file_library_store()

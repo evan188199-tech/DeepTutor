@@ -6,6 +6,7 @@ import atexit
 from dataclasses import dataclass
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 import secrets
@@ -34,6 +35,8 @@ from deeptutor.services.app_update import LAUNCHER_PID_ENV
 
 BACKEND_READY_TIMEOUT_ENV = "DEEPTUTOR_BACKEND_READY_TIMEOUT"
 FRONTEND_READY_TIMEOUT_ENV = "DEEPTUTOR_FRONTEND_READY_TIMEOUT"
+
+logger = logging.getLogger(__name__)
 
 
 def _ready_timeout(env_name: str, default: int) -> int:
@@ -638,8 +641,10 @@ def _copy_packaged_web_if_needed(
         try:
             if json.loads(marker.read_text(encoding="utf-8")) == marker_payload:
                 return cache
-        except Exception:
-            pass
+        except (OSError, ValueError) as exc:
+            logger.debug(
+                "web runtime marker unreadable in %s; recopying packaged files: %s", cache, exc
+            )
 
     if cache.exists():
         shutil.rmtree(cache)
@@ -787,8 +792,10 @@ def _ensure_source_production_build(
             if json.loads(marker.read_text(encoding="utf-8")) == payload:
                 _prepare_source_standalone(source)
                 return
-        except Exception:
-            pass
+        except (OSError, ValueError) as exc:
+            logger.debug(
+                "source build marker unreadable at %s; rebuilding frontend: %s", marker, exc
+            )
 
     _log(f"Building the source frontend for production in {source} ...")
     # Next rewrites these source-controlled files to point at whichever dist
@@ -943,7 +950,8 @@ def _detect_existing_source_frontend(frontend: FrontendRuntime) -> ExistingFront
     for lock_path in lock_candidates:
         try:
             payload = json.loads(lock_path.read_text(encoding="utf-8"))
-        except Exception:
+        except (OSError, ValueError) as exc:
+            logger.debug("failed to read Next dev lock %s: %s", lock_path, exc)
             continue
         if not isinstance(payload, dict):
             continue

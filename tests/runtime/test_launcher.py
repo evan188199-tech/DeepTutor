@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import logging
 from pathlib import Path
 from threading import Thread
 from types import SimpleNamespace
@@ -927,3 +928,95 @@ def test_port_listeners_tolerate_missing_stdout(monkeypatch, platform: str) -> N
         launcher.subprocess, "run", lambda *args, **kwargs: SimpleNamespace(stdout=None)
     )
     assert launcher._port_listeners(3782) == []
+
+
+def test_packaged_web_cache_rebuilds_and_traces_when_the_marker_is_corrupt(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    """An unreadable runtime marker triggers a recopy and leaves a debug trace."""
+    packaged = tmp_path / "pkg"
+    (packaged / ".next").mkdir(parents=True)
+    (packaged / "server.js").write_text(
+        "const api='__NEXT_PUBLIC_API_BASE_PLACEHOLDER__';",
+        encoding="utf-8",
+    )
+    home = tmp_path / "home"
+
+    cache = launcher._copy_packaged_web_if_needed(
+        packaged,
+        home=home,
+        api_base="http://localhost:8001",
+        auth_enabled=False,
+    )
+    (cache / ".deeptutor-web-runtime.json").write_bytes(b"\xff\xfe not json")
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.runtime.launcher"):
+        rebuilt = launcher._copy_packaged_web_if_needed(
+            packaged,
+            home=home,
+            api_base="http://localhost:8001",
+            auth_enabled=False,
+        )
+
+    assert rebuilt == cache
+    assert (rebuilt / "server.js").read_text(encoding="utf-8") == (
+        "const api='http://localhost:8001';"
+    )
+    assert "web runtime marker unreadable" in caplog.text
+
+
+def test_source_build_reuses_cache_only_with_a_readable_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A corrupt build marker forces a rebuild, and the fallback is traced."""
+    source = tmp_path / "web"
+    source.mkdir()
+    (source / "package.json").write_text('{"scripts":{"build":"next build"}}', encoding="utf-8")
+    app = source / "app"
+    app.mkdir()
+    (app / "page.tsx").write_text(
+        "export default function Page() { return null; }", encoding="utf-8"
+    )
+    builds: list[list[str]] = []
+
+    def _run(command, cwd, env, **_kwargs):
+        builds.append(list(command))
+        dist = source / launcher.SOURCE_PRODUCTION_DIST_DIR
+        (dist / "standalone").mkdir(parents=True, exist_ok=True)
+        (dist / "BUILD_ID").write_text(f"build-{len(builds)}", encoding="utf-8")
+        (dist / "standalone" / "server.js").write_text("", encoding="utf-8")
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(launcher.subprocess, "run", _run)
+
+    launcher._ensure_source_production_build(
+        source, "npm", api_base="http://localhost:8001", auth_enabled=False
+    )
+    marker = source / launcher.SOURCE_PRODUCTION_DIST_DIR / launcher.SOURCE_BUILD_MARKER
+    marker.write_bytes(b"\xff\xfe not json")
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.runtime.launcher"):
+        launcher._ensure_source_production_build(
+            source, "npm", api_base="http://localhost:8001", auth_enabled=False
+        )
+
+    assert builds == [["npm", "run", "build"], ["npm", "run", "build"]]
+    assert "source build marker unreadable" in caplog.text
+
+
+def test_detect_existing_source_frontend_skips_a_corrupt_dev_lock_with_a_trace(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    """An unreadable Next dev lock is skipped with a trace instead of silence."""
+    source = tmp_path / "web"
+    lock = source / ".next" / "dev" / "lock"
+    lock.parent.mkdir(parents=True)
+    lock.write_bytes(b"\x00\x01 not json")
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.runtime.launcher"):
+        existing = launcher._detect_existing_source_frontend(
+            launcher.FrontendRuntime("source", [], source)
+        )
+
+    assert existing is None
+    assert "failed to read Next dev lock" in caplog.text

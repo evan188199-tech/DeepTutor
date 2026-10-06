@@ -119,3 +119,20 @@ def test_update_keeps_an_explicit_message_verbatim(tmp_path) -> None:
 
     assert seen[-1]["message"] == "already rendered"
     assert "message_key" not in seen[-1]
+
+
+def test_notify_traces_when_the_broadcast_module_is_unavailable(
+    tmp_path, monkeypatch, caplog
+) -> None:
+    """A missing progress-events module skips broadcast with a trace, not silence."""
+    import logging
+    import sys
+
+    monkeypatch.setattr("deeptutor.runtime.mode.is_server", lambda: True)
+    monkeypatch.setitem(sys.modules, "deeptutor.knowledge.progress_events", None)
+    tracker = ProgressTracker("kb", tmp_path)
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.knowledge.progress_tracker"):
+        tracker._notify({"stage": "processing_documents", "progress_percent": 10})
+
+    assert "progress broadcast unavailable" in caplog.text

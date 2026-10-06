@@ -202,8 +202,8 @@ class FileLibraryStore:
                         break
                     if parent.is_dir() and not any(parent.iterdir()):
                         parent.rmdir()
-            except Exception:
-                pass
+            except OSError as exc:
+                logger.debug("failed to prune empty parent directories for %s: %s", target, exc)
 
     # ------------------------------------------------------------------
     # Public API — add / get / delete

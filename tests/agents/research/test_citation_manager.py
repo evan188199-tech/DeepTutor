@@ -103,3 +103,24 @@ def test_rag_citation_falls_back_to_the_answer_without_metadata(tmp_path) -> Non
 
     assert citation["kb_name"] == "kb"
     assert citation["total_sources"] == 1
+
+
+def test_web_citation_extraction_traces_an_unparseable_answer(
+    tmp_path, monkeypatch, caplog
+) -> None:
+    """An unparseable raw answer yields no web sources and leaves a debug trace."""
+    import logging
+
+    def _unparseable(*_args, **_kwargs):
+        raise ValueError("answer is not JSON")
+
+    monkeypatch.setattr(
+        "deeptutor.agents.research.utils.citation_manager.parse_json_response", _unparseable
+    )
+    manager = CitationManager("research-unparseable", cache_dir=tmp_path)
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.agents.research.utils.citation_manager"):
+        citation = manager._extract_web_citation("CIT-1-01", "web_search", "junk", _trace())
+
+    assert citation["web_sources"] == []
+    assert "no web citation list in raw answer" in caplog.text

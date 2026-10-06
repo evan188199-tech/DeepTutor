@@ -509,6 +509,8 @@ def load_ui_settings() -> dict[str, Any]:
         try:
             with open(settings_file, encoding="utf-8") as handle:
                 saved = json.load(handle)
+                if not isinstance(saved, dict):
+                    raise ValueError("UI settings root must be a JSON object")
                 # resolve_languages owns the legacy migration (a file predating
                 # the UI/response split inherits its one language into both).
                 merged = {**DEFAULT_UI_SETTINGS, **saved, **resolve_languages(saved)}
@@ -519,8 +521,12 @@ def load_ui_settings() -> dict[str, Any]:
                     merged.get("enabled_optional_tools")
                 )
                 return merged
-        except Exception:
-            pass
+        except (OSError, ValueError) as exc:
+            logger.warning(
+                "failed to load UI settings from %s; falling back to defaults: %s",
+                settings_file,
+                exc,
+            )
     return DEFAULT_UI_SETTINGS.copy()
 
 
@@ -2260,14 +2266,16 @@ async def tour_status():
     if tour_cache.exists():
         try:
             cache = json.loads(tour_cache.read_text(encoding="utf-8"))
+            if not isinstance(cache, dict):
+                raise ValueError("tour cache root must be a JSON object")
             return {
                 "active": True,
                 "status": cache.get("status", "unknown"),
                 "launch_at": cache.get("launch_at"),
                 "redirect_at": cache.get("redirect_at"),
             }
-        except Exception:
-            pass
+        except (OSError, ValueError) as exc:
+            logger.debug("failed to read tour cache %s: %s", tour_cache, exc)
     return {"active": False, "status": "none", "launch_at": None, "redirect_at": None}
 
 

@@ -522,7 +522,8 @@ async def duplicate_check(payload: DuplicateCheckRequest) -> dict[str, Any]:
         for url in payload.urls:
             try:
                 material_id = url_material_id(url)
-            except Exception:  # noqa: BLE001 - a malformed URL is simply not a match
+            except (ValueError, ReadingError) as exc:
+                logger.debug("skipping malformed URL %r: %s", url, exc)
                 continue
             record = catalog.get_material(material_id)
             if record is None or not _material_allowed(record.material_id):

@@ -102,8 +102,8 @@ class ProgressTracker:
                     loop.create_task(broadcast_progress(self.kb_name, progress))
                 except RuntimeError:
                     pass
-            except (ImportError, Exception):
-                pass
+            except ImportError as exc:
+                _logger_instance().debug("progress broadcast unavailable: %s", exc)
 
         for callback in self._callbacks:
             try:

@@ -48,13 +48,13 @@ def _iso(ts: float | int | str | None) -> str:
         try:
             datetime.fromisoformat(ts.replace("Z", "+00:00"))
             return ts
-        except Exception:
-            pass
+        except ValueError:
+            logger.debug("snapshot adapter: dropping non-ISO timestamp %r", ts)
     if isinstance(ts, (int, float)):
         try:
             return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()
-        except Exception:
-            pass
+        except (ValueError, OSError, OverflowError):
+            logger.debug("snapshot adapter: dropping out-of-range epoch timestamp %r", ts)
     return ""
 
 

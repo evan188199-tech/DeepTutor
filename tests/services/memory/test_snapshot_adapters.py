@@ -169,3 +169,15 @@ def test_fingerprint_changes_when_conversation_grows(partner_tree: Path) -> None
     )
     fp2 = adapters.read_partner_entities()[0].fingerprint
     assert fp1 != fp2
+
+
+def test_iso_drops_unusable_timestamps_with_a_trace(caplog: pytest.LogCaptureFixture) -> None:
+    """A malformed stamp falls back to an empty string with a debug trace."""
+    import logging
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.services.memory.snapshot.adapters"):
+        assert adapters._iso("not-a-timestamp") == ""
+        assert adapters._iso(float("nan")) == ""
+
+    assert "dropping non-ISO timestamp" in caplog.text
+    assert "dropping out-of-range epoch timestamp" in caplog.text

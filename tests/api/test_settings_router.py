@@ -60,6 +60,57 @@ def test_both_readers_of_interface_json_agree_on_a_legacy_file(
         assert from_router[field] == from_service[field] == "zh"
 
 
+def test_load_ui_settings_falls_back_to_defaults_and_warns_on_a_corrupt_file(
+    monkeypatch: pytest.MonkeyPatch, tmp_path, caplog: pytest.LogCaptureFixture
+) -> None:
+    import logging
+
+    settings_file = tmp_path / "interface.json"
+    settings_file.write_text("{not json at all", encoding="utf-8")
+    monkeypatch.setattr(settings_router, "_settings_file", lambda: settings_file)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.settings"):
+        settings = settings_router.load_ui_settings()
+
+    assert settings == settings_router.DEFAULT_UI_SETTINGS.copy()
+    assert "failed to load UI settings" in caplog.text
+    assert str(settings_file) in caplog.text
+
+
+def test_load_ui_settings_treats_a_non_object_root_as_corrupt(
+    monkeypatch: pytest.MonkeyPatch, tmp_path, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A JSON array at the root is corruption, not a settings document."""
+    import logging
+
+    settings_file = tmp_path / "interface.json"
+    settings_file.write_text("[1, 2, 3]", encoding="utf-8")
+    monkeypatch.setattr(settings_router, "_settings_file", lambda: settings_file)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.api.routers.settings"):
+        settings = settings_router.load_ui_settings()
+
+    assert settings == settings_router.DEFAULT_UI_SETTINGS.copy()
+    assert "UI settings root must be a JSON object" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_tour_status_reports_inactive_when_cache_is_corrupt(
+    monkeypatch: pytest.MonkeyPatch, tmp_path, caplog: pytest.LogCaptureFixture
+) -> None:
+    import logging
+
+    tour_cache = tmp_path / "tour-cache.json"
+    tour_cache.write_bytes(b"\xff\xfe not json")
+    monkeypatch.setattr(settings_router, "_tour_cache_file", lambda: tour_cache)
+
+    with caplog.at_level(logging.DEBUG, logger="deeptutor.api.routers.settings"):
+        status = await settings_router.tour_status()
+
+    assert status == {"active": False, "status": "none", "launch_at": None, "redirect_at": None}
+    assert "failed to read tour cache" in caplog.text
+
+
 @pytest.mark.asyncio
 async def test_ui_languages_are_persisted_independently(
     monkeypatch: pytest.MonkeyPatch, tmp_path
