@@ -1,0 +1,91 @@
+[
+ {
+  "file": "components/settings/ConnectionsEditor.tsx",
+  "loc": 763,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "components/settings/TaskModelsEditor.tsx",
+  "loc": 101,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "components/workspaces/WorkspaceChatGroups.tsx",
+  "loc": 232,
+  "cats": [
+   "test"
+  ],
+  "test_files": [
+   "tests/workspace-chat-groups.spec.tsx"
+  ],
+  "dyn_template": 0
+ },
+ {
+  "file": "components/workspaces/WorkspaceSwitcher.tsx",
+  "loc": 70,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "features/chat/components/turn/index.ts",
+  "loc": 3,
+  "cats": [
+   "test"
+  ],
+  "test_files": [
+   "tests/integration/protocol-mismatch-notice.spec.tsx"
+  ],
+  "dyn_template": 0
+ },
+ {
+  "file": "features/knowledge/components/engines/GraphRagForm.tsx",
+  "loc": 2,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "features/knowledge/components/engines/ImaForm.tsx",
+  "loc": 2,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "features/knowledge/components/engines/LightRagForm.tsx",
+  "loc": 2,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "features/knowledge/components/engines/LlamaIndexForm.tsx",
+  "loc": 2,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "i18n/index.ts",
+  "loc": 5,
+  "cats": [],
+  "test_files": [],
+  "dyn_template": 0
+ },
+ {
+  "file": "lib/route-params.ts",
+  "loc": 9,
+  "cats": [
+   "test"
+  ],
+  "test_files": [
+   "tests/route-params.test.ts"
+  ],
+  "dyn_template": 0
+ }
+]
