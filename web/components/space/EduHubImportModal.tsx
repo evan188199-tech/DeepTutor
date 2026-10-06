@@ -56,12 +56,10 @@ export default function EduHubImportModal({
 }: {
   onClose: () => void;
   onInstalled: () => void;
-  /** Names of skills already installed locally — shown as "已导入". */
+  /** Names of skills already installed locally — shown as "Installed". */
   installedNames?: Set<string>;
 }) {
-  const { i18n } = useTranslation();
-  const zh = i18n.language?.toLowerCase().startsWith("zh");
-  const tr = useCallback((cn: string, en: string) => (zh ? cn : en), [zh]);
+  const { t } = useTranslation();
 
   const [skills, setSkills] = useState<HubSkillListing[] | null>(null);
   const [webUrl, setWebUrl] = useState<string>(EDUHUB_FALLBACK);
@@ -78,7 +76,7 @@ export default function EduHubImportModal({
     Record<string, InstallState>
   >({});
   // Slugs imported during this session, merged with the names passed from the
-  // Skills list, so freshly-downloaded skills flip to "已导入" without a reload.
+  // Skills list, so freshly-downloaded skills flip to "Installed" without a reload.
   const [installedLocal, setInstalledLocal] = useState<Set<string>>(
     () => new Set(installedNames ?? []),
   );
@@ -185,7 +183,7 @@ export default function EduHubImportModal({
               className="shrink-0 text-[var(--muted-foreground)]"
             />
             <h3 className="truncate text-[14px] font-semibold text-[var(--foreground)]">
-              {tr("从 EduHub 导入技能", "Import skills from EduHub")}
+              {t("Import skills from EduHub")}
             </h3>
           </div>
           <div className="flex shrink-0 items-center gap-1">
@@ -196,11 +194,11 @@ export default function EduHubImportModal({
               className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
             >
               <ExternalLink size={13} />
-              {tr("在 EduHub 打开", "Open EduHub")}
+              {t("Open EduHub")}
             </a>
             <button
               onClick={onClose}
-              aria-label={tr("关闭", "Close")}
+              aria-label={t("Close")}
               className="rounded-md p-1.5 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
             >
               <X size={16} />
@@ -217,7 +215,7 @@ export default function EduHubImportModal({
             installState={installState[selected.slug]}
             installed={installedLocal.has(selected.slug)}
             webUrl={webUrl}
-            tr={tr}
+            t={t}
             onBack={() => setSelected(null)}
             onInstall={install}
           />
@@ -230,7 +228,7 @@ export default function EduHubImportModal({
             query={query}
             installState={installState}
             installedLocal={installedLocal}
-            tr={tr}
+            t={t}
             onQueryChange={setQuery}
             onRetry={loadCatalog}
             onOpen={openDetail}
@@ -252,7 +250,7 @@ function ListView({
   query,
   installState,
   installedLocal,
-  tr,
+  t,
   onQueryChange,
   onRetry,
   onOpen,
@@ -265,7 +263,7 @@ function ListView({
   query: string;
   installState: Record<string, InstallState>;
   installedLocal: Set<string>;
-  tr: (cn: string, en: string) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
   onQueryChange: (q: string) => void;
   onRetry: () => void;
   onOpen: (skill: HubSkillListing) => void;
@@ -283,7 +281,7 @@ function ListView({
           <input
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder={tr("搜索技能名称或描述…", "Search skills…")}
+            placeholder={t("Search skills…")}
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] py-2 pl-9 pr-3 text-[13px] text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--muted-foreground)]/70 focus:border-[var(--foreground)]/30"
           />
         </div>
@@ -297,7 +295,7 @@ function ListView({
         ) : error ? (
           <div className="mx-auto max-w-md rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-center text-[12.5px] text-amber-700 dark:text-amber-400">
             <AlertTriangle size={16} className="mx-auto mb-1.5" />
-            <p>{tr("无法连接 EduHub。", "Couldn't reach EduHub.")}</p>
+            <p>{t("Couldn't reach EduHub.")}</p>
             <p className="mt-0.5 break-words text-[11.5px] opacity-80">
               {error}
             </p>
@@ -306,14 +304,14 @@ function ListView({
               className="mt-2.5 inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] px-3 py-1 text-[12px] font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
             >
               <RefreshCw size={12} />
-              {tr("重试", "Retry")}
+              {t("Retry")}
             </button>
           </div>
         ) : skills.length === 0 ? (
           <div className="py-16 text-center text-[13px] text-[var(--muted-foreground)]">
             {total === 0
-              ? tr("EduHub 上暂时还没有技能。", "No skills on EduHub yet.")
-              : tr("没有匹配的技能。", "No skills match your search.")}
+              ? t("No skills on EduHub yet.")
+              : t("No skills match your search.")}
           </div>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -323,7 +321,7 @@ function ListView({
                 skill={skill}
                 state={installState[skill.slug]}
                 installed={installedLocal.has(skill.slug)}
-                tr={tr}
+                t={t}
                 onOpen={() => onOpen(skill)}
                 onInstall={onInstall}
               />
@@ -339,23 +337,23 @@ function SkillCard({
   skill,
   state,
   installed,
-  tr,
+  t,
   onOpen,
   onInstall,
 }: {
   skill: HubSkillListing;
   state?: InstallState;
   installed: boolean;
-  tr: (cn: string, en: string) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
   onOpen: () => void;
   onInstall: (slug: string, opts?: { force?: boolean }) => void;
 }) {
   return (
-    <Tooltip label={tr("查看详情", "View details")} as="li" side="top">
+    <Tooltip label={t("View details")} as="li" side="top">
       <div
         role="button"
         tabIndex={0}
-        aria-label={`${tr("查看详情", "View details")}: ${skill.name}`}
+        aria-label={`${t("View details")}: ${skill.name}`}
         onClick={onOpen}
         onKeyDown={(e) => {
           if (e.target !== e.currentTarget) return;
@@ -378,7 +376,7 @@ function SkillCard({
               {installed ? (
                 <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 size={9} />
-                  {tr("已导入", "Installed")}
+                  {t("Installed")}
                 </span>
               ) : null}
             </div>
@@ -388,7 +386,7 @@ function SkillCard({
               </p>
             ) : (
               <p className="mt-0.5 text-[12px] italic text-[var(--muted-foreground)]/60">
-                {tr("暂无描述。", "No description.")}
+                {t("No description.")}
               </p>
             )}
           </div>
@@ -411,7 +409,7 @@ function SkillCard({
           <InstallButton
             state={state}
             installed={installed}
-            tr={tr}
+            t={t}
             onClick={(force) => onInstall(skill.slug, { force })}
           />
         </div>
@@ -436,7 +434,7 @@ function DetailView({
   installState,
   installed,
   webUrl,
-  tr,
+  t,
   onBack,
   onInstall,
 }: {
@@ -447,7 +445,7 @@ function DetailView({
   installState?: InstallState;
   installed: boolean;
   webUrl: string;
-  tr: (cn: string, en: string) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
   onBack: () => void;
   onInstall: (slug: string, opts?: { force?: boolean }) => void;
 }) {
@@ -460,7 +458,7 @@ function DetailView({
           className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[12.5px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
         >
           <ArrowLeft size={13} />
-          {tr("返回", "Back")}
+          {t("Back")}
         </button>
         <div className="flex items-center gap-1.5">
           <a
@@ -470,12 +468,12 @@ function DetailView({
             className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[12px] text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
           >
             <ExternalLink size={13} />
-            {tr("在 EduHub 查看", "View on EduHub")}
+            {t("View on EduHub")}
           </a>
           <InstallButton
             state={installState}
             installed={installed}
-            tr={tr}
+            t={t}
             onClick={(force) => onInstall(skill.slug, { force })}
           />
         </div>
@@ -495,7 +493,7 @@ function DetailView({
         <div className="mb-4 flex flex-wrap items-center gap-3 text-[11.5px] text-[var(--muted-foreground)]">
           <span className="inline-flex items-center gap-1">
             <Download size={12} />
-            {skill.downloads} {tr("次下载", "downloads")}
+            {skill.downloads} {t("downloads")}
           </span>
           <span className="inline-flex items-center gap-1">
             <Star size={12} />
@@ -519,7 +517,7 @@ function DetailView({
 
         {installState?.kind === "error" ? (
           <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-700 dark:text-amber-400">
-            {tr("导入失败：", "Import failed: ")}
+            {t("Import failed: ")}
             {installState.message}
           </div>
         ) : null}
@@ -547,29 +545,29 @@ function DetailView({
 function InstallButton({
   state,
   installed,
-  tr,
+  t,
   onClick,
 }: {
   state?: InstallState;
   installed: boolean;
-  tr: (cn: string, en: string) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
   onClick: (force: boolean) => void;
 }) {
   if (state?.kind === "installing") {
     return (
       <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--muted)] px-3 py-1.5 text-[12px] font-medium text-[var(--muted-foreground)]">
         <Loader2 size={12} className="animate-spin" />
-        {tr("下载中…", "Downloading…")}
+        {t("Downloading…")}
       </span>
     );
   }
 
   const label =
     state?.kind === "error"
-      ? tr("重试", "Retry")
+      ? t("Retry")
       : installed
-        ? tr("重新下载", "Re-download")
-        : tr("下载", "Download");
+        ? t("Re-download")
+        : t("Download");
   const Icon = installed ? RefreshCw : Download;
 
   return (

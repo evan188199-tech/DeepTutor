@@ -323,10 +323,7 @@ export default function ToolsSettingsPage() {
                     const isComingSoon = !!tool.coming_soon;
                     const isAvailable = tool.available !== false;
                     const availability = !isAvailable
-                      ? toolAvailabilityCopy(
-                          tool.unavailable_reason,
-                          language === "zh" ? "zh" : "en",
-                        )
+                      ? toolAvailabilityCopy(tool.unavailable_reason, t)
                       : null;
                     const isEnabled = toolEffectiveEnabled(
                       tool.toggleable ? enabled.has(tool.name) : true,

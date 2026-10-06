@@ -7,7 +7,7 @@ import { Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from '@/shared/ui/Tooltip'
 import { useSettingsAccess } from '@/features/settings/navigation/SettingsAccessProvider'
-import { settingsAnchorHref, type Lang } from '@/features/settings/navigation/settings-nav'
+import { settingsAnchorHref } from '@/features/settings/navigation/settings-nav'
 import {
   SETTINGS_PAGE_GROUPS,
   settingsPageFamily,
@@ -17,9 +17,7 @@ import {
 } from '@/features/settings/navigation/settings-pages'
 
 export default function SettingsNav({ onNavigate }: { onNavigate?: () => void }) {
-  const { t, i18n } = useTranslation()
-  const zh = i18n.language?.toLowerCase().startsWith('zh')
-  const tr = (label: Lang) => (zh ? label.zh : label.en)
+  const { t } = useTranslation()
   const pathname = usePathname()
   const access = useSettingsAccess()
   const pages = visibleSettingsPages(access)
@@ -34,17 +32,19 @@ export default function SettingsNav({ onNavigate }: { onNavigate?: () => void })
       page.blurb.en,
       page.blurb.zh,
       page.key,
-      page.key === 'connections' ? 'API Key token base url 密钥 凭据 地址 供应商' : '',
+      page.key === 'connections' ? t('settings.nav.connectionsAliases') : '',
       ...Object.values(settingsPageLabel(page.key, page.label)),
     ]
       .join(' ')
       .toLocaleLowerCase()
       .includes(needle)
   )
+  // Group headings are locale keys; the English text in the settings data is
+  // the key, translations live in the locale catalogs.
   const groups = needle
-    ? [{ label: { en: 'Search results', zh: '搜索结果' }, pages: matches }]
+    ? [{ label: 'Search results', pages: matches }]
     : SETTINGS_PAGE_GROUPS.map(group => ({
-        ...group,
+        label: group.label.en,
         pages: group.keys.flatMap(key => {
           // If the family representative is restricted, use its first visible member.
           const page = settingsPageFamily(key)
@@ -84,16 +84,16 @@ export default function SettingsNav({ onNavigate }: { onNavigate?: () => void })
         {groups
           .filter(group => group.pages.length)
           .map(group => (
-            <div key={group.label.en} className="mb-0.5">
+            <div key={group.label} className="mb-0.5">
               <p className="px-2.5 pb-1 pt-3.5 text-[11px] font-medium text-muted-foreground">
-                {tr(group.label)}
+                {t(group.label)}
               </p>
               <div className="space-y-0.5">
                 {group.pages.map(page => {
                   const Icon = needle ? page.icon : settingsPageIcon(page.key, page.icon)
                   const active = needle ? page.key === currentKey : currentFamily.includes(page.key)
                   return (
-                    <Tooltip key={page.key} label={tr(page.blurb)} as="div" side="right">
+                    <Tooltip key={page.key} label={t(page.blurb.en)} as="div" side="right">
                       <Link
                         href={settingsAnchorHref(page.key)}
                         scroll={false}
@@ -104,7 +104,11 @@ export default function SettingsNav({ onNavigate }: { onNavigate?: () => void })
                       >
                         <Icon size={15} strokeWidth={1.8} className="shrink-0" />
                         <span>
-                          {tr(needle ? page.label : settingsPageLabel(page.key, page.label))}
+                          {t(
+                            needle
+                              ? page.label.en
+                              : settingsPageLabel(page.key, page.label).en,
+                          )}
                         </span>
                       </Link>
                     </Tooltip>

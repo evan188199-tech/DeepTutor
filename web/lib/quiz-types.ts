@@ -270,25 +270,25 @@ export function summarizeQuizConfig(
   cfg: DeepQuestionFormConfig,
   translate?: (key: string) => string,
 ): string {
-  const tr = translate ?? ((s: string) => s);
+  const t = translate ?? ((s: string) => s);
   if (cfg.mode === "mimic") {
-    const target = cfg.paper_path.trim() || tr("no paper");
+    const target = cfg.paper_path.trim() || t("no paper");
     return [
-      tr("Mimic Paper"),
+      t("Mimic Paper"),
       target,
-      `${tr("Max")} ${cfg.max_questions}`,
+      `${t("Max")} ${cfg.max_questions}`,
     ].join(" · ");
   }
   const typeSummary =
     cfg.question_types.length === 0
-      ? tr("Auto")
+      ? t("Auto")
       : cfg.question_types.length === 1
-        ? tr(QUIZ_TYPE_LABEL_KEYS[cfg.question_types[0]])
-        : `${cfg.question_types.length} ${tr("types")}`;
+        ? t(QUIZ_TYPE_LABEL_KEYS[cfg.question_types[0]])
+        : `${cfg.question_types.length} ${t("types")}`;
   return [
-    tr("Custom"),
-    `${cfg.num_questions} ${tr("questions")}`,
-    tr(titleCase(cfg.difficulty || "auto")),
+    t("Custom"),
+    `${cfg.num_questions} ${t("questions")}`,
+    t(titleCase(cfg.difficulty || "auto")),
     typeSummary,
   ].join(" · ");
 }

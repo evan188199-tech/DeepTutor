@@ -92,9 +92,9 @@ const EMPTY_LIBRARY: SourceLibrary = {
 //: Entries listed under one question-bank category.
 const MAX_CATEGORY_ENTRIES = 50
 
-type Translate = (cn: string, en: string) => string
+type Translate = (key: string, options?: Record<string, unknown>) => string
 
-export function useTopicSourceLibrary(tr: Translate) {
+export function useTopicSourceLibrary(t: Translate) {
   const [library, setLibrary] = useState<SourceLibrary>(EMPTY_LIBRARY)
   const [loading, setLoading] = useState(true)
 
@@ -134,7 +134,7 @@ export function useTopicSourceLibrary(tr: Translate) {
         key: JSON.stringify([row.content_workspace_id ?? '', kind, id]),
         kind,
         sourceId: String(id),
-        label: String(label || tr('Untitled', 'Untitled')),
+        label: String(label || t('Untitled')),
         detail: String(detail || ''),
         content_workspace_id: String(row.content_workspace_id ?? ''),
         content_workspace_name: String(row.content_workspace_name || ''),
@@ -192,7 +192,7 @@ export function useTopicSourceLibrary(tr: Translate) {
     return () => {
       disposed = true
     }
-  }, [tr])
+  }, [t])
 
   // Child lists are fetched per row, only when the learner opens one: a
   // workspace with a dozen libraries, categories and partners would otherwise
@@ -211,7 +211,7 @@ export function useTopicSourceLibrary(tr: Translate) {
             }
       )
       try {
-        const listed = await fetchChildren(candidate, tr)
+        const listed = await fetchChildren(candidate, t)
         setChildLists(previous => ({
           ...previous,
           [parentKey]: { loading: false, error: '', candidates: listed },
@@ -225,12 +225,12 @@ export function useTopicSourceLibrary(tr: Translate) {
             error:
               reason instanceof Error
                 ? reason.message
-                : tr('无法读取列表', 'Could not load the list'),
+                : t('Could not load the list'),
           },
         }))
       }
     },
-    [tr]
+    [t]
   )
 
   const candidates = useMemo(
@@ -255,7 +255,7 @@ export function useTopicSourceLibrary(tr: Translate) {
 /** One expandable row's children, by kind. Throws so the caller can show why. */
 async function fetchChildren(
   candidate: SourceCandidate,
-  tr: Translate
+  t: Translate
 ): Promise<SourceCandidate[]> {
   const parentKey = candidate.key
   if (candidate.kind === 'knowledge_base') {
@@ -276,7 +276,7 @@ async function fetchChildren(
           kind: 'file' as const,
           sourceId: entry.name,
           label: entry.name,
-          detail: tr(`${kbName} 中的文件`, `File in ${kbName}`),
+          detail: t('File in {{name}}', { name: kbName }),
           available: true,
           kbName,
           path: entry.name,
@@ -295,10 +295,10 @@ async function fetchChildren(
       key: `question_bank:${entry.id}`,
       kind: 'question_bank' as const,
       sourceId: String(entry.id),
-      label: entry.question.slice(0, 80) || tr('未命名题目', 'Untitled question'),
+      label: entry.question.slice(0, 80) || t('Untitled question'),
       detail: entry.is_correct
-        ? tr('已答对', 'Answered correctly')
-        : tr('答错过', 'Answered wrong'),
+        ? t('Answered correctly')
+        : t('Answered wrong'),
       available: true,
       excerpt: entry.question,
       parentKey,
@@ -311,8 +311,8 @@ async function fetchChildren(
       kind: 'chat' as const,
       // The reference form chat's own transcript reader understands.
       sourceId: `partner:${candidate.sourceId}:${session.session_key}`,
-      label: session.title || tr('未命名对话', 'Untitled conversation'),
-      detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+      label: session.title || t('Untitled conversation'),
+      detail: t('{{count}} messages', { count: session.message_count }),
       available: true,
       excerpt: session.last_message || '',
       parentKey,
@@ -324,8 +324,8 @@ async function fetchChildren(
       key: `partner_group:${candidate.sourceId}:${session.session_key}`,
       kind: 'partner_group' as const,
       sourceId: `${candidate.sourceId}:${session.session_key}`,
-      label: session.title || tr('未命名讨论', 'Untitled discussion'),
-      detail: tr(`${session.message_count} 条消息`, `${session.message_count} messages`),
+      label: session.title || t('Untitled discussion'),
+      detail: t('{{count}} messages', { count: session.message_count }),
       available: true,
       parentKey,
     }))

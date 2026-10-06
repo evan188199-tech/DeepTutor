@@ -116,10 +116,10 @@ export function summarizeResearchConfig(
   translate?: (key: string) => string,
 ): string {
   const validation = validateResearchConfig(cfg);
-  const tr = translate ?? ((s: string) => s);
-  if (!validation.valid) return tr("Incomplete settings");
+  const t = translate ?? ((s: string) => s);
+  if (!validation.valid) return t("Incomplete settings");
   const modeLabel =
     RESEARCH_MODE_LABELS[cfg.mode] ?? cfg.mode.replace("_", " ");
   const depthLabel = RESEARCH_DEPTH_LABELS[cfg.depth] ?? cfg.depth;
-  return [tr(modeLabel), tr(depthLabel)].join(" · ");
+  return [t(modeLabel), t(depthLabel)].join(" · ");
 }

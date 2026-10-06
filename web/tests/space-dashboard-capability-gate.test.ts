@@ -11,11 +11,11 @@ import {
 
 const groups = [
   {
-    label: { zh: "常规", en: "Regular" },
+    label: "Regular",
     items: [{ key: "a", href: "/a" }],
   },
   {
-    label: { zh: "更多项目", en: "More Projects" },
+    label: "More Projects",
     items: [{ key: "w", href: "/w", requiresCapability: "whisper_visitor" }],
   },
 ] as unknown as typeof DASHBOARD_GROUPS;
@@ -31,14 +31,14 @@ test("a missing capability hides its tile", () => {
   const shown = visibleGroups(groups, () => false);
 
   assert.equal(shown.length, 1);
-  assert.equal(shown[0].label.en, "Regular");
+  assert.equal(shown[0].label, "Regular");
 });
 
 test("a group emptied by the gate loses its heading too", () => {
   // Otherwise "More Projects" renders as a title with nothing under it.
   const shown = visibleGroups(groups, () => false);
 
-  assert.ok(!shown.some((g) => g.label.en === "More Projects"));
+  assert.ok(!shown.some((g) => g.label === "More Projects"));
 });
 
 test("ungated tiles are never affected by the gate", () => {
