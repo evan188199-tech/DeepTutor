@@ -74,6 +74,7 @@ class TexDownloader:
         if not arxiv_id:
             return TexDownloadResult(success=False, error="Unable to extract ArXiv ID")
 
+        temp_dir: str | None = None
         try:
             # Build source download URL
             source_url = f"https://arxiv.org/e-print/{arxiv_id}"
@@ -119,9 +120,6 @@ class TexDownloader:
             final_tex_path = paper_dir / "main.tex"
             shutil.copy(main_tex, final_tex_path)
 
-            # Clean up temporary directory
-            shutil.rmtree(temp_dir, ignore_errors=True)
-
             return TexDownloadResult(
                 success=True, tex_path=str(final_tex_path), tex_content=tex_content
             )
@@ -130,6 +128,10 @@ class TexDownloader:
             return TexDownloadResult(success=False, error=f"Download failed: {e!s}")
         except Exception as e:
             return TexDownloadResult(success=False, error=f"Processing failed: {e!s}")
+        finally:
+            # Clean up temporary directory on every path (success and failure)
+            if temp_dir is not None:
+                shutil.rmtree(temp_dir, ignore_errors=True)
 
     def _extract_arxiv_id(self, url: str) -> str | None:
         """Extract ArXiv ID from URL"""
