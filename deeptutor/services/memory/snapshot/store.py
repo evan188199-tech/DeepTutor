@@ -8,20 +8,25 @@ holding:
                        the old human-readable title) and ``last_refresh``.
 - ``changes.jsonl``  — append-only diff log (one ``ChangeEntry`` per line).
 
-State writes are atomic via temp-file + rename. Changes are appended
-line-by-line, which is naturally atomic on POSIX filesystems.
+State writes are atomic via temp-file + rename, flushed and fsync'd
+before the rename so a power loss cannot publish an empty or partial
+``state.json``. Changes are appended line-by-line, which is naturally
+atomic on POSIX filesystems.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Iterator
 
 from deeptutor.services.memory.paths import Surface, memory_root
 from deeptutor.services.memory.snapshot.entity import ChangeEntry
+
+logger = logging.getLogger(__name__)
 
 
 def snapshot_dir(surface: Surface) -> Path:
@@ -66,7 +71,15 @@ def save_state(
         "labels": labels,
         "last_refresh": last_refresh,
     }
-    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    with tmp.open("w", encoding="utf-8") as fh:
+        fh.write(json.dumps(payload, ensure_ascii=False, indent=2))
+        fh.flush()
+        try:
+            os.fsync(fh.fileno())
+        except OSError as exc:
+            # Durability is degraded, not the write itself: still publish the
+            # complete content via the rename below.
+            logger.warning("snapshot state fsync failed before replacing %s: %s", target, exc)
     os.replace(tmp, target)
 
 
