@@ -214,3 +214,113 @@ def test_admin_partner_summary_is_identity_only(monkeypatch):
     )
     summary = router._admin_partner_summary()
     assert summary == [{"partner_id": "p1", "name": "Tutor", "description": "math", "emoji": "🤖"}]
+
+
+# ── identity resolution & default-policy branches ─────────────
+
+
+def test_partner_owner_id_reads_manager_or_falls_back_to_admin_managed(monkeypatch):
+    # Missing/blank owner_id both read as admin-managed (the pre-ownership
+    # default); unknown partners read the same way.
+    _patch_manager(
+        monkeypatch,
+        [
+            {"partner_id": "p1", "owner_id": "u_alice"},
+            {"partner_id": "legacy"},
+            {"partner_id": "old", "owner_id": ""},
+        ],
+    )
+    assert partner_access.partner_owner_id("p1") == "u_alice"
+    assert partner_access.partner_owner_id("legacy") == ""
+    assert partner_access.partner_owner_id("old") == ""
+    assert partner_access.partner_owner_id("missing") == ""
+
+
+def test_assigned_partner_ids_accepts_entries_keyed_by_id(as_user, monkeypatch):
+    monkeypatch.setattr(
+        partner_access, "load_grant", lambda uid: {"partners": [{"id": "p9"}]}
+    )
+    with as_user("u_alice", role="user"):
+        assert partner_access.assigned_partner_ids() == {"p9"}
+
+
+def test_assigned_partner_ids_explicit_user_overrides_context_default(as_user, monkeypatch):
+    def _grant(uid):
+        return (
+            {"partners": [{"partner_id": "p_bob"}]}
+            if uid == "u_bob"
+            else empty_grant(uid)
+        )
+
+    monkeypatch.setattr(partner_access, "load_grant", _grant)
+    with as_user("u_alice", role="user"):
+        assert partner_access.assigned_partner_ids("u_bob") == {"p_bob"}
+        # The default (user_id=None) resolves to the current user, not to any
+        # other account.
+        assert partner_access.assigned_partner_ids() == set()
+
+
+def test_assert_partner_allowed_user_id_override_gates_on_named_account(as_user, monkeypatch):
+    def _grant(uid):
+        return (
+            {"partners": [{"partner_id": "p_bob"}]}
+            if uid == "u_bob"
+            else empty_grant(uid)
+        )
+
+    monkeypatch.setattr(partner_access, "load_grant", _grant)
+    with as_user("u_alice", role="user"):
+        partner_access.assert_partner_allowed("p_bob", user_id="u_bob")  # no raise
+        with pytest.raises(HTTPException) as exc:
+            partner_access.assert_partner_allowed("p_other", user_id="u_bob")
+        assert exc.value.status_code == 403
+
+
+def test_can_manage_prefers_explicit_user_argument_over_context(make_user, monkeypatch):
+    _patch_manager(monkeypatch, [{"partner_id": "p1", "owner_id": "u_alice"}])
+    assert partner_access.can_manage_partner("p1", make_user("u_alice")) is True
+    assert partner_access.can_manage_partner("p1", make_user("u_bob")) is False
+
+
+def test_admin_manageability_assert_never_raises(as_user, monkeypatch):
+    _patch_manager(monkeypatch, [])
+    with as_user("u_admin", role="admin"):
+        partner_access.assert_partner_manageable("anything")  # no raise
+
+
+@pytest.mark.parametrize("role", ["user", "teacher", "student"])
+def test_only_admin_elevates_non_admin_roles_face_identical_gating(
+    as_user, monkeypatch, role
+):
+    # The learner/standard preset boundary lives on UserRecord, never on
+    # CurrentUser: presets are not privileges, and every non-admin role is
+    # gated identically — least privilege, only "admin" elevates.
+    _patch_manager(
+        monkeypatch, [{"partner_id": "p1", "name": "P1", "owner_id": "u_admin"}]
+    )
+    monkeypatch.setattr(partner_access, "load_grant", lambda uid: empty_grant(uid))
+    with as_user("u_any", role=role):
+        assert not partner_access.can_manage_partner("p1")
+        assert not partner_access.can_use_partner("p1")
+        with pytest.raises(HTTPException) as exc:
+            partner_access.assert_partner_manageable("p1")
+        assert exc.value.status_code == 403
+        with pytest.raises(HTTPException) as exc:
+            partner_access.assert_partner_allowed("p1")
+        assert exc.value.status_code == 403
+
+
+def test_blank_partner_id_is_never_usable_manageable_or_assignable(as_user, monkeypatch):
+    # A partner entry without an identifier is a non-entity: it matches no
+    # assignment and grants nothing, even when a grant carries blank ids.
+    _patch_manager(monkeypatch, [{"partner_id": "", "name": "Ghost"}])
+    monkeypatch.setattr(
+        partner_access,
+        "load_grant",
+        lambda uid: {"partners": [{"partner_id": "  "}, {}]},
+    )
+    with as_user("u_alice", role="user"):
+        assert partner_access.assigned_partner_ids() == set()
+        assert not partner_access.can_manage_partner("")
+        assert not partner_access.can_use_partner("")
+        assert [p["partner_id"] for p in partner_access.visible_partners()] == []
