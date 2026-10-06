@@ -40,6 +40,15 @@ if (!fs.existsSync(enRoot) || !fs.existsSync(zhRoot)) {
   process.exit(2);
 }
 
+// Locales that only need to cover every English key (one-directional).
+// They may legitimately carry extra keys (e.g. stale French entries or
+// language-specific plural forms), so extras are not reported for them.
+const coverageOnlyLocales = fs
+  .readdirSync(localesRoot, { withFileTypes: true })
+  .filter((ent) => ent.isDirectory() && !["en", "zh"].includes(ent.name))
+  .map((ent) => ent.name)
+  .sort();
+
 const enFiles = listJsonFiles(enRoot).map((p) => toRel(p, enRoot)).sort();
 const zhFiles = listJsonFiles(zhRoot).map((p) => toRel(p, zhRoot)).sort();
 
@@ -82,6 +91,44 @@ for (const rel of enFiles) {
       for (const k of extraKeys) console.error(`  - ${k}`);
     }
   }
+}
+
+// Coverage check: every non-en/zh locale must provide every key the English
+// catalog has (missing keys fall back to English at runtime). Extra keys are
+// allowed for these locales.
+const coverageReport = [];
+for (const locale of coverageOnlyLocales) {
+  const localeRoot = path.join(localesRoot, locale);
+  const localeFiles = listJsonFiles(localeRoot).map((p) => toRel(p, localeRoot));
+  for (const rel of enFiles) {
+    if (!localeFiles.includes(rel)) {
+      ok = false;
+      coverageReport.push({ locale, rel, keys: null });
+      continue;
+    }
+    const localeJson = loadJson(path.join(localeRoot, rel));
+    const enKeys = new Set(flattenKeys(loadJson(path.join(enRoot, rel))));
+    const localeKeys = new Set(flattenKeys(localeJson));
+    const missingKeys = [...enKeys].filter((k) => !localeKeys.has(k)).sort();
+    if (missingKeys.length) {
+      ok = false;
+      coverageReport.push({ locale, rel, keys: missingKeys });
+    }
+  }
+}
+
+if (coverageReport.length) {
+  for (const { locale, rel, keys } of coverageReport) {
+    if (keys === null) {
+      console.error(`[i18n:parity] Missing ${locale} file: ${rel}`);
+    } else {
+      console.error(`[i18n:parity] ${locale} is missing ${keys.length} keys from ${rel}:`);
+      for (const k of keys) console.error(`  - ${k}`);
+    }
+  }
+} else {
+  const langs = coverageOnlyLocales.join(", ");
+  console.log(`[i18n:parity] OK coverage: ${langs} cover all English keys (0 missing)`);
 }
 
 if (!ok) process.exit(1);
