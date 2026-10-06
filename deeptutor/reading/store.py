@@ -154,6 +154,32 @@ def _read_json(path: Path) -> Any:
         return None
 
 
+def _fsync_dir(path: Path) -> None:
+    """Best-effort fsync of *path* so a completed directory swap reaches disk.
+
+    A rename is only durable once its entry in the parent directory is
+    synced; a power loss can otherwise undo the swap even though the staged
+    files were written first, leaving the store pointing at the old material
+    directory (or none at all). Windows has no ``O_DIRECTORY``, so directory
+    syncing is skipped there. Any other failure only weakens that durability
+    promise — the swap already published a complete directory — so it is
+    logged as a warning instead of surfacing as an error.
+    """
+    if not hasattr(os, "O_DIRECTORY"):  # pragma: no cover - platform specific
+        return
+    try:
+        fd = os.open(str(path), os.O_RDONLY | os.O_DIRECTORY)
+    except OSError as exc:
+        logger.warning("Could not open directory %s for fsync after swap: %r", path, exc)
+        return
+    try:
+        os.fsync(fd)
+    except OSError as exc:
+        logger.warning("Could not fsync directory %s after swap: %r", path, exc)
+    finally:
+        os.close(fd)
+
+
 def content_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:_ID_LENGTH]
 
@@ -432,6 +458,7 @@ class ReadingStore:
                     if backup_dir.exists() and not material_dir.exists():
                         os.replace(backup_dir, material_dir)
                     raise
+                _fsync_dir(self.root)
             finally:
                 shutil.rmtree(stage_dir, ignore_errors=True)
                 shutil.rmtree(backup_dir, ignore_errors=True)
@@ -597,6 +624,7 @@ class ReadingStore:
                     if backup_dir.exists() and not material_dir.exists():
                         os.replace(backup_dir, material_dir)
                     raise
+                _fsync_dir(self.root)
             finally:
                 shutil.rmtree(stage_dir, ignore_errors=True)
                 shutil.rmtree(backup_dir, ignore_errors=True)
@@ -760,6 +788,7 @@ class ReadingStore:
                     if backup_dir.exists() and not material_dir.exists():
                         os.replace(backup_dir, material_dir)
                     raise
+                _fsync_dir(self.root)
             finally:
                 shutil.rmtree(stage_dir, ignore_errors=True)
                 shutil.rmtree(backup_dir, ignore_errors=True)
@@ -1162,6 +1191,7 @@ class ReadingStore:
         staged_dir = self.root / f".{material_id}.{uuid.uuid4().hex[:8]}.deleting"
         with self._locked(material_id):
             os.replace(material_dir, staged_dir)
+            _fsync_dir(self.root)
             try:
                 yield True
             except BaseException:
