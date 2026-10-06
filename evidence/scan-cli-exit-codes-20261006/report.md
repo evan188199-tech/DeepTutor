@@ -160,7 +160,7 @@
 | `session show bogus-id` | 1 | 36B | 0 | ✗ 错误在 stdout |
 | `doctor --format json` | 1 | 1179B | 0 | ✔（沙箱无 LLM 配置，必检失败→1，与 doctor.py:74-75 一致；本次输出为纯 JSON，无日志混入） |
 
-原始数据：`capture/results/*.{code,out,err}`、汇总 `capture/cases.tsv`。
+原始数据：`capture/results/*.{code,stdout,err}`、汇总 `capture/cases.tsv`。
 
 ## 3. `--json` 污染分析
 
@@ -168,7 +168,7 @@
 
 - CLI 入口 import 时即 `configure_logging()`（deeptutor_cli/main.py:29）。
 - `console_output` 默认 True（deeptutor/logging/config.py:12），处理器挂 **sys.stdout**（deeptutor/logging/configure.py:55）；loguru 桥接后同样进 stdlib→stdout（loguru_bridge.py:16-27）。
-- 动态证明 `scripts/pollution_probe.py`（结果 `capture/probe_stdout_log_pollution.out`）：任一库代码 `logging.warning(...)` 的日志行与命令数据同流混排：
+- 动态证明 `scripts/pollution_probe.py`（结果 `capture/probe_stdout_log_pollution.stdout`）：任一库代码 `logging.warning(...)` 的日志行与命令数据同流混排：
   ```
   WARNING deeptutor.test - POLLUTION-PROBE log line on stdout
   {} JSON-DATA-MARKER

@@ -1,0 +1,30 @@
+                                                                                
+ Usage: python -m deeptutor_cli [OPTIONS] COMMAND [ARGS]...                     
+                                                                                
+ DeepTutor CLI – agent-first interface for capabilities, tools, and knowledge.  
+                                                                                
+╭─ Options ────────────────────────────────────────────────────────────────────╮
+│ --help          Show this message and exit.                                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ───────────────────────────────────────────────────────────────────╮
+│ doctor     Check whether DeepTutor is ready to start a session.              │
+│ init       Create or update data/user/settings for this workspace.           │
+│ run        Run any capability in a single turn (agent-first entry point).    │
+│ start      Launch backend + frontend together. Source installs default to    │
+│            production.                                                       │
+│ stop       Stop a DeepTutor launcher started with ``--detach``.              │
+│ serve      Start the DeepTutor API server.                                   │
+│ partner    Manage partners (IM-connected companions).                        │
+│ chat       Interactive chat REPL.                                            │
+│ kb         Manage knowledge bases.                                           │
+│ skill      Manage skills and install from hubs (ClawHub, …).                 │
+│ skills     Manage skills and install from hubs (ClawHub, …).                 │
+│ memory     View and manage lightweight memory.                               │
+│ plugin     List plugins.                                                     │
+│ config     Inspect configuration.                                            │
+│ session    Manage shared sessions.                                           │
+│ notebook   Manage notebooks and imported markdown records.                   │
+│ provider   Manage provider OAuth login.                                      │
+│ book       Manage interactive Books (BookEngine).                            │
+│ workspace  Manage the user content workspace.                                │
+╰──────────────────────────────────────────────────────────────────────────────╯

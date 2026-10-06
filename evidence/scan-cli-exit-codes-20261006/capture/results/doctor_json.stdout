@@ -1,0 +1,48 @@
+{
+  "ok": false,
+  "online": false,
+  "checks": [
+    {
+      "key": "llm_config",
+      "label": "LLM configuration",
+      "status": "fail",
+      "detail": "No active LLM model is configured.",
+      "required": true
+    },
+    {
+      "key": "llm_credentials",
+      "label": "LLM credentials",
+      "status": "fail",
+      "detail": "No credentials are configured for openai.",
+      "required": true
+    },
+    {
+      "key": "llm_endpoint",
+      "label": "LLM endpoint",
+      "status": "pass",
+      "detail": "https://api.openai.com",
+      "required": true
+    },
+    {
+      "key": "storage",
+      "label": "Runtime storage",
+      "status": "pass",
+      "detail": "Writable: /private/tmp/multica-task-1519787357/opencode/dt-exitcodes-dyn/cwd/home/data/user",
+      "required": true
+    },
+    {
+      "key": "rag",
+      "label": "RAG prerequisites",
+      "status": "skip",
+      "detail": "No knowledge bases are configured.",
+      "required": false
+    },
+    {
+      "key": "online",
+      "label": "Provider response",
+      "status": "skip",
+      "detail": "Not requested. Use --online to send a small model request.",
+      "required": false
+    }
+  ]
+}

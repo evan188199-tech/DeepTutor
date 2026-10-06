@@ -12,10 +12,10 @@ mkdir -p "$OUT"
 
 run_case() {
   local name="$1"; shift
-  "$PY" -m deeptutor_cli "$@" >"$OUT/$name.out" 2>"$OUT/$name.err"
+  "$PY" -m deeptutor_cli "$@" >"$OUT/$name.stdout" 2>"$OUT/$name.err"
   local code=$?
   echo "$code" >"$OUT/$name.code"
-  printf '%s\t%s\tout=%dB\terr=%dB\n' "$name" "$code" "$(wc -c <"$OUT/$name.out" | tr -d ' ')" "$(wc -c <"$OUT/$name.err" | tr -d ' ')"
+  printf '%s\t%s\tout=%dB\terr=%dB\n' "$name" "$code" "$(wc -c <"$OUT/$name.stdout" | tr -d ' ')" "$(wc -c <"$OUT/$name.err" | tr -d ' ')"
 }
 
 run_case help --help
