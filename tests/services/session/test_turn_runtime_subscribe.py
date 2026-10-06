@@ -224,14 +224,27 @@ async def test_subscribe_turn_does_not_mutate_remote_running_turn(tmp_path, monk
     turn = await store.create_turn(session["id"], capability="chat")
 
     events: list[dict] = []
+    reconciles = 0
+    _inner_get_turn = store.get_turn
+
+    async def _counting_get_turn(turn_id: str):
+        nonlocal reconciles
+        reconciles += 1
+        return await _inner_get_turn(turn_id)
+
+    store.get_turn = _counting_get_turn  # type: ignore[method-assign]
 
     async def _collect() -> None:
         async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
             events.append(event)
 
     task = asyncio.create_task(_collect())
-    await asyncio.sleep(0.04)
+    for _ in range(200):
+        if reconciles >= 2:
+            break
+        await asyncio.sleep(0.01)
 
+    assert reconciles >= 2
     persisted = await store.get_turn(turn["id"])
     assert persisted is not None
     assert persisted["status"] == "running"
