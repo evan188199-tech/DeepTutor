@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import logging
+import os
 from unittest.mock import patch
+
+import pytest
 
 from deeptutor.services.memory.consolidator import meta as meta_mod
 from deeptutor.services.memory.settings import (
@@ -101,3 +105,27 @@ def test_l2_meta_missing_file_returns_empty() -> None:
     m = L2Meta()
     assert m.seen_entity_refs == set()
     assert m.last_update_at is None
+
+
+def test_atomic_write_json_reports_temp_cleanup_failure(
+    tmp_path, monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    path = tmp_path / "L2" / "chat.meta.json"
+
+    def fail_replace(src, dst) -> None:
+        raise OSError("replace failed")
+
+    def fail_remove(target) -> None:
+        raise OSError("remove failed")
+
+    monkeypatch.setattr(os, "replace", fail_replace)
+    monkeypatch.setattr(os, "remove", fail_remove)
+
+    with caplog.at_level(logging.DEBUG, logger=meta_mod.logger.name):
+        with pytest.raises(OSError, match="replace failed"):
+            meta_mod._atomic_write_json(path, {"version": 1})
+
+    debug_messages = [r.getMessage() for r in caplog.records if r.levelno == logging.DEBUG]
+    assert any(
+        "chat.meta.json" in message and "remove failed" in message for message in debug_messages
+    ), debug_messages

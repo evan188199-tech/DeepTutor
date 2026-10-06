@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 
 import pytest
 
@@ -169,3 +170,35 @@ async def test_undo_last_restores_previous_document(manager: RunManager, tmp_pat
     assert event is not None
     assert path.read_text(encoding="utf-8") == "before"
     assert event.payload["stage"] == "undo_applied"
+
+
+@pytest.mark.asyncio
+async def test_wait_for_events_duplicate_waiter_removal_is_safe(
+    manager: RunManager, caplog: pytest.LogCaptureFixture
+) -> None:
+    run = runs_module.Run(
+        id="run-dup",
+        layer="L2",
+        key="chat",
+        mode="update",
+        params={},
+        language="en",
+        user_label="test",
+        status="running",
+    )
+
+    caplog.set_level(logging.DEBUG, logger=runs_module.logger.name)
+    task = asyncio.create_task(manager.wait_for_events(run, since=0))
+    while not run._waiters:
+        await asyncio.sleep(0)
+    waiter = run._waiters[0]
+
+    run._waiters.remove(waiter)
+    waiter.set()
+
+    events = await asyncio.wait_for(task, timeout=5)
+    assert events == []
+    assert waiter not in run._waiters
+
+    debug_messages = [r.getMessage() for r in caplog.records if r.levelno == logging.DEBUG]
+    assert any("run-dup" in message for message in debug_messages), debug_messages

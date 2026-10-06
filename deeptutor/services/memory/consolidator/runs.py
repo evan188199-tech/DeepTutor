@@ -254,7 +254,10 @@ class RunManager:
             try:
                 run._waiters.remove(waiter)
             except ValueError:
-                pass
+                logger.debug(
+                    "consolidator run waiter already removed (run_id=%s)",
+                    run.id,
+                )
         return [event for event in run.events if event.seq >= since]
 
     # ── Drive ──────────────────────────────────────────────────────────

@@ -174,8 +174,8 @@ def _atomic_write_json(path: Path, payload: dict) -> None:
         if os.path.exists(tmp_str):
             try:
                 os.remove(tmp_str)
-            except OSError:
-                pass
+            except OSError as exc:
+                logger.debug("memory meta: failed to remove temp file %s: %s", tmp_str, exc)
 
 
 def _now_iso() -> str:
