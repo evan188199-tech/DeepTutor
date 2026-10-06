@@ -83,7 +83,7 @@ def _read_caption(path: Path) -> str | None:
             return caption.strip()
     except (OSError, ValueError, UnicodeError):
         # Missing, unreadable, or malformed entries are ordinary cache misses.
-        pass
+        logger.debug("Treating unreadable image caption cache entry as a miss: %s", path)
     return None
 
 
@@ -142,7 +142,8 @@ def _read_batch_captions(path: Path, count: int) -> list[str] | None:
         ):
             return [caption.strip() for caption in captions]
     except (OSError, ValueError, UnicodeError):
-        pass
+        # Missing, unreadable, or malformed entries are ordinary cache misses.
+        logger.debug("Treating unreadable image caption batch cache entry as a miss: %s", path)
     return None
 
 

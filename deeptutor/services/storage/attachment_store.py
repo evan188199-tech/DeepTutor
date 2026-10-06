@@ -264,8 +264,11 @@ class LocalDiskAttachmentStore:
             shutil.move(str(source), str(destination))
         try:
             source_dir.rmdir()
-        except OSError:
-            pass
+        except OSError as exc:
+            # Cleanup semantics: entries skipped above (e.g. symlinks) keep the
+            # legacy dir alive for the next materialization pass; failing to
+            # prune it must not fail the moves that already succeeded.
+            logger.debug("failed to remove legacy attachment dir %s: %s", source_dir, exc)
 
     def materialize_all_sessions(self) -> None:
         """Bring legacy uploads into this workspace before data migration."""

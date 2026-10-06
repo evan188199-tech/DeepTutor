@@ -11,11 +11,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 import tempfile
 
 from .config import MinerUConfig
+
+logger = logging.getLogger(__name__)
 
 _VERSION = "slices-v1"
 _MAX_ARCHIVE_BYTES = 500 * 1024 * 1024
@@ -72,7 +75,9 @@ class SliceCheckpoint:
             if hashlib.sha256(data).hexdigest() == digest:
                 return data
         except (OSError, ValueError, KeyError, TypeError):
-            pass
+            # Unreadable or malformed checkpoints are ordinary misses; the
+            # affected slice is simply re-parsed.
+            logger.debug("Treating unusable mineru slice checkpoint as a miss: %s", self.pointer)
         return None
 
     def save(self, archive: bytes) -> None:

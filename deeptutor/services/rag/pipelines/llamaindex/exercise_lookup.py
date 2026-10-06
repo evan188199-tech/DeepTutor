@@ -10,12 +10,15 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 import hashlib
 import json
+import logging
 from pathlib import Path
 import re
 from typing import Any
 import unicodedata
 
 from deeptutor.services.parsing.cache import source_hash_from_path
+
+logger = logging.getLogger(__name__)
 
 MAX_QUESTIONS = 30
 MAX_CONTENT = 24000
@@ -258,6 +261,8 @@ def _parse_for(source: Path, cache_root: Path) -> Path | None:
             if full or files:
                 return (full or files)[0]
         except (OSError, ValueError, TypeError):
+            # An unreadable or malformed manifest only skips that candidate.
+            logger.debug("Skipping unreadable exercise parse manifest %s", manifest)
             continue
     return None
 
@@ -303,6 +308,8 @@ def lookup_exercises(query: str, kb_dir: Path, cache_root: Path) -> dict[str, An
                 if key in candidates and (kind is None or exercise.kind == kind):
                     candidates[key].append((source, exercise))
         except (OSError, ValueError, TypeError):
+            # One unreadable source only removes that source from the lookup.
+            logger.debug("Skipping unusable exercise source %s", source)
             continue
     if not supported:
         return None

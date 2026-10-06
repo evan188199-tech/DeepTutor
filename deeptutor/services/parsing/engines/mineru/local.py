@@ -6,6 +6,7 @@ from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
+import logging
 import os
 from pathlib import Path
 import shutil
@@ -19,6 +20,8 @@ from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.parsing.cache import load_ir
 
 from .formats import MINERU_SUPPORTED_FORMATS
+
+logger = logging.getLogger(__name__)
 
 # Minimum seconds between on_output callbacks. MinerU's CLI emits tqdm-style
 # progress that universal-newline decoding turns into many lines per second;
@@ -329,9 +332,9 @@ def parse_document_with_mineru_result(
                         "reason": str(result.reason),
                     },
                 )
-            except OSError:
+            except OSError as exc:
                 # A diagnostic write must not hide the original failure.
-                pass
+                logger.debug("failed to write mineru diagnostic state %s: %s", state_path, exc)
 
 
 def parse_document_with_mineru(
