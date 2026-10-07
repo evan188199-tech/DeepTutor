@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import pytest
@@ -92,3 +93,49 @@ def test_env_info_reads_project_model_catalog(tmp_path: Path):
     cm = ConfigManager(project_root=project)
     env = cm.get_env_info()
     assert env["model"] == "Base"
+
+
+def test_missing_config_file_loads_empty(tmp_path: Path):
+    cm = ConfigManager(project_root=tmp_path)
+    assert cm.load_config() == {}
+    assert cm._read_yaml() == {}
+
+
+def test_singleton_reuses_instance_until_reset(tmp_path: Path):
+    first = ConfigManager(project_root=tmp_path)
+    second = ConfigManager(project_root=tmp_path / "elsewhere")
+    assert second is first
+    ConfigManager.reset_for_tests()
+    assert ConfigManager(project_root=tmp_path) is not first
+
+
+def test_save_config_creates_missing_settings_dir(tmp_path: Path):
+    cm = ConfigManager(project_root=tmp_path)
+    assert cm.save_config({"nested": {"key": "value"}})
+    config_path = tmp_path / "data" / "user" / "settings" / "main.yaml"
+    assert yaml.safe_load(config_path.read_text(encoding="utf-8")) == {"nested": {"key": "value"}}
+
+
+def test_validate_required_env_reports_missing_llm_keys(tmp_path: Path):
+    """Without an active LLM profile the LLM_* keys are empty; ports have defaults."""
+    cm = ConfigManager(project_root=tmp_path)
+    result = cm.validate_required_env(["LLM_MODEL", "LLM_API_KEY", "BACKEND_PORT"])
+    assert result["missing"] == ["LLM_MODEL", "LLM_API_KEY"]
+
+
+def test_save_failure_leaves_no_partial_file(tmp_path: Path, monkeypatch):
+    cfg_path = tmp_path / "data" / "user" / "settings" / "main.yaml"
+    write_yaml(cfg_path, {"original": True})
+    cm = ConfigManager(project_root=tmp_path)
+    cm.load_config(force_reload=True)
+
+    def failing_replace(src, dst, **kwargs):
+        raise OSError("replace failed")
+
+    monkeypatch.setattr(os, "replace", failing_replace)
+
+    with pytest.raises(OSError):
+        cm.save_config({"new": True})
+
+    assert yaml.safe_load(cfg_path.read_text(encoding="utf-8")) == {"original": True}
+    assert not list((tmp_path / "data" / "user" / "settings").glob("main.yaml.*"))
