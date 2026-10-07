@@ -1,0 +1,398 @@
+[
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "agents/loop/context_budget.py",
+  "line": 327,
+  "col": 11,
+  "arg_line": 327,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/code_generator_agent.py",
+  "line": 88,
+  "col": 26,
+  "arg_line": 88,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/code_generator_agent.py",
+  "line": 89,
+  "col": 24,
+  "arg_line": 89,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/concept_design_agent.py",
+  "line": 48,
+  "col": 26,
+  "arg_line": 48,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/summary_agent.py",
+  "line": 48,
+  "col": 26,
+  "arg_line": 48,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/summary_agent.py",
+  "line": 49,
+  "col": 24,
+  "arg_line": 49,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/summary_agent.py",
+  "line": 50,
+  "col": 24,
+  "arg_line": 50,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/math_animator/agents/visual_review_agent.py",
+  "line": 66,
+  "col": 24,
+  "arg_line": 67,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/visualize/agents/code_generator_agent.py",
+  "line": 58,
+  "col": 26,
+  "arg_line": 58,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "agents/visualize/agents/review_agent.py",
+  "line": 54,
+  "col": 26,
+  "arg_line": 54,
+  "note": "model_dump() in python mode keeps datetime/UUID/Decimal/enum objects"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/routers/co_writer.py",
+  "line": 509,
+  "col": 42,
+  "arg_line": 509,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/routers/co_writer.py",
+  "line": 513,
+  "col": 41,
+  "arg_line": 513,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/routers/co_writer.py",
+  "line": 515,
+  "col": 42,
+  "arg_line": 515,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/routers/partners.py",
+  "line": 1542,
+  "col": 36,
+  "arg_line": 1542,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/routers/unified_ws.py",
+  "line": 71,
+  "col": 31,
+  "arg_line": 71,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/utils/task_log_stream.py",
+  "line": 22,
+  "col": 36,
+  "arg_line": 22,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "api/utils/task_log_stream.py",
+  "line": 159,
+  "col": 23,
+  "arg_line": 159,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "app/facade.py",
+  "line": 281,
+  "col": 11,
+  "arg_line": 281,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "book/learning_overlay.py",
+  "line": 33,
+  "col": 28,
+  "arg_line": 33,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "book/storage.py",
+  "line": 55,
+  "col": 11,
+  "arg_line": 55,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "capabilities/course_study/tools.py",
+  "line": 145,
+  "col": 15,
+  "arg_line": 145,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "capabilities/course_study/tools.py",
+  "line": 189,
+  "col": 21,
+  "arg_line": 189,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "co_writer/storage.py",
+  "line": 55,
+  "col": 11,
+  "arg_line": 55,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "kb.py",
+  "line": 175,
+  "col": 31,
+  "arg_line": 175,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "kb.py",
+  "line": 208,
+  "col": 27,
+  "arg_line": 208,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "kb.py",
+  "line": 411,
+  "col": 31,
+  "arg_line": 411,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "knowledge/manager.py",
+  "line": 1436,
+  "col": 16,
+  "arg_line": 1437,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "logging/formatters.py",
+  "line": 39,
+  "col": 15,
+  "arg_line": 39,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "notebook.py",
+  "line": 31,
+  "col": 22,
+  "arg_line": 31,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "notebook.py",
+  "line": 50,
+  "col": 26,
+  "arg_line": 50,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "reading/extensions.py",
+  "line": 61,
+  "col": 15,
+  "arg_line": 61,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "runtime/agentic/tool_dispatch.py",
+  "line": 380,
+  "col": 23,
+  "arg_line": 380,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "runtime/coordination/redis.py",
+  "line": 325,
+  "col": 16,
+  "arg_line": 325,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "runtime/coordination/redis.py",
+  "line": 362,
+  "col": 18,
+  "arg_line": 363,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "runtime/coordination/redis.py",
+  "line": 421,
+  "col": 18,
+  "arg_line": 422,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "services/memory/snapshot/store.py",
+  "line": 80,
+  "col": 21,
+  "arg_line": 80,
+  "note": "asdict() reflective dict — field types (enum/datetime) not statically verifiable"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "services/memory/trace.py",
+  "line": 70,
+  "col": 15,
+  "arg_line": 70,
+  "note": "asdict() reflective dict — field types (enum/datetime) not statically verifiable"
+ },
+ {
+  "rule": "J5",
+  "grade": "medium",
+  "file": "services/rag/pipelines/llamaindex/storage.py",
+  "line": 254,
+  "col": 34,
+  "arg_line": 254,
+  "note": "asdict() reflective dict — field types (enum/datetime) not statically verifiable"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "services/session/event_preview.py",
+  "line": 123,
+  "col": 19,
+  "arg_line": 123,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "services/session/event_preview.py",
+  "line": 135,
+  "col": 23,
+  "arg_line": 135,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "services/session/sqlite_store.py",
+  "line": 46,
+  "col": 11,
+  "arg_line": 46,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "services/workspace/data_migration.py",
+  "line": 748,
+  "col": 22,
+  "arg_line": 748,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "session_cmd.py",
+  "line": 68,
+  "col": 22,
+  "arg_line": 68,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ },
+ {
+  "rule": "J1",
+  "grade": "low",
+  "file": "video_learning/marks.py",
+  "line": 202,
+  "col": 11,
+  "arg_line": 202,
+  "note": "default=str masks any non-serializable value with silent stringification"
+ }
+]

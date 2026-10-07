@@ -1,0 +1,55 @@
+PASS anchor J1 agents/loop/context_budget.py:327
+PASS anchor J5 agents/math_animator/agents/code_generator_agent.py:88
+PASS anchor J5 agents/math_animator/agents/code_generator_agent.py:89
+PASS anchor J5 agents/math_animator/agents/concept_design_agent.py:48
+PASS anchor J5 agents/math_animator/agents/summary_agent.py:48
+PASS anchor J5 agents/math_animator/agents/summary_agent.py:49
+PASS anchor J5 agents/math_animator/agents/summary_agent.py:50
+PASS anchor J5 agents/math_animator/agents/visual_review_agent.py:66
+PASS anchor J5 agents/visualize/agents/code_generator_agent.py:58
+PASS anchor J5 agents/visualize/agents/review_agent.py:54
+PASS anchor J1 api/routers/co_writer.py:509
+PASS anchor J1 api/routers/co_writer.py:513
+PASS anchor J1 api/routers/co_writer.py:515
+PASS anchor J1 api/routers/partners.py:1542
+PASS anchor J1 api/routers/unified_ws.py:71
+PASS anchor J1 api/utils/task_log_stream.py:22
+PASS anchor J1 api/utils/task_log_stream.py:159
+PASS anchor J1 app/facade.py:281
+PASS anchor J1 book/learning_overlay.py:33
+PASS anchor J1 book/storage.py:55
+PASS anchor J1 capabilities/course_study/tools.py:145
+PASS anchor J1 capabilities/course_study/tools.py:189
+PASS anchor J1 co_writer/storage.py:55
+PASS anchor J1 kb.py:175
+PASS anchor J1 kb.py:208
+PASS anchor J1 kb.py:411
+PASS anchor J1 knowledge/manager.py:1436
+PASS anchor J1 logging/formatters.py:39
+PASS anchor J1 notebook.py:31
+PASS anchor J1 notebook.py:50
+PASS anchor J1 reading/extensions.py:61
+PASS anchor J1 runtime/agentic/tool_dispatch.py:380
+PASS anchor J1 runtime/coordination/redis.py:325
+PASS anchor J1 runtime/coordination/redis.py:362
+PASS anchor J1 runtime/coordination/redis.py:421
+PASS anchor J5 services/memory/snapshot/store.py:80
+PASS anchor J5 services/memory/trace.py:70
+PASS anchor J5 services/rag/pipelines/llamaindex/storage.py:254
+PASS anchor J1 services/session/event_preview.py:123
+PASS anchor J1 services/session/event_preview.py:135
+PASS anchor J1 services/session/sqlite_store.py:46
+PASS anchor J1 services/workspace/data_migration.py:748
+PASS anchor J1 session_cmd.py:68
+PASS anchor J1 video_learning/marks.py:202
+PASS behavior J3-datetime TypeError: TypeError
+PASS behavior J3-decimal TypeError: TypeError
+PASS behavior J3-uuid TypeError: TypeError
+PASS behavior J3-bytes TypeError: TypeError
+PASS behavior J3-uuid.hex serializes (false-positive guard): serializes as expected
+PASS behavior J2 NaN token emitted (invalid JSON per RFC 8259): serializes as expected
+PASS behavior J2b allow_nan=False ValueError: ValueError
+PASS behavior J1 default=str silent stringification: serializes as expected
+PASS behavior J5 model_dump python-mode TypeError: TypeError
+PASS behavior J5 model_dump(mode=json) safe: serializes as expected
+SUMMARY PASS 54/54
