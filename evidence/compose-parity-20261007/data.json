@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "task": "AGEN-1003 scan: Docker/compose 配置与代码默认值一致性清点",
+    "date": "2026-10-07",
+    "repo": "HKUDS/DeepTutor",
+    "commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741 (origin/main, release: v1.6.13)",
+    "method": "只读静态核对，不构建镜像，不改产品代码",
+    "scope_files": [
+      "Dockerfile", "Dockerfile.runner", ".dockerignore",
+      "compose.yaml", "compose.codex-oauth.yaml",
+      "docker-compose.yml", "docker-compose.dev.yml", "docker-compose.ghcr.yml",
+      ".env.example", "scripts/docker_compose.py", "scripts/install_extras.py",
+      "deeptutor/services/config/runtime_settings.py", "deeptutor/runtime/launcher.py",
+      "deeptutor/api/main.py", "web/proxy.ts",
+      "deeptutor/services/sandbox/config.py", "deeptutor/services/sandbox/runner/server.py",
+      "deeptutor/services/workspace/service.py", "deeptutor/services/cli_apps/paths.py",
+      "docs-for-user/CONTAINERIZATION.md", "README.md",
+      "tests/scripts/test_docker_compose.py"
+    ],
+    "counts": { "checks": 54, "drifts": 6, "observations": 4, "sampled_code_verifications": 11 }
+  },
+  "drifts": [
+    {
+      "id": "D1",
+      "axis": "ports",
+      "severity": "medium",
+      "title": "compose.yaml 容器侧端口硬编码，与 JSON 驱动端口的文档路径矛盾",
+      "evidence": [
+        "compose.yaml:162-163 发布映射右侧硬编码 8001/3782（`127.0.0.1:${HOST_PORT_BACKEND:-8001}:8001`）",
+        "compose.yaml:57-62 头注与 .env.example:8-13 均称容器侧端口来自 data/user/settings/system.json，改 JSON + restart 即可",
+        "docs-for-user/CONTAINERIZATION.md:434-437 称改 backend_port/frontend_port 后更新 HOST_PORT_* 即可，但 HOST_PORT_* 只改宿主侧，podman 路径没有任何环境变量能改映射右侧"
+      ],
+      "impact": "system.json backend_port/frontend_port 改为非默认值后，容器内应用绑定新端口，compose 仍发布宿主→容器旧端口，端口映射失效",
+      "fix": "在 compose.yaml 头注与 .env.example 中明确：podman 路径改容器侧端口必须同时编辑 compose.yaml 映射右侧；或改为与 docker 路径一致的渲染机制（宿主/容器同变量）"
+    },
+    {
+      "id": "D2",
+      "axis": "healthcheck",
+      "severity": "medium",
+      "title": "compose.yaml 健康检查固定 :8001，与 Dockerfile JSON 自适应健康检查不一致",
+      "evidence": [
+        "compose.yaml:190-195 `curl http://localhost:8001/health/ready` 端口写死",
+        "Dockerfile:517-531 healthcheck.py 从 /app/data/user/settings/system.json 读 backend_port；Dockerfile:538-539 HEALTHCHECK 使用它",
+        "deeptutor/api/main.py:801 /health/ready 端点存在（两侧共同前提，无漂移）"
+      ],
+      "impact": "与 D1 同根：JSON 改端口后 compose 健康检查永久失败，容器被判 unhealthy（Dockerfile 自带检查则自适应通过）",
+      "fix": "compose.yaml 健康检查改用容器内 /app/healthcheck.py（镜像已内置），或注明仅支持默认端口"
+    },
+    {
+      "id": "D3",
+      "axis": "ports",
+      "severity": "low",
+      "title": "compose.codex-oauth.yaml 容器侧变量名与 podman 基础文件不匹配",
+      "evidence": [
+        "compose.codex-oauth.yaml:8-9 容器侧用 ${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}（docker 命名，由 scripts/docker_compose.py:57-59 渲染）",
+        "docs-for-user/CONTAINERIZATION.md:188 文档化用法 `podman compose -f compose.yaml -f compose.codex-oauth.yaml`，而 compose.yaml 体系只定义 HOST_PORT_*",
+        "podman 组合下该变量永远未定义 → 静默回落 3782，frontend_port 非默认时回调断裂"
+      ],
+      "impact": "仅影响 podman + 非默认 frontend_port + 临时 OAuth 桥的组合场景",
+      "fix": "overlay 容器侧改用中立变量并保持两套命名均有默认值，或在 CONTAINERIZATION.md:188 处注明 podman 组合仅支持默认端口"
+    },
+    {
+      "id": "D4",
+      "axis": "volumes",
+      "severity": "low",
+      "title": "docker-compose.dev.yml 残留旧版 /pb/pb_data 挂载",
+      "evidence": [
+        "docker-compose.dev.yml:15 pocketbase 覆盖挂载 ./data/pocketbase:/pb/pb_data",
+        "docker-compose.yml:57-64 基础文件已改为 /pb_data、/pb_public、/pb_hooks，且注释明确旧路径曾导致启动崩溃（'The previous example mounted at /pb/pb_data and crashed'）",
+        "compose 卷合并按容器目标路径去重，/pb/pb_data 与 /pb_data 是不同目标 → 两条挂载并存，旧条目成无效果死挂载"
+      ],
+      "impact": "功能无损，但保留已判定为有害的旧路径，误导后续维护",
+      "fix": "删除 docker-compose.dev.yml:13-15 的 pocketbase 卷覆盖（基础文件已覆盖同一宿主目录）"
+    },
+    {
+      "id": "D5",
+      "axis": "env",
+      "severity": "low",
+      "title": "TZ 仅在 podman 路径传递，docker 两个 compose 文件缺失",
+      "evidence": [
+        "compose.yaml:179-180 `- TZ=${TZ:-UTC}`；.env.example:26-27 文档化 TZ",
+        "docker-compose.yml:100-124 与 docker-compose.ghcr.yml:79-100 environment 段均无 TZ",
+        "compose.yaml:179 注释称 TZ 由 Python (time.tzset) 与 Next.js 在启动时读取，属通用能力而非 podman 专属"
+      ],
+      "impact": "docker/ghcr 部署无法按文件既定方式设置时区，两套部署路径行为不一致",
+      "fix": "在 docker-compose.yml 与 docker-compose.ghcr.yml 的 environment 加 `TZ=${TZ:-UTC}`"
+    },
+    {
+      "id": "D6",
+      "axis": "startup",
+      "severity": "low",
+      "title": "依赖门禁与『可选服务』文档语义冲突（pocketbase / redis）",
+      "evidence": [
+        "docker-compose.yml:133-139 与 compose.yaml:200-204 deeptutor 硬依赖 pocketbase、redis service_healthy",
+        "两文件自身注释与 docs-for-user/CONTAINERIZATION.md:445-446 均称 PocketBase 可选（留空走 SQLite 回退）",
+        "integrations 默认 turn_coordination.backend=memory、redis_url=\"\"（deeptutor/services/config/runtime_settings.py:98-106），默认不连接 redis"
+      ],
+      "impact": "『可选』仅指应用层回退；编排层无条件启动两服务并以健康为启动门禁，不能按文档语义裁剪掉它们",
+      "fix": "在两文件 depends_on 附近注明『可选指应用回退，服务容器仍会启动』，或提供无 sidecar 的精简变体"
+    }
+  ],
+  "observations": [
+    {
+      "id": "O1",
+      "axis": "env",
+      "note": "两套宿主端口变量命名并存：HOST_PORT_*（compose.yaml/.env.example，podman 路径）与 DEEPTUTOR_DOCKER_*（docker 路径，scripts/docker_compose.py:46-71 从 system.json/integrations.json 渲染写入 data/user/settings/docker.env）。.env.example 头注与 docker_compose.py docstring 均声明互不读取，属有意设计，仅提示读者。"
+    },
+    {
+      "id": "O2",
+      "axis": "env",
+      "note": "entrypoint unset 清单（Dockerfile:342-367）未覆盖 render_environment 全部导出键（如 DEEPTUTOR_VERSION_CHECK_ENABLED、DEEPTUTOR_SANDBOX_ALLOW_SUBPROCESS、AUTH_PRIVATE_LOGIN_HOSTS）。无实际影响：Dockerfile:117/337 已导出 DEEPTUTOR_IGNORE_PROCESS_ENV_OVERRIDES=1（runtime_settings.py:384 同名常量），进程环境覆盖被整体忽略，unset 仅是双保险。"
+    },
+    {
+      "id": "O3",
+      "axis": "volumes",
+      "note": "compose.yaml:58 注释称设置位于 'the deeptutor-data volume'，同文件 :174 实际挂载为 ./data 宿主目录 bind（:226-230 还解释了为何不用命名卷）。术语笔误，建议改为 './data bind'。"
+    },
+    {
+      "id": "O4",
+      "axis": "startup",
+      "note": "Dockerfile.runner:12 手动运行示例 `docker run -p 8900:8900` 将 runner 发布到所有接口，与 docker-compose.yml:153-154/180 'not exposed to the host' 的设计表述不一致（示例仅为手动调试用途）。建议示例改 127.0.0.1:8900:8900。Dockerfile:534 EXPOSE 8001 3782 为纯声明性，与 JSON 端口机制共存无碍。"
+    }
+  ],
+  "sampled_code_verifications": [
+    {"claim": "/health/ready 端点存在", "code": "deeptutor/api/main.py:801", "result": "match"},
+    {"claim": "/health/live 端点存在", "code": "deeptutor/api/main.py:796", "result": "match"},
+    {"claim": "render_environment 导出 BACKEND_PORT/FRONTEND_PORT/DEEPTUTOR_API_BASE_URL 等", "code": "deeptutor/services/config/runtime_settings.py:704-753", "result": "match"},
+    {"claim": "默认端口 8001/3782/8090", "code": "deeptutor/services/config/runtime_settings.py:23-25,94", "result": "match"},
+    {"claim": "docker.env 由 system.json backend_port/frontend_port 与 integrations.json pocketbase_port 渲染", "code": "scripts/docker_compose.py:46-71", "result": "match"},
+    {"claim": "DEEPTUTOR_SANDBOX_RUNNER_URL/DEEPTUTOR_SANDBOX_ALLOW_SUBPROCESS 环境名与优先级", "code": "deeptutor/services/sandbox/config.py:32-33,58-66", "result": "match"},
+    {"claim": "runner 默认端口 8900、RUNNER_PORT 可覆盖、GET /health 端点", "code": "deeptutor/services/sandbox/runner/server.py:74,299-315,357-359", "result": "match"},
+    {"claim": "DEEPTUTOR_WORKSPACE_ROOT/DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS 环境名", "code": "deeptutor/services/workspace/service.py:29-30", "result": "match"},
+    {"claim": "cli-apps 目录名与 data 根下路径（runner 只读挂载 ./data/cli-apps:/app/data/cli-apps）", "code": "deeptutor/services/cli_apps/paths.py:42,48", "result": "match"},
+    {"claim": "get_ws_max_size / HTTP_KEEP_ALIVE_TIMEOUT 可导入（start-backend.sh 依赖）", "code": "deeptutor/services/config/__init__.py:29,38", "result": "match"},
+    {"claim": "web/proxy.ts 请求时读 DEEPTUTOR_API_BASE_URL 重写 /api/*、/ws/*", "code": "web/proxy.ts:17-18", "result": "match"}
+  ],
+  "checks": {
+    "ports": [
+      {"id": "P01", "file": "compose.yaml", "line": 162, "item": "backend 宿主/容器默认 8001", "truth": "runtime_settings.py:23 backend_port=8001", "result": "match（改 JSON 即触发 D1）"},
+      {"id": "P02", "file": "compose.yaml", "line": 163, "item": "frontend 宿主/容器默认 3782", "truth": "runtime_settings.py:25 frontend_port=3782", "result": "match（改 JSON 即触发 D1）"},
+      {"id": "P03", "file": "compose.yaml", "line": 103, "item": "pocketbase 宿主 8090→容器 8090", "truth": "runtime_settings.py:94 pocketbase_port=8090", "result": "match"},
+      {"id": "P04", "file": "docker-compose.yml", "line": 85, "item": "backend 宿主=容器=DEEPTUTOR_DOCKER_BACKEND_PORT", "truth": "docker_compose.py:54-56 从 system.json 渲染", "result": "match"},
+      {"id": "P05", "file": "docker-compose.yml", "line": 86, "item": "frontend 宿主=容器=DEEPTUTOR_DOCKER_FRONTEND_PORT", "truth": "docker_compose.py:57-59", "result": "match"},
+      {"id": "P06", "file": "docker-compose.yml", "line": 55, "item": "pocketbase 宿主侧 DEEPTUTOR_DOCKER_POCKETBASE_PORT", "truth": "docker_compose.py:60-62 从 integrations.json 渲染", "result": "match"},
+      {"id": "P07", "file": "docker-compose.ghcr.yml", "line": "65-66", "item": "backend/frontend 同 docker-compose.yml 方案", "truth": "同上渲染器", "result": "match"},
+      {"id": "P08", "file": "compose.codex-oauth.yaml", "line": "8-9", "item": "Codex 回调 1455/1457→前端容器端口", "truth": "tests/scripts/test_docker_compose.py:119-127 固定该内容", "result": "drift→D3"},
+      {"id": "P09", "file": "Dockerfile", "line": 534, "item": "EXPOSE 8001 3782", "truth": "默认端口一致；EXPOSE 仅声明", "result": "match（O4 提示）"},
+      {"id": "P10", "file": "Dockerfile", "line": "9-10", "item": "docker run 示例 -p 固定 8001/3782", "truth": "默认端口一致；CONTAINERIZATION.md:145-147 说明改右侧", "result": "match"},
+      {"id": "P11", "file": ".env.example", "line": "18-21", "item": "HOST_PORT_BACKEND/FRONTEND/POCKETBASE 默认 8001/3782/8090", "truth": "代码默认值一致", "result": "match"},
+      {"id": "P12", "file": ".env.example", "line": "8-13", "item": "『容器侧端口来自 system.json』表述 vs compose.yaml 硬编码右侧", "truth": "compose.yaml:162-163", "result": "drift→D1"},
+      {"id": "P13", "file": "README.md", "line": "259,403,414", "item": "快速开始示例端口 3782", "truth": "默认值一致", "result": "match"}
+    ],
+    "volumes": [
+      {"id": "V01", "file": "compose.yaml", "line": 174, "item": "./data:/app/data:U 全数据树", "truth": "healthcheck.py 读 /app/data/user/settings/system.json（Dockerfile:523）；entrypoint chown /app/data（Dockerfile:418）", "result": "match"},
+      {"id": "V02", "file": "compose.yaml", "line": 177, "item": "workspace 默认 ./data/user/workspace:/workspace", "truth": "DEEPTUTOR_WORKSPACE_ROOT=/workspace（compose.yaml:181）→ workspace/service.py:29-30", "result": "match"},
+      {"id": "V03", "file": "docker-compose.yml", "line": "97-98", "item": "./data:/app/data + workspace 同构", "truth": "同上", "result": "match"},
+      {"id": "V04", "file": "docker-compose.ghcr.yml", "line": "76-77", "item": "完整 ./data 树（含 data/system 等持久化）", "truth": "docker-compose.ghcr.yml:69-75 注释；CONTAINERIZATION.md:208 迁移章节锚点存在", "result": "match"},
+      {"id": "V05", "file": "docker-compose.yml", "line": "168-169", "item": "runner /workspace:ro + outputs 可写", "truth": "DEEPTUTOR_RUNNER_ALLOWED_WORKDIRS=/workspace/outputs（docker-compose.yml:178；server.py:160）", "result": "match"},
+      {"id": "V06", "file": "docker-compose.yml", "line": 175, "item": "./data/cli-apps:/app/data/cli-apps:ro", "truth": "cli_apps/paths.py:42 CLI_APPS_DIRNAME='cli-apps'，位于 data 根", "result": "match"},
+      {"id": "V07", "file": "docker-compose.yml/ghcr/compose.yaml", "line": "36/50/76", "item": "redis ./data/redis:/data", "truth": "三文件一致", "result": "match"},
+      {"id": "V08", "file": "docker-compose.yml", "line": "62-64", "item": "pocketbase /pb_data、/pb_public、/pb_hooks", "truth": "与上游镜像 entrypoint 绝对路径一致（:57-61 注释）", "result": "match"},
+      {"id": "V09", "file": "docker-compose.dev.yml", "line": 15, "item": "pocketbase 覆盖挂载 /pb/pb_data", "truth": "基础文件已弃用该路径", "result": "drift→D4"},
+      {"id": "V10", "file": "docker-compose.dev.yml", "line": "41-43", "item": "data/user、data/memory、data/knowledge_bases 子集挂载", "truth": "为 ./data:/app/data 的子集，同宿主目录，冗余无害", "result": "match（观察）"},
+      {"id": "V11", "file": "Dockerfile", "line": "183-197", "item": "mkdir 预建数据目录树", "truth": "与 entrypoint init_user_directories（Dockerfile:406-410）互补，路径一致", "result": "match"}
+    ],
+    "env": [
+      {"id": "E01", "file": "compose.yaml", "line": "181-182", "item": "DEEPTUTOR_WORKSPACE_ROOT/ALLOWED_ROOTS=/workspace", "truth": "workspace/service.py:29-30", "result": "match"},
+      {"id": "E02", "file": "docker-compose.yml", "line": 107, "item": "DEEPTUTOR_SANDBOX_RUNNER_URL=http://sandbox-runner:8900", "truth": "sandbox/config.py:32,58；runner 8900（server.py:74）", "result": "match"},
+      {"id": "E03", "file": "compose.yaml", "line": "38-42", "item": "podman 路径不设 runner URL，回退 bwrap/subprocess", "truth": "sandbox_allow_subprocess 默认 True（runtime_settings.py:37；Dockerfile:119-125 注释一致）", "result": "match"},
+      {"id": "E04", "file": "Dockerfile", "line": "342-367", "item": "entrypoint unset 清单 vs render_environment 导出键", "truth": "runtime_settings.py:709-753", "result": "match（良性不对称见 O2）"},
+      {"id": "E05", "file": "compose.yaml vs docker-compose.yml/ghcr", "line": "179-180 / 100-124,79-100", "item": "TZ 传递", "truth": ".env.example:26-27 文档化", "result": "drift→D5"},
+      {"id": "E06", "file": "Dockerfile", "line": "373-401", "item": "PUID/PGID（含 DEEPTUTOR_PUID/PGID 别名）重映射", "truth": "docker-compose.yml:120-124、ghcr:97-100、CONTAINERIZATION.md:77-85 文档一致", "result": "match"},
+      {"id": "E07", "file": "Dockerfile", "line": "449-470", "item": "DEEPTUTOR_APT_PACKAGES / DEEPTUTOR_EXTRAS 消费", "truth": "scripts/install_extras.py 存在且被 COPY scripts/ 打包；两 compose 文件注释示例一致", "result": "match"},
+      {"id": "E08", "file": ".env.example", "line": "18-27", "item": "键集合 = compose.yaml 实际引用（HOST_PORT_*、TZ）", "truth": "compose.yaml:162-163,179-180", "result": "match"},
+      {"id": "E09", "file": "Dockerfile", "line": "117,337", "item": "DEEPTUTOR_IGNORE_PROCESS_ENV_OVERRIDES=1", "truth": "runtime_settings.py:384 同名常量；JSON 为唯一权威，与『不读 .env』设计一致", "result": "match"},
+      {"id": "E10", "file": "全部 compose 文件", "line": "-", "item": "不直接消费旧环境名（BACKEND_PORT 等）作映射", "truth": "tests/scripts/test_docker_compose.py:87 固化该约定；scripts/docker_compose.py:116-125 主机侧再剔除一层", "result": "match"},
+      {"id": "E11", "file": "compose.yaml", "line": "187-189", "item": "POCKETBASE_URL 示例注释", "truth": "integrations.json pocketbase_url 为权威（render_environment 导出，runtime_settings.py:748）", "result": "match"},
+      {"id": "E12", "file": "Dockerfile", "line": "42-47", "item": "前端构建不再烘焙 API URL", "truth": "web/proxy.ts:17-18 请求时读取；web/lib/api.ts 透传", "result": "match"},
+      {"id": "E13", "file": "scripts/docker_compose.py", "line": "114-125", "item": "调用 compose 前剔除主机 BACKEND_PORT 等 7 键", "truth": "与 entrypoint unset 设计同向，避免主机进程覆盖", "result": "match"}
+    ],
+    "health": [
+      {"id": "H01", "file": "deeptutor/api/main.py", "line": "796,801", "item": "/health/live 与 /health/ready 端点存在", "truth": "FastAPI 路由", "result": "match"},
+      {"id": "H02", "file": "Dockerfile", "line": "517-539", "item": "HEALTHCHECK→healthcheck.py 读 system.json backend_port", "truth": "JSON 自适应", "result": "match"},
+      {"id": "H03", "file": "docker-compose.yml", "line": "126-131", "item": "curl ${DEEPTUTOR_DOCKER_BACKEND_PORT}/health/ready", "truth": "与渲染器同源变量", "result": "match"},
+      {"id": "H04", "file": "docker-compose.ghcr.yml", "line": "102-107", "item": "同 H03", "truth": "同上", "result": "match"},
+      {"id": "H05", "file": "compose.yaml", "line": "190-199", "item": "curl 固定 :8001/health/ready", "truth": "Dockerfile 自适应检查与之分歧", "result": "drift→D2"},
+      {"id": "H06", "file": "docker-compose.yml", "line": "200-206", "item": "runner 健康检查 urllib :8900/health", "truth": "server.py:299-315 端点；8900 默认", "result": "match"},
+      {"id": "H07", "file": "docker-compose.yml/compose.yaml", "line": "67-72/116-127", "item": "pocketbase wget /api/health :8090", "truth": "上游镜像契约，容器侧固定 8090 与端口映射一致", "result": "match"},
+      {"id": "H08", "file": "三文件", "line": "-", "item": "redis redis-cli ping", "truth": "标准检查", "result": "match"}
+    ],
+    "startup": [
+      {"id": "S01", "file": "Dockerfile", "line": "274-304", "item": "start-backend.sh 默认 8001/0.0.0.0/workers=1", "truth": "runtime_settings.py:23-24 默认一致", "result": "match"},
+      {"id": "S02", "file": "Dockerfile", "line": 301, "item": "--ws-max-size 取自 get_ws_max_size（回退 16MB）", "truth": "deeptutor/services/config/__init__.py:38 导出", "result": "match"},
+      {"id": "S03", "file": "Dockerfile", "line": 302, "item": "--timeout-keep-alive 取自 HTTP_KEEP_ALIVE_TIMEOUT（回退 300）", "truth": "deeptutor/services/config/__init__.py:29 导出", "result": "match"},
+      {"id": "S04", "file": "Dockerfile", "line": "313-324", "item": "start-frontend.sh PORT/HOSTNAME→node server.js（standalone）", "truth": "Dockerfile:170-172 拷贝 standalone 产物", "result": "match"},
+      {"id": "S05", "file": "Dockerfile", "line": "228-271", "item": "supervisord nodaemon + 子程序 user=deeptutor", "truth": "与 rootless keep-id / PUID 重映射设计一致", "result": "match"},
+      {"id": "S06", "file": "Dockerfile", "line": "547-611", "item": "development stage：uvicorn --reload + node scripts/dev.mjs", "truth": "dev override build.target=development（docker-compose.dev.yml:19）存在该 stage", "result": "match"},
+      {"id": "S07", "file": "docker-compose.yml", "line": "133-139", "item": "depends_on pocketbase/redis healthy", "truth": "文档称两服务可选", "result": "drift→D6"},
+      {"id": "S08", "file": "compose.yaml", "line": "200-204", "item": "depends_on pocketbase/redis healthy", "truth": "同上", "result": "drift→D6"},
+      {"id": "S09", "file": "Dockerfile.runner", "line": "103-107", "item": "RUNNER_PORT=8900、USER runner、CMD server.py", "truth": "server.py:359 读 RUNNER_PORT", "result": "match"}
+    ]
+  }
+}
