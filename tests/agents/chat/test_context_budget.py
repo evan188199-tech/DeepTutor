@@ -9,6 +9,7 @@ alongside ``cost_summary``.
 from __future__ import annotations
 
 import asyncio
+import json
 from types import SimpleNamespace
 from typing import Any
 
@@ -541,3 +542,320 @@ def test_known_context_window_readout_is_not_clamped():
     info = resolve_window_info(model="gemini-2.5-pro")
     assert info.window == 1048576
     assert info.estimated is False
+
+
+# ---- trimming order -------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("snapshot_flagged", "shipped_system", "expected_tokens"),
+    [
+        pytest.param(
+            True,
+            "## general\nyou are\n\n---\n\nLANG",
+            {
+                "system_prompt": _chars("## general\nyou are\n\n---\n\nLANG"),
+                "memory": _chars("## memory\nremembered facts"),
+                "messages": _chars("hi"),
+            },
+            id="snapshot-trims-dynamic-blocks-out-of-system-itemization",
+        ),
+        pytest.param(
+            False,
+            "## general\nyou are\n\n---\n\n## memory\nremembered facts\n\nLANG",
+            {
+                "system_prompt": _chars(
+                    "## general\nyou are\n\n---\n\n## memory\nremembered facts\n\nLANG"
+                )
+                - _chars("## memory\nremembered facts"),
+                "memory": _chars("## memory\nremembered facts"),
+                "messages": _chars("hi") + _chars("## memory\nremembered facts"),
+            },
+            id="no-snapshot-keeps-runtime-block-in-system-and-counts-snapshot-text",
+        ),
+    ],
+)
+def test_runtime_snapshot_moves_dynamic_block_attribution(
+    snapshot_flagged: bool,
+    shipped_system: str,
+    expected_tokens: dict[str, int],
+) -> None:
+    snapshot_message: dict[str, Any] = {
+        "role": "user",
+        "content": "## memory\nremembered facts",
+    }
+    if snapshot_flagged:
+        snapshot_message["_context_snapshot"] = "memory"
+    budget = _budget(
+        blocks=[
+            PromptBlock("general", "you are"),
+            PromptBlock("memory", "remembered facts"),
+        ],
+        request=LLMRequestSnapshot(
+            messages=[
+                {"role": "system", "content": shipped_system},
+                {"role": "user", "content": "hi"},
+                snapshot_message,
+            ]
+        ),
+    )
+
+    assert _tokens(budget) == expected_tokens
+
+
+@pytest.mark.parametrize(
+    ("blocks", "expected_order"),
+    [
+        pytest.param(
+            [PromptBlock("memory", "w" * 4), PromptBlock("skills", "w" * 4)],
+            ["memory", "skills"],
+            id="equal-tokens-sort-by-name",
+        ),
+        pytest.param(
+            [PromptBlock("workspace", "w" * 4), PromptBlock("notebooks", "w" * 4)],
+            ["notebooks", "workspace"],
+            id="equal-tokens-sort-by-name-reversed-input",
+        ),
+        pytest.param(
+            [PromptBlock("workspace", "w" * 50), PromptBlock("memory", "w" * 4)],
+            ["workspace", "memory"],
+            id="larger-tokens-win-regardless-of-name",
+        ),
+    ],
+)
+def test_segment_ranking_is_tokens_desc_then_name_asc(
+    blocks: list[PromptBlock], expected_order: list[str]
+) -> None:
+    segments = _budget(blocks=blocks, context_window=10_000)["segments"]
+
+    assert [segment["key"] for segment in segments] == expected_order
+    assert all(segment["tokens"] > 0 for segment in segments)
+
+
+def test_blank_block_content_is_trimmed_and_rendered_form_is_measured() -> None:
+    budget = _budget(
+        blocks=[
+            PromptBlock("memory", None),  # type: ignore[arg-type]
+            PromptBlock("skills", "  \n\t "),
+            PromptBlock("sources", "  padded  "),
+        ],
+    )
+
+    assert _tokens(budget) == {"sources": _chars("## sources\npadded")}
+
+
+def test_non_dict_tool_schemas_are_skipped() -> None:
+    valid = _schema("rag", "longer description")
+    budget = _budget(
+        request=LLMRequestSnapshot(tool_schemas=[None, "junk", 42, valid]),
+    )
+
+    assert _tokens(budget) == {"system_tools": _chars(json.dumps(valid, ensure_ascii=False))}
+
+
+# ---- over-limit fallback --------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        pytest.param(-5, 0, id="negative-clamps-to-zero"),
+        pytest.param(0, 0, id="zero-stays-zero"),
+        pytest.param("7", 7, id="numeric-string-coerced"),
+        pytest.param(12, 12, id="int-passthrough"),
+        pytest.param(10**9, 10**9, id="large-value-kept"),
+    ],
+)
+def test_deferred_tool_count_is_coerced_and_clamped(raw: Any, expected: int) -> None:
+    assert _budget(deferred_tool_count=raw)["deferred_tool_count"] == expected
+
+
+@pytest.mark.parametrize("raw", ["not-a-number", None, object()])
+def test_non_numeric_deferred_tool_count_degrades_to_no_budget(raw: Any) -> None:
+    assert (
+        build_context_budget(
+            blocks=[],
+            request=LLMRequestSnapshot(),
+            context_window=1000,
+            deferred_tool_count=raw,
+            counter=_chars,
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    ("snapshot_text", "extra_user_text"),
+    [
+        pytest.param("s", "hi", id="conversation-smaller-than-dynamic-tokens"),
+        pytest.param("## memory\n" + "x" * 10, "", id="conversation-exactly-dynamic-tokens"),
+    ],
+)
+def test_messages_segment_clamps_at_zero_when_dynamic_tokens_cover_conversation(
+    snapshot_text: str, extra_user_text: str
+) -> None:
+    messages: list[dict[str, Any]] = [
+        {"role": "system", "content": "## general\nyou are"},
+        {"role": "user", "content": snapshot_text, "_context_snapshot": "memory"},
+    ]
+    if extra_user_text:
+        messages.insert(1, {"role": "user", "content": extra_user_text})
+    budget = _budget(
+        blocks=[PromptBlock("general", "you are"), PromptBlock("memory", "x" * 10)],
+        request=LLMRequestSnapshot(messages=messages),
+    )
+
+    assert _tokens(budget) == {"system_prompt": _chars("## general\nyou are"), "memory": 20}
+
+
+@pytest.mark.parametrize(
+    "request_material",
+    [
+        pytest.param(None, id="request-none"),
+        pytest.param(LLMRequestSnapshot(messages=None), id="messages-none"),
+        pytest.param(LLMRequestSnapshot(messages=[], tool_schemas=None), id="tool-schemas-none"),
+    ],
+)
+def test_malformed_request_material_degrades_to_no_budget(request_material: Any) -> None:
+    assert (
+        build_context_budget(
+            blocks=[],
+            request=request_material,
+            context_window=1000,
+            counter=_chars,
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    ("window", "expected_free"),
+    [
+        pytest.param(13, 0, id="window-equals-used"),
+        pytest.param(12, 0, id="window-below-used"),
+        pytest.param(14, 1, id="window-one-above-used"),
+    ],
+)
+def test_free_tokens_boundary_around_exact_usage(window: int, expected_free: int) -> None:
+    budget = _budget(blocks=[PromptBlock("memory", "abc")], context_window=window)
+
+    assert budget["used_tokens"] == _chars("## memory\nabc")
+    assert budget["free_tokens"] == expected_free
+
+
+# ---- boundary values ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("context_window", "expected_window", "estimated"),
+    [
+        pytest.param("3000", 3000, False, id="numeric-string-verbatim"),
+        pytest.param(3000, 3000, False, id="int-verbatim"),
+        pytest.param("0", None, True, id="zero-is-not-positive"),
+        pytest.param("-5", None, True, id="negative-falls-back"),
+        pytest.param("12.5", None, True, id="float-string-unparseable"),
+        pytest.param(True, None, True, id="bool-unparseable"),
+    ],
+)
+def test_window_value_boundaries_route_between_verbatim_and_estimated(
+    context_window: Any, expected_window: int | None, estimated: bool
+) -> None:
+    info = resolve_window_info(context_window=context_window, model="unknown")
+
+    assert info.estimated is estimated
+    if expected_window is None:
+        assert info.window > 0
+    else:
+        assert info.window == expected_window
+
+
+@pytest.mark.parametrize(
+    ("messages", "expected_counted"),
+    [
+        pytest.param(
+            [
+                {"role": "user", "content": "first"},
+                {"role": "assistant", "content": "second"},
+            ],
+            "firstsecond",
+            id="conversation-not-opening-with-system",
+        ),
+        pytest.param(
+            [
+                {"role": "system", "content": [{"type": "text", "text": "abc"}]},
+                {"role": "user", "content": "hi"},
+            ],
+            "hi",
+            id="leading-system-content-not-a-string-still-skipped",
+        ),
+    ],
+)
+def test_leading_system_prompt_absent_or_unrenderable_skips_overhead(
+    messages: list[dict[str, Any]], expected_counted: str
+) -> None:
+    budget = _budget(request=LLMRequestSnapshot(messages=messages))
+
+    tokens = _tokens(budget)
+    assert "system_prompt" not in tokens
+    assert tokens["messages"] == _chars(expected_counted)
+
+
+@pytest.mark.parametrize(
+    ("messages", "expected"),
+    [
+        pytest.param([], 0, id="no-messages"),
+        pytest.param([{"role": "system", "content": "only"}], 0, id="leading-system-only"),
+        pytest.param(
+            [{"role": "system", "content": None}, {"role": "user", "content": "hi"}],
+            _chars("hi"),
+            id="leading-system-content-none",
+        ),
+        pytest.param(
+            [
+                {
+                    "role": "system",
+                    "content": [
+                        {"type": "text", "text": ""},
+                        {"type": "image_url", "image_url": {}},
+                    ],
+                },
+                {"role": "user", "content": "hi"},
+            ],
+            _chars("hi"),
+            id="multimodal-empty-text-and-image-only",
+        ),
+    ],
+)
+def test_conversation_token_counting_boundaries(
+    messages: list[dict[str, Any]], expected: int
+) -> None:
+    assert count_conversation_tokens(messages, _chars) == expected
+
+
+def test_empty_turn_yields_zero_usage_readout() -> None:
+    empty = _budget()
+
+    assert empty["segments"] == []
+    assert empty["used_tokens"] == 0
+    assert empty["free_tokens"] == 1000
+    assert empty["window_estimated"] is False
+
+    estimated = _budget(model="unknown", context_window=None)
+
+    assert estimated["window_estimated"] is True
+    assert estimated["used_tokens"] == 0
+    assert estimated["free_tokens"] == estimated["window"]
+    assert estimated["window"] > 0
+
+
+def test_deferred_split_matches_top_level_named_schemas() -> None:
+    deferred = {"type": "function", "name": "mcp_y", "description": "d"}
+    builtin = {"type": "function", "name": "rag", "description": "d"}
+    budget = _budget(
+        request=LLMRequestSnapshot(tool_schemas=[deferred, builtin]),
+        loaded_deferred_names={"mcp_y"},
+    )
+
+    tokens = _tokens(budget)
+    assert tokens["mcp_tools"] == _chars(json.dumps(deferred, ensure_ascii=False))
+    assert tokens["system_tools"] == _chars(json.dumps(builtin, ensure_ascii=False))
