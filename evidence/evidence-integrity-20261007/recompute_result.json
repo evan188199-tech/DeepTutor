@@ -1,0 +1,145 @@
+{
+  "summary": {
+    "branches": 8,
+    "recomputed_files": 107,
+    "mismatch_entries": 0
+  },
+  "results": [
+    {
+      "branch": "myfork/scan/a11y-basics-20261005",
+      "evidence_file_count": 6,
+      "manifests": [
+        {
+          "manifest": "evidence/a11y-basics-20261005/SHA256SUMS",
+          "dir": "evidence/a11y-basics-20261005",
+          "entries": [],
+          "recomputed": 5,
+          "match": 5,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/coverage-gaps-20261005",
+      "evidence_file_count": 8,
+      "manifests": [
+        {
+          "manifest": "evidence/coverage-gaps-20261005/SHA256SUMS",
+          "dir": "evidence/coverage-gaps-20261005",
+          "entries": [],
+          "recomputed": 7,
+          "match": 7,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/cli-exit-codes-20261006",
+      "evidence_file_count": 51,
+      "manifests": [
+        {
+          "manifest": "evidence/scan-cli-exit-codes-20261006/SHA256SUMS",
+          "dir": "evidence/scan-cli-exit-codes-20261006",
+          "entries": [],
+          "recomputed": 50,
+          "match": 50,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/win-compat-20261004",
+      "evidence_file_count": 12,
+      "manifests": [
+        {
+          "manifest": "evidence/scan-win-compat-20261004/SHA256SUMS",
+          "dir": "evidence/scan-win-compat-20261004",
+          "entries": [],
+          "recomputed": 11,
+          "match": 11,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/mypy-adoption-20261006",
+      "evidence_file_count": 23,
+      "manifests": [
+        {
+          "manifest": "evidence/mypy-adoption-20261006/SHA256SUMS",
+          "dir": "evidence/mypy-adoption-20261006",
+          "entries": [],
+          "recomputed": 22,
+          "match": 22,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/web-error-boundaries-20261006",
+      "evidence_file_count": 9,
+      "manifests": [
+        {
+          "manifest": "evidence/scan-web-error-boundaries-20261006/SHA256SUMS",
+          "dir": "evidence/scan-web-error-boundaries-20261006",
+          "entries": [],
+          "recomputed": 8,
+          "match": 8,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/signal-handlers-20261007",
+      "evidence_file_count": 4,
+      "manifests": [
+        {
+          "manifest": "evidence/signal-handlers-20261007/SHA256SUMS",
+          "dir": "evidence/signal-handlers-20261007",
+          "entries": [],
+          "recomputed": 3,
+          "match": 3,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    },
+    {
+      "branch": "myfork/scan/settings-draft-apply-20261003",
+      "evidence_file_count": 2,
+      "manifests": [
+        {
+          "manifest": "evidence/settings-scan-2026-10-03/SHA256SUMS",
+          "dir": "evidence/settings-scan-2026-10-03",
+          "entries": [],
+          "recomputed": 1,
+          "match": 1,
+          "mismatch": [],
+          "unreadable": [],
+          "in_tree_not_in_manifest": [],
+          "in_manifest_not_in_tree": []
+        }
+      ]
+    }
+  ]
+}
