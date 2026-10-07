@@ -29,7 +29,7 @@
 - `begin_turn`：`BEGIN IMMEDIATE`（`:1295`）→ 会话存在检查（`:1296-1300`）→ 活跃 turn 检查（`:1301-1316`，冲突抛 `ActiveTurnConflict` `:1313`）→ INSERT turns（`:1317-1334`）；并发竞态由部分唯一索引 `idx_turns_one_active_session` 兜底（建索引 `sqlite_store.py:642` 附近），`IntegrityError` 统一转 `ActiveTurnConflict`（`:1335-1338`）。
 - `append_events`：单事务批量（`BEGIN IMMEDIATE` `:1582`，批量动机注释 `:1576-1579`）；`fencing_token` 校验（`:1588-1589`）；seq 幂等：同 seq 同内容放行、内容不同抛 `ValueError`（`:1608-1620`）。
 - `transition_turn`：`BEGIN IMMEDIATE`（`:1488`）；`expected_status` / `fencing_token` 守卫（`:1494-1499`）；终态不可再迁移（`:1500-1501`）；`state_version + 1`（`:1506`）。
-- 其他写点：`update_session_title`（`:1825-1826`，sync `:1800-1823`）、`update_summary`（`:2908-2922`）、`update_session_preferences` 读-合并-写（`:2924-2948`）。
+- 其他写点：`update_session_title`（`:1825-1826`，sync `:1812-1823`）、`update_summary`（`:2908-2922`）、`update_session_preferences` 读-合并-写（`:2924-2948`）。
 
 读点：
 
