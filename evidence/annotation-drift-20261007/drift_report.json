@@ -1,0 +1,5918 @@
+{
+ "drift_kind_counts": {
+  "override_signature_mismatch": 1,
+  "required_param_undocumented": 29
+ },
+ "drift_rows": 30,
+ "entries": [
+  {
+   "anchor": "deeptutor/services/path_service.py:85",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.__init__",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": null,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "workspace_root: Path | None"
+    ],
+    "returns": null
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:93",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_instance",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 93,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "cls"
+    ],
+    "returns": "'PathService'"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:99",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.reset_instance",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 99,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "cls"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:103",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.project_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 103,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:107",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.user_data_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 107,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:111",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.workspace_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 111,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:115",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.package_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 115,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:118",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_user_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 118,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:121",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_knowledge_bases_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 121,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:124",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:125",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_parse_cache_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 124,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:134",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_chat_history_db",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 134,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:137",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_public_outputs_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 137,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:140",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:141",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.resolve_public_output_path",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 140,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "path: str | Path"
+    ],
+    "returns": "Path | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:219",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.is_public_output_path",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 219,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "path: str | Path"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:222",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_workspace_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 222,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:225",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_settings_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 225,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:228",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:229",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_runtime_state_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 228,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:233",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_settings_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 233,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "name: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:238",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_runtime_config_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 238,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "name: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:243",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_workspace_feature_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 243,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "feature: WorkspaceFeature"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:246",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_chat_workspace_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 246,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:249",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_chat_feature_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 249,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "feature: ChatWorkspaceFeature"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:252",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_task_workspace",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 252,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "feature: str",
+     "task_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:256",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_session_workspace",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 256,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "feature: str",
+     "session_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:274",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_agent_base_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 274,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:277",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_agent_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 277,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "module: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:284",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_session_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 284,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "module: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:287",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_task_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 287,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "module: str",
+     "task_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:290",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_notebook_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 290,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:293",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_notebook_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 293,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "notebook_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:296",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_notebook_index_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 296,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:299",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_memory_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 299,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:302",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:303",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.migrate_legacy_memory_markdown",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 302,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:351",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_solve_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 351,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:354",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_solve_session_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 354,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:357",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_solve_task_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 357,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "task_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:360",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_chat_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 360,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:363",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_chat_session_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 363,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:366",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_question_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 366,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:369",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_question_batch_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 369,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "batch_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:372",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_research_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 372,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:375",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_research_reports_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 375,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:378",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 378,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:381",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_history_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 381,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:384",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_tool_calls_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 384,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:387",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_audio_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 387,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:390",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:391",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_docs_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 390,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:394",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:395",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_doc_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 394,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "doc_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/path_service.py:394",
+     "detail": "required param 'doc_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:398",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_co_writer_doc_manifest",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 398,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "doc_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:403",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:404",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 403,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:407",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/path_service.py:408",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 72,
+   "function": "PathService.get_book_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 407,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/path_service.py:407",
+     "detail": "required param 'book_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:411",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_manifest_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 411,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:414",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_spine_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 414,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:417",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_progress_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 417,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:420",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_inputs_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 420,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:423",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_log_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 423,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:426",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_pages_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 426,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:429",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_page_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 429,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str",
+     "page_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:432",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_learning_captures_file",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 432,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:435",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_book_assets_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 435,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:438",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_book_root",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 438,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:445",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_exec_workspace_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 445,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:448",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.get_logs_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 448,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:451",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_agent_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 451,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "module: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:456",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_task_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 456,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "module: str",
+     "task_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:461",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_workspace_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 461,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:465",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_notebook_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 465,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:470",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_memory_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 470,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:475",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_settings_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 475,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:479",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_runtime_state_dir",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 479,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:482",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "PathService.ensure_all_directories",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 482,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/path_service.py:509",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 72,
+   "function": "get_path_service",
+   "module": "deeptutor/services/path_service.py",
+   "ret_ann_line": 509,
+   "runtime": {
+    "call_expr": "get_path_service()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:PathService"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/context.py:150",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/context.py:151",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "UnifiedContext.extension",
+   "module": "deeptutor/core/context.py",
+   "ret_ann_line": 150,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "namespace: str"
+    ],
+    "returns": "dict[str, Any]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:48",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:49",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "migrate_legacy_multi_user_tree",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 48,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:89",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "admin_scope",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 89,
+   "runtime": {
+    "call_expr": "admin_scope()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:UserScope"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "UserScope"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:93",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "local_admin_user",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 93,
+   "runtime": {
+    "call_expr": "local_admin_user()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:CurrentUser"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "CurrentUser"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:102",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "scope_for_user",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 102,
+   "runtime": {
+    "call_expr": "scope_for_user('', is_admin=False)",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:UserScope"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "user_id: str",
+     "is_admin: bool"
+    ],
+    "returns": "UserScope"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:109",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "ensure_user_workspace",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 109,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "user_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:113",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:114",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "ensure_scope_workspace",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 113,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "scope: UserScope"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:128",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "ensure_system_dirs",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 128,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:140",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_path_service_for_scope",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 140,
+   "runtime": {
+    "candidate": false,
+    "skip": "unsafe-required-param:scope"
+   },
+   "signature": {
+    "params": [
+     "scope: UserScope"
+    ],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:149",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_admin_path_service",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 149,
+   "runtime": {
+    "call_expr": "get_admin_path_service()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:PathService"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:153",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_account_path_service",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 153,
+   "runtime": {
+    "call_expr": "get_account_path_service()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:PathService"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:164",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_current_path_service",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 164,
+   "runtime": {
+    "call_expr": "get_current_path_service()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:PathService"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:200",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:201",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_owner_path_service",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 200,
+   "runtime": {
+    "call_expr": "get_owner_path_service()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:PathService"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:217",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:218",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 66,
+   "function": "owner_secrets_dir",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 217,
+   "runtime": {
+    "candidate": false,
+    "skip": "body-touches-io"
+   },
+   "signature": {
+    "params": [
+     "owner_id: str"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/multi_user/paths.py:217",
+     "detail": "required param 'owner_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:238",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:239",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "get_owner_secrets_dir",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 238,
+   "runtime": {
+    "candidate": false,
+    "skip": "body-touches-io"
+   },
+   "signature": {
+    "params": [],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:254",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/multi_user/paths.py:255",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "current_owner_id",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 254,
+   "runtime": {
+    "call_expr": "current_owner_id()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "str",
+      "len": 11
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/paths.py:260",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 66,
+   "function": "user_context",
+   "module": "deeptutor/multi_user/paths.py",
+   "ret_ann_line": 260,
+   "runtime": {
+    "candidate": false,
+    "skip": "contextmanager"
+   },
+   "signature": {
+    "params": [
+     "user: CurrentUser"
+    ],
+    "returns": "Iterator[None]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/context.py:14",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 54,
+   "function": "set_current_user",
+   "module": "deeptutor/multi_user/context.py",
+   "ret_ann_line": 14,
+   "runtime": {
+    "candidate": false,
+    "skip": "unsafe-required-param:user"
+   },
+   "signature": {
+    "params": [
+     "user: CurrentUser"
+    ],
+    "returns": "Token[CurrentUser | None]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/context.py:18",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 54,
+   "function": "reset_current_user",
+   "module": "deeptutor/multi_user/context.py",
+   "ret_ann_line": 18,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "token: Token[CurrentUser | None]"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/context.py:22",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 54,
+   "function": "get_current_user",
+   "module": "deeptutor/multi_user/context.py",
+   "ret_ann_line": 22,
+   "runtime": {
+    "call_expr": "get_current_user()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:CurrentUser"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "CurrentUser"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/context.py:26",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 54,
+   "function": "get_current_user_or_none",
+   "module": "deeptutor/multi_user/context.py",
+   "ret_ann_line": 26,
+   "runtime": {
+    "call_expr": "get_current_user_or_none()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "none"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "CurrentUser | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/multi_user/context.py:30",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 54,
+   "function": "user_from_token_payload",
+   "module": "deeptutor/multi_user/context.py",
+   "ret_ann_line": 30,
+   "runtime": {
+    "call_expr": "user_from_token_payload(None)",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "object:CurrentUser"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "payload: Any | None"
+    ],
+    "returns": "CurrentUser"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/file_io.py:37",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/file_io.py:38",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 43,
+   "function": "atomic_write_json",
+   "module": "deeptutor/services/file_io.py",
+   "ret_ann_line": 37,
+   "runtime": {
+    "candidate": false,
+    "skip": "body-touches-io"
+   },
+   "signature": {
+    "params": [
+     "path: Path",
+     "payload: dict[str, Any]"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/file_io.py:37",
+     "detail": "required param 'path' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/file_io.py:63",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/file_io.py:64",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 43,
+   "function": "atomic_write_text",
+   "module": "deeptutor/services/file_io.py",
+   "ret_ann_line": 63,
+   "runtime": {
+    "candidate": false,
+    "skip": "body-touches-io"
+   },
+   "signature": {
+    "params": [
+     "path: Path",
+     "text: str"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/file_io.py:63",
+     "detail": "required param 'path' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:32",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "get_workspace_scope",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 32,
+   "runtime": {
+    "call_expr": "get_workspace_scope()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "none"
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "WorkspaceScope | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:37",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/workspace/context.py:38",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 38,
+   "function": "account_workspace_context",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": null,
+   "runtime": {
+    "candidate": false,
+    "skip": "contextmanager"
+   },
+   "signature": {
+    "params": [
+     "account_root: Path"
+    ],
+    "returns": null
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/workspace/context.py:37",
+     "detail": "required param 'account_root' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:48",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "current_workspace_id",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 48,
+   "runtime": {
+    "call_expr": "current_workspace_id()",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "str",
+      "len": 0
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:53",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/workspace/context.py:54",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 38,
+   "function": "workspace_url",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 53,
+   "runtime": {
+    "call_expr": "workspace_url('')",
+    "candidate": true,
+    "drifts": [],
+    "result": {
+     "observed": {
+      "kind": "str",
+      "len": 14
+     },
+     "status": "verified"
+    },
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "url: str"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/workspace/context.py:53",
+     "detail": "required param 'url' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:65",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "resolve_workspace_scope",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 65,
+   "runtime": {
+    "candidate": false,
+    "skip": "body-touches-io"
+   },
+   "signature": {
+    "params": [
+     "workspace_id: str | None=…"
+    ],
+    "returns": "WorkspaceScope"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:84",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "install_workspace_scope",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 84,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "workspace_id: str | None=…"
+    ],
+    "returns": "WorkspaceScope"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:91",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "workspace_context",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 91,
+   "runtime": {
+    "candidate": false,
+    "skip": "contextmanager"
+   },
+   "signature": {
+    "params": [
+     "workspace_id: str | WorkspaceScope | None=…"
+    ],
+    "returns": "Iterator[WorkspaceScope]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:107",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.__init__",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": null,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "account: PathService",
+     "scope: WorkspaceScope"
+    ],
+    "returns": null
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:123",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.project_root",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 123,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:126",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.get_settings_dir",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 126,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:129",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.get_runtime_state_dir",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 129,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:134",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.get_memory_dir",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 134,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:137",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.get_workspace_feature_dir",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": null,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "feature"
+    ],
+    "returns": null
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:142",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "WorkspacePathService.migrate_legacy_memory_markdown",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 142,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/workspace/context.py:146",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 38,
+   "function": "scoped_path_service",
+   "module": "deeptutor/services/workspace/context.py",
+   "ret_ann_line": 146,
+   "runtime": {
+    "candidate": false,
+    "skip": "unsafe-required-param:account"
+   },
+   "signature": {
+    "params": [
+     "account: PathService"
+    ],
+    "returns": "PathService"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:45",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:46",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolParameter.to_schema",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 45,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "dict[str, Any]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:71",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:72",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolDefinition.to_openai_schema",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 71,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "dict[str, Any]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:197",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.get",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 197,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "name: str"
+    ],
+    "returns": "'BaseTool | None'"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:199",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.get_enabled",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 199,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "names: list[str]"
+    ],
+    "returns": "list['BaseTool']"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:201",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.get_definitions",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 201,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "names: list[str] | None"
+    ],
+    "returns": "list[ToolDefinition]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:203",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.deferred_tools",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 203,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "list['BaseTool']"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:205",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.list_tools",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 205,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "list[str]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:207",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.build_openai_schemas",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 207,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "names: list[str] | None"
+    ],
+    "returns": "list[dict[str, Any]]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:209",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.build_prompt_text",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 215,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "names: list[str]=…",
+     "format: str",
+     "language: str",
+     "**opts=…"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:217",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "ToolLookup.execute",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 217,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "name: str",
+     "**kwargs=…"
+    ],
+    "returns": "Any"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:249",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:250",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "BaseTool.get_definition",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 249,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "ToolDefinition"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:254",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:255",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "BaseTool.execute",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 254,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "**kwargs=…"
+    ],
+    "returns": "ToolResult"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:258",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:259",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 35,
+   "function": "BaseTool.get_prompt_hints",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 258,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "language: str"
+    ],
+    "returns": "ToolPromptHints"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/core/tool_protocol.py:258",
+     "detail": "required param 'language' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:266",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "BaseTool.name",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 266,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/core/tool_protocol.py:270",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/core/tool_protocol.py:271",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 35,
+   "function": "provider_identity",
+   "module": "deeptutor/core/tool_protocol.py",
+   "ret_ann_line": 270,
+   "runtime": {
+    "candidate": false,
+    "skip": "unsafe-required-param:tool"
+   },
+   "signature": {
+    "params": [
+     "tool: Any"
+    ],
+    "returns": "tuple[str, str]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:34",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.__init__",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 39,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "max_history: int | None=…",
+     "assign_seq: bool=…"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:58",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:59",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.latest_seq",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 58,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "int"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:62",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:63",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.emit",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 62,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "event: StreamEvent"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:79",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:80",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.subscribe",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 79,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "after_seq: int=…"
+    ],
+    "returns": "AsyncIterator[StreamEvent]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:105",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:106",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.mark_closed",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 105,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:122",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:123",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.close",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 122,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:129",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:135",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 34,
+   "function": "StreamBus.stage",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": null,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "name: str=…",
+     "source: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": null
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:129",
+     "detail": "required param 'source' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:129",
+     "detail": "required param 'metadata' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:156",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.content",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 162,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "text: str=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:173",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.thinking",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 179,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "text: str=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:190",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.observation",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 196,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "text: str=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:207",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.tool_call",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 214,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "tool_name: str=…",
+     "args: dict[str, Any]=…",
+     "source: str",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:225",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.tool_result",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 232,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "tool_name: str=…",
+     "result: str=…",
+     "source: str",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:243",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.progress",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 251,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "message: str=…",
+     "current: int=…",
+     "total: int=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:265",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.sources",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 271,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "sources: list[dict[str, Any]]=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:281",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.result",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 286,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "data: dict[str, Any]=…",
+     "source: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:295",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.error",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 301,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "message: str=…",
+     "source: str=…",
+     "stage: str",
+     "metadata: dict[str, Any] | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:312",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:319",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 34,
+   "function": "StreamBus.wait_for_input",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 318,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "prompt: str=…",
+     "source: str=…",
+     "stage: str",
+     "timeout: float | None"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:312",
+     "detail": "required param 'stage' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:344",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:345",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 34,
+   "function": "StreamBus.submit_input",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 344,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "content: str"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:344",
+     "detail": "required param 'content' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:353",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:354",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "StreamBus.event_to_json",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 353,
+   "runtime": {
+    "candidate": false,
+    "skip": "unsafe-required-param:event"
+   },
+   "signature": {
+    "params": [
+     "event: StreamEvent"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:363",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:364",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 34,
+   "function": "register_bus",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 363,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "turn_id: str",
+     "bus: StreamBus"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:363",
+     "detail": "required param 'turn_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:368",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:369",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 34,
+   "function": "unregister_bus",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 368,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "turn_id: str"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/runtime/stream_bus.py:368",
+     "detail": "required param 'turn_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/runtime/stream_bus.py:373",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/runtime/stream_bus.py:374",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 34,
+   "function": "get_bus",
+   "module": "deeptutor/runtime/stream_bus.py",
+   "ret_ann_line": 373,
+   "runtime": {
+    "call_expr": "get_bus('')",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "turn_id: str"
+    ],
+    "returns": "StreamBus | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/models.py:289",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/models.py:290",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "PendingQuestion.choice_map",
+   "module": "deeptutor/learning/models.py",
+   "ret_ann_line": 289,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "dict[str, str]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/models.py:474",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/models.py:475",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "LearnerProfile.is_empty",
+   "module": "deeptutor/learning/models.py",
+   "ret_ann_line": 474,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:147",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:148",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 33,
+   "function": "LLMConfig.model_copy",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 147,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "update: LLMConfigUpdate | None"
+    ],
+    "returns": "'LLMConfig'"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/services/llm/config.py:147",
+     "detail": "required param 'update' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:151",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:152",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "LLMConfig.get_api_key",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 151,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:167",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:168",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "set_scoped_llm_config",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 167,
+   "runtime": {
+    "call_expr": "set_scoped_llm_config(None)",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "config: LLMConfig | None"
+    ],
+    "returns": "Token[LLMConfig | None]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:172",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:173",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "reset_scoped_llm_config",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 172,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [
+     "token: Token[LLMConfig | None]"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:177",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:178",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "initialize_environment",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 177,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:235",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": true
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:236",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "get_llm_config",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 235,
+   "runtime": {
+    "call_expr": "get_llm_config()",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "LLMConfig"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:258",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": true
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:259",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "get_llm_config_async",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 258,
+   "runtime": {
+    "candidate": false,
+    "skip": "async"
+   },
+   "signature": {
+    "params": [],
+    "returns": "LLMConfig"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:270",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:271",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "clear_llm_config_cache",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 270,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:277",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:278",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "reload_config",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 277,
+   "runtime": {
+    "candidate": false,
+    "skip": "name-stateful"
+   },
+   "signature": {
+    "params": [],
+    "returns": "LLMConfig"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:283",
+   "docstring": {
+    "has": true,
+    "params": {
+     "model": null
+    },
+    "returns": null,
+    "structured": true
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:284",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "uses_max_completion_tokens",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 283,
+   "runtime": {
+    "call_expr": "uses_max_completion_tokens('')",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "model: str"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/llm/config.py:316",
+   "docstring": {
+    "has": true,
+    "params": {
+     "max_tokens": null,
+     "model": null
+    },
+    "returns": "dictionary",
+    "structured": true
+   },
+   "docstring_anchor": "deeptutor/services/llm/config.py:317",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 33,
+   "function": "get_token_limit_kwargs",
+   "module": "deeptutor/services/llm/config.py",
+   "ret_ann_line": 316,
+   "runtime": {
+    "call_expr": "get_token_limit_kwargs('', 0)",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "model: str",
+     "max_tokens: int"
+    ],
+    "returns": "dict[str, int]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/book/models.py:107",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/book/models.py:108",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "depth_scale",
+   "module": "deeptutor/book/models.py",
+   "ret_ann_line": 107,
+   "runtime": {
+    "call_expr": "depth_scale(None)",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [
+     "depth: str | None"
+    ],
+    "returns": "float"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/book/models.py:281",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "ConceptGraph.node_by_id",
+   "module": "deeptutor/book/models.py",
+   "ret_ann_line": 281,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "node_id: str"
+    ],
+    "returns": "ConceptNode | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/book/models.py:287",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "ConceptGraph.has_edge",
+   "module": "deeptutor/book/models.py",
+   "ret_ann_line": 287,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "src: str",
+     "dst: str"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/book/models.py:355",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "Spine.chapter_by_id",
+   "module": "deeptutor/book/models.py",
+   "ret_ann_line": 355,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "chapter_id: str"
+    ],
+    "returns": "Chapter | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/book/models.py:470",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "Page.block_by_id",
+   "module": "deeptutor/book/models.py",
+   "ret_ann_line": 470,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "block_id: str"
+    ],
+    "returns": "Block | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/services/session/__init__.py:15",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/services/session/__init__.py:16",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 32,
+   "function": "get_session_store",
+   "module": "deeptutor/services/session/__init__.py",
+   "ret_ann_line": 15,
+   "runtime": {
+    "call_expr": "get_session_store()",
+    "candidate": true,
+    "skip": ""
+   },
+   "signature": {
+    "params": [],
+    "returns": "SessionStoreProtocol"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:87",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningConflictError.__init__",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 87,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "path_id: str",
+     "expected: int",
+     "actual: int"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:100",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "PathLeaseConflictError.__init__",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 100,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "lease: MasteryPathLease"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:116",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.__init__",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 122,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "conn: sqlite3.Connection",
+     "progress: LearningProgress",
+     "created: bool"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:131",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.touch",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 131,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:134",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.emit",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 141,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "event_type: str",
+     "payload: dict[str, Any] | None",
+     "session_id: str=…",
+     "turn_id: str=…"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:151",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.events",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 151,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "list[tuple[str, dict[str, Any], str, str]]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:171",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.get_interaction",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 171,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "interaction_id: str"
+    ],
+    "returns": "MasteryInteraction | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:178",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.active_interaction",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 178,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "MasteryInteraction | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:190",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.put_interaction",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 190,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "interaction: MasteryInteraction"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:240",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.abandon_active_interactions",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 240,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "int"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:259",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:260",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningTransaction.put_topic",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 259,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "metadata: TopicMetadata",
+     "sources: list[TopicSource]"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:259",
+     "detail": "required param 'sources' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:322",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:323",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningTransaction.topic_sources",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 322,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "list[TopicSource]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:353",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.__init__",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 353,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "root: Path | None"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:369",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.db_path",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 369,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "Path"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:373",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:374",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.event_scope",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 373,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "str"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:756",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:757",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.rebuild_learning_evidence_projection",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 756,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:756",
+     "detail": "required param 'book_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:803",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:804",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.import_legacy_json",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 803,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "legacy_path: Path",
+     "archive: bool=…"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:911",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.load",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 911,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "LearningProgress | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:920",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:927",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.list_learning_evidence",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 926,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "book_id: str",
+     "knowledge_point_id: str | None",
+     "limit: int | None=…"
+    ],
+    "returns": "list[LearningEvidence]"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:920",
+     "detail": "required param 'book_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:920",
+     "detail": "required param 'knowledge_point_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:947",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:954",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.load_with_learning_evidence",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 953,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str",
+     "knowledge_point_id: str",
+     "limit: int=…"
+    ],
+    "returns": "tuple[LearningProgress | None, list[LearningEvidence], int]"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:947",
+     "detail": "required param 'book_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:947",
+     "detail": "required param 'knowledge_point_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:988",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.count_learning_evidence",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 988,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self=…",
+     "book_id: str",
+     "knowledge_point_id: str | None"
+    ],
+    "returns": "int"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1002",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.save",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1002,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "progress: LearningProgress"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1092",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:1098",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.transaction",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1097,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str",
+     "create: bool=…"
+    ],
+    "returns": "Iterator[LearningTransaction]"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:1092",
+     "detail": "required param 'book_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1208",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.mutate",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1214,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str",
+     "mutation: Callable[[LearningTransaction], _T]",
+     "create: bool=…"
+    ],
+    "returns": "tuple[LearningProgress, _T]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1219",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.delete",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1219,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1248",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.exists",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1248,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "book_id: str"
+    ],
+    "returns": "bool"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1255",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.list_all",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1255,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self"
+    ],
+    "returns": "list[str]"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1291",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:1298",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.record_reading_position",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1297,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "material_id: str",
+     "locator: int",
+     "percentage: float"
+    ],
+    "returns": "ReadingProgressRecord"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:1291",
+     "detail": "required param 'material_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:1291",
+     "detail": "required param 'locator' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:1291",
+     "detail": "required param 'percentage' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1370",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:1379",
+   "drift": true,
+   "drift_kinds": [
+    "required_param_undocumented"
+   ],
+   "fanin": 30,
+   "function": "LearningStore.record_reading_activity",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1378,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "material_id: str",
+     "extension_id: str",
+     "action: str",
+     "locator: int",
+     "result_type: str"
+    ],
+    "returns": "ReadingActivityRecord"
+   },
+   "static_drifts": [
+    {
+     "anchor": "deeptutor/learning/storage.py:1370",
+     "detail": "required param 'material_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:1370",
+     "detail": "required param 'extension_id' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:1370",
+     "detail": "required param 'locator' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    },
+    {
+     "anchor": "deeptutor/learning/storage.py:1370",
+     "detail": "required param 'result_type' not documented in docstring",
+     "kind": "required_param_undocumented",
+     "severity": "low"
+    }
+   ]
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1419",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:1420",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.list_reading_records",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1419,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "activity_limit: int=…"
+    ],
+    "returns": "ReadingLearningRecords"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1449",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.put_topic",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1449,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "metadata: TopicMetadata",
+     "sources: list[TopicSource]"
+    ],
+    "returns": "MasteryTopic"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1468",
+   "docstring": {
+    "has": false,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": null,
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.get_topic",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1473,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "path_id: str",
+     "progress: LearningProgress | None=…"
+    ],
+    "returns": "MasteryTopic | None"
+   },
+   "static_drifts": []
+  },
+  {
+   "anchor": "deeptutor/learning/storage.py:1535",
+   "docstring": {
+    "has": true,
+    "params": {},
+    "returns": null,
+    "structured": false
+   },
+   "docstring_anchor": "deeptutor/learning/storage.py:1547",
+   "drift": false,
+   "drift_kinds": [],
+   "fanin": 30,
+   "function": "LearningStore.list_topic_snapshots",
+   "module": "deeptutor/learning/storage.py",
+   "ret_ann_line": 1539,
+   "runtime": {
+    "candidate": false,
+    "skip": "instance-method"
+   },
+   "signature": {
+    "params": [
+     "self",
+     "status: str=…"
+    ],
+    "returns": "list[tuple[LearningProgress, MasteryTopic, int, MasteryInteraction | None]]"
+   },
+   "static_drifts": []
+  }
+ ],
+ "fanin_source": "myfork/scan/coverage-gaps-det-20261006:evidence/coverage-gaps-20261005/summary.json#fanin_top50",
+ "functions_available": 335,
+ "functions_sampled": 200,
+ "modules_missing": [],
+ "modules_resolved": 29,
+ "override_drifts": [
+  {
+   "anchor": "deeptutor/services/workspace/context.py:107",
+   "detail": "WorkspacePathService.__init__ required params ['account', 'scope'] != PathService.__init__ required params ['workspace_root']",
+   "kind": "override_signature_mismatch",
+   "severity": "medium"
+  }
+ ],
+ "repo_root_commit_expected": "origin/main f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+ "runtime_verified": 15,
+ "tool": "scan_annotation_drift.py"
+}
