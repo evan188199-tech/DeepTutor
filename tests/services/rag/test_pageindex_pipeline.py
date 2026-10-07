@@ -8,12 +8,16 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from pathlib import Path
 
 import pytest
 
 from deeptutor.services.rag.factory import get_pipeline, normalize_provider_name
-from deeptutor.services.rag.index_versioning import resolve_storage_dir_for_read
+from deeptutor.services.rag.index_versioning import (
+    resolve_storage_dir_for_read,
+    resolve_storage_dir_for_rebuild,
+)
 from deeptutor.services.rag.pipelines.pageindex import client as client_mod
 from deeptutor.services.rag.pipelines.pageindex import storage
 from deeptutor.services.rag.pipelines.pageindex.client import PageIndexClient
@@ -203,6 +207,104 @@ def test_remove_document_updates_sdk_and_manifest(tmp_path) -> None:
     assert asyncio.run(pipe.remove_document("kb", "a.pdf")) is True
     assert client.deleted == ["pi-a.pdf"]
     assert _manifest(tmp_path, "kb")["docs"] == {}
+
+
+NFD_NAME = "cafe\u0301.pdf"  # decomposed "café.pdf" — macOS disk form
+NFC_NAME = "caf\u00e9.pdf"  # composed "café.pdf" — canonical form
+
+
+def test_remove_document_nfc_name_removes_nfd_file_entry(tmp_path) -> None:
+    client = FakeClient()
+    pipe = _pipe(tmp_path, client)
+    pdf = tmp_path / NFD_NAME
+    pdf.write_text("x")
+    asyncio.run(pipe.initialize("kb", [str(pdf)]))
+
+    ok = asyncio.run(pipe.remove_document("kb", NFC_NAME))
+
+    assert ok is True
+    assert client.deleted == [f"pi-{NFD_NAME}"]
+    assert _manifest(tmp_path, "kb")["docs"] == {}
+
+
+def test_remove_document_matches_legacy_nfd_manifest_key(tmp_path) -> None:
+    # A manifest written before key normalization keeps its decomposed key.
+    client = FakeClient()
+    pipe = _pipe(tmp_path, client)
+    storage_dir = resolve_storage_dir_for_rebuild(Path(tmp_path) / "kb", None)
+    manifest = storage._empty_manifest()
+    manifest["docs"][NFD_NAME] = {
+        "doc_id": "pi-legacy",
+        "size": 1,
+        "submitted_at": "2026-10-07 00:00:00",
+    }
+    storage.write_manifest(storage_dir, manifest)
+    storage.write_meta(storage_dir)
+
+    ok = asyncio.run(pipe.remove_document("kb", NFC_NAME))
+
+    assert ok is True
+    assert client.deleted == ["pi-legacy"]
+    assert _manifest(tmp_path, "kb")["docs"] == {}
+
+
+def test_reingest_across_unicode_forms_keeps_single_entry(tmp_path) -> None:
+    client = FakeClient()
+    pipe = _pipe(tmp_path, client)
+    nfd_pdf = tmp_path / NFD_NAME
+    nfd_pdf.write_text("x")
+    asyncio.run(pipe.initialize("kb", [str(nfd_pdf)]))
+    nfc_dir = tmp_path / "copy"
+    nfc_dir.mkdir()
+    nfc_pdf = nfc_dir / NFC_NAME  # same visual name, composed form
+    nfc_pdf.write_text("y")
+
+    ok = asyncio.run(pipe.add_documents("kb", [str(nfc_pdf)]))
+
+    assert ok is True
+    docs = _manifest(tmp_path, "kb")["docs"]
+    assert list(docs) == [NFC_NAME]
+    assert docs[NFC_NAME]["doc_id"] == f"pi-{NFC_NAME}"
+
+
+def test_reingest_replaces_legacy_nfd_key(tmp_path) -> None:
+    client = FakeClient()
+    pipe = _pipe(tmp_path, client)
+    storage_dir = resolve_storage_dir_for_rebuild(Path(tmp_path) / "kb", None)
+    manifest = storage._empty_manifest()
+    manifest["docs"][NFD_NAME] = {
+        "doc_id": "pi-legacy",
+        "size": 1,
+        "submitted_at": "2026-10-07 00:00:00",
+    }
+    storage.write_manifest(storage_dir, manifest)
+    storage.write_meta(storage_dir)
+    nfc_pdf = tmp_path / NFC_NAME
+    nfc_pdf.write_text("y")
+
+    ok = asyncio.run(pipe.add_documents("kb", [str(nfc_pdf)]))
+
+    assert ok is True
+    docs = _manifest(tmp_path, "kb")["docs"]
+    assert list(docs) == [NFC_NAME]
+    assert docs[NFC_NAME]["doc_id"] == f"pi-{NFC_NAME}"
+
+
+def test_remove_document_unknown_name_logs_and_returns_false(tmp_path, caplog) -> None:
+    client = FakeClient()
+    pipe = _pipe(tmp_path, client)
+    pdf = tmp_path / "a.pdf"
+    pdf.write_text("x")
+    asyncio.run(pipe.initialize("kb", [str(pdf)]))
+
+    with caplog.at_level(
+        logging.WARNING, logger="deeptutor.services.rag.pipelines.pageindex.pipeline"
+    ):
+        ok = asyncio.run(pipe.remove_document("kb", "missing.pdf"))
+
+    assert ok is False
+    assert client.deleted == []
+    assert any("missing.pdf" in record.message for record in caplog.records)
 
 
 def test_factory_dispatches_by_provider(tmp_path, monkeypatch) -> None:

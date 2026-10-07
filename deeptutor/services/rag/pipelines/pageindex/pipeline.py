@@ -270,9 +270,16 @@ class PageIndexPipeline:
             return False
         manifest = storage.read_manifest(storage_dir, provider=self.provider)
         docs = storage.doc_entries(manifest)
-        key = file_name if file_name in docs else Path(file_name).name
-        entry = docs.get(key)
+        key = storage.resolve_doc_key(docs, file_name)
+        entry = docs.get(key) if key is not None else None
         if not isinstance(entry, dict) or not entry.get("doc_id"):
+            self.logger.warning(
+                "PageIndex: remove_document found no indexed document named '%s' "
+                "in KB '%s' (%d doc(s) in manifest)",
+                file_name,
+                kb_name,
+                len(docs),
+            )
             return False
         client = (
             PageIndexClient.local_read(storage.sdk_storage_path(storage_dir))

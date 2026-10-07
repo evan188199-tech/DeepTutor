@@ -15,10 +15,17 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+import unicodedata
 
 from deeptutor.services.file_io import atomic_write_json
 
 logger = logging.getLogger(__name__)
+
+
+def _nfc(file_name: str) -> str:
+    """Canonicalize a file name so NFC and NFD spellings share one manifest key."""
+    return unicodedata.normalize("NFC", file_name)
+
 
 MANIFEST_FILENAME = "pageindex_docs.json"
 META_FILENAME = "meta.json"
@@ -92,6 +99,25 @@ def doc_ids(manifest: dict[str, Any]) -> list[str]:
     ]
 
 
+def resolve_doc_key(docs: dict[str, Any], file_name: str) -> str | None:
+    """Return the stored manifest key for ``file_name``, matching across Unicode forms.
+
+    Tries the full name then the basename exactly, then falls back to comparing
+    NFC-normalized forms so an entry stored under a decomposed (NFD) key — the
+    macOS disk spelling, e.g. from a manifest written before normalization — is
+    still found. Returns ``None`` when no entry matches.
+    """
+    candidates = [file_name, Path(file_name).name]
+    for candidate in candidates:
+        if candidate in docs:
+            return candidate
+    wanted = {_nfc(candidate) for candidate in candidates}
+    for key in docs:
+        if _nfc(key) in wanted:
+            return key
+    return None
+
+
 def upsert_doc(
     manifest: dict[str, Any],
     file_name: str,
@@ -100,7 +126,11 @@ def upsert_doc(
     size: int | None = None,
 ) -> None:
     docs = manifest.setdefault("docs", {})
-    docs[file_name] = {
+    key = _nfc(file_name)
+    for existing in list(docs):
+        if existing != key and _nfc(existing) == key:
+            del docs[existing]  # replace a differently-normalized duplicate
+    docs[key] = {
         "doc_id": doc_id,
         "size": size,
         "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -127,6 +157,7 @@ __all__ = [
     "write_meta",
     "doc_entries",
     "doc_ids",
+    "resolve_doc_key",
     "upsert_doc",
     "remove_doc",
     "sdk_storage_path",
