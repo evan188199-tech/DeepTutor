@@ -55,7 +55,7 @@
 | 书章/准备行 | `PAGE_STATE`：ready→done，partial/error→error，planning/generating→running，pending→done；流超前于 manifest 时 live 优先（仅 error 例外） | `web/lib/book-activity.ts:129-136`、`:304-309` |
 | 书整册相位 BookPhase | 六 StageId + paused/interrupted/done；`backendWorking`（`generation.working`）优先于本地推断；interrupted="说编译但进程已死" | `web/lib/book-activity.ts:43-48`、`:399-418` |
 | 书 orb | `PHASE_ORB`：ideation→shaping、exploration→searching、synthesis→weaving、critique→solving、overview→connecting、compilation→composing、paused/interrupted/done→breathing（0.5 速） | `web/lib/book-activity.ts:114-127` |
-| co-writer 工具行 | `tool_result` 且 success=false → error；tool_result → done；否则 running | `web/features/co-writer/components/CoWriterWorkspace.tsx:2263-2270` |
+| co-writer 工具行 | `tool_result` 且 success=false → error；tool_result → done；否则 running | `web/features/co-writer/components/CoWriterWorkspace.tsx:2262-2267` |
 | 侧栏会话标记 SessionMark | live 集/`status==="running"`→running；failed/rejected→failed；cancelled→idle（用户自己停的不算故障）；未读→unread | `web/components/sidebar/SessionAvatar.tsx:118-135` |
 | mastery 活动流 | 连接态 connecting/live/offline + 事件批合并 | `web/hooks/useMasteryPathActivity.ts:11`、`:138` |
 
