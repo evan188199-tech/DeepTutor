@@ -794,3 +794,294 @@ async def test_short_starters_request_does_not_spend_its_budget_on_hidden_reason
     assert result.status == "ready"
     assert len(result.suggestions) == 3
     assert seen[0]["reasoning_effort"] == "none"
+
+
+# ── Fallbacks and edges ──────────────────────────────────────────────────
+
+# The autouse fixture replaces these; the tests below need the originals.
+_REAL_OUTPUT_LANGUAGE = suggestions._output_language
+_REAL_TRACE_COUNT = suggestions._trace_count
+
+
+def test_output_language_falls_back_to_english_when_settings_fail(monkeypatch):
+    import deeptutor.services.settings.interface_settings as interface_settings
+
+    def _boom(default: str = "en") -> str:
+        raise RuntimeError("settings unreadable")
+
+    monkeypatch.setattr(interface_settings, "get_response_language", _boom)
+
+    assert _REAL_OUTPUT_LANGUAGE() == "en"
+
+
+def test_trace_count_falls_back_to_the_default_when_settings_fail(monkeypatch):
+    import deeptutor.services.settings.starter_settings as starter_settings
+    from deeptutor.services.settings.starter_settings import DEFAULT_TRACE_COUNT
+
+    def _boom() -> dict:
+        raise RuntimeError("settings unreadable")
+
+    monkeypatch.setattr(starter_settings, "get_starter_settings", _boom)
+
+    assert _REAL_TRACE_COUNT() == DEFAULT_TRACE_COUNT
+
+
+def test_trace_count_reads_the_setting(monkeypatch):
+    import deeptutor.services.settings.starter_settings as starter_settings
+
+    monkeypatch.setattr(starter_settings, "get_starter_settings", lambda: {"trace_count": 7})
+
+    assert _REAL_TRACE_COUNT() == 7
+
+
+def test_to_dict_shapes():
+    item = suggestions.Suggestion(label="L", prompt="P")
+
+    assert item.to_dict() == {"label": "L", "prompt": "P"}
+
+    as_set = suggestions.SuggestionSet((item,), "zh", 12.5, "abc")
+
+    assert as_set.to_dict() == {
+        "suggestions": [{"label": "L", "prompt": "P"}],
+        "language": "zh",
+        "generated_at": 12.5,
+        "fingerprint": "abc",
+        "status": "ready",
+    }
+
+
+def test_load_coerces_and_filters_cached_entries(isolated_scope: Path):
+    _write_cache(
+        isolated_scope,
+        {
+            "suggestions": [
+                {"label": "kept", "prompt": "yes"},
+                {"label": "no prompt"},
+                {"prompt": "no label"},
+                {"label": 42, "prompt": "coerced"},
+                "not an object",
+            ],
+            "language": "en",
+            "generated_at": "12.5",
+            "fingerprint": None,
+        },
+    )
+
+    loaded = suggestions._load()
+
+    assert [i.label for i in loaded.suggestions] == ["kept", "42"]
+    assert loaded.status == "ready"
+    assert loaded.generated_at == 12.5
+    assert loaded.fingerprint == ""
+
+
+def test_sanitize_truncates_more_than_three_unique_lines():
+    raw = json.dumps([{"label": f"Label {i}", "prompt": f"ask {i}"} for i in range(5)])
+
+    items = suggestions._sanitize(raw, "en")
+
+    assert [i.label for i in items] == ["Label 0", "Label 1", "Label 2"]
+
+
+def test_sanitize_chinese_bounds_accept_well_formed_lines():
+    zh_lines = [
+        {
+            "label": "自注意力比 RNN 强在哪一步",
+            "prompt": "我想弄清楚自注意力相对 RNN 的优势具体体现在哪一步。",
+        },
+        {"label": "特征值到底在度量什么", "prompt": "请从几何角度给我讲讲特征值到底在度量什么。"},
+        {
+            "label": "BM25 什么时候反而比向量检索准",
+            "prompt": "什么场景下 BM25 会比向量检索更准？为什么？",
+        },
+    ]
+
+    assert len(suggestions._sanitize(json.dumps(zh_lines, ensure_ascii=False), "zh")) == 3
+
+    # 40 characters is allowed, 41 is one too many — and the over-long line is
+    # dropped from the batch rather than truncated.
+    boundary = json.dumps(
+        [
+            {"label": "界" * 41, "prompt": "太长了"},
+            {"label": "边界一", "prompt": "第一问"},
+            {"label": "界" * 40, "prompt": "正好"},
+            {"label": "边界三", "prompt": "第三问"},
+        ],
+        ensure_ascii=False,
+    )
+    items = suggestions._sanitize(boundary, "zh")
+
+    assert [i.label for i in items] == ["边界一", "界" * 40, "边界三"]
+
+
+def test_ttl_boundary_is_inclusive():
+    now = time.time()
+    edge = suggestions.SuggestionSet((), "en", now - suggestions._TTL_SECONDS, "f")
+    just_past = suggestions.SuggestionSet((), "en", now - suggestions._TTL_SECONDS - 1.0, "f")
+
+    assert suggestions._is_fresh(edge, "en", now=now) is True
+    assert suggestions._is_fresh(just_past, "en", now=now) is False
+    # A set generated in another language never reads as fresh.
+    assert suggestions._is_fresh(edge, "zh", now=now) is False
+
+
+def test_schedule_probe_without_a_running_loop_is_a_noop():
+    suggestions._schedule_probe(force=True)
+
+    assert suggestions._inflight == {}
+
+
+def test_fingerprint_tracks_language_subject_and_surface_but_not_recency():
+    base = suggestions._Material("p", [suggestions._Topic("chat", "Eigenvalues", 1)])
+    same = suggestions._Material("p", [suggestions._Topic("chat", "Eigenvalues", 1)])
+
+    assert suggestions._fingerprint(base, "en") == suggestions._fingerprint(same, "en")
+    # A language switch is a new set.
+    assert suggestions._fingerprint(base, "zh") != suggestions._fingerprint(base, "en")
+    # The subject the line names is the content.
+    renamed = suggestions._Material("p", [suggestions._Topic("chat", "Chain rule", 1)])
+    assert suggestions._fingerprint(base, "en") != suggestions._fingerprint(renamed, "en")
+    resurfaced = suggestions._Material("p", [suggestions._Topic("kb", "Eigenvalues", 1)])
+    assert suggestions._fingerprint(base, "en") != suggestions._fingerprint(resurfaced, "en")
+    # A day passing does not, by itself, burn a regeneration.
+    older = suggestions._Material("p", [suggestions._Topic("chat", "Eigenvalues", 2)])
+    assert suggestions._fingerprint(base, "en") == suggestions._fingerprint(older, "en")
+
+
+def test_material_fetch_window_and_overfetch(monkeypatch: pytest.MonkeyPatch):
+    from deeptutor.services.memory import recall
+
+    seen: list[tuple[str, dict]] = []
+
+    def _recent(**kwargs):
+        seen.append(("recent", kwargs))
+        return []
+
+    def _queries(**kwargs):
+        seen.append(("queries", kwargs))
+        return []
+
+    monkeypatch.setattr(recall, "recent", _recent)
+    monkeypatch.setattr(recall, "recent_queries", _queries)
+
+    suggestions._collect_material(4)
+
+    by_source = dict(seen)
+    # Over-fetching before the cut is what lets noise filtering still fill the list.
+    assert by_source["recent"]["limit"] == 4 * 3
+    assert by_source["queries"]["limit"] == 4
+    assert by_source["recent"]["days"] == suggestions._LOOKBACK_DAYS
+    assert by_source["queries"]["days"] == suggestions._LOOKBACK_DAYS
+
+
+@pytest.mark.asyncio
+async def test_a_timed_out_model_call_degrades_to_an_error(
+    monkeypatch: pytest.MonkeyPatch, isolated_scope: Path
+) -> None:
+    _stub_material(monkeypatch, [_hit("chat", "Chain rule")])
+    import deeptutor.services.llm as llm
+
+    async def _slow(**_):
+        await asyncio.sleep(30)
+
+    monkeypatch.setattr(llm, "complete", _slow)
+    monkeypatch.setattr(suggestions, "_LLM_TIMEOUT", 0.05)
+
+    result = await suggestions.refresh_suggestions()
+
+    assert result.suggestions == ()
+    assert result.status == "error"
+    # The failure must not be cached over the material.
+    assert not (isolated_scope / "suggestions" / "starters.json").exists()
+
+
+@pytest.mark.asyncio
+async def test_refresh_failure_is_flagged_then_cleared_on_success(
+    monkeypatch: pytest.MonkeyPatch, isolated_scope: Path
+) -> None:
+    suggestions._failures.clear()
+    _write_cache(
+        isolated_scope,
+        {
+            "suggestions": [{"label": "cached", "prompt": "x"}],
+            "language": "en",
+            "generated_at": time.time(),
+            "fingerprint": "old",
+        },
+    )
+    _stub_material(monkeypatch, [_hit("chat", "Chain rule")])
+    import deeptutor.services.llm as llm
+
+    async def _boom(**_):
+        raise RuntimeError("provider down")
+
+    monkeypatch.setattr(llm, "complete", _boom)
+    await suggestions.get_suggestions()
+    await asyncio.gather(*suggestions._inflight.values())
+
+    flagged = await suggestions.get_suggestions()
+    assert flagged["refresh_failed"] is True
+
+    async def _ok(**_):
+        return _THREE
+
+    monkeypatch.setattr(llm, "complete", _ok)
+    await suggestions._regenerate_if_due()
+
+    cleared = await suggestions.get_suggestions()
+    assert cleared["refresh_failed"] is False
+
+
+@pytest.mark.asyncio
+async def test_a_corrupt_cache_is_discarded_and_replaced(
+    monkeypatch: pytest.MonkeyPatch, isolated_scope: Path, no_material
+) -> None:
+    directory = isolated_scope / "suggestions"
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "starters.json").write_text("{ truncated", encoding="utf-8")
+
+    assert suggestions._load() is None
+
+    result = await suggestions.get_suggestions()
+    assert result["suggestions"] == []
+    assert result["stale"] is True  # a rebuild is already underway
+
+    # The next background pass rebuilds a valid cache in its place.
+    await asyncio.gather(*suggestions._inflight.values())
+    replaced = suggestions._load()
+    assert replaced is not None
+    assert replaced.status == "no-material"
+
+
+@pytest.mark.asyncio
+async def test_first_read_while_warming_reports_working(monkeypatch: pytest.MonkeyPatch) -> None:
+    _stub_material(monkeypatch, [_hit("chat", "Chain rule")])
+    import deeptutor.services.llm as llm
+
+    entered = asyncio.Event()
+    release = asyncio.Event()
+
+    async def _hold(**_):
+        entered.set()
+        await release.wait()
+        return _THREE
+
+    monkeypatch.setattr(llm, "complete", _hold)
+
+    first = await suggestions.get_suggestions()
+    await entered.wait()
+
+    assert first["suggestions"] == []
+    assert first["status"] == "working"
+    assert first["stale"] is True
+
+    second = await suggestions.get_suggestions()
+    assert second["status"] == "working"
+
+    release.set()
+    await asyncio.gather(*suggestions._inflight.values())
+    settled = await suggestions.get_suggestions()
+
+    assert len(settled["suggestions"]) == 3
+    assert settled["status"] == "ready"
+    assert settled["stale"] is False
