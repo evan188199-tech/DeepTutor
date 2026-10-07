@@ -1,0 +1,119 @@
+{
+  "card": "AGEN-1002",
+  "title": "scan: Unicode 归一化一致性清点",
+  "date": "2026-10-07",
+  "baseline": {
+    "ref": "origin/main",
+    "commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+    "note": "release: v1.6.13；独立 worktree dt-agen1002-uni-wt，分支 scan/unicode-normalize-20261007，全程只读，未改产品代码"
+  },
+  "method": {
+    "tools": ["rg (ripgrep)", "python3 行为实证脚本 verify_samples.py"],
+    "patterns_py": ["unicodedata.normalize", ".casefold()", ".lower()", "sorted/sort key", "strip()"],
+    "patterns_web": ["toLowerCase()", "localeCompare", ".normalize("],
+    "scope": ["deeptutor/", "scripts/", "deeptutor_cli/", "web/（不含 node_modules，不含 tests/）"]
+  },
+  "census": {
+    "py_lower_calls_deeptutor": 744,
+    "py_casefold_calls_deeptutor": 75,
+    "py_casefold_files": 30,
+    "py_casefold_calls_scripts": 1,
+    "py_unicodedata_normalize_sites": 3,
+    "web_tolowercase_calls": 198,
+    "web_localecompare_calls": 14,
+    "web_normalize_calls": 0,
+    "inventory_hits_total": 42
+  },
+  "categories": {
+    "A_filename_rw": [
+      {"id": "A1", "loc": "deeptutor/utils/document_validator.py:97", "what": "上传文件名 unicodedata.normalize('NFC')", "form_treatment": "NFC", "risk": "ok", "note": "防御到位（S1 实证：NFD 输入落盘为 NFC）"},
+      {"id": "A2", "loc": "deeptutor/knowledge/naming.py:20", "what": "KB 名 validate_knowledge_base_name NFC 化", "form_treatment": "NFC", "risk": "ok", "note": "防御到位"},
+      {"id": "A3", "loc": "deeptutor/api/routers/knowledge.py:379-383", "what": "_sanitize_path_segment 目录/路径段只删坏字符，不 NFC 归一", "form_treatment": "none", "risk": "high", "note": "NFD 目录段可进入 raw/（S2 实证）；与 A1 组合产生 NFC 文件名 + NFD 目录混层"},
+      {"id": "A4", "loc": "deeptutor/api/routers/knowledge.py:3038-3055", "what": "_resolve_kb_raw_file_or_404 按精确字节路径解析 serve/delete", "form_treatment": "none", "risk": "high", "note": "客户端 NFC 名 vs 磁盘 NFD 文件 → 404"},
+      {"id": "A5", "loc": "deeptutor/api/routers/knowledge.py:893-898", "what": "_resolve_registered_kb_name 对 URL 参数做精确集合成员判断", "form_treatment": "none", "risk": "low", "note": "web UI 用列表回显名，API 深链/外部工具可踩"},
+      {"id": "A6", "loc": "deeptutor/services/rag/pipelines/pageindex/pipeline.py:202", "what": "manifest 键 = path.name 原文（storage.py:95-103 upsert_doc 原样写键）", "form_treatment": "none", "risk": "high", "note": "跨形式同名会写成两条 manifest 条目（去重失效）"},
+      {"id": "A7", "loc": "deeptutor/services/rag/pipelines/pageindex/pipeline.py:273", "what": "remove_document 键查找 file_name in docs else Path(file_name).name，无 NFC", "form_treatment": "none", "risk": "high", "note": "跨形式查找未命中且返回 False 静默失败"},
+      {"id": "A8", "loc": "deeptutor/api/routers/co_writer.py:736-744", "what": "_docx_download_filename 保留标题原形式", "form_treatment": "none", "risk": "low", "note": "NFD 标题下载后落成 NFD 文件名"},
+      {"id": "A9", "loc": "deeptutor/services/web_source/crawler.py:131-167", "what": "_to_filename unquote 后 quote 编码为 ASCII 安全段", "form_treatment": "ascii-encode", "risk": "ok", "note": "防御到位"},
+      {"id": "A10", "loc": "deeptutor/services/partners/manager.py:177-197", "what": "_slugify_id ASCII-only + 纯 CJK 时 partner-<hash> 兜底", "form_treatment": "ascii-encode", "risk": "ok", "note": "防御到位"},
+      {"id": "A11", "loc": "deeptutor/api/utils/http_headers.py:12-22", "what": "content_disposition RFC 5987 filename* + ASCII 兜底", "form_treatment": "rfc5987", "risk": "ok", "note": "防御到位"}
+    ],
+    "B_search_matching": [
+      {"id": "B1", "loc": "deeptutor/services/mcp/catalog/loader.py:114,141,168", "what": "目录搜索 q.strip().casefold() + needle in haystack.casefold()", "form_treatment": "casefold-no-nfc", "risk": "medium", "note": "NFD 查询搜不到 NFC 目录条目"},
+      {"id": "B2", "loc": "deeptutor/services/session/pocketbase_store.py:679", "what": "会话搜索 title.casefold() contains", "form_treatment": "casefold-no-nfc", "risk": "medium", "note": "NFD 关键字漏配 NFC 标题"},
+      {"id": "B3", "loc": "deeptutor/services/chat_hints.py:183-184", "what": "_normal_form = re.sub([^\\w…])+'' + casefold", "form_treatment": "regex-strip+casefold-no-nfc", "risk": "medium", "note": "\\w 不匹配组合符号，NFD 音符被剔除 → 回声检测键随形式变化（S3 实证 cafépdf vs cafepdf）"},
+      {"id": "B4", "loc": "deeptutor/services/reading_hints.py:335", "what": "同 B3 模式", "form_treatment": "regex-strip+casefold-no-nfc", "risk": "medium", "note": "同 B3"},
+      {"id": "B5", "loc": "deeptutor/reading/epub_bilingual.py:75,79", "what": "token 集合与标题 casefold 集合比对", "form_treatment": "casefold-no-nfc", "risk": "low", "note": "主要面向 CJK/ASCII，影响面小"},
+      {"id": "B6", "loc": "deeptutor/services/rag/eval/matching.py:45-50", "what": "normalize_text/tokenize 用 .strip().lower()", "form_treatment": "lower-no-nfc", "risk": "low", "note": "eval 内部自洽，但与线上 casefold 语义不一致"},
+      {"id": "B7", "loc": "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:32", "what": "_normal = NFKC + 长破折号翻译", "form_treatment": "NFKC", "risk": "ok", "note": "局部防御到位"},
+      {"id": "B8", "loc": "deeptutor/api/routers/book.py:199", "what": "label.casefold() == correct_text.casefold()", "form_treatment": "casefold-no-nfc", "risk": "low", "note": "题面短文本，跨形式概率低"},
+      {"id": "B9", "loc": "deeptutor/reading/references.py:142", "what": "heading.casefold() in source_name.casefold()", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""}
+    ],
+    "C_dedup_keys": [
+      {"id": "C1", "loc": "deeptutor/services/courses.py:324-325", "what": "课程名 casefold 查重", "form_treatment": "casefold-no-nfc", "risk": "high", "note": "NFC/NFD 双胞胎课程名不去重（S4 实证）"},
+      {"id": "C2", "loc": "deeptutor/services/partners/commands.py:293,298,362,368", "what": "模型名 casefold 去重与请求匹配", "form_treatment": "casefold-no-nfc", "risk": "medium", "note": ""},
+      {"id": "C3", "loc": "deeptutor/services/partner_groups/manager.py:1538,1540", "what": "partner 别名 casefold 键映射", "form_treatment": "casefold-no-nfc", "risk": "medium", "note": ""},
+      {"id": "C4", "loc": "deeptutor/services/partner_groups/manager.py:1630", "what": "提及匹配 strip+lstrip@+CJK 标点 rstrip+casefold", "form_treatment": "casefold-no-nfc", "risk": "low", "note": "逻辑本身周全，仅缺 NFC"},
+      {"id": "C5", "loc": "deeptutor/services/suggestions.py:373-377,511-513", "what": "topic label casefold seen-set 去重", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C6", "loc": "deeptutor/services/memory/recall.py:131", "what": "(surface, label.casefold()) 去重键", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C7", "loc": "deeptutor/services/memory/store.py:37", "what": "' '.join(split()).casefold() 规范键", "form_treatment": "casefold-no-nfc", "risk": "low", "note": "split() 顺带压掉各类 Unicode 空白"},
+      {"id": "C8", "loc": "deeptutor/tools/question_bank.py:371", "what": "题干 ' '.join(split()).casefold() 去重键", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C9", "loc": "deeptutor/reading/quiz.py:64", "what": "同 C8 模式", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C10", "loc": "deeptutor/reading/translation.py:51", "what": "行文本 ' '.join(split()).casefold()", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C11", "loc": "deeptutor/reading/vocabulary.py:61", "what": "词条 ' '.join(split()).casefold()", "form_treatment": "casefold-no-nfc", "risk": "low", "note": ""},
+      {"id": "C12", "loc": "web/lib/chat-import/chatgpt.ts:130-137,202-205", "what": "cursor/id Set 精确去重", "form_treatment": "exact", "risk": "low", "note": "id 为 ASCII，不受影响"}
+    ],
+    "D_sort_compare": [
+      {"id": "D1", "loc": "deeptutor/api/routers/knowledge.py:3075", "what": "KB raw 文件列表 sorted(key=str(p).lower())", "form_treatment": "lower-no-nfc", "risk": "medium", "note": "与 courses/courses_state 的 casefold 折叠口径不一致；NFC/NFD 同名非邻排列（S8）"},
+      {"id": "D2", "loc": "deeptutor/api/routers/settings.py:635,648,695,708,720,732,837", "what": "provider/model label .lower() 排序", "form_treatment": "lower-no-nfc", "risk": "low", "note": "多为内置 ASCII 标签"},
+      {"id": "D3", "loc": "deeptutor/services/rag/file_routing.py:395", "what": "文件路径 str(path).lower() 排序", "form_treatment": "lower-no-nfc", "risk": "low", "note": ""},
+      {"id": "D4", "loc": "deeptutor/services/courses.py:331", "what": "课程列表 (created_at, name.casefold()) 排序", "form_treatment": "casefold", "risk": "medium", "note": "折叠口径与 D1/D2 不同（S5 实证 ß 排序差异）"},
+      {"id": "D5", "loc": "deeptutor/services/courses_state.py:304,338,380,384", "what": "label casefold 排序", "form_treatment": "casefold", "risk": "low", "note": ""},
+      {"id": "D6", "loc": "deeptutor/services/mcp/catalog/loader.py:86", "what": "(tier, display_name.casefold(), id) 排序", "form_treatment": "casefold", "risk": "low", "note": ""},
+      {"id": "D7", "loc": "scripts/export_discord_history.py:496", "what": "path.casefold() 排序", "form_treatment": "casefold", "risk": "low", "note": ""},
+      {"id": "D8", "loc": "web/components/knowledge/KbDocumentList.tsx:99,104", "what": "name.toLowerCase().localeCompare(name.toLowerCase())", "form_treatment": "js-lower+localeCompare", "risk": "medium", "note": "与后端 .lower() 列表顺序可不一致；localeCompare 依赖宿主 locale"},
+      {"id": "D9", "loc": "web/components/reading/library/ReadingLibrary.tsx:140", "what": "title.localeCompare(b.title, i18n.language)", "form_treatment": "localeCompare", "risk": "low", "note": "顺序随界面语言变化"},
+      {"id": "D10", "loc": "web/components/partners/PartnerChannels.tsx:220", "what": "display_name.localeCompare", "form_treatment": "localeCompare", "risk": "low", "note": ""},
+      {"id": "D11", "loc": "web/components/knowledge/KbDocumentsSection.tsx:69", "what": "folder 名 localeCompare", "form_treatment": "localeCompare", "risk": "low", "note": ""}
+    ]
+  },
+  "strip_casefold_divergence": [
+    {"id": "E1", "what": "Python .strip() 不去除 U+FEFF BOM；ECMAScript .trim() 去除（WhiteSpace 含 ZWNBSP）", "evidence": "S6 实证 Python 侧；JS 侧为规范行为", "risk": "medium"},
+    {"id": "E2", "what": ".lower() 744 处 vs .casefold() 75 处（30 文件）两套折叠并存；ß 等 full-casefold 字符两套结果不同", "evidence": "S5 实证；计数见 census", "risk": "medium"},
+    {"id": "E3", "what": "web 198 处 toLowerCase() 与 Python casefold() 语义不同（'ß'.toLowerCase()==='ß' vs 'ß'.casefold()=='ss'）→ 前后端对同一数据去重/比对结论可相反", "evidence": "S5 + 计数", "risk": "medium"},
+    {"id": "E4", "what": "JS localeCompare 顺序依赖宿主/界面 locale，且与 Python .lower()/.casefold() 排序互不一致", "evidence": "web/lib 14 处 localeCompare 清单", "risk": "low"},
+    {"id": "E5", "what": "Python 正则 \\w 不匹配组合符号（Mn）→ NFD 文本经 [^\\w…]+ 剔除丢音符，与 NFC 结果发散", "evidence": "S3 实证", "risk": "medium"}
+  ],
+  "macos_nfd_risk_list": [
+    {"rank": "H1", "summary": "KB raw/ 目录 NFC/NFD 混写：上传名 NFC（A1）但目录段（A3）与非上传来源文件名不归一 → 同一视觉名双份、列表双行、serve/delete（A4）只命中其一", "locs": ["deeptutor/api/routers/knowledge.py:379-383", "deeptutor/api/routers/knowledge.py:3038-3055", "deeptutor/utils/document_validator.py:97"]},
+    {"rank": "H2", "summary": "PageIndex manifest 按文件名原文做键与查找（A6/A7），跨形式删除静默失败（返回 False 无报错）、重索引产生双条目", "locs": ["deeptutor/services/rag/pipelines/pageindex/pipeline.py:202", "deeptutor/services/rag/pipelines/pageindex/pipeline.py:273", "deeptutor/services/rag/pipelines/pageindex/storage.py:95-103"]},
+    {"rank": "H3", "summary": "课程名等 casefold 查重在 NFC/NFD 混写下失效（macOS 侧输入常为 NFD）", "locs": ["deeptutor/services/courses.py:324-325"]},
+    {"rank": "M1", "summary": "搜索匹配链路（MCP 目录、会话标题、reading hints）无 NFC，NFD 查询漏配", "locs": ["deeptutor/services/mcp/catalog/loader.py:114,141,168", "deeptutor/services/session/pocketbase_store.py:679", "deeptutor/services/reading_hints.py:335"]},
+    {"rank": "M2", "summary": "前后端折叠口径不一致（lower/casefold/toLowerCase ß 行为不同；localeCompare 依赖 locale）→ 列表顺序与去重两端不一致", "locs": ["deeptutor/api/routers/knowledge.py:3075", "deeptutor/services/courses.py:331", "web/components/knowledge/KbDocumentList.tsx:99"]},
+    {"rank": "L1", "summary": "KB 名 URL 参数精确匹配无 NFC（API 深链/外部工具场景 404）", "locs": ["deeptutor/api/routers/knowledge.py:893-898"]},
+    {"rank": "L2", "summary": "co_writer docx 下载名保留 NFD 原形式，落盘成 NFD 文件", "locs": ["deeptutor/api/routers/co_writer.py:736-744"]}
+  ],
+  "defenses_present": [
+    "deeptutor/utils/document_validator.py:97 上传文件名 NFC",
+    "deeptutor/knowledge/naming.py:20 KB 名 NFC",
+    "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:32 NFKC",
+    "deeptutor/api/utils/http_headers.py:12-22 RFC 5987",
+    "deeptutor/services/web_source/crawler.py:131-167 ASCII 编码文件名",
+    "deeptutor/services/partners/manager.py:177-197 ASCII slug + hash 兜底"
+  ],
+  "sample_verification": {
+    "script": "verify_samples.py",
+    "samples_run": 8,
+    "all_confirmed": true,
+    "summary": [
+      "S1 上传文件名 NFD 输入被 NFC 化（A1 防御成立）",
+      "S2 目录段 NFD 原样保留（A3 缺口成立）",
+      "S3 chat_hints _normal_form NFC='cafépdf' vs NFD='cafepdf'（B3 成立）",
+      "S4 casefold 查重不匹配 NFC/NFD 双胞胎（C1 成立）",
+      "S5 ß: lower≠ss、casefold=ss；sort lower 与 casefold 顺序不同（D4/E2/E3 成立）",
+      "S6 Python strip 保留 U+FEFF（E1 Python 侧成立）",
+      "S7 manifest 键 NFD 查 NFC 条目直接与 fallback 均未命中（A6/A7 成立）",
+      "S8 NFC/NFD 同名按码点排序非邻（D1 成立）"
+    ]
+  }
+}
