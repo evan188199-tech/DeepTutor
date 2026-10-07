@@ -568,6 +568,16 @@ def test_source_production_build_is_reused_until_an_input_changes(
     assert next_env.read_text(encoding="utf-8") == "// developer dist types\n"
 
 
+class _AlreadyExitedProcess:
+    """Stand-in Popen for cleanup paths: already terminated, no live child."""
+
+    def poll(self) -> int:
+        return 0
+
+    def wait(self, timeout: float | None = None) -> int:  # noqa: ARG002
+        return 0
+
+
 @pytest.mark.parametrize("resolved_backend_port", [8001, 8123])
 def test_start_uses_ipv4_loopback_for_frontend_proxy(
     tmp_path: Path,
@@ -627,7 +637,7 @@ def test_start_uses_ipv4_loopback_for_frontend_proxy(
         assert cwd == tmp_path
         captured_envs[name] = dict(env)
         if name == "backend":
-            return launcher.ManagedProcess("backend", object(), None)
+            return launcher.ManagedProcess("backend", _AlreadyExitedProcess(), None)
         assert name == "frontend"
         raise RuntimeError("captured launch environment")
 

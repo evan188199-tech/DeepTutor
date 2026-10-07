@@ -142,6 +142,10 @@ LABELS: dict[str, dict[str, str]] = {
         "start.port_killing": "Stopping PID {pid} ({command}) ...",
         "start.port_kill_failed": "Could not free port {port} (PID {pid}).",
         "start.port_freed": "Port {port} released.",
+        "start.port_reclaim": (
+            "Non-interactive session; the process(es) above belong to this DeepTutor "
+            "installation — stopping them and retrying."
+        ),
     },
     "zh": {
         "tagline": "智能体原生的个性化辅导",
@@ -260,6 +264,7 @@ LABELS: dict[str, dict[str, str]] = {
         "start.port_killing": "正在停止 PID {pid} ({command}) ...",
         "start.port_kill_failed": "无法释放端口 {port} (PID {pid})。",
         "start.port_freed": "端口 {port} 已释放。",
+        "start.port_reclaim": "非交互会话：以上进程属于本 DeepTutor 安装，正在停止并重试。",
     },
     "de": {
         "tagline": "Agent-native, personalisierte Lernbegleitung",
@@ -364,6 +369,10 @@ LABELS: dict[str, dict[str, str]] = {
         "start.port_killing": "PID {pid} ({command}) wird beendet ...",
         "start.port_kill_failed": "Port {port} konnte nicht freigegeben werden (PID {pid}).",
         "start.port_freed": "Port {port} freigegeben.",
+        "start.port_reclaim": (
+            "Nicht-interaktive Sitzung; die obigen Prozesse gehören zu dieser "
+            "DeepTutor-Installation — sie werden beendet und erneut versucht."
+        ),
     },
     "uk": {
         "tagline": "Агентно-орієнтоване персоналізоване навчання",
@@ -468,6 +477,10 @@ LABELS: dict[str, dict[str, str]] = {
         "start.port_killing": "Зупинення PID {pid} ({command}) ...",
         "start.port_kill_failed": "Не вдалося звільнити порт {port} (PID {pid}).",
         "start.port_freed": "Порт {port} звільнено.",
+        "start.port_reclaim": (
+            "Неінтерактивний сеанс; наведені вище процеси належать до цього "
+            "встановлення DeepTutor — вони будуть зупинені, і спробу буде повторено."
+        ),
     },
 }
 

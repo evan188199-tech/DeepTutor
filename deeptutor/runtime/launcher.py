@@ -268,6 +268,44 @@ def _terminate(proc: ManagedProcess | None) -> None:
             pass
 
 
+class _ManagedStopper:
+    """Two-phase, re-enterable stop for the launcher's managed children.
+
+    Stopping children one at a time left a window in which a launcher killed
+    partway through cleanup — a force-restart during shutdown — orphaned the
+    not-yet-stopped backend, still holding its port (#1795). The stopper
+    signals every still-running child up front, then waits on each, and
+    remembers which children it already signalled so an interrupted stop can
+    simply run again: the resumed pass skips the converged children and
+    finishes the rest.
+    """
+
+    def __init__(self) -> None:
+        self._signaled: set[int] = set()
+
+    def _signal(self, proc: ManagedProcess | None) -> None:
+        if proc is None or proc.process.poll() is not None:
+            return
+        if proc.process.pid in self._signaled:
+            return
+        self._signaled.add(proc.process.pid)
+        _log(_t("start.stopping", name=proc.name, pid=proc.process.pid))
+        try:
+            _send_tree_signal(proc.process.pid, proc.pgid, signal.SIGTERM)
+        except Exception:
+            pass
+
+    def stop(self, processes: list[ManagedProcess | None]) -> None:
+        procs = [proc for proc in processes if proc is not None]
+        # Signal every child's process tree as one unit before blocking on
+        # any exit, so an interruption between child stops cannot leave a
+        # still-signalled-but-untouched child behind.
+        for proc in procs:
+            self._signal(proc)
+        for proc in procs:
+            _terminate(proc)
+
+
 def _relax_console_encoding(streams: tuple[object, ...] | None = None) -> None:
     """Make the launcher's own console output lossy instead of fatal.
 
@@ -532,9 +570,13 @@ def _resolve_port_conflicts(
 ) -> tuple[int, int]:
     """Return free ``(backend_port, frontend_port)``, resolving conflicts interactively.
 
-    When stdin is not a TTY (Docker, CI), falls back to exiting with the
-    historical ``start.port_in_use`` message.
+    When stdin is not a TTY (Docker, CI), listeners that are positively
+    identified as this installation's own backend/frontend are reclaimed
+    instead of exiting — a supervised restart must take over an orphan left
+    by an interrupted shutdown (#1795). Anything foreign keeps the
+    historical ``start.port_in_use`` exit.
     """
+    reclaim_attempted = False
     while True:
         roles = [("start.backend", backend_port)]
         if check_frontend:
@@ -554,8 +596,22 @@ def _resolve_port_conflicts(
                 _log(_t("start.port_conflict_proc", pid=pid, command=command))
 
         if sys.stdin is None or not sys.stdin.isatty():
-            joined = ", ".join(str(port) for _key, port in occupied)
-            raise SystemExit(_t("start.port_in_use", ports=joined))
+            reclaimable: dict[int, list[tuple[int, str]]] = {}
+            foreign_present = False
+            for key, port in occupied:
+                entries = listeners[port]
+                own = [entry for entry in entries if _listener_belongs_to_installation(key, entry)]
+                if entries and len(own) == len(entries):
+                    reclaimable[port] = own
+                else:
+                    foreign_present = True
+            if foreign_present or not reclaimable or reclaim_attempted:
+                joined = ", ".join(str(port) for _key, port in occupied)
+                raise SystemExit(_t("start.port_in_use", ports=joined))
+            reclaim_attempted = True
+            _log(_t("start.port_reclaim"))
+            _kill_port_listeners(reclaimable)
+            continue
 
         if _prompt_conflict_choice() == "1":
             backend_port, frontend_port = _prompt_new_ports(
@@ -982,12 +1038,41 @@ def _process_command(pid: int | None) -> str:
     return (completed.stdout or "").strip()
 
 
-def _looks_like_next_process(pid: int | None) -> bool:
-    command = _process_command(pid).lower()
+def _looks_like_next_command(command: str) -> bool:
+    lowered = command.lower()
     return bool(
-        command
-        and ("next-server" in command or "next/dist/bin/next" in command or " next dev" in command)
+        lowered
+        and ("next-server" in lowered or "next/dist/bin/next" in lowered or " next dev" in lowered)
     )
+
+
+def _looks_like_next_process(pid: int | None) -> bool:
+    return _looks_like_next_command(_process_command(pid))
+
+
+def _is_own_backend_listener(command: str) -> bool:
+    """True when a command line marks a listener as this launcher's backend.
+
+    ``run_server`` spawns the backend as ``<python> -m uvicorn
+    deeptutor.api.main:app --host 0.0.0.0 --port <n>``; matching on the
+    module target keeps the check independent of the interpreter path.
+    """
+    lowered = command.lower()
+    return "uvicorn" in lowered and "deeptutor.api.main:app" in lowered
+
+
+def _listener_belongs_to_installation(role_key: str, entry: tuple[int, str]) -> bool:
+    """Best-effort check that a port listener is one of our own children.
+
+    ``role_key`` is the label key of the occupied port (``start.backend`` or
+    ``start.frontend``). Ownership is decided from the command line alone, so
+    an unidentified listener ("?") counts as foreign and is never killed
+    unattended.
+    """
+    _pid, command = entry
+    if role_key == "start.backend":
+        return _is_own_backend_listener(command)
+    return _looks_like_next_command(command)
 
 
 def _stop_unhealthy_source_frontend(frontend: ExistingFrontendRuntime) -> bool:
@@ -1481,6 +1566,7 @@ def start(
     shutdown_requested = False
     cleanup_started = False
     exit_code = 0
+    stopper = _ManagedStopper()
 
     def request_shutdown(signal_name: str | None = None) -> None:
         nonlocal shutdown_requested
@@ -1501,11 +1587,15 @@ def start(
 
     def cleanup() -> None:
         nonlocal cleanup_started
+        # Stop both managed children as a unit — the backend is signalled
+        # first — and stay re-enterable: a cleanup interrupted partway (an
+        # exception resumed by atexit, or a kill between child stops) must
+        # resume stopping whatever is still alive instead of returning early
+        # and orphaning it (#1795).
+        stopper.stop([backend, web])
         if cleanup_started:
             return
         cleanup_started = True
-        _terminate(web)
-        _terminate(backend)
         if detached_paths is not None:
             _clear_detached_runtime(detached_paths, detached_token)
 
