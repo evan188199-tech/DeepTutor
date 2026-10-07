@@ -848,13 +848,27 @@ class MCPConnectionManager:
     async def _disconnect(self, conn: _ServerConnection) -> None:
         self._unregister_adapters(conn)
         conn.shutdown.set()
-        if conn.task is not None:
-            try:
-                await asyncio.wait_for(conn.task, timeout=10)
-            except (asyncio.TimeoutError, Exception):
-                conn.task.cancel()
-        conn.status = "disabled"
-        conn.adapters = []
+        try:
+            if conn.task is not None:
+                try:
+                    await asyncio.wait_for(conn.task, timeout=10)
+                except (asyncio.TimeoutError, Exception):
+                    conn.task.cancel()
+                except asyncio.CancelledError:
+                    # The waiter itself was cancelled mid-wait — the one path
+                    # the ``Exception`` clause above cannot see. The connection
+                    # task must not outlive the disconnect, and the status
+                    # write in ``finally`` must land before the cancellation
+                    # travels on. A connection task that was cancelled by
+                    # someone else is still down, so it completes the
+                    # disconnect instead of aborting the caller's loop.
+                    conn.task.cancel()
+                    task = asyncio.current_task()
+                    if task is not None and task.cancelling() > 0:
+                        raise
+        finally:
+            conn.status = "disabled"
+            conn.adapters = []
 
     # ── registry sync ──────────────────────────────────────────────────
 

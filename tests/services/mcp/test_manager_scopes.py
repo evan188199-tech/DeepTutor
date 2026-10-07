@@ -10,6 +10,7 @@ property most of this file exists to pin.
 from __future__ import annotations
 
 import asyncio
+from contextlib import suppress
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,7 @@ from deeptutor.services.mcp.manager import (
     SHARED_OWNER,
     MCPConnectionManager,
     MCPToolAdapter,
+    _ServerConnection,
 )
 
 
@@ -273,3 +275,56 @@ async def test_shutdown_closes_every_scope(manager: MCPConnectionManager) -> Non
 
     assert manager._connections == {}
     assert manager.adapters_for("u_ada") == []
+
+
+@pytest.mark.asyncio
+async def test_a_disconnect_cancelled_mid_wait_still_shuts_the_connection_down() -> None:
+    """A disconnect interrupted by its own cancellation must finish its job.
+
+    ``_disconnect`` grants every server a 10s graceful window and waits on
+    it; a caller cancelled inside that window — an app shutdown racing a
+    scope eviction — used to skip both the task ``cancel()`` and the status
+    write after it, stranding a live task advertised as connected.
+    """
+    manager = MCPConnectionManager()
+    conn = _ServerConnection(
+        name="one",
+        config=MCPServerConfig(url="https://one.example/mcp"),
+        signature="sig",
+        owner="u_ada",
+    )
+    conn.status = "connected"
+    conn.adapters = [
+        MCPToolAdapter(
+            manager=manager,
+            owner="u_ada",
+            server_name="one",
+            original_name="ping",
+            description="d",
+            input_schema=None,
+            tool_timeout=5,
+        )
+    ]
+    # A server that never notices the shutdown event: only cancel() ends it.
+    hang = asyncio.Event()
+    conn.task = asyncio.ensure_future(hang.wait())
+    manager._connections[("u_ada", "one")] = conn
+
+    disconnect = asyncio.ensure_future(manager._disconnect(conn))
+    while not conn.shutdown.is_set():
+        await asyncio.sleep(0)
+    await asyncio.sleep(0)  # the waiter is now parked on the graceful window
+    disconnect.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await disconnect
+
+    task = conn.task
+    try:
+        assert conn.status == "disabled"
+        assert conn.adapters == []
+        assert task.cancelling() > 0
+    finally:
+        if not task.done():
+            task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
