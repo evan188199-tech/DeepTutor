@@ -1,0 +1,4341 @@
+{
+  "scan": "web-test-gaps",
+  "scope": "web/ (static file-level mapping; no tests executed)",
+  "excluded": [
+    "web/tests (test corpus itself)",
+    "node_modules, dist, .next, vendor",
+    "contracts/generated (generated)",
+    "*.d.ts declarations",
+    "tests/setup (fixtures)"
+  ],
+  "classification_rules": {
+    "covered": "path referenced by at least one non-meta vitest (*.spec.*) or node (*.test.ts) test",
+    "weak": "referenced somewhere but never by path from a non-meta unit/node test (audit-only, meta-only or basename-only)",
+    "zero": "no references in any test file"
+  },
+  "totals": {
+    "source_files": 886,
+    "covered": 445,
+    "weak": 73,
+    "zero": 368,
+    "test_files": 346,
+    "by_kind": {
+      "node": 210,
+      "vitest": 123,
+      "playwright": 13
+    },
+    "actionable_zero_weak": 435
+  },
+  "by_category": {
+    "app": {
+      "covered": 27,
+      "zero": 81
+    },
+    "components": {
+      "covered": 151,
+      "weak": 28,
+      "zero": 201
+    },
+    "config": {
+      "covered": 1,
+      "weak": 1,
+      "zero": 4
+    },
+    "context": {
+      "covered": 4,
+      "zero": 2
+    },
+    "contracts": {
+      "covered": 2
+    },
+    "eslint": {
+      "zero": 1
+    },
+    "features": {
+      "covered": 57,
+      "weak": 21,
+      "zero": 26
+    },
+    "hooks": {
+      "covered": 20,
+      "zero": 16
+    },
+    "i18n": {
+      "covered": 3,
+      "weak": 2
+    },
+    "lib": {
+      "covered": 165,
+      "weak": 7,
+      "zero": 31
+    },
+    "root": {
+      "covered": 1
+    },
+    "scripts": {
+      "covered": 4,
+      "weak": 2,
+      "zero": 6
+    },
+    "shared": {
+      "covered": 10,
+      "weak": 12
+    }
+  },
+  "top_candidates": [
+    {
+      "path": "lib/memory-graph.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 762,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/code-languages.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 180,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/latex-commands.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 172,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "context/QuizFollowupContext.tsx",
+      "category": "context",
+      "status": "zero",
+      "loc": 647,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/quiz-judge.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 157,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/personas-api.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 128,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/research-types.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 125,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useDragSort.ts",
+      "category": "hooks",
+      "status": "zero",
+      "loc": 404,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/session-unread.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 92,
+      "reason": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/youtube-iframe-api.ts",
+      "category": "lib",
+      "status": "zero",
+      "loc": 80,
+      "reason": "no test file references this path or basename"
+    }
+  ],
+  "zero": [
+    {
+      "path": "app/(admin)/layout.tsx",
+      "category": "app",
+      "loc": 7,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(auth)/layout.tsx",
+      "category": "app",
+      "loc": 11,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(auth)/login/page.tsx",
+      "category": "app",
+      "loc": 185,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(auth)/register/page.tsx",
+      "category": "app",
+      "loc": 191,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(settings)/layout.tsx",
+      "category": "app",
+      "loc": 15,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(settings)/settings/[section]/page.tsx",
+      "category": "app",
+      "loc": 10,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(settings)/settings/page.tsx",
+      "category": "app",
+      "loc": 28,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/agents/layout.tsx",
+      "category": "app",
+      "loc": 13,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/agents/page.tsx",
+      "category": "app",
+      "loc": 11,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/avatar-preview/page.tsx",
+      "category": "app",
+      "loc": 145,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/courses/[courseId]/page.tsx",
+      "category": "app",
+      "loc": 423,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/courses/layout.tsx",
+      "category": "app",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/courses/page.tsx",
+      "category": "app",
+      "loc": 14,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/knowledge-bases/[kbName]/page.tsx",
+      "category": "app",
+      "loc": 19,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/knowledge-bases/page.tsx",
+      "category": "app",
+      "loc": 19,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/layout.tsx",
+      "category": "app",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/graph/page.tsx",
+      "category": "app",
+      "loc": 7,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/l1/page.tsx",
+      "category": "app",
+      "loc": 68,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/l2/[surface]/page.tsx",
+      "category": "app",
+      "loc": 40,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/l2/page.tsx",
+      "category": "app",
+      "loc": 7,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/l3/[slot]/page.tsx",
+      "category": "app",
+      "loc": 30,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/l3/page.tsx",
+      "category": "app",
+      "loc": 7,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/layout.tsx",
+      "category": "app",
+      "loc": 15,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/page.tsx",
+      "category": "app",
+      "loc": 11,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/memory/resolve/page.tsx",
+      "category": "app",
+      "loc": 105,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/notebooks/NotebooksRoute.tsx",
+      "category": "app",
+      "loc": 86,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/notebooks/[notebookId]/page.tsx",
+      "category": "app",
+      "loc": 1,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/notebooks/page.tsx",
+      "category": "app",
+      "loc": 1,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/profile/page.tsx",
+      "category": "app",
+      "loc": 414,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/session-handoff/page.tsx",
+      "category": "app",
+      "loc": 138,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/settings/progress/page.tsx",
+      "category": "app",
+      "loc": 116,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/chat-history/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/cli-apps/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/layout.tsx",
+      "category": "app",
+      "loc": 9,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/mcp/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/personas/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(utility)/space/skills/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/co-writer/page.tsx",
+      "category": "app",
+      "loc": 324,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/co-writer/sampleTemplate.ts",
+      "category": "app",
+      "loc": 183,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/[bookId]/page.tsx",
+      "category": "app",
+      "loc": 1,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/[bookId]/pages/[pageId]/page.tsx",
+      "category": "app",
+      "loc": 1,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/PageOutlineNav.tsx",
+      "category": "app",
+      "loc": 329,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/AnimationBlock.tsx",
+      "category": "app",
+      "loc": 111,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/BlockBodyEditor.tsx",
+      "category": "app",
+      "loc": 101,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "category": "app",
+      "loc": 387,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/CalloutBlock.tsx",
+      "category": "app",
+      "loc": 66,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/CodeBlock.tsx",
+      "category": "app",
+      "loc": 25,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/ConceptGraphBlock.tsx",
+      "category": "app",
+      "loc": 157,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/DeepDiveBlock.tsx",
+      "category": "app",
+      "loc": 126,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/FigureBlock.tsx",
+      "category": "app",
+      "loc": 108,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/FlashCardsBlock.tsx",
+      "category": "app",
+      "loc": 82,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/InteractiveBlock.tsx",
+      "category": "app",
+      "loc": 81,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/PlaceholderBlock.tsx",
+      "category": "app",
+      "loc": 41,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/SectionBlock.tsx",
+      "category": "app",
+      "loc": 66,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/TextBlock.tsx",
+      "category": "app",
+      "loc": 21,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/TimelineBlock.tsx",
+      "category": "app",
+      "loc": 40,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/components/blocks/UserNoteBlock.tsx",
+      "category": "app",
+      "loc": 155,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/books/page.tsx",
+      "category": "app",
+      "loc": 1,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/layout.tsx",
+      "category": "app",
+      "loc": 3,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/mastery/[pathId]/sessions/[sessionId]/page.tsx",
+      "category": "app",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/mastery/[pathId]/sessions/page.tsx",
+      "category": "app",
+      "loc": 23,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/mastery/layout.tsx",
+      "category": "app",
+      "loc": 6,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/mastery/page.tsx",
+      "category": "app",
+      "loc": 135,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/[workspaceId]/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/[workspaceId]/sessions/[sessionId]/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/[workspaceId]/sessions/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/folders/[folderId]/page.tsx",
+      "category": "app",
+      "loc": 10,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/materials/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/reading/page.tsx",
+      "category": "app",
+      "loc": 13,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/watching/[sessionId]/page.tsx",
+      "category": "app",
+      "loc": 5,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/learning/watching/page.tsx",
+      "category": "app",
+      "loc": 24,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/page.tsx",
+      "category": "app",
+      "loc": 10,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/partners/groups/new/page.tsx",
+      "category": "app",
+      "loc": 296,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/partners/new/page.tsx",
+      "category": "app",
+      "loc": 550,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/(workspace)/partners/page.tsx",
+      "category": "app",
+      "loc": 279,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/api/knowledge-bases/[kbName]/upload/route.ts",
+      "category": "app",
+      "loc": 8,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/api/knowledge-bases/route.ts",
+      "category": "app",
+      "loc": 12,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/handoff/page.tsx",
+      "category": "app",
+      "loc": 109,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "app/layout.tsx",
+      "category": "app",
+      "loc": 68,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/Geogebra.tsx",
+      "category": "components",
+      "loc": 257,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/Mermaid.tsx",
+      "category": "components",
+      "loc": 179,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/UserAvatar.tsx",
+      "category": "components",
+      "loc": 188,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/access/CapabilityGate.tsx",
+      "category": "components",
+      "loc": 24,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/access/RequireCapability.tsx",
+      "category": "components",
+      "loc": 59,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityDetailGrid.tsx",
+      "category": "components",
+      "loc": 94,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityFold.tsx",
+      "category": "components",
+      "loc": 62,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityHeader.tsx",
+      "category": "components",
+      "loc": 105,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityMark.tsx",
+      "category": "components",
+      "loc": 143,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityOrb.tsx",
+      "category": "components",
+      "loc": 110,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityRow.tsx",
+      "category": "components",
+      "loc": 186,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/ActivityStack.tsx",
+      "category": "components",
+      "loc": 70,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/StatusDot.tsx",
+      "category": "components",
+      "loc": 58,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/activity/index.ts",
+      "category": "components",
+      "loc": 35,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/agents/AgentsHub.tsx",
+      "category": "components",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/auth/AdminLink.tsx",
+      "category": "components",
+      "loc": 56,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/auth/LogoutButton.tsx",
+      "category": "components",
+      "loc": 49,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/auth/ProfileLink.tsx",
+      "category": "components",
+      "loc": 76,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/BookReferencePicker.tsx",
+      "category": "components",
+      "loc": 442,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/MemoryPicker.tsx",
+      "category": "components",
+      "loc": 165,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/MyAgentsPicker.tsx",
+      "category": "components",
+      "loc": 685,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/PersonaPicker.tsx",
+      "category": "components",
+      "loc": 207,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/ReadingReferencePicker.tsx",
+      "category": "components",
+      "loc": 514,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/CapabilityConfigCard.tsx",
+      "category": "components",
+      "loc": 123,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ChatMarkdownNoteTab.tsx",
+      "category": "components",
+      "loc": 186,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ChatViewerBridges.tsx",
+      "category": "components",
+      "loc": 34,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ComposerRail.tsx",
+      "category": "components",
+      "loc": 36,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ContextBudgetChip.tsx",
+      "category": "components",
+      "loc": 335,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ContextReferenceTree.tsx",
+      "category": "components",
+      "loc": 228,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/CourseHandoffCard.tsx",
+      "category": "components",
+      "loc": 144,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/CoursePill.tsx",
+      "category": "components",
+      "loc": 182,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/KnowledgeSelector.tsx",
+      "category": "components",
+      "loc": 189,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/MasteryHandoffCard.tsx",
+      "category": "components",
+      "loc": 247,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ModelSelector.tsx",
+      "category": "components",
+      "loc": 294,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/PartnerDraftCard.tsx",
+      "category": "components",
+      "loc": 202,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/PartnerGroupSelector.tsx",
+      "category": "components",
+      "loc": 73,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/PartnerSelector.tsx",
+      "category": "components",
+      "loc": 74,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/PersonaSelector.tsx",
+      "category": "components",
+      "loc": 296,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SelectedResources.tsx",
+      "category": "components",
+      "loc": 132,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SessionActivityPanel.tsx",
+      "category": "components",
+      "loc": 571,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SessionLoadingView.tsx",
+      "category": "components",
+      "loc": 101,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SetupCredentialCard.tsx",
+      "category": "components",
+      "loc": 59,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SubagentRunTranscript.tsx",
+      "category": "components",
+      "loc": 188,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/ToolbarLabel.tsx",
+      "category": "components",
+      "loc": 46,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/composer-field.tsx",
+      "category": "components",
+      "loc": 74,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/DocxPreview.tsx",
+      "category": "components",
+      "loc": 134,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/FallbackPreview.tsx",
+      "category": "components",
+      "loc": 55,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/ImagePreview.tsx",
+      "category": "components",
+      "loc": 62,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/MarkdownPreview.tsx",
+      "category": "components",
+      "loc": 38,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/OfficeTextPreview.tsx",
+      "category": "components",
+      "loc": 63,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/SvgPreview.tsx",
+      "category": "components",
+      "loc": 25,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/TextPreview.tsx",
+      "category": "components",
+      "loc": 55,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/VideoPreview.tsx",
+      "category": "components",
+      "loc": 43,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/XlsxPreview.tsx",
+      "category": "components",
+      "loc": 170,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/useBinarySource.ts",
+      "category": "components",
+      "loc": 64,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/preview/previewers/useTextSource.ts",
+      "category": "components",
+      "loc": 80,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/space/ChatSpaceMenu.tsx",
+      "category": "components",
+      "loc": 331,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/cli-apps/CliAppsSection.tsx",
+      "category": "components",
+      "loc": 1026,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/BrandIcon.tsx",
+      "category": "components",
+      "loc": 120,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/GeogebraOpenCTA.tsx",
+      "category": "components",
+      "loc": 83,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/McpToolGroups.tsx",
+      "category": "components",
+      "loc": 126,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/ModelThinkingCard.tsx",
+      "category": "components",
+      "loc": 102,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/MotionProvider.tsx",
+      "category": "components",
+      "loc": 10,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/ProcessLogs.tsx",
+      "category": "components",
+      "loc": 97,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/ProviderIcon.tsx",
+      "category": "components",
+      "loc": 97,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/RichInlineMarkdown.tsx",
+      "category": "components",
+      "loc": 83,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/ToastViewport.tsx",
+      "category": "components",
+      "loc": 80,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/markdown-renderer-core.ts",
+      "category": "components",
+      "loc": 60,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/markdown-renderer-types.ts",
+      "category": "components",
+      "loc": 12,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/common/motion-features.ts",
+      "category": "components",
+      "loc": 3,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseConventions.tsx",
+      "category": "components",
+      "loc": 110,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseDialog.tsx",
+      "category": "components",
+      "loc": 224,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseNextStep.tsx",
+      "category": "components",
+      "loc": 189,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseProgress.tsx",
+      "category": "components",
+      "loc": 169,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseResources.tsx",
+      "category": "components",
+      "loc": 323,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseScope.tsx",
+      "category": "components",
+      "loc": 142,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/courses/CourseSyllabus.tsx",
+      "category": "components",
+      "loc": 251,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/ConnectKiwixModal.tsx",
+      "category": "components",
+      "loc": 117,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/EmbeddingModelSelector.tsx",
+      "category": "components",
+      "loc": 70,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/FileDropZone.tsx",
+      "category": "components",
+      "loc": 380,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/ImaConnectionFields.tsx",
+      "category": "components",
+      "loc": 280,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbDocumentList.tsx",
+      "category": "components",
+      "loc": 597,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbFilePreview.tsx",
+      "category": "components",
+      "loc": 359,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbIndexFailureBanner.tsx",
+      "category": "components",
+      "loc": 50,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbKiwixArticlesSection.tsx",
+      "category": "components",
+      "loc": 90,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbStatusBadge.tsx",
+      "category": "components",
+      "loc": 64,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbTaskLogs.tsx",
+      "category": "components",
+      "loc": 73,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KbUpdateHistory.tsx",
+      "category": "components",
+      "loc": 152,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KnowledgeEngineIcon.tsx",
+      "category": "components",
+      "loc": 63,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/KnowledgePage.tsx",
+      "category": "components",
+      "loc": 524,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/LightRagEmbeddingWarning.tsx",
+      "category": "components",
+      "loc": 32,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/LinkFolderModal.tsx",
+      "category": "components",
+      "loc": 139,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/knowledge/PageIndexSettingsModal.tsx",
+      "category": "components",
+      "loc": 211,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/learning/LearningCard.tsx",
+      "category": "components",
+      "loc": 67,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/learning/LearningShell.tsx",
+      "category": "components",
+      "loc": 139,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/learning/LearningWays.tsx",
+      "category": "components",
+      "loc": 312,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/learning/practice/PracticePage.tsx",
+      "category": "components",
+      "loc": 316,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/learning/practice/ReviewHome.tsx",
+      "category": "components",
+      "loc": 229,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/math-animator/MathAnimatorViewer.tsx",
+      "category": "components",
+      "loc": 205,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpAdminRegistry.tsx",
+      "category": "components",
+      "loc": 150,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpCatalogBrowser.tsx",
+      "category": "components",
+      "loc": 760,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpDeploymentList.tsx",
+      "category": "components",
+      "loc": 65,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpServerForm.tsx",
+      "category": "components",
+      "loc": 395,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpServerList.tsx",
+      "category": "components",
+      "loc": 127,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpServerRow.tsx",
+      "category": "components",
+      "loc": 245,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpStatusBadge.tsx",
+      "category": "components",
+      "loc": 47,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/mcp/McpToolList.tsx",
+      "category": "components",
+      "loc": 30,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryArchivedBanner.tsx",
+      "category": "components",
+      "loc": 99,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryGraph.tsx",
+      "category": "components",
+      "loc": 992,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryHub.tsx",
+      "category": "components",
+      "loc": 265,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryL1Workbench.tsx",
+      "category": "components",
+      "loc": 279,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryRunPanel.tsx",
+      "category": "components",
+      "loc": 952,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemorySection.tsx",
+      "category": "components",
+      "loc": 1548,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/MemoryWorkbench.tsx",
+      "category": "components",
+      "loc": 639,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/memory/useMemoryRun.ts",
+      "category": "components",
+      "loc": 471,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/notebook/NotebookRecordActions.tsx",
+      "category": "components",
+      "loc": 222,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/notebook/NotebookRecordPicker.tsx",
+      "category": "components",
+      "loc": 89,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/notebook/NotebookSelector.tsx",
+      "category": "components",
+      "loc": 252,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/notebook/useNotebookSelection.ts",
+      "category": "components",
+      "loc": 170,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/ChannelIcon.tsx",
+      "category": "components",
+      "loc": 299,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/FaceEditor.tsx",
+      "category": "components",
+      "loc": 225,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/PartnerChannels.tsx",
+      "category": "components",
+      "loc": 392,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/PartnerConfigure.tsx",
+      "category": "components",
+      "loc": 567,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/PartnerLinkModal.tsx",
+      "category": "components",
+      "loc": 209,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/PartnerModelPicker.tsx",
+      "category": "components",
+      "loc": 149,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/PartnerModelSelect.tsx",
+      "category": "components",
+      "loc": 208,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/SoulEditor.tsx",
+      "category": "components",
+      "loc": 101,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/SoulPicker.tsx",
+      "category": "components",
+      "loc": 266,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/ToolPicker.tsx",
+      "category": "components",
+      "loc": 231,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/WeixinQrLogin.tsx",
+      "category": "components",
+      "loc": 161,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/GroupComposer.tsx",
+      "category": "components",
+      "loc": 266,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/GroupEmptyState.tsx",
+      "category": "components",
+      "loc": 75,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/GroupRound.tsx",
+      "category": "components",
+      "loc": 250,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/GroupSidePanel.tsx",
+      "category": "components",
+      "loc": 235,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/InvocationCard.tsx",
+      "category": "components",
+      "loc": 98,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/PartnerSeat.tsx",
+      "category": "components",
+      "loc": 210,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/RoundSummaryAction.tsx",
+      "category": "components",
+      "loc": 75,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/group/useGroupSession.ts",
+      "category": "components",
+      "loc": 574,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/partners/schema-form.tsx",
+      "category": "components",
+      "loc": 353,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/quiz/FollowupChatComposer.tsx",
+      "category": "components",
+      "loc": 171,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/quiz/QuizConfigPanel.tsx",
+      "category": "components",
+      "loc": 767,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/quiz/QuizFollowupTabBody.tsx",
+      "category": "components",
+      "loc": 400,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/library/FolderDialog.tsx",
+      "category": "components",
+      "loc": 210,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/library/FolderGlyph.tsx",
+      "category": "components",
+      "loc": 82,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/library/LibraryShell.tsx",
+      "category": "components",
+      "loc": 136,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/library/MaterialLibrary.tsx",
+      "category": "components",
+      "loc": 744,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/library/ReadingLibrary.tsx",
+      "category": "components",
+      "loc": 621,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/reading-actions-context.ts",
+      "category": "components",
+      "loc": 80,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace-menu-context.ts",
+      "category": "components",
+      "loc": 60,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace/BilibiliReadingPlayer.tsx",
+      "category": "components",
+      "loc": 101,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace/ReadAloudButton.tsx",
+      "category": "components",
+      "loc": 116,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace/ReadingActionCards.tsx",
+      "category": "components",
+      "loc": 186,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace/WorkspaceMenu.tsx",
+      "category": "components",
+      "loc": 130,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/reading/workspace/useLearningMode.ts",
+      "category": "components",
+      "loc": 143,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/research/ResearchConfigPanel.tsx",
+      "category": "components",
+      "loc": 167,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/research/ResearchOutlineEditor.tsx",
+      "category": "components",
+      "loc": 248,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/ChatResponseTimeoutSection.tsx",
+      "category": "components",
+      "loc": 136,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/ConnectionsEditor.tsx",
+      "category": "components",
+      "loc": 762,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/DimensionField.tsx",
+      "category": "components",
+      "loc": 176,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/ModelCapabilityFields.tsx",
+      "category": "components",
+      "loc": 138,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/ModelCards.tsx",
+      "category": "components",
+      "loc": 473,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/SettingsLoadStatusBanner.tsx",
+      "category": "components",
+      "loc": 66,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/SettingsReturnTracker.tsx",
+      "category": "components",
+      "loc": 32,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/SettingsRuntimePage.tsx",
+      "category": "components",
+      "loc": 24,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/SettingsStatusPanel.tsx",
+      "category": "components",
+      "loc": 51,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/SettingsTourOverlay.tsx",
+      "category": "components",
+      "loc": 249,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/TaskModelsEditor.tsx",
+      "category": "components",
+      "loc": 100,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/ThemePreviewCard.tsx",
+      "category": "components",
+      "loc": 262,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/settings/WorkspaceShell.tsx",
+      "category": "components",
+      "loc": 293,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/sidebar/SessionAvatar.tsx",
+      "category": "components",
+      "loc": 216,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/sidebar/SidebarNav.tsx",
+      "category": "components",
+      "loc": 703,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/sidebar/UtilitySidebar.tsx",
+      "category": "components",
+      "loc": 168,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/sidebar/WorkspaceSidebar.tsx",
+      "category": "components",
+      "loc": 261,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/EduHubImportModal.tsx",
+      "category": "components",
+      "loc": 587,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/ImportWizard.tsx",
+      "category": "components",
+      "loc": 574,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/McpStoreSection.tsx",
+      "category": "components",
+      "loc": 301,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/MyAgentsSection.tsx",
+      "category": "components",
+      "loc": 695,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/PersonasSection.tsx",
+      "category": "components",
+      "loc": 588,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/ScopeEditorModal.tsx",
+      "category": "components",
+      "loc": 234,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/ScopePicker.tsx",
+      "category": "components",
+      "loc": 191,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/SkillLibraryScope.tsx",
+      "category": "components",
+      "loc": 66,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/SkillsSection.tsx",
+      "category": "components",
+      "loc": 1038,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/SpaceMain.tsx",
+      "category": "components",
+      "loc": 58,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/CoverageNotice.tsx",
+      "category": "components",
+      "loc": 90,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/CreateTopicWizard.tsx",
+      "category": "components",
+      "loc": 249,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/EditTopicRouteDialog.tsx",
+      "category": "components",
+      "loc": 144,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/LearningBoard.tsx",
+      "category": "components",
+      "loc": 163,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/LevelUpCelebration.tsx",
+      "category": "components",
+      "loc": 328,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/ModuleOutline.tsx",
+      "category": "components",
+      "loc": 355,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/ProgressRing.tsx",
+      "category": "components",
+      "loc": 88,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/RouteDraftEditor.tsx",
+      "category": "components",
+      "loc": 381,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/SessionCamp.tsx",
+      "category": "components",
+      "loc": 152,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/StudyOutline.tsx",
+      "category": "components",
+      "loc": 186,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/TopicAtlas.tsx",
+      "category": "components",
+      "loc": 149,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/space/learning/TopicMapCard.tsx",
+      "category": "components",
+      "loc": 52,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/visualize/VisualizationViewer.tsx",
+      "category": "components",
+      "loc": 674,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/visualize/VisualizeConfigPanel.tsx",
+      "category": "components",
+      "loc": 283,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/watching/WatchingMarksPanel.tsx",
+      "category": "components",
+      "loc": 216,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/watching/WatchingPlayer.tsx",
+      "category": "components",
+      "loc": 189,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/workspaces/SystemWorkspaceSnapshot.tsx",
+      "category": "components",
+      "loc": 106,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/workspaces/WorkspaceSwitcher.tsx",
+      "category": "components",
+      "loc": 69,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "context/GeogebraTabContext.tsx",
+      "category": "context",
+      "loc": 89,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "context/QuizFollowupContext.tsx",
+      "category": "context",
+      "loc": 647,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "eslint/i18n-plugin.mjs",
+      "category": "eslint",
+      "loc": 57,
+      "actionable": false,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/capabilities/useCapabilityCatalog.ts",
+      "category": "features",
+      "loc": 72,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/multi-user/components/BookPermissionEditor.tsx",
+      "category": "features",
+      "loc": 198,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/multi-user/components/LearnerProfileEditor.tsx",
+      "category": "features",
+      "loc": 127,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/navigation/settings-scroll.ts",
+      "category": "features",
+      "loc": 53,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/AboutSettingsSection.tsx",
+      "category": "features",
+      "loc": 466,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/AttachmentsSettingsSection.tsx",
+      "category": "features",
+      "loc": 275,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/CapabilitiesSettingsSection.tsx",
+      "category": "features",
+      "loc": 642,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/DataMigrationSettingsSection.tsx",
+      "category": "features",
+      "loc": 403,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/LearnerProfileSettingsSection.tsx",
+      "category": "features",
+      "loc": 83,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/MemorySettingsSection.tsx",
+      "category": "features",
+      "loc": 409,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/NetworkSettingsSection.tsx",
+      "category": "features",
+      "loc": 404,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/StartersSettingsSection.tsx",
+      "category": "features",
+      "loc": 194,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/ToolsSettingsSection.tsx",
+      "category": "features",
+      "loc": 594,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/VideoLearningSettingsSection.tsx",
+      "category": "features",
+      "loc": 205,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/ConnectionsSettingsSection.tsx",
+      "category": "features",
+      "loc": 21,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/EmbeddingSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/ImageSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/LlmSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/MultimodalSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/SearchSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/SttSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/TaskModelsSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/TtsSettingsSection.tsx",
+      "category": "features",
+      "loc": 20,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/VideoSettingsSection.tsx",
+      "category": "features",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/VoicePlaybackPrefs.tsx",
+      "category": "features",
+      "loc": 88,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/models/VoiceSettingsSection.tsx",
+      "category": "features",
+      "loc": 20,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/use-card-submission.ts",
+      "category": "hooks",
+      "loc": 54,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/use-linger-expand.ts",
+      "category": "hooks",
+      "loc": 77,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/use-outside-click.ts",
+      "category": "hooks",
+      "loc": 29,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useCollapsiblePanel.ts",
+      "category": "hooks",
+      "loc": 60,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useConsultationReference.ts",
+      "category": "hooks",
+      "loc": 30,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useDragSort.ts",
+      "category": "hooks",
+      "loc": 404,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useKnowledgeHistory.ts",
+      "category": "hooks",
+      "loc": 149,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useMcpServers.ts",
+      "category": "hooks",
+      "loc": 248,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useMeasuredHeight.ts",
+      "category": "hooks",
+      "loc": 23,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useModalDialog.ts",
+      "category": "hooks",
+      "loc": 86,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/usePickerOpen.ts",
+      "category": "hooks",
+      "loc": 31,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useResearchOutlineContinuation.ts",
+      "category": "hooks",
+      "loc": 52,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useSetupSync.ts",
+      "category": "hooks",
+      "loc": 93,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useSidebarResize.ts",
+      "category": "hooks",
+      "loc": 116,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useVoiceMathSpeak.ts",
+      "category": "hooks",
+      "loc": 74,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "hooks/useVoiceRecorder.ts",
+      "category": "hooks",
+      "loc": 119,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/book-errors.ts",
+      "category": "lib",
+      "loc": 32,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/book-references.ts",
+      "category": "lib",
+      "loc": 62,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/co-writer-events.ts",
+      "category": "lib",
+      "loc": 28,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/code-languages.ts",
+      "category": "lib",
+      "loc": 180,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/datetime.ts",
+      "category": "lib",
+      "loc": 32,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/file-attachments.ts",
+      "category": "lib",
+      "loc": 14,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/floating-menu.ts",
+      "category": "lib",
+      "loc": 51,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/kb-name.ts",
+      "category": "lib",
+      "loc": 32,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/latex-commands.ts",
+      "category": "lib",
+      "loc": 172,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/markdown-anchors.ts",
+      "category": "lib",
+      "loc": 39,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/memory-graph.ts",
+      "category": "lib",
+      "loc": 762,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/notebook-selection-types.ts",
+      "category": "lib",
+      "loc": 40,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/personas-api.ts",
+      "category": "lib",
+      "loc": 128,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/picker-origin.ts",
+      "category": "lib",
+      "loc": 48,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/quiz-judge.ts",
+      "category": "lib",
+      "loc": 157,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/random-uuid.ts",
+      "category": "lib",
+      "loc": 40,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/reading-failure.ts",
+      "category": "lib",
+      "loc": 24,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/reading-media-time.ts",
+      "category": "lib",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/relative-time.ts",
+      "category": "lib",
+      "loc": 59,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/research-types.ts",
+      "category": "lib",
+      "loc": 125,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/session-handoff-api.ts",
+      "category": "lib",
+      "loc": 51,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/session-unread.ts",
+      "category": "lib",
+      "loc": 92,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/settings-presets.ts",
+      "category": "lib",
+      "loc": 25,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/space-items.ts",
+      "category": "lib",
+      "loc": 75,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/tool-event.ts",
+      "category": "lib",
+      "loc": 56,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/tools-settings.ts",
+      "category": "lib",
+      "loc": 35,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/use-auto-sized-textarea.ts",
+      "category": "lib",
+      "loc": 37,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/use-ime-composing.ts",
+      "category": "lib",
+      "loc": 28,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/visualizers-api.ts",
+      "category": "lib",
+      "loc": 78,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/workspace-drafts.ts",
+      "category": "lib",
+      "loc": 72,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "lib/youtube-iframe-api.ts",
+      "category": "lib",
+      "loc": 80,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "playwright.config.ts",
+      "category": "config",
+      "loc": 57,
+      "actionable": false,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "postcss.config.js",
+      "category": "config",
+      "loc": 6,
+      "actionable": false,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/build-brand-icons.mts",
+      "category": "scripts",
+      "loc": 103,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/generate-contracts.mjs",
+      "category": "scripts",
+      "loc": 89,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/i18n_parity.mjs",
+      "category": "scripts",
+      "loc": 88,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/next-type-includes.mjs",
+      "category": "scripts",
+      "loc": 27,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/probe-right-edge.mjs",
+      "category": "scripts",
+      "loc": 22,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "scripts/route_budgets.mjs",
+      "category": "scripts",
+      "loc": 209,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "tailwind.config.js",
+      "category": "config",
+      "loc": 113,
+      "actionable": false,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "vitest.config.mts",
+      "category": "config",
+      "loc": 23,
+      "actionable": false,
+      "basis": "no test file references this path or basename"
+    }
+  ],
+  "weak": [
+    {
+      "path": "components/ThemeScript.tsx",
+      "category": "components",
+      "loc": 49,
+      "actionable": true,
+      "basis": "path-refs: meta=1",
+      "refs": {
+        "meta": [
+          "tests/architecture-contracts.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/activity/types.ts",
+      "category": "components",
+      "loc": 12,
+      "actionable": true,
+      "basis": "basename-only refs: meta=2, node=12, vitest=10",
+      "refs": {
+        "node": [
+          "tests/book-activity.test.ts",
+          "tests/build-wrapper.test.ts",
+          "tests/capability-catalog.test.ts",
+          "tests/codex-oauth-client.test.ts",
+          "tests/ima-connection.test.ts",
+          "tests/learning-dashboard.test.ts",
+          "tests/math-animator-types.test.ts",
+          "tests/quiz-question-type.test.ts",
+          "tests/quiz-turn-id.test.ts",
+          "tests/smooth-stream.test.ts",
+          "tests/visualize-types.test.ts",
+          "tests/wire-api-settings-contract.test.ts"
+        ],
+        "vitest": [
+          "tests/chat-import-chatgpt.spec.ts",
+          "tests/chat-import-codex.spec.ts",
+          "tests/chat-workspace-binding.spec.tsx",
+          "tests/composer-resources.spec.tsx",
+          "tests/imports-api.spec.ts",
+          "tests/lightrag-role-models.spec.tsx",
+          "tests/markdown-math-renderer.spec.tsx",
+          "tests/media-reading-stage.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/voice-settings.spec.tsx"
+        ],
+        "meta": [
+          "tests/generated-contracts.test.ts",
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/agents/ConnectedAgents.tsx",
+      "category": "components",
+      "loc": 380,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/subagent-harnesses.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/agents/agent-icons.tsx",
+      "category": "components",
+      "loc": 242,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/subagent-harnesses.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/chat/preview/FilePreviewDrawer.tsx",
+      "category": "components",
+      "loc": 428,
+      "actionable": true,
+      "basis": "path-refs: meta=1",
+      "refs": {
+        "meta": [
+          "tests/architecture-contracts.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/common/InlineMarkdown.tsx",
+      "category": "components",
+      "loc": 42,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/reading-inline-markdown.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/common/Modal.tsx",
+      "category": "components",
+      "loc": 182,
+      "actionable": true,
+      "basis": "basename-only refs: node=2",
+      "refs": {
+        "node": [
+          "tests/partner-chat-stop.test.ts",
+          "tests/service-config-done.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/knowledge/LightRagIndexingProvenance.tsx",
+      "category": "components",
+      "loc": 91,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/lightrag-indexing-model.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/learning/surfaces.ts",
+      "category": "components",
+      "loc": 109,
+      "actionable": true,
+      "basis": "basename-only refs: node=10, playwright=4, vitest=1",
+      "refs": {
+        "node": [
+          "tests/app-update.test.ts",
+          "tests/cli-apps-api.test.ts",
+          "tests/course-handoff.test.ts",
+          "tests/lightrag-indexing-model.test.ts",
+          "tests/linked-folder-api.test.ts",
+          "tests/llm-options-state.test.ts",
+          "tests/marginnote4-api.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/session-load-failure.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/compliance-and-ux.audit.ts",
+          "tests/e2e/multi-worker-turns.audit.ts",
+          "tests/e2e/release-ui-matrix.audit.ts",
+          "tests/e2e/turn-lifecycle.audit.ts"
+        ],
+        "vitest": [
+          "tests/unified-turn-client-errors.spec.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/mcp/styles.ts",
+      "category": "components",
+      "loc": 16,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/pdf-reading-resize.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/notebook/SaveToNotebookModal.tsx",
+      "category": "components",
+      "loc": 710,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/mastery-study-layout.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/partners/group/labels.ts",
+      "category": "components",
+      "loc": 28,
+      "actionable": true,
+      "basis": "basename-only refs: node=8, vitest=4",
+      "refs": {
+        "node": [
+          "tests/account-role.test.ts",
+          "tests/doc-attachments.test.ts",
+          "tests/german-locale-quality.test.ts",
+          "tests/latex.test.ts",
+          "tests/mastery-format.test.ts",
+          "tests/settings-memory-label.test.ts",
+          "tests/settings-readiness-i18n.test.ts",
+          "tests/subagent-harnesses.test.ts"
+        ],
+        "vitest": [
+          "tests/ask-user-card-form.spec.tsx",
+          "tests/attachment-processing-status.spec.tsx",
+          "tests/integration/chat-messages.spec.tsx",
+          "tests/reading-outline-tracking.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/partners/group/mentions.ts",
+      "category": "components",
+      "loc": 126,
+      "actionable": true,
+      "basis": "basename-only refs: node=3, vitest=2",
+      "refs": {
+        "vitest": [
+          "tests/consultation-sidebar.spec.tsx",
+          "tests/partner-group-export-session.spec.tsx"
+        ],
+        "node": [
+          "tests/dev-heap-ceiling.test.ts",
+          "tests/markdown-display.test.ts",
+          "tests/partner-group-export.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/partners/group/outline.ts",
+      "category": "components",
+      "loc": 81,
+      "actionable": true,
+      "basis": "basename-only refs: node=6, playwright=5, vitest=8",
+      "refs": {
+        "node": [
+          "tests/chat-outline.test.ts",
+          "tests/deep-research-report.test.ts",
+          "tests/mastery-mode.test.ts",
+          "tests/reading-outline.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/topic-source-selection.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/pdf-reading-resize.audit.ts",
+          "tests/e2e/reading-citation-material.audit.ts",
+          "tests/e2e/reading-location-history.audit.ts",
+          "tests/e2e/reading-w3c-annotations.audit.ts",
+          "tests/epub-reader.audit.ts"
+        ],
+        "vitest": [
+          "tests/epub-display-preferences.spec.tsx",
+          "tests/learning-dashboard.spec.tsx",
+          "tests/mastery-objective-gate-bar.spec.tsx",
+          "tests/mastery-opening.spec.tsx",
+          "tests/mastery-review-trail-scroll.spec.tsx",
+          "tests/reading-learning-mode.spec.tsx",
+          "tests/reading-outline-tracking.spec.tsx",
+          "tests/reading-source-navigator.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/reading/PdfPage.tsx",
+      "category": "components",
+      "loc": 212,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/pdf-reading-resize.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/reading/library/ReadingFolder.tsx",
+      "category": "components",
+      "loc": 459,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/reading-v2-surface.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/reading/library/shared.tsx",
+      "category": "components",
+      "loc": 121,
+      "actionable": true,
+      "basis": "basename-only refs: meta=6, node=17, vitest=13",
+      "refs": {
+        "vitest": [
+          "tests/annotation-layer-tooltip.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/integration/ask-user-trace-continuity.spec.tsx",
+          "tests/integration/smoke.spec.tsx",
+          "tests/integration/ui-primitives.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/partner-chat-continuity.spec.tsx",
+          "tests/partner-continuity.spec.tsx",
+          "tests/partner-workspace-picker.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/reading-learning-mode.spec.tsx",
+          "tests/tooltip.spec.tsx",
+          "tests/usage-statistics.spec.tsx"
+        ],
+        "node": [
+          "tests/api-client.test.ts",
+          "tests/appearance-settings-page.test.ts",
+          "tests/auth-return-url.test.ts",
+          "tests/build-wrapper.test.ts",
+          "tests/capability-access.test.ts",
+          "tests/codex-oauth-settings-contract.test.ts",
+          "tests/course-organization-api.test.ts",
+          "tests/guardian-management.test.ts",
+          "tests/latex.test.ts",
+          "tests/mastery-study-layout.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/native-button-title.test.ts",
+          "tests/optimistic-id.test.ts",
+          "tests/service-config-done.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/storage.test.ts",
+          "tests/video-player-controller.test.ts"
+        ],
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/internal-route-contract.test.ts",
+          "tests/no-page-module-imports.test.ts",
+          "tests/no-unified-chat-context.test.ts",
+          "tests/no-v1-chat-surface.test.ts",
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/settings/MemoryUsageItem.tsx",
+      "category": "components",
+      "loc": 180,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/settings-memory-label.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/settings/SettingsNav.tsx",
+      "category": "components",
+      "loc": 124,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/settings/SettingsOverview.tsx",
+      "category": "components",
+      "loc": 156,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/appearance-settings-page.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/settings/Toggle.tsx",
+      "category": "components",
+      "loc": 30,
+      "actionable": true,
+      "basis": "basename-only refs: node=1, vitest=1",
+      "refs": {
+        "node": [
+          "tests/appearance-settings-page.test.ts"
+        ],
+        "vitest": [
+          "tests/chat-failed-submission-recovery.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/space/learning/ConfirmDialog.tsx",
+      "category": "components",
+      "loc": 99,
+      "actionable": true,
+      "basis": "basename-only refs: node=3",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts",
+          "tests/partner-chat-stop.test.ts",
+          "tests/watching-note-timestamps.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/space/question-bank/BankScopeRail.tsx",
+      "category": "components",
+      "loc": 125,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel components/space/question-bank/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "components/space/question-bank/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/space/question-bank/BankSelectionBar.tsx",
+      "category": "components",
+      "loc": 95,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel components/space/question-bank/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "components/space/question-bank/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/space/question-bank/BankToolbar.tsx",
+      "category": "components",
+      "loc": 168,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel components/space/question-bank/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "components/space/question-bank/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/space/question-bank/CategoryMenu.tsx",
+      "category": "components",
+      "loc": 211,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel components/space/question-bank/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "components/space/question-bank/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "components/space/question-bank/QuestionBankSection.tsx",
+      "category": "components",
+      "loc": 331,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/practice-entrypoints.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "components/ui/ConfirmDialog.tsx",
+      "category": "components",
+      "loc": 116,
+      "actionable": true,
+      "basis": "basename-only refs: node=3",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts",
+          "tests/partner-chat-stop.test.ts",
+          "tests/watching-note-timestamps.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "eslint.config.mjs",
+      "category": "config",
+      "loc": 87,
+      "actionable": false,
+      "basis": "path-refs: meta=2",
+      "refs": {
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/capabilities/api.ts",
+      "category": "features",
+      "loc": 21,
+      "actionable": true,
+      "basis": "basename-only refs: meta=4, node=46, playwright=10, vitest=65",
+      "refs": {
+        "node": [
+          "tests/admin-user-batches.test.ts",
+          "tests/admin-user-presets.test.ts",
+          "tests/api-auth-redirect.test.ts",
+          "tests/api-client.test.ts",
+          "tests/app-update.test.ts",
+          "tests/auth-enabled.test.ts",
+          "tests/backend-runtime-config.test.ts",
+          "tests/book-activity.test.ts",
+          "tests/book-api-transport.test.ts",
+          "tests/chat-markdown-note.test.ts",
+          "tests/cli-apps-api.test.ts",
+          "tests/course-organization-api.test.ts",
+          "tests/graphrag-model-compatibility.test.ts",
+          "tests/guardian-management.test.ts",
+          "tests/ima-knowledge-api.test.ts",
+          "tests/knowledge-api-boundaries.test.ts",
+          "tests/learning-dashboard.test.ts",
+          "tests/learning-records-api.test.ts",
+          "tests/lightrag-indexing-model.test.ts",
+          "tests/linked-folder-api.test.ts",
+          "tests/marginnote4-api.test.ts",
+          "tests/mastery-path-activity.test.ts",
+          "tests/mastery-route-draft.test.ts",
+          "tests/mastery-session.test.ts",
+          "tests/math-animator-types.test.ts",
+          "tests/mcp-server-config.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/mcp-store.test.ts",
+          "tests/partner-group-export.test.ts",
+          "tests/partners-channel-onboarding.test.ts",
+          "tests/proxy-policy.test.ts",
+          "tests/reading-citation-capture.test.ts",
+          "tests/reading-extensions.test.ts",
+          "tests/reading-notebook-capture.test.ts",
+          "tests/reading-position.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/reading-w3c-annotations.test.ts",
+          "tests/search-providers.test.ts",
+          "tests/session-archive.test.ts",
+          "tests/session-search-api.test.ts",
+          "tests/settings-context-ui-sync.test.ts",
+          "tests/settings-presets.test.ts",
+          "tests/sidebar-entries.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/streaming-upload-proxy.test.ts",
+          "tests/watching-session.test.ts"
+        ],
+        "vitest": [
+          "tests/annotation-layer-tooltip.spec.tsx",
+          "tests/app-shell-language-adoption.spec.tsx",
+          "tests/archived-chats-settings.spec.tsx",
+          "tests/book-deep-link-loading.spec.tsx",
+          "tests/book-deep-link-shell.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/chat-history-search.spec.tsx",
+          "tests/chat-read-aloud-playback.spec.tsx",
+          "tests/chat-reply-language.spec.tsx",
+          "tests/chat-workspace-binding.spec.tsx",
+          "tests/co-writer-lazy-notebook.spec.tsx",
+          "tests/co-writer-model-selection.spec.tsx",
+          "tests/consultation-message-reference.spec.tsx",
+          "tests/consultation-sidebar.spec.tsx",
+          "tests/courses-shelf.spec.tsx",
+          "tests/epub-display-preferences.spec.tsx",
+          "tests/history-session-search.spec.tsx",
+          "tests/image-description-model.spec.tsx",
+          "tests/imports-api.spec.ts",
+          "tests/kb-embedding-binding.spec.tsx",
+          "tests/knowledge-create-progress.spec.tsx",
+          "tests/knowledge-linked-folders.spec.tsx",
+          "tests/knowledge-sync-progress.spec.tsx",
+          "tests/learning-dashboard.spec.tsx",
+          "tests/learning-source-library.spec.tsx",
+          "tests/lightrag-embedding-compatibility.spec.tsx",
+          "tests/lightrag-form.spec.tsx",
+          "tests/lightrag-lifecycle.spec.tsx",
+          "tests/mastery-objective-gate-bar.spec.tsx",
+          "tests/mastery-opening.spec.tsx",
+          "tests/mastery-review-trail-scroll.spec.tsx",
+          "tests/mastery-teach-copy.spec.tsx",
+          "tests/media-reading-stage.spec.tsx",
+          "tests/model-settings-store.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/notebook-record-edit-discoverability.spec.tsx",
+          "tests/office-pdf-preview.spec.tsx",
+          "tests/partner-chat-continuity.spec.tsx",
+          "tests/partner-continuity.spec.tsx",
+          "tests/partner-group-export-session.spec.tsx",
+          "tests/partner-workspace-picker.spec.tsx",
+          "tests/practice-display-stats.spec.tsx",
+          "tests/practice-entrypoints.spec.tsx",
+          "tests/practice-workflow.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/question-bank-picker.spec.tsx",
+          "tests/reading-add-invidious.spec.tsx",
+          "tests/reading-age-presentation.spec.tsx",
+          "tests/reading-quiz-persistence.spec.tsx",
+          "tests/reading-read-aloud-speech.spec.ts",
+          "tests/reading-source-navigator.spec.tsx",
+          "tests/reading-toolbar-selection.spec.tsx",
+          "tests/settings-unified-draft.spec.tsx",
+          "tests/starter-suggestions.spec.tsx",
+          "tests/subagent-grok-settings.spec.tsx",
+          "tests/task-board.spec.tsx",
+          "tests/voice-settings.spec.tsx",
+          "tests/watching-browser.spec.tsx",
+          "tests/watching-workspace.spec.tsx",
+          "tests/web-source-bilingual-pairing.spec.tsx",
+          "tests/workspace-chat-groups.spec.tsx",
+          "tests/workspace-resource-picker.spec.tsx",
+          "tests/workspace-scope.spec.ts",
+          "tests/workspace-session-menu.spec.tsx",
+          "tests/workspace-sidebar-grouping.spec.tsx"
+        ],
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/generated-contracts.test.ts",
+          "tests/internal-route-contract.test.ts",
+          "tests/no-v1-chat-surface.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/book-reader-sequential.audit.ts",
+          "tests/e2e/compliance-and-ux.audit.ts",
+          "tests/e2e/learning-progress.audit.ts",
+          "tests/e2e/pdf-reading-resize.audit.ts",
+          "tests/e2e/reading-citation-material.audit.ts",
+          "tests/e2e/reading-location-history.audit.ts",
+          "tests/e2e/reading-w3c-annotations.audit.ts",
+          "tests/e2e/settings-navigation.audit.ts",
+          "tests/e2e/video-learning.audit.ts",
+          "tests/epub-reader.audit.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/chat/components/turn/ProtocolMismatchNotice.tsx",
+      "category": "features",
+      "loc": 39,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/protocol-mismatch-notice.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/chat/trace/ActivityOrb.tsx",
+      "category": "features",
+      "loc": 55,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel features/chat/trace/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "features/chat/trace/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/chat/trace/model.ts",
+      "category": "features",
+      "loc": 102,
+      "actionable": true,
+      "basis": "basename-only refs: node=40, playwright=5, vitest=31",
+      "refs": {
+        "node": [
+          "tests/app-shell-language-bootstrap.test.ts",
+          "tests/appearance-settings-page.test.ts",
+          "tests/ask-user-segments.test.ts",
+          "tests/ask-user-state.test.ts",
+          "tests/capability-catalog.test.ts",
+          "tests/clipboard.test.ts",
+          "tests/co-writer-editor-state.test.ts",
+          "tests/codebuddy-auth-settings-contract.test.ts",
+          "tests/codex-oauth-client.test.ts",
+          "tests/codex-oauth-settings-contract.test.ts",
+          "tests/course-handoff.test.ts",
+          "tests/deep-research-report.test.ts",
+          "tests/graphrag-model-compatibility.test.ts",
+          "tests/ima-connection.test.ts",
+          "tests/knowledge-helpers.test.ts",
+          "tests/latex-normalize.test.ts",
+          "tests/lightrag-indexing-model.test.ts",
+          "tests/llm-options-state.test.ts",
+          "tests/llm-options-transport.test.ts",
+          "tests/mastery-handoff.test.ts",
+          "tests/mastery-question.test.ts",
+          "tests/partner-chat-draft.test.ts",
+          "tests/partner-draft.test.ts",
+          "tests/provider-trace-row.test.ts",
+          "tests/reading-citations.test.ts",
+          "tests/reading-quote-locator.test.ts",
+          "tests/reading-reader-action.test.ts",
+          "tests/reasoning-effort.test.ts",
+          "tests/runtime-status.test.ts",
+          "tests/session-activity.test.ts",
+          "tests/settings-readiness.test.ts",
+          "tests/setup-signals.test.ts",
+          "tests/smooth-stream.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/stream.test.ts",
+          "tests/trace-memory.test.ts",
+          "tests/trace-selectors.test.ts",
+          "tests/trace-timing.test.ts",
+          "tests/turn-lifecycle-characterization.test.ts",
+          "tests/wire-api-settings-contract.test.ts"
+        ],
+        "vitest": [
+          "tests/ask-user-streaming-card.spec.tsx",
+          "tests/attachment-processing-status.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/chat-import-codex.spec.ts",
+          "tests/chat-streaming-status.spec.tsx",
+          "tests/co-writer-model-selection.spec.tsx",
+          "tests/consultation-sidebar.spec.tsx",
+          "tests/exploring-auto-fold.spec.tsx",
+          "tests/image-description-model.spec.tsx",
+          "tests/integration/ask-user-trace-continuity.spec.tsx",
+          "tests/integration/chat-messages.spec.tsx",
+          "tests/integration/mastery-teaching.spec.tsx",
+          "tests/integration/runtime-health.spec.tsx",
+          "tests/kb-embedding-binding.spec.tsx",
+          "tests/lightrag-embedding-compatibility.spec.tsx",
+          "tests/lightrag-form.spec.tsx",
+          "tests/lightrag-lifecycle.spec.tsx",
+          "tests/lightrag-role-models.spec.tsx",
+          "tests/markdown-math-renderer.spec.tsx",
+          "tests/model-id-suggestions.spec.tsx",
+          "tests/model-settings-store.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/reading-toolbar-selection.spec.tsx",
+          "tests/settings-unified-draft.spec.tsx",
+          "tests/subagent-grok-settings.spec.tsx",
+          "tests/task-models-workflow.spec.tsx",
+          "tests/trace-stored-expansion.spec.tsx",
+          "tests/usage-footer.spec.tsx",
+          "tests/usage-statistics.spec.tsx",
+          "tests/voice-settings.spec.tsx"
+        ],
+        "playwright": [
+          "tests/e2e/pdf-reading-resize.audit.ts",
+          "tests/e2e/reading-citation-material.audit.ts",
+          "tests/e2e/reading-location-history.audit.ts",
+          "tests/e2e/reading-w3c-annotations.audit.ts",
+          "tests/e2e/settings-navigation.audit.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/co-writer/hooks/useDocumentLifecycle.ts",
+      "category": "features",
+      "loc": 32,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/co-writer-workspace.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/co-writer/hooks/useSelectionEdit.ts",
+      "category": "features",
+      "loc": 31,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/co-writer-workspace.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/co-writer/hooks/useSplitPane.ts",
+      "category": "features",
+      "loc": 82,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/co-writer-workspace.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/co-writer/hooks/useSynchronizedScroll.ts",
+      "category": "features",
+      "loc": 50,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/co-writer-workspace.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/knowledge/components/engines/GraphRagForm.tsx",
+      "category": "features",
+      "loc": 1,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/knowledge-api-boundaries.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/knowledge/components/engines/ImaForm.tsx",
+      "category": "features",
+      "loc": 1,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/knowledge-api-boundaries.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/knowledge/components/engines/LightRagForm.tsx",
+      "category": "features",
+      "loc": 1,
+      "actionable": true,
+      "basis": "basename-only refs: node=1, vitest=1",
+      "refs": {
+        "node": [
+          "tests/knowledge-api-boundaries.test.ts"
+        ],
+        "vitest": [
+          "tests/lightrag-form.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/knowledge/components/engines/LlamaIndexForm.tsx",
+      "category": "features",
+      "loc": 1,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/knowledge-api-boundaries.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/multi-user/api.ts",
+      "category": "features",
+      "loc": 95,
+      "actionable": true,
+      "basis": "basename-only refs: meta=4, node=46, playwright=10, vitest=65",
+      "refs": {
+        "node": [
+          "tests/admin-user-batches.test.ts",
+          "tests/admin-user-presets.test.ts",
+          "tests/api-auth-redirect.test.ts",
+          "tests/api-client.test.ts",
+          "tests/app-update.test.ts",
+          "tests/auth-enabled.test.ts",
+          "tests/backend-runtime-config.test.ts",
+          "tests/book-activity.test.ts",
+          "tests/book-api-transport.test.ts",
+          "tests/chat-markdown-note.test.ts",
+          "tests/cli-apps-api.test.ts",
+          "tests/course-organization-api.test.ts",
+          "tests/graphrag-model-compatibility.test.ts",
+          "tests/guardian-management.test.ts",
+          "tests/ima-knowledge-api.test.ts",
+          "tests/knowledge-api-boundaries.test.ts",
+          "tests/learning-dashboard.test.ts",
+          "tests/learning-records-api.test.ts",
+          "tests/lightrag-indexing-model.test.ts",
+          "tests/linked-folder-api.test.ts",
+          "tests/marginnote4-api.test.ts",
+          "tests/mastery-path-activity.test.ts",
+          "tests/mastery-route-draft.test.ts",
+          "tests/mastery-session.test.ts",
+          "tests/math-animator-types.test.ts",
+          "tests/mcp-server-config.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/mcp-store.test.ts",
+          "tests/partner-group-export.test.ts",
+          "tests/partners-channel-onboarding.test.ts",
+          "tests/proxy-policy.test.ts",
+          "tests/reading-citation-capture.test.ts",
+          "tests/reading-extensions.test.ts",
+          "tests/reading-notebook-capture.test.ts",
+          "tests/reading-position.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/reading-w3c-annotations.test.ts",
+          "tests/search-providers.test.ts",
+          "tests/session-archive.test.ts",
+          "tests/session-search-api.test.ts",
+          "tests/settings-context-ui-sync.test.ts",
+          "tests/settings-presets.test.ts",
+          "tests/sidebar-entries.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/streaming-upload-proxy.test.ts",
+          "tests/watching-session.test.ts"
+        ],
+        "vitest": [
+          "tests/annotation-layer-tooltip.spec.tsx",
+          "tests/app-shell-language-adoption.spec.tsx",
+          "tests/archived-chats-settings.spec.tsx",
+          "tests/book-deep-link-loading.spec.tsx",
+          "tests/book-deep-link-shell.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/chat-history-search.spec.tsx",
+          "tests/chat-read-aloud-playback.spec.tsx",
+          "tests/chat-reply-language.spec.tsx",
+          "tests/chat-workspace-binding.spec.tsx",
+          "tests/co-writer-lazy-notebook.spec.tsx",
+          "tests/co-writer-model-selection.spec.tsx",
+          "tests/consultation-message-reference.spec.tsx",
+          "tests/consultation-sidebar.spec.tsx",
+          "tests/courses-shelf.spec.tsx",
+          "tests/epub-display-preferences.spec.tsx",
+          "tests/history-session-search.spec.tsx",
+          "tests/image-description-model.spec.tsx",
+          "tests/imports-api.spec.ts",
+          "tests/kb-embedding-binding.spec.tsx",
+          "tests/knowledge-create-progress.spec.tsx",
+          "tests/knowledge-linked-folders.spec.tsx",
+          "tests/knowledge-sync-progress.spec.tsx",
+          "tests/learning-dashboard.spec.tsx",
+          "tests/learning-source-library.spec.tsx",
+          "tests/lightrag-embedding-compatibility.spec.tsx",
+          "tests/lightrag-form.spec.tsx",
+          "tests/lightrag-lifecycle.spec.tsx",
+          "tests/mastery-objective-gate-bar.spec.tsx",
+          "tests/mastery-opening.spec.tsx",
+          "tests/mastery-review-trail-scroll.spec.tsx",
+          "tests/mastery-teach-copy.spec.tsx",
+          "tests/media-reading-stage.spec.tsx",
+          "tests/model-settings-store.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/notebook-record-edit-discoverability.spec.tsx",
+          "tests/office-pdf-preview.spec.tsx",
+          "tests/partner-chat-continuity.spec.tsx",
+          "tests/partner-continuity.spec.tsx",
+          "tests/partner-group-export-session.spec.tsx",
+          "tests/partner-workspace-picker.spec.tsx",
+          "tests/practice-display-stats.spec.tsx",
+          "tests/practice-entrypoints.spec.tsx",
+          "tests/practice-workflow.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/question-bank-picker.spec.tsx",
+          "tests/reading-add-invidious.spec.tsx",
+          "tests/reading-age-presentation.spec.tsx",
+          "tests/reading-quiz-persistence.spec.tsx",
+          "tests/reading-read-aloud-speech.spec.ts",
+          "tests/reading-source-navigator.spec.tsx",
+          "tests/reading-toolbar-selection.spec.tsx",
+          "tests/settings-unified-draft.spec.tsx",
+          "tests/starter-suggestions.spec.tsx",
+          "tests/subagent-grok-settings.spec.tsx",
+          "tests/task-board.spec.tsx",
+          "tests/voice-settings.spec.tsx",
+          "tests/watching-browser.spec.tsx",
+          "tests/watching-workspace.spec.tsx",
+          "tests/web-source-bilingual-pairing.spec.tsx",
+          "tests/workspace-chat-groups.spec.tsx",
+          "tests/workspace-resource-picker.spec.tsx",
+          "tests/workspace-scope.spec.ts",
+          "tests/workspace-session-menu.spec.tsx",
+          "tests/workspace-sidebar-grouping.spec.tsx"
+        ],
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/generated-contracts.test.ts",
+          "tests/internal-route-contract.test.ts",
+          "tests/no-v1-chat-surface.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/book-reader-sequential.audit.ts",
+          "tests/e2e/compliance-and-ux.audit.ts",
+          "tests/e2e/learning-progress.audit.ts",
+          "tests/e2e/pdf-reading-resize.audit.ts",
+          "tests/e2e/reading-citation-material.audit.ts",
+          "tests/e2e/reading-location-history.audit.ts",
+          "tests/e2e/reading-w3c-annotations.audit.ts",
+          "tests/e2e/settings-navigation.audit.ts",
+          "tests/e2e/video-learning.audit.ts",
+          "tests/epub-reader.audit.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "category": "features",
+      "loc": 338,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/multi-user/types.ts",
+      "category": "features",
+      "loc": 88,
+      "actionable": true,
+      "basis": "basename-only refs: meta=2, node=12, vitest=10",
+      "refs": {
+        "node": [
+          "tests/book-activity.test.ts",
+          "tests/build-wrapper.test.ts",
+          "tests/capability-catalog.test.ts",
+          "tests/codex-oauth-client.test.ts",
+          "tests/ima-connection.test.ts",
+          "tests/learning-dashboard.test.ts",
+          "tests/math-animator-types.test.ts",
+          "tests/quiz-question-type.test.ts",
+          "tests/quiz-turn-id.test.ts",
+          "tests/smooth-stream.test.ts",
+          "tests/visualize-types.test.ts",
+          "tests/wire-api-settings-contract.test.ts"
+        ],
+        "vitest": [
+          "tests/chat-import-chatgpt.spec.ts",
+          "tests/chat-import-codex.spec.ts",
+          "tests/chat-workspace-binding.spec.tsx",
+          "tests/composer-resources.spec.tsx",
+          "tests/imports-api.spec.ts",
+          "tests/lightrag-role-models.spec.tsx",
+          "tests/markdown-math-renderer.spec.tsx",
+          "tests/media-reading-stage.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/voice-settings.spec.tsx"
+        ],
+        "meta": [
+          "tests/generated-contracts.test.ts",
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/runtime-status/RuntimeHealthCard.tsx",
+      "category": "features",
+      "loc": 176,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/runtime-health.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/runtime-status/TurnCoordinationSettings.tsx",
+      "category": "features",
+      "loc": 174,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/runtime-health.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "features/runtime-status/api.ts",
+      "category": "features",
+      "loc": 15,
+      "actionable": true,
+      "basis": "basename-only refs: meta=4, node=46, playwright=10, vitest=65",
+      "refs": {
+        "node": [
+          "tests/admin-user-batches.test.ts",
+          "tests/admin-user-presets.test.ts",
+          "tests/api-auth-redirect.test.ts",
+          "tests/api-client.test.ts",
+          "tests/app-update.test.ts",
+          "tests/auth-enabled.test.ts",
+          "tests/backend-runtime-config.test.ts",
+          "tests/book-activity.test.ts",
+          "tests/book-api-transport.test.ts",
+          "tests/chat-markdown-note.test.ts",
+          "tests/cli-apps-api.test.ts",
+          "tests/course-organization-api.test.ts",
+          "tests/graphrag-model-compatibility.test.ts",
+          "tests/guardian-management.test.ts",
+          "tests/ima-knowledge-api.test.ts",
+          "tests/knowledge-api-boundaries.test.ts",
+          "tests/learning-dashboard.test.ts",
+          "tests/learning-records-api.test.ts",
+          "tests/lightrag-indexing-model.test.ts",
+          "tests/linked-folder-api.test.ts",
+          "tests/marginnote4-api.test.ts",
+          "tests/mastery-path-activity.test.ts",
+          "tests/mastery-route-draft.test.ts",
+          "tests/mastery-session.test.ts",
+          "tests/math-animator-types.test.ts",
+          "tests/mcp-server-config.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/mcp-store.test.ts",
+          "tests/partner-group-export.test.ts",
+          "tests/partners-channel-onboarding.test.ts",
+          "tests/proxy-policy.test.ts",
+          "tests/reading-citation-capture.test.ts",
+          "tests/reading-extensions.test.ts",
+          "tests/reading-notebook-capture.test.ts",
+          "tests/reading-position.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/reading-w3c-annotations.test.ts",
+          "tests/search-providers.test.ts",
+          "tests/session-archive.test.ts",
+          "tests/session-search-api.test.ts",
+          "tests/settings-context-ui-sync.test.ts",
+          "tests/settings-presets.test.ts",
+          "tests/sidebar-entries.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/streaming-upload-proxy.test.ts",
+          "tests/watching-session.test.ts"
+        ],
+        "vitest": [
+          "tests/annotation-layer-tooltip.spec.tsx",
+          "tests/app-shell-language-adoption.spec.tsx",
+          "tests/archived-chats-settings.spec.tsx",
+          "tests/book-deep-link-loading.spec.tsx",
+          "tests/book-deep-link-shell.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/chat-history-search.spec.tsx",
+          "tests/chat-read-aloud-playback.spec.tsx",
+          "tests/chat-reply-language.spec.tsx",
+          "tests/chat-workspace-binding.spec.tsx",
+          "tests/co-writer-lazy-notebook.spec.tsx",
+          "tests/co-writer-model-selection.spec.tsx",
+          "tests/consultation-message-reference.spec.tsx",
+          "tests/consultation-sidebar.spec.tsx",
+          "tests/courses-shelf.spec.tsx",
+          "tests/epub-display-preferences.spec.tsx",
+          "tests/history-session-search.spec.tsx",
+          "tests/image-description-model.spec.tsx",
+          "tests/imports-api.spec.ts",
+          "tests/kb-embedding-binding.spec.tsx",
+          "tests/knowledge-create-progress.spec.tsx",
+          "tests/knowledge-linked-folders.spec.tsx",
+          "tests/knowledge-sync-progress.spec.tsx",
+          "tests/learning-dashboard.spec.tsx",
+          "tests/learning-source-library.spec.tsx",
+          "tests/lightrag-embedding-compatibility.spec.tsx",
+          "tests/lightrag-form.spec.tsx",
+          "tests/lightrag-lifecycle.spec.tsx",
+          "tests/mastery-objective-gate-bar.spec.tsx",
+          "tests/mastery-opening.spec.tsx",
+          "tests/mastery-review-trail-scroll.spec.tsx",
+          "tests/mastery-teach-copy.spec.tsx",
+          "tests/media-reading-stage.spec.tsx",
+          "tests/model-settings-store.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/notebook-record-edit-discoverability.spec.tsx",
+          "tests/office-pdf-preview.spec.tsx",
+          "tests/partner-chat-continuity.spec.tsx",
+          "tests/partner-continuity.spec.tsx",
+          "tests/partner-group-export-session.spec.tsx",
+          "tests/partner-workspace-picker.spec.tsx",
+          "tests/practice-display-stats.spec.tsx",
+          "tests/practice-entrypoints.spec.tsx",
+          "tests/practice-workflow.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/question-bank-picker.spec.tsx",
+          "tests/reading-add-invidious.spec.tsx",
+          "tests/reading-age-presentation.spec.tsx",
+          "tests/reading-quiz-persistence.spec.tsx",
+          "tests/reading-read-aloud-speech.spec.ts",
+          "tests/reading-source-navigator.spec.tsx",
+          "tests/reading-toolbar-selection.spec.tsx",
+          "tests/settings-unified-draft.spec.tsx",
+          "tests/starter-suggestions.spec.tsx",
+          "tests/subagent-grok-settings.spec.tsx",
+          "tests/task-board.spec.tsx",
+          "tests/voice-settings.spec.tsx",
+          "tests/watching-browser.spec.tsx",
+          "tests/watching-workspace.spec.tsx",
+          "tests/web-source-bilingual-pairing.spec.tsx",
+          "tests/workspace-chat-groups.spec.tsx",
+          "tests/workspace-resource-picker.spec.tsx",
+          "tests/workspace-scope.spec.ts",
+          "tests/workspace-session-menu.spec.tsx",
+          "tests/workspace-sidebar-grouping.spec.tsx"
+        ],
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/generated-contracts.test.ts",
+          "tests/internal-route-contract.test.ts",
+          "tests/no-v1-chat-surface.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/book-reader-sequential.audit.ts",
+          "tests/e2e/compliance-and-ux.audit.ts",
+          "tests/e2e/learning-progress.audit.ts",
+          "tests/e2e/pdf-reading-resize.audit.ts",
+          "tests/e2e/reading-citation-material.audit.ts",
+          "tests/e2e/reading-location-history.audit.ts",
+          "tests/e2e/reading-w3c-annotations.audit.ts",
+          "tests/e2e/settings-navigation.audit.ts",
+          "tests/e2e/video-learning.audit.ts",
+          "tests/epub-reader.audit.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/runtime-status/useRuntimeStatus.ts",
+      "category": "features",
+      "loc": 117,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel features/runtime-status/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "features/runtime-status/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/settings/navigation/SettingsAccessProvider.tsx",
+      "category": "features",
+      "loc": 42,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "features/settings/sections/GuardianSettingsSection.tsx",
+      "category": "features",
+      "loc": 467,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "i18n/I18nClientBridge.tsx",
+      "category": "i18n",
+      "loc": 14,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel i18n/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "i18n/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "i18n/I18nProvider.tsx",
+      "category": "i18n",
+      "loc": 68,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel i18n/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "i18n/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/agent-store.ts",
+      "category": "lib",
+      "loc": 168,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel lib/chat-import/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "lib/chat-import/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/attribution.ts",
+      "category": "lib",
+      "loc": 88,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/partner-group-export.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/claude-code.ts",
+      "category": "lib",
+      "loc": 173,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel lib/chat-import/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "lib/chat-import/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/detect.ts",
+      "category": "lib",
+      "loc": 35,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/dev-heap-ceiling.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/shared.ts",
+      "category": "lib",
+      "loc": 49,
+      "actionable": true,
+      "basis": "basename-only refs: meta=6, node=17, vitest=13",
+      "refs": {
+        "vitest": [
+          "tests/annotation-layer-tooltip.spec.tsx",
+          "tests/chat-failed-submission-recovery.spec.tsx",
+          "tests/integration/ask-user-trace-continuity.spec.tsx",
+          "tests/integration/smoke.spec.tsx",
+          "tests/integration/ui-primitives.spec.tsx",
+          "tests/model-settings-workflow.spec.tsx",
+          "tests/partner-chat-continuity.spec.tsx",
+          "tests/partner-continuity.spec.tsx",
+          "tests/partner-workspace-picker.spec.tsx",
+          "tests/provider-registry-workflow.spec.tsx",
+          "tests/reading-learning-mode.spec.tsx",
+          "tests/tooltip.spec.tsx",
+          "tests/usage-statistics.spec.tsx"
+        ],
+        "node": [
+          "tests/api-client.test.ts",
+          "tests/appearance-settings-page.test.ts",
+          "tests/auth-return-url.test.ts",
+          "tests/build-wrapper.test.ts",
+          "tests/capability-access.test.ts",
+          "tests/codex-oauth-settings-contract.test.ts",
+          "tests/course-organization-api.test.ts",
+          "tests/guardian-management.test.ts",
+          "tests/latex.test.ts",
+          "tests/mastery-study-layout.test.ts",
+          "tests/mcp-space-surface.test.ts",
+          "tests/native-button-title.test.ts",
+          "tests/optimistic-id.test.ts",
+          "tests/service-config-done.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/storage.test.ts",
+          "tests/video-player-controller.test.ts"
+        ],
+        "meta": [
+          "tests/architecture-contracts.test.ts",
+          "tests/internal-route-contract.test.ts",
+          "tests/no-page-module-imports.test.ts",
+          "tests/no-unified-chat-context.test.ts",
+          "tests/no-v1-chat-surface.test.ts",
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/chat-import/streaming.ts",
+      "category": "lib",
+      "loc": 51,
+      "actionable": true,
+      "basis": "basename-only refs: node=17, vitest=6",
+      "refs": {
+        "vitest": [
+          "tests/ask-user-resume-cursor.spec.tsx",
+          "tests/ask-user-streaming-card.spec.tsx",
+          "tests/ask-user-terminal-turn.spec.tsx",
+          "tests/chat-streaming-status.spec.tsx",
+          "tests/exploring-auto-fold.spec.tsx",
+          "tests/unified-turn-client-errors.spec.ts"
+        ],
+        "node": [
+          "tests/ask-user-segments.test.ts",
+          "tests/book-api-transport.test.ts",
+          "tests/chat-resend-decision.test.ts",
+          "tests/latex-normalize.test.ts",
+          "tests/latex.test.ts",
+          "tests/partner-chat-autoscroll.test.ts",
+          "tests/partner-chat-stop.test.ts",
+          "tests/quiz-autoscroll.test.ts",
+          "tests/quiz-turn-id.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/reconnecting-websocket.test.ts",
+          "tests/sidebar-entries.test.ts",
+          "tests/stream.test.ts",
+          "tests/streaming-upload-proxy.test.ts",
+          "tests/think-segments.test.ts",
+          "tests/trace-selectors.test.ts",
+          "tests/turn-reconcile.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "lib/guardian-api.ts",
+      "category": "lib",
+      "loc": 183,
+      "actionable": true,
+      "basis": "basename-only refs: node=1",
+      "refs": {
+        "node": [
+          "tests/guardian-management.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "scripts/i18n_audit.mjs",
+      "category": "scripts",
+      "loc": 252,
+      "actionable": true,
+      "basis": "path-refs: meta=1",
+      "refs": {
+        "meta": [
+          "tests/i18n-audit.spec.ts"
+        ]
+      }
+    },
+    {
+      "path": "scripts/typecheck.mjs",
+      "category": "scripts",
+      "loc": 52,
+      "actionable": true,
+      "basis": "path-refs: meta=1",
+      "refs": {
+        "meta": [
+          "tests/tooling-config.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "shared/api/runtime.ts",
+      "category": "shared",
+      "loc": 13,
+      "actionable": true,
+      "basis": "basename-only refs: meta=1, node=17, playwright=3, vitest=2",
+      "refs": {
+        "node": [
+          "tests/api-auth-redirect.test.ts",
+          "tests/api-client.test.ts",
+          "tests/backend-runtime-config.test.ts",
+          "tests/chat-provider-topology.test.ts",
+          "tests/mastery-question.test.ts",
+          "tests/partner-direct-chat.test.ts",
+          "tests/partners-channel-onboarding.test.ts",
+          "tests/proxy-policy.test.ts",
+          "tests/reading-v2-surface.test.ts",
+          "tests/run-node-tests-windows.test.ts",
+          "tests/runtime-status.test.ts",
+          "tests/settings-continuous-navigation.test.ts",
+          "tests/settings-memory-label.test.ts",
+          "tests/settings-readiness.test.ts",
+          "tests/sidebar-entries.test.ts",
+          "tests/start-turn-input.test.ts",
+          "tests/tool-availability.test.ts"
+        ],
+        "playwright": [
+          "tests/e2e/multi-worker-turns.audit.ts",
+          "tests/e2e/settings-navigation.audit.ts",
+          "tests/e2e/turn-lifecycle.audit.ts"
+        ],
+        "vitest": [
+          "tests/integration/runtime-health.spec.tsx",
+          "tests/workspace-i18n.spec.ts"
+        ],
+        "meta": [
+          "tests/no-v1-chat-surface.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/Button.tsx",
+      "category": "shared",
+      "loc": 76,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=2",
+      "refs": {
+        "vitest": [
+          "tests/integration/smoke.spec.tsx",
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/Dialog.tsx",
+      "category": "shared",
+      "loc": 174,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/EmptyState.tsx",
+      "category": "shared",
+      "loc": 45,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/Field.tsx",
+      "category": "shared",
+      "loc": 71,
+      "actionable": true,
+      "basis": "basename-only refs: node=1, vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ],
+        "node": [
+          "tests/mcp-space-surface.test.ts"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/IconButton.tsx",
+      "category": "shared",
+      "loc": 56,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/InlineAlert.tsx",
+      "category": "shared",
+      "loc": 55,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/Skeleton.tsx",
+      "category": "shared",
+      "loc": 15,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel shared/ui/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "shared/ui/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/StatusChip.tsx",
+      "category": "shared",
+      "loc": 39,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/integration/ui-primitives.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/activity-state.ts",
+      "category": "shared",
+      "loc": 18,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel shared/ui/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "shared/ui/index.ts"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/styles.ts",
+      "category": "shared",
+      "loc": 6,
+      "actionable": true,
+      "basis": "basename-only refs: vitest=1",
+      "refs": {
+        "vitest": [
+          "tests/pdf-reading-resize.spec.tsx"
+        ]
+      }
+    },
+    {
+      "path": "shared/ui/tooltip-position.ts",
+      "category": "shared",
+      "loc": 86,
+      "actionable": true,
+      "basis": "no direct test references; re-exported via covered barrel shared/ui/index.ts (indirect reachability only)",
+      "refs": {
+        "barrel": [
+          "shared/ui/index.ts"
+        ]
+      }
+    }
+  ]
+}
