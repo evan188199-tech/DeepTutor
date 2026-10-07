@@ -318,6 +318,25 @@ class KnowledgeBaseInitializer:
         logger.info(f"Raw documents: {len(raw_files)}")
         logger.info(f"Index versions: {len(index_versions)}")
         logger.info(f"Provider used: {self.rag_provider}")
+        if self.rag_provider == "llamaindex":
+            from deeptutor.services.rag.pipelines.llamaindex.config import (
+                retrieval_config_from_settings,
+            )
+            from deeptutor.services.rag.pipelines.llamaindex.retrievers import (
+                effective_retrieval_profile,
+            )
+
+            config = retrieval_config_from_settings()
+            effective = effective_retrieval_profile(config)
+            if effective != config.profile:
+                logger.warning(
+                    "Retrieval profile: configured '%s', effective '%s' "
+                    "(BM25 retriever unavailable; hybrid degrades to vector-only)",
+                    config.profile,
+                    effective,
+                )
+            else:
+                logger.info("Retrieval profile: %s", effective)
         logger.info("=" * 50)
 
 

@@ -14,6 +14,7 @@ from deeptutor.services.doctor import (
     _rag_check,
     run_diagnostics,
 )
+from deeptutor.services.rag.pipelines.llamaindex.config import RetrievalConfig
 from deeptutor_cli.main import app
 
 runner = CliRunner()
@@ -510,6 +511,63 @@ async def test_lightrag_server_reports_missing_connection_as_advisory(tmp_path) 
     assert rag.required is False
     assert "remote-notes" in rag.detail
     assert "no server URL configured" in rag.detail
+    assert report.ok is True
+
+
+@pytest.mark.asyncio
+async def test_hybrid_profile_degradation_is_reported_as_advisory(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        "deeptutor.services.rag.pipelines.llamaindex.config.retrieval_config_from_settings",
+        lambda: RetrievalConfig(profile="hybrid"),
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.rag.pipelines.llamaindex.retrievers._import_bm25_retriever",
+        lambda: None,
+    )
+
+    report = await run_diagnostics(
+        resolve_llm=lambda: _llm_config(),
+        data_root=tmp_path,
+        load_rag_config=lambda: {
+            "defaults": {"rag_provider": "llamaindex"},
+            "knowledge_bases": {"notes": {"rag_provider": "llamaindex"}},
+        },
+        rag_preflight=lambda provider: {"ok": True, "checks": []},
+    )
+
+    profile = next(check for check in report.checks if check.key == "rag_retrieval_profile")
+    assert profile.status == "fail"
+    assert profile.required is False
+    assert "'hybrid' runs as 'vector'" in profile.detail
+    assert "BM25 retriever package is missing" in profile.detail
+    assert report.ok is True
+
+
+@pytest.mark.asyncio
+async def test_available_hybrid_profile_passes_without_advisory(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        "deeptutor.services.rag.pipelines.llamaindex.config.retrieval_config_from_settings",
+        lambda: RetrievalConfig(profile="hybrid"),
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.rag.pipelines.llamaindex.retrievers._import_bm25_retriever",
+        lambda: object,
+    )
+
+    report = await run_diagnostics(
+        resolve_llm=lambda: _llm_config(),
+        data_root=tmp_path,
+        load_rag_config=lambda: {
+            "defaults": {"rag_provider": "llamaindex"},
+            "knowledge_bases": {"notes": {"rag_provider": "llamaindex"}},
+        },
+        rag_preflight=lambda provider: {"ok": True, "checks": []},
+    )
+
+    profile = next(check for check in report.checks if check.key == "rag_retrieval_profile")
+    assert profile.status == "pass"
+    assert profile.required is False
+    assert "Effective retrieval profile: hybrid" in profile.detail
     assert report.ok is True
 
 

@@ -309,6 +309,76 @@ def _rag_check(
     )
 
 
+def _retrieval_profile_check(config: dict[str, Any]) -> DoctorCheck | None:
+    """Report the effective LlamaIndex retrieval profile, or ``None`` if N/A.
+
+    The optional BM25 integration is excluded on Python >= 3.14, so a
+    configured ``hybrid`` profile silently runs vector-only there. This check
+    makes the degradation visible; it stays advisory because the fallback is
+    deliberate and retrieval keeps working.
+    """
+    knowledge_bases = config.get("knowledge_bases", {})
+    if not isinstance(knowledge_bases, dict):
+        return None
+    defaults = config.get("defaults", {})
+    default_provider = (
+        str(defaults.get("rag_provider", "llamaindex"))
+        if isinstance(defaults, dict)
+        else "llamaindex"
+    )
+    from deeptutor.services.rag.factory import DEFAULT_PROVIDER, normalize_provider_name
+
+    def _is_llamaindex(entry: Any) -> bool:
+        return isinstance(entry, dict) and (
+            normalize_provider_name(str(entry.get("rag_provider") or default_provider))
+            == DEFAULT_PROVIDER
+        )
+
+    if not any(_is_llamaindex(entry) for entry in knowledge_bases.values()):
+        return None
+
+    try:
+        from deeptutor.services.rag.pipelines.llamaindex.config import (
+            HYBRID_PROFILE,
+            VECTOR_PROFILE,
+            retrieval_config_from_settings,
+        )
+        from deeptutor.services.rag.pipelines.llamaindex.retrievers import (
+            effective_retrieval_profile,
+        )
+
+        profile_config = retrieval_config_from_settings()
+        effective = effective_retrieval_profile(profile_config)
+        profile = profile_config.profile
+    except Exception:
+        return DoctorCheck(
+            key="rag_retrieval_profile",
+            label="RAG retrieval profile",
+            status="skip",
+            detail="Retrieval profile could not be determined.",
+            required=False,
+        )
+
+    if profile == HYBRID_PROFILE and effective == VECTOR_PROFILE:
+        return DoctorCheck(
+            key="rag_retrieval_profile",
+            label="RAG retrieval profile",
+            status="fail",
+            detail=(
+                "Configured profile 'hybrid' runs as 'vector': the BM25 retriever "
+                "package is missing, so retrieval quality is degraded."
+            ),
+            required=False,
+        )
+    return DoctorCheck(
+        key="rag_retrieval_profile",
+        label="RAG retrieval profile",
+        status="pass",
+        detail=f"Effective retrieval profile: {effective}.",
+        required=False,
+    )
+
+
 def _redact_error(exc: Exception, config: Any) -> str:
     message = str(exc).strip() or type(exc).__name__
     extra_headers = getattr(config, "extra_headers", None) or {}
@@ -413,7 +483,11 @@ async def run_diagnostics(
 
     checks.append(_storage_check(data_root))
     try:
-        checks.append(_rag_check(load_rag_config(), rag_preflight))
+        rag_config = load_rag_config()
+        checks.append(_rag_check(rag_config, rag_preflight))
+        profile_check = _retrieval_profile_check(rag_config)
+        if profile_check is not None:
+            checks.append(profile_check)
     except Exception as exc:
         checks.append(
             DoctorCheck(

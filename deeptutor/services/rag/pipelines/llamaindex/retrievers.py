@@ -64,7 +64,9 @@ def build_bm25_retriever(index: Any, storage_dir: Path, *, top_k: int) -> Any | 
         top_k = min(top_k, corpus_size)
     bm25_cls = _import_bm25_retriever()
     if bm25_cls is None:
-        logger.info(
+        # WARNING, not INFO: the optional package is excluded on Python >= 3.14,
+        # so the default ``hybrid`` profile silently runs vector-only without it.
+        logger.warning(
             "LlamaIndex BM25 retriever package is not installed; falling back to vector retrieval."
         )
         return None
@@ -82,6 +84,21 @@ def build_bm25_retriever(index: Any, storage_dir: Path, *, top_k: int) -> Any | 
     except Exception as exc:
         logger.warning("Failed to build BM25 retriever; falling back to vector retrieval: %s", exc)
         return None
+
+
+def effective_retrieval_profile(config: RetrievalConfig | None = None) -> str:
+    """Return the retrieval profile this environment actually runs.
+
+    ``hybrid`` needs the optional ``llama-index-retrievers-bm25`` package,
+    which is excluded on Python >= 3.14; when it is missing, retrieval
+    degrades to vector-only even though the configured profile stays
+    ``hybrid``. Summaries (KB statistics, ``deeptutor doctor``) should report
+    this value so the degradation is visible to operators.
+    """
+    retrieval_config = config or retrieval_config_from_settings()
+    if retrieval_config.profile == HYBRID_PROFILE and _import_bm25_retriever() is None:
+        return VECTOR_PROFILE
+    return retrieval_config.profile
 
 
 def persist_bm25_retriever(index: Any, storage_dir: Path, *, top_k: int) -> bool:
@@ -184,6 +201,7 @@ __all__ = [
     "BM25_PERSIST_DIRNAME",
     "build_bm25_retriever",
     "build_retriever",
+    "effective_retrieval_profile",
     "persist_bm25_retriever",
     "retrieve_nodes",
 ]
