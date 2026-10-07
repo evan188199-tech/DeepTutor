@@ -63,7 +63,8 @@ def test_missing_mcp_package_reports_real_cause_without_waiting_out_timeout(
     async def scenario() -> tuple[float, manager_mod._ServerConnection]:
         mgr = MCPConnectionManager()
         started = time.monotonic()
-        await mgr._connect("pageindex", cfg)
+        conn, ready = mgr._spawn_connect("pageindex", cfg)
+        await mgr._await_connect(conn, ready)
         elapsed = time.monotonic() - started
         conn = mgr._connections[(SHARED_OWNER, "pageindex")]
         assert conn.task is not None

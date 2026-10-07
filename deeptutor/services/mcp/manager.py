@@ -243,8 +243,9 @@ class MCPConnectionManager:
 
     def __init__(self) -> None:
         self._connections: dict[tuple[str, str], _ServerConnection] = {}
-        # One lock per owner: a cold connect for one owner must not serialise
-        # every other owner's turn behind it.
+        # One lock per owner, held only around connection-table changes: a
+        # cold connect for one owner must not serialise every other owner's
+        # turn — or another session's — behind its handshake.
         self._locks: dict[str, asyncio.Lock] = {}
         # Monotonic time each owner scope was last used, for idle eviction.
         self._scope_used: dict[str, float] = {}
@@ -265,6 +266,11 @@ class MCPConnectionManager:
         Lazy: callers invoke this at turn start; after the first call it only
         retries connections that previously failed and whose backoff expired,
         or picks up servers added via :meth:`reload`.
+
+        The owner lock covers only the diff and the connection-table changes
+        (see :meth:`_plan_sync`), so a session starting while an
+        unrelated :meth:`reload` is mid-handshake establishes its own
+        connections instead of waiting that handshake out.
         """
         if self._started:
             await self._retry_failed(SHARED_OWNER)
@@ -272,14 +278,16 @@ class MCPConnectionManager:
         async with self._lock_for(SHARED_OWNER):
             if self._started:
                 return
-            await self._sync_to_config(load_mcp_config())
+            stale, spawned = self._plan_sync(load_mcp_config())
             self._started = True
+        await self._apply_sync(stale, spawned)
 
     async def reload(self) -> None:
         """Re-read the persisted config and apply the diff to live connections."""
         async with self._lock_for(SHARED_OWNER):
-            await self._sync_to_config(load_mcp_config())
+            stale, spawned = self._plan_sync(load_mcp_config())
             self._started = True
+        await self._apply_sync(stale, spawned)
 
     async def shutdown(self) -> None:
         for owner in list(self._locks) or [SHARED_OWNER]:
@@ -310,9 +318,10 @@ class MCPConnectionManager:
             if not config.servers and not self._has_scope(owner):
                 self._scope_used.pop(owner, None)
                 return []
-            await self._sync_to_config(config, owner=owner)
-            await self._retry_failed_locked(owner)
+            stale, spawned = self._plan_sync(config, owner=owner)
+            spawned.extend(self._retry_failed_locked(owner))
             self._scope_used[owner] = asyncio.get_running_loop().time()
+        await self._apply_sync(stale, spawned)
         await self._evict_cold_scopes(keep=owner)
         return self.adapters_for(owner)
 
@@ -329,8 +338,9 @@ class MCPConnectionManager:
 
         async with self._lock_for(owner):
             config, _rejected = load_user_mcp_config(owner)
-            await self._sync_to_config(config, owner=owner)
+            stale, spawned = self._plan_sync(config, owner=owner)
             self._scope_used[owner] = asyncio.get_running_loop().time()
+        await self._apply_sync(stale, spawned)
 
     def _has_scope(self, owner: str) -> bool:
         return any(conn_owner == owner for conn_owner, _name in self._connections)
@@ -372,20 +382,31 @@ class MCPConnectionManager:
         connected" — until an administrator saves the config again.
         """
         async with self._lock_for(owner):
-            await self._retry_failed_locked(owner)
+            spawned = self._retry_failed_locked(owner)
+        await self._apply_sync([], spawned)
 
-    async def _retry_failed_locked(self, owner: str) -> None:
-        """As :meth:`_retry_failed`; caller holds this owner's lock."""
+    def _retry_failed_locked(
+        self, owner: str
+    ) -> list[tuple["_ServerConnection", "asyncio.Future[None]"]]:
+        """As :meth:`_retry_failed`; caller holds this owner's lock.
+
+        Returns the spawned connections to await outside the lock, so a slow
+        reconnect never serialises another session's turn behind it.
+        """
         now = asyncio.get_running_loop().time()
         due = [
             conn
             for (conn_owner, _name), conn in self._connections.items()
             if conn_owner == owner and conn.status == "error" and conn.retry_at <= now
         ]
+        spawned: list[tuple["_ServerConnection", "asyncio.Future[None]"]] = []
         for conn in due:
             delay, key = conn.retry_delay, (conn.owner, conn.name)
             self._connections.pop(key, None)
-            await self._connect(conn.name, conn.config, owner=owner, retry_delay=delay)
+            spawned.append(
+                self._spawn_connect(conn.name, conn.config, owner=owner, retry_delay=delay)
+            )
+        return spawned
 
     # ── public queries ─────────────────────────────────────────────────
 
@@ -601,33 +622,65 @@ class MCPConnectionManager:
             return base
         return f"{base}#{hashlib.sha256(resolved.encode('utf-8')).hexdigest()}"
 
-    async def _sync_to_config(self, config: MCPConfig, *, owner: str = SHARED_OWNER) -> None:
-        """Diff *owner*'s live connections against *config*; caller holds the lock."""
+    def _plan_sync(
+        self, config: MCPConfig, *, owner: str = SHARED_OWNER
+    ) -> tuple[list[_ServerConnection], list[tuple[_ServerConnection, "asyncio.Future[None]"]]]:
+        """Compute *owner*'s diff against *config*; caller holds the lock.
+
+        Every mutation of the connection table happens here, synchronously:
+        stale entries are popped and replacement connections are inserted
+        (status ``connecting``) before their transport opens, so a concurrent
+        diff sees a consistent table and never double-connects a server.
+        """
         desired = {name: cfg for name, cfg in config.servers.items() if cfg.enabled}
         # Drop removed/disabled/changed servers.
-        for key in list(self._connections):
-            if key[0] != owner:
-                continue
-            cfg = desired.get(key[1])
-            if cfg is None or self._signature(cfg, owner) != self._connections[key].signature:
-                await self._disconnect(self._connections.pop(key))
-        # Connect new/changed servers concurrently.
-        pending = [
-            self._connect(name, cfg, owner=owner)
+        stale = [
+            self._connections.pop(key)
+            for key in list(self._connections)
+            if key[0] == owner
+            and (
+                desired.get(key[1]) is None
+                or self._signature(desired[key[1]], owner) != self._connections[key].signature
+            )
+        ]
+        spawned = [
+            self._spawn_connect(name, cfg, owner=owner)
             for name, cfg in desired.items()
             if (owner, name) not in self._connections
         ]
-        if pending:
-            await asyncio.gather(*pending)
+        return stale, spawned
 
-    async def _connect(
+    async def _apply_sync(
+        self,
+        stale: list[_ServerConnection],
+        spawned: list[tuple[_ServerConnection, "asyncio.Future[None]"]],
+    ) -> None:
+        """Tear down *stale* and connect *spawned*; no owner lock is held.
+
+        The work of one :meth:`_plan_sync` call, awaited concurrently: a slow
+        handshake delays only the caller that planned it, not every other
+        session sharing the owner.
+        """
+        if not stale and not spawned:
+            return
+        await asyncio.gather(
+            *(self._disconnect(conn) for conn in stale),
+            *(self._await_connect(conn, ready) for conn, ready in spawned),
+        )
+
+    def _spawn_connect(
         self,
         name: str,
         cfg: MCPServerConfig,
         *,
         owner: str = SHARED_OWNER,
         retry_delay: float = _RETRY_BACKOFF_START_S,
-    ) -> None:
+    ) -> tuple[_ServerConnection, "asyncio.Future[None]"]:
+        """Insert a ``connecting`` entry and start its connection task.
+
+        Synchronous on purpose — it runs under the owner lock, so the table
+        insert is atomic with the diff that decided to connect.
+        """
         conn = _ServerConnection(
             name=name,
             config=cfg,
@@ -638,16 +691,16 @@ class MCPConnectionManager:
         self._connections[(owner, name)] = conn
         ready: asyncio.Future = asyncio.get_running_loop().create_future()
         conn.task = asyncio.create_task(self._run_server(conn, ready), name=f"mcp-server-{name}")
+        return conn, ready
+
+    async def _await_connect(self, conn: _ServerConnection, ready: "asyncio.Future[None]") -> None:
+        """Wait for a spawned connection to become live; no owner lock is held."""
         try:
             await asyncio.wait_for(ready, timeout=_CONNECT_TIMEOUT_S)
-            conn.status = "connected"
-            conn.error = ""
-            conn.retry_delay = _RETRY_BACKOFF_START_S
-            self._register_adapters(conn)
-            logger.info("MCP server %r connected (%d tools)", name, len(conn.adapters))
         except asyncio.TimeoutError:
             self._mark_failed(conn, f"connect timed out after {_CONNECT_TIMEOUT_S}s")
-            logger.error("MCP server %r: %s", name, conn.error)
+            logger.error("MCP server %r: %s", conn.name, conn.error)
+            return
         except Exception as exc:
             # Unwrapped, same as the probe: this string is what the store shows
             # under a server's row, and "unhandled errors in a TaskGroup" tells
@@ -659,7 +712,20 @@ class MCPConnectionManager:
                 # does not spend the next five minutes re-discovering that nobody
                 # has consented yet.
                 conn.status = "needs_auth"
-            logger.error("MCP server %r failed to connect: %s", name, conn.error)
+            logger.error("MCP server %r failed to connect: %s", conn.name, conn.error)
+            return
+        if self._connections.get((conn.owner, conn.name)) is not conn:
+            # Superseded by a newer sync, or torn down by shutdown, while the
+            # transport was opening. The table's entry owns the name now: stop
+            # this task and publish nothing, or a dead session's tools would
+            # shadow the live ones.
+            conn.shutdown.set()
+            return
+        conn.status = "connected"
+        conn.error = ""
+        conn.retry_delay = _RETRY_BACKOFF_START_S
+        self._register_adapters(conn)
+        logger.info("MCP server %r connected (%d tools)", conn.name, len(conn.adapters))
 
     def _mark_failed(self, conn: _ServerConnection, error: str) -> None:
         """Record a connect failure and schedule the next attempt."""
