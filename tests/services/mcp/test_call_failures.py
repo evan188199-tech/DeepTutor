@@ -238,6 +238,73 @@ async def test_cancelling_the_turn_does_not_orphan_the_call() -> None:
     conn.task.cancel()
 
 
+# ── which cancellation is real ─────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_a_cancellation_leaked_by_the_sdk_is_reported_not_raised() -> None:
+    """The SDK's anyio scopes can leak CancelledError on internal failures.
+
+    The leak belongs to no one: the turn task itself was never cancelled, so
+    the call must come back as a tool result the model can read, not crash the
+    turn with a cancellation the user never asked for.
+    """
+    manager = MCPConnectionManager()
+
+    class _LeakySession:
+        async def call_tool(self, *_args, **_kwargs):
+            raise asyncio.CancelledError
+
+    conn = _ServerConnection(
+        name=SERVER,
+        config=MCPServerConfig(url="https://maps.example/mcp"),
+        signature="sig",
+        owner=OWNER,
+        status="connected",
+        session=_LeakySession(),
+    )
+    conn.task = asyncio.create_task(asyncio.Event().wait())
+    manager._connections[(OWNER, SERVER)] = conn
+
+    result = await manager.call_tool(OWNER, SERVER, "compute_routes", {}, timeout=5)
+
+    assert "cancel" in result.lower()
+    conn.task.cancel()
+
+
+@pytest.mark.asyncio
+async def test_a_cancellation_of_the_turn_itself_is_reraised_not_reported() -> None:
+    """The mirror branch of the leak handling: when the caller really was
+    cancelled — Stop clicked, client gone — the cancellation must surface, and
+    must never be laundered into an ordinary-looking tool result string."""
+    manager = MCPConnectionManager()
+
+    class _SlowSession:
+        async def call_tool(self, *_args, **_kwargs):
+            await asyncio.sleep(10)
+            return "never reached"
+
+    conn = _ServerConnection(
+        name=SERVER,
+        config=MCPServerConfig(url="https://maps.example/mcp"),
+        signature="sig",
+        owner=OWNER,
+        status="connected",
+        session=_SlowSession(),
+    )
+    conn.task = asyncio.create_task(asyncio.Event().wait())
+    manager._connections[(OWNER, SERVER)] = conn
+
+    turn = asyncio.create_task(manager.call_tool(OWNER, SERVER, "compute_routes", {}, timeout=45))
+    await asyncio.sleep(0.05)  # let the turn reach its call
+    turn.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await turn
+    assert turn.cancelled()
+    conn.task.cancel()
+
+
 # ── what the model is allowed to see ───────────────────────────────────
 
 

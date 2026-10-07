@@ -49,6 +49,76 @@ async def test_worker_cancellation_terminates_the_child() -> None:
         await task
 
 
+# ── cancellation cleans up completely before surfacing ─────────────────
+
+
+def _worker_process_children() -> list:  # type: ignore[type-arg]
+    import psutil
+
+    me = psutil.Process()
+    return [child for child in me.children() if "worker_process" in " ".join(child.cmdline())]
+
+
+@pytest.mark.asyncio
+async def test_cancelling_the_call_leaves_no_child_process_behind() -> None:
+    """Cancelling a call must terminate and join its child before surfacing.
+
+    The caller of ``run_in_isolated_process`` is often a request whose client
+    disconnected: the parser child must be dead — not merely abandoned to the
+    process table — by the time the cancellation reaches that caller.
+    """
+    pytest.importorskip("psutil")
+    loop = asyncio.get_running_loop()
+    task = asyncio.create_task(run_in_isolated_process("time:sleep", 30, timeout=30))
+    deadline = loop.time() + 30
+    while not _worker_process_children() and loop.time() < deadline:
+        await asyncio.sleep(0.05)
+    assert _worker_process_children(), "child process never started"
+
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    deadline = loop.time() + 10
+    while _worker_process_children() and loop.time() < deadline:
+        await asyncio.sleep(0.05)
+    assert _worker_process_children() == [], "cancelled call left its child running"
+
+
+@pytest.mark.asyncio
+async def test_a_cancelled_call_releases_its_worker_slot() -> None:
+    """The concurrency slot must be given back when a call is cancelled.
+
+    A slot leaked per cancellation would eventually wedge every isolated call
+    behind a semaphore that only restart clears.
+    """
+    from deeptutor.runtime.isolated_worker import MAX_CONCURRENT_ISOLATED_WORKERS
+
+    loop = asyncio.get_running_loop()
+    blockers = [
+        asyncio.create_task(run_in_isolated_process("time:sleep", 30, timeout=30))
+        for _ in range(MAX_CONCURRENT_ISOLATED_WORKERS)
+    ]
+    deadline = loop.time() + 60
+    while (
+        len(_worker_process_children()) < MAX_CONCURRENT_ISOLATED_WORKERS and loop.time() < deadline
+    ):
+        await asyncio.sleep(0.05)
+    assert len(_worker_process_children()) >= MAX_CONCURRENT_ISOLATED_WORKERS, (
+        "blocking children never started"
+    )
+
+    for blocker in blockers:
+        blocker.cancel()
+    outcomes = await asyncio.gather(*blockers, return_exceptions=True)
+    assert all(isinstance(outcome, asyncio.CancelledError) for outcome in outcomes)
+
+    assert (
+        await asyncio.wait_for(run_in_isolated_process("operator:add", 20, 22, timeout=10), 30)
+        == 42
+    )
+
+
 @pytest.mark.asyncio
 async def test_document_wrapper_restores_public_error_type(tmp_path: Path) -> None:
     empty = tmp_path / "empty.txt"

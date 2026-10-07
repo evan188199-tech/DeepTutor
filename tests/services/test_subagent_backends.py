@@ -1167,6 +1167,136 @@ async def test_partner_consult_empty_reply_is_unsuccessful(monkeypatch) -> None:
     assert result.final_text == ""
 
 
+# ---- partner backend: cancellation semantics ---------------------------------
+
+
+class _ScriptedTurnManager(_FakePartnerManager):
+    """Fake manager whose web turns are plain asyncio tasks the test controls.
+
+    ``park_seconds=None`` streams the scripted reply and finishes; a number
+    keeps the turn parked (cancellable) for that long.
+    """
+
+    def __init__(self, *, existing_turn=None, park_seconds=None, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._existing_turn = existing_turn
+        self._park_seconds = park_seconds
+
+    def subscribe_web_turn(self, pid, session_key):
+        return self._existing_turn
+
+    def start_web_turn(self, pid, session_key, content, media=None):
+        import asyncio
+
+        from deeptutor.services.partners.manager import LiveTurn
+
+        turn = LiveTurn(user_content=content)
+
+        async def _run() -> None:
+            if self._park_seconds is not None:
+                await asyncio.sleep(self._park_seconds)
+                return
+            await asyncio.sleep(0.01)  # let the consult subscribe first
+            turn.emit({"type": "content", "content": self._reply})
+            turn.emit({"type": "done"})
+            turn.finish([{"type": "done"}])
+
+        turn.task = asyncio.create_task(_run())
+        self.live = turn
+        return turn
+
+
+@pytest.mark.asyncio
+async def test_partner_consult_cancel_reaps_the_live_turn(monkeypatch) -> None:
+    """A cancelled consult must stop the native partner turn it opened.
+
+    The sidebar waiter owns no one's answer but its own: leaving the turn
+    running would keep the partner replying into a session nobody is reading,
+    and leaving the queue subscribed would leak the buffer.
+    """
+    import asyncio
+
+    from deeptutor.services.subagent.partner import PartnerBackend
+
+    manager = _ScriptedTurnManager(park_seconds=30)
+    _patch_manager(monkeypatch, manager)
+
+    async def on_event(ev):
+        pass
+
+    consult = asyncio.create_task(
+        PartnerBackend().consult("hello", on_event=on_event, partner_id="paul")
+    )
+    await asyncio.sleep(0.05)  # the consult is parked on the turn's queue
+    consult.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await consult
+    assert consult.cancelled()  # re-raised, not laundered into a ConsultResult
+    assert manager.live.task.cancelled()  # the native turn was cancelled…
+    assert manager.live.subscribers == set()  # …and the subscription reaped
+
+
+@pytest.mark.asyncio
+async def test_partner_consult_survives_a_cancelled_previous_turn(monkeypatch) -> None:
+    """Joining an in-flight turn is shielded: when THAT turn is cancelled —
+    not the waiter — the consult goes on to ask its own question."""
+    import asyncio
+
+    from deeptutor.services.partners.manager import LiveTurn
+    from deeptutor.services.subagent.partner import PartnerBackend
+
+    existing = LiveTurn(user_content="an earlier question")
+    existing.task = asyncio.create_task(asyncio.sleep(30))
+    manager = _ScriptedTurnManager(existing_turn=existing)
+    _patch_manager(monkeypatch, manager)
+
+    async def on_event(ev):
+        pass
+
+    consult = asyncio.create_task(
+        PartnerBackend().consult("hello", on_event=on_event, partner_id="paul")
+    )
+    await asyncio.sleep(0.05)  # the consult is parked joining the old turn
+    existing.task.cancel()
+
+    result = await asyncio.wait_for(consult, timeout=5)
+
+    assert result.success is True
+    assert result.final_text == "Hi from partner."
+    assert manager.live.done  # the consult's own turn ran to completion
+
+
+@pytest.mark.asyncio
+async def test_partner_consult_own_cancel_while_joining_is_reraised(monkeypatch) -> None:
+    """The mirror branch of the join: a cancellation of the waiter itself must
+    surface, and the shield must keep the joined turn alive for its own waiters."""
+    import asyncio
+
+    from deeptutor.services.partners.manager import LiveTurn
+    from deeptutor.services.subagent.partner import PartnerBackend
+
+    existing = LiveTurn(user_content="an earlier question")
+    existing.task = asyncio.create_task(asyncio.sleep(30))
+    manager = _ScriptedTurnManager(existing_turn=existing)
+    _patch_manager(monkeypatch, manager)
+
+    async def on_event(ev):
+        pass
+
+    consult = asyncio.create_task(
+        PartnerBackend().consult("hello", on_event=on_event, partner_id="paul")
+    )
+    await asyncio.sleep(0.05)  # the consult is parked joining the old turn
+    consult.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await consult
+    assert consult.cancelled()
+    assert not existing.task.cancelled()  # the join never cancelled the old turn
+    existing.task.cancel()  # cleanup for the fake's own task
+
+
 def _partner_trace_state() -> dict[str, dict[str, str]]:
     return {"text": {}, "reason": {}, "pending_tools": {}}
 
