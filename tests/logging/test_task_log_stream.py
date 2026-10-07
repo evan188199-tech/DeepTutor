@@ -228,3 +228,239 @@ def test_task_buffer_has_approximate_byte_ceiling():
 
     assert manager._buffer_bytes["large-task"] <= manager._MAX_BYTES_PER_TASK
     assert len(manager._buffers["large-task"]) < 20
+
+
+# ---------------------------------------------------------------------------
+# Error-path coverage: stream interruption, early read-side disconnect,
+# oversized event truncation, and idempotent close/cleanup semantics.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def no_memory_reclaim(monkeypatch):
+    monkeypatch.setattr(
+        KnowledgeTaskStreamManager, "_schedule_memory_reclaim", staticmethod(lambda: None)
+    )
+
+
+async def _drain_with_deadline(stream, timeout: float = 2.0) -> list[str]:
+    chunks: list[str] = []
+    while True:
+        try:
+            chunks.append(await asyncio.wait_for(anext(stream), timeout=timeout))
+        except StopAsyncIteration:
+            return chunks
+
+
+async def _subscribe_task(manager, task_id):
+    return manager.subscribe(task_id)
+
+
+def test_event_bytes_falls_back_for_unserializable_event():
+    circular: dict = {"event": "process_log", "payload": {}}
+    circular["payload"]["self"] = circular
+
+    assert KnowledgeTaskStreamManager._event_bytes(circular) == 256
+
+
+def test_oversized_process_log_event_is_compacted_to_hard_byte_budget():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-oversize-log")
+
+    manager.emit_log("task-oversize-log", "x" * (3 * 1024 * 1024))
+
+    events = list(manager._buffers["task-oversize-log"])
+    assert len(events) == 1
+    assert events[0]["event"] == "process_log"
+    assert events[0]["payload"]["truncated"] is True
+    assert manager._buffer_bytes["task-oversize-log"] <= manager._MAX_BYTES_PER_TASK
+
+
+def test_oversized_failed_event_is_compacted_and_stays_terminal_visible(no_memory_reclaim):
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-oversize-failed")
+
+    manager.emit_failed(
+        "task-oversize-failed",
+        "y" * (3 * 1024 * 1024),
+        error_code="graphrag_model_incompatible",
+    )
+
+    events = list(manager._buffers["task-oversize-failed"])
+    assert len(events) == 1
+    assert events[0]["event"] == "failed"
+    assert events[0]["payload"]["truncated"] is True
+    assert events[0]["payload"]["detail"] == "y" * 8192
+    assert "error_code" not in events[0]["payload"]
+    assert manager._buffer_bytes["task-oversize-failed"] <= manager._MAX_BYTES_PER_TASK
+
+
+@pytest.mark.asyncio
+async def test_stream_yields_compacted_oversized_terminal_and_terminates(no_memory_reclaim):
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-oversize-stream")
+
+    manager.emit_failed("task-oversize-stream", "z" * (3 * 1024 * 1024))
+
+    stream = manager.stream("task-oversize-stream")
+    try:
+        chunks = await _drain_with_deadline(stream)
+    finally:
+        await stream.aclose()
+
+    assert len(chunks) == 1
+    assert chunks[0].startswith("event: failed\n")
+    assert '"truncated": true' in chunks[0]
+    assert "z" * 9000 not in chunks[0]
+    assert manager._subscribers.get("task-oversize-stream") in (None, [])
+
+
+def test_emit_skips_subscriber_bound_to_closed_event_loop():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-closed-loop")
+    loop = asyncio.new_event_loop()
+    try:
+        queue, _backlog, sub_loop = loop.run_until_complete(
+            _subscribe_task(manager, "task-closed-loop")
+        )
+    finally:
+        loop.close()
+
+    manager.emit_log("task-closed-loop", "producer emits after the read loop closed")
+
+    last = list(manager._buffers["task-closed-loop"])[-1]
+    assert last["payload"]["message"] == "producer emits after the read loop closed"
+    manager.unsubscribe("task-closed-loop", queue, sub_loop)
+    assert "task-closed-loop" not in manager._subscribers
+
+
+@pytest.mark.asyncio
+async def test_full_subscriber_queue_drops_events_without_error():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-full-queue")
+    queue, _backlog, loop = manager.subscribe("task-full-queue")
+
+    total = queue.maxsize + 25
+    for index in range(total):
+        manager.emit_log("task-full-queue", f"line-{index}")
+    await asyncio.sleep(0)
+
+    assert queue.qsize() == queue.maxsize
+    assert queue.get_nowait()["payload"]["message"] == "line-0"
+    manager.unsubscribe("task-full-queue", queue, loop)
+    assert "task-full-queue" not in manager._subscribers
+
+
+@pytest.mark.asyncio
+async def test_stream_interrupted_midway_unsubscribes_and_manager_stays_usable():
+    manager = KnowledgeTaskStreamManager()
+    manager._HEARTBEAT_SECONDS = 0.01
+    manager.ensure_task("task-mid-stream-disconnect")
+
+    stream = manager.stream("task-mid-stream-disconnect")
+    heartbeat = await asyncio.wait_for(anext(stream), timeout=1.0)
+    assert heartbeat == ": keep-alive\n\n"
+    await stream.aclose()
+    await stream.aclose()
+
+    assert manager._subscribers.get("task-mid-stream-disconnect") in (None, [])
+    manager.emit_log("task-mid-stream-disconnect", "producer continues after disconnect")
+    last = list(manager._buffers["task-mid-stream-disconnect"])[-1]
+    assert last["payload"]["message"] == "producer continues after disconnect"
+
+
+@pytest.mark.asyncio
+async def test_stream_terminates_and_unsubscribes_on_failed_terminal_event(no_memory_reclaim):
+    manager = KnowledgeTaskStreamManager()
+    manager._HEARTBEAT_SECONDS = 0.01
+    manager.ensure_task("task-failed-terminal")
+
+    async def _fail_later():
+        await asyncio.sleep(0.05)
+        manager.emit_failed(
+            "task-failed-terminal",
+            "graphrag pipeline exploded",
+            error_code="graphrag_model_incompatible",
+        )
+
+    emitter = asyncio.create_task(_fail_later())
+    try:
+        chunks = [chunk async for chunk in manager.stream("task-failed-terminal")]
+    finally:
+        await emitter
+
+    assert any("event: failed" in chunk for chunk in chunks)
+    assert any("graphrag_model_incompatible" in chunk for chunk in chunks)
+    assert manager._subscribers.get("task-failed-terminal") in (None, [])
+
+
+@pytest.mark.asyncio
+async def test_stream_replaying_failed_backlog_returns_without_heartbeat_wait(no_memory_reclaim):
+    manager = KnowledgeTaskStreamManager()
+    manager.emit_failed("task-replay-failed", "late failure after disconnect")
+
+    stream = manager.stream("task-replay-failed")
+    try:
+        chunks = await _drain_with_deadline(stream)
+    finally:
+        await stream.aclose()
+
+    assert len(chunks) == 1
+    assert "event: failed" in chunks[0]
+    assert "late failure after disconnect" in chunks[0]
+    assert manager._subscribers.get("task-replay-failed") in (None, [])
+
+
+@pytest.mark.asyncio
+async def test_unsubscribe_is_idempotent_for_same_queue():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-unsub-twice")
+    queue, _backlog, loop = manager.subscribe("task-unsub-twice")
+
+    manager.unsubscribe("task-unsub-twice", queue, loop)
+    manager.unsubscribe("task-unsub-twice", queue, loop)
+
+    assert "task-unsub-twice" not in manager._subscribers
+    assert manager.retained_task_count() == 1
+
+
+@pytest.mark.asyncio
+async def test_unsubscribe_unknown_task_is_silent_noop():
+    manager = KnowledgeTaskStreamManager()
+    queue: asyncio.Queue = asyncio.Queue(maxsize=1)
+
+    manager.unsubscribe("task-never-subscribed", queue, asyncio.get_running_loop())
+
+    assert manager.retained_task_count() == 0
+
+
+def test_cleanup_of_task_without_terminal_event_leaves_no_tombstone():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-dropped-mid-flight")
+    manager.emit_log("task-dropped-mid-flight", "still running")
+
+    manager._drop_task_locked("task-dropped-mid-flight")
+
+    assert "task-dropped-mid-flight" not in manager._buffers
+    assert "task-dropped-mid-flight" not in manager._terminal_tombstones
+    assert manager.retained_task_count() == 0
+
+
+@pytest.mark.asyncio
+async def test_dropped_terminal_task_replays_tombstone_to_late_subscriber():
+    manager = KnowledgeTaskStreamManager()
+    manager.ensure_task("task-tombstone-replay")
+    manager.emit_failed("task-tombstone-replay", "failed while nobody watched")
+    manager._drop_task_locked("task-tombstone-replay")
+    assert "task-tombstone-replay" in manager._terminal_tombstones
+
+    stream = manager.stream("task-tombstone-replay")
+    try:
+        chunks = await _drain_with_deadline(stream)
+    finally:
+        await stream.aclose()
+
+    assert len(chunks) == 1
+    assert "event: failed" in chunks[0]
+    assert "failed while nobody watched" in chunks[0]
+    assert manager._subscribers.get("task-tombstone-replay") in (None, [])
