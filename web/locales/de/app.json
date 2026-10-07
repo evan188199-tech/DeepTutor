@@ -3705,6 +3705,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "Dies entfernt {{count}} Modell(e) und die gespeicherten Anmeldedaten. Dies kann nicht rückgängig gemacht werden.",
   "nothing configured": "Nichts konfiguriert",
   "Immersive Watching": "Immersive Watching",
+  "Learning layout": "Lernlayout",
+  "Video and conversation split": "Teiler für Video und Unterhaltung",
   "Native YouTube learning": "Natives YouTube-Lernen",
   "Refresh provider": "Provider aktualisieren",
   "Close video learning": "Video-Lernen schließen",

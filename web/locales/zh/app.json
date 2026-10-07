@@ -3705,6 +3705,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "这会删除 {{count}} 个模型及已保存的密钥，且不可撤销。",
   "nothing configured": "未配置",
   "Immersive Watching": "沉浸式观看",
+  "Learning layout": "学习布局",
+  "Video and conversation split": "视频与对话分栏",
   "Native YouTube learning": "原生 YouTube 学习",
   "Refresh provider": "刷新播放提供方",
   "Close video learning": "关闭视频学习",

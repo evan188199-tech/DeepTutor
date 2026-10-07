@@ -3614,6 +3614,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "Це видалить {{count}} модель(і) та збережені облікові дані. Це неможливо скасувати.",
   "nothing configured": "нічого не налаштовано",
   "Immersive Watching": "Занурене перегляд",
+  "Learning layout": "Макет навчання",
+  "Video and conversation split": "Роздільник відео та розмови",
   "Native YouTube learning": "Нативне навчання через YouTube",
   "Refresh provider": "Оновити провайдера",
   "Close video learning": "Закрити навчання через відео",

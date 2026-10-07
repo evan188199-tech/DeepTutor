@@ -1344,11 +1344,61 @@ a[href^="#dt-locator-"]:hover {
   color: var(--muted-foreground);
   text-align: center;
 }
-.watching-browse-toggle {
+.watching-surface-controls {
   position: absolute;
   right: 12px;
   top: 8px;
   z-index: 44;
+  display: flex;
+  gap: 8px;
+}
+.watching-surface-controls > button {
+  background: var(--background);
+}
+@media (max-width: 1023px) {
+  /* Mobile keeps the tab panels; the desktop-only split controls stay hidden. */
+  .watching-surface-controls .watching-learning-toggle,
+  .watching-surface-controls .watching-fullscreen-toggle {
+    display: none;
+  }
+}
+.watching-split-handle {
+  display: none;
+}
+@media (min-width: 1024px) {
+  /* Learning layout: one resizable video/captions + conversation/notes split.
+     Only the shared --watching-split variable moves, so neither the player
+     nor the chat runtime remounts while resizing. */
+  [data-watching-workspace="true"][data-watching-learning="true"] .dt-watching-shell {
+    width: var(--watching-split, 60%);
+    transform: none;
+    visibility: visible;
+  }
+  [data-watching-workspace="true"][data-watching-learning="true"] > .chat-preview-shell {
+    padding-left: var(--watching-split, 60%);
+  }
+  [data-watching-workspace="true"][data-watching-learning="true"] .dt-watching-shell > .watching-split-handle {
+    display: block;
+    flex: 0 0 10px;
+    cursor: col-resize;
+    border-radius: 6px;
+    touch-action: none;
+  }
+  [data-watching-workspace="true"][data-watching-learning="true"] .dt-watching-shell > .watching-split-handle:hover,
+  [data-watching-workspace="true"][data-watching-learning="true"] .dt-watching-shell > .watching-split-handle:focus-visible {
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
+    outline: none;
+  }
+}
+/* Browser fullscreen, with a fixed-viewport fallback when the Fullscreen API
+   is unavailable (e.g. embedded contexts). */
+[data-watching-workspace="true"]:fullscreen {
+  background: var(--background);
+}
+[data-watching-workspace="true"][data-watching-fullscreen-fallback="true"] {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
   background: var(--background);
 }
 .watching-account-error {
@@ -1367,7 +1417,7 @@ a[href^="#dt-locator-"]:hover {
   pointer-events: none;
 }
 @media (max-width: 1023px) {
-  .watching-browse-toggle {
+  .watching-surface-controls {
     top: 48px;
   }
 }

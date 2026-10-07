@@ -3704,6 +3704,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "Spowoduje to usunięcie {{count}} modeli oraz zapisanych danych uwierzytelniających dostawcy. Tej operacji nie można cofnąć.",
   "nothing configured": "brak konfiguracji",
   "Immersive Watching": "Immersywne oglądanie",
+  "Learning layout": "Układ nauki",
+  "Video and conversation split": "Podział wideo i rozmowy",
   "Native YouTube learning": "Nauka bezpośrednio z YouTube",
   "Refresh provider": "Odśwież dostawcę",
   "Close video learning": "Zamknij naukę z filmu",

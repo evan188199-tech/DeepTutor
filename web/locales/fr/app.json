@@ -4237,6 +4237,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "Cela retire {{count}} modèle(s) et ses identifiants enregistrés. Cette action est irréversible.",
   "nothing configured": "rien de configuré",
   "Immersive Watching": "Visionnage immersif",
+  "Learning layout": "Disposition d'apprentissage",
+  "Video and conversation split": "Séparateur vidéo et conversation",
   "Native YouTube learning": "Apprentissage YouTube natif",
   "Refresh provider": "Actualiser le fournisseur",
   "Close video learning": "Fermer l'apprentissage vidéo",

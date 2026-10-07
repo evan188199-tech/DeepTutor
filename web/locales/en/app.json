@@ -3705,6 +3705,8 @@
   "This removes {{count}} model(s) and its saved credentials. This can't be undone.": "This removes {{count}} model(s) and its saved credentials. This can't be undone.",
   "nothing configured": "nothing configured",
   "Immersive Watching": "Immersive Watching",
+  "Learning layout": "Learning layout",
+  "Video and conversation split": "Video and conversation split",
   "Native YouTube learning": "Native YouTube learning",
   "Refresh provider": "Refresh provider",
   "Close video learning": "Close video learning",
