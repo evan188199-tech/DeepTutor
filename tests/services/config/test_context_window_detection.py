@@ -159,8 +159,10 @@ def test_models_endpoint_probe_honors_disable_ssl_verify(monkeypatch) -> None:
         return FakeConnector()
 
     monkeypatch.setattr(detection_module, "disable_ssl_verify_enabled", lambda: True)
-    monkeypatch.setattr(detection_module.aiohttp, "TCPConnector", fake_connector)
-    monkeypatch.setattr(detection_module.aiohttp, "ClientSession", FakeSession)
+    import aiohttp
+
+    monkeypatch.setattr(aiohttp, "TCPConnector", fake_connector)
+    monkeypatch.setattr(aiohttp, "ClientSession", FakeSession)
 
     result = asyncio.run(detection_module._detect_from_models_endpoint(_config()))
 

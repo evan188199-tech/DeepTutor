@@ -8,8 +8,6 @@ from datetime import datetime, timezone
 import logging
 from typing import Any
 
-import aiohttp
-
 from deeptutor.services.keypool import primary_api_key
 from deeptutor.services.llm.config import LLMConfig
 from deeptutor.services.llm.context_window import (
@@ -133,6 +131,8 @@ async def _detect_from_models_endpoint(
     url = f"{base_url.rstrip('/')}/models"
     headers = build_auth_headers(primary_api_key(llm_config.api_key), llm_config.binding)
     headers.pop("Content-Type", None)
+
+    import aiohttp
 
     timeout = aiohttp.ClientTimeout(total=12)
     connector = aiohttp.TCPConnector(ssl=False) if disable_ssl_verify_enabled() else None

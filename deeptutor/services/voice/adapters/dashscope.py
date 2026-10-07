@@ -10,7 +10,6 @@ from typing import Any
 from urllib.parse import urlsplit
 import uuid
 
-import aiohttp
 import httpx
 
 from deeptutor.services.voice.audio import FFMPEG_STT_INSTALL_HINT
@@ -261,6 +260,8 @@ class DashScopeSTTAdapter(BaseSTTAdapter):
         if not config.api_key:
             raise VoiceProviderError("No API key configured for DashScope STT.")
 
+        import aiohttp
+
         timeout = aiohttp.ClientTimeout(total=config.request_timeout)
         try:
             async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:
@@ -383,6 +384,8 @@ class DashScopeSTTAdapter(BaseSTTAdapter):
         audio: bytes,
         config: STTConfig,
     ) -> str:
+        import aiohttp
+
         task_id = uuid.uuid4().hex
         await websocket.send_str(self._json(self._start_payload(config, task_id)))
 
@@ -444,6 +447,8 @@ class DashScopeSTTAdapter(BaseSTTAdapter):
 
     @staticmethod
     def _require_started(message: Any, task_id: str) -> None:
+        import aiohttp
+
         if getattr(message, "type", None) != aiohttp.WSMsgType.TEXT:
             raise VoiceProviderError("DashScope STT websocket closed before task started.")
         data = message.json()

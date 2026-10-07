@@ -15,10 +15,12 @@ import sys
 import deeptutor.api.main  # noqa: F401
 
 heavy_roots = {
+    "aiohttp",
     "anthropic",
     "docx",
     "fitz",
     "graphrag",
+    "jinja2",
     "llama_index",
     "matplotlib",
     "networkx",

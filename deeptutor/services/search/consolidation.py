@@ -7,14 +7,17 @@ Strategies (chosen automatically):
 - Optional LLM synthesis when ``use_llm=True``
 """
 
-import logging
-from typing import Any
+from __future__ import annotations
 
-from jinja2 import BaseLoader, Environment
+import logging
+from typing import TYPE_CHECKING, Any
 
 from deeptutor.services.llm import get_llm_client
 
 from .types import WebSearchResponse
+
+if TYPE_CHECKING:
+    from jinja2 import Environment
 
 _logger = logging.getLogger(__name__)
 
@@ -163,7 +166,8 @@ class AnswerConsolidator:
         self.custom_template = custom_template
         self.llm_config = llm_config or {}
         self.max_results = max_results
-        self.jinja_env = Environment(loader=BaseLoader(), autoescape=autoescape)  # nosec B701
+        self._jinja_autoescape = autoescape
+        self.jinja_env: Environment | None = None
 
         if self.custom_template is not None and autoescape:
             _logger.warning(
@@ -171,6 +175,16 @@ class AnswerConsolidator:
                 "HTML in rendered variables will be escaped by default; use the "
                 "'safe' filter in your template if you intentionally need raw HTML."
             )
+
+    def _jinja_environment(self) -> Environment:
+        """Build the Jinja2 environment on first template render (keeps jinja2 lazy)."""
+        from jinja2 import BaseLoader, Environment
+
+        if self.jinja_env is None:
+            self.jinja_env = Environment(  # nosec B701
+                loader=BaseLoader(), autoescape=self._jinja_autoescape
+            )
+        return self.jinja_env
 
     def consolidate(self, response: WebSearchResponse) -> WebSearchResponse:
         """Consolidate search results into an answer."""
@@ -275,7 +289,7 @@ class AnswerConsolidator:
             _logger.info(f"Using fallback simple formatting for {response.provider}")
             return self._format_simple_results(response)
 
-        template = self.jinja_env.from_string(template_str)
+        template = self._jinja_environment().from_string(template_str)
 
         # Build context with provider-specific fields
         context = self._build_provider_context(response)
