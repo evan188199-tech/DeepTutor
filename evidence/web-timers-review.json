@@ -1,0 +1,42 @@
+{
+ "reviewed_at_commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+ "method": "all 23 findings read at their anchor lines in the scan worktree; plus 10 negative controls (5 managed intervals, 2 removed-listener pairs, 3 correctly-excluded false-positive classes). Severity adjustments are recorded here; scanner output is left untouched for reproducibility.",
+ "entries": [
+  {"id": "WT-0001", "verdict": "confirmed-low", "note": "module-level cached <script> singleton; load/error listeners fire at most once per page load; benign, annotated"},
+  {"id": "WT-0002", "verdict": "confirmed-low", "note": "same singleton pattern as WT-0001"},
+  {"id": "WT-0003", "verdict": "confirmed-medium", "note": "clipboard copied-reset timer (1.5s) updates state with no guard and no handle"},
+  {"id": "WT-0004", "verdict": "downgrade-low", "adjusted_severity": "low", "note": "per-toast removal timers are intentionally not cleared; code comment documents the decision, unsubscribe cleanup exists for the subscription; pending timers are no-ops after unmount (React 18) and self-remove"},
+  {"id": "WT-0005", "verdict": "confirmed-medium", "note": "copied-reset timer (2s), fire-and-forget, no guard"},
+  {"id": "WT-0006", "verdict": "confirmed-medium", "note": "copied-reset timer (1.5s), fire-and-forget, no guard"},
+  {"id": "WT-0007", "verdict": "confirmed-medium", "note": "WS attach_busy retry timer (2s) inside the big connection effect; cleanup closes the socket and removes listeners but does not clear pending retry timers; callbacks are ref-guarded which limits the blast radius"},
+  {"id": "WT-0008", "verdict": "confirmed-medium", "note": "same retry pattern in the .catch() path of attach_idle handling"},
+  {"id": "WT-0009", "verdict": "confirmed-medium", "note": "copied-reset timer (2s), fire-and-forget, no guard"},
+  {"id": "WT-0010", "verdict": "confirmed-medium", "note": "copied-reset timer (1.6s), fire-and-forget, no guard"},
+  {"id": "WT-0011", "verdict": "confirmed-low", "note": "listeners on the epub rendition document; lifetime bounded by rendition.destroy(); no explicit removal, annotated"},
+  {"id": "WT-0012", "verdict": "confirmed-low", "note": "same rendition-document pattern"},
+  {"id": "WT-0013", "verdict": "confirmed-low", "note": "same rendition-document pattern; external-link interception"},
+  {"id": "WT-0014", "verdict": "confirmed-medium", "note": "highlight auto-remove timer (2.2s) in an effect with no cleanup return; ref-only work guarded by optional chaining, so impact is minor; pattern is real"},
+  {"id": "WT-0015", "verdict": "confirmed-medium", "note": "clearest bug of the batch: the 120ms auto-jump timer's clearTimeout is returned from inside the onTurnEnd event-listener function, where the return value is ignored; the cleanup never runs and the timer survives unmount"},
+  {"id": "WT-0016", "verdict": "confirmed-medium", "note": "same misplaced-timer family as WT-0015: 120ms seek timer never cleared; listener removal exists but pending timer survives unmount"},
+  {"id": "WT-0017", "verdict": "confirmed-medium", "note": "next-tick setReadingViewport reset, unassigned handle, no guard; impact minimal (0ms) but pattern is real"},
+  {"id": "WT-0018", "verdict": "confirmed-medium", "note": "same 0ms reset pattern as WT-0017"},
+  {"id": "WT-0019", "verdict": "confirmed-medium", "note": "copied-reset timer (1.5s), fire-and-forget, no guard"},
+  {"id": "WT-0020", "verdict": "confirmed-low", "note": "EventSource listeners have no removeEventListener, but the source is closed via sourcesRef container (closeAll on unmount); listeners die with the source"},
+  {"id": "WT-0021", "verdict": "confirmed-low", "note": "same EventSource container-lifetime pattern"},
+  {"id": "WT-0022", "verdict": "confirmed-low", "note": "same EventSource container-lifetime pattern"},
+  {"id": "WT-0023", "verdict": "confirmed-low", "note": "same EventSource container-lifetime pattern"}
+ ],
+ "negative_controls": [
+  {"target": "web/hooks/useKnowledgeBases.ts:187", "expected": "interval cleared in effect cleanup", "observed": "return () => window.clearInterval(interval) present; scanner silent", "result": "pass"},
+  {"target": "web/app/(workspace)/whisper/page.tsx:150", "expected": "poll + giveUp + retry set all cleared", "observed": "cleanup clears poll, giveUp and every tracked retry timer; scanner silent", "result": "pass"},
+  {"target": "web/features/settings/sections/DataMigrationSettingsSection.tsx:108", "expected": "interval cleared + alive flag", "observed": "alive flag and clearInterval in cleanup; scanner silent", "result": "pass"},
+  {"target": "web/components/partners/group/PartnerGroupChat.tsx:104", "expected": "interval cleared", "observed": "return () => clearInterval(timer); scanner silent", "result": "pass"},
+  {"target": "web/components/settings/MinerUEngineSettings.tsx:187", "expected": "interval cleared", "observed": "return () => clearInterval(timer) at :215; scanner silent", "result": "pass"},
+  {"target": "web/app/(workspace)/partners/[partnerId]/page.tsx:175", "expected": "conditional interval + focus/visibilitychange listeners all cleaned", "observed": "cleanup clears timer (null-checked) and both listeners; scanner silent", "result": "pass"},
+  {"target": "web/components/partners/PartnerChat.tsx:905", "expected": "focus/online/visibilitychange removed in cleanup", "observed": "all three removed; scanner silent", "result": "pass"},
+  {"target": "web/hooks/use-linger-expand.ts:46", "expected": "ref-tracked timer cleared via useEffect(() => clearTimer) on unmount", "observed": "scanner initially flagged, rule refined (assigned+cleared skip); now silent", "result": "pass"},
+  {"target": "web/shared/ui/Tooltip.tsx:78", "expected": "timerRef tracked and cleared via clearTimer", "observed": "scanner initially flagged, rule refined; now silent", "result": "pass"},
+  {"target": "web/lib/youtube-iframe-api.ts:64", "expected": "{ once: true } listener self-removes", "observed": "scanner initially flagged, once-option skip added; now silent", "result": "pass"}
+ ],
+ "adjusted_distribution": {"high": 0, "medium": 13, "low": 10}
+}

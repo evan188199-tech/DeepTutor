@@ -1,0 +1,350 @@
+{
+ "meta": {
+  "scanner": "scripts/scan_web_timers.py",
+  "rev": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+  "subject": "release: v1.6.13",
+  "files_scanned": 1219,
+  "scope": "web/**/*.{ts,tsx}",
+  "excluded_dirs": [
+   ".next",
+   ".turbo",
+   "coverage",
+   "dist",
+   "generated",
+   "locales",
+   "node_modules",
+   "playwright-report",
+   "public",
+   "test-results",
+   "vendor"
+  ],
+  "rules": [
+   {
+    "rule": "interval-dropped-handle",
+    "meaning": "setInterval return value discarded; cannot be stopped"
+   },
+   {
+    "rule": "interval-never-cleared",
+    "meaning": "saved handle but no clearInterval path in file"
+   },
+   {
+    "rule": "interval-ownership-transfer",
+    "meaning": "interval returned to caller (informational)"
+   },
+   {
+    "rule": "timeout-in-effect-no-cleanup",
+    "meaning": "setTimeout in useEffect without cleanup clear"
+   },
+   {
+    "rule": "post-unmount-state-update",
+    "meaning": "detached setTimeout updates state without guard"
+   },
+   {
+    "rule": "listener-no-removal",
+    "meaning": "addEventListener without matching removal in file"
+   },
+   {
+    "rule": "listener-wrapper-no-removal",
+    "meaning": "subscription helper without unsubscribe return"
+   },
+   {
+    "rule": "effect-subscription-no-cleanup",
+    "meaning": "useEffect registers subscription, no cleanup return"
+   }
+  ]
+ },
+ "counts": {
+  "total": 23,
+  "by_severity": {
+   "high": 0,
+   "medium": 14,
+   "low": 9
+  },
+  "by_rule": {
+   "listener-no-removal": 9,
+   "post-unmount-state-update": 7,
+   "timeout-in-effect-no-cleanup": 7
+  },
+  "by_zone": {
+   "product": 23
+  }
+ },
+ "findings": [
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/components/Geogebra.tsx",
+   "line": 60,
+   "col": 7,
+   "detail": "addEventListener('load' on existing) has no matching removeEventListener('load') in this file",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0001"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/components/Geogebra.tsx",
+   "line": 61,
+   "col": 7,
+   "detail": "addEventListener('error' on existing) has no matching removeEventListener('error') in this file",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0002"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/chat/preview/FilePreviewDrawer.tsx",
+   "line": 156,
+   "col": 7,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0003"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/common/ToastViewport.tsx",
+   "line": 25,
+   "col": 28,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0004"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/courses/CourseConventions.tsx",
+   "line": 49,
+   "col": 14,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0005"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/knowledge/KbFilePreview.tsx",
+   "line": 201,
+   "col": 7,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0006"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/partners/PartnerChat.tsx",
+   "line": 734,
+   "col": 18,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0007"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/partners/PartnerChat.tsx",
+   "line": 767,
+   "col": 20,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0008"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/partners/PartnerLinkModal.tsx",
+   "line": 75,
+   "col": 7,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0009"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/partners/group/PartnerSeat.tsx",
+   "line": 74,
+   "col": 14,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0010"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/components/reading/EpubDocumentView.tsx",
+   "line": 372,
+   "col": 7,
+   "detail": "addEventListener('touchstart' on doc) has no matching removeEventListener('touchstart') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0011"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/components/reading/EpubDocumentView.tsx",
+   "line": 383,
+   "col": 7,
+   "detail": "addEventListener('touchend' on doc) has no matching removeEventListener('touchend') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0012"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/components/reading/EpubDocumentView.tsx",
+   "line": 403,
+   "col": 7,
+   "detail": "addEventListener('click' on doc) has no matching removeEventListener('click') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0013"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/reading/EpubDocumentView.tsx",
+   "line": 623,
+   "col": 16,
+   "detail": "setTimeout inside useEffect that has no cleanup return; callback can still fire after unmount",
+   "suggestion": "keep the handle (ref or local) and clearTimeout in an effect cleanup",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0014"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/reading/ReaderPane.tsx",
+   "line": 696,
+   "col": 28,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0015"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/reading/workspace/MediaReadingStage.tsx",
+   "line": 433,
+   "col": 14,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0016"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/reading/workspace/ReadingComposer.tsx",
+   "line": 113,
+   "col": 16,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0017"
+  },
+  {
+   "rule": "timeout-in-effect-no-cleanup",
+   "severity": "medium",
+   "file": "web/components/reading/workspace/ReadingWorkspace.tsx",
+   "line": 327,
+   "col": 16,
+   "detail": "setTimeout inside useEffect whose cleanup return does not clearTimeout it; callback can still fire after unmount",
+   "suggestion": "clear the timer in the effect cleanup return",
+   "zone": "product",
+   "context": "effect-no-cleanup",
+   "id": "WT-0018"
+  },
+  {
+   "rule": "post-unmount-state-update",
+   "severity": "medium",
+   "file": "web/components/whisper/WhisperRoomChip.tsx",
+   "line": 19,
+   "col": 14,
+   "detail": "fire-and-forget setTimeout callback updates component state without a mounted/cancelled guard",
+   "suggestion": "track the handle and clear on unmount, or guard with a cancelled ref",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0019"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/hooks/useKnowledgeProgress.ts",
+   "line": 306,
+   "col": 7,
+   "detail": "addEventListener('process_log' on source) has no matching removeEventListener('process_log') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0020"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/hooks/useKnowledgeProgress.ts",
+   "line": 331,
+   "col": 7,
+   "detail": "addEventListener('progress' on source) has no matching removeEventListener('progress') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0021"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/hooks/useKnowledgeProgress.ts",
+   "line": 364,
+   "col": 7,
+   "detail": "addEventListener('complete' on source) has no matching removeEventListener('complete') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0022"
+  },
+  {
+   "rule": "listener-no-removal",
+   "severity": "low",
+   "file": "web/hooks/useKnowledgeProgress.ts",
+   "line": 391,
+   "col": 7,
+   "detail": "addEventListener('failed' on source) has no matching removeEventListener('failed') in this file; note: target objects in this file are closed via close()/abort()/disconnect(), so listeners are discarded with the target",
+   "suggestion": "element listeners are GC'd with the element, but repeated registration (e.g. inside handlers) accumulates; add a removal path or manage the target lifetime explicitly",
+   "zone": "product",
+   "context": "component",
+   "id": "WT-0023"
+  }
+ ]
+}
