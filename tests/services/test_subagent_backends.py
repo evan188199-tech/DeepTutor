@@ -1614,6 +1614,116 @@ async def test_server_registry_shutdown_terminates_everything() -> None:
     assert proc.terminated is True
 
 
+# A stub child that installs its SIGTERM handler, says "ready", then hangs —
+# used to prove the teardown ladders escalate instead of leaving orphans.
+_SIGTERM_IGNORING_STUB = (
+    "import signal, sys, time\n"
+    "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+    "sys.stdout.write('ready\\n')\n"
+    "sys.stdout.flush()\n"
+    "while True:\n"
+    "    time.sleep(0.05)\n"
+)
+
+
+@pytest.mark.asyncio
+async def test_server_atexit_cleanup_escalates_to_kill_and_reaps_stub(monkeypatch) -> None:
+    import asyncio
+    import os
+    import time
+
+    from deeptutor.services.subagent import opencode_server as srv
+
+    proc = await asyncio.create_subprocess_exec(
+        sys.executable,
+        "-c",
+        _SIGTERM_IGNORING_STUB,
+        stdin=asyncio.subprocess.DEVNULL,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.DEVNULL,
+    )
+    assert await proc.stdout.readline() == b"ready\n"  # handler installed
+    monkeypatch.setattr(srv, "_TERMINATE_GRACE_SECONDS", 0.5)
+    srv._servers.clear()
+    srv._servers[("stub", "")] = srv.ServerHandle(
+        base_url="http://127.0.0.1:1", username="u", password="p", process=proc
+    )
+    try:
+        started = time.monotonic()
+        srv._atexit_cleanup()
+        elapsed = time.monotonic() - started
+        assert srv._servers == {}
+        with pytest.raises(ProcessLookupError):
+            os.kill(proc.pid, 0)  # gone at the OS level, not just signalled
+        assert await asyncio.wait_for(proc.wait(), timeout=5.0) is not None
+        assert elapsed < 10.0  # bounded, even though the stub ignores SIGTERM
+    finally:
+        srv._servers.clear()
+        if proc.returncode is None:
+            proc.kill()
+            await proc.wait()
+
+
+# ---- claude model capture: bounded child reaping -------------------------------
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX-only pty capture child reaping")
+def test_capture_child_reap_escalates_to_kill_for_sigterm_ignoring_stub(monkeypatch) -> None:
+    import os
+    import subprocess
+    import time
+
+    from deeptutor.services.subagent import claude_models
+
+    proc = subprocess.Popen(
+        [sys.executable, "-c", _SIGTERM_IGNORING_STUB],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+    )
+    try:
+        assert proc.stdout.readline() == b"ready\n"
+        monkeypatch.setattr(claude_models, "_REAP_GRACE_SECONDS", 0.5)
+        started = time.monotonic()
+        claude_models._reap_capture_child(proc.pid)
+        elapsed = time.monotonic() - started
+        with pytest.raises(ProcessLookupError):
+            os.kill(proc.pid, 0)
+        assert elapsed < 10.0
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.wait()
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX-only pty capture child reaping")
+def test_capture_child_reap_returns_fast_when_sigterm_works(monkeypatch) -> None:
+    import os
+    import subprocess
+    import time
+
+    from deeptutor.services.subagent import claude_models
+
+    stub = "import sys, time\nsys.stdout.write('ready\\n')\nsys.stdout.flush()\ntime.sleep(30)\n"
+    proc = subprocess.Popen(
+        [sys.executable, "-c", stub],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+    )
+    try:
+        assert proc.stdout.readline() == b"ready\n"
+        monkeypatch.setattr(claude_models, "_REAP_GRACE_SECONDS", 0.5)
+        started = time.monotonic()
+        claude_models._reap_capture_child(proc.pid)
+        elapsed = time.monotonic() - started
+        with pytest.raises(ProcessLookupError):
+            os.kill(proc.pid, 0)
+        assert elapsed < 0.9  # SIGTERM sufficed — no grace window burned
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+        proc.wait()
+
+
 @pytest.mark.asyncio
 async def test_native_partner_consult_stop_and_parent_cancellation(monkeypatch):
     import asyncio

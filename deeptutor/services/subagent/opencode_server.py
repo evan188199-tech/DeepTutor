@@ -11,7 +11,8 @@ server processes so the backend can treat "a reachable server" as a primitive:
   warm server instead of paying a cold start each question.
 * Loopback only, with a random per-spawn password passed via the CLI's server
   env vars, so another local user can't drive the agent through our port.
-* Reaped after an idle TTL (checked on each acquire), terminated atexit, and
+* Reaped after an idle TTL (checked on each acquire), terminated and reaped
+  atexit (SIGTERM, escalating to SIGKILL), and
   respawned transparently if the process died in between.
 
 Sessions live on the CLI's own disk storage (keyed by the workdir), so a
@@ -41,6 +42,7 @@ _IDLE_TTL_SECONDS = 15 * 60
 _READY_TIMEOUT_SECONDS = 30.0
 _READY_POLL_SECONDS = 0.3
 _TERMINATE_GRACE_SECONDS = 5.0
+_REAP_POLL_SECONDS = 0.05
 
 
 @dataclass(slots=True)
@@ -194,10 +196,50 @@ async def shutdown_servers() -> None:
                 pass
 
 
+def _wait_exit_sync(process: asyncio.subprocess.Process, timeout: float) -> bool:
+    """Bounded synchronous wait for an asyncio child process to be gone.
+
+    Watches the transport's ``returncode`` (set by the child watcher) and, on
+    POSIX, probes the pid directly so teardown still converges once the owning
+    event loop is closed.
+    """
+    deadline = time.monotonic() + timeout
+    while True:
+        if process.returncode is not None:
+            return True
+        pid = getattr(process, "pid", None)
+        if pid is not None and os.name != "nt":
+            try:
+                os.kill(pid, 0)
+            except ProcessLookupError:
+                return True
+        if time.monotonic() >= deadline:
+            return process.returncode is not None
+        time.sleep(_REAP_POLL_SECONDS)
+
+
+def _terminate_and_reap(handle: ServerHandle, *, grace_seconds: float) -> None:
+    """Synchronous terminate → bounded wait → kill ladder for teardown paths."""
+    process = handle.process
+    if process.returncode is not None:
+        return
+    try:
+        process.terminate()
+    except ProcessLookupError:
+        pass
+    if _wait_exit_sync(process, grace_seconds):
+        return
+    try:
+        process.kill()
+    except ProcessLookupError:
+        pass
+    _wait_exit_sync(process, grace_seconds)
+
+
 @atexit.register
-def _atexit_cleanup() -> None:  # pragma: no cover - process teardown
-    for handle in _servers.values():
-        _terminate_sync(handle)
+def _atexit_cleanup() -> None:
+    for handle in list(_servers.values()):
+        _terminate_and_reap(handle, grace_seconds=_TERMINATE_GRACE_SECONDS)
     _servers.clear()
 
 

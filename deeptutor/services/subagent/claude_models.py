@@ -34,6 +34,8 @@ _CACHE_FILE = "claude_models_cache.json"
 # Bounds for the capture: total wall-clock, and the terminal geometry (wide
 # enough that description columns don't wrap into the model name).
 _CAPTURE_TIMEOUT = 35.0
+_REAP_GRACE_SECONDS = 5.0
+_REAP_POLL_SECONDS = 0.05
 _COLS, _ROWS = 200, 60
 
 # A picker row: optional cursor marker, an index, then "Name<2+ spaces>desc".
@@ -138,6 +140,37 @@ def _parse_model_screen(text: str) -> list[dict[str, str]]:
     return out
 
 
+def _wait_child_reaped(pid: int, timeout: float) -> bool:
+    """Bounded non-blocking wait for a direct child to be reaped."""
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            reaped, _ = os.waitpid(pid, os.WNOHANG)
+        except ChildProcessError:
+            return True  # already reaped elsewhere — nothing left to wait for
+        if reaped == pid:
+            return True
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(_REAP_POLL_SECONDS)
+
+
+def _reap_capture_child(pid: int) -> None:
+    """Stop the capture child and reap it, escalating to SIGKILL if needed.
+
+    Bounded on purpose: a wedged CLI costs at most two grace windows here
+    instead of blocking the capture thread (and its thread-pool slot) forever.
+    """
+    for sig in (signal.SIGTERM, signal.SIGKILL):
+        try:
+            os.kill(pid, sig)
+        except OSError:
+            pass
+        if _wait_child_reaped(pid, _REAP_GRACE_SECONDS):
+            return
+    logger.warning("claude /model capture child pid=%s still running after SIGKILL", pid)
+
+
 def _capture_model_screen() -> str | None:
     """Drive ``claude``'s ``/model`` TUI in a pty and return the rendered screen.
 
@@ -218,14 +251,7 @@ def _capture_model_screen() -> str | None:
             os.close(fd)
         except OSError:
             pass
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except OSError:
-            pass
-        try:
-            os.waitpid(pid, 0)
-        except OSError:
-            pass
+        _reap_capture_child(pid)
         _cleanup_dir(workdir)
 
 
