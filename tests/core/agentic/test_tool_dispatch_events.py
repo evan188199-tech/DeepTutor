@@ -54,6 +54,31 @@ class _FlakyConnectionRegistry:
         return ToolResult(content="recovered", success=True)
 
 
+class _CountingSlowRegistry:
+    """Every attempt sleeps past the timeout — counts how often it ran."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def execute(self, name: str, **kwargs: Any) -> ToolResult:
+        self.calls += 1
+        await asyncio.sleep(0.05)
+        return ToolResult(content="too late", success=True)
+
+
+class _FlakyTimeoutRegistry:
+    """Slow on the first attempt only, so a retry can succeed."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def execute(self, name: str, **kwargs: Any) -> ToolResult:
+        self.calls += 1
+        if self.calls == 1:
+            await asyncio.sleep(0.05)
+        return ToolResult(content="recovered", success=True)
+
+
 class _PausingRegistry:
     async def execute(self, name: str, **kwargs: Any) -> ToolResult:
         assert name == "ask_user"
@@ -214,6 +239,62 @@ async def test_transient_connection_error_is_retried() -> None:
 
     assert registry.calls == 2
     assert _call_states(events) == ["running", "complete"]
+
+
+@pytest.mark.asyncio
+async def test_non_idempotent_tool_timeout_is_not_retried() -> None:
+    """A timeout must not replay a tool whose first attempt may have applied.
+
+    ``write_note`` persists; the timeout cancels it mid-write, so a blind
+    retry could write the note twice. The call must run exactly once and
+    surface a diagnosable error that names the tool, the timeout, and why
+    no retry happened.
+    """
+    registry = _CountingSlowRegistry()
+
+    events = await _run_dispatch(
+        [{"id": "c1", "name": "write_note", "arguments": '{"content": "x"}'}],
+        registry=registry,
+        tool_timeout=0.01,
+        tool_max_retries=2,
+    )
+
+    assert registry.calls == 1
+    status_events = _status_events(events)
+    assert _call_states(events) == ["running", "error"]
+    error = str(status_events[-1].metadata.get("error"))
+    assert "write_note timed out after" in error
+    assert "not known to be idempotent" in error
+
+
+@pytest.mark.asyncio
+async def test_idempotent_tool_timeout_still_retries() -> None:
+    """Read-only retrieval keeps its timeout retry (cancel-hygiene M3 fix)."""
+    registry = _FlakyTimeoutRegistry()
+
+    events = await _run_dispatch(
+        [{"id": "c1", "name": "web_search", "arguments": '{"query": "x"}'}],
+        registry=registry,
+        tool_timeout=0.01,
+        tool_max_retries=1,
+    )
+
+    assert registry.calls == 2
+    assert _call_states(events) == ["running", "complete"]
+
+
+def test_timeout_retry_safe_tools_are_real_builtins() -> None:
+    """A misspelled or external name would silently widen the retry policy.
+
+    Only built-ins can opt into timeout retry; MCP and CLI tools reach the
+    dispatcher under provider-prefixed names that this frozenset must never
+    contain.
+    """
+    from deeptutor.runtime.agentic.tool_dispatch import TIMEOUT_RETRY_SAFE_TOOLS
+    from deeptutor.tools.builtin_specs import BUILTIN_TOOL_NAMES
+
+    assert TIMEOUT_RETRY_SAFE_TOOLS
+    assert TIMEOUT_RETRY_SAFE_TOOLS <= set(BUILTIN_TOOL_NAMES)
 
 
 @pytest.mark.asyncio

@@ -54,6 +54,60 @@ MAX_PARALLEL_TOOL_CALLS = 15
 # not carry the persisted version of it.
 PAUSE_LAST_TOOLS = frozenset({"ask_user", "workspace_export"})
 
+# Built-in tools that are safe to re-execute after a ``wait_for`` timeout:
+# read-only retrieval, search, or pure computation — replaying one cannot
+# apply the same effect twice. A timeout cancels the tool *mid-flight*, so
+# for anything else (file/notebook writes, ``exec``, message- and
+# state-mutating tools, every MCP/CLI tool) the first attempt may already
+# have taken effect, and a retry would run that effect a second time.
+# Deny is the default: a tool keeps its timeout retry only by being listed
+# here. ``ConnectionError`` retries are unaffected — a transport failure
+# means the call never reached the tool's side effects.
+TIMEOUT_RETRY_SAFE_TOOLS = frozenset(
+    {
+        # Retrieval and search (read-only).
+        "rag",
+        "kb_files",
+        "knowledge_frontier",
+        "web_search",
+        "web_fetch",
+        "paper_search",
+        "zotero_search",
+        "github",
+        # Pure-LLM helpers (no external effect beyond the call itself).
+        "brainstorm",
+        "reason",
+        "geogebra_analysis",
+        # Reads of user content and state.
+        "read_source",
+        "read_memory",
+        "read_skill",
+        "list_notebook",
+        "workspace_list",
+        "workspace_read",
+        "workspace_search",
+        "obsidian_search",
+        "obsidian_read",
+        "obsidian_list",
+        "obsidian_backlinks",
+        "obsidian_links",
+        "obsidian_tags",
+        "marginnote_search",
+        "marginnote_read",
+        "marginnote_list",
+        "marginnote_documents",
+        "marginnote_links",
+        "marginnote_tags",
+        "marginnote_cards",
+        "ima_list",
+        "ima_read",
+        "ima_note_search",
+        "partner_read",
+        "partner_search",
+        "inspect_setup",
+    }
+)
+
 
 KwargAugmenter = Callable[[str, dict[str, Any], UnifiedContext], dict[str, Any]]
 # Tool names whose whole job is to change what the *rest* of the round operates
@@ -736,13 +790,28 @@ async def execute_tool_call(
                     timeout=tool_timeout,
                 )
             except (asyncio.TimeoutError, ConnectionError) as exc:
+                timed_out = isinstance(exc, asyncio.TimeoutError)
+                if timed_out and tool_name not in TIMEOUT_RETRY_SAFE_TOOLS:
+                    # The timeout cancelled the tool mid-flight, so the first
+                    # attempt may already have applied its effect (a written
+                    # note, a sent message). Replaying it would apply that
+                    # effect a second time, so a non-idempotent tool fails
+                    # fast instead — with a message that says why it was not
+                    # retried, not just that it timed out.
+                    timeout_detail = (
+                        f" after {tool_timeout:g} seconds" if tool_timeout is not None else ""
+                    )
+                    raise TimeoutError(
+                        f"{tool_name} timed out{timeout_detail}; not retried because the tool "
+                        "is not known to be idempotent and may have already taken effect"
+                    ) from exc
                 if attempt >= attempts:
-                    if isinstance(exc, asyncio.TimeoutError) and tool_timeout is not None:
+                    if timed_out and tool_timeout is not None:
                         raise TimeoutError(
                             f"{tool_name} timed out after {tool_timeout:g} seconds"
                         ) from exc
                     raise
-                retry_reason = "timed out" if isinstance(exc, asyncio.TimeoutError) else str(exc)
+                retry_reason = "timed out" if timed_out else str(exc)
                 await _event_sink(
                     "tool_log",
                     f"{tool_name} {retry_reason}; retrying attempt {attempt + 1}/{attempts}",
