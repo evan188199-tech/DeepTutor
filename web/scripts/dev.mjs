@@ -60,10 +60,18 @@ const child = spawn(process.execPath, [NEXT_BIN, "dev", ...process.argv.slice(2)
 
 // Let Next own the terminal: forward the signals it already handles (lock file
 // cleanup, worker teardown) instead of dying first and orphaning the worker.
-for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
+const forwardedSignals = ["SIGINT", "SIGTERM", "SIGHUP"];
+for (const signal of forwardedSignals) {
   process.on(signal, () => child.kill(signal));
 }
 child.on("exit", (code, signal) => {
-  if (signal) process.kill(process.pid, signal);
-  else process.exit(code ?? 0);
+  if (signal) {
+    // The forwarding listeners stop Node from dying on the re-raised signal
+    // (and kill() on the dead child is a no-op), so drop them first or this
+    // wrapper hangs forever after the child dies from a signal.
+    for (const name of forwardedSignals) process.removeAllListeners(name);
+    process.kill(process.pid, signal);
+  } else {
+    process.exit(code ?? 0);
+  }
 });
