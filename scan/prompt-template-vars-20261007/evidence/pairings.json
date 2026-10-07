@@ -1,0 +1,2248 @@
+{
+ "pairings": 201,
+ "findings": [
+  {
+   "lang": "zh",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/zh/audit_l2.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 175,
+   "key": "system",
+   "placeholders": [
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "focus"
+   ],
+   "drift": []
+  },
+  {
+   "lang": "en",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 175,
+   "key": "system",
+   "placeholders": [
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "focus"
+   ],
+   "drift": []
+  },
+  {
+   "lang": "zh",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/zh/audit_l3.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 316,
+   "key": "system",
+   "placeholders": [
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "focus"
+   ],
+   "drift": []
+  },
+  {
+   "lang": "en",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 316,
+   "key": "system",
+   "placeholders": [
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "focus"
+   ],
+   "drift": []
+  },
+  {
+   "lang": "zh",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/zh/update_l3.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 459,
+   "key": "system",
+   "placeholders": [
+    "focus",
+    "sections",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "sections",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "slot"
+   ],
+   "drift": []
+  },
+  {
+   "lang": "en",
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "en_rel": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 459,
+   "key": "system",
+   "placeholders": [
+    "focus",
+    "sections",
+    "today",
+    "user_label"
+   ],
+   "provided": [
+    "focus",
+    "sections",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "class": "EXTRA_PARAM",
+   "extra": [
+    "slot"
+   ],
+   "drift": []
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "key": "explain.user",
+   "placeholders": [
+    "knowledge_point"
+   ]
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "key": "feynman.user",
+   "placeholders": [
+    "knowledge_point"
+   ]
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "key": "practice.user",
+   "placeholders": [
+    "knowledge_points"
+   ]
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/zh.yaml",
+   "key": "explain.user",
+   "placeholders": [
+    "knowledge_point"
+   ]
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/zh.yaml",
+   "key": "feynman.user",
+   "placeholders": [
+    "knowledge_point"
+   ]
+  },
+  {
+   "class": "PLACEHOLDER_WITHOUT_PAIRING",
+   "tpl": "deeptutor/learning/prompts/zh.yaml",
+   "key": "practice.user",
+   "placeholders": [
+    "knowledge_points"
+   ]
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/agents/chat/prompts/en/chat_agent.yaml",
+   "keys": {
+    "context_template": [
+     "context"
+    ],
+    "history_format": [
+     "history"
+    ],
+    "user_template": [
+     "message"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/agents/chat/prompts/zh/chat_agent.yaml",
+   "keys": {
+    "context_template": [
+     "context"
+    ],
+    "history_format": [
+     "history"
+    ],
+    "user_template": [
+     "message"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/agents/question/prompts/en/idea_agent.yaml",
+   "keys": {
+    "generate_ideas.user": [
+     "topic"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/agents/question/prompts/zh/idea_agent.yaml",
+   "keys": {
+    "generate_ideas.user": [
+     "topic"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/co_writer/prompts/en/narrator_agent.yaml",
+   "keys": {
+    "extract_key_points_user": [
+     "content"
+    ],
+    "generate_script_system_template": [
+     "length_instruction",
+     "style_prompt"
+    ],
+    "generate_script_user_long": [
+     "content"
+    ],
+    "generate_script_user_short": [
+     "content"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/co_writer/prompts/zh/narrator_agent.yaml",
+   "keys": {
+    "extract_key_points_user": [
+     "content"
+    ],
+    "generate_script_system_template": [
+     "length_instruction",
+     "style_prompt"
+    ],
+    "generate_script_user_long": [
+     "content"
+    ],
+    "generate_script_user_short": [
+     "content"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/services/memory/prompts/en.yaml",
+   "keys": {
+    "system_l2": [
+     "today",
+     "user_label"
+    ],
+    "system_l3": [
+     "today",
+     "user_label"
+    ],
+    "user_l2": [
+     "changes",
+     "entities",
+     "existing",
+     "focus",
+     "kb_queries",
+     "sections",
+     "surface"
+    ],
+    "user_l3": [
+     "existing",
+     "focus",
+     "l2_corpus",
+     "sections",
+     "slot"
+    ]
+   }
+  },
+  {
+   "class": "ORPHAN_TEMPLATE",
+   "tpl": "deeptutor/services/memory/prompts/zh.yaml",
+   "keys": {
+    "system_l2": [
+     "today",
+     "user_label"
+    ],
+    "system_l3": [
+     "today",
+     "user_label"
+    ],
+    "user_l2": [
+     "changes",
+     "entities",
+     "existing",
+     "focus",
+     "kb_queries",
+     "sections",
+     "surface"
+    ],
+    "user_l3": [
+     "existing",
+     "focus",
+     "l2_corpus",
+     "sections",
+     "slot"
+    ]
+   }
+  }
+ ],
+ "table": [
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/pipeline.py",
+   "line": 1126,
+   "key": "notices.too_many_tool_calls",
+   "provided": [
+    "limit",
+    "requested"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/pipeline.py",
+   "line": 1112,
+   "key": "notices.tool_error",
+   "provided": [
+    "error",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/pipeline.py",
+   "line": 1151,
+   "key": "notices.tool_error",
+   "provided": [
+    "error",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/agent_loop.py",
+   "line": 827,
+   "key": "notices.loop_error_finish",
+   "provided": [
+    "error"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 137,
+   "key": "tool_call_policy",
+   "provided": [
+    "limit"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 218,
+   "key": "general_partner",
+   "provided": [
+    "name"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 224,
+   "key": "general_partner_description",
+   "provided": [
+    "description"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 256,
+   "key": "runtime_context",
+   "provided": [
+    "datetime"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 276,
+   "key": "loop.user",
+   "provided": [
+    "user_message"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/solve/loop.py",
+   "line": 46,
+   "key": "solve.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/setup/capability.py",
+   "line": 58,
+   "key": "setup.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/ima/capability.py",
+   "line": 54,
+   "key": "ima.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/marginnote4/capability.py",
+   "line": 50,
+   "key": "marginnote4.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/obsidian/capability.py",
+   "line": 50,
+   "key": "obsidian.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "call": "deeptutor/capabilities/mastery/loop.py",
+   "line": 236,
+   "key": "mastery.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "line": 80,
+   "key": "generate_user_template",
+   "provided": [
+    "analysis_json",
+    "design_json",
+    "duration_requirement",
+    "output_mode",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "line": 120,
+   "key": "retry_user_template",
+   "provided": [
+    "attempt",
+    "current_code",
+    "duration_requirement",
+    "error_message",
+    "output_mode",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "line": 75,
+   "key": "generate_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "line": 115,
+   "key": "retry_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/concept_analysis_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/concept_analysis_agent.py",
+   "line": 58,
+   "key": "user_template",
+   "provided": [
+    "history_context",
+    "output_mode",
+    "reference_count",
+    "style_hint",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/concept_analysis_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/concept_analysis_agent.py",
+   "line": 52,
+   "key": "user_template",
+   "provided": [
+    "history_context",
+    "output_mode",
+    "reference_count",
+    "style_hint",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/concept_analysis_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/concept_analysis_agent.py",
+   "line": 40,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/concept_design_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/concept_design_agent.py",
+   "line": 44,
+   "key": "user_template",
+   "provided": [
+    "analysis_json",
+    "output_mode",
+    "style_hint",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/concept_design_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/concept_design_agent.py",
+   "line": 39,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/summary_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/summary_agent.py",
+   "line": 45,
+   "key": "user_template",
+   "provided": [
+    "analysis_json",
+    "design_json",
+    "output_mode",
+    "render_json",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/summary_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/summary_agent.py",
+   "line": 40,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/visual_review_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/visual_review_agent.py",
+   "line": 62,
+   "key": "user_template",
+   "provided": [
+    "current_code",
+    "output_mode",
+    "render_json",
+    "reviewed_frames",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/visual_review_agent.yaml",
+   "call": "deeptutor/agents/math_animator/agents/visual_review_agent.py",
+   "line": 57,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 112,
+   "key": "status.code_prepared",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 120,
+   "key": "status.retry",
+   "provided": [
+    "attempt",
+    "error"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 153,
+   "key": "status.rendering",
+   "provided": [
+    "mode",
+    "quality"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 189,
+   "key": "status.artifacts_one",
+   "provided": [
+    "count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 189,
+   "key": "status.artifacts_many",
+   "provided": [
+    "count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "call": "deeptutor/agents/math_animator/capability.py",
+   "line": 306,
+   "key": "status.llm_call_failed",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/notebook/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/notebook/analysis_agent.py",
+   "line": 302,
+   "key": "thinking.user_template",
+   "provided": [
+    "catalog",
+    "user_question"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/notebook/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/notebook/analysis_agent.py",
+   "line": 313,
+   "key": "acting.user_template",
+   "provided": [
+    "catalog",
+    "thinking_text",
+    "user_question"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/notebook/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/notebook/analysis_agent.py",
+   "line": 342,
+   "key": "observing.user_template",
+   "provided": [
+    "detailed_blocks",
+    "thinking_text",
+    "user_question"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/notebook/prompts/en/summarize_agent.yaml",
+   "call": "deeptutor/agents/notebook/summarize_agent.py",
+   "line": 105,
+   "key": "user_template",
+   "provided": [
+    "metadata",
+    "output",
+    "record_hint",
+    "record_type",
+    "title",
+    "user_query"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/followup_agent.yaml",
+   "call": "deeptutor/agents/question/agents/followup_agent.py",
+   "line": 46,
+   "key": "answer_followup",
+   "provided": [
+    "history_context",
+    "question_context",
+    "user_message"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/followup_agent.yaml",
+   "call": "deeptutor/agents/question/agents/followup_agent.py",
+   "line": 35,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 645,
+   "key": "explore.system",
+   "provided": [
+    "kb_note",
+    "num_questions",
+    "tool_list"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 657,
+   "key": "explore.user_template",
+   "provided": [
+    "allowed_types",
+    "attachments_summary",
+    "conversation_context",
+    "difficulty",
+    "num_questions",
+    "per_type_counts",
+    "quiz_history",
+    "user_message"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 720,
+   "key": "plan.system",
+   "provided": [
+    "num_questions"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 722,
+   "key": "plan.user_template",
+   "provided": [
+    "allowed_types",
+    "difficulty",
+    "exploration_trace",
+    "num_questions",
+    "per_type_counts",
+    "user_message"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 797,
+   "key": "notices.plan_count_mismatch",
+   "provided": [
+    "got",
+    "requested"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 890,
+   "key": "quiz_step.system",
+   "provided": [
+    "kb_note",
+    "question_number",
+    "tool_list",
+    "total_questions"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 898,
+   "key": "quiz_step.user_template",
+   "provided": [
+    "difficulty",
+    "exploration_trace",
+    "plan_summary",
+    "previous_questions",
+    "question_id",
+    "question_type",
+    "reference_block",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 982,
+   "key": "repair.user_template",
+   "provided": [
+    "difficulty",
+    "invalid_payload",
+    "issues",
+    "question_id",
+    "question_type",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 1069,
+   "key": "tool_summarizer.user_template",
+   "provided": [
+    "tool_result"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 1145,
+   "key": "notices.tool_summarizer_failed",
+   "provided": [
+    "error"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 1225,
+   "key": "trace.iteration_tool_call",
+   "provided": [
+    "n",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 1245,
+   "key": "trace.iteration_thought",
+   "provided": [
+    "n"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 1255,
+   "key": "trace.iteration_tool_result",
+   "provided": [
+    "n",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 2063,
+   "key": "notices.too_many_tool_calls",
+   "provided": [
+    "limit",
+    "requested"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/question/pipeline.py",
+   "line": 2087,
+   "key": "notices.tool_error",
+   "provided": [
+    "error",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "call": "deeptutor/agents/question/capability.py",
+   "line": 56,
+   "key": "status.topic_required",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "call": "deeptutor/agents/question/capability.py",
+   "line": 137,
+   "key": "status.topic_required",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "call": "deeptutor/agents/question/capability.py",
+   "line": 264,
+   "key": "status.parsing_uploaded",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "call": "deeptutor/agents/question/capability.py",
+   "line": 299,
+   "key": "status.parsing_directory",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "call": "deeptutor/agents/question/capability.py",
+   "line": 348,
+   "key": "status.mimic_needs_paper",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 672,
+   "key": "notices.partial_results",
+   "provided": [
+    "failed",
+    "total"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 785,
+   "key": "rephrase.system",
+   "provided": [
+    "max_questions_per_round",
+    "max_rounds",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 791,
+   "key": "rephrase.user_template",
+   "provided": [
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 866,
+   "key": "decompose.user_template",
+   "provided": [
+    "num_subtopics",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 975,
+   "key": "research_step.system",
+   "provided": [
+    "block_overview",
+    "block_title",
+    "kb_note",
+    "max_iterations",
+    "mode",
+    "tool_list",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 993,
+   "key": "research_step.user_template",
+   "provided": [
+    "accumulated_knowledge",
+    "sibling_topics"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1118,
+   "key": "system.obsidian_kb_system_note",
+   "provided": [
+    "kb_name"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1144,
+   "key": "system.kb_system_note",
+   "provided": [
+    "kb_name",
+    "kb_name_repr"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1248,
+   "key": "note.user_template",
+   "provided": [
+    "query",
+    "raw_answer",
+    "tool_name"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1321,
+   "key": "notices.report_incomplete",
+   "provided": [
+    "parts"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1576,
+   "key": "report.outline.user_template",
+   "provided": [
+    "block_summaries",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1745,
+   "key": "report.intro.system",
+   "provided": [
+    "section_number"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1746,
+   "key": "report.intro.user_template",
+   "provided": [
+    "section_number",
+    "sections_overview",
+    "title",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1788,
+   "key": "report.section.system",
+   "provided": [
+    "section_number"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1789,
+   "key": "report.section.user_template",
+   "provided": [
+    "evidence",
+    "report_title",
+    "section_id",
+    "section_intent",
+    "section_number",
+    "section_title",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1836,
+   "key": "report.conclusion.system",
+   "provided": [
+    "section_number"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 1837,
+   "key": "report.conclusion.user_template",
+   "provided": [
+    "section_number",
+    "sections_recap",
+    "title",
+    "topic"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 2757,
+   "key": "notices.tool_error",
+   "provided": [
+    "error",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 2923,
+   "key": "notices.append_rejected_full_progress",
+   "provided": [
+    "title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 2948,
+   "key": "notices.append_rejected_dup_progress",
+   "provided": [
+    "existing",
+    "title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 2967,
+   "key": "notices.append_rejected_duplicate",
+   "provided": [
+    "existing_id",
+    "existing_title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 2985,
+   "key": "notices.append_accepted_progress",
+   "provided": [
+    "new_block_id",
+    "title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 3001,
+   "key": "notices.append_accepted",
+   "provided": [
+    "new_block_id",
+    "title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 3085,
+   "key": "notices.rephrase_only_ask_user",
+   "provided": [
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 3102,
+   "key": "notices.rephrase_cap_reached",
+   "provided": [
+    "max_rounds"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 3121,
+   "key": "notices.too_many_tool_calls",
+   "provided": [
+    "limit",
+    "requested"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "call": "deeptutor/agents/research/pipeline.py",
+   "line": 3143,
+   "key": "notices.tool_error",
+   "provided": [
+    "error",
+    "tool"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 73,
+   "key": "user_template_fixed",
+   "provided": [
+    "history_context",
+    "render_type",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 73,
+   "key": "user_template_figure",
+   "provided": [
+    "history_context",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 73,
+   "key": "user_template",
+   "provided": [
+    "history_context",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 53,
+   "key": "system_fixed",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 58,
+   "key": "system_figure",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/analysis_agent.py",
+   "line": 61,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/code_generator_agent.py",
+   "line": 54,
+   "key": "user_template",
+   "provided": [
+    "analysis_json",
+    "history_context",
+    "render_type",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/code_generator_agent.py",
+   "line": 45,
+   "key": "system_base",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/code_generator_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/code_generator_agent.py",
+   "line": 46,
+   "key": "rules_general",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/review_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/review_agent.py",
+   "line": 50,
+   "key": "repair_user_template",
+   "provided": [
+    "analysis_json",
+    "code",
+    "error",
+    "render_type",
+    "user_input"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/review_agent.yaml",
+   "call": "deeptutor/agents/visualize/agents/review_agent.py",
+   "line": 45,
+   "key": "repair_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 158,
+   "key": "status.tool_calling_disabled",
+   "provided": [
+    "target"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 202,
+   "key": "status.no_payload_tool_calling_disabled",
+   "provided": [
+    "target"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 208,
+   "key": "status.no_payload",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 366,
+   "key": "status.manim_code_prepared",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 374,
+   "key": "status.manim_retry",
+   "provided": [
+    "attempt",
+    "error"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 407,
+   "key": "status.manim_rendering",
+   "provided": [
+    "mode",
+    "quality"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 448,
+   "key": "status.manim_artifacts_one",
+   "provided": [
+    "count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 448,
+   "key": "status.manim_artifacts_many",
+   "provided": [
+    "count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "call": "deeptutor/agents/visualize/capability.py",
+   "line": 564,
+   "key": "status.llm_call_failed",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/animation.yaml",
+   "call": "deeptutor/book/blocks/animation.py",
+   "line": 52,
+   "key": "context_summary",
+   "provided": [
+    "chapter_summary"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/animation.yaml",
+   "call": "deeptutor/book/blocks/animation.py",
+   "line": 57,
+   "key": "context_objectives",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/animation.yaml",
+   "call": "deeptutor/book/blocks/animation.py",
+   "line": 63,
+   "key": "focus_clause",
+   "provided": [
+    "focus"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/animation.yaml",
+   "call": "deeptutor/book/blocks/animation.py",
+   "line": 66,
+   "key": "brief",
+   "provided": [
+    "chapter_title",
+    "focus_clause"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/animation.yaml",
+   "call": "deeptutor/book/blocks/animation.py",
+   "line": 49,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/callout.yaml",
+   "call": "deeptutor/book/blocks/callout.py",
+   "line": 40,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "label",
+    "objectives_inline",
+    "variant"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/callout.yaml",
+   "call": "deeptutor/book/blocks/callout.py",
+   "line": 49,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/code.yaml",
+   "call": "deeptutor/book/blocks/code.py",
+   "line": 76,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "intent",
+    "language",
+    "objectives_inline"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/code.yaml",
+   "call": "deeptutor/book/blocks/code.py",
+   "line": 85,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/deep_dive.yaml",
+   "call": "deeptutor/book/blocks/deep_dive.py",
+   "line": 33,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/deep_dive.yaml",
+   "call": "deeptutor/book/blocks/deep_dive.py",
+   "line": 39,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/figure.yaml",
+   "call": "deeptutor/book/blocks/figure.py",
+   "line": 45,
+   "key": "context_summary",
+   "provided": [
+    "chapter_summary"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/figure.yaml",
+   "call": "deeptutor/book/blocks/figure.py",
+   "line": 50,
+   "key": "context_objectives",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/figure.yaml",
+   "call": "deeptutor/book/blocks/figure.py",
+   "line": 56,
+   "key": "focus_clause",
+   "provided": [
+    "focus"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/figure.yaml",
+   "call": "deeptutor/book/blocks/figure.py",
+   "line": 59,
+   "key": "brief",
+   "provided": [
+    "chapter_title",
+    "focus_clause",
+    "variant"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/figure.yaml",
+   "call": "deeptutor/book/blocks/figure.py",
+   "line": 61,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/flash_cards.yaml",
+   "call": "deeptutor/book/blocks/flash_cards.py",
+   "line": 33,
+   "key": "system_template",
+   "provided": [
+    "count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/flash_cards.yaml",
+   "call": "deeptutor/book/blocks/flash_cards.py",
+   "line": 34,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "objectives_inline"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/interactive.yaml",
+   "call": "deeptutor/book/blocks/interactive.py",
+   "line": 45,
+   "key": "context_summary",
+   "provided": [
+    "chapter_summary"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/interactive.yaml",
+   "call": "deeptutor/book/blocks/interactive.py",
+   "line": 50,
+   "key": "context_objectives",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/interactive.yaml",
+   "call": "deeptutor/book/blocks/interactive.py",
+   "line": 56,
+   "key": "focus_clause",
+   "provided": [
+    "focus"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/interactive.yaml",
+   "call": "deeptutor/book/blocks/interactive.py",
+   "line": 59,
+   "key": "brief",
+   "provided": [
+    "chapter_title",
+    "focus_clause",
+    "interaction"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/interactive.yaml",
+   "call": "deeptutor/book/blocks/interactive.py",
+   "line": 61,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/section.yaml",
+   "call": "deeptutor/book/blocks/section.py",
+   "line": 194,
+   "key": "outline_user",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "focus_topic",
+    "objectives_block",
+    "rag_section",
+    "section_role",
+    "target_words"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/section.yaml",
+   "call": "deeptutor/book/blocks/section.py",
+   "line": 206,
+   "key": "outline_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/section.yaml",
+   "call": "deeptutor/book/blocks/section.py",
+   "line": 294,
+   "key": "subsection_user",
+   "provided": [
+    "chapter_title",
+    "evidence_section",
+    "focus",
+    "heading",
+    "outline_intro",
+    "role",
+    "section_focus",
+    "target_words"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/section.yaml",
+   "call": "deeptutor/book/blocks/section.py",
+   "line": 307,
+   "key": "subsection_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/text.yaml",
+   "call": "deeptutor/book/blocks/text.py",
+   "line": 56,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "objectives_block",
+    "previous_section",
+    "rag_section",
+    "role"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/text.yaml",
+   "call": "deeptutor/book/blocks/text.py",
+   "line": 66,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/text.yaml",
+   "call": "deeptutor/book/blocks/text.py",
+   "line": 101,
+   "key": "bridge_user_template",
+   "provided": [
+    "chapter_title",
+    "next_block_hint",
+    "previous_block_summary"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/text.yaml",
+   "call": "deeptutor/book/blocks/text.py",
+   "line": 108,
+   "key": "bridge_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/timeline.yaml",
+   "call": "deeptutor/book/blocks/timeline.py",
+   "line": 31,
+   "key": "user_template",
+   "provided": [
+    "chapter_summary",
+    "chapter_title"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/timeline.yaml",
+   "call": "deeptutor/book/blocks/timeline.py",
+   "line": 33,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/page_planner.yaml",
+   "call": "deeptutor/book/agents/page_planner.py",
+   "line": 276,
+   "key": "architect_user",
+   "provided": [
+    "chapter_summary",
+    "chapter_title",
+    "content_type",
+    "exploration_summary",
+    "objectives_block"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/page_planner.yaml",
+   "call": "deeptutor/book/agents/page_planner.py",
+   "line": 262,
+   "key": "architect_system",
+   "provided": [
+    "block_catalog"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/ideation_agent.yaml",
+   "call": "deeptutor/book/agents/ideation_agent.py",
+   "line": 56,
+   "key": "user_template",
+   "provided": [
+    "ideation_context"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/ideation_agent.yaml",
+   "call": "deeptutor/book/agents/ideation_agent.py",
+   "line": 53,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/source_explorer.yaml",
+   "call": "deeptutor/book/agents/source_explorer.py",
+   "line": 294,
+   "key": "queries_user",
+   "provided": [
+    "extra_context",
+    "kb_list",
+    "proposal_block",
+    "user_intent"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/source_explorer.yaml",
+   "call": "deeptutor/book/agents/source_explorer.py",
+   "line": 259,
+   "key": "queries_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/source_explorer.yaml",
+   "call": "deeptutor/book/agents/source_explorer.py",
+   "line": 699,
+   "key": "summary_user",
+   "provided": [
+    "chunks_block",
+    "coverage_block",
+    "proposal_scope",
+    "proposal_title",
+    "user_intent"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/source_explorer.yaml",
+   "call": "deeptutor/book/agents/source_explorer.py",
+   "line": 684,
+   "key": "summary_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_agent.yaml",
+   "call": "deeptutor/book/agents/spine_agent.py",
+   "line": 69,
+   "key": "user_template",
+   "provided": [
+    "proposal_block",
+    "source_material"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_agent.yaml",
+   "call": "deeptutor/book/agents/spine_agent.py",
+   "line": 59,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 195,
+   "key": "draft_user",
+   "provided": [
+    "candidate_concepts",
+    "chunks_block",
+    "exploration_summary",
+    "proposal_block"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 193,
+   "key": "draft_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 219,
+   "key": "critique_user",
+   "provided": [
+    "draft_block",
+    "exploration_summary",
+    "proposal_block"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 215,
+   "key": "critique_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 244,
+   "key": "revise_user",
+   "provided": [
+    "critique_block",
+    "draft_block",
+    "proposal_block"
+   ]
+  },
+  {
+   "tpl": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "call": "deeptutor/book/agents/spine_synthesizer.py",
+   "line": 240,
+   "key": "revise_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "call": "deeptutor/learning/prompts.py",
+   "line": 58,
+   "key": "notebook.user",
+   "provided": [
+    "records_json"
+   ]
+  },
+  {
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "call": "deeptutor/learning/prompts.py",
+   "line": 107,
+   "key": "topic.user",
+   "provided": [
+    "goal",
+    "must_cover_block",
+    "name",
+    "sources_json"
+   ]
+  },
+  {
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "call": "deeptutor/learning/prompts.py",
+   "line": 106,
+   "key": "topic.system",
+   "provided": [
+    "module_limit"
+   ]
+  },
+  {
+   "tpl": "deeptutor/learning/prompts/en.yaml",
+   "call": "deeptutor/learning/prompts.py",
+   "line": 117,
+   "key": "notebook.default_module_name",
+   "provided": [
+    "index"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 175,
+   "key": "system",
+   "provided": [
+    "focus",
+    "surface",
+    "today",
+    "user_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 181,
+   "key": "user",
+   "provided": [
+    "chunk",
+    "surface"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 316,
+   "key": "system",
+   "provided": [
+    "focus",
+    "slot",
+    "today",
+    "user_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "line": 322,
+   "key": "user",
+   "provided": [
+    "chunk",
+    "slot"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/dedup.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/dedup.py",
+   "line": 126,
+   "key": "system",
+   "provided": [
+    "today",
+    "user_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/dedup.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/dedup.py",
+   "line": 127,
+   "key": "user",
+   "provided": [
+    "doc",
+    "iteration",
+    "iterations_total"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/update_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 231,
+   "key": "system",
+   "provided": [
+    "focus",
+    "sections",
+    "surface",
+    "today",
+    "user_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/update_l2.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 245,
+   "key": "user",
+   "provided": [
+    "chunk",
+    "chunk_end",
+    "chunk_index",
+    "chunk_start",
+    "chunk_total",
+    "existing",
+    "surface"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 459,
+   "key": "system",
+   "provided": [
+    "focus",
+    "sections",
+    "slot",
+    "today",
+    "user_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "call": "deeptutor/services/memory/consolidator/modes/update.py",
+   "line": 478,
+   "key": "user",
+   "provided": [
+    "chunk",
+    "chunk_index",
+    "chunk_total",
+    "existing",
+    "slot"
+   ]
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 167,
+   "key": "system",
+   "provided": [
+    "available_tools"
+   ]
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 176,
+   "key": "action_template",
+   "provided": [
+    "action_verb",
+    "instruction"
+   ]
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 182,
+   "key": "context_template",
+   "provided": [
+    "context",
+    "source_label"
+   ]
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 191,
+   "key": "user_template",
+   "provided": [
+    "text"
+   ]
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 335,
+   "key": "auto_mark_system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "call": "deeptutor/co_writer/edit_agent.py",
+   "line": 339,
+   "key": "auto_mark_user_template",
+   "provided": [
+    "text"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/ima/prompts/en/system.md",
+   "call": "deeptutor/capabilities/ima/capability.py",
+   "line": 61,
+   "key": "__file__",
+   "provided": [
+    "kb_names"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/marginnote4/prompts/en/system.md",
+   "call": "deeptutor/capabilities/marginnote4/capability.py",
+   "line": 52,
+   "key": "__file__",
+   "provided": [
+    "library_name"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/obsidian/prompts/en/system.md",
+   "call": "deeptutor/capabilities/obsidian/capability.py",
+   "line": 52,
+   "key": "__file__",
+   "provided": [
+    "vault_name"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/reading/prompts/en/reading.yaml",
+   "call": "deeptutor/capabilities/reading/capability.py",
+   "line": 221,
+   "key": "material_facts",
+   "provided": [
+    "annotations",
+    "summary",
+    "unit",
+    "unit_count"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/course_study/prompts/en/course_study.yaml",
+   "call": "deeptutor/capabilities/course_study/capability.py",
+   "line": 408,
+   "key": "course_facts",
+   "provided": [
+    "course_id"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/explore_context/prompts/en/explore_context.yaml",
+   "call": "deeptutor/capabilities/explore_context/explorer.py",
+   "line": 186,
+   "key": "loop.system",
+   "provided": [
+    "tool_call_limit"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/explore_context/prompts/en/explore_context.yaml",
+   "call": "deeptutor/capabilities/explore_context/explorer.py",
+   "line": 196,
+   "key": "loop.user_template",
+   "provided": [
+    "manifest",
+    "mode",
+    "question"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/explore_context/prompts/en/explore_context.yaml",
+   "call": "deeptutor/capabilities/explore_context/explorer.py",
+   "line": 449,
+   "key": "user_template",
+   "provided": [
+    "manifest",
+    "mode",
+    "question",
+    "sources"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/explore_context/prompts/en/explore_context.yaml",
+   "call": "deeptutor/capabilities/explore_context/explorer.py",
+   "line": 446,
+   "key": "system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/capabilities/mastery/loop.py",
+   "line": 549,
+   "key": "general",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/capabilities/mastery/loop.py",
+   "line": 549,
+   "key": "runtime_policy",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/capabilities/mastery/loop.py",
+   "line": 549,
+   "key": "loop.system",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/capabilities/mastery/loop.py",
+   "line": 549,
+   "key": "playbook",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/capabilities/mastery/tools.py",
+   "line": 597,
+   "key": "session",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "call": "deeptutor/agents/loop/prompt_blocks.py",
+   "line": 276,
+   "key": "loop.user",
+   "provided": [
+    "user_message"
+   ]
+  },
+  {
+   "tpl": "deeptutor/capabilities/prompts/en/audio_overview.yaml",
+   "call": "deeptutor/capabilities/audio_overview/capability.py",
+   "line": 44,
+   "key": "status.missing_kb",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/prompts/en/audio_overview.yaml",
+   "call": "deeptutor/capabilities/audio_overview/capability.py",
+   "line": 56,
+   "key": "status.missing_workspace",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/agents/vision_solver/prompts/geogebra.md",
+   "call": "deeptutor/agents/vision_solver/vision_solver_agent.py",
+   "line": 41,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/ask_questions/prompts/en/system.md",
+   "call": "deeptutor/capabilities/ask_questions/loop.py",
+   "line": 49,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/solve/prompts/en/system.md",
+   "call": "deeptutor/capabilities/solve/loop.py",
+   "line": 79,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/setup/prompts/en/system.md",
+   "call": "deeptutor/capabilities/setup/capability.py",
+   "line": 104,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/partner_authoring/prompts/en/system.md",
+   "call": "deeptutor/capabilities/partner_authoring/capability.py",
+   "line": 38,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/partner_authoring/prompts/en/heuristic.md",
+   "call": "deeptutor/capabilities/partner_authoring/capability.py",
+   "line": 38,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/partner_group/prompts/en/system.md",
+   "call": "deeptutor/capabilities/partner_group/capability.py",
+   "line": 59,
+   "key": "__file__",
+   "provided": []
+  },
+  {
+   "tpl": "deeptutor/capabilities/partner_group/prompts/en/invoke_other.md",
+   "call": "deeptutor/capabilities/partner_group/capability.py",
+   "line": 61,
+   "key": "__file__",
+   "provided": []
+  }
+ ]
+}

@@ -1,0 +1,4119 @@
+{
+ "templates": [
+  {
+   "file": "deeptutor/agents/chat/prompts/en/agentic_chat.yaml",
+   "strings": 53,
+   "named": [
+    "datetime",
+    "description",
+    "error",
+    "limit",
+    "name",
+    "requested",
+    "tool",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/chat/prompts/en/chat_agent.yaml",
+   "strings": 4,
+   "named": [
+    "context",
+    "history",
+    "message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/chat/prompts/zh/agentic_chat.yaml",
+   "strings": 53,
+   "named": [
+    "datetime",
+    "description",
+    "error",
+    "limit",
+    "name",
+    "requested",
+    "tool",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/chat/prompts/zh/chat_agent.yaml",
+   "strings": 4,
+   "named": [
+    "context",
+    "history",
+    "message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/code_generator_agent.yaml",
+   "strings": 4,
+   "named": [
+    "analysis_json",
+    "attempt",
+    "current_code",
+    "design_json",
+    "duration_requirement",
+    "error_message",
+    "output_mode",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/concept_analysis_agent.yaml",
+   "strings": 2,
+   "named": [
+    "history_context",
+    "output_mode",
+    "reference_count",
+    "style_hint",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/concept_design_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "output_mode",
+    "style_hint",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/math_animator.yaml",
+   "strings": 6,
+   "named": [
+    "attempt",
+    "count",
+    "error",
+    "mode",
+    "quality"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/summary_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "design_json",
+    "output_mode",
+    "render_json",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/en/visual_review_agent.yaml",
+   "strings": 2,
+   "named": [
+    "current_code",
+    "output_mode",
+    "render_json",
+    "reviewed_frames",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/code_generator_agent.yaml",
+   "strings": 4,
+   "named": [
+    "analysis_json",
+    "attempt",
+    "current_code",
+    "design_json",
+    "duration_requirement",
+    "error_message",
+    "output_mode",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/concept_analysis_agent.yaml",
+   "strings": 2,
+   "named": [
+    "history_context",
+    "output_mode",
+    "reference_count",
+    "style_hint",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/concept_design_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "output_mode",
+    "style_hint",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/math_animator.yaml",
+   "strings": 6,
+   "named": [
+    "attempt",
+    "count",
+    "error",
+    "mode",
+    "quality"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/summary_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "design_json",
+    "output_mode",
+    "render_json",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/math_animator/prompts/zh/visual_review_agent.yaml",
+   "strings": 2,
+   "named": [
+    "current_code",
+    "output_mode",
+    "render_json",
+    "reviewed_frames",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/notebook/prompts/en/analysis_agent.yaml",
+   "strings": 6,
+   "named": [
+    "catalog",
+    "detailed_blocks",
+    "thinking_text",
+    "user_question"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/notebook/prompts/en/summarize_agent.yaml",
+   "strings": 7,
+   "named": [
+    "metadata",
+    "output",
+    "record_hint",
+    "record_type",
+    "title",
+    "user_query"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/notebook/prompts/zh/analysis_agent.yaml",
+   "strings": 6,
+   "named": [
+    "catalog",
+    "detailed_blocks",
+    "thinking_text",
+    "user_question"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/notebook/prompts/zh/summarize_agent.yaml",
+   "strings": 7,
+   "named": [
+    "metadata",
+    "output",
+    "record_hint",
+    "record_type",
+    "title",
+    "user_query"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/en/deep_question.yaml",
+   "strings": 5,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/en/followup_agent.yaml",
+   "strings": 2,
+   "named": [
+    "history_context",
+    "question_context",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/en/idea_agent.yaml",
+   "strings": 2,
+   "named": [
+    "topic"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/en/pipeline.yaml",
+   "strings": 54,
+   "named": [
+    "allowed_types",
+    "attachments_summary",
+    "conversation_context",
+    "difficulty",
+    "error",
+    "exploration_trace",
+    "got",
+    "invalid_payload",
+    "issues",
+    "kb_note",
+    "limit",
+    "n",
+    "num_questions",
+    "per_type_counts",
+    "plan_summary",
+    "previous_questions",
+    "question_id",
+    "question_number",
+    "question_type",
+    "quiz_history",
+    "reference_block",
+    "requested",
+    "tool",
+    "tool_list",
+    "tool_result",
+    "topic",
+    "total_questions",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/zh/deep_question.yaml",
+   "strings": 5,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/zh/followup_agent.yaml",
+   "strings": 2,
+   "named": [
+    "history_context",
+    "question_context",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/zh/idea_agent.yaml",
+   "strings": 2,
+   "named": [
+    "topic"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/question/prompts/zh/pipeline.yaml",
+   "strings": 54,
+   "named": [
+    "allowed_types",
+    "attachments_summary",
+    "conversation_context",
+    "difficulty",
+    "error",
+    "exploration_trace",
+    "got",
+    "invalid_payload",
+    "issues",
+    "kb_note",
+    "limit",
+    "n",
+    "num_questions",
+    "per_type_counts",
+    "plan_summary",
+    "previous_questions",
+    "question_id",
+    "question_number",
+    "question_type",
+    "quiz_history",
+    "reference_block",
+    "requested",
+    "tool",
+    "tool_list",
+    "tool_result",
+    "topic",
+    "total_questions",
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/research/prompts/en/pipeline.yaml",
+   "strings": 73,
+   "named": [
+    "accumulated_knowledge",
+    "block_overview",
+    "block_summaries",
+    "block_title",
+    "error",
+    "evidence",
+    "existing",
+    "existing_id",
+    "existing_title",
+    "failed",
+    "kb_name",
+    "kb_name_repr",
+    "kb_note",
+    "limit",
+    "max_iterations",
+    "max_questions_per_round",
+    "max_rounds",
+    "mode",
+    "new_block_id",
+    "num_subtopics",
+    "parts",
+    "query",
+    "raw_answer",
+    "report_title",
+    "requested",
+    "section_id",
+    "section_intent",
+    "section_number",
+    "section_title",
+    "sections_overview",
+    "sections_recap",
+    "sibling_topics",
+    "title",
+    "tool",
+    "tool_list",
+    "tool_name",
+    "topic",
+    "total"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/research/prompts/zh/pipeline.yaml",
+   "strings": 73,
+   "named": [
+    "accumulated_knowledge",
+    "block_overview",
+    "block_summaries",
+    "block_title",
+    "error",
+    "evidence",
+    "existing",
+    "existing_id",
+    "existing_title",
+    "failed",
+    "kb_name",
+    "kb_name_repr",
+    "kb_note",
+    "limit",
+    "max_iterations",
+    "max_questions_per_round",
+    "max_rounds",
+    "mode",
+    "new_block_id",
+    "num_subtopics",
+    "parts",
+    "query",
+    "raw_answer",
+    "report_title",
+    "requested",
+    "section_id",
+    "section_intent",
+    "section_number",
+    "section_title",
+    "sections_overview",
+    "sections_recap",
+    "sibling_topics",
+    "title",
+    "tool",
+    "tool_list",
+    "tool_name",
+    "topic",
+    "total"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/vision_solver/prompts/geogebra.md",
+   "strings": 1,
+   "named": [],
+   "positional": [
+    "1",
+    "2"
+   ],
+   "invalid": [
+    "1,2",
+    "\n  \"image_is_reference\""
+   ]
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/en/analysis_agent.yaml",
+   "strings": 6,
+   "named": [
+    "history_context",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/en/code_generator_agent.yaml",
+   "strings": 7,
+   "named": [
+    "analysis_json",
+    "history_context",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/en/review_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "code",
+    "error",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/en/visualize.yaml",
+   "strings": 11,
+   "named": [
+    "attempt",
+    "count",
+    "error",
+    "mode",
+    "quality",
+    "target"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/zh/analysis_agent.yaml",
+   "strings": 6,
+   "named": [
+    "history_context",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/zh/code_generator_agent.yaml",
+   "strings": 7,
+   "named": [
+    "analysis_json",
+    "history_context",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/zh/review_agent.yaml",
+   "strings": 2,
+   "named": [
+    "analysis_json",
+    "code",
+    "error",
+    "render_type",
+    "user_input"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/agents/visualize/prompts/zh/visualize.yaml",
+   "strings": 11,
+   "named": [
+    "attempt",
+    "count",
+    "error",
+    "mode",
+    "quality",
+    "target"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/animation.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/callout.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "label",
+    "objectives_inline",
+    "variant"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/code.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "intent",
+    "language",
+    "objectives_inline"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"language\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/deep_dive.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"suggestions\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/figure.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause",
+    "variant"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/flash_cards.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "count",
+    "objectives_inline"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/ideation_agent.yaml",
+   "strings": 2,
+   "named": [
+    "ideation_context"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"title\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/interactive.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause",
+    "interaction"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/page_planner.yaml",
+   "strings": 3,
+   "named": [
+    "block_catalog",
+    "chapter_summary",
+    "chapter_title",
+    "content_type",
+    "exploration_summary",
+    "objectives_block"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"role\"",
+    "\"variant\"",
+    "\"num_questions\"",
+    "\"count\"",
+    "\"variant\"",
+    "\"interaction\"",
+    "\"focus\"",
+    "\"language\"",
+    "\"blocks\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/section.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "evidence_section",
+    "focus",
+    "focus_topic",
+    "heading",
+    "objectives_block",
+    "outline_intro",
+    "rag_section",
+    "role",
+    "section_focus",
+    "section_role",
+    "target_words"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"intro\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/source_explorer.yaml",
+   "strings": 4,
+   "named": [
+    "chunks_block",
+    "coverage_block",
+    "extra_context",
+    "kb_list",
+    "proposal_block",
+    "proposal_scope",
+    "proposal_title",
+    "user_intent"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"queries\"",
+    "\n  \"summary\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/spine_agent.yaml",
+   "strings": 2,
+   "named": [
+    "proposal_block",
+    "source_material"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"chapters\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/spine_synthesizer.yaml",
+   "strings": 6,
+   "named": [
+    "candidate_concepts",
+    "chunks_block",
+    "critique_block",
+    "draft_block",
+    "exploration_summary",
+    "proposal_block"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"concept_graph\"",
+    "\n  \"issues\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/en/text.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "next_block_hint",
+    "objectives_block",
+    "previous_block_summary",
+    "previous_section",
+    "rag_section",
+    "role"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/en/timeline.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"events\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/animation.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/callout.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "label",
+    "objectives_inline",
+    "variant"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/code.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "intent",
+    "language",
+    "objectives_inline"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"language\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/deep_dive.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"suggestions\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/figure.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause",
+    "variant"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/flash_cards.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "count",
+    "objectives_inline"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/ideation_agent.yaml",
+   "strings": 2,
+   "named": [
+    "ideation_context"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"title\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/interactive.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "focus",
+    "focus_clause",
+    "interaction"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/page_planner.yaml",
+   "strings": 3,
+   "named": [
+    "block_catalog",
+    "chapter_summary",
+    "chapter_title",
+    "content_type",
+    "exploration_summary",
+    "objectives_block"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"role\"",
+    "\"variant\"",
+    "\"num_questions\"",
+    "\"count\"",
+    "\"variant\"",
+    "\"interaction\"",
+    "\"focus\"",
+    "\"language\"",
+    "\"blocks\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/section.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "evidence_section",
+    "focus",
+    "focus_topic",
+    "heading",
+    "objectives_block",
+    "outline_intro",
+    "rag_section",
+    "role",
+    "section_focus",
+    "section_role",
+    "target_words"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"intro\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/source_explorer.yaml",
+   "strings": 4,
+   "named": [
+    "chunks_block",
+    "coverage_block",
+    "extra_context",
+    "kb_list",
+    "proposal_block",
+    "proposal_scope",
+    "proposal_title",
+    "user_intent"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"queries\"",
+    "\n  \"summary\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/spine_agent.yaml",
+   "strings": 2,
+   "named": [
+    "proposal_block",
+    "source_material"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"chapters\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/spine_synthesizer.yaml",
+   "strings": 6,
+   "named": [
+    "candidate_concepts",
+    "chunks_block",
+    "critique_block",
+    "draft_block",
+    "exploration_summary",
+    "proposal_block"
+   ],
+   "positional": [],
+   "invalid": [
+    "\n  \"concept_graph\"",
+    "\n  \"issues\""
+   ]
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/text.yaml",
+   "strings": 4,
+   "named": [
+    "chapter_summary",
+    "chapter_title",
+    "next_block_hint",
+    "objectives_block",
+    "previous_block_summary",
+    "previous_section",
+    "rag_section",
+    "role"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/book/prompts/zh/timeline.yaml",
+   "strings": 2,
+   "named": [
+    "chapter_summary",
+    "chapter_title"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"events\""
+   ]
+  },
+  {
+   "file": "deeptutor/capabilities/ask_questions/prompts/en/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/ask_questions/prompts/zh/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/course_study/prompts/en/course_study.yaml",
+   "strings": 3,
+   "named": [
+    "course_id"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/course_study/prompts/zh/course_study.yaml",
+   "strings": 3,
+   "named": [
+    "course_id"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/explore_context/prompts/en/explore_context.yaml",
+   "strings": 8,
+   "named": [
+    "manifest",
+    "mode",
+    "question",
+    "sources",
+    "tool_call_limit"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/explore_context/prompts/zh/explore_context.yaml",
+   "strings": 8,
+   "named": [
+    "manifest",
+    "mode",
+    "question",
+    "sources",
+    "tool_call_limit"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/ima/prompts/en/system.md",
+   "strings": 1,
+   "named": [
+    "kb_names"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/ima/prompts/zh/system.md",
+   "strings": 1,
+   "named": [
+    "kb_names"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/marginnote4/prompts/en/system.md",
+   "strings": 1,
+   "named": [
+    "library_name"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/marginnote4/prompts/zh/system.md",
+   "strings": 1,
+   "named": [
+    "library_name"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "strings": 10,
+   "named": [
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": [
+    "label, body",
+    "\"label\""
+   ]
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/prompts/zh/mastery_loop.yaml",
+   "strings": 10,
+   "named": [
+    "user_message"
+   ],
+   "positional": [],
+   "invalid": [
+    "label, body",
+    "\"label\""
+   ]
+  },
+  {
+   "file": "deeptutor/capabilities/obsidian/prompts/en/system.md",
+   "strings": 1,
+   "named": [
+    "vault_name"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/obsidian/prompts/zh/system.md",
+   "strings": 1,
+   "named": [
+    "vault_name"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_authoring/prompts/en/heuristic.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_authoring/prompts/en/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_authoring/prompts/zh/heuristic.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_authoring/prompts/zh/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_group/prompts/en/invoke_other.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_group/prompts/en/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_group/prompts/zh/invoke_other.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/partner_group/prompts/zh/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/prompts/en/audio_overview.yaml",
+   "strings": 4,
+   "named": [],
+   "positional": [],
+   "invalid": [
+    "\n  \"title\""
+   ]
+  },
+  {
+   "file": "deeptutor/capabilities/prompts/zh/audio_overview.yaml",
+   "strings": 4,
+   "named": [],
+   "positional": [],
+   "invalid": [
+    "\n  \"title\""
+   ]
+  },
+  {
+   "file": "deeptutor/capabilities/reading/prompts/en/reading.yaml",
+   "strings": 5,
+   "named": [
+    "annotations",
+    "summary",
+    "unit",
+    "unit_count"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/reading/prompts/zh/reading.yaml",
+   "strings": 5,
+   "named": [
+    "annotations",
+    "summary",
+    "unit",
+    "unit_count"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/setup/prompts/en/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/setup/prompts/zh/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/solve/prompts/en/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/capabilities/solve/prompts/zh/system.md",
+   "strings": 1,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/co_writer/prompts/en/edit_agent.yaml",
+   "strings": 6,
+   "named": [
+    "action_verb",
+    "available_tools",
+    "context",
+    "instruction",
+    "source_label",
+    "text"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/co_writer/prompts/en/narrator_agent.yaml",
+   "strings": 10,
+   "named": [
+    "content",
+    "length_instruction",
+    "style_prompt"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/co_writer/prompts/zh/edit_agent.yaml",
+   "strings": 6,
+   "named": [
+    "action_verb",
+    "available_tools",
+    "context",
+    "instruction",
+    "source_label",
+    "text"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/co_writer/prompts/zh/narrator_agent.yaml",
+   "strings": 10,
+   "named": [
+    "content",
+    "length_instruction",
+    "style_prompt"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/learning/prompts/en.yaml",
+   "strings": 17,
+   "named": [
+    "goal",
+    "index",
+    "knowledge_point",
+    "knowledge_points",
+    "module_limit",
+    "must_cover_block",
+    "name",
+    "records_json",
+    "sources_json"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"questions\"",
+    "\"passed\"",
+    "\"questions\"",
+    "\"diagnoses\""
+   ]
+  },
+  {
+   "file": "deeptutor/learning/prompts/zh.yaml",
+   "strings": 17,
+   "named": [
+    "goal",
+    "index",
+    "knowledge_point",
+    "knowledge_points",
+    "module_limit",
+    "must_cover_block",
+    "name",
+    "records_json",
+    "sources_json"
+   ],
+   "positional": [],
+   "invalid": [
+    "\"questions\"",
+    "\"passed\"",
+    "\"questions\"",
+    "\"diagnoses\""
+   ]
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/_meta.yaml",
+   "strings": 38,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/audit_l2.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/audit_l3.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/dedup.yaml",
+   "strings": 2,
+   "named": [
+    "doc",
+    "iteration",
+    "iterations_total",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/update_l2.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "chunk_end",
+    "chunk_index",
+    "chunk_start",
+    "chunk_total",
+    "existing",
+    "focus",
+    "sections",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/en/update_l3.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "chunk_index",
+    "chunk_total",
+    "existing",
+    "focus",
+    "sections",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/_meta.yaml",
+   "strings": 38,
+   "named": [],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/audit_l2.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/audit_l3.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/dedup.yaml",
+   "strings": 2,
+   "named": [
+    "doc",
+    "iteration",
+    "iterations_total",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/update_l2.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "chunk_end",
+    "chunk_index",
+    "chunk_start",
+    "chunk_total",
+    "existing",
+    "focus",
+    "sections",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/consolidator/prompts/zh/update_l3.yaml",
+   "strings": 2,
+   "named": [
+    "chunk",
+    "chunk_index",
+    "chunk_total",
+    "existing",
+    "focus",
+    "sections",
+    "slot",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/prompts/en.yaml",
+   "strings": 42,
+   "named": [
+    "changes",
+    "entities",
+    "existing",
+    "focus",
+    "kb_queries",
+    "l2_corpus",
+    "sections",
+    "slot",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  },
+  {
+   "file": "deeptutor/services/memory/prompts/zh.yaml",
+   "strings": 42,
+   "named": [
+    "changes",
+    "entities",
+    "existing",
+    "focus",
+    "kb_queries",
+    "l2_corpus",
+    "sections",
+    "slot",
+    "surface",
+    "today",
+    "user_label"
+   ],
+   "positional": [],
+   "invalid": []
+  }
+ ],
+ "calls": {
+  "deeptutor/agents/loop/pipeline.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 1932,
+     "scope": "_t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": [
+    {
+     "key": "notices.too_many_tool_calls",
+     "kwargs": [
+      "requested",
+      "limit"
+     ],
+     "line": 1126,
+     "scope": "_dispatch_tool_calls"
+    }
+   ]
+  },
+  "deeptutor/agents/loop/prompt_blocks.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "limit"
+     ],
+     "pos": [],
+     "line": 137,
+     "scope": "blocks"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "name"
+     ],
+     "pos": [],
+     "line": 218,
+     "scope": "_general_block"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "description"
+     ],
+     "pos": [],
+     "line": 224,
+     "scope": "_general_block"
+    },
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "datetime"
+     ],
+     "pos": [],
+     "line": 256,
+     "scope": "_runtime_context_block"
+    },
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "user_message"
+     ],
+     "pos": [],
+     "line": 276,
+     "scope": "user_message"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/math_animator/agents/code_generator_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "generate_system",
+     "line": 75
+    },
+    {
+     "key": "generate_user_template",
+     "line": 76
+    },
+    {
+     "key": "retry_system",
+     "line": 115
+    },
+    {
+     "key": "retry_user_template",
+     "line": 116
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "output_mode",
+      "duration_requirement",
+      "analysis_json",
+      "design_json"
+     ],
+     "pos": [],
+     "line": 80,
+     "scope": "generate"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "output_mode",
+      "attempt",
+      "duration_requirement",
+      "error_message",
+      "current_code"
+     ],
+     "pos": [],
+     "line": 120,
+     "scope": "repair"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/math_animator/agents/concept_analysis_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 40
+    },
+    {
+     "key": "user_template",
+     "line": 41
+    },
+    {
+     "key": "system",
+     "line": 51
+    },
+    {
+     "key": "user_template",
+     "line": 52
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "history_context",
+      "output_mode",
+      "style_hint",
+      "reference_count"
+     ],
+     "pos": [],
+     "line": 58,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/math_animator/agents/concept_design_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 39
+    },
+    {
+     "key": "user_template",
+     "line": 40
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "output_mode",
+      "style_hint",
+      "analysis_json"
+     ],
+     "pos": [],
+     "line": 44,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/math_animator/agents/summary_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 40
+    },
+    {
+     "key": "user_template",
+     "line": 41
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "output_mode",
+      "analysis_json",
+      "design_json",
+      "render_json"
+     ],
+     "pos": [],
+     "line": 45,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/math_animator/agents/visual_review_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 57
+    },
+    {
+     "key": "user_template",
+     "line": 58
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "output_mode",
+      "reviewed_frames",
+      "render_json",
+      "current_code"
+     ],
+     "pos": [],
+     "line": 62,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/notebook/analysis_agent.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "user_question",
+      "catalog"
+     ],
+     "pos": [],
+     "line": 302,
+     "scope": "_thinking_prompt"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "user_question",
+      "thinking_text",
+      "catalog"
+     ],
+     "pos": [],
+     "line": 313,
+     "scope": "_acting_prompt"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "user_question",
+      "thinking_text",
+      "detailed_blocks"
+     ],
+     "pos": [],
+     "line": 342,
+     "scope": "_observing_prompt"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/notebook/summarize_agent.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "record_type",
+      "record_hint",
+      "title",
+      "user_query",
+      "output",
+      "metadata"
+     ],
+     "pos": [],
+     "line": 105,
+     "scope": "_build_user_prompt"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/question/agents/followup_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 35
+    },
+    {
+     "key": "answer_followup",
+     "line": 38
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_prompt_template",
+     "kwargs": [
+      "question_context",
+      "history_context",
+      "user_message"
+     ],
+     "pos": [],
+     "line": 46,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/question/pipeline.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 2019,
+     "scope": "_t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": [
+    {
+     "key": "explore.system",
+     "kwargs": [
+      "kb_note",
+      "tool_list",
+      "num_questions"
+     ],
+     "line": 645,
+     "scope": "_explore"
+    },
+    {
+     "key": "explore.user_template",
+     "kwargs": [
+      "user_message",
+      "num_questions",
+      "allowed_types",
+      "per_type_counts",
+      "difficulty",
+      "attachments_summary",
+      "conversation_context",
+      "quiz_history"
+     ],
+     "line": 657,
+     "scope": "_explore"
+    },
+    {
+     "key": "plan.system",
+     "kwargs": [
+      "num_questions"
+     ],
+     "line": 720,
+     "scope": "_plan"
+    },
+    {
+     "key": "plan.user_template",
+     "kwargs": [
+      "user_message",
+      "exploration_trace",
+      "num_questions",
+      "allowed_types",
+      "per_type_counts",
+      "difficulty"
+     ],
+     "line": 722,
+     "scope": "_plan"
+    },
+    {
+     "key": "notices.plan_count_mismatch",
+     "kwargs": [
+      "got",
+      "requested"
+     ],
+     "line": 797,
+     "scope": "_plan"
+    },
+    {
+     "key": "quiz_step.system",
+     "kwargs": [
+      "question_number",
+      "total_questions",
+      "kb_note",
+      "tool_list"
+     ],
+     "line": 890,
+     "scope": "_quiz_one"
+    },
+    {
+     "key": "quiz_step.user_template",
+     "kwargs": [
+      "question_id",
+      "topic",
+      "question_type",
+      "difficulty",
+      "exploration_trace",
+      "plan_summary",
+      "previous_questions",
+      "reference_block"
+     ],
+     "line": 898,
+     "scope": "_quiz_one"
+    },
+    {
+     "key": "repair.user_template",
+     "kwargs": [
+      "question_id",
+      "topic",
+      "question_type",
+      "difficulty",
+      "invalid_payload",
+      "issues"
+     ],
+     "line": 982,
+     "scope": "_repair_quiz_payload"
+    },
+    {
+     "key": "tool_summarizer.user_template",
+     "kwargs": [
+      "tool_result"
+     ],
+     "line": 1069,
+     "scope": "_summarize_tool_result"
+    },
+    {
+     "key": "notices.tool_summarizer_failed",
+     "kwargs": [
+      "error"
+     ],
+     "line": 1145,
+     "scope": "_summarize_tool_result"
+    },
+    {
+     "key": "trace.iteration_tool_call",
+     "kwargs": [
+      "n",
+      "tool"
+     ],
+     "line": 1225,
+     "scope": "_render_exploration_trace"
+    },
+    {
+     "key": "trace.iteration_thought",
+     "kwargs": [
+      "n"
+     ],
+     "line": 1245,
+     "scope": "_render_exploration_trace"
+    },
+    {
+     "key": "trace.iteration_tool_result",
+     "kwargs": [
+      "n",
+      "tool"
+     ],
+     "line": 1255,
+     "scope": "_render_exploration_trace"
+    },
+    {
+     "key": "notices.too_many_tool_calls",
+     "kwargs": [
+      "requested",
+      "limit"
+     ],
+     "line": 2063,
+     "scope": "dispatch_tools"
+    }
+   ]
+  },
+  "deeptutor/agents/research/data_structures.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "<expr>"
+     ],
+     "line": 130,
+     "scope": "_truncate_raw_answer"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/research/pipeline.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:notice_template",
+     "kwargs": [
+      "parts"
+     ],
+     "pos": [],
+     "line": 1321,
+     "scope": "incomplete_error"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 2325,
+     "scope": "_t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": [
+    {
+     "key": "notices.partial_results",
+     "kwargs": [
+      "failed",
+      "total"
+     ],
+     "line": 672,
+     "scope": "_run_inner"
+    },
+    {
+     "key": "rephrase.system",
+     "kwargs": [
+      "max_rounds",
+      "max_questions_per_round",
+      "topic"
+     ],
+     "line": 785,
+     "scope": "_rephrase"
+    },
+    {
+     "key": "rephrase.user_template",
+     "kwargs": [
+      "topic"
+     ],
+     "line": 791,
+     "scope": "_rephrase"
+    },
+    {
+     "key": "decompose.user_template",
+     "kwargs": [
+      "topic",
+      "num_subtopics"
+     ],
+     "line": 866,
+     "scope": "_decompose"
+    },
+    {
+     "key": "research_step.system",
+     "kwargs": [
+      "topic",
+      "block_title",
+      "block_overview",
+      "mode",
+      "max_iterations",
+      "kb_note",
+      "tool_list"
+     ],
+     "line": 975,
+     "scope": "_research_block"
+    },
+    {
+     "key": "research_step.user_template",
+     "kwargs": [
+      "accumulated_knowledge",
+      "sibling_topics"
+     ],
+     "line": 993,
+     "scope": "_research_block"
+    },
+    {
+     "key": "system.obsidian_kb_system_note",
+     "kwargs": [
+      "kb_name"
+     ],
+     "line": 1118,
+     "scope": "_kb_system_note"
+    },
+    {
+     "key": "system.kb_system_note",
+     "kwargs": [
+      "kb_name",
+      "kb_name_repr"
+     ],
+     "line": 1144,
+     "scope": "_kb_system_note"
+    },
+    {
+     "key": "note.user_template",
+     "kwargs": [
+      "tool_name",
+      "query",
+      "raw_answer"
+     ],
+     "line": 1248,
+     "scope": "_summarise_tool_result"
+    },
+    {
+     "key": "report.outline.user_template",
+     "kwargs": [
+      "topic",
+      "block_summaries"
+     ],
+     "line": 1576,
+     "scope": "_gen_report_outline"
+    },
+    {
+     "key": "report.intro.system",
+     "kwargs": [
+      "section_number"
+     ],
+     "line": 1745,
+     "scope": "_write_intro"
+    },
+    {
+     "key": "report.intro.user_template",
+     "kwargs": [
+      "topic",
+      "title",
+      "section_number",
+      "sections_overview"
+     ],
+     "line": 1746,
+     "scope": "_write_intro"
+    },
+    {
+     "key": "report.section.system",
+     "kwargs": [
+      "section_number"
+     ],
+     "line": 1788,
+     "scope": "_write_section"
+    },
+    {
+     "key": "report.section.user_template",
+     "kwargs": [
+      "topic",
+      "report_title",
+      "section_id",
+      "section_title",
+      "section_intent",
+      "section_number",
+      "evidence"
+     ],
+     "line": 1789,
+     "scope": "_write_section"
+    },
+    {
+     "key": "report.conclusion.system",
+     "kwargs": [
+      "section_number"
+     ],
+     "line": 1836,
+     "scope": "_write_conclusion"
+    },
+    {
+     "key": "report.conclusion.user_template",
+     "kwargs": [
+      "topic",
+      "title",
+      "section_number",
+      "sections_recap"
+     ],
+     "line": 1837,
+     "scope": "_write_conclusion"
+    },
+    {
+     "key": "notices.too_many_tool_calls",
+     "kwargs": [
+      "requested",
+      "limit"
+     ],
+     "line": 2733,
+     "scope": "dispatch_tools"
+    },
+    {
+     "key": "notices.append_rejected_full_progress",
+     "kwargs": [
+      "title"
+     ],
+     "line": 2923,
+     "scope": "on_intermediate"
+    },
+    {
+     "key": "notices.append_rejected_dup_progress",
+     "kwargs": [
+      "title",
+      "existing"
+     ],
+     "line": 2948,
+     "scope": "on_intermediate"
+    },
+    {
+     "key": "notices.append_rejected_duplicate",
+     "kwargs": [
+      "existing_id",
+      "existing_title"
+     ],
+     "line": 2967,
+     "scope": "on_intermediate"
+    },
+    {
+     "key": "notices.append_accepted_progress",
+     "kwargs": [
+      "title",
+      "new_block_id"
+     ],
+     "line": 2985,
+     "scope": "on_intermediate"
+    },
+    {
+     "key": "notices.append_accepted",
+     "kwargs": [
+      "new_block_id",
+      "title"
+     ],
+     "line": 3001,
+     "scope": "on_intermediate"
+    },
+    {
+     "key": "notices.rephrase_only_ask_user",
+     "kwargs": [
+      "tool"
+     ],
+     "line": 3085,
+     "scope": "dispatch_tools"
+    },
+    {
+     "key": "notices.rephrase_cap_reached",
+     "kwargs": [
+      "max_rounds"
+     ],
+     "line": 3102,
+     "scope": "dispatch_tools"
+    },
+    {
+     "key": "notices.too_many_tool_calls",
+     "kwargs": [
+      "requested",
+      "limit"
+     ],
+     "line": 3121,
+     "scope": "dispatch_tools"
+    }
+   ]
+  },
+  "deeptutor/agents/visualize/agents/analysis_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system_fixed",
+     "line": 53
+    },
+    {
+     "key": "user_template_fixed",
+     "line": 54
+    },
+    {
+     "key": "system_figure",
+     "line": 58
+    },
+    {
+     "key": "user_template_figure",
+     "line": 59
+    },
+    {
+     "key": "system",
+     "line": 61
+    },
+    {
+     "key": "user_template",
+     "line": 62
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "**format_kwargs"
+     ],
+     "pos": [],
+     "line": 73,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/visualize/agents/code_generator_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system_base",
+     "line": 45
+    },
+    {
+     "key": "rules_general",
+     "line": 46
+    },
+    {
+     "key": "user_template",
+     "line": 50
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "history_context",
+      "render_type",
+      "analysis_json"
+     ],
+     "pos": [],
+     "line": 54,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/agents/visualize/agents/review_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "repair_system",
+     "line": 45
+    },
+    {
+     "key": "repair_user_template",
+     "line": 46
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_input",
+      "render_type",
+      "error",
+      "analysis_json",
+      "code"
+     ],
+     "pos": [],
+     "line": 50,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/api/main.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:CONFIG_DRIFT_ERROR_TEMPLATE",
+     "kwargs": [
+      "drift"
+     ],
+     "pos": [],
+     "line": 64,
+     "scope": "validate_tool_consistency"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/agents/ideation_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 53
+    },
+    {
+     "key": "user_template",
+     "line": 55
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "ideation_context"
+     ],
+     "pos": [],
+     "line": 56,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/agents/page_planner.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "content_type",
+      "objectives_block",
+      "exploration_summary"
+     ],
+     "pos": [],
+     "line": 276,
+     "scope": "_architect_user_prompt"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/agents/source_explorer.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "queries_system",
+     "line": 259
+    },
+    {
+     "key": "queries_user",
+     "line": 265
+    },
+    {
+     "key": "summary_system",
+     "line": 684
+    },
+    {
+     "key": "summary_user",
+     "line": 686
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_intent",
+      "proposal_block",
+      "kb_list",
+      "extra_context"
+     ],
+     "pos": [],
+     "line": 294,
+     "scope": "_design_queries"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "user_intent",
+      "proposal_title",
+      "proposal_scope",
+      "coverage_block",
+      "chunks_block"
+     ],
+     "pos": [],
+     "line": 699,
+     "scope": "_summarise"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/agents/spine_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 59
+    },
+    {
+     "key": "user_template",
+     "line": 60
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "proposal_block",
+      "source_material"
+     ],
+     "pos": [],
+     "line": 69,
+     "scope": "process"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/agents/spine_synthesizer.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "draft_system",
+     "line": 193
+    },
+    {
+     "key": "draft_user",
+     "line": 194
+    },
+    {
+     "key": "critique_system",
+     "line": 215
+    },
+    {
+     "key": "critique_user",
+     "line": 216
+    },
+    {
+     "key": "revise_system",
+     "line": 240
+    },
+    {
+     "key": "revise_user",
+     "line": 241
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "proposal_block",
+      "exploration_summary",
+      "candidate_concepts",
+      "chunks_block"
+     ],
+     "pos": [],
+     "line": 195,
+     "scope": "_draft"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "proposal_block",
+      "exploration_summary",
+      "draft_block"
+     ],
+     "pos": [],
+     "line": 219,
+     "scope": "_critique"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "proposal_block",
+      "critique_block",
+      "draft_block"
+     ],
+     "pos": [],
+     "line": 244,
+     "scope": "_revise"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/animation.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_summary"
+     ],
+     "pos": [],
+     "line": 52,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "focus"
+     ],
+     "pos": [],
+     "line": 63,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "focus_clause"
+     ],
+     "pos": [],
+     "line": 66,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/callout.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "objectives_inline",
+      "variant",
+      "label"
+     ],
+     "pos": [],
+     "line": 40,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/code.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "objectives_inline",
+      "intent",
+      "language"
+     ],
+     "pos": [],
+     "line": 76,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/deep_dive.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary"
+     ],
+     "pos": [],
+     "line": 33,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/figure.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_summary"
+     ],
+     "pos": [],
+     "line": 45,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "focus"
+     ],
+     "pos": [],
+     "line": 56,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "variant",
+      "chapter_title",
+      "focus_clause"
+     ],
+     "pos": [],
+     "line": 59,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/flash_cards.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "count"
+     ],
+     "pos": [],
+     "line": 33,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "objectives_inline"
+     ],
+     "pos": [],
+     "line": 34,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/interactive.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_summary"
+     ],
+     "pos": [],
+     "line": 45,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "focus"
+     ],
+     "pos": [],
+     "line": 56,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "interaction",
+      "chapter_title",
+      "focus_clause"
+     ],
+     "pos": [],
+     "line": 59,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/section.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "objectives_block",
+      "focus_topic",
+      "section_role",
+      "target_words",
+      "rag_section"
+     ],
+     "pos": [],
+     "line": 194,
+     "scope": "_make_outline"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "section_focus",
+      "outline_intro",
+      "heading",
+      "role",
+      "focus",
+      "target_words",
+      "evidence_section"
+     ],
+     "pos": [],
+     "line": 294,
+     "scope": "_fill_subsection"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/text.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary",
+      "objectives_block",
+      "role",
+      "previous_section",
+      "rag_section"
+     ],
+     "pos": [],
+     "line": 56,
+     "scope": "_generate"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "previous_block_summary",
+      "next_block_hint"
+     ],
+     "pos": [],
+     "line": 101,
+     "scope": "generate_bridge_text"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/blocks/timeline.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "chapter_title",
+      "chapter_summary"
+     ],
+     "pos": [],
+     "line": 31,
+     "scope": "_generate"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/engine.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "concepts",
+      "chapters"
+     ],
+     "pos": [],
+     "line": 789,
+     "scope": "_materialize_overview_page"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/book/export.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "kind"
+     ],
+     "pos": [],
+     "line": 196,
+     "scope": "_render_visual"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/course_study/capability.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:facts_template",
+     "kwargs": [
+      "course_id"
+     ],
+     "pos": [],
+     "line": 408,
+     "scope": "system_block"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/explore_context/explorer.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "tool_call_limit"
+     ],
+     "pos": [],
+     "line": 186,
+     "scope": "_run_loop"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "question",
+      "mode",
+      "manifest"
+     ],
+     "pos": [],
+     "line": 196,
+     "scope": "_run_loop"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "question",
+      "mode",
+      "manifest",
+      "sources"
+     ],
+     "pos": [],
+     "line": 449,
+     "scope": "_single_pass"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/ima/capability.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [],
+   "replace_sites": [
+    {
+     "var": "kb_names",
+     "receiver": null,
+     "line": 61
+    }
+   ],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/marginnote4/capability.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [],
+   "replace_sites": [
+    {
+     "var": "library_name",
+     "receiver": null,
+     "line": 52
+    }
+   ],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/mastery/choices.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:_OPTION_ECHO_TEMPLATE",
+     "kwargs": [
+      "label",
+      "body"
+     ],
+     "pos": [],
+     "line": 196,
+     "scope": "strip_echoed_options"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/obsidian/capability.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [],
+   "replace_sites": [
+    {
+     "var": "vault_name",
+     "receiver": null,
+     "line": 52
+    }
+   ],
+   "t_calls": []
+  },
+  "deeptutor/capabilities/reading/capability.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "summary",
+      "unit",
+      "unit_count",
+      "annotations"
+     ],
+     "pos": [],
+     "line": 221,
+     "scope": "_material_facts"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/co_writer/edit_agent.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "system",
+     "line": 163
+    },
+    {
+     "key": "action_template",
+     "line": 172
+    },
+    {
+     "key": "context_template",
+     "line": 179
+    },
+    {
+     "key": "user_template",
+     "line": 187
+    },
+    {
+     "key": "auto_mark_system",
+     "line": 335
+    },
+    {
+     "key": "auto_mark_user_template",
+     "line": 336
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:system_template",
+     "kwargs": [
+      "available_tools"
+     ],
+     "pos": [],
+     "line": 167,
+     "scope": "process"
+    },
+    {
+     "receiver": "var:action_template",
+     "kwargs": [
+      "action_verb",
+      "instruction"
+     ],
+     "pos": [],
+     "line": 176,
+     "scope": "process"
+    },
+    {
+     "receiver": "var:context_template",
+     "kwargs": [
+      "context",
+      "source_label"
+     ],
+     "pos": [],
+     "line": 182,
+     "scope": "process"
+    },
+    {
+     "receiver": "var:text_template",
+     "kwargs": [
+      "text"
+     ],
+     "pos": [],
+     "line": 191,
+     "scope": "process"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "text"
+     ],
+     "pos": [],
+     "line": 339,
+     "scope": "auto_mark"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/i18n/status_i18n.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 54,
+     "scope": "t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/knowledge/manifest.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "count",
+      "plural"
+     ],
+     "pos": [],
+     "line": 402,
+     "scope": "_total_label"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "count"
+     ],
+     "pos": [],
+     "line": 444,
+     "scope": "_note_line"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "name",
+      "reason"
+     ],
+     "pos": [],
+     "line": 456,
+     "scope": "render_manifest_report"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "name",
+      "qualifier"
+     ],
+     "pos": [],
+     "line": 458,
+     "scope": "render_manifest_report"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "name",
+      "qualifier",
+      "total",
+      "plural"
+     ],
+     "pos": [],
+     "line": 461,
+     "scope": "render_manifest_report"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "pattern"
+     ],
+     "pos": [],
+     "line": 470,
+     "scope": "render_manifest_report"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "pattern",
+      "count"
+     ],
+     "pos": [],
+     "line": 472,
+     "scope": "render_manifest_report"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "shown",
+      "omitted"
+     ],
+     "pos": [],
+     "line": 475,
+     "scope": "render_manifest_report"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/learning/prompts.py": {
+   "loaders": [],
+   "fetches": [
+    {
+     "key": "notebook.default_module_name",
+     "line": 116,
+     "learning": true
+    },
+    {
+     "key": "diagnostic.system",
+     "line": 120,
+     "learning": true
+    },
+    {
+     "key": "diagnostic.user",
+     "line": 121,
+     "learning": true
+    },
+    {
+     "key": "explain.system",
+     "line": 122,
+     "learning": true
+    },
+    {
+     "key": "explain.user",
+     "line": 123,
+     "learning": true
+    },
+    {
+     "key": "feynman.system",
+     "line": 124,
+     "learning": true
+    },
+    {
+     "key": "feynman.user",
+     "line": 125,
+     "learning": true
+    },
+    {
+     "key": "practice.system",
+     "line": 126,
+     "learning": true
+    },
+    {
+     "key": "practice.user",
+     "line": 127,
+     "learning": true
+    },
+    {
+     "key": "error_diagnosis.system",
+     "line": 128,
+     "learning": true
+    },
+    {
+     "key": "error_diagnosis.user",
+     "line": 129,
+     "learning": true
+    },
+    {
+     "key": "review.system",
+     "line": 130,
+     "learning": true
+    },
+    {
+     "key": "review.user",
+     "line": 131,
+     "learning": true
+    },
+    {
+     "key": "notebook.system",
+     "line": 132,
+     "learning": true
+    },
+    {
+     "key": "notebook.user",
+     "line": 133,
+     "learning": true
+    }
+   ],
+   "formats": [
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "records_json"
+     ],
+     "pos": [],
+     "line": 58,
+     "scope": "notebook_generation_prompts"
+    },
+    {
+     "receiver": "var:user_template",
+     "kwargs": [
+      "name",
+      "goal",
+      "sources_json",
+      "must_cover_block"
+     ],
+     "pos": [],
+     "line": 107,
+     "scope": "topic_generation_prompts"
+    },
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "index"
+     ],
+     "pos": [],
+     "line": 117,
+     "scope": "default_module_name"
+    }
+   ],
+   "replace_sites": [
+    {
+     "var": "module_limit",
+     "receiver": "var:system_prompt",
+     "line": 106
+    }
+   ],
+   "t_calls": []
+  },
+  "deeptutor/partners/channels/matrix.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "<expr>"
+     ],
+     "line": 403,
+     "scope": "_upload_and_send_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "filename"
+     ],
+     "line": 407,
+     "scope": "_upload_and_send_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "filename"
+     ],
+     "line": 416,
+     "scope": "_upload_and_send_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "filename"
+     ],
+     "line": 745,
+     "scope": "_fetch_media_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "filename"
+     ],
+     "line": 753,
+     "scope": "_fetch_media_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "filename"
+     ],
+     "line": 766,
+     "scope": "_fetch_media_attachment"
+    },
+    {
+     "receiver": null,
+     "kwargs": [],
+     "pos": [
+      "path"
+     ],
+     "line": 784,
+     "scope": "_fetch_media_attachment"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/runtime/launcher.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:template",
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 102,
+     "scope": "_t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": [
+    {
+     "key": "start.stopping",
+     "kwargs": [
+      "name",
+      "pid"
+     ],
+     "line": 257,
+     "scope": "_terminate"
+    },
+    {
+     "key": "start.port_invalid",
+     "kwargs": [
+      "value"
+     ],
+     "line": 440,
+     "scope": "_prompt_port"
+    },
+    {
+     "key": "start.port_saved",
+     "kwargs": [
+      "path"
+     ],
+     "line": 495,
+     "scope": "_prompt_new_ports"
+    },
+    {
+     "key": "start.port_killing",
+     "kwargs": [
+      "pid",
+      "command"
+     ],
+     "line": 502,
+     "scope": "_kill_port_listeners"
+    },
+    {
+     "key": "start.port_kill_failed",
+     "kwargs": [
+      "port",
+      "pid"
+     ],
+     "line": 521,
+     "scope": "_kill_port_listeners"
+    },
+    {
+     "key": "start.port_freed",
+     "kwargs": [
+      "port"
+     ],
+     "line": 523,
+     "scope": "_kill_port_listeners"
+    },
+    {
+     "key": "start.port_conflict_line",
+     "kwargs": [
+      "role",
+      "port"
+     ],
+     "line": 549,
+     "scope": "_resolve_port_conflicts"
+    },
+    {
+     "key": "start.port_conflict_proc",
+     "kwargs": [
+      "pid",
+      "command"
+     ],
+     "line": 554,
+     "scope": "_resolve_port_conflicts"
+    },
+    {
+     "key": "start.port_in_use",
+     "kwargs": [
+      "ports"
+     ],
+     "line": 558,
+     "scope": "_resolve_port_conflicts"
+    },
+    {
+     "key": "start.waiting_for",
+     "kwargs": [
+      "name",
+      "url"
+     ],
+     "line": 580,
+     "scope": "_wait_for_http"
+    },
+    {
+     "key": "start.exited",
+     "kwargs": [
+      "name",
+      "code"
+     ],
+     "line": 586,
+     "scope": "_wait_for_http"
+    },
+    {
+     "key": "start.ready",
+     "kwargs": [
+      "name"
+     ],
+     "line": 589,
+     "scope": "_wait_for_http"
+    },
+    {
+     "key": "start.not_ready",
+     "kwargs": [
+      "name",
+      "timeout",
+      "env"
+     ],
+     "line": 593,
+     "scope": "_wait_for_http"
+    },
+    {
+     "key": "start.detached_already_running",
+     "kwargs": [
+      "pid",
+      "log"
+     ],
+     "line": 1092,
+     "scope": "_launch_detached"
+    },
+    {
+     "key": "start.detached_started",
+     "kwargs": [
+      "pid"
+     ],
+     "line": 1148,
+     "scope": "_launch_detached"
+    },
+    {
+     "key": "start.detached_log",
+     "kwargs": [
+      "path"
+     ],
+     "line": 1149,
+     "scope": "_launch_detached"
+    },
+    {
+     "key": "start.detached_stop_hint",
+     "kwargs": [
+      "home"
+     ],
+     "line": 1150,
+     "scope": "_launch_detached"
+    },
+    {
+     "key": "stop.requested",
+     "kwargs": [
+      "pid"
+     ],
+     "line": 1199,
+     "scope": "stop"
+    },
+    {
+     "key": "stop.timeout",
+     "kwargs": [
+      "pid",
+      "log"
+     ],
+     "line": 1208,
+     "scope": "stop"
+    },
+    {
+     "key": "start.restarting_frontend",
+     "kwargs": [
+      "url",
+      "pid"
+     ],
+     "line": 1349,
+     "scope": "start"
+    },
+    {
+     "key": "start.frontend_restart_failed",
+     "kwargs": [
+      "url",
+      "pid"
+     ],
+     "line": 1352,
+     "scope": "start"
+    },
+    {
+     "key": "start.received_signal",
+     "kwargs": [
+      "signal"
+     ],
+     "line": 1491,
+     "scope": "request_shutdown"
+    },
+    {
+     "key": "start.reusing_frontend",
+     "kwargs": [
+      "url",
+      "pid"
+     ],
+     "line": 1535,
+     "scope": "start"
+    },
+    {
+     "key": "start.open_in_browser",
+     "kwargs": [
+      "url"
+     ],
+     "line": 1567,
+     "scope": "start"
+    },
+    {
+     "key": "start.exited",
+     "kwargs": [
+      "name",
+      "code"
+     ],
+     "line": 1577,
+     "scope": "start"
+    }
+   ]
+  },
+  "deeptutor/services/i18n.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "**kwargs"
+     ],
+     "pos": [],
+     "line": 127,
+     "scope": "t"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/llm/provider_core/openai_compat_provider.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [],
+   "replace_sites": [
+    {
+     "var": "api_key",
+     "receiver": null,
+     "line": 263
+    }
+   ],
+   "t_calls": []
+  },
+  "deeptutor/services/mcp/catalog/models.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "value"
+     ],
+     "pos": [],
+     "line": 135,
+     "scope": "render"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/memory/consolidator/modes/audit.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:prompt[system]",
+     "kwargs": [
+      "user_label",
+      "surface",
+      "focus",
+      "today"
+     ],
+     "pos": [],
+     "line": 175,
+     "scope": "_run_audit_l2"
+    },
+    {
+     "receiver": "var:prompt[user]",
+     "kwargs": [
+      "surface",
+      "chunk"
+     ],
+     "pos": [],
+     "line": 181,
+     "scope": "_run_audit_l2"
+    },
+    {
+     "receiver": "var:prompt[system]",
+     "kwargs": [
+      "user_label",
+      "slot",
+      "focus",
+      "today"
+     ],
+     "pos": [],
+     "line": 316,
+     "scope": "_run_audit_l3"
+    },
+    {
+     "receiver": "var:prompt[user]",
+     "kwargs": [
+      "slot",
+      "chunk"
+     ],
+     "pos": [],
+     "line": 322,
+     "scope": "_run_audit_l3"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/memory/consolidator/modes/dedup.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:prompt[system]",
+     "kwargs": [
+      "user_label",
+      "today"
+     ],
+     "pos": [],
+     "line": 126,
+     "scope": "_run_dedup_inner"
+    },
+    {
+     "receiver": "var:prompt[user]",
+     "kwargs": [
+      "doc",
+      "iteration",
+      "iterations_total"
+     ],
+     "pos": [],
+     "line": 127,
+     "scope": "_run_dedup_inner"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/memory/consolidator/modes/update.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": "var:prompt[system]",
+     "kwargs": [
+      "user_label",
+      "surface",
+      "sections",
+      "focus",
+      "today"
+     ],
+     "pos": [],
+     "line": 231,
+     "scope": "_run_update_l2"
+    },
+    {
+     "receiver": "var:prompt[user]",
+     "kwargs": [
+      "surface",
+      "existing",
+      "chunk",
+      "chunk_index",
+      "chunk_total",
+      "chunk_start",
+      "chunk_end"
+     ],
+     "pos": [],
+     "line": 245,
+     "scope": "_run_update_l2"
+    },
+    {
+     "receiver": "var:prompt[system]",
+     "kwargs": [
+      "user_label",
+      "slot",
+      "sections",
+      "focus",
+      "today"
+     ],
+     "pos": [],
+     "line": 459,
+     "scope": "_run_update_l3"
+    },
+    {
+     "receiver": "var:prompt[user]",
+     "kwargs": [
+      "slot",
+      "existing",
+      "chunk",
+      "chunk_index",
+      "chunk_total"
+     ],
+     "pos": [],
+     "line": 478,
+     "scope": "_run_update_l3"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/memory/consolidator/references.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "marker"
+     ],
+     "pos": [],
+     "line": 183,
+     "scope": "render_traces_for_concat"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/parsing/engines/mineru/backend.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "detail"
+     ],
+     "pos": [],
+     "line": 241,
+     "scope": "_parse_local"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/prompt/manager.py": {
+   "loaders": [
+    {
+     "module": null,
+     "agent": null,
+     "subdir": null,
+     "line": 246,
+     "args_literal": false
+    }
+   ],
+   "fetches": [],
+   "formats": [],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/session/sqlite_store.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "where"
+     ],
+     "pos": [],
+     "line": 2699,
+     "scope": "_list_session_summaries_sync"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "where"
+     ],
+     "pos": [],
+     "line": 2723,
+     "scope": "_get_session_summaries_sync"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "where"
+     ],
+     "pos": [],
+     "line": 2746,
+     "scope": "_list_sessions_sync"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "entries"
+     ],
+     "pos": [],
+     "line": 3746,
+     "scope": "_question_bank_filters"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "entries"
+     ],
+     "pos": [],
+     "line": 3965,
+     "scope": "_question_bank_stats_sync"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "entries"
+     ],
+     "pos": [],
+     "line": 4033,
+     "scope": "_list_question_bank_materials_sync"
+    },
+    {
+     "receiver": null,
+     "kwargs": [
+      "entries"
+     ],
+     "pos": [],
+     "line": 4249,
+     "scope": "_list_categories_sync"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/skill/hub.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "slug",
+      "version",
+      "dest"
+     ],
+     "pos": [],
+     "line": 625,
+     "scope": "fetch"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  },
+  "deeptutor/services/voice/speech_text.py": {
+   "loaders": [],
+   "fetches": [],
+   "formats": [
+    {
+     "receiver": null,
+     "kwargs": [
+      "inner"
+     ],
+     "pos": [],
+     "line": 454,
+     "scope": "_unwrap_style_once"
+    }
+   ],
+   "replace_sites": [],
+   "t_calls": []
+  }
+ }
+}
