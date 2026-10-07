@@ -601,12 +601,15 @@ export function EpubDocumentView({
 
   useEffect(() => {
     if (!jump || !renditionRef.current) return;
+    let cancelled = false;
+    let highlightTimer: number | undefined;
     const sectionTarget = bookRef.current?.spine.get(jump.locator - 1);
     const ref = unitRefs.find((row) => row.locator === jump.locator);
     const target = sectionTarget?.href ?? ref?.source_href;
     if (!target) return;
     void renditionRef.current.display(target).then(async () => {
-      if (!jump.quote || !bookRef.current || !renditionRef.current) return;
+      if (cancelled || !jump.quote || !bookRef.current || !renditionRef.current)
+        return;
       const section = bookRef.current.spine.get(jump.locator - 1);
       if (!section) return;
       try {
@@ -620,13 +623,18 @@ export function EpubDocumentView({
           "dt-epub-jump",
           { fill: "rgba(99, 102, 241, 0.35)" },
         );
-        window.setTimeout(() => {
+        if (cancelled) return;
+        highlightTimer = window.setTimeout(() => {
           renditionRef.current?.annotations.remove(matches[0].cfi, "highlight");
         }, 2200);
       } catch {
         // Reaching the requested locator is still useful if quote search fails.
       }
     });
+    return () => {
+      cancelled = true;
+      if (highlightTimer !== undefined) window.clearTimeout(highlightTimer);
+    };
   }, [jump, unitRefs]);
 
   const surface =

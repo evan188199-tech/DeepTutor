@@ -688,12 +688,13 @@ export function ReaderPane({
    * assistant is talking about.
    */
   useEffect(() => {
+    let citationTimer: number | undefined;
     const onTurnEnd = (event: Event) => {
       const moved = (event as CustomEvent<{ moved?: boolean }>).detail?.moved;
       if (moved || !autoJump || !material) return;
       // One frame later: the final answer is still being committed to the DOM
       // as the turn closes.
-      const timer = window.setTimeout(() => {
+      citationTimer = window.setTimeout(() => {
         const answers = document.querySelectorAll('[role="article"]');
         const last = answers[answers.length - 1];
         const anchor = last?.querySelector<HTMLAnchorElement>(
@@ -701,10 +702,12 @@ export function ReaderPane({
         );
         void navigateCitation(anchor?.getAttribute("href"));
       }, 120);
-      return () => window.clearTimeout(timer);
     };
     window.addEventListener(READER_TURN_END_EVENT, onTurnEnd);
-    return () => window.removeEventListener(READER_TURN_END_EVENT, onTurnEnd);
+    return () => {
+      window.removeEventListener(READER_TURN_END_EVENT, onTurnEnd);
+      if (citationTimer !== undefined) window.clearTimeout(citationTimer);
+    };
   }, [autoJump, material, navigateCitation]);
 
   /**

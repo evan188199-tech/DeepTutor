@@ -1,7 +1,8 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MediaReadingStage } from "@/components/reading/workspace/MediaReadingStage";
+import { READER_TURN_END_EVENT } from "@/lib/reading-reader-action";
 import type { ReadingLibraryMaterial } from "@/lib/reading-workspace-api";
 import type { TranscriptRow } from "@/components/reading/workspace/types";
 
@@ -108,6 +109,10 @@ beforeEach(() => {
   mock.savePosition.mockResolvedValue(undefined);
 });
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe("MediaReadingStage", () => {
   it("shows the current and next caption and seeks from either line", () => {
     renderStage();
@@ -188,5 +193,51 @@ describe("MediaReadingStage", () => {
 
     fireEvent.click(screen.getByLabelText("Enter fullscreen"));
     expect(requestFullscreen).toHaveBeenCalled();
+  });
+
+  function mountCitedAnswer() {
+    const article = document.createElement("div");
+    article.setAttribute("role", "article");
+    article.innerHTML = '<a href="#dt-media-time-65">1:05</a>';
+    document.body.appendChild(article);
+    return article;
+  }
+
+  it("seeks from the last answer's citation when the turn ends unmoved", async () => {
+    const { view } = renderStage();
+    await screen.findByTestId("reading-media-transcript-list");
+    const article = mountCitedAnswer();
+
+    vi.useFakeTimers();
+    window.dispatchEvent(
+      new CustomEvent(READER_TURN_END_EVENT, { detail: { moved: false } }),
+    );
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+
+    expect(mock.seeks).toContain(65);
+    vi.useRealTimers();
+    view.unmount();
+    article.remove();
+  });
+
+  it("does not seek from a turn-end citation after unmount", async () => {
+    const { view } = renderStage();
+    await screen.findByTestId("reading-media-transcript-list");
+    const article = mountCitedAnswer();
+
+    vi.useFakeTimers();
+    window.dispatchEvent(
+      new CustomEvent(READER_TURN_END_EVENT, { detail: { moved: false } }),
+    );
+    view.unmount();
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+    vi.useRealTimers();
+
+    expect(mock.seeks).not.toContain(65);
+    article.remove();
   });
 });

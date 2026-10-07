@@ -428,9 +428,10 @@ export function MediaReadingStage({
   }, [locatorAtTime, notifyLocator]);
 
   useEffect(() => {
+    let citationTimer: number | undefined;
     const onTurnEnd = (event: Event) => {
       if ((event as CustomEvent<{ moved?: boolean }>).detail?.moved) return;
-      window.setTimeout(() => {
+      citationTimer = window.setTimeout(() => {
         const answers = document.querySelectorAll('[role="article"]');
         const anchor = answers[
           answers.length - 1
@@ -442,7 +443,10 @@ export function MediaReadingStage({
       }, 120);
     };
     window.addEventListener(READER_TURN_END_EVENT, onTurnEnd);
-    return () => window.removeEventListener(READER_TURN_END_EVENT, onTurnEnd);
+    return () => {
+      window.removeEventListener(READER_TURN_END_EVENT, onTurnEnd);
+      if (citationTimer !== undefined) window.clearTimeout(citationTimer);
+    };
   }, [locatorAtTime, notifyLocator]);
 
   useEffect(() => {
