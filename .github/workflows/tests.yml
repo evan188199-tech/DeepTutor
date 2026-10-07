@@ -283,7 +283,7 @@ jobs:
       - name: Run Python tests
         run: |
           echo "🧪 Running Python tests on Python ${{ matrix.python-version }}"
-          pytest -q tests deeptutor/learning/tests
+          pytest -q tests
         env:
           PYTHONPATH: ${{ github.workspace }}
           DEEPTUTOR_TEST_REDIS_URL: redis://127.0.0.1:6379/0
