@@ -59,6 +59,13 @@ _TOOLCALLS_CLOSE_TAG_RE = re.compile(r"</[^>]*?tool_calls\s*>", re.IGNORECASE)
 # for a closing ``>``. Real DSML tags are much shorter than this ceiling.
 _MAX_PARTIAL_TAG_CHARS = 512
 
+# Likewise, a block whose close tag never arrives must not make the live
+# stream buffer it whole and re-scan it from the start on every chunk —
+# quadratic work over the round. Real invokes stay far below this ceiling;
+# once it is exceeded with no close tag in sight, the pending block is
+# released verbatim as prose and scanning resumes from the next chunk.
+_MAX_PENDING_BLOCK_CHARS = 262144
+
 
 class DSMLStreamFilter:
     """Incrementally remove complete DSML calls from streamed text.
@@ -67,7 +74,9 @@ class DSMLStreamFilter:
     between, and after calls is returned immediately, so one tool call cannot
     redirect the rest of the round into a different output channel. Incomplete
     invokes are released verbatim by :meth:`flush` instead of silently losing
-    provider output.
+    provider output, and a pending block that outgrows
+    ``_MAX_PENDING_BLOCK_CHARS`` without closing is released the same way so
+    per-chunk cost stays linear.
     """
 
     def __init__(self) -> None:
@@ -92,6 +101,15 @@ class DSMLStreamFilter:
             if self._pending_close is not None:
                 close = self._pending_close.search(self._buffer)
                 if close is None:
+                    if len(self._buffer) <= _MAX_PENDING_BLOCK_CHARS:
+                        break
+                    # No close tag in a block this large: this is prose (or
+                    # a truncated call), not markup worth holding open.
+                    # Release it verbatim instead of re-scanning the same
+                    # bytes on every subsequent chunk.
+                    visible.append(self._buffer)
+                    self._buffer = ""
+                    self._pending_close = None
                     break
                 block = self._buffer[: close.end()]
                 self._buffer = self._buffer[close.end() :]

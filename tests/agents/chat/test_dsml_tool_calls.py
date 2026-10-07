@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
 
 from deeptutor.agents.loop.dsml_tool_calls import (
+    _MAX_PENDING_BLOCK_CHARS,
     DSMLStreamFilter,
     extract_dsml_tool_calls,
     has_dsml_tool_calls,
@@ -223,3 +225,81 @@ class TestDSMLStreamFilter:
 
     def test_plain_angle_brackets_are_untouched(self) -> None:
         assert self._run(["1 < 2 and <b>", "bold</b>"]) == "1 < 2 and <b>bold</b>"
+
+    def test_overlong_unclosed_block_streams_verbatim_without_rescanning(self, monkeypatch) -> None:
+        # A pending block with no close tag used to be re-scanned in full on
+        # every chunk while the buffer grew without bound — quadratic work
+        # across the round. Past the pending ceiling the block must come out
+        # verbatim, and the pending-close search must stop touching already
+        # searched bytes: doubling the stream must not meaningfully grow the
+        # number of characters scanned (the quadratic path would grow ~4x).
+        from deeptutor.agents.loop import dsml_tool_calls as dsml_module
+
+        original_close_re = dsml_module._INVOKE_CLOSE_TAG_RE
+        scanned = 0
+
+        class _CountingPattern:
+            def search(self, text: str) -> re.Match[str] | None:
+                nonlocal scanned
+                scanned += len(text)
+                return original_close_re.search(text)
+
+        monkeypatch.setattr(dsml_module, "_INVOKE_CLOSE_TAG_RE", _CountingPattern())
+
+        open_tag = '<｜DSML｜invoke name="exec">'
+        chunk_size = 256
+
+        def _run_stream(total_chars: int) -> tuple[str, int]:
+            text = open_tag + "a" * (total_chars - len(open_tag))
+            stream_filter = DSMLStreamFilter()
+            chunks = [text[i : i + chunk_size] for i in range(0, len(text), chunk_size)]
+            visible = [stream_filter.feed(chunk) for chunk in chunks]
+            return "".join(visible) + stream_filter.flush(), scanned
+
+        small_total = _MAX_PENDING_BLOCK_CHARS * 3
+        large_total = _MAX_PENDING_BLOCK_CHARS * 6
+
+        visible_small, _ = _run_stream(small_total)
+        assert visible_small == open_tag + "a" * (small_total - len(open_tag))
+
+        scanned_before_large = scanned
+        visible_large, _ = _run_stream(large_total)
+        assert visible_large == open_tag + "a" * (large_total - len(open_tag))
+
+        scanned_large = scanned - scanned_before_large
+        assert scanned_large <= scanned_before_large * 1.5
+
+    def test_parsing_recovers_after_overlong_unclosed_block(self) -> None:
+        filler = "b" * (_MAX_PENDING_BLOCK_CHARS + 65536)
+        text = (
+            '<｜DSML｜invoke name="exec">' + filler + '<｜DSML｜invoke name="exec">'
+            '<｜DSML｜parameter name="command" string="true">echo hi'
+            "</｜DSML｜parameter></｜DSML｜invoke> tail"
+        )
+        open_len = len('<｜DSML｜invoke name="exec">')
+        first = open_len + _MAX_PENDING_BLOCK_CHARS // 2  # held pending
+        # Still pure filler, but past the ceiling: the release path fires.
+        second = first + _MAX_PENDING_BLOCK_CHARS // 2 + 2048
+        stream_filter = DSMLStreamFilter()
+        visible = (
+            stream_filter.feed(text[:first])
+            + stream_filter.feed(text[first:second])
+            + stream_filter.feed(text[second:])
+        )
+        # The unclosed block is released verbatim once past the ceiling, and
+        # the well-formed call that follows is still suppressed.
+        assert visible + stream_filter.flush() == (
+            '<｜DSML｜invoke name="exec">' + filler + " tail"
+        )
+
+    def test_complete_call_larger_than_ceiling_passes_through_verbatim(self) -> None:
+        # Past the ceiling a complete-but-huge call is no longer worth
+        # buffering for suppression: it streams out as-is. The dispatcher
+        # still parses the full round text separately, so the call is not
+        # lost — only its live markup suppression is.
+        body = "c" * (_MAX_PENDING_BLOCK_CHARS + 200000)
+        text = '<｜DSML｜invoke name="exec">' + body + "</｜DSML｜invoke> tail"
+        stream_filter = DSMLStreamFilter()
+        chunks = [text[i : i + 65536] for i in range(0, len(text), 65536)]
+        visible = "".join(stream_filter.feed(chunk) for chunk in chunks)
+        assert visible + stream_filter.flush() == text
