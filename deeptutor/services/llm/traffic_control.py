@@ -100,7 +100,7 @@ class TrafficController:
         # prevents queue jumping.
         try:
             await self._wait_for_token()
-        except Exception:
+        except BaseException:
             # If rate limiter fails/cancels, release semaphore
             self._semaphore.release()
             raise
