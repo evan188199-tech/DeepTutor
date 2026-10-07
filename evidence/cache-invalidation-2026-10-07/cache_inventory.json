@@ -1,0 +1,1929 @@
+{
+  "meta": {
+    "issue": "AGEN-999 scan: 缓存键与失效策略一致性清点",
+    "date": "2026-10-07",
+    "repo_base": "origin/main @ f07029cfc (HKUDS/DeepTutor, release v1.6.13)",
+    "branch": "scan/cache-invalidation-20261007",
+    "worktree": "dt-agen999-scan-cache-wt (全程只读，未改任何产品代码)",
+    "method": "5 个分区并行扫描（LLM生成/知识RAG/技能提示词/前端契约/会话系统杂项）+ 13 处抽样对照现行代码复核",
+    "total_points": 102,
+    "risk_counts": {
+      "high": 10,
+      "medium": 27,
+      "low": 65
+    },
+    "verified_samples": [
+      "deeptutor/services/llm/image_caption_cache.py:46-135",
+      "deeptutor/services/singleflight_cache.py:36-75",
+      "deeptutor/services/chat_hints.py:44-75",
+      "deeptutor/services/prompt/manager.py:85-100,218-246",
+      "deeptutor/services/parsing/signature.py:32-46 + parsing/cache.py:38-45",
+      "deeptutor/services/rag/index_versioning.py:46-64",
+      "deeptutor/services/llm/capabilities.py:490-545",
+      "deeptutor/services/suggestions.py:64-70,402-409,595-600",
+      "web/features/co-writer/components/CoWriterWorkspace.tsx:300-312 + storage/drafts.ts:53-70",
+      "deeptutor/services/rag/factory.py:60-64,193-209",
+      "deeptutor/knowledge/add_documents.py:141-169",
+      "deeptutor/services/llm/config.py:160-174,245-280",
+      "deeptutor/services/llm/client.py:210-246 + api/routers/settings.py:495-505"
+    ],
+    "verified_count": 13
+  },
+  "caches": [
+    {
+      "id": "image-caption-cache",
+      "category": "persistent",
+      "location": "deeptutor/services/llm/image_caption_cache.py:46",
+      "purpose": "视觉模型图片描述复用（单图 complete_image_caption 与批量 complete_image_caption_batch 共用同一存储）",
+      "key": "sha256(canonical JSON{version=1, config:15字段LLM身份(model/api_key/base_url/binding/wire_api/temperature等), request:{prompt,system_prompt,mime,filename,image_sha256}})；批量版另含 image_data 列表与 batch_format=id_checked_v1 等固化策略字段；存储路径 parse_cache/image_captions/<digest[:2]>/<digest>.json",
+      "write": [
+        "deeptutor/services/llm/image_caption_cache.py:128(_write_caption,原子写)",
+        "deeptutor/services/llm/image_caption_cache.py:195-197(_write_batch_captions)"
+      ],
+      "read": [
+        "deeptutor/services/llm/image_caption_cache.py:121-125(_read_caption)",
+        "deeptutor/services/llm/image_caption_cache.py:184-188(_read_batch_captions)",
+        "deeptutor/reading/captions.py:101",
+        "deeptutor/services/rag/pipelines/llamaindex/document_loader.py:520"
+      ],
+      "invalidation": "任一键输入(图片字节/prompt/模型配置)变化→新digest；force=True 绕过读并覆盖；version 字段升级；无TTL；手动删 parse_cache/image_captions 或工作区数据管理清理",
+      "risk": "键含完整模型身份，不会跨模型误用；残余风险：质量差的非空描述永久冻结(需force或手清)、磁盘无界增长",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "parse-result-cache",
+      "category": "persistent",
+      "location": "deeptutor/services/parsing/cache.py:38-90",
+      "purpose": "文档解析结果(markdown/IR/图片)跨提问提取与RAG索引复用",
+      "key": "(source_hash=sha256(文件字节)[:16], signature=sha256({engine,engine_version,params})[:16])；目录 parse_cache/<hash[:2]>/<source_hash>/<signature>/manifest.json+*.md",
+      "write": [
+        "deeptutor/services/parsing/service.py:181(reserve)",
+        "deeptutor/services/parsing/service.py:190-198(write_manifest 就绪戳最后写)",
+        "deeptutor/services/parsing/cache.py:83-90"
+      ],
+      "read": [
+        "deeptutor/services/parsing/service.py:156(lookup,is_ready校验)",
+        "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:234-262"
+      ],
+      "invalidation": "字节或引擎签名变化→新目录；空/坏命中被删除重解析(service.py:173-175)；无TTL；手动清 parse_cache",
+      "risk": "解析器 bugfix 未升版本号时复用旧输出(受 package_version lru 传导,见 package-version-lru)；已删文档解析永久留存(磁盘增长非正确性)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "mineru-slice-checkpoints",
+      "category": "persistent",
+      "location": "deeptutor/services/parsing/engines/mineru/checkpoints.py:24-48",
+      "purpose": "MinerU 云解析按切片断点续传，重试跳过已完成切片",
+      "key": "job=sha256({version:slices-v1, source_sha256, name, endpoint, model, language, formula, table, ocr, pages_per_part})；slice=<start>-<end>/ready.json→sha256命名zip(读取时校验完整性)",
+      "write": [
+        "deeptutor/services/parsing/engines/mineru/checkpoints.py:78-84"
+      ],
+      "read": [
+        "deeptutor/services/parsing/engines/mineru/checkpoints.py:56-76"
+      ],
+      "invalidation": "任一身份字段变化→新job键；无TTL/无GC/无数量上限(单档案500MB上限)；手清 .mineru-segments",
+      "risk": "正确性低(完整配置在键中)；端点/模型旧组合永久累积",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "suggestions-starters",
+      "category": "persistent",
+      "location": "deeptutor/services/suggestions.py:159-164",
+      "purpose": "首页三个 starter 提示词 chips；即时返回+后台再生成(SWR)",
+      "key": "每工作区单文件 suggestions/starters.json；新鲜度=language匹配 AND 6h内 AND fingerprint一致；fingerprint=SHA-1(language+L3 profile+每topic surface:label)[:16]",
+      "write": [
+        "deeptutor/services/suggestions.py:204-208(_save)",
+        "deeptutor/services/suggestions.py:620"
+      ],
+      "read": [
+        "deeptutor/services/suggestions.py:181-201(_load)",
+        "deeptutor/services/suggestions.py:732(get_suggestions)",
+        "deeptutor/services/suggestions.py:595-600(_is_fresh)"
+      ],
+      "invalidation": "6h TTL；素材指纹变化(后台节流1/60s检查)；语言变化强制重查；手动 refresh；SWR:过期但仍可用先返回",
+      "risk": "指纹不含模型/提示模板——切换默认模型后旧集合存活至多6h；语言已处理",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "office-preview-disk",
+      "category": "persistent",
+      "location": "deeptutor/services/office_preview.py:78-99,157-196",
+      "purpose": "LibreOffice 转 PDF 预览缓存(<user_root>/cache/office_previews)",
+      "key": "sha256('office-preview-v1'+后缀+完整源字节)→<hash>.pdf；内容寻址",
+      "write": [
+        "deeptutor/services/office_preview.py:157-170"
+      ],
+      "read": [
+        "deeptutor/services/office_preview.py:91-99(校验%PDF-魔数)"
+      ],
+      "invalidation": "24h TTL；每次转换后 prune 至200文件/512MB；源字节变化自动换键；响应 no-store",
+      "risk": "键不含 LibreOffice 版本——soffice 升级后同字节最长24h渲染旧版",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "kb-file-hashes-manifest",
+      "category": "persistent",
+      "location": "deeptutor/knowledge/add_documents.py:111-138,266-324,479-484",
+      "purpose": "metadata.json:file_hashes 已摄入内容清单，增量添加跳过重复",
+      "key": "sha256(文件字节)→按 raw/ 相对 POSIX 路径键控(KB作用域)；不含 embedding 模型或分块信息",
+      "write": [
+        "deeptutor/knowledge/add_documents.py:479-484(_record_successful_hash)",
+        "deeptutor/api/routers/knowledge.py:3859-3861(重索引成功后整体重写)"
+      ],
+      "read": [
+        "deeptutor/knowledge/add_documents.py:311-324(跳过判定)",
+        "deeptutor/knowledge/add_documents.py:163-166(删除时移除)"
+      ],
+      "invalidation": "API 删除文档移除条目；重索引成功重写；raw 文件在 API 之外被手删时记录残留",
+      "risk": "HIGH: 手删文件后 hash 记录仍在→重索引跳过→同内容重传被静默跳过而索引中无此文档；删除文档的向量保留至重建(与 RAG 索引叠加)",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "llamaindex-version-index",
+      "category": "persistent",
+      "location": "deeptutor/services/rag/index_versioning.py:46-64,212-370",
+      "purpose": "默认 provider 持久化向量/BM25 索引本体，每个 embedding 签名一个 version-N/ 目录",
+      "key": "目录 version-N；meta.json.signature=sha256(binding+model+dim+base_url+api_version[+role_semantics])[:16]；文档内容哈希不在索引键中(仅在 metadata.json:file_hashes)",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/storage.py:89-111(create/insert+BM25持久化)",
+        "deeptutor/services/rag/index_versioning.py:307-321(write_version_meta)",
+        "deeptutor/services/rag/index_versioning.py:359-370(重建解析新目录)"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/pipeline.py:296-298(按活跃签名解析)",
+        "deeptutor/services/rag/index_probe.py:77-93(探测)",
+        "deeptutor/knowledge/manager.py:161-322(对账)"
+      ],
+      "invalidation": "fail-closed: 无签名匹配→needs_reindex；embedding模型切换安全(按签名分版本)；手动 clean_rag_storage；分块配置变化不在键中——增量添加会混用同签名版本",
+      "risk": "HIGH: 删除文档不删向量(remove_raw_document 明确留待重建)，已删文档可被检索到直至重建；分块几何混用",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "lightrag-version-index",
+      "category": "persistent",
+      "location": "deeptutor/services/rag/pipelines/lightrag/storage.py:50-52,218-323",
+      "purpose": "LightRAG KV/向量库/知识图，自包含于 version-N/ 目录(workspace=deeptutor_<sha16>)",
+      "key": "version目录+meta.json{embedding_signature全身份哈希, embedding_model/dim, indexing_policy(固化LLM/VLM指纹), lightrag_package_version, workspace}",
+      "write": [
+        "deeptutor/services/rag/pipelines/lightrag/pipeline.py:401-418,559-570(发布)",
+        "deeptutor/services/rag/pipelines/lightrag/embedding_binding.py:230-233"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/lightrag/storage.py:228-236(latest_published_root)",
+        "deeptutor/services/rag/pipelines/lightrag/embedding_binding.py:160-188",
+        "deeptutor/services/rag/pipelines/lightrag/storage.py:258-269(require_compatible_embedding)"
+      ],
+      "invalidation": "embedding不匹配在搜索与追加时抛 EmbeddingMismatchError(fail-closed)；未发布/legacy版本拒绝；全量重建→新版本目录；手删KB",
+      "risk": "与 LlamaIndex 同样：删除文档不删图实体/向量直至重建；追加路径只增不减",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "lightrag-llm-response-cache-reuse",
+      "category": "persistent",
+      "location": "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py:17-134",
+      "purpose": "重建时从同KB旧版本继承索引期 LLM 响应缓存(省 token)",
+      "key": "LightRAG键 '<prefix>:<type>:<32-64hex>'(type∈extract/summary/analysis/smartheading)；哈希含源内容+模型身份；供体必须匹配当前索引策略指纹(含VLM模式)或为紧邻中断版本；查询/答案缓存类型排除",
+      "write": [
+        "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py:124-132(合并后原子写入新版本工作区)"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py:46-53,81-129",
+        "deeptutor/services/rag/pipelines/lightrag/pipeline.py:436-442"
+      ],
+      "invalidation": "模型/角色指纹变化→供体身份不匹配→跳过；新版本同键覆盖；SDK 钉住 lightrag-hku==1.5.7",
+      "risk": "低：键为内容+模型绑定，查询答案不跨重建；中断版本(无meta.json)作为rank3供体仍为内容哈希键",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "graphrag-json-cache-bm25",
+      "category": "persistent",
+      "location": "deeptutor/services/rag/pipelines/graphrag/config.py:306-309 + pipelines/llamaindex/retrievers.py:24,87-111",
+      "purpose": "GraphRAG SDK 自带 LLM 响应缓存(版本目录内 cache/)；LlamaIndex 混检 BM25 持久目录",
+      "key": "GraphRAG 内部键；BM25 与索引版本同签名(兄弟目录)",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/storage.py:95,110(每次索引写BM25)"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/retrievers.py:72-81(每查询构建)"
+      ],
+      "invalidation": "随版本目录生灭；BM25 每次索引写重持久化",
+      "risk": "低：BM25 随索引重建；GraphRAG 缓存无 DeepTutor 侧过滤但新版本目录从头开始",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "claude-models-file-cache",
+      "category": "persistent",
+      "location": "deeptutor/services/subagent/claude_models.py:32,44-97",
+      "purpose": "从 Claude Code /model TUI 抓取的模型清单缓存(data/user/settings/claude_models_cache.json)",
+      "key": "单文件 {fetched_at, models:[{slug,display_name}]}",
+      "write": [
+        "deeptutor/services/subagent/claude_models.py:93-97(仅设置页手动同步触发,subagent/models.py:427-431)"
+      ],
+      "read": [
+        "deeptutor/services/subagent/claude_models.py:48-66",
+        "deeptutor/services/subagent/models.py:163-164(空则回退内置清单)",
+        "deeptutor/api/routers/subagents.py:73-88"
+      ],
+      "invalidation": "无TTL/无mtime/无自动刷新；fetched_at 仅展示不校验；唯一刷新=用户手动点同步",
+      "risk": "MEDIUM-HIGH: Claude Code 升级新增/更名模型后选择器无限期供应旧目录(生成模型的契约漂移)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "codex-models-cache",
+      "category": "persistent",
+      "location": "deeptutor/services/codex_auth/storage.py:113 + constants.py:23-24",
+      "purpose": "DeepTutor 侧 Codex 账号模型目录缓存(models-cache.v1.json,带ETag再验证)",
+      "key": "account_hash(sha256(account_id))+凭据generation；freshness=fetched_at",
+      "write": [
+        "deeptutor/services/codex_auth/catalog.py:239(304再验证)",
+        "deeptutor/services/codex_auth/catalog.py:303(实拉取)",
+        "deeptutor/services/codex_auth/storage.py:259-281"
+      ],
+      "read": [
+        "deeptutor/services/codex_auth/catalog.py:142-167,309-325",
+        "deeptutor/services/codex_auth/service.py:1014-1022"
+      ],
+      "invalidation": "≤300s fresh；断网 stale-while-error ≤24h；401/403作废；凭据轮换generation递增丢弃",
+      "risk": "全仓调优最好的缓存；最坏 24h 旧目录",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "codex-external-models-cache",
+      "category": "persistent",
+      "location": "deeptutor/services/subagent/models.py:189-212",
+      "purpose": "读取 Codex CLI 自己写的 ~/.codex/models_cache.json(只读消费)",
+      "key": "单文件{fetched_at,models}",
+      "write": [
+        "(无,外部CLI拥有)"
+      ],
+      "read": [
+        "deeptutor/services/subagent/models.py:182-219"
+      ],
+      "invalidation": "DeepTutor 不校验TTL；刷新仅在用户运行 Codex CLI 时",
+      "risk": "与用户上次跑 CLI 同样新旧；可能列出账号已无的模型",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "video-provider-cache",
+      "category": "persistent",
+      "location": "deeptutor/video_learning/service.py:677,693-735,744",
+      "purpose": "材料 JSON 内缓存 Invidious 播放格式 URL(timed_media/<material_id>.json 的 provider_cache 字段)",
+      "key": "字段 provider_cache.invidious_formats 于持久材料记录",
+      "write": [
+        "deeptutor/video_learning/service.py:677,731"
+      ],
+      "read": [
+        "deeptutor/video_learning/service.py:696",
+        "deeptutor/api/routers/video_learning.py:460(公开载荷剥离,783,790)"
+      ],
+      "invalidation": "仅字段为空时重解析(:696)；URL 本身无过期检查；transcript _caption_text_version 为一次性迁移旗标",
+      "risk": "MEDIUM: 流URL有时效，缓存过期URL持续供应直至客户端播放失败，无主动刷新",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "invidious-auth-flow-store",
+      "category": "persistent",
+      "location": "deeptutor/video_learning/invidious_account_storage.py:30,110-151",
+      "purpose": "Invidious 设备授权 pending flow + 账号 token 存储",
+      "key": "sha256(state)文件名,按 owner 私有目录",
+      "write": [
+        "deeptutor/video_learning/invidious_account_storage.py:118-131"
+      ],
+      "read": [
+        "deeptutor/video_learning/invidious_account_storage.py:134-151(一次性认领)",
+        "deeptutor/video_learning/invidious_account.py:90,103,172"
+      ],
+      "invalidation": "flow超时；每次访问purge过期；rename-claim单次使用",
+      "risk": "无——每次读取都强制过期检查",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "manager-catalog-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/knowledge/manager.py:88,335,346-379",
+      "purpose": "kb_config.json 快照+按KB对账的2秒单飞缓存",
+      "key": "(kb_config.json stat(inode,mtime_ns,size), embedding签名哈希, user_id, workspace_id)",
+      "write": [
+        "deeptutor/knowledge/manager.py:374-378"
+      ],
+      "read": [
+        "deeptutor/knowledge/manager.py:369-372"
+      ],
+      "invalidation": "文件stat变化/embedding签名变化/用户或工作区变化/2s TTL/_save_config显式清除(:471)",
+      "risk": "≤2s陈旧；embedding签名在键中,切模型即失效",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "manager-info-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/knowledge/manager.py:336,1423-1454",
+      "purpose": "缓存昂贵的每KB info载荷(含docstore解析探测)2秒",
+      "key": "((kb_name,default_name), catalog revision tuple + 该KB配置JSON)",
+      "write": [
+        "deeptutor/knowledge/manager.py:1449-1453"
+      ],
+      "read": [
+        "deeptutor/knowledge/manager.py:1442-1444"
+      ],
+      "invalidation": "同上revision/TTL；_save_config清除(:472)；超2×KB数整体清空",
+      "risk": "≤2s计数陈旧",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "kb-manager-lru",
+      "category": "rag_inprocess",
+      "location": "deeptutor/multi_user/knowledge_access.py:30-32",
+      "purpose": "每解析 base_dir 一个 KnowledgeBaseManager 实例(lru 128)",
+      "key": "str(解析后的KB根目录)",
+      "write": [
+        "deeptutor/multi_user/knowledge_access.py:31-32"
+      ],
+      "read": [
+        "deeptutor/multi_user/knowledge_access.py:48-59,211-212,361,385,418"
+      ],
+      "invalidation": "仅LRU淘汰/重启；无显式清除(数据迁移 _clear_store_caches 不含它)",
+      "risk": "注:非权限缓存——权限每次新读(grants.py 无缓存,无过期权限风险)；残留:同路径字符串复用得旧manager对象",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pipeline-instance-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/factory.py:64,193-209",
+      "purpose": "复用构造的 pipeline 实例(LlamaIndex/LightRAG/PageIndex等)",
+      "key": "(kb_base_dir, provider)",
+      "write": [
+        "deeptutor/services/rag/factory.py:207-208"
+      ],
+      "read": [
+        "deeptutor/services/rag/factory.py:206-209(带kwargs绕过)"
+      ],
+      "invalidation": "无——全仓无任何 clear/evict 调用(已grep验证)，进程生命周期",
+      "risk": "MEDIUM: 无界增长；已删除KB的pipeline实例常驻(多无状态,行为陈旧低)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "llamaindex-index-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/llamaindex/storage.py:213-290",
+      "purpose": "内存持有已解析索引(向量+docstore)避免重复加载",
+      "key": "(存储目录路径, docstore.json+向量文件mtime_ns, 完整embedding配置(含凭据)sha256)",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/storage.py:267-275"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/storage.py:257-263,293-295"
+      ],
+      "invalidation": "两存储文件任一mtime变化/embedding配置或凭据变化/10分钟空闲清扫/LRU 2槽/同目录取代/clear_index_cache",
+      "risk": "低；仅2槽多KB并发抖动(性能非正确性)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "llamaindex-reranker-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/llamaindex/rerank.py:15-65",
+      "purpose": "SentenceTransformers CrossEncoder 模型对象复用(LRU 2)",
+      "key": "reranker model_name 字符串",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/rerank.py:60-64"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/rerank.py:37-41,101"
+      ],
+      "invalidation": "clear_reranker_cache 存在但无生产调用方(仅测试)；否则LRU/重启",
+      "risk": "同命本地模型文件被替换后旧权重服务至重启(仅排序质量)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "docstore-count-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/index_probe.py:258-275",
+      "purpose": "lru(128) 免解析多MB docstore 只为计数的就绪探测",
+      "key": "(docstore.json路径, st_size, st_mtime_ns)",
+      "write": [
+        "deeptutor/services/rag/index_probe.py:262-267"
+      ],
+      "read": [
+        "deeptutor/services/rag/index_probe.py:270-275,165,173"
+      ],
+      "invalidation": "size或mtime变化；LRU 128",
+      "risk": "病态同size+同mtime重写可陈旧计数(仅展示)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "exercise-parse-caches",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:222-231,297",
+      "purpose": "结构化 content-list 的源哈希+解析元组 memo(lru 32/8)",
+      "key": "(路径, st_mtime_ns, st_size)",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:236,297"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py:236,282-292(调用)"
+      ],
+      "invalidation": "mtime/size变化；LRU上限",
+      "risk": "同mtime+size改写才陈旧(罕见)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "ima-inventory-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/ima/inventory.py:45-76,180-196",
+      "purpose": "省每轮 IMA get_knowledge_list 往返",
+      "key": "'{client_id}:{kb_id}'；成功TTL 60s；失败缓存None 30s(有意)",
+      "write": [
+        "deeptutor/services/rag/pipelines/ima/inventory.py:117-122,194-196"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/ima/inventory.py:97-100,180-191",
+        "deeptutor/knowledge/manifest.py:85-92"
+      ],
+      "invalidation": "仅TTL；clear_cache 存在但无生产调用方(KB重绑后未接线)",
+      "risk": "IMA 文档增删/删库不可见≤60s(有界)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pageindex-cloud-tools-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/pageindex/tools.py:144-147",
+      "purpose": "缓存 PageIndex Cloud 工具 schema(lru 1)",
+      "key": "SDK client 对象身份",
+      "write": [
+        "deeptutor/services/rag/pipelines/pageindex/tools.py:147"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/pageindex/tools.py:162-166"
+      ],
+      "invalidation": "仅更换client对象(容量1)/重启",
+      "risk": "Cloud 工具面变更后 schema 陈旧至重启(仅schema非数据)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pageindex-cloud-client-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/pageindex/client.py:21-25",
+      "purpose": "复用 SDK MCP 桥接 client(lru 1)",
+      "key": "api_key 字符串",
+      "write": [
+        "deeptutor/services/rag/pipelines/pageindex/client.py:22-25"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/pageindex/client.py:103-105"
+      ],
+      "invalidation": "仅api_key变更/重启；无TTL/无会话健康检查",
+      "risk": "回滚的旧key复用可能已死的MCP会话(报错非陈旧数据)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "graphrag-capability-cache",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py:23,35-69",
+      "purpose": "记住接受原生 json_object 的(provider,profile,model)避免重复探测",
+      "key": "(provider/binding, profile_id, model_id) 无界 set",
+      "write": [
+        "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py:40-43"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py:35-38"
+      ],
+      "invalidation": "clear_capability_cache 仅测试；生产永不清",
+      "risk": "端点停止支持 json_object 后仍持续发送直至重启→索引失败(非陈旧索引数据)",
+      "risk_level": "medium",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "llamaindex-global-embed-adapter",
+      "category": "rag_inprocess",
+      "location": "deeptutor/services/rag/pipelines/llamaindex/embedding_adapter.py:53-94,201-226",
+      "purpose": "进程全局 LlamaIndex embedding 适配器(Settings.embed_model)",
+      "key": "配置指纹(binding, model, dim, effective_url, api_version, send_dimensions)",
+      "write": [
+        "deeptutor/services/rag/pipelines/llamaindex/embedding_adapter.py:215-223(指纹不匹配即重绑)"
+      ],
+      "read": [
+        "deeptutor/services/rag/pipelines/llamaindex/embedding_adapter.py:201-204(每查询/索引前 configure)"
+      ],
+      "invalidation": "每次 configure 比对指纹,不匹配即替换",
+      "risk": "低:模型切换逐调用检测,配合按签名版本选择不会供错模型向量",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "llm-config-cache",
+      "category": "llm_client",
+      "location": "deeptutor/services/llm/config.py:160,245-280",
+      "purpose": "进程级解析后 LLMConfig memo(路由模型/端点/密钥)",
+      "key": "单全局槽(另 ContextVar 请求级覆盖优先)",
+      "write": [
+        "deeptutor/services/llm/config.py:254"
+      ],
+      "read": [
+        "deeptutor/services/llm/config.py:251-252(全LLM栈+image caption缓存键)"
+      ],
+      "invalidation": "仅手动:clear_llm_config_cache/reload_config,接线于 settings_spec.py:461-473 与 api/routers/settings.py:501;外部改 model_catalog.json 或 DEEPTUTOR_HOME 切换不触发",
+      "risk": "HIGH: 设置被带外修改(手编文件/另一进程)后持续路由旧模型/端点/密钥直至下次API设置写入或重启",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "llm-client-singleton",
+      "category": "llm_client",
+      "location": "deeptutor/services/llm/client.py:210-246",
+      "purpose": "legacy LLMClient 门面单例(图片描述/阅读captions用)",
+      "key": "无——仅首次调用 config 生效(first-caller-wins)",
+      "write": [
+        "deeptutor/services/llm/client.py:226"
+      ],
+      "read": [
+        "deeptutor/services/llm/client.py:224-227"
+      ],
+      "invalidation": "仅 reset_llm_client()(级联重置 provider+agentic 池);无配置变更检测/无TTL",
+      "risk": "HIGH: 同 llm-config-cache;启动期 warmup 用不同 profile 会永久钉错路由;caption缓存键读实时config但HTTP客户端仍用旧凭据",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "embedding-client-singleton",
+      "category": "llm_client",
+      "location": "deeptutor/services/embedding/client.py:302-318",
+      "purpose": "复用 EmbeddingClient 实例",
+      "key": "无存储键,但每次调用比对 client.config != resolved_config(dataclass相等)不匹配即重建",
+      "write": [
+        "deeptutor/services/embedding/client.py:310-311"
+      ],
+      "read": [
+        "deeptutor/services/embedding/client.py:308-313"
+      ],
+      "invalidation": "配置不等(自动)+手动 reset",
+      "risk": "低:配置自动轮换;注:embedding 结果/向量无任何缓存(直通),向量复用由 index_versioning 承担",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "runtime-provider-pool",
+      "category": "llm_client",
+      "location": "deeptutor/services/llm/provider_factory.py:17-45,144-197",
+      "purpose": "每事件循环池化 SDK provider(HTTP连接复用,LRU 2)",
+      "key": "13元组(loop, provider/binding, mode, model, sha256(api_key)[:16], url, api_version, 排序headers, wire_api, api_format, temperature, max_tokens, reasoning_effort)",
+      "write": [
+        "deeptutor/services/llm/provider_factory.py:164-169(LRU淘汰关闭)"
+      ],
+      "read": [
+        "deeptutor/services/llm/provider_factory.py:157-162"
+      ],
+      "invalidation": "任一键字段变化→新条目;手动 reset/close(接线于设置保存钩子)",
+      "risk": "低(模型/凭据全在键中);>2配置交替为churn非陈旧",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "agentic-client-pool",
+      "category": "llm_client",
+      "location": "deeptutor/runtime/agentic/client.py:64-120,253-299",
+      "purpose": "agentic 循环 OpenAI 兼容客户端池(LRU 2,含多key轮换包装)",
+      "key": "(loop, binding, model, sha256(json(api_key))[:16], base_url, api_version, headers, wire_api, api_format, disable_ssl_verify)",
+      "write": [
+        "deeptutor/runtime/agentic/client.py:264-267"
+      ],
+      "read": [
+        "deeptutor/runtime/agentic/client.py:253-258"
+      ],
+      "invalidation": "键变化/LRU/手动 reset(接入 reset_llm_client)",
+      "risk": "低",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "capabilities-runtime-negative-caches",
+      "category": "llm_client",
+      "location": "deeptutor/services/llm/capabilities.py:495,524",
+      "purpose": "记忆拒绝 response_format / 强制 tool_choice 的(binding,model)避免重复失败重试",
+      "key": "(binding.lower, model.lower) set 成员",
+      "write": [
+        "deeptutor/services/llm/capabilities.py:509,531(disable_*_at_runtime,来自重试/降级路径)"
+      ],
+      "read": [
+        "deeptutor/services/llm/capabilities.py:516,541,559"
+      ],
+      "invalidation": "无——进程生命周期,无TTL/无清除函数/无设置重载钩子",
+      "risk": "HIGH: 瞬时供应商错误(或服务端修复/本地服务原地升级)后能力永久静默降级直至重启",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "singleflight-ttl-cache",
+      "category": "llm_client",
+      "location": "deeptutor/services/singleflight_cache.py:14-75",
+      "purpose": "通用进程内有界TTL缓存+按键in-flight异步任务合并(单生产者,等待者共享)",
+      "key": "调用方自定义泛型K",
+      "write": [
+        "deeptutor/services/singleflight_cache.py:73-74(remember,超limit按插入序淘汰)"
+      ],
+      "read": [
+        "deeptutor/services/singleflight_cache.py:36-43(recall,惰性TTL)"
+      ],
+      "invalidation": "读时惰性TTL过期;容量淘汰;进程生命周期(不持久);无显式clear API",
+      "risk": "机制健全;风险继承自各调用方键设计;惰性过期使满载陈旧条目可滞留至触碰;调用方:chat_hints/reading_hints/mastery_hints",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "chat-hints-cache",
+      "category": "llm_client",
+      "location": "deeptutor/services/chat_hints.py:44-45,64,74-75",
+      "purpose": "首页 composer 预测下一句提示",
+      "key": "f\"{session_id}\\0{transcript_length}\"——无模型/无语言/无transcript内容哈希",
+      "write": [
+        "deeptutor/services/chat_hints.py:298-302(仅非空缓存)"
+      ],
+      "read": [
+        "deeptutor/services/chat_hints.py:298-302(get_or_create)"
+      ],
+      "invalidation": "30min TTL;新消息改变transcript_length→新键;容量256;重启",
+      "risk": "语言/模型设置变化不在键中→旧语言/旧模型提示存活至30min;编辑(非追加)消息不改变长度→旧提示复用",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "reading-hints-cache",
+      "category": "llm_client",
+      "location": "deeptutor/services/reading_hints.py:30-31,50,67-74",
+      "purpose": "沉浸阅读 composer 预测学习者提问(基于当前素材/页)",
+      "key": "f\"{workspace_id}\\0{material_id}\\0{locator_bucket(5页桶)}\\0{transcript_length}\";有选中内容时完全绕过缓存(:474-481)",
+      "write": [
+        "deeptutor/services/reading_hints.py:490-494"
+      ],
+      "read": [
+        "deeptutor/services/reading_hints.py:同get_or_create"
+      ],
+      "invalidation": "30min TTL;素材/页桶/长度变化;容量;重启",
+      "risk": "同chat-hints:模型/语言缺键;5页桶为有界设计取舍",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "mastery-hints-cache",
+      "category": "llm_client",
+      "location": "deeptutor/services/mastery_hints.py:62-63,82,367-373",
+      "purpose": "mastery-path 学习 composer 每路点预测提问",
+      "key": "path_id\\0\"{kp_id}:{message_count}\"\\0session_id(anchor构造于:194);无模型/语言",
+      "write": [
+        "deeptutor/services/mastery_hints.py:369-373"
+      ],
+      "read": [
+        "deeptutor/services/mastery_hints.py:同get_or_create"
+      ],
+      "invalidation": "30min TTL;路点/进度/会话变化;容量;重启",
+      "risk": "同上;session_id在键中致同路点两会话不共享(多花LLM调用非陈旧)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "prompt-manager-cache",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/prompt/manager.py:20,53-56,85-100",
+      "purpose": "全局解析后 per-agent YAML 提示词包缓存(research/solve/question/chat/book/mastery…)",
+      "key": "f\"{module}_{agent}_{lang}{_subdirectory}\"→解析后YAML dict;类级_cache全实例共享;空结果不缓存(允许启动后重试)",
+      "write": [
+        "deeptutor/services/prompt/manager.py:88"
+      ],
+      "read": [
+        "deeptutor/services/prompt/manager.py:80-81",
+        "调用方: agents/loop/pipeline.py:330, agents/base_agent.py:137, agents/research/pipeline.py:510, agents/question/pipeline.py:443, book/blocks/_prompts.py:43, capabilities/mastery/loop.py:543 等"
+      ],
+      "invalidation": "进程生命周期;clear_cache/reload_prompts 存在但无生产调用方(仅测试+concept_analysis_agent.py:48构造时一次)",
+      "risk": "HIGH: 编辑 deeptutor/**/prompts/*.yaml 后旧解析dict持续供应直至重启;无mtime键",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "learning-prompts-lru",
+      "category": "prompt_skill",
+      "location": "deeptutor/learning/prompts.py:31-41",
+      "purpose": "Mastery-Path 本地化提示模板(prompts/{en,zh}.yaml) lru(8)",
+      "key": "parse_language(language)(折叠到zh/en)",
+      "write": [
+        "deeptutor/learning/prompts.py:37-41"
+      ],
+      "read": [
+        "deeptutor/learning/prompts.py:46,50,91"
+      ],
+      "invalidation": "无——cache_clear 全仓无调用;无mtime;语言在键中故设置切换安全",
+      "risk": "HIGH(文件编辑): YAML 编辑不可见直至重启",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "memory-consolidator-prompt-cache",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/memory/consolidator/modes/_runtime.py:32-61",
+      "purpose": "记忆整合提示 YAML 加载缓存(_PROMPT_CACHE/_META_CACHE)",
+      "key": "(prompt name, lang)/lang",
+      "write": [
+        "deeptutor/services/memory/consolidator/modes/_runtime.py:49-50,56-61"
+      ],
+      "read": [
+        "同文件39-61"
+      ],
+      "invalidation": "进程生命周期(随包发布资产)",
+      "risk": "低(包内置资产)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "skill-service-instances",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/skill/service.py:1026,1048-1050",
+      "purpose": "每工作区根单例 SkillService",
+      "key": "str(root.resolve())",
+      "write": [
+        "deeptutor/services/skill/service.py:1048-1049"
+      ],
+      "read": [
+        "deeptutor/services/skill/service.py:1050",
+        "deeptutor/services/skill/runtime.py:24-61"
+      ],
+      "invalidation": "进程生命周期;launcher _reset_runtime_singletons(launcher.py:140-159)不清它;文件内容每次调用重读(list/get_detail walk磁盘)",
+      "risk": "MEDIUM-LOW: SKILL.md 编辑即时生效;但根绑定/身份冻结——运行时切 DEEPTUTOR_HOME 不反映",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "persona-service-instances",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/persona/service.py:342-359",
+      "purpose": "每工作区 PersonaService 单例;首次实例化跑一次性 legacy skills→personas 迁移",
+      "key": "str(<workspace>/personas).resolve()",
+      "write": [
+        "deeptutor/services/persona/service.py:355-358"
+      ],
+      "read": [
+        "deeptutor/services/persona/service.py:359,362-379(每turn渲染 prompt_blocks.py:158-159)"
+      ],
+      "invalidation": "进程生命周期;persona文件内容每调用重读;launcher 不清",
+      "risk": "同上;迁移不可重跑(文件恢复后)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "capability-discovery-cache",
+      "category": "prompt_skill",
+      "location": "deeptutor/capabilities/registry.py:152-181",
+      "purpose": "entry-point 外部 loop-capability 插件发现 @cache 无界",
+      "key": "无参(单元组结果)",
+      "write": [
+        "deeptutor/capabilities/registry.py:153-181"
+      ],
+      "read": [
+        "deeptutor/capabilities/registry.py:201,204-207,239(每turn)"
+      ],
+      "invalidation": "进程生命周期;cache_clear 仅测试",
+      "risk": "MEDIUM: 运行中 pip 装插件不可见直至重启(内置静态,实际影响低)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "capability-catalog-singleton",
+      "category": "prompt_skill",
+      "location": "deeptutor/runtime/capability_catalog.py:39-94",
+      "purpose": "turn 能力工厂注册表(name→manifest/factory)",
+      "key": "(kind,name)",
+      "write": [
+        "deeptutor/runtime/capability_catalog.py:39-63",
+        "deeptutor/capabilities/registry.py:184-193(首turn注册)"
+      ],
+      "read": [
+        "deeptutor/runtime/capability_catalog.py:65-76"
+      ],
+      "invalidation": "生产永不清(clear/set 仅测试);factory每turn重调但manifest(owned_tools快照)冻结于首turn",
+      "risk": "插件升级后 owned_tools 陈旧至重启",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "mcp-catalog-lru",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/mcp/catalog/loader.py:56-93",
+      "purpose": "vendored MCP 目录解析缓存 lru(1)",
+      "key": "无参",
+      "write": [
+        "deeptutor/services/mcp/catalog/loader.py:57-88"
+      ],
+      "read": [
+        "deeptutor/services/mcp/catalog/loader.py:96-149"
+      ],
+      "invalidation": "进程生命周期;reset_catalog_cache 导出但无生产调用方",
+      "risk": "低(随包发布文件,非用户可改)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "cli-apps-catalog-lru",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/cli_apps/catalog.py:46,68,149-151",
+      "purpose": "vendored CLI-app 快照三处 lru(1)(目录/pin/id索引)",
+      "key": "无参",
+      "write": [
+        "deeptutor/services/cli_apps/catalog.py:47-75,150-151"
+      ],
+      "read": [
+        "deeptutor/services/cli_apps/catalog.py:78-133"
+      ],
+      "invalidation": "进程生命周期",
+      "risk": "低(同上)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "model-catalog-service-instances",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/config/model_catalog.py:255-267,633-644",
+      "purpose": "每 settings 文件单例 ModelCatalogService",
+      "key": "str(model_catalog.json 解析路径)(非admin强制admin路径)",
+      "write": [
+        "deeptutor/services/config/model_catalog.py:265-266",
+        "launcher.py:157(HOME切换时清)"
+      ],
+      "read": [
+        "deeptutor/services/config/model_catalog.py:262-267"
+      ],
+      "invalidation": "实例进程级;数据每次 load() 重读磁盘",
+      "risk": "低(内容即时);边界:非admin调用方固定admin文件实例(有意)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "runtime-settings-instances",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/config/runtime_settings.py:472-502",
+      "purpose": "每 settings 目录单例 RuntimeSettingsService(system/auth/integrations JSON)",
+      "key": "str(settings_dir.resolve());process_env 注入调用绕过缓存",
+      "write": [
+        "deeptutor/services/config/runtime_settings.py:500-501",
+        "launcher.py:151"
+      ],
+      "read": [
+        "各 load_*(每次重读JSON,433-440)"
+      ],
+      "invalidation": "实例进程级(launcher HOME 切换清);数据每次新读",
+      "risk": "低",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "config-manager-mtime-cache",
+      "category": "prompt_skill",
+      "location": "deeptutor/utils/config_manager.py:21-97",
+      "purpose": "main.yaml 能力开关内存缓存(mtime校验)",
+      "key": "单文件槽+st_mtime",
+      "write": [
+        "deeptutor/utils/config_manager.py:62-66,89-90"
+      ],
+      "read": [
+        "deeptutor/utils/config_manager.py:55-67",
+        "deeptutor/services/config/capabilities_settings.py:311,467"
+      ],
+      "invalidation": "mtime增大重读;save时force_reload;同秒粗粒度mtime写可能漏检",
+      "risk": "低——全仓唯一带自动文件变更检测的settings缓存(mtime粒度限制)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "codebuddy-external-consume",
+      "category": "prompt_skill",
+      "location": "deeptutor/services/codebuddy_credentials.py:124-263",
+      "purpose": "消费 CodeBuddy IDE/CLI 自有磁盘状态(OAuth会话+端点/模型目录,只读)",
+      "key": "固定文件路径(可DEEPTUTOR_CODEBUDDY_AUTH_FILE覆盖)",
+      "write": [
+        "refresh_credentials:271-314(POST刷新,不回写文件)"
+      ],
+      "read": [
+        "deeptutor/services/codebuddy_credentials.py:124,164-182,251-263(每次调用)"
+      ],
+      "invalidation": "过期即用时刷新(300s skew);模型目录新鲜度完全取决于外部CLI",
+      "risk": "模型目录与 CodeBuddy 桌面端上次同步同样新旧;过期token致每调用一次刷新往返",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "auth-config-import-snapshot",
+      "category": "session_system",
+      "location": "deeptutor/services/auth.py:40-61",
+      "purpose": "模块 import 时快照 auth.json/integrations.json(auth开关/单用户凭据/token时效/PB模式/JWT密钥)",
+      "key": "常量,import 时一次解析",
+      "write": [
+        "deeptutor/services/auth.py:40-41,46,58-61"
+      ],
+      "read": [
+        "deeptutor/services/auth.py 全文(decode_token/authenticate/create_token)"
+      ],
+      "invalidation": "仅进程重启(无重读钩子)",
+      "risk": "MEDIUM-HIGH: 改 auth.json(关认证/换密钥/切PB)不重启不生效;JWT密钥轮换重启前无效",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pocketbase-token-cache",
+      "category": "session_system",
+      "location": "deeptutor/services/pocketbase_client.py:38-39,130-156",
+      "purpose": "PocketBase 用户 token 验证结果缓存(auth-refresh 往返) 60s",
+      "key": "原始bearer token→(payload{username,role}, expires_at monotonic)",
+      "write": [
+        "deeptutor/services/pocketbase_client.py:156"
+      ],
+      "read": [
+        "deeptutor/services/pocketbase_client.py:130-135",
+        "deeptutor/services/auth.py:299-309(decode_token)"
+      ],
+      "invalidation": "60s TTL(惰性删);无容量上界(无界dict)",
+      "risk": "撤销/禁用/改角色用户≤60s仍通过;token多时内存增长",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pocketbase-client-singleton",
+      "category": "session_system",
+      "location": "deeptutor/services/pocketbase_client.py:33-35,56-108",
+      "purpose": "admin 认证 PocketBase SDK client 单例",
+      "key": "f\"{pb_url}|{admin_email}\"",
+      "write": [
+        "deeptutor/services/pocketbase_client.py:105-107"
+      ],
+      "read": [
+        "deeptutor/services/pocketbase_client.py:76-77"
+      ],
+      "invalidation": "进程生命周期;仅URL/邮箱变化重建",
+      "risk": "SDK内部admin token过期不主动刷新;改admin密码需重启",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "pocketbase-store-instance-cache",
+      "category": "session_system",
+      "location": "deeptutor/services/session/__init__.py:12,33-37 + scope.py:29-36",
+      "purpose": "每(backend,PB-url+workspace,owner)一个 PocketBaseSessionStore",
+      "key": "StoreScope.cache_key='pocketbase:<url>#workspace=<ws>:<owner>'",
+      "write": [
+        "deeptutor/services/session/__init__.py:36"
+      ],
+      "read": [
+        "deeptutor/services/session/__init__.py:33,37"
+      ],
+      "invalidation": "无(进程生命周期,无淘汰)",
+      "risk": "URL改后旧实例泄漏但键变不供用(泄漏非陈旧);store无内部数据缓存",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "sqlite-session-store-instances",
+      "category": "session_system",
+      "location": "deeptutor/services/session/sqlite_store.py:4422-4444",
+      "purpose": "每解析 db 路径一个 SQLiteSessionStore(连接池)",
+      "key": "str(resolved chat_history.db)",
+      "write": [
+        "deeptutor/services/session/sqlite_store.py:4429,4443"
+      ],
+      "read": [
+        "deeptutor/services/session/sqlite_store.py:4428,4442"
+      ],
+      "invalidation": "进程级;workspace数据迁移 _clear_store_caches(data_migration.py:981-988)显式清",
+      "risk": "仅迁移路径覆盖——其它根移动路径绕过则旧句柄写旧文件",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "turn-runtime-manager-cache",
+      "category": "session_system",
+      "location": "deeptutor/services/session/turn_runtime.py:40-52",
+      "purpose": "进程级每 store scope 一个 TurnRuntimeManager(活turn执行/回复队列)",
+      "key": "store_scope(store).cache_key",
+      "write": [
+        "deeptutor/services/session/turn_runtime.py:51"
+      ],
+      "read": [
+        "deeptutor/services/session/turn_runtime.py:50,52"
+      ],
+      "invalidation": "进程级;与 app/container.py RuntimeRegistry 平行双缓存",
+      "risk": "迁移/scope切换后旧manager滞留至重启",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "app-runtime-registry",
+      "category": "session_system",
+      "location": "deeptutor/app/container.py:47-60,101,177-184,336-348",
+      "purpose": "DI 容器缓存 coordinator/能力注册/turn引擎/每scope TurnRuntimeManager+RecoveryService",
+      "key": "store_scope cache_key",
+      "write": [
+        "deeptutor/app/container.py:53-59,183-184,342"
+      ],
+      "read": [
+        "deeptutor/app/container.py:50-51,181,339-343"
+      ],
+      "invalidation": "进程级;set_application_container(None)(测试/lifespan)",
+      "risk": "SQLite→PocketBase 运行时切换后旧scope runtime滞留至重启;_clear_store_caches 不含",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "path-service-per-scope",
+      "category": "session_system",
+      "location": "deeptutor/multi_user/paths.py:42,140-161 + models.py:63-65",
+      "purpose": "每用户 scope PathService 实例缓存",
+      "key": "UserScope.cache_key='kind:user_id:resolved_root'(根在键中)",
+      "write": [
+        "deeptutor/multi_user/paths.py:144-145"
+      ],
+      "read": [
+        "deeptutor/multi_user/paths.py:142,149-161,189-197"
+      ],
+      "invalidation": "无淘汰;PathService.reset_instance 只清默认单例不清此dict",
+      "risk": "键含根故实际陈旧风险低;条目泄漏",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "attachment-store-instances",
+      "category": "session_system",
+      "location": "deeptutor/services/storage/attachment_store.py:279-293",
+      "purpose": "每(根,legacy根)一个 LocalDiskAttachmentStore",
+      "key": "(str(attachment_root), str(legacy_root))",
+      "write": [
+        "deeptutor/services/storage/attachment_store.py:292"
+      ],
+      "read": [
+        "deeptutor/services/storage/attachment_store.py:291,293"
+      ],
+      "invalidation": "进程级;reset仅测试",
+      "risk": "rebind后旧条目泄漏;无数据陈旧(磁盘为真源)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "file-library-store-instances",
+      "category": "session_system",
+      "location": "deeptutor/services/storage/file_library.py:454-480",
+      "purpose": "每用户根一个 FileLibraryStore(SQLite句柄)",
+      "key": "str(user_root)",
+      "write": [
+        "deeptutor/services/storage/file_library.py:474"
+      ],
+      "read": [
+        "deeptutor/services/storage/file_library.py:469,475"
+      ],
+      "invalidation": "进程级;迁移路径 _clear_store_caches 清",
+      "risk": "同 sqlite-session-store",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "learning-storage-init-guard",
+      "category": "session_system",
+      "location": "deeptutor/learning/storage.py:51,590",
+      "purpose": "'此DB已初始化'集合防重复初始化",
+      "key": "DB路径",
+      "write": [
+        "deeptutor/learning/storage.py:590(add)"
+      ],
+      "read": [
+        "初始化路径"
+      ],
+      "invalidation": "进程级;data_migration 清(:986)",
+      "risk": "DB被手删后跳过初始化直至迁移清/重启",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "web-risk-lookup-cache",
+      "category": "session_system",
+      "location": "deeptutor/services/search/source_filter.py:88-95,296-339",
+      "purpose": "Google Web Risk 判定缓存(省配额,900s/1024条)",
+      "key": "完整URL→(时间戳,flagged)",
+      "write": [
+        "deeptutor/services/search/source_filter.py:339(仅成功判定;失败不缓存)"
+      ],
+      "read": [
+        "deeptutor/services/search/source_filter.py:298-301"
+      ],
+      "invalidation": "900s TTL;≥1024时淘汰最旧一半",
+      "risk": "15min窗口内判定陈旧(有界,进程本地)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "cron-job-snapshot",
+      "category": "session_system",
+      "location": "deeptutor/services/cron/service.py:199-272 + repository.py:132-186",
+      "purpose": "调度器内存任务dict,SQLite revision 对账",
+      "key": "job id;revision=cron_meta.revision(每次写递增)",
+      "write": [
+        "deeptutor/services/cron/service.py:258-259"
+      ],
+      "read": [
+        "deeptutor/services/cron/service.py:210,263-272"
+      ],
+      "invalidation": "revision不匹配下次_load强制重载;reload()强制;每次公共读都过_load",
+      "risk": "陈旧上界=一次revision读(低)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "version-check-cache",
+      "category": "session_system",
+      "location": "deeptutor/services/app_update.py:29,288-331",
+      "purpose": "GitHub 最新 release 检查 24h 进程缓存",
+      "key": "单槽(_cache,_cached_at)",
+      "write": [
+        "deeptutor/services/app_update.py:329-330"
+      ],
+      "read": [
+        "deeptutor/services/app_update.py:311-316,320",
+        "deeptutor/api/routers/system.py:177,211,224"
+      ],
+      "invalidation": "24h TTL;force=true绕过;响应诚实标注cached",
+      "risk": "新版本≤24h不可见(外观性)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "update-job-store",
+      "category": "session_system",
+      "location": "deeptutor/services/app_update.py:475-505",
+      "purpose": "自更新任务跨launcher重启持久化(state.json+active O_EXCL锁)",
+      "key": "固定目录+UUID job id",
+      "write": [
+        "deeptutor/services/app_update.py:484-505"
+      ],
+      "read": [
+        "deeptutor/api/routers/system.py:100,159,300"
+      ],
+      "invalidation": "任务生命周期;active标记防并发",
+      "risk": "崩溃后残留active标记阻塞后续更新直至手清(闩锁非供陈旧数据)",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "task-log-stream-buffers",
+      "category": "session_system",
+      "location": "deeptutor/api/utils/task_log_stream.py:26-43,121-138,190-237",
+      "purpose": "知识任务 SSE 环形缓冲(500事件/2MB)+终态墓碑",
+      "key": "task_id",
+      "write": [
+        "deeptutor/api/utils/task_log_stream.py:66-119(emit)"
+      ],
+      "read": [
+        "deeptutor/api/utils/task_log_stream.py:121-138,251-273(订阅回放)"
+      ],
+      "invalidation": "终态+1h无订阅TTL;≤32任务;墓碑24h/256上限",
+      "risk": "TTL/溢出淘汰后重连者得空backlog且无墓碑→误判'尚无事件'(有界)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "settings-tour-cache",
+      "category": "session_system",
+      "location": "deeptutor/api/routers/settings.py:95,128-130,2257-2306",
+      "purpose": "引导tour状态文件(.tour_cache.json)",
+      "key": "单固定文件{status,launch_at,redirect_at,test_results}",
+      "write": [
+        "deeptutor/api/routers/settings.py:2295-2306,2317"
+      ],
+      "read": [
+        "deeptutor/api/routers/settings.py:2257-2271"
+      ],
+      "invalidation": "显式complete/reopen写;永不过期",
+      "risk": "可忽略(损坏回退inactive)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "launcher-packaged-web-copy",
+      "category": "session_system",
+      "location": "deeptutor/runtime/launcher.py:62,613-653",
+      "purpose": "打包 Next.js standalone 可写副本+占位符补丁(data/user/runtime/web)",
+      "key": "标记 .deeptutor-web-runtime.json={源目录,server.js mtime_ns,api_base,auth_enabled}",
+      "write": [
+        "deeptutor/runtime/launcher.py:644-652"
+      ],
+      "read": [
+        "deeptutor/runtime/launcher.py:637-642"
+      ],
+      "invalidation": "标记不匹配→全量重拷",
+      "risk": "仅3输入入指纹——未来新增构建时变量将静默供旧前端",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "launcher-source-build-cache",
+      "category": "session_system",
+      "location": "deeptutor/runtime/launcher.py:723-816",
+      "purpose": "源码运行生产构建复用(.next-deeptutor/)",
+      "key": "sha256(全部源文件+__version__.py+3个环境键)",
+      "write": [
+        "deeptutor/runtime/launcher.py:816"
+      ],
+      "read": [
+        "deeptutor/runtime/launcher.py:784-791"
+      ],
+      "invalidation": "指纹变化→重建",
+      "risk": "极低(全源哈希)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "workspace-exec-caches",
+      "category": "session_system",
+      "location": "deeptutor/services/workspace/execution.py:39-106",
+      "purpose": "每turn执行沙箱共享缓存根(PIP/npm/HF/torch/matplotlib env重定向)",
+      "key": "<turn_output>/.deeptutor/execution/cache/ 文件系统路径",
+      "write": [
+        "由包管理器自身写入"
+      ],
+      "read": [
+        "同turn后续执行经env"
+      ],
+      "invalidation": "turn生命周期(目录随turn输出)",
+      "risk": "低(包管理器内容寻址;限turn内)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "marginnote-store-cache",
+      "category": "session_system",
+      "location": "deeptutor/capabilities/marginnote4/tools.py:35-55",
+      "purpose": "turn 内 MarginNoteStore(SQLite)复用",
+      "key": "raw db 路径",
+      "write": [
+        "deeptutor/capabilities/marginnote4/tools.py:35-55"
+      ],
+      "read": [
+        "同",
+        "clear仅测试"
+      ],
+      "invalidation": "进程级",
+      "risk": "同路径换库文件后供旧数据直至重启(docstring自认)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "package-version-lru",
+      "category": "session_system",
+      "location": "deeptutor/services/parsing/engines/_versions.py:15-20",
+      "purpose": "已安装解析引擎包版本 memo(lru None)——喂 parse 签名",
+      "key": "发行包名",
+      "write": [
+        "deeptutor/services/parsing/engines/_versions.py:17"
+      ],
+      "read": [
+        "各engine signature();_install.py:105,111(托管安装后cache_clear)"
+      ],
+      "invalidation": "仅托管安装路径清;带外 pip/conda 升级不清",
+      "risk": "MEDIUM: 带外引擎升级后旧version串→旧parse签名→parse-cache 供升级前解析直至重启(本清单最清晰正确性漂移链)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "markitdown-formats-lru",
+      "category": "session_system",
+      "location": "deeptutor/services/parsing/engines/markitdown/formats.py:61-84",
+      "purpose": "MarkItDown 转换器扩展发现 lru(1)",
+      "key": "无参",
+      "write": [
+        "deeptutor/services/parsing/engines/markitdown/formats.py:84"
+      ],
+      "read": [
+        "engine支持检查"
+      ],
+      "invalidation": "进程级;_install.py:111 随package_version一并清",
+      "risk": "可忽略(vendored清单)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "book-kb-fingerprints",
+      "category": "session_system",
+      "location": "deeptutor/book/engine.py:522-532,1338-1349 + kb_health.py:92-310",
+      "purpose": "书籍生成 KB 指纹基线/陈旧页检测(生成契约守卫)",
+      "key": "每book存 kb_fingerprints(KB名→内容digest)+kb_document_fingerprints;对拍活KB状态",
+      "write": [
+        "deeptutor/book/engine.py:530(基线),1338-1349(READY页后刷新)"
+      ],
+      "read": [
+        "deeptutor/api/routers/book.py:1295-1313(漂移报告,cached:true先回)"
+      ],
+      "invalidation": "页重编译成功刷新;手动 refresh-fingerprints(409门/force越过)",
+      "risk": "按设计陈旧生成页持续供应——漂移仅告警不阻断",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "book-page-artifacts",
+      "category": "session_system",
+      "location": "deeptutor/book/engine.py:384-435,1213,1596 + book/storage.py",
+      "purpose": "生成的书本体(spine/编译页块)持久生成物,每次打开重供",
+      "key": "book_id/page_id/block_id;块内容哈希捕获去重(book.py:421-431,516-521)",
+      "write": [
+        "deeptutor/book/engine.py:1213,1596,1800-1986"
+      ],
+      "read": [
+        "deeptutor/api/routers/book.py 页/块GET;web/lib/book-api.ts(no-store)"
+      ],
+      "invalidation": "仅显式重编译/重生成/KB漂移旗标;无TTL无自动再生",
+      "risk": "MEDIUM: prompt/模型/代码变更从不失效既有页(上月模板编译的书永存直至手动重建);B2漂移旗标部分缓解",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "msteams-token-cache",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/msteams.py:126-127,824-847",
+      "purpose": "Azure AD client-credentials token 缓存",
+      "key": "单槽(租户/应用固定)",
+      "write": [
+        "deeptutor/partners/channels/msteams.py:845-846"
+      ],
+      "read": [
+        "deeptutor/partners/channels/msteams.py:828-829"
+      ],
+      "invalidation": "到期前60s安全边际",
+      "risk": "吊销secret≤到期仍可用(良性)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "msteams-jwks-cache",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/msteams.py:131-134,525-559",
+      "purpose": "Bot Framework OpenID 元数据+签名密钥缓存 1h",
+      "key": "单槽each",
+      "write": [
+        "deeptutor/partners/channels/msteams.py:538,559"
+      ],
+      "read": [
+        "deeptutor/partners/channels/msteams.py:529,545"
+      ],
+      "invalidation": "3600s TTL",
+      "risk": "微软密钥滚动≤1h不被拾取→新签名消息验证失败(有界)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "msteams-conversation-refs",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/msteams.py:56,136-142,699-822",
+      "purpose": "主动消息会话引用持久化(state JSON)",
+      "key": "bot_id:conversation_id→ref+updated_at",
+      "write": [
+        "deeptutor/partners/channels/msteams.py:356,806-815"
+      ],
+      "read": [
+        "deeptutor/partners/channels/msteams.py:269,746-753"
+      ],
+      "invalidation": "30天滑动TTL(用即刷新);启动与保存时prune",
+      "risk": "已删会话≤30天仍尝试(发送失败后prune)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "dingtalk-token-cache",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/dingtalk.py:146-147,225-250",
+      "purpose": "DingTalk accessToken 缓存",
+      "key": "单槽",
+      "write": [
+        "deeptutor/partners/channels/dingtalk.py:244-246"
+      ],
+      "read": [
+        "deeptutor/partners/channels/dingtalk.py:227-228"
+      ],
+      "invalidation": "expireIn−60s TTL",
+      "risk": "低",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "weixin-session-state",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/weixin.py:162-245,787-884",
+      "purpose": "iLink bot token+每用户 context_token+typing tickets 持久化(account.json)",
+      "key": "from_user_id/chat_id→token/ticket;_context_token_at时间戳不持久",
+      "write": [
+        "deeptutor/partners/channels/weixin.py:207-217,236-245,516-517,802,821,879-880"
+      ],
+      "read": [
+        "deeptutor/partners/channels/weixin.py:790,840,903,986"
+      ],
+      "invalidation": "context_token按阈值刷新(服务端90-160s过期);会话过期错误码清除;tickets 24h TTL;重启后token视为全旧强制刷新(保守安全)",
+      "risk": "bot token 跨重启存续,服务端会话已死时惰性检测(408-411需用户重扫)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "feishu-ui-state-caches",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/feishu.py:415-451,736-796,1769-1774,2342-2348",
+      "purpose": "消息去重/流式卡片合并/互动UI状态(表情/模型选择器/思考提示)",
+      "key": "message_id/chat_id/sender_id;TTL 1h或FIFO上限(1000/50)",
+      "write": [
+        "各写入点如上"
+      ],
+      "read": [
+        "入站去重2342,picker过期1769-1771"
+      ],
+      "invalidation": "TTL/容量;进程级",
+      "risk": "重启后可能重复投递(去重窗口丢失,轻微)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "channel-message-dedup-caches",
+      "category": "channels",
+      "location": "deeptutor/partners/channels/wecom.py:62,219-225,307-312 + qq.py:81 + whatsapp.py:48,139-143 + napcat.py:80-81 + zulip.py:84 + matrix.py:232-238,369-382",
+      "purpose": "渠道消息去重deque/回复帧复用/上传限制探测(同族合并)",
+      "key": "消息id;容量500-5000 FIFO;matrix上传限制探测单次缓存",
+      "write": [
+        "各渠道写入点"
+      ],
+      "read": [
+        "入站处理"
+      ],
+      "invalidation": "FIFO容量;进程级",
+      "risk": "重启后重复投递可能;matrix上传限制陈旧至重启(低)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "fe-client-cache",
+      "category": "frontend",
+      "location": "web/lib/client-cache.ts:9-63",
+      "purpose": "前端 API GET 内存 TTL 缓存(30s,tab生命周期)",
+      "key": "\"<前缀+args>:workspace=<activeWorkspaceId>\"",
+      "write": [
+        "web/lib/client-cache.ts:43-58",
+        "消费方: personas-api.ts:53, llm-options.ts:49, courses-api.ts:175,277,298, knowledge/api/client.ts:290-691, skills-api.ts:68,298, subagents-api.ts:206 等"
+      ],
+      "read": [
+        "web/lib/client-cache.ts:29-37"
+      ],
+      "invalidation": "30s TTL;变更操作前缀失效(personas-api:127, courses-api:205-343, session-api:345-415 等);注:capabilities/api.ts:12 缓存但全仓无失效调用",
+      "risk": "他tab/他设备变更≤30s不可见;capabilities清单在他tab装卸后陈旧30s",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "cowriter-local-draft",
+      "category": "frontend",
+      "location": "web/features/co-writer/storage/drafts.ts:3-92 + CoWriterWorkspace.tsx:300-366",
+      "purpose": "co-writer 编辑器 localStorage 草稿缓冲(防刷新丢字)",
+      "key": "deeptutor.co_writer.draft.v2.<encodeURIComponent(docId)>;值{version:2,docId,content,revision(本地单调计数),updatedAt};legacy前缀迁移",
+      "write": [
+        "web/features/co-writer/components/CoWriterWorkspace.tsx:341(每击键批,revision++)",
+        "web/features/co-writer/storage/drafts.ts:72-92"
+      ],
+      "read": [
+        "web/features/co-writer/components/CoWriterWorkspace.tsx:305(载入时)",
+        "web/features/co-writer/storage/drafts.ts:53-70"
+      ],
+      "invalidation": "仅成功服务器autosave后清除(:366);schema版本不匹配视为不存在",
+      "risk": "HIGH(全仓最重漂移路径): 载入时本地草稿与服务器内容不同即覆盖服务器副本(仅比较content,无revision/时间戳对拍,:306-308注释自认'rare'但代码无条件);autosave失败或他tab/设备保存更新后,陈旧本地缓冲胜出并被autosave回写覆盖较新服务器文本;后端PUT last-write-wins无revision/ETag",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": true
+    },
+    {
+      "id": "workspace-drafts-idb",
+      "category": "frontend",
+      "location": "web/lib/workspace-drafts.ts:8-71",
+      "purpose": "未发送 composer 文本+附件 IndexedDB 持久化",
+      "key": "<auth user_id|'local-admin'>:<workspaceId>:<pathname>",
+      "write": [
+        "web/lib/workspace-drafts.ts:25-41,61-71"
+      ],
+      "read": [
+        "web/lib/workspace-drafts.ts:43-58"
+      ],
+      "invalidation": "发送或清空时删;无TTL/无版本字段/无schema迁移(DB v1钉死)",
+      "risk": "旧工作区/路径草稿永存;换账号孤儿条目;内容为用户手写非生成(漂移影响=陈旧composer文本)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "app-shell-prefs",
+      "category": "frontend",
+      "location": "web/context/app-shell-storage.ts:73-128,157-416",
+      "purpose": "UI语言/主题/侧栏等 localStorage 优先设置(浏览器为真源)",
+      "key": "raw键 deeptutor-language/-response-language/-theme/code-block-*/sidebarCollapsed/chatResponseTimeout;sessionStorage activeSessionId.tab:<ws>",
+      "write": [
+        "web/context/app-shell-storage.ts 各setter",
+        "web/hooks/useSetupSync.ts:26-44(setup_applied事件回写)"
+      ],
+      "read": [
+        "readStored* 函数",
+        "web/components/ThemeScript.tsx:14-38(水合前)"
+      ],
+      "invalidation": "手动改;跨tab storage事件;服务器变更仅经 setup_applied 事件路径采纳;hasStoredLanguage 一旦本地有值永不再问服务器",
+      "risk": "有意的浏览器真源设计——服务器端设置变更(它设备/管理端)无事件永不达此浏览器(代码内已注明)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "settings-diagnostics-session",
+      "category": "frontend",
+      "location": "web/features/settings/store/SettingsStore.tsx:425-436,887-897",
+      "purpose": "连通性测试结果跨settings子路由携带(sessionStorage)",
+      "key": "DIAGNOSTICS_RESULTS_KEY→{service:结果} map",
+      "write": [
+        "web/features/settings/store/SettingsStore.tsx:891"
+      ],
+      "read": [
+        "web/features/settings/store/SettingsStore.tsx:431"
+      ],
+      "invalidation": "tab会话结束;每次新测试覆盖",
+      "risk": "会话内点时结果可陈旧(UI标注为上次结果,低)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "knowledge-history",
+      "category": "frontend",
+      "location": "web/hooks/useKnowledgeHistory.ts:22-90",
+      "purpose": "最近访问知识库快速导航(localStorage)",
+      "key": "knowledge:history:v1(不在版本化命名空间,靠键后缀手工升级)",
+      "write": [
+        "web/hooks/useKnowledgeHistory.ts:49"
+      ],
+      "read": [
+        "web/hooks/useKnowledgeHistory.ts:34,72-90"
+      ],
+      "invalidation": "永不过期;schema变更靠键bump",
+      "risk": "已删/改名KB残留至点击(404,外观性)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "failed-submissions-queue",
+      "category": "frontend",
+      "location": "web/lib/failed-submissions.ts:22-77,331",
+      "purpose": "发送失败的聊天提交离线队列(重试)",
+      "key": "deeptutor.failedSubmissions + .record/.cleared墓碑/.binding条目;legacy单blob迁移(:77)",
+      "write": [
+        "同文件各写入方"
+      ],
+      "read": [
+        "应用载入/重试UI排空"
+      ],
+      "invalidation": "墓碑防复活;binding绑session;成功重试移除",
+      "risk": "有界——记录可引用已删session(重试干净失败)",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "reading-location-history",
+      "category": "frontend",
+      "location": "web/lib/reading-location-history.ts:5,178",
+      "purpose": "阅读位置恢复(每session键)",
+      "key": "dt.reader.history.<encodeURIComponent(sessionId)>",
+      "write": [
+        "web/components/reading/ReaderPane.tsx(位置保存)"
+      ],
+      "read": [
+        "reader挂载恢复"
+      ],
+      "invalidation": "永不过期;每session覆盖",
+      "risk": "素材重抓修订后位置可能越界(reader钳制,低)",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "memory-active-run",
+      "category": "frontend",
+      "location": "web/components/memory/useMemoryRun.ts:55-60,189-249",
+      "purpose": "记忆抽取进行中run指针(刷新后重连)",
+      "key": "dt:memory:active-run:<layer>:<key>→run_id",
+      "write": [
+        "web/components/memory/useMemoryRun.ts:189-249(run启动时)"
+      ],
+      "read": [
+        "挂载时no-store轮询run状态"
+      ],
+      "invalidation": "run终态或服务器报missing即弃;无TTL",
+      "risk": "陈旧指针代价一次404轮询(低)",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "partner-session-keys",
+      "category": "frontend",
+      "location": "web/lib/partner-session.ts:11-40",
+      "purpose": "伙伴会话session id跨刷新重连(localStorage)",
+      "key": "partner-session:<accountId>:<partnerId>(legacy无account迁移+归属检查)",
+      "write": [
+        "web/lib/partner-session.ts initializePartnerSessionKey"
+      ],
+      "read": [
+        "web/lib/partner-session.ts:24-40"
+      ],
+      "invalidation": "仅owner账号变更或新流程建会话;服务端已删会话不主动失效",
+      "risk": "陈旧键指向已删会话→报错/空线程而非新会话",
+      "risk_level": "low",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "llm-options-swr",
+      "category": "frontend",
+      "location": "web/lib/llm-options-state.ts:16-46 + llm-options.ts:49,79",
+      "purpose": "模型选择器目录 SWR(刷新飞行中保持旧目录可见)",
+      "key": "单例React state+client-cache键llm-options",
+      "write": [
+        "web/lib/llm-options-state.ts:39-46(成功才替换)"
+      ],
+      "read": [
+        "useLLMOptions hook→选择器UI"
+      ],
+      "invalidation": "回页/mount后台刷新;保存LLM设置后显式invalidateClientCache(llm-options.ts:79);服务器设置保存同时清后端config缓存",
+      "risk": "有意的SWR——服务器删/改名模型在下次成功刷新前仍可选(直接影响哪个模型生成);失败时旧目录无限期保持(代码注明)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "ui-prefs-misc",
+      "category": "frontend",
+      "location": "web/features/co-writer/storage/drafts.ts:104-144 + useVoiceAutoplay.ts:11,71 + pending-prompt.ts:11,35 + sidebar-layout.ts:6 + useCollapsiblePanel.ts:30 + chat-markdown-note.ts:75,105 + EpubDocumentView(textPreferences) + ChatWorkspace.tsx:499-533 + useLearningMode.ts:12,44-78 等",
+      "purpose": "零散UI偏好(分栏比例/语音自动播/侧栏宽度/EPUB排版/learning-mode等同族合并)",
+      "key": "各自raw或.v2后缀localStorage/sessionStorage键",
+      "write": [
+        "各setter"
+      ],
+      "read": [
+        "各hook挂载"
+      ],
+      "invalidation": "手动切换或会话结束;带.v2的迁移干净,raw靠改键名",
+      "risk": "可忽略(纯UI状态)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "visualizer-assets-http",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/visualizers.py:129-144",
+      "purpose": "已安装可视化bundle(JS/HTML/CSS)浏览器缓存",
+      "key": "URL /api/visualizers/{id}/assets/{path};Cache-Control private,max-age=300+CSP;registry目录每请求新建(有意非单例,registry.py:149-152)",
+      "write": [
+        "deeptutor/visualizers/store.py 安装/导入写bundle"
+      ],
+      "read": [
+        "浏览器iframe加载缓存"
+      ],
+      "invalidation": "仅300s浏览器过期;无ETag/版本查询参数/重装不bust",
+      "risk": "卸载→同id重装修改版,近5分钟加载过的浏览器继续执行旧JS(沙箱内生成spec漂移,有界)",
+      "risk_level": "medium",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "reading-snapshot-assets",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/reading.py:1328-1354",
+      "purpose": "网页快照图片服务(immutable缓存)",
+      "key": "URL含material_id=sha256(normalize_url(url))[:16](ingestion.py:141-148,重抓同URL复用同id);Cache-Control private,max-age=31536000,immutable(:1351)",
+      "write": [
+        "deeptutor/reading/ingestion.py:205-294(重抓覆盖同目录assets,旧内容存revisions)"
+      ],
+      "read": [
+        "浏览器(reader媒体条)"
+      ],
+      "invalidation": "服务端无——immutable禁止再验证;仅URL变(→新hash→新id)才bust",
+      "risk": "HIGH(结构性): 同URL重抓(重试/刷新,网页内容已变)回填同material_id同名asset,而所有曾加载的浏览器按immutable供旧图一年",
+      "risk_level": "high",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "generated-files-no-policy",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/reading.py:1295-1325(raw/render) + deeptutor/api/routers/outputs.py:77-88",
+      "purpose": "生成文件端点无显式Cache-Control(FileResponse默认Last-Modified+弱ETag)",
+      "key": "URL路径;浏览器启发式缓存(文档寿命10%)",
+      "write": [
+        "reading ingestion/agent output原地重生成"
+      ],
+      "read": [
+        "主SPA客户端no-store绕过(reading-api.ts:504-514,OfficePdfPreview:76);非no-store客户端(直链/img/iframe/导出)受影响"
+      ],
+      "invalidation": "启发式过期后条件GET再验证取新文件",
+      "risk": "MEDIUM: 非no-store客户端启发式缓存旧字节(有界,无immutable风险)",
+      "risk_level": "medium",
+      "confidence": "medium",
+      "verified": false
+    },
+    {
+      "id": "file-library-download",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/file_library.py:106-130",
+      "purpose": "用户库文件下载(immutable)",
+      "key": "file_id=UUID(每唯一sha256铸造一次,dedupe store.py:240-247);Cache-Control private,max-age=31536000,immutable",
+      "write": [
+        "deeptutor/services/storage/file_library.py:212-291(add_file)"
+      ],
+      "read": [
+        "浏览器"
+      ],
+      "invalidation": "无需——id⇒内容不可变;删除后404但缓存副本私有留存",
+      "risk": "无(内容寻址语义正确)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "workspace-item-files",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/workspace.py:327-362 + service.py:50-58,610-680",
+      "purpose": "工作区发布条目下载(hash验证缓存)",
+      "key": "wsi_<uuid5(...:sha256)>;ETag=内容sha256;immutable",
+      "write": [
+        "deeptutor/services/workspace/service.py:610-680(publish按sha写blob)"
+      ],
+      "read": [
+        "浏览器/预览抽屉(要新鲜时no-store)"
+      ],
+      "invalidation": "内容变→新sha→新id→新URL(自动bust)",
+      "risk": "无(正确的内容寻址不可变设计)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "auth-avatar",
+      "category": "http_policy",
+      "location": "deeptutor/api/routers/auth.py:1353-1376 + web/lib/avatar.ts:75,90-91",
+      "purpose": "头像图片 24h 缓存",
+      "key": "/api/auth/avatar/{user_id}+客户端?v=<img:version>标记bust",
+      "write": [
+        "上传更新用户记录img:<version>标记+替换磁盘文件"
+      ],
+      "read": [
+        "UserAvatar按标记构建URL"
+      ],
+      "invalidation": "上传bump标记;否则24h",
+      "risk": "删除头像旧图≤24h缓存(低)",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    },
+    {
+      "id": "provider-prompt-cache-markers",
+      "category": "provider_side",
+      "location": "deeptutor/services/llm/provider_core/anthropic_provider.py:321-393,480-486 + openai_compat_provider.py:273-308,423 + openai_codex_provider.py:67,227-236",
+      "purpose": "供应商侧提示词缓存标记(无本地状态):Anthropic/OpenAI兼容 cache_control ephemeral 断点(系统+末消息+工具≤4);Codex prompt_cache_key=sha256(system前缀canonical JSON)路由亲和",
+      "key": "供应商管理(≈5min TTL);codex键仅system消息前缀故历史增长稳定",
+      "write": [
+        "请求组装时应用标记"
+      ],
+      "read": [
+        "usage回读(cache_read_input_tokens,仅计量)"
+      ],
+      "invalidation": "供应商侧;miss只费token不损正确性",
+      "risk": "低;请求形态变化仅冷缓存",
+      "risk_level": "low",
+      "confidence": "high",
+      "verified": false
+    }
+  ],
+  "negative_findings": [
+    "deeptutor/services/llm/request_cache.py —— 非缓存:无内容sha256指纹+compare_requests仅做KV命中诊断,不存储不供用",
+    "deeptutor/services/generation_http.py —— 纯HTTP管线(认证头/解码/报错),无响应缓存",
+    "deeptutor/services/embedding/adapters/* + client —— 无embedding结果/向量缓存(直通);向量复用由 rag/index_versioning.py EmbeddingSignature 按签名版本承担",
+    "deeptutor/services/imagegen|videogen|voice —— 无生成产物缓存,每次调用直连供应商",
+    "deeptutor/knowledge/manifest.py —— 文档清单每次磁盘现读,docstring明拒从索引记录推计数",
+    "deeptutor/multi_user/grants.py:load_grant —— 权限读取无缓存,无过期权限窗口",
+    "deeptutor/services/session/* 的 .cache 命中 —— 均为 StoreScope.cache_key 字符串dict键,非磁盘.cache目录",
+    "deeptutor/services/web_source/crawler.py —— 无爬取结果缓存;快照经repository持久化+scheduler按sync_interval重同步(有意持久化非缓存)",
+    "deeptutor/services/courses.py|practice/* —— courses.json每调用现读(线程锁);practice直连SQLite无memo",
+    "deeptutor/services/i18n.py —— 编译期内置消息表+每次现读interface.json,语言切换即时生效,非缓存",
+    "deeptutor/partners/channels/telegram|email|slack 等 —— 静态配置token无获取缓存;telegram每消息解析file_id,全channels无file_id上传复用缓存",
+    "deeptutor/services/llm/metrics.py + usage_ledger —— 仅计量与追加式台账,非复用缓存",
+    "deeptutor/services/session/provider_response_state.py —— provider私有回放状态持久化(校验+有界),非缓存;失配状态被丢弃由供应商拒绝非法回放",
+    "deeptutor/agents/loop/prompt_blocks.py —— 每turn现渲染,无memo",
+    "技能清单/系统提示manifest —— 每turn重建(turns/executor.py:596-598 + skill/runtime.py:64-75),编辑即时生效"
+  ]
+}
