@@ -1,0 +1,2421 @@
+{
+  "root": ".",
+  "files_scanned": 1029,
+  "parse_failures": 0,
+  "total_findings": 253,
+  "by_rule": {
+    "E1": 181,
+    "E2": 72
+  },
+  "by_severity": {
+    "high": 16,
+    "medium": 234,
+    "low": 3
+  },
+  "modules": {
+    "deeptutor.api": {
+      "total": 226,
+      "by_severity": {
+        "high": 2,
+        "medium": 224
+      }
+    },
+    "deeptutor.services": {
+      "total": 17,
+      "by_severity": {
+        "high": 11,
+        "medium": 5,
+        "low": 1
+      }
+    },
+    "deeptutor.tools": {
+      "total": 5,
+      "by_severity": {
+        "high": 1,
+        "medium": 4
+      }
+    },
+    "deeptutor.multi_user": {
+      "total": 2,
+      "by_severity": {
+        "high": 1,
+        "medium": 1
+      }
+    },
+    "deeptutor.runtime": {
+      "total": 2,
+      "by_severity": {
+        "low": 2
+      }
+    },
+    "deeptutor.partners": {
+      "total": 1,
+      "by_severity": {
+        "high": 1
+      }
+    }
+  },
+  "findings": [
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1045,
+      "col": 12,
+      "code": "raise HandoffRejected(\"Invalid handoff ticket\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1105,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/multi_user/session_handoff.py",
+      "line": 176,
+      "col": 8,
+      "code": "raise HandoffRejected(\"Invalid handoff ticket\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/partners/channels/slack.py",
+      "line": 123,
+      "col": 12,
+      "code": "raise RuntimeError(\"Slack Socket Mode WebSocket connect timed out\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost (handler logs before raising: likely intentional, verify root cause still reachable in logs)"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/app_update.py",
+      "line": 388,
+      "col": 8,
+      "code": "raise VersionCheckError(\"The latest release has an invalid version\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/app_update.py",
+      "line": 418,
+      "col": 8,
+      "code": "raise VersionCheckError(\"The latest release has an invalid URL\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/app_update.py",
+      "line": 435,
+      "col": 8,
+      "code": "raise VersionCheckError(\"The latest release has an invalid version\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/cron/service.py",
+      "line": 141,
+      "col": 12,
+      "code": "raise ValueError(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/cron/service.py",
+      "line": 170,
+      "col": 16,
+      "code": "raise ValueError(f\"unknown timezone {schedule.tz!r}\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/embedding/adapters/gemini.py",
+      "line": 374,
+      "col": 20,
+      "code": "raise EmbeddingProviderError(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `exc`; root cause fully lost (handler logs before raising: likely intentional, verify root cause still reachable in logs)"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/llm/provider_core/openai_codex_provider.py",
+      "line": 102,
+      "col": 32,
+      "code": "raise CodexHTTPError(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `refresh_error`; root cause fully lost (handler logs before raising: likely intentional, verify root cause still reachable in logs)"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/partners/channel_onboarding.py",
+      "line": 488,
+      "col": 20,
+      "code": "raise _InvalidProviderResponse(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/session/_turn_runtime_shared.py",
+      "line": 1300,
+      "col": 12,
+      "code": "raise ValueError(\"Could not resolve the selected text's source message\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/settings/registry_edit.py",
+      "line": 80,
+      "col": 16,
+      "code": "raise ValueError(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/services/subagent/opencode_server.py",
+      "line": 150,
+      "col": 20,
+      "code": "raise RuntimeError(\"server did not become ready in time\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "high",
+      "path": "deeptutor/tools/cron_tool.py",
+      "line": 51,
+      "col": 8,
+      "code": "raise ValueError(",
+      "detail": "`from None` inside handler drops the root-cause traceback; raised message does not reference caught exception `None`; root cause fully lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 961,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 966,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1006,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1011,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1065,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/auth.py",
+      "line": 1070,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 834,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 857,
+      "col": 12,
+      "code": "raise HTTPException(status_code=400, detail=f\"Invalid proposal: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 861,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 864,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 888,
+      "col": 12,
+      "code": "raise HTTPException(status_code=400, detail=f\"Invalid spine: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 897,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 900,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 921,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 923,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 926,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 949,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 952,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 994,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 997,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1063,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1066,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1093,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1096,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1364,
+      "col": 8,
+      "code": "raise _book_paused_http(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1367,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1412,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1415,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1434,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1437,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1455,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/book.py",
+      "line": 1458,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 131,
+      "col": 8,
+      "code": "raise HTTPException(status_code=403, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 133,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 546,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 561,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 597,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 609,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 626,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 643,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 716,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 728,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 839,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 857,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/co_writer.py",
+      "line": 874,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/file_preview.py",
+      "line": 109,
+      "col": 16,
+      "code": "raise HTTPException(status_code=404, detail=\"Preview source not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/file_preview.py",
+      "line": 121,
+      "col": 16,
+      "code": "raise HTTPException(status_code=404, detail=\"Preview source not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1427,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1486,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1507,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1539,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1563,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1595,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1615,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1635,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1650,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1686,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1698,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1751,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1781,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1803,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1819,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 1879,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2001,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2037,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2051,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2113,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2127,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2139,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2158,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2185,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2190,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2222,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2225,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2253,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2274,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2293,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2298,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2403,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2408,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2472,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2477,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2545,
+      "col": 8,
+      "code": "raise HTTPException(status_code=401, detail=\"IMA rejected the supplied credentials.\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2547,
+      "col": 8,
+      "code": "raise HTTPException(status_code=429, detail=\"IMA rate limit reached. Try again shortly.\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2549,
+      "col": 8,
+      "code": "raise HTTPException(status_code=502, detail=\"IMA returned an invalid response.\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2551,
+      "col": 8,
+      "code": "raise HTTPException(status_code=502, detail=\"Could not reach Tencent IMA.\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2722,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2729,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=\"Could not connect the IMA knowledge base.\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 2960,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=f\"Failed to list knowledge bases: {e!s}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3001,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3003,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3050,
+      "col": 8,
+      "code": "raise HTTPException(status_code=403, detail=\"Access denied\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3261,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3263,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3420,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 3715,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4171,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=format_exception_message(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4220,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=format_exception_message(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4238,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4252,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4555,
+      "col": 12,
+      "code": "raise HTTPException(status_code=404, detail=error_msg)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4556,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=error_msg)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4558,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4572,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4574,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4591,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4593,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4688,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Knowledge base '{kb_name}' not found\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/knowledge.py",
+      "line": 4690,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/mcp_settings.py",
+      "line": 73,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/memory.py",
+      "line": 349,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/memory.py",
+      "line": 384,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=\"unknown run_id\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/memory.py",
+      "line": 386,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/memory.py",
+      "line": 714,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=\"day must be YYYY-MM-DD\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/memory.py",
+      "line": 721,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 204,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 206,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 221,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 223,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 246,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 248,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 270,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 272,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 301,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 303,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 325,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 327,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 360,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 362,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 395,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 397,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 423,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 425,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 439,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 441,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 455,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 457,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 475,
+      "col": 8,
+      "code": "raise _unreadable(exc)",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/notebook.py",
+      "line": 477,
+      "col": 8,
+      "code": "raise HTTPException(status_code=500, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 100,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 118,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 157,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 178,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 180,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 216,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 231,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 251,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 253,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 280,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 283,
+      "col": 8,
+      "code": "raise HTTPException(status_code=status_code, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 312,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 314,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 332,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partner_groups.py",
+      "line": 334,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 209,
+      "col": 12,
+      "code": "raise HTTPException(status_code=500, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 366,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 371,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 468,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1042,
+      "col": 16,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost (handler logs before raising: likely intentional, verify root cause still reachable in logs)",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1131,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1191,
+      "col": 8,
+      "code": "raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1206,
+      "col": 8,
+      "code": "raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1221,
+      "col": 8,
+      "code": "raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1230,
+      "col": 8,
+      "code": "raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1304,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1407,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1409,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1433,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1449,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1464,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1488,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1504,
+      "col": 8,
+      "code": "raise HTTPException(status_code=422, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1522,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1666,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1671,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/partners.py",
+      "line": 1673,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 94,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 118,
+      "col": 8,
+      "code": "raise HTTPException(",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 123,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 138,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=t(\"api.persona_not_found\", name=name))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 140,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 142,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 152,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=t(\"api.persona_not_found\", name=name))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/personas.py",
+      "line": 154,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/question_notebook.py",
+      "line": 300,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=str(e))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/question_notebook.py",
+      "line": 574,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/question_notebook.py",
+      "line": 583,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 919,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 928,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 952,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 961,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 970,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 979,
+      "col": 8,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 1021,
+      "col": 12,
+      "code": "raise _codex_http_exception(exc) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/settings.py",
+      "line": 1290,
+      "col": 8,
+      "code": "raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 97,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=f\"Tag already exists: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 99,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 109,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Tag not found: {tag}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 111,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=f\"Tag already exists: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 113,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 123,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Tag not found: {tag}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 125,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 169,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 175,
+      "col": 8,
+      "code": "raise HTTPException(status_code=502, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 189,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 195,
+      "col": 8,
+      "code": "raise HTTPException(status_code=502, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 210,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 236,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=f\"Skill already exists: {payload.name}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 238,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 240,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 267,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=f\"Skill already exists: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 269,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 271,
+      "col": 8,
+      "code": "raise HTTPException(status_code=502, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 293,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Skill not found: {name}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 295,
+      "col": 8,
+      "code": "raise HTTPException(status_code=403, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 297,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 299,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 301,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 311,
+      "col": 8,
+      "code": "raise HTTPException(status_code=404, detail=f\"Skill not found: {name}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 313,
+      "col": 8,
+      "code": "raise HTTPException(status_code=403, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/skills.py",
+      "line": 315,
+      "col": 8,
+      "code": "raise HTTPException(status_code=400, detail=str(exc))",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/system.py",
+      "line": 219,
+      "col": 12,
+      "code": "raise HTTPException(",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/system.py",
+      "line": 290,
+      "col": 8,
+      "code": "raise HTTPException(status_code=503, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/api/routers/system.py",
+      "line": 309,
+      "col": 8,
+      "code": "raise HTTPException(status_code=409, detail=str(exc)) from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/multi_user/session_handoff.py",
+      "line": 137,
+      "col": 12,
+      "code": "raise HandoffError(\"Public origin hostname is invalid\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/services/app_update.py",
+      "line": 378,
+      "col": 12,
+      "code": "raise VersionCheckError(f\"Unable to check for updates: {exc}\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost"
+    },
+    {
+      "rule": "E2",
+      "severity": "medium",
+      "path": "deeptutor/services/cron/service.py",
+      "line": 146,
+      "col": 12,
+      "code": "raise ValueError(f\"invalid cron expression {schedule.expr!r}: {exc}\") from None",
+      "detail": "`from None` inside handler drops the root-cause traceback; message embeds the caught exception text, but chain/type is lost",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/services/parsing/engines/docling/engine.py",
+      "line": 170,
+      "col": 12,
+      "code": "raise ParserError(f\"Docling failed to convert {Path(source_path).name}: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/services/parsing/engines/markitdown/engine.py",
+      "line": 81,
+      "col": 12,
+      "code": "raise ParserError(f\"markitdown failed to convert {Path(source_path).name}: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/services/parsing/engines/pymupdf4llm/engine.py",
+      "line": 113,
+      "col": 12,
+      "code": "raise ParserError(f\"PyMuPDF4LLM failed to convert {source_path.name}: {exc}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/tools/tex_downloader.py",
+      "line": 222,
+      "col": 12,
+      "code": "raise Exception(f\"Failed to read tex file: {e!s}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')",
+      "dedup": "scan-broad-excepts"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/tools/vision/image_utils.py",
+      "line": 106,
+      "col": 8,
+      "code": "raise ImageError(f\"Failed to download image: HTTP {e.response.status_code}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/tools/vision/image_utils.py",
+      "line": 108,
+      "col": 8,
+      "code": "raise ImageError(f\"Image download timeout ({REQUEST_TIMEOUT}s)\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E1",
+      "severity": "medium",
+      "path": "deeptutor/tools/vision/image_utils.py",
+      "line": 110,
+      "col": 8,
+      "code": "raise ImageError(f\"Failed to download image: {e!s}\")",
+      "detail": "raise of a new exception inside handler without `from`: implicit __context__ survives, but __cause__ unset (traceback prints 'During handling...' not 'direct cause')"
+    },
+    {
+      "rule": "E2",
+      "severity": "low",
+      "path": "deeptutor/runtime/launcher.py",
+      "line": 432,
+      "col": 12,
+      "code": "raise SystemExit(130) from None",
+      "detail": "recognized idiom: Ctrl-C/EOF converted to SystemExit; `from None` is intentional here"
+    },
+    {
+      "rule": "E2",
+      "severity": "low",
+      "path": "deeptutor/runtime/launcher.py",
+      "line": 452,
+      "col": 12,
+      "code": "raise SystemExit(130) from None",
+      "detail": "recognized idiom: Ctrl-C/EOF converted to SystemExit; `from None` is intentional here"
+    },
+    {
+      "rule": "E2",
+      "severity": "low",
+      "path": "deeptutor/services/session/turn_runtime.py",
+      "line": 23,
+      "col": 8,
+      "code": "raise AttributeError(f\"module {__name__!r} has no attribute {name!r}\") from None",
+      "detail": "recognized idiom: PEP 562 module/attribute __getattr__ protocol; `from None` is intentional here"
+    }
+  ]
+}
