@@ -464,6 +464,7 @@ class CodexOAuthService:
         self._last_snapshot: CatalogSnapshot | None = None
         self._operation_lock = asyncio.Lock()
         self._refresh_lock = asyncio.Lock()
+        self._refresh_flight: asyncio.Task[CodexCredentials] | None = None
         self._catalog_sync_lock = asyncio.Lock()
         self._inference_lock = asyncio.Lock()
         self._active_inferences = 0
@@ -719,28 +720,82 @@ class CodexOAuthService:
             return self.public_status()
 
     async def get_token(self) -> CodexToken:
-        async with self._refresh_lock:
-            credentials = self._store.load_credentials()
-            if credentials is None:
-                raise CodexAuthError(
-                    "authentication_required",
-                    "Sign in to Codex before using this model.",
-                    401,
-                )
-            if self._reauth_required():
-                # A recent refresh was rejected — the stored session no
-                # longer refreshes (revoked, de-authorized). Fail fast with a
-                # terminal error instead of asking the token endpoint again
-                # on this turn or the next (#1454).
-                raise CodexAuthError(
-                    "authentication_required",
-                    "Codex sign-in could not be renewed. Sign in to Codex again.",
-                    401,
-                )
-            if credentials.expires_at - int(self._clock()) > 300:
-                return credentials.public_token()
-            refreshed = await self._refresh_credentials(credentials)
-            return refreshed.public_token()
+        # Fast path without the refresh lock: a token with life left is
+        # served from the store immediately, so a slow in-flight refresh
+        # never queues valid-token callers behind the token endpoint.
+        credentials = self._store.load_credentials()
+        if credentials is None:
+            raise CodexAuthError(
+                "authentication_required",
+                "Sign in to Codex before using this model.",
+                401,
+            )
+        if self._reauth_required():
+            # A recent refresh was rejected — the stored session no
+            # longer refreshes (revoked, de-authorized). Fail fast with a
+            # terminal error instead of asking the token endpoint again
+            # on this turn or the next (#1454).
+            raise CodexAuthError(
+                "authentication_required",
+                "Codex sign-in could not be renewed. Sign in to Codex again.",
+                401,
+            )
+        if credentials.expires_at - int(self._clock()) > 300:
+            return credentials.public_token()
+        refreshed = await self._refresh_credentials_single_flight()
+        return refreshed.public_token()
+
+    async def _refresh_credentials_single_flight(self) -> CodexCredentials:
+        """Return credentials refreshed beyond the five-minute window.
+
+        The refresh lock guards only the state checks and the in-flight
+        marker; the network refresh runs as a detached task with no lock
+        held, and concurrent callers join that flight instead of queueing
+        behind a lock-wrapped token request. Each call leads at most one
+        flight, so a caller sees exactly one refresh attempt of its own —
+        the same outcome the lock-serialized version produced.
+        """
+        while True:
+            led = False
+            async with self._refresh_lock:
+                flight = self._refresh_flight
+                if flight is not None and flight.done():
+                    if not flight.cancelled():
+                        # Retrieve an outcome nobody awaited so a finished
+                        # flight never warns at teardown.
+                        flight.exception()
+                    self._refresh_flight = None
+                    flight = None
+                credentials = self._store.load_credentials()
+                if credentials is None:
+                    raise CodexAuthError(
+                        "authentication_required",
+                        "Sign in to Codex before using this model.",
+                        401,
+                    )
+                if self._reauth_required():
+                    raise CodexAuthError(
+                        "authentication_required",
+                        "Codex sign-in could not be renewed. Sign in to Codex again.",
+                        401,
+                    )
+                if credentials.expires_at - int(self._clock()) > 300:
+                    return credentials
+                if flight is None:
+                    flight = self._refresh_flight = asyncio.create_task(
+                        self._refresh_credentials(credentials)
+                    )
+                    led = True
+            if led:
+                return await flight
+            try:
+                return await flight
+            except Exception:
+                # A joined flight failed. Re-check the stored state under
+                # the lock — a rejected refresh now fails fast via the
+                # reauth marker, a transient failure joins or starts a
+                # new flight — instead of holding the failure's lock.
+                continue
 
     def profile_matches_current_account(self, profile: Mapping[str, Any]) -> bool:
         credentials = self._store.load_credentials()
@@ -825,17 +880,39 @@ class CodexOAuthService:
         return committed
 
     async def recover_after_unauthorized(self, generation: int) -> None:
-        async with self._refresh_lock:
-            credentials = self._store.load_credentials()
-            if credentials is None:
-                raise CodexAuthError(
-                    "authentication_required",
-                    "Sign in to Codex before using this model.",
-                    401,
-                )
-            if credentials.generation != generation:
+        # Same single-flight shape as get_token: the lock guards the state
+        # checks and the in-flight marker, the refresh itself runs detached.
+        while True:
+            led = False
+            async with self._refresh_lock:
+                flight = self._refresh_flight
+                if flight is not None and flight.done():
+                    if not flight.cancelled():
+                        flight.exception()
+                    self._refresh_flight = None
+                    flight = None
+                credentials = self._store.load_credentials()
+                if credentials is None:
+                    raise CodexAuthError(
+                        "authentication_required",
+                        "Sign in to Codex before using this model.",
+                        401,
+                    )
+                if credentials.generation != generation:
+                    return
+                if flight is None:
+                    flight = self._refresh_flight = asyncio.create_task(
+                        self._refresh_credentials(credentials)
+                    )
+                    led = True
+            if led:
+                await flight
                 return
-            await self._refresh_credentials(credentials)
+            try:
+                await flight
+                return
+            except Exception:
+                continue
 
     @asynccontextmanager
     async def inference_guard(self) -> AsyncIterator[None]:

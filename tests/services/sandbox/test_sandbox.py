@@ -403,6 +403,53 @@ async def test_service_does_not_fallback_from_unhealthy_runner() -> None:
 
 
 @pytest.mark.asyncio
+async def test_slow_health_probe_does_not_hold_the_health_lock() -> None:
+    svc = SandboxService(SandboxSettings(allow_subprocess=False))
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    class SlowBackend(RestrictedSubprocessBackend):
+        async def health(self) -> tuple[bool, str]:
+            started.set()
+            await release.wait()
+            return True, "slow but functional"
+
+    svc._backend = SlowBackend()
+
+    probe = asyncio.create_task(svc.isolation_level())
+    await started.wait()
+    try:
+        # The health lock guards the cached verdict and the in-flight
+        # marker only; the probe itself runs without holding it.
+        assert svc._health_lock.locked() is False
+    finally:
+        release.set()
+
+    assert await probe is IsolationLevel.APPLICATION
+    assert await svc.isolation_level() is IsolationLevel.APPLICATION
+
+
+@pytest.mark.asyncio
+async def test_concurrent_health_checks_share_one_probe() -> None:
+    svc = SandboxService(SandboxSettings(allow_subprocess=False))
+    calls = 0
+
+    class CountingBackend(RestrictedSubprocessBackend):
+        async def health(self) -> tuple[bool, str]:
+            nonlocal calls
+            calls += 1
+            await asyncio.sleep(0)
+            return True, "functional"
+
+    svc._backend = CountingBackend()
+
+    levels = await asyncio.gather(*(svc.isolation_level() for _ in range(4)))
+
+    assert calls == 1
+    assert all(level is IsolationLevel.APPLICATION for level in levels)
+
+
+@pytest.mark.asyncio
 async def test_quota_rate_limit() -> None:
     quota = UserExecQuota(max_concurrent=5, max_per_minute=2)
     async with await quota.acquire("u1"):

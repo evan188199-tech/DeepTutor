@@ -37,6 +37,7 @@ class SandboxService:
         self._healthy: bool | None = None
         self._health_detail = ""
         self._health_lock = asyncio.Lock()
+        self._health_flight: asyncio.Task[None] | None = None
         self._quota = UserExecQuota(
             max_concurrent=self._settings.max_concurrent_per_user,
             max_per_minute=self._settings.max_runs_per_minute_per_user,
@@ -51,21 +52,40 @@ class SandboxService:
             return False
         if self._healthy is not None:
             return self._healthy
-        async with self._health_lock:
-            if self._healthy is None:
-                try:
-                    self._healthy, self._health_detail = await self._backend.health()
-                except Exception as exc:
-                    self._healthy = False
-                    self._health_detail = f"health check failed: {exc}"
-                if not self._healthy:
-                    logger.warning(
-                        "sandbox backend %s unhealthy: %s",
-                        type(self._backend).__name__,
-                        self._health_detail,
-                    )
-                    await self._try_subprocess_fallback()
-        return bool(self._healthy)
+        # Single-flight probe: the lock guards only the cached verdict and
+        # the in-flight marker; the probe (and its subprocess fallback)
+        # runs as a detached task with no lock held, and concurrent
+        # callers join that flight instead of queueing on the lock.
+        while True:
+            async with self._health_lock:
+                flight = self._health_flight
+                if flight is not None and flight.done():
+                    if not flight.cancelled():
+                        # Retrieve an outcome nobody awaited so a finished
+                        # flight never warns at teardown.
+                        flight.exception()
+                    self._health_flight = None
+                    flight = None
+                if self._healthy is not None:
+                    return self._healthy
+                if flight is None:
+                    flight = self._health_flight = asyncio.create_task(self._probe_health())
+            await flight
+
+    async def _probe_health(self) -> None:
+        backend = self._backend
+        try:
+            self._healthy, self._health_detail = await backend.health()
+        except Exception as exc:
+            self._healthy = False
+            self._health_detail = f"health check failed: {exc}"
+        if not self._healthy:
+            logger.warning(
+                "sandbox backend %s unhealthy: %s",
+                type(backend).__name__,
+                self._health_detail,
+            )
+            await self._try_subprocess_fallback()
 
     async def _try_subprocess_fallback(self) -> None:
         """Fall back to restricted subprocess when bwrap cannot run.

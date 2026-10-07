@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 
@@ -297,3 +298,57 @@ def test_launcher_available_uses_the_read_only_process_probe(monkeypatch) -> Non
 
     assert app_update.launcher_available() is True
     assert probed == [4242]
+
+
+@pytest.mark.asyncio
+async def test_check_serves_fresh_cache_while_a_forced_check_is_in_flight() -> None:
+    started = asyncio.Event()
+    release = asyncio.Event()
+    calls = 0
+
+    async def handler(_request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        if calls > 1:
+            started.set()
+            await release.wait()
+        return httpx.Response(200, json=_release())
+
+    service = VersionCheckService(
+        client_factory=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        clock=lambda: 100,
+    )
+    first = await service.check()
+    assert first.cached is False
+
+    forced = asyncio.create_task(service.check(force=True))
+    await started.wait()
+
+    cached = await asyncio.wait_for(service.check(), timeout=1)
+
+    assert cached.cached is True
+    assert cached.release.version == first.release.version
+    release.set()
+    assert (await forced).cached is False
+    assert calls == 2
+
+
+@pytest.mark.asyncio
+async def test_concurrent_forced_checks_share_one_fetch() -> None:
+    calls = 0
+
+    async def handler(_request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        await asyncio.sleep(0)
+        return httpx.Response(200, json=_release())
+
+    service = VersionCheckService(
+        client_factory=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+        clock=lambda: 100,
+    )
+
+    results = await asyncio.gather(*(service.check(force=True) for _ in range(3)))
+
+    assert calls == 1
+    assert {result.release.version for result in results} == {"1.7.0"}

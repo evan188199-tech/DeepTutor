@@ -1898,3 +1898,56 @@ async def test_pasting_a_callback_with_no_login_waiting_is_a_conflict(tmp_path: 
 
     assert exc_info.value.code == "login_not_active"
     assert exc_info.value.http_status == 409
+
+
+@pytest.mark.asyncio
+async def test_concurrent_get_token_calls_share_one_refresh(tmp_path: Path) -> None:
+    clock = [1_000]
+    service, _callback, oauth, _catalog, store, _models = await _oauth_service(
+        tmp_path,
+        clock=clock,
+    )
+    store.commit_credentials(
+        _stored_credentials(expires_at=1_200),
+        expected_generation=0,
+    )
+
+    tokens = await asyncio.gather(*(service.get_token() for _ in range(5)))
+
+    assert oauth.refresh_calls == 1
+    assert {token.access_token for token in tokens} == {"refreshed-access"}
+    assert {token.generation for token in tokens} == {2}
+
+
+@pytest.mark.asyncio
+async def test_slow_refresh_does_not_queue_other_refresh_lock_users(
+    tmp_path: Path,
+) -> None:
+    clock = [1_000]
+    service, _callback, oauth, _catalog, store, _models = await _oauth_service(
+        tmp_path,
+        clock=clock,
+    )
+    committed = store.commit_credentials(
+        _stored_credentials(expires_at=1_200),
+        expected_generation=0,
+    )
+    oauth.refresh_started = asyncio.Event()
+    oauth.refresh_release = asyncio.Event()
+
+    refresh_task = asyncio.create_task(service.get_token())
+    await oauth.refresh_started.wait()
+
+    # The refresh lock guards state and the in-flight marker only: while
+    # the token endpoint is slow, a stale-generation recovery is still a
+    # no-op that returns without queueing behind the network request.
+    assert service._refresh_lock.locked() is False
+    await asyncio.wait_for(
+        service.recover_after_unauthorized(committed.generation + 99),
+        timeout=1,
+    )
+
+    oauth.refresh_release.set()
+    refreshed = await refresh_task
+    assert refreshed.access_token == "refreshed-access"
+    assert oauth.refresh_calls == 1

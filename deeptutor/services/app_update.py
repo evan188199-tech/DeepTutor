@@ -307,6 +307,7 @@ class VersionCheckService:
         self._cache: VersionCheckResult | None = None
         self._cached_at: float | None = None
         self._lock = asyncio.Lock()
+        self._fetch_flight: asyncio.Task[VersionCheckResult] | None = None
 
     def cached(self) -> VersionCheckResult | None:
         if self._cache is None or self._cached_at is None:
@@ -316,19 +317,52 @@ class VersionCheckService:
         return replace(self._cache, cached=True)
 
     async def check(self, *, force: bool = False) -> VersionCheckResult:
-        async with self._lock:
-            if not force and (cached := self.cached()) is not None:
-                return cached
-            release = await self._fetch()
-            result = VersionCheckResult(
-                current_version=__version__,
-                release=release,
-                checked_at=_now(),
-                cached=False,
-            )
-            self._cache = result
-            self._cached_at = self._clock()
-            return result
+        # Fast path without the lock: a fresh cache answers immediately
+        # even while another caller's forced check is in flight.
+        if not force and (cached := self.cached()) is not None:
+            return cached
+        # Single-flight fetch: the lock guards only the cache checks and
+        # the in-flight marker; the GitHub request runs as a detached
+        # task with no lock held, and concurrent callers join it instead
+        # of queueing behind a lock-wrapped request. Each call leads at
+        # most one flight, so a caller performs at most one fetch of its
+        # own — the same outcome the lock-serialized version produced.
+        while True:
+            led = False
+            async with self._lock:
+                flight = self._fetch_flight
+                if flight is not None and flight.done():
+                    if not flight.cancelled():
+                        # Retrieve an outcome nobody awaited so a finished
+                        # flight never warns at teardown.
+                        flight.exception()
+                    self._fetch_flight = None
+                    flight = None
+                if not force and (cached := self.cached()) is not None:
+                    return cached
+                if flight is None:
+                    flight = self._fetch_flight = asyncio.create_task(self._fetch_and_cache())
+                    led = True
+            if led:
+                return await flight
+            try:
+                return await flight
+            except Exception:
+                # A joined fetch failed. Re-check the cache and join or
+                # start a new flight, as waiting on the lock did before.
+                continue
+
+    async def _fetch_and_cache(self) -> VersionCheckResult:
+        release = await self._fetch()
+        result = VersionCheckResult(
+            current_version=__version__,
+            release=release,
+            checked_at=_now(),
+            cached=False,
+        )
+        self._cache = result
+        self._cached_at = self._clock()
+        return result
 
     async def _fetch(self) -> ReleaseInfo:
         factory = self._client_factory or (
