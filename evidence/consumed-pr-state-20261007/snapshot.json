@@ -1,0 +1,107 @@
+{
+ "snapshot_at": "2026-10-07",
+ "source_ledger": "reserve/backlog/deeptour.consumed",
+ "ledger_sha256": "b076356a2c8b813e7b3552d49ff1480fad3dfecdbdfcbc36607acbd974b7f26e",
+ "coverage": "10/10",
+ "counts": {
+  "闭环": 3,
+  "仍开放": 0,
+  "已关闭未合并": 1,
+  "无上游PR": 6
+ },
+ "entries": [
+  {
+   "key": "up-1646",
+   "pr": 1685,
+   "pr_state": "MERGED",
+   "merged_at": "2026-10-04T06:19:37Z",
+   "head": "codex/fix/mastery-session-lock",
+   "base": "dev",
+   "category": "闭环",
+   "issue_state": "CLOSED/completed",
+   "note": "标题含 (#1646)"
+  },
+  {
+   "key": "up-1647",
+   "pr": 1666,
+   "pr_state": "MERGED",
+   "merged_at": "2026-10-04T06:06:25Z",
+   "head": "fix/chat-kb-ref-labels",
+   "base": "dev",
+   "category": "闭环",
+   "issue_state": "CLOSED/completed",
+   "note": ""
+  },
+  {
+   "key": "up-1678",
+   "pr": 1683,
+   "pr_state": "MERGED",
+   "merged_at": "2026-10-04T06:01:26Z",
+   "head": "codex/fix/chat-history-search",
+   "base": "dev",
+   "category": "闭环",
+   "issue_state": "CLOSED/completed",
+   "note": "commit 8535d8668 在 main（verify-consumed-tests-green 2026-10-05）"
+  },
+  {
+   "key": "rework-AGEN-136",
+   "pr": 1727,
+   "pr_state": "CLOSED",
+   "merged_at": null,
+   "closed_at": "2026-10-06T05:09:35Z",
+   "head": "fix/knowledge-surface-swallowed-failures",
+   "base": "main",
+   "category": "已关闭未合并",
+   "issue_state": null,
+   "note": "作者留言：opened by mistake by an automated script；main/dev knowledge.py 均无 _progress_age_seconds；batch-1 PR #1703/#1704/#1707 不含 knowledge.py"
+  },
+  {
+   "key": "guide-mastery",
+   "pr": null,
+   "pr_state": null,
+   "head": "docs/guides/mastery-path (myfork)",
+   "category": "无上游PR",
+   "note": "docs-only 分支 fcb131a96 2026-10-02；由人决定是否开 PR"
+  },
+  {
+   "key": "guide-reading",
+   "pr": null,
+   "pr_state": null,
+   "head": "docs/guides/immersive-reading (myfork)",
+   "category": "无上游PR",
+   "note": "docs-only 分支 787ddd799 2026-10-02；由人决定是否开 PR"
+  },
+  {
+   "key": "bundle-logging-storage",
+   "pr": null,
+   "pr_state": null,
+   "head": null,
+   "category": "无上游PR",
+   "note": "直接产物分支未建；部分覆盖于开放 PR #1703/#1707（storage 5/8 条目，引自 verify-consumed-tests-green 2026-10-05）"
+  },
+  {
+   "key": "bundle-logging-runtime",
+   "pr": null,
+   "pr_state": null,
+   "head": null,
+   "category": "无上游PR",
+   "note": "直接产物分支未建；部分覆盖于开放 PR #1704/#1707（runtime 6/7 条目）"
+  },
+  {
+   "key": "bundle-tests-backend",
+   "pr": null,
+   "pr_state": null,
+   "head": null,
+   "category": "无上游PR",
+   "note": "卡已取消、产物分支 test/backend-coverage-batch-1 未建"
+  },
+  {
+   "key": "bundle-tests-frontend",
+   "pr": null,
+   "pr_state": null,
+   "head": null,
+   "category": "无上游PR",
+   "note": "幽灵条目：无卡、无 ledger 定义、无分支"
+  }
+ ]
+}
