@@ -37,6 +37,10 @@ export default function PartnersPage() {
   const [partners, setPartners] = useState<PartnerInfo[]>([]);
   const [groups, setGroups] = useState<PartnerGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  // A failed read (403, say) must not read as "no partners": the roster keeps
+  // an error state instead of the empty state.
+  const [partnersError, setPartnersError] = useState(false);
+  const [groupsError, setGroupsError] = useState(false);
   const anyAssigned = partners.some((partner) => partner.can_manage === false);
   // A group needs at least two members, so the entry point stays inert until
   // there is something to convene.
@@ -46,12 +50,20 @@ export default function PartnersPage() {
     let cancelled = false;
     void (async () => {
       const [partnerList, groupList] = await Promise.all([
-        listPartners().catch(() => [] as PartnerInfo[]),
-        listPartnerGroups().catch(() => [] as PartnerGroup[]),
+        listPartners().then(
+          (list) => list,
+          () => null,
+        ),
+        listPartnerGroups().then(
+          (list) => list,
+          () => null,
+        ),
       ]);
       if (cancelled) return;
-      setPartners(partnerList);
-      setGroups(groupList);
+      setPartners(partnerList ?? []);
+      setGroups(groupList ?? []);
+      setPartnersError(partnerList === null);
+      setGroupsError(groupList === null);
       setLoading(false);
     })();
     return () => {
@@ -88,6 +100,15 @@ export default function PartnersPage() {
       {loading ? (
         <div className="flex min-h-[320px] items-center justify-center">
           <Loader2 className="h-5 w-5 animate-spin text-[var(--muted-foreground)]" />
+        </div>
+      ) : partnersError ? (
+        <div className="flex min-h-[320px] items-center justify-center rounded-2xl border border-dashed border-[var(--border)]">
+          <p
+            role="alert"
+            className="max-w-sm px-6 text-center text-[13px] leading-relaxed text-red-600 dark:text-red-400"
+          >
+            {t("Could not load partners.")}
+          </p>
         </div>
       ) : partners.length === 0 ? (
         <div className="flex min-h-[360px] flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] text-center">
@@ -199,7 +220,16 @@ export default function PartnersPage() {
             ) : null}
           </div>
 
-          {groups.length === 0 ? (
+          {groupsError ? (
+            <div className="flex items-center gap-3 rounded-2xl border border-dashed border-[var(--border)] px-4 py-5">
+              <p
+                role="alert"
+                className="text-[12px] leading-relaxed text-red-600 dark:text-red-400"
+              >
+                {t("Could not load partner groups.")}
+              </p>
+            </div>
+          ) : groups.length === 0 ? (
             <div className="flex items-center gap-3 rounded-2xl border border-dashed border-[var(--border)] px-4 py-5">
               <Users
                 className="h-6 w-6 shrink-0 text-[var(--muted-foreground)]"

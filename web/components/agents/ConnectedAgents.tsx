@@ -45,6 +45,8 @@ export default function ConnectedAgents() {
   const [backends, setBackends] = useState<SubagentBackendInfo[]>([]);
   const [connections, setConnections] = useState<SubagentConnection[]>([]);
   const [loading, setLoading] = useState(true);
+  // A failed read must not read as "no agents": keep an error state instead.
+  const [loadError, setLoadError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [busyName, setBusyName] = useState<string | null>(null);
 
@@ -52,11 +54,18 @@ export default function ConnectedAgents() {
     setLoading(true);
     try {
       const [detected, conns] = await Promise.all([
-        detectSubagents().catch(() => [] as SubagentBackendInfo[]),
-        listSubagentConnections().catch(() => [] as SubagentConnection[]),
+        detectSubagents().then(
+          (list) => list,
+          () => null,
+        ),
+        listSubagentConnections().then(
+          (list) => list,
+          () => null,
+        ),
       ]);
-      setBackends(detected);
-      setConnections(conns);
+      setBackends(detected ?? []);
+      setConnections(conns ?? []);
+      setLoadError(detected === null || conns === null);
     } finally {
       setLoading(false);
     }
@@ -121,6 +130,16 @@ export default function ConnectedAgents() {
         <div className="flex items-center gap-2 px-1 text-[12px] text-[var(--muted-foreground)]">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
           {tr({ zh: "检测可用智能体…", en: "Detecting available agents…" })}
+        </div>
+      ) : loadError ? (
+        <div
+          role="alert"
+          className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)]/40 px-4 py-5 text-[12.5px] leading-relaxed text-red-600 dark:text-red-400"
+        >
+          {tr({
+            zh: "智能体列表加载失败。请检查访问权限后重试。",
+            en: "Could not load agents. Check your access and try again.",
+          })}
         </div>
       ) : !canConnect ? (
         <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--card)]/40 px-4 py-5 text-[12.5px] leading-relaxed text-[var(--muted-foreground)]">

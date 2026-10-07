@@ -275,6 +275,7 @@ export default function SpaceDashboard() {
   const tr = useCallback((l: Lang) => (zh ? l.zh : l.en), [zh]);
 
   const [counts, setCounts] = useState<Partial<Record<DashKey, number>>>({});
+  const [failed, setFailed] = useState<Partial<Record<DashKey, boolean>>>({});
 
   const capabilityAvailable = useCapabilityFilter();
   const groups = useMemo(
@@ -284,8 +285,9 @@ export default function SpaceDashboard() {
 
   useEffect(() => {
     let cancelled = false;
-    // Each tile loads independently so one slow/failed endpoint never blanks
-    // the whole dashboard.
+    // Each tile loads independently so one slow endpoint never blanks the
+    // whole dashboard; a failed one keeps its tile and is marked instead of
+    // silently dropping its count.
     for (const item of ALL_ITEMS) {
       if (!item.load) continue;
       item
@@ -294,7 +296,7 @@ export default function SpaceDashboard() {
           if (!cancelled) setCounts(prev => ({ ...prev, [item.key]: n }));
         })
         .catch(() => {
-          /* leave undefined → tile just omits the count */
+          if (!cancelled) setFailed(prev => ({ ...prev, [item.key]: true }));
         });
     }
     return () => {
@@ -316,6 +318,18 @@ export default function SpaceDashboard() {
         </p>
       </header>
 
+      {Object.keys(failed).length > 0 ? (
+        <div
+          role="alert"
+          className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[12.5px] leading-relaxed text-red-600 dark:text-red-400"
+        >
+          {tr({
+            zh: "部分内容加载失败，相关瓦片暂不显示计数。",
+            en: "Some content failed to load; the affected tiles show no count.",
+          })}
+        </div>
+      ) : null}
+
       <div className="space-y-9">
         {groups.map(group => (
           <section key={group.label.en}>
@@ -328,6 +342,7 @@ export default function SpaceDashboard() {
                   key={item.key}
                   item={item}
                   count={counts[item.key]}
+                  failed={Boolean(failed[item.key])}
                   tr={tr}
                 />
               ))}
@@ -342,10 +357,12 @@ export default function SpaceDashboard() {
 function DashboardCard({
   item,
   count,
+  failed = false,
   tr,
 }: {
   item: DashboardItem;
   count: number | undefined;
+  failed?: boolean;
   tr: (l: Lang) => string;
 }) {
   const Icon = item.icon;
@@ -382,6 +399,13 @@ function DashboardCard({
                     {tr(item.unit)}
                   </span>
                 </>
+              ) : failed ? (
+                <span
+                  title={tr({ zh: "计数不可用", en: "Count unavailable" })}
+                  className="my-[3px] text-[20px] font-semibold leading-none text-[var(--destructive)]"
+                >
+                  —
+                </span>
               ) : (
                 <span className="my-[3px] h-3.5 w-12 animate-pulse rounded bg-[var(--muted)]" />
               )}

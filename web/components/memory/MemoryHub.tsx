@@ -53,21 +53,36 @@ export default function MemoryHub() {
   const [overview, setOverview] = useState<OverviewResponse | null>(null);
   const [l1Total, setL1Total] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  // A forbidden or failing read must not render as zero counts.
+  const [overviewError, setOverviewError] = useState(false);
+  const [l1Error, setL1Error] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setOverviewError(false);
+    setL1Error(false);
     try {
       const [ovRes, ...l1Counts] = await Promise.all([
-        apiFetch(apiUrl("/api/memory/overview")).then((r) => r.json()),
+        apiFetch(apiUrl("/api/memory/overview"))
+          .then(async (r) => {
+            if (!r.ok) return null;
+            return (await r.json().catch(() => null)) as OverviewResponse | null;
+          })
+          .catch(() => null),
         ...SURFACES.map((s) =>
           apiFetch(apiUrl(`/api/memory/snapshot/${s}`))
-            .then((r) => r.json())
-            .then((d: SnapshotResponse) => d?.entities?.length ?? 0)
-            .catch(() => 0),
+            .then(async (r) => {
+              if (!r.ok) return -1;
+              const d = (await r.json().catch(() => null)) as SnapshotResponse | null;
+              return d?.entities?.length ?? 0;
+            })
+            .catch(() => -1),
         ),
       ]);
-      setOverview(ovRes as OverviewResponse);
-      setL1Total(l1Counts.reduce<number>((acc, n) => acc + (n as number), 0));
+      setOverview(ovRes);
+      setOverviewError(ovRes === null);
+      setL1Error(l1Counts.some((n) => n < 0));
+      setL1Total(l1Counts.reduce<number>((acc, n) => acc + Math.max(n, 0), 0));
     } finally {
       setLoading(false);
     }
@@ -121,13 +136,22 @@ export default function MemoryHub() {
         </div>
       </header>
 
+      {overviewError || l1Error ? (
+        <div
+          role="alert"
+          className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-[13px] leading-relaxed text-red-600 dark:text-red-400"
+        >
+          {t("Some memory data could not be loaded. Press Refresh to retry.")}
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         <LayerCard
           href="/memory/l1"
           icon={Layers}
           title={t("L1 · Workspace mirror")}
           tag={t("Live")}
-          stat={l1Total === null ? "…" : l1Total.toLocaleString()}
+          stat={l1Error ? "—" : l1Total === null ? "…" : l1Total.toLocaleString()}
           statLabel={t("entities tracked")}
           detail={t(
             "Snapshot of your live workspace across {{n}} surfaces. Refresh to record changes.",
@@ -139,7 +163,7 @@ export default function MemoryHub() {
           icon={Workflow}
           title={t("L2 · Per-surface summaries")}
           tag={t("Curated")}
-          stat={l2Total.toLocaleString()}
+          stat={overviewError ? "—" : l2Total.toLocaleString()}
           statLabel={t("facts across {{n}} surfaces", {
             n: l2Docs.length || SURFACES.length,
           })}
@@ -152,7 +176,7 @@ export default function MemoryHub() {
           icon={Network}
           title={t("L3 · Cross-surface knowledge")}
           tag={t("Synthesis")}
-          stat={l3Total.toLocaleString()}
+          stat={overviewError ? "—" : l3Total.toLocaleString()}
           statLabel={t("propositions across {{n}} slots", {
             n: l3Docs.length || L3_VISIBLE.length,
           })}
