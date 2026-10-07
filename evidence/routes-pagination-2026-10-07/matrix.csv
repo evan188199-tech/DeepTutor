@@ -1,0 +1,158 @@
+method,path,file_line,list_keys,pagination_style,limit_param,default_limit,server_cap,returns_total,frontend_usage,risk_class,notes
+GET,/api/knowledge-bases,deeptutor/api/routers/knowledge.py:2776,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:792),unbounded,response_model=list[KnowledgeBaseInfo]; full KB list
+GET,/api/knowledge-bases/list,deeptutor/api/routers/knowledge.py:2963,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:297),unbounded,duplicate of GET /api/knowledge-bases; both fetch-all
+POST,/api/knowledge-bases/list-ima,deeptutor/api/routers/knowledge.py:2524,knowledge_bases,cursor,limit (body),20,50 (MAX_PAGE_LIMIT),yes (next_cursor/is_end),paginated-loop (web/hooks/useImaConnection.ts:181),paginated-ok,only cursor-paginated KB list; body limit Field ge=1 le=50
+GET,/api/knowledge-bases/kiwix-catalog,deeptutor/api/routers/knowledge.py:2576,archives,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:817),static,installed zim archives; admin-managed small set
+GET,/api/knowledge-bases/kiwix-articles,deeptutor/api/routers/knowledge.py:2632,articles,hardcap,-,n/a,10,no,fetch-all (web/features/knowledge/api/client.ts:856),capped,fixed top_k=10; no client control
+GET,/api/knowledge-bases/{kb_name}/files,deeptutor/api/routers/knowledge.py:3058,files,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:695),unbounded,sorted(raw_dir.rglob(*)) walks entire KB raw dir; HIGH
+GET,/api/knowledge-bases/{kb_name}/linked-folders,deeptutor/api/routers/knowledge.py:4561,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:1028),unbounded,grows with linked folders
+GET,/api/knowledge-bases/{kb_name}/github-sources,deeptutor/api/routers/knowledge.py:4797,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:1581),unbounded,grows with sources
+GET,/api/knowledge-bases/{kb_name}/web-sources,deeptutor/api/routers/knowledge.py:4854,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:1733),unbounded,grows with sources
+GET,/api/knowledge-bases/{kb_name}/web-source-sync,deeptutor/api/routers/knowledge.py:4876,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:1815),unbounded,job list grows with sources
+GET,/api/knowledge-bases/{kb_name}/web-source/{source_id}/pairings,deeptutor/api/routers/knowledge.py:4888,raw,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:1751),unbounded,pairings grow with content
+GET,/api/knowledge-bases/embedding-usage,deeptutor/api/routers/knowledge.py:1882,knowledge_bases,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:30),unbounded,one row per KB
+GET,/api/knowledge-bases/rag-providers,deeptutor/api/routers/knowledge.py:1406,providers,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:326),static,provider registry
+GET,/api/knowledge-bases/rag-pipelines/model-options,deeptutor/api/routers/knowledge.py:1869,options,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:602),static,model catalog options
+GET,/api/knowledge-bases/rag-pipelines/lightrag/model-options,deeptutor/api/routers/knowledge.py:1701,options,none,-,unbounded,none,no,fetch-all (web/features/knowledge/api/client.ts:551),static,model catalog options
+POST,/api/knowledge-bases/{kb_name}/sync-folder/{folder_id},deeptutor/api/routers/knowledge.py:4596,files,none,-,unbounded,none,no,action-result (web/features/knowledge/api/client.ts:1087),mutation-echo,one-shot sync result file list
+POST,/api/knowledge-bases/{kb_name}/sync-github,deeptutor/api/routers/knowledge.py:4813,results,none,-,unbounded,none,no,action-result (web/features/knowledge/api/client.ts:1645),mutation-echo,one-shot sync results
+POST,/api/knowledge-bases/{kb_name}/sync-web,deeptutor/api/routers/knowledge.py:4987,results,none,-,unbounded,none,no,action-result (web/features/knowledge/api/client.ts:1887),mutation-echo,one-shot sync results
+GET,/api/settings,deeptutor/api/routers/settings.py:892,providers+connection_targets+task_kinds,none,-,unbounded,none,no,fetch-all (web/features/settings/store/SettingsStore.tsx:751),static,config enumeration payload
+GET,/api/settings/document-parsing,deeptutor/api/routers/settings.py:1258,available_engines+installable+model_downloadable,none,-,unbounded,none,no,fetch-all (DocumentParsingSettingsSection.tsx:84),static,engine registry lists
+GET,/api/settings/presets,deeptutor/api/routers/settings.py:1293,presets,none,-,unbounded,none,no,fetch-all (web/lib/settings-presets.ts:20),static,preset definitions
+GET,/api/settings/llm-options,deeptutor/api/routers/settings.py:1684,raw,none,-,unbounded,none,no,fetch-all (web/lib/llm-options.ts:58),static,allowed LLM options
+POST,/api/settings/fetch-models,deeptutor/api/routers/settings.py:1973,models,none,-,unbounded,none,no,fetch-all (ServiceConfigEditor.tsx:384),static,provider model list (external)
+GET,/api/settings/themes,deeptutor/api/routers/settings.py:2129,themes,none,-,unbounded,none,no,unused-frontend,static,fixed 4 entries
+GET,/api/settings/usage,deeptutor/api/routers/settings.py:2325,days+models,none,-,bounded-by-year (365),none,yes (implicit),fetch-all (web/lib/usage-statistics.ts:13),static,days array bounded by required year query
+GET,/api/reading/library/materials,deeptutor/api/routers/reading.py:432,materials,none,-,unbounded,none,yes (counts),fetch-all + client-side filter (listReadingLibraryMaterials),unbounded,counts returned but full list always; no pagination
+POST,/api/reading/library/duplicate-check,deeptutor/api/routers/reading.py:485,matches,none-client-limited,-,n/a,request max_length=50,no,fetch-all (checkReadingDuplicates),request-bounded,input files/urls capped at 50
+POST,/api/reading/library/import-urls,deeptutor/api/routers/reading.py:543,materials,none-client-limited,-,n/a,request max_length=50,no,fetch-all (reading-workspace-api.ts:267),request-bounded,input urls capped at 50
+GET,/api/reading/workspaces,deeptutor/api/routers/reading.py:677,workspaces,none,-,unbounded,none,no,fetch-all + search (listReadingWorkspaces),unbounded,grows with workspaces
+GET,/api/reading/workspaces/index,deeptutor/api/routers/reading.py:688,collections,none,-,unbounded,none,no,fetch-all (reading-workspace-api.ts:393),unbounded,index rows
+GET,/api/reading/workspaces/{workspace_id},deeptutor/api/routers/reading.py:726,sessions,none,-,unbounded,none,no,fetch-all (getReadingWorkspace),unbounded,all sessions of workspace embedded
+GET,/api/reading/workspaces/{workspace_id}/sessions,deeptutor/api/routers/reading.py:831,sessions,none,-,unbounded,none,no,fetch-all (reading-workspace-api.ts:331),unbounded,grows with sessions
+GET,/api/reading/materials,deeptutor/api/routers/reading.py:1024,raw,none,-,unbounded,none,no,fetch-all (ReadingReferencePicker.tsx:81),unbounded,full material manifest list
+GET,/api/reading/materials/{material_id}/epub-pairing-candidates,deeptutor/api/routers/reading.py:1127,raw,none,-,unbounded,none,no,unused-frontend,unbounded,candidates list; no caller
+GET,/api/reading/epub-pairings,deeptutor/api/routers/reading.py:1138,raw,none,-,unbounded,none,no,unused-frontend,unbounded,pairings list; no caller
+GET,/api/reading/materials/{material_id}/transcript,deeptutor/api/routers/reading.py:1206,segments,hardcap,-,unbounded,2097152 bytes,yes (truncated flag),fetch-all one round trip (reading-api.ts:344),capped,byte-budget cap with truncated flag; only byte-cap in scan
+GET,/api/reading/materials/{material_id}/revisions,deeptutor/api/routers/reading.py:1263,raw,none,-,unbounded,none,no,unused-frontend,unbounded,revisions grow with edits; no caller
+GET,/api/reading/materials/{material_id}/media,deeptutor/api/routers/reading.py:1357,raw,none,-,unbounded,none,no,fetch-all (reading-api.ts:300),unbounded,media items
+GET,/api/reading/materials/{material_id}/annotations,deeptutor/api/routers/reading.py:1389,raw,none,-,unbounded,none,no,fetch-all (reading-api.ts:577),unbounded,annotations grow with reading activity; HIGH
+GET,/api/reading/materials/{material_id}/bookmarks,deeptutor/api/routers/reading.py:1442,bookmarks,none,-,unbounded,none,no,fetch-all (reading-api.ts:539),unbounded,bookmarks grow slowly
+GET,/api/reading/extensions,deeptutor/api/routers/reading_extensions.py:141,raw,none,-,unbounded,none,no,fetch-all (listReadingExtensions),static,extension registry
+GET,/api/reading/materials/{material_id}/quiz/rewards,deeptutor/api/routers/reading_extensions.py:484,rewards,none,-,unbounded,none,yes (total_stars),fetch-all (reading-api.ts:493),unbounded,rewards grow with quizzes
+GET,/api/partners/souls,deeptutor/api/routers/partners.py:561,raw,none,-,unbounded,none,no,unused-frontend (GET wrapper; POST /souls used),unbounded,soul library list; GET wrapper unused
+GET,/api/partners/soul-sources,deeptutor/api/routers/partners.py:601,library+personas,none,-,unbounded,none,no,fetch-all (SoulPicker.tsx:73),unbounded,library+personas combined
+GET,/api/partners,deeptutor/api/routers/partners.py:641,raw,none,-,unbounded,none,no,fetch-all (web/lib/partners-api.ts:195),unbounded,visible_partners() full list
+GET,/api/partners/recent,deeptutor/api/routers/partners.py:664,raw,limit-offset,limit,3,none (no ge/le validation),no,unused-frontend (contracts only),unbounded,limit param unvalidated; manager slices activity[:limit]
+GET,/api/partners/tool-options,deeptutor/api/routers/partners.py:707,tools+builtin_tools+mcp_tools,none,-,unbounded,none,no,fetch-all (PartnerConfigure.tsx:149),static,tool registries
+GET,/api/partners/{partner_id}/workspaces,deeptutor/api/routers/partners.py:1259,workspaces,none,-,unbounded,none,no,fetch-all (PartnerWorkspacePicker.tsx:34),unbounded,all content workspaces
+GET,/api/partners/{partner_id}/assets,deeptutor/api/routers/partners.py:1277,knowledge_bases+skills+notebooks,none,-,unbounded,none,no,fetch-all (PartnerConfigure.tsx:134),unbounded,asset lists
+GET,/api/partners/{partner_id}/links,deeptutor/api/routers/partners.py:1331,links,none,-,unbounded,none,no,unused-frontend (wrapper only),unbounded,links list; no caller
+GET,/api/partners/{partner_id}/history,deeptutor/api/routers/partners.py:1352,raw,limit-offset,limit,100,none,no,unused-frontend (UI uses /history/page),unbounded,legacy limit-offset history; superseded by cursor /history/page
+GET,/api/partners/{partner_id}/history/page,deeptutor/api/routers/partners.py:1375,messages,cursor,before,60,200,yes (total),paginated-loop (PartnerChat.tsx:543 via before),paginated-ok,capped_limit=min(limit;200); next_before cursor
+GET,/api/partners/{partner_id}/sessions,deeptutor/api/routers/partners.py:1412,raw,none,-,unbounded,none,no,fetch-all (PartnerChat.tsx:1057; PartnerArchives.tsx:83),unbounded,all chat sessions
+GET,/api/partners/commands/palette,deeptutor/api/routers/partners.py:1531,commands,none,-,unbounded,none,no,unused-frontend (wrapper only),static,command palette registry
+GET,/api/partner-groups,deeptutor/api/routers/partner_groups.py:80,raw,none,-,unbounded,none,no,fetch-all (partner-groups-api.ts:103),unbounded,all groups
+GET,/api/partner-groups/discussion-modes,deeptutor/api/routers/partner_groups.py:85,raw,none,-,unbounded,none,no,fetch-all (partner-groups-api.ts:265),static,mode registry
+GET,/api/partner-groups/shared-memory-types,deeptutor/api/routers/partner_groups.py:90,raw,none,-,unbounded,none,no,unused-frontend,static,registry
+GET,/api/partner-groups/{group_id}/history,deeptutor/api/routers/partner_groups.py:129,raw,limit-offset,limit,200,500,no,no-limit-passed (server default 200),paginated-ok,frontend omits limit -> silent truncation at 200 rows; no total
+GET,/api/partner-groups/{group_id}/sessions,deeptutor/api/routers/partner_groups.py:139,raw,none,-,unbounded,none,no,fetch-all (partner-groups-api.ts:221),unbounded,all group sessions
+GET,/api/partner-groups/{group_id}/whiteboard,deeptutor/api/routers/partner_groups.py:163,raw,limit-offset,limit,200,500,no,no-limit-passed (server default 200),paginated-ok,same silent-truncation pattern as history
+GET,/api/partner-groups/{group_id}/invocations,deeptutor/api/routers/partner_groups.py:19,raw,limit-offset,limit,200,500,no,no-limit-passed (server default 200),paginated-ok,same silent-truncation pattern as history
+GET,/api/books/block-types,deeptutor/api/routers/book.py:576,block_types,none,-,unbounded,none,no,fetch-all (web/lib/book-api.ts:209),static,enum list
+GET,/api/books,deeptutor/api/routers/book.py:594,books,none,-,unbounded,none,no,fetch-all (web/lib/book-api.ts:114),unbounded,full book list; no pagination
+GET,/api/books/{book_id}/learning-captures,deeptutor/api/routers/book.py:614,captures,none,-,unbounded,none,no,fetch-all + status filter (book-api.ts:454),unbounded,captures grow with study activity
+GET,/api/books/{book_id},deeptutor/api/routers/book.py:742,pages,none,-,unbounded,none,no,fetch-all (book-api.ts:137),unbounded,entire book with all pages/blocks; HIGH payload
+POST,/api/books/confirm-spine,deeptutor/api/routers/book.py:872,pages,none,-,n/a,none,no,action-result (book-api.ts),mutation-echo,returns full page list after action
+POST,/api/books/resume,deeptutor/api/routers/book.py:1397,pages,none,-,n/a,none,no,action-result,mutation-echo,full page list after action
+POST,/api/books/pause,deeptutor/api/routers/book.py:1419,pages,none,-,n/a,none,no,action-result,mutation-echo,full page list after action
+POST,/api/books/rebuild,deeptutor/api/routers/book.py:1441,pages,none,-,n/a,none,no,action-result,mutation-echo,full page list after action
+GET,/api/mastery-paths/topics,deeptutor/api/routers/mastery_path.py:456,topics,none,-,unbounded,none,no,fetch-all (web/lib/learning-api.ts:598),unbounded,full snapshots incl maps+reviews per topic; HIGH
+GET,/api/mastery-paths/topics/index,deeptutor/api/routers/mastery_path.py:468,topics,none,-,unbounded,none,no,fetch-all (learning-api.ts:628),unbounded,index rows only
+GET,/api/mastery-paths/reading/records,deeptutor/api/routers/mastery_path.py:498,progress+activities,hardcap,-,progress unbounded; activities default 200,max(1;min(activity_limit;500)) internal,no,fetch-all (learning-api.ts:28),capped,activities clamped 200/500 internally; progress rows unbounded; silent truncation >200
+GET,/api/mastery-paths/topics/{path_id}/sessions,deeptutor/api/routers/mastery_path.py:717,sessions,none,-,unbounded,none,no,fetch-all (learning-api.ts:762),unbounded,all topic sessions
+GET,/api/mastery-paths/progress,deeptutor/api/routers/mastery_path.py:903,summaries+errors,none,-,unbounded,none,no,fetch-all (learning-api.ts:338),unbounded,one summary per book
+GET,/api/mastery-paths/progress/{book_id}/board,deeptutor/api/routers/mastery_path.py:943,cards+modules,none,-,unbounded,none,no,fetch-all (learning-api.ts:180),unbounded,one card per knowledge point
+GET,/api/mastery-paths/progress/{book_id}/events,deeptutor/api/routers/mastery_path.py:1031,events,cursor,after_revision,unbounded (all events after cursor),none,no,cursor sync (learning-api.ts:224 ?after_revision=N),unbounded,cursor without window/cap/has_more; initial sync returns full event history; HIGH
+GET,/api/mastery-paths/progress/{book_id}/sessions,deeptutor/api/routers/mastery_path.py:1050,session_ids,none,-,unbounded,none,no,unused-frontend,unbounded,session id list; no caller
+GET,/api/mastery-paths/progress/{book_id}/objectives/{kp_id},deeptutor/api/routers/mastery_path.py:996,attempts+evidence,hardcap,-,evidence 20,20,yes (evidence_count),fetch-all (learning-api.ts:314),capped,evidence fixed limit=20 with count
+GET,/api/memory/overview,deeptutor/api/routers/memory.py:84,docs+backups,none,-,unbounded,none,no,fetch-all (MemoryWorkbench.tsx:218),unbounded,all docs + backup dirs
+GET,/api/memory/backup,deeptutor/api/routers/memory.py:124,backups,none,-,unbounded,none,no,unused-frontend,unbounded,walks all backup dirs; no caller
+GET,/api/memory/runs,deeptutor/api/routers/memory.py:398,runs,none,-,unbounded,none,no,fetch-all + layer/key filter (useMemoryRun.ts:134),unbounded,run history grows unbounded
+GET,/api/memory/doc/{layer}/{key}/lines,deeptutor/api/routers/memory.py:574,lines,none,-,unbounded,none,no,fetch-all (MemoryWorkbench.tsx:236),static,whole document lines; document-viewer by design
+GET,/api/memory/trace/{surface},deeptutor/api/routers/memory.py:680,events,limit-offset,limit,200,1000,no,limit=200 (MemorySection.tsx:721),paginated-ok,echoes offset/limit; no total/has_more -> client cannot detect truncation
+GET,/api/memory/snapshot/{surface},deeptutor/api/routers/memory.py:728,entities+pending_changes,none,-,unbounded,none,no,fetch-all (web/lib/memory-graph.ts:244),unbounded,full graph entities
+GET,/api/memory/snapshot/{surface}/changes,deeptutor/api/routers/memory.py:765,changes,limit-offset,limit,200,1000,no,unused-frontend,paginated-ok,slice offset:offset+bound; no total
+POST,/api/memory/snapshot/{surface}/refresh,deeptutor/api/routers/memory.py:750,changes,none,-,n/a,none,no,action-result,mutation-echo,diff result list
+GET,/api/auth/devices,deeptutor/api/routers/auth.py:1384,devices,none,-,unbounded,none,no,unused-frontend (contracts only),unbounded,devices per user; small
+GET,/api/auth/users,deeptutor/api/routers/auth.py:1465,raw,none,-,unbounded,none,no,fetch-all admin (web/lib/admin-api.ts:67),unbounded,all users; admin UI fetch-all; pagination needed at scale; HIGH
+POST,/api/auth/users/import,deeptutor/api/routers/auth.py:1679,results,none-client-limited,-,n/a,500 rows (_USER_IMPORT_MAX_ROWS),yes (counts),fetch-all (admin-api.ts:110),request-bounded,CSV rows >500 rejected
+POST,/api/auth/users/batch-delete,deeptutor/api/routers/auth.py:1834,results,none-client-limited,-,n/a,500 (_USER_BATCH_MAX_ROWS),yes (counts),fetch-all (admin-api.ts:128),request-bounded,input cap 500
+GET,/api/multi-user/admin/resources,deeptutor/api/routers/multi_user.py:354,knowledge_bases+skills+partners+reading_materials+reading_extensions+tools+mcp_tools,none,-,unbounded,none,no,fetch-all (web/features/multi-user/api.ts:19),unbounded,aggregate of 7 resource lists
+GET,/api/multi-user/admin/books,deeptutor/api/routers/multi_user.py:375,books,none,-,unbounded,none,no,fetch-all (multi-user/api.ts:56),unbounded,full book catalog
+GET,/api/multi-user/guardians,deeptutor/api/routers/multi_user.py:382,relationships,none,-,unbounded,none,no,fetch-all (web/lib/guardian-api.ts:75),unbounded,all guardian relationships
+GET,/api/multi-user/me/guardianships,deeptutor/api/routers/multi_user.py:450,relationships,none,-,unbounded,none,no,fetch-all (guardian-api.ts:66),unbounded,guardianship list
+GET,/api/multi-user/learners/{learner_user_id}/guardian-report,deeptutor/api/routers/multi_user.py:489,assigned_materials,none,-,unbounded,none,no,fetch-all (guardian-api.ts:120),unbounded,derived from full catalog
+GET,/api/multi-user/learners/{learner_user_id}/materials,deeptutor/api/routers/multi_user.py:535,materials,none,-,unbounded,none,no,fetch-all (guardian-api.ts:142),unbounded,full catalog per learner
+GET,/api/multi-user/learners/{learner_user_id}/restrictions,deeptutor/api/routers/multi_user.py:633,available_extensions,none,-,unbounded,none,no,fetch-all (guardian-api.ts:166),static,extension registry
+GET,/api/multi-user/users,deeptutor/api/routers/multi_user.py:926,users,none,-,unbounded,none,no,unused-frontend (contracts only),unbounded,duplicate of /api/auth/users surface; no caller
+GET,/api/video-learning/invidious/browse/{kind},deeptutor/api/routers/video_learning.py:179,videos (raw array),page-based,page,1,page validated 1..1000 (upstream max_results=24),no,paginated-loop (WatchingBrowser.tsx:373 prev/next),paginated-ok,external upstream pagination; page param forwarded
+GET,/api/video-learning/materials/{material_id}/notes,deeptutor/api/routers/video_learning.py:260,raw,none,-,unbounded,none,no,fetch-all (web/lib/video-learning-api.ts:145),unbounded,all notes of material
+GET,/api/video-learning/materials/{material_id}/marks,deeptutor/api/routers/video_learning.py:318,raw,none,-,unbounded,none,no,fetch-all (video-learning-api.ts:287),unbounded,all marks
+POST,/api/video-learning/materials/{material_id}/mark-suggestions,deeptutor/api/routers/video_learning.py:378,suggestions,none,-,unbounded,none,no,fetch-all (video-learning-api.ts:358),static,algorithm-generated small list
+GET,/api/sessions,deeptutor/api/routers/sessions.py:118,sessions,limit-offset,limit,50,200 (Query le=200),no,paginated-loop pageSize=200 (session-api.ts:199;230),paginated-ok,no total/has_more; loop relies on short-page detection
+GET,/api/sessions/search,deeptutor/api/routers/sessions.py:138,sessions+total,limit-offset,limit,50,100 (Query le=100),yes,limit=50 + paginated-loop pageSize=100 (session-api.ts:249;270),paginated-ok,total returned; consistent
+GET,/api/sessions/recycle-bin,deeptutor/api/routers/sessions.py:283,sessions,limit-offset,limit,50,200,no,unused-frontend,paginated-ok,paginated; no caller
+GET,/api/sessions/{session_id},deeptutor/api/routers/sessions.py:293,messages,none,-,unbounded,none,no,fetch-all (session-api.ts:302),unbounded,all messages of session in one payload; HIGH
+GET,/api/sessions/{session_id}/messages/{message_id}/events,deeptutor/api/routers/sessions.py:307,events,cursor,after_seq+limit,500,1000,yes,limit=500 fixed per poll (session-api.ts:375),paginated-ok,stream-style cursor with cap
+GET,/api/question-notebook/entries,deeptutor/api/routers/question_notebook.py:351,items+total,limit-offset,limit,50,200,yes,paginated-loop limit=200 (QuestionBankPicker.tsx:115; useQuestionBank.ts:189),paginated-ok,total + window; consistent
+GET,/api/question-notebook/materials,deeptutor/api/routers/question_notebook.py:540,raw,none,-,unbounded,none,no,fetch-all (notebook-api.ts:603),unbounded,question bank materials
+GET,/api/question-notebook/categories,deeptutor/api/routers/question_notebook.py:556,raw,none,-,unbounded,none,no,fetch-all (notebook-api.ts:629),unbounded,category list
+GET,/api/notebooks,deeptutor/api/routers/notebook.py:192,notebooks+total,none,-,unbounded,none,yes (len),fetch-all (notebook-api.ts:53),unbounded,total present but full list always returned
+GET,/api/notebooks/{notebook_id},deeptutor/api/routers/notebook.py:251,records,none,-,unbounded,none,no,fetch-all (notebook-api.ts:62),unbounded,all notebook records
+GET,/api/documents,deeptutor/api/routers/co_writer.py:707,documents,none,-,unbounded,none,no,fetch-all (co-writer-api.ts:34),unbounded,all co-writer doc summaries
+GET,/api/documents/history,deeptutor/api/routers/co_writer.py:600,history+total,none,-,unbounded,none,yes (len),unused-frontend (contracts only),unbounded,legacy; no live caller
+GET,/api/skills,deeptutor/api/routers/skills.py:132,skills,none,-,unbounded,none,no,fetch-all (skills-api.ts:71),unbounded,merged skill registry
+GET,/api/skills/tags/list,deeptutor/api/routers/skills.py:85,tags,none,-,unbounded,none,no,fetch-all (skills-api.ts:301),static,tag list
+GET,/api/skills/hub/catalog,deeptutor/api/routers/skills.py:153,skills,none-client-limited,limit,50,none (no ge/le clamp),no,limit=100 (EduHubImportModal.tsx:90),unbounded,limit forwarded to external hub provider; no server cap
+GET,/api/system/memory,deeptutor/api/routers/system.py:405,processes,hardcap,-,n/a,12 (MAX_REPORTED_PROCESSES),no,fetch-all (MemoryUsageItem.tsx),capped,fixed 12 processes + other bucket
+GET,/api/courses,deeptutor/api/routers/courses.py:69,courses+colors,none,-,unbounded,none,no,fetch-all (courses-api.ts:178),unbounded,all courses
+GET,/api/courses/resource-candidates,deeptutor/api/routers/courses.py:91,candidates,none,-,unbounded,none,no,fetch-all (courses-api.ts:302),unbounded,aggregate candidates
+GET,/api/courses/{course_id}/state,deeptutor/api/routers/courses.py:189,resources+sessions+question_bank+syllabus.units+mastery.paths+reading.workspaces,none,-,unbounded,none,no,fetch-all (courses-api.ts:281),unbounded,whole-course aggregate; grows with every sub-resource; HIGH
+GET,/api/subagents/detect,deeptutor/api/routers/subagents.py:57,backends,none,-,unbounded,none,no,fetch-all (subagents-api.ts:26),static,backend detection
+GET,/api/subagents/backends/options,deeptutor/api/routers/subagents.py:64,backends,none,-,unbounded,none,no,fetch-all (subagents-api.ts:92),static,options registry
+GET,/api/subagents/connections,deeptutor/api/routers/subagents.py:91,connections,none,-,unbounded,none,no,fetch-all (subagents-api.ts:35),unbounded,per-KB connections
+GET,/api/question-notebook/practice/queue,deeptutor/api/routers/practice.py:135,raw,limit-offset,limit,20,100 (Query le=100),no,no-limit-passed -> server default 20 (practice-api.ts:95),paginated-ok,implicit 20-question window; no total
+GET,/api/question-notebook/practice/analytics,deeptutor/api/routers/practice.py:184,daily+sources,page-based (days enum),days,30,enum {7;30;90},no,fetch-all days=30 (practice-api.ts:41),capped,days validated to enum
+POST,/api/question-notebook/practice/import/preview,deeptutor/api/routers/practice.py:327,errors+samples,hardcap,-,n/a,5 samples,yes (total),fetch (practice-api.ts:124),capped,samples sliced [:5] with total
+GET,/api/space/mcp/servers,deeptutor/api/routers/space_mcp.py:92,servers(map)+status+rejected+configured_secrets,none,-,unbounded,none (write-time max_servers=8),no,fetch-all (mcp-api.ts),static,server map; bounded at write time (max 8)
+PUT,/api/space/mcp/servers/{name},deeptutor/api/routers/space_mcp.py:138,servers(map)+status+rejected,none,-,unbounded,none,no,settings UI,mutation-echo,returns list_servers()
+DELETE,/api/space/mcp/servers/{name},deeptutor/api/routers/space_mcp.py:157,servers(map)+status+rejected,none,-,unbounded,none,no,settings UI,mutation-echo,returns list_servers()
+GET,/api/space/mcp/catalog,deeptutor/api/routers/space_mcp.py:287,entries,cursor,cursor+limit,30,100 (MAX_PAGE_SIZE),yes (next_cursor+total),paginated-loop (mcp-store.ts Load more),paginated-ok,cursor + total; consistent
+POST,/api/space/mcp/catalog/{entry_id}/install,deeptutor/api/routers/space_mcp.py:319,servers(map)+status+rejected,none,-,unbounded,none,no,store install button,mutation-echo,returns list_servers()
+GET,/api/marginnote4/devices,deeptutor/api/routers/marginnote4.py:177,raw,none,-,unbounded,none,no,fetch-all (marginnote4-api.ts:70),unbounded,device list
+GET,/api/visualizers/list,deeptutor/api/routers/visualizers.py:39,visualizers,none,-,unbounded,none,no,fetch-all (visualizers-api.ts:32),static,registry catalog
+GET,/files/library,deeptutor/api/routers/file_library.py:54,raw,limit-offset,limit+offset,50,200 (Query le=200),no,unused-frontend,paginated-ok,paginated endpoint with no frontend caller
+GET,/files/library/search,deeptutor/api/routers/file_library.py:85,raw,none,-,unbounded,none,no,unused-frontend,unbounded,search returns all matches
+GET,/api/dashboard/recent,deeptutor/api/routers/dashboard.py:20,raw,limit-offset,limit,50,none (plain int default; no Query validation),no,unused-frontend (contracts only),unbounded,limit unvalidated; negative limit -> negative slice
+GET,/api/dashboard/suggestions,deeptutor/api/routers/dashboard.py:49,suggestions,none,-,unbounded,none,no,fetch-all (StarterSuggestions.tsx:92),static,small starter set
+GET,/api/dashboard/learning-index,deeptutor/api/routers/dashboard.py:79,sources.books+mastery+reading+watching+failed,none,-,unbounded,none,no,fetch-all (LearningDashboard.tsx:52),unbounded,aggregate of 4 source indexes
+GET,/api/dashboard/source-library/{kind},deeptutor/api/routers/dashboard.py:120,items+unavailable_workspaces,none,-,unbounded,none,no,fetch-all (useTopicSourceLibrary.ts:108),unbounded,aggregate items
+GET,/api/dashboard/learning-library/{kind},deeptutor/api/routers/dashboard.py:160,items+unavailable_workspaces,none,-,unbounded,none,no,fetch-all (learning-library.ts:12),unbounded,server internally pages list_notebook_entries(limit=200) until total fetched then returns all; N+1 internal pagination; HIGH
+GET,/api/space/cli-apps/apps,deeptutor/api/routers/space_cli_apps.py:61,apps,none,-,unbounded,none,no,fetch-all (cli-apps-api.ts:194),unbounded,installed apps
+PUT,/api/space/cli-apps/apps/{app_id}/enabled,deeptutor/api/routers/space_cli_apps.py:87,apps,none,-,unbounded,none,no,toggle UI,mutation-echo,returns list_apps()
+GET,/api/space/cli-apps/catalog,deeptutor/api/routers/space_cli_apps.py:109,entries,cursor,cursor+limit,24,60 (MAX_PAGE_SIZE),yes (next_cursor+total),paginated-loop (cli-apps-api.ts),paginated-ok,cursor + total; consistent
+POST,/api/space/cli-apps/catalog/{app_id}/install,deeptutor/api/routers/space_cli_apps.py:135,apps,none,-,unbounded,none,no,admin install,mutation-echo,returns list_apps()
+DELETE,/api/space/cli-apps/apps/{app_id},deeptutor/api/routers/space_cli_apps.py:162,apps,none,-,unbounded,none,no,admin uninstall,mutation-echo,returns list_apps()
+GET,/api/personas,deeptutor/api/routers/personas.py:68,personas,none,-,unbounded,none,no,fetch-all (personas-api.ts:56),unbounded,own + admin presets merged
+GET,/api/settings/mcp,deeptutor/api/routers/mcp_settings.py:57,servers(map)+status,none,-,unbounded,none (write-time cap),no,fetch-all (mcp-api.ts),static,admin server map
+PUT,/api/settings/mcp/servers/{name},deeptutor/api/routers/mcp_settings.py:81,servers(map)+status,none,-,unbounded,none,no,admin registry UI,mutation-echo,returns server map
+DELETE,/api/settings/mcp/servers/{name},deeptutor/api/routers/mcp_settings.py:107,servers(map)+status,none,-,unbounded,none,no,admin registry UI,mutation-echo,returns server map
+GET,/api/task-board,deeptutor/api/routers/task_board.py:10,cards,none,-,unbounded,none,no,fetch-all (task-board-api.ts),unbounded,full board
+POST,/api/task-board/cards,deeptutor/api/routers/task_board.py:16,cards,none,-,unbounded,none,no,board UI,mutation-echo,board after create
+PATCH,/api/task-board/cards/{card_id},deeptutor/api/routers/task_board.py:22,cards,none,-,unbounded,none,no,board UI,mutation-echo,board after update
+GET,/api/imports/chat-history,deeptutor/api/routers/imports.py:139,sessions,limit-offset,limit+offset,50,200 (Query le=200),no,limit=200 (imports-api.ts:79),paginated-ok,no total
+POST,/api/imports/chat-history,deeptutor/api/routers/imports.py:74,sessions,none-client-limited,-,n/a,1000 (_MAX_SESSIONS_PER_REQUEST),yes (counts),chat-import flow,request-bounded,request cap 1000 with imported/skipped counts
+GET,/api/tools,deeptutor/api/routers/tools.py:215,tools+enabled_optional_tools,none,-,unbounded,none,no,fetch-all (tools-settings.ts:10),static,tool registry
+GET,/api/capabilities/registered,deeptutor/api/routers/capabilities.py:24,capabilities,none,-,unbounded,none,no,fetch-all (features/capabilities/api.ts:15),static,capability registry
