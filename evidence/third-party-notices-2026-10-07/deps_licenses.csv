@@ -1,0 +1,254 @@
+ecosystem,name,license,class,source,notice_file,context
+python,aiohttp,Apache-2.0 AND MIT,apache-2.0,.venv 3.14.3 METADATA License 字段,False,"dependencies,extra:partners"
+python,aiosqlite,MIT License,permissive,.venv 0.22.1 METADATA Classifiers,False,dependencies
+python,anthropic,MIT,permissive,.venv 1.0.0 METADATA License 字段,False,"dependencies,extra:cli"
+python,arxiv,MIT,permissive,.venv 4.0.1 METADATA License-Expression,False,"dependencies,extra:cli"
+python,bandit,Apache-2.0,apache-2.0,.venv 1.9.4 METADATA License 字段,False,extra:dev
+python,bcrypt,Apache-2.0,apache-2.0,.venv 5.0.0 METADATA License 字段,False,"dependencies,extra:server"
+python,codebuddy-agent-sdk,UNKNOWN,unknown,not installed in .venv,False,extra:codebuddy
+python,croniter,MIT,permissive,.venv 6.2.4 METADATA License-Expression,False,"dependencies,extra:server"
+python,dashscope,Apache 2.0,apache-2.0,.venv 1.27.1 METADATA License 字段,True,"dependencies,extra:cli"
+python,ddgs,MIT,permissive,.venv 9.15.0 METADATA License-Expression,False,dependencies
+python,defusedxml,PSFL,permissive,.venv 0.7.1 METADATA License 字段,False,"dependencies,extra:cli,extra:dev"
+python,dingtalk-stream,MIT,permissive,.venv 0.24.3 METADATA License 字段,False,extra:partners
+python,docling,UNKNOWN,unknown,not installed in .venv,False,extra:parse-docling
+python,docling-slim,UNKNOWN,unknown,not installed in .venv,False,extra:parse-docling
+python,faiss-cpu,MIT,permissive,.venv 1.15.0 METADATA License-Expression,True,"dependencies,extra:cli"
+python,fastapi,MIT,permissive,.venv 0.141.1 METADATA License-Expression,False,"dependencies,extra:server"
+python,graphrag,MIT,permissive,.venv 3.1.1 METADATA License 字段,False,extra:graphrag
+python,httpx,BSD-3-Clause,permissive,.venv 0.28.1 METADATA License 字段,False,dependencies
+python,import-linter,BSD 2-Clause License,permissive,.venv 2.11 METADATA License 字段,False,extra:dev
+python,jinja2,BSD License,permissive,.venv 3.1.6 METADATA Classifiers,False,dependencies
+python,json-repair,MIT,permissive,.venv 0.63.3 METADATA License-Expression,False,"dependencies,extra:server"
+python,jsonschema,MIT,permissive,.venv 4.26.0 METADATA License-Expression,False,dependencies
+python,lark-oapi,MIT,permissive,.venv 1.7.2 METADATA License 字段,False,extra:partners
+python,lightrag-hku,UNKNOWN,unknown,not installed in .venv,False,extra:rag-lightrag
+python,liteparse,UNKNOWN,unknown,not installed in .venv,False,extra:parse-liteparse
+python,llama-index,MIT,permissive,.venv 0.14.19 METADATA License-Expression,False,"dependencies,extra:cli"
+python,llama-index-retrievers-bm25,MIT,permissive,.venv 0.7.1 METADATA License-Expression,False,"dependencies,extra:cli"
+python,llama-index-vector-stores-faiss,MIT,permissive,.venv 0.6.0 METADATA License-Expression,False,"dependencies,extra:cli"
+python,loguru,MIT License,permissive,.venv 0.7.3 METADATA Classifiers,False,"dependencies,extra:server"
+python,manim,MIT,permissive,.venv 0.21.0 METADATA License-Expression,False,extra:math-animator
+python,markitdown,MIT,permissive,.venv 0.1.4 METADATA License-Expression,False,extra:parse-markitdown
+python,matrix-nio,UNKNOWN,unknown,not installed in .venv,False,"extra:matrix,extra:matrix-e2e"
+python,mcp,MIT,permissive,.venv 1.29.0 METADATA License 字段,False,dependencies
+python,mistune,UNKNOWN,unknown,not installed in .venv,False,extra:matrix
+python,msgpack,Apache-2.0,apache-2.0,.venv 1.2.1 METADATA License-Expression,False,extra:partners
+python,nest-asyncio,BSD,permissive,.venv 1.6.0 METADATA License 字段,False,dependencies
+python,nh3,UNKNOWN,unknown,not installed in .venv,False,extra:matrix
+python,numpy,BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0,permissive,.venv 2.5.2 METADATA License-Expression,False,"dependencies,extra:cli"
+python,oauth-cli-kit,MIT,permissive,.venv 0.1.6 METADATA License 字段,False,"dependencies,extra:cli"
+python,openai,Apache-2.0,apache-2.0,.venv 2.54.0 METADATA License 字段,False,dependencies
+python,openpyxl,MIT,permissive,.venv 3.1.5 METADATA License 字段,False,"dependencies,extra:cli,extra:dev"
+python,pageindex,MIT,permissive,.venv 0.2.10 METADATA License 字段,False,"dependencies,extra:cli"
+python,pdfplumber,MIT License,permissive,.venv 0.11.7 METADATA Classifiers,False,"dependencies,extra:cli"
+python,perplexityai,Apache-2.0,apache-2.0,.venv 0.43.3 METADATA License 字段,False,"dependencies,extra:cli"
+python,pillow,MIT-CMU,permissive,.venv 12.3.0 METADATA License-Expression,False,"dependencies,extra:cli"
+python,pocketbase,MIT,permissive,.venv 0.17.3 METADATA License-Expression,False,"dependencies,extra:server"
+python,pre-commit,MIT,permissive,.venv 4.6.2 METADATA License 字段,False,extra:dev
+python,prompt-toolkit,BSD License,permissive,.venv 3.0.53 METADATA Classifiers,False,dependencies
+python,psutil,BSD-3-Clause,permissive,.venv 7.2.2 METADATA License 字段,False,"dependencies,extra:server"
+python,pydantic,MIT,permissive,.venv 2.13.4 METADATA License-Expression,False,dependencies
+python,pydantic-settings,MIT,permissive,.venv 2.15.0 METADATA License-Expression,False,dependencies
+python,pyjwt,MIT,permissive,.venv 2.13.0 METADATA License-Expression,False,extra:partners
+python,pymupdf,Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License,strong-copyleft,.venv 1.28.2 METADATA License 字段,False,"dependencies,extra:cli"
+python,pymupdf4llm,UNKNOWN,unknown,not installed in .venv,False,extra:parse-pymupdf4llm
+python,pypdf,BSD-3-Clause,permissive,.venv 6.16.1 METADATA License-Expression,False,"dependencies,extra:cli,extra:dev"
+python,pyte,GNU Lesser General Public License v3 (LGPLv3),strong-copyleft,.venv 0.8.2 METADATA Classifiers,False,dependencies
+python,pytest,MIT,permissive,.venv 9.1.1 METADATA License-Expression,False,extra:dev
+python,pytest-asyncio,Apache-2.0,apache-2.0,.venv 1.4.0 METADATA License-Expression,False,extra:dev
+python,python-docx,MIT,permissive,.venv 1.2.0 METADATA License 字段,False,"dependencies,extra:cli,extra:dev"
+python,python-jose,MIT,permissive,.venv 3.5.0 METADATA License 字段,False,"dependencies,extra:server"
+python,python-multipart,Apache-2.0,apache-2.0,.venv 0.0.32 METADATA License-Expression,False,"dependencies,extra:server"
+python,python-pptx,MIT,permissive,.venv 1.0.2 METADATA License 字段,False,"dependencies,extra:cli,extra:dev"
+python,python-socketio,MIT,permissive,.venv 5.16.4 METADATA License 字段,False,extra:partners
+python,python-socks,Apache-2.0,apache-2.0,.venv 2.8.2 METADATA License 字段,False,extra:partners
+python,python-telegram-bot,LGPL-3.0-only,strong-copyleft,.venv 22.8 METADATA License-Expression,False,extra:partners
+python,pyyaml,MIT,permissive,.venv 6.0.3 METADATA License 字段,False,dependencies
+python,qq-botpy,Tencent,other,.venv 1.2.1 METADATA License 字段,False,extra:partners
+python,qrcode,BSD,permissive,.venv 8.2 METADATA License 字段,False,dependencies
+python,redis,UNKNOWN,unknown,not installed in .venv,False,"dependencies,extra:server"
+python,reportlab,"BSD license (see license.txt for details), Copyright (c) 2000-2025, ReportLab Inc.",permissive,.venv 5.0.1 METADATA License 字段,False,"dependencies,extra:cli"
+python,requests,Apache-2.0,apache-2.0,.venv 2.34.2 METADATA License 字段,True,dependencies
+python,rich,MIT,permissive,.venv 15.0.0 METADATA License 字段,False,dependencies
+python,safety,MIT license,permissive,.venv 2.3.4 METADATA License 字段,False,extra:dev
+python,sentence-transformers,UNKNOWN,unknown,not installed in .venv,False,extra:rag-rerank
+python,slack-sdk,MIT,permissive,.venv 3.43.0 METADATA License 字段,False,extra:partners
+python,slackify-markdown,MIT License,permissive,.venv 0.2.4 METADATA Classifiers,False,extra:partners
+python,socksio,MIT License,permissive,.venv 1.0.0 METADATA Classifiers,False,extra:partners
+python,tenacity,Apache 2.0,apache-2.0,.venv 9.1.4 METADATA License 字段,False,dependencies
+python,tiktoken,"MIT License Copyright (c) 2022 OpenAI, Shantanu Jain Permission is hereby granted, free of charge, to any person obtaini",permissive,.venv 0.14.0 METADATA License 字段(全文),False,dependencies
+python,typer,MIT,permissive,.venv 0.26.8 METADATA License-Expression,False,dependencies
+python,uvicorn,BSD-3-Clause,permissive,.venv 0.52.4 METADATA License-Expression,False,"dependencies,extra:server"
+python,websocket-client,Apache-2.0,apache-2.0,.venv 1.9.0 METADATA License 字段,False,extra:partners
+python,websockets,BSD-3-Clause,permissive,.venv 15.0.1 METADATA License 字段,False,"dependencies,extra:partners,extra:server"
+python,wecom-aibot-sdk,MIT,permissive,.venv 1.0.8 METADATA License-Expression,False,extra:partners
+python,youtube-transcript-api,MIT,permissive,.venv 1.2.4 METADATA License 字段,False,"dependencies,extra:cli,extra:video-learning"
+python,zulip,Apache Software License,apache-2.0,.venv 0.9.1 METADATA Classifiers,False,extra:partners
+npm,@recogito/text-annotator,BSD-3-Clause,permissive,package-lock.json@4.2.5,False,dependencies
+npm,chart.js,MIT,permissive,package-lock.json@4.5.1,False,dependencies
+npm,clsx,MIT,permissive,package-lock.json@2.1.1,False,dependencies
+npm,cytoscape,MIT,permissive,package-lock.json@3.33.1,False,dependencies
+npm,docx-preview,Apache-2.0,apache-2.0,package-lock.json@0.3.7,False,dependencies
+npm,epubjs,BSD-2-Clause,permissive,package-lock.json@0.3.93,False,dependencies
+npm,exceljs,MIT,permissive,package-lock.json@4.4.0,False,dependencies
+npm,framer-motion,MIT,permissive,package-lock.json@12.24.11,False,dependencies
+npm,html2canvas,MIT,permissive,package-lock.json@1.4.1,False,dependencies
+npm,i18next,MIT,permissive,package-lock.json@25.8.0,False,dependencies
+npm,jspdf,MIT,permissive,package-lock.json@4.2.1,False,dependencies
+npm,lucide-react,ISC,permissive,package-lock.json@0.562.0,False,dependencies
+npm,mdast-util-from-markdown,MIT,permissive,package-lock.json@2.0.2,False,dependencies
+npm,mermaid,MIT,permissive,package-lock.json@11.14.0,False,dependencies
+npm,next,MIT,permissive,package-lock.json@16.2.3,False,dependencies
+npm,pdfjs-dist,Apache-2.0,apache-2.0,package-lock.json@6.2.108,False,dependencies
+npm,react,MIT,permissive,package-lock.json@19.2.3,False,dependencies
+npm,react-chartjs-2,MIT,permissive,package-lock.json@5.3.1,False,dependencies
+npm,react-dom,MIT,permissive,package-lock.json@19.2.3,False,dependencies
+npm,react-i18next,MIT,permissive,package-lock.json@16.5.3,False,dependencies
+npm,react-markdown,MIT,permissive,package-lock.json@10.1.0,False,dependencies
+npm,react-syntax-highlighter,MIT,permissive,package-lock.json@16.1.1,False,dependencies
+npm,rehype-katex,MIT,permissive,package-lock.json@7.0.1,False,dependencies
+npm,rehype-raw,MIT,permissive,package-lock.json@7.0.0,False,dependencies
+npm,remark-gfm,MIT,permissive,package-lock.json@4.0.1,False,dependencies
+npm,remark-math,MIT,permissive,package-lock.json@6.0.0,False,dependencies
+npm,tailwind-merge,MIT,permissive,package-lock.json@3.4.0,False,dependencies
+npm,@playwright/test,Apache-2.0,apache-2.0,package-lock.json@1.57.0,False,devDependencies
+npm,@testing-library/dom,MIT,permissive,package-lock.json@10.4.1,False,devDependencies
+npm,@testing-library/jest-dom,MIT,permissive,package-lock.json@7.0.1,False,devDependencies
+npm,@testing-library/react,MIT,permissive,package-lock.json@16.3.3,False,devDependencies
+npm,@testing-library/user-event,MIT,permissive,package-lock.json@14.6.6,False,devDependencies
+npm,@types/node,MIT,permissive,package-lock.json@25.0.3,False,devDependencies
+npm,@types/react,MIT,permissive,package-lock.json@19.2.7,False,devDependencies
+npm,@types/react-dom,MIT,permissive,package-lock.json@19.2.3,False,devDependencies
+npm,@types/react-syntax-highlighter,MIT,permissive,package-lock.json@15.5.13,False,devDependencies
+npm,autoprefixer,MIT,permissive,package-lock.json@10.4.23,False,devDependencies
+npm,dependency-cruiser,MIT,permissive,package-lock.json@17.4.3,False,devDependencies
+npm,eslint,MIT,permissive,package-lock.json@9.39.2,False,devDependencies
+npm,eslint-config-next,MIT,permissive,package-lock.json@16.2.3,False,devDependencies
+npm,jsdom,MIT,permissive,package-lock.json@29.1.1,False,devDependencies
+npm,json-schema-to-typescript,MIT,permissive,package-lock.json@16.0.0,False,devDependencies
+npm,openapi-typescript,MIT,permissive,package-lock.json@7.13.0,False,devDependencies
+npm,postcss,MIT,permissive,package-lock.json@8.5.26,False,devDependencies
+npm,simple-icons,CC0-1.0,permissive,package-lock.json@16.27.1,False,devDependencies
+npm,tailwindcss,MIT,permissive,package-lock.json@3.4.19,False,devDependencies
+npm,typescript,Apache-2.0,apache-2.0,package-lock.json@5.9.3,False,devDependencies
+npm,vitest,MIT,permissive,package-lock.json@4.1.11,False,devDependencies
+npm-transitive,@chevrotain/cst-dts-gen,Apache-2.0,apache-2.0,package-lock.json@12.0.0,False,transitive-sample
+npm-transitive,@chevrotain/gast,Apache-2.0,apache-2.0,package-lock.json@12.0.0,False,transitive-sample
+npm-transitive,@chevrotain/regexp-to-ast,Apache-2.0,apache-2.0,package-lock.json@12.0.0,False,transitive-sample
+npm-transitive,@chevrotain/types,Apache-2.0,apache-2.0,package-lock.json@12.0.0,False,transitive-sample
+npm-transitive,@chevrotain/utils,Apache-2.0,apache-2.0,package-lock.json@12.0.0,False,transitive-sample
+npm-transitive,@eslint/config-array,Apache-2.0,apache-2.0,package-lock.json@0.21.1,False,transitive-sample
+npm-transitive,@eslint/config-helpers,Apache-2.0,apache-2.0,package-lock.json@0.4.2,False,transitive-sample
+npm-transitive,@eslint/core,Apache-2.0,apache-2.0,package-lock.json@0.17.0,False,transitive-sample
+npm-transitive,@eslint/object-schema,Apache-2.0,apache-2.0,package-lock.json@2.1.7,False,transitive-sample
+npm-transitive,@eslint/plugin-kit,Apache-2.0,apache-2.0,package-lock.json@0.4.1,False,transitive-sample
+npm-transitive,@humanfs/core,Apache-2.0,apache-2.0,package-lock.json@0.19.1,False,transitive-sample
+npm-transitive,@humanfs/node,Apache-2.0,apache-2.0,package-lock.json@0.16.7,False,transitive-sample
+npm-transitive,@humanwhocodes/module-importer,Apache-2.0,apache-2.0,package-lock.json@1.0.1,False,transitive-sample
+npm-transitive,@humanwhocodes/retry,Apache-2.0,apache-2.0,package-lock.json@0.4.3,False,transitive-sample
+npm-transitive,@img/sharp-darwin-arm64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-darwin-x64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-libvips-darwin-arm64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-darwin-x64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-arm,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-arm64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-ppc64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-riscv64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-s390x,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linux-x64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linuxmusl-arm64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-libvips-linuxmusl-x64,LGPL-3.0-or-later,strong-copyleft,package-lock.json@1.2.4,False,transitive-sample
+npm-transitive,@img/sharp-linux-arm,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linux-arm64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linux-ppc64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linux-riscv64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linux-s390x,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linux-x64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linuxmusl-arm64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-linuxmusl-x64,Apache-2.0,apache-2.0,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-wasm32,Apache-2.0 AND LGPL-3.0-or-later AND MIT,strong-copyleft,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-win32-arm64,Apache-2.0 AND LGPL-3.0-or-later,strong-copyleft,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-win32-ia32,Apache-2.0 AND LGPL-3.0-or-later,strong-copyleft,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@img/sharp-win32-x64,Apache-2.0 AND LGPL-3.0-or-later,strong-copyleft,package-lock.json@0.34.5,False,transitive-sample
+npm-transitive,@swc/helpers,Apache-2.0,apache-2.0,package-lock.json@0.5.15,False,transitive-sample
+npm-transitive,aria-query,Apache-2.0,apache-2.0,package-lock.json@5.3.0,False,transitive-sample
+npm-transitive,@adobe/css-tools,MIT,permissive,package-lock.json@4.5.0,False,transitive-sample
+npm-transitive,@alloc/quick-lru,MIT,permissive,package-lock.json@5.2.0,False,transitive-sample
+npm-transitive,@annotorious/core,BSD-3-Clause,permissive,package-lock.json@3.8.9,False,transitive-sample
+npm-transitive,@antfu/install-pkg,MIT,permissive,package-lock.json@1.1.0,False,transitive-sample
+npm-transitive,@apidevtools/json-schema-ref-parser,MIT,permissive,package-lock.json@11.9.3,False,transitive-sample
+npm-transitive,@asamuzakjp/css-color,MIT,permissive,package-lock.json@5.1.11,False,transitive-sample
+npm-transitive,@asamuzakjp/dom-selector,MIT,permissive,package-lock.json@7.1.1,False,transitive-sample
+npm-transitive,@asamuzakjp/generational-cache,MIT,permissive,package-lock.json@1.0.1,False,transitive-sample
+npm-transitive,@asamuzakjp/nwsapi,MIT,permissive,package-lock.json@2.3.9,False,transitive-sample
+npm-transitive,@babel/code-frame,MIT,permissive,package-lock.json@7.27.1,False,transitive-sample
+npm-transitive,@babel/compat-data,MIT,permissive,package-lock.json@7.28.5,False,transitive-sample
+npm-transitive,@babel/core,MIT,permissive,package-lock.json@7.28.5,False,transitive-sample
+npm-transitive,@babel/generator,MIT,permissive,package-lock.json@7.28.5,False,transitive-sample
+npm-transitive,@babel/helper-compilation-targets,MIT,permissive,package-lock.json@7.27.2,False,transitive-sample
+npm-transitive,@babel/helper-globals,MIT,permissive,package-lock.json@7.28.0,False,transitive-sample
+npm-transitive,@babel/helper-module-imports,MIT,permissive,package-lock.json@7.27.1,False,transitive-sample
+npm-transitive,@babel/helper-module-transforms,MIT,permissive,package-lock.json@7.28.3,False,transitive-sample
+npm-transitive,@babel/helper-string-parser,MIT,permissive,package-lock.json@7.27.1,False,transitive-sample
+npm-transitive,@babel/helper-validator-identifier,MIT,permissive,package-lock.json@7.28.5,False,transitive-sample
+npm-transitive,@babel/helper-validator-option,MIT,permissive,package-lock.json@7.27.1,False,transitive-sample
+python-transitive,aiofiles,Apache-2.0,apache-2.0,.venv 25.1.0 METADATA License 字段,True,transitive-sample
+python-transitive,aiosignal,Apache 2.0,apache-2.0,.venv 1.4.0 METADATA License 字段,False,transitive-sample
+python-transitive,asttokens,Apache 2.0,apache-2.0,.venv 2.4.1 METADATA License 字段,False,transitive-sample
+python-transitive,bidict,MPL 2.0,weak-copyleft,.venv 0.23.1 METADATA License 字段,False,transitive-sample
+python-transitive,certifi,MPL-2.0,weak-copyleft,.venv 2026.7.22 METADATA License 字段,False,transitive-sample
+python-transitive,coverage,Apache-2.0,apache-2.0,.venv 7.16.2 METADATA License 字段,True,transitive-sample
+python-transitive,cryptography,Apache-2.0 OR BSD-3-Clause,apache-2.0,.venv 50.0.0 METADATA License-Expression,False,transitive-sample
+python-transitive,cython,Apache-2.0,apache-2.0,.venv 3.3.0 METADATA License 字段,False,transitive-sample
+python-transitive,deprecation,Apache 2,apache-2.0,.venv 2.1.0 METADATA License 字段,False,transitive-sample
+python-transitive,distro,"Apache License, Version 2.0",apache-2.0,.venv 1.9.0 METADATA License 字段,False,transitive-sample
+python-transitive,fake-useragent,Apache-2.0,apache-2.0,.venv 2.2.0 METADATA License-Expression,False,transitive-sample
+python-transitive,flatbuffers,Apache 2.0,apache-2.0,.venv 25.12.19 METADATA License 字段,False,transitive-sample
+python-transitive,frozenlist,Apache-2.0,apache-2.0,.venv 1.8.0 METADATA License 字段,False,transitive-sample
+python-transitive,hf-xet,Apache-2.0,apache-2.0,.venv 1.6.0 METADATA License-Expression,False,transitive-sample
+python-transitive,huggingface-hub,Apache,apache-2.0,.venv 0.36.2 METADATA License 字段,False,transitive-sample
+python-transitive,importlib-metadata,Apache-2.0,apache-2.0,.venv 8.9.0 METADATA License-Expression,False,transitive-sample
+python-transitive,lance-namespace,Apache-2.0,apache-2.0,.venv 0.9.0 METADATA License 字段,False,transitive-sample
+python-transitive,lance-namespace-urllib3-client,Apache-2.0,apache-2.0,.venv 0.9.0 METADATA License 字段,False,transitive-sample
+python-transitive,lancedb,Apache Software License,apache-2.0,.venv 0.34.0 METADATA Classifiers,False,transitive-sample
+python-transitive,magika,Apache-2.0,apache-2.0,.venv 0.6.3 METADATA License 字段,False,transitive-sample
+python-transitive,multidict,Apache License 2.0,apache-2.0,.venv 6.7.1 METADATA License 字段,False,transitive-sample
+python-transitive,nltk,"Apache License, Version 2.0",apache-2.0,.venv 3.9.1 METADATA License 字段,False,transitive-sample
+python-transitive,orjson,MPL-2.0 AND (Apache-2.0 OR MIT),weak-copyleft,.venv 3.11.9 METADATA License-Expression,False,transitive-sample
+python-transitive,packaging,Apache-2.0 OR BSD-2-Clause,apache-2.0,.venv 26.3 METADATA License-Expression,False,transitive-sample
+python-transitive,propcache,Apache-2.0,apache-2.0,.venv 0.5.2 METADATA License 字段,True,transitive-sample
+python-transitive,pyarrow,Apache-2.0,apache-2.0,.venv 25.0.1 METADATA License-Expression,True,transitive-sample
+python-transitive,pycairo,LGPL-2.1-only OR MPL-1.1,strong-copyleft,.venv 1.29.1 METADATA License 字段,False,transitive-sample
+python-transitive,pypdfium2,"BSD-3-Clause, Apache-2.0, dependency licenses",apache-2.0,.venv 5.10.1 METADATA License 字段,False,transitive-sample
+python-transitive,python-dateutil,Dual License,other,.venv 2.9.0.post0 METADATA License 字段,False,transitive-sample
+python-transitive,regex,Apache-2.0 AND CNRI-Python,apache-2.0,.venv 2026.7.19 METADATA License-Expression,False,transitive-sample
+python-transitive,requests-toolbelt,Apache 2.0,apache-2.0,.venv 1.0.0 METADATA License 字段,False,transitive-sample
+python-transitive,rsa,Apache-2.0,apache-2.0,.venv 4.9.1 METADATA License 字段,False,transitive-sample
+python-transitive,sniffio,MIT OR Apache-2.0,apache-2.0,.venv 1.3.1 METADATA License 字段,False,transitive-sample
+python-transitive,sortedcontainers,Apache 2.0,apache-2.0,.venv 2.4.0 METADATA License 字段,False,transitive-sample
+python-transitive,stevedore,Apache-2.0,apache-2.0,.venv 5.9.1 METADATA License-Expression,False,transitive-sample
+python-transitive,tokenizers,Apache Software License,apache-2.0,.venv 0.22.2 METADATA Classifiers,False,transitive-sample
+python-transitive,tqdm,MPL-2.0 AND MIT,weak-copyleft,.venv 4.70.0 METADATA License 字段,False,transitive-sample
+python-transitive,watchdog,Apache-2.0,apache-2.0,.venv 6.0.0 METADATA License 字段,False,transitive-sample
+python-transitive,yarl,Apache-2.0,apache-2.0,.venv 1.24.5 METADATA License 字段,True,transitive-sample
+python-transitive,aiohappyeyeballs,PSF-2.0,permissive,.venv 2.7.1 METADATA License 字段,False,transitive-sample
+python-transitive,annotated-doc,MIT,permissive,.venv 0.0.5 METADATA License-Expression,False,transitive-sample
+python-transitive,annotated-types,MIT,permissive,.venv 0.8.0 METADATA License-Expression,False,transitive-sample
+python-transitive,anyio,MIT,permissive,.venv 4.14.2 METADATA License-Expression,False,transitive-sample
+python-transitive,apscheduler,MIT,permissive,.venv 3.11.3 METADATA License 字段,False,transitive-sample
+python-transitive,attrs,MIT,permissive,.venv 26.1.0 METADATA License-Expression,False,transitive-sample
+python-transitive,audioop-lts,PSF-2.0,permissive,.venv 0.2.2 METADATA License-Expression,False,transitive-sample
+python-transitive,av,BSD-3-Clause,permissive,.venv 18.1.0 METADATA License-Expression,False,transitive-sample
+python-transitive,azure-core,MIT,permissive,.venv 1.41.0 METADATA License-Expression,False,transitive-sample
+python-transitive,azure-cosmos,MIT License,permissive,.venv 4.16.3 METADATA License 字段,False,transitive-sample
+python-transitive,azure-identity,MIT,permissive,.venv 1.25.3 METADATA License-Expression,False,transitive-sample
+python-transitive,azure-search-documents,MIT,permissive,.venv 12.0.0 METADATA License-Expression,False,transitive-sample
+python-transitive,azure-storage-blob,MIT License,permissive,.venv 12.30.0 METADATA License 字段,False,transitive-sample
+python-transitive,banks,MIT,permissive,.venv 2.5.0 METADATA License-Expression,False,transitive-sample
+python-transitive,beautifulsoup4,MIT License,permissive,.venv 4.15.0 METADATA License 字段,False,transitive-sample
+python-transitive,blis,BSD,permissive,.venv 1.3.3 METADATA License 字段,False,transitive-sample
+python-transitive,bm25s,MIT License,permissive,.venv 0.3.10 METADATA Classifiers,False,transitive-sample
+python-transitive,brotli,MIT,permissive,.venv 1.2.0 METADATA License 字段,False,transitive-sample
+python-transitive,catalogue,MIT,permissive,.venv 2.0.10 METADATA License 字段,False,transitive-sample
+python-transitive,cffi,MIT-0,permissive,.venv 2.1.1 METADATA License-Expression,False,transitive-sample
