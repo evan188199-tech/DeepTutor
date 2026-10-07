@@ -1,0 +1,13 @@
+tests/reading 复跑（guide-reading §七 测试计数结论复核）
+
+命令：cd <worktree @ f07029cfc> && /Users/Shared/DeepTutor/.venv/bin/python -m pytest -q -p no:cacheprovider tests/reading
+新基线：origin/main @ f07029cfc（v1.6.13）
+
+输出（尾部）：
+........................................................................ [ 69%]
+........................................................................ [ 86%]
+.......................................................                  [100%]
+415 passed in 5.61s
+
+对照导读声明：402 passed, 0 failed（4.88s @ ef2d9e5c3）
+结论：仍全绿；计数漂移 +13（新测试：read-aloud、EPUB 锚点升级、MD fence 解析等）。

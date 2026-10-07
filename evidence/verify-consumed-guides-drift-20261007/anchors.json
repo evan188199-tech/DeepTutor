@@ -1,0 +1,2196 @@
+{
+ "mastery": [
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    174,
+    174
+   ],
+   "label": "LoopCapability",
+   "status": "INTACT",
+   "new": 174
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    197,
+    197
+   ],
+   "label": "owned_tools",
+   "status": "INTACT",
+   "new": 197
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    239,
+    297
+   ],
+   "label": "augment_kwargs",
+   "status": "INTACT",
+   "new": 239
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    251,
+    257
+   ],
+   "label": "read_source remap",
+   "status": "INTACT",
+   "new": 251
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    299,
+    374
+   ],
+   "label": "finish_instruction",
+   "status": "INTACT",
+   "new": 299
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    376,
+    407
+   ],
+   "label": "final_text_override",
+   "status": "INTACT",
+   "new": 376
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    409,
+    477
+   ],
+   "label": "pre_loop_seed",
+   "status": "INTACT",
+   "new": 409
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/loop.py",
+   "old": [
+    498,
+    512
+   ],
+   "label": "_bind_active_mode",
+   "status": "SHIFTED",
+   "new": 517
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    92,
+    107
+   ],
+   "label": "MASTERY_TOOL_NAMES",
+   "status": "SHIFTED",
+   "new": 93
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2678,
+    2693
+   ],
+   "label": "MASTERY_TOOL_TYPES",
+   "status": "SHIFTED",
+   "new": 2709
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    672,
+    672
+   ],
+   "label": "mastery_status cls",
+   "status": "SHIFTED",
+   "new": 700
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    688,
+    688
+   ],
+   "label": "mastery_status exec",
+   "status": "SHIFTED",
+   "new": 716
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    775,
+    775
+   ],
+   "label": "mastery_quiz cls",
+   "status": "SHIFTED",
+   "new": 803
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    892,
+    892
+   ],
+   "label": "mastery_quiz exec",
+   "status": "SHIFTED",
+   "new": 920
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    945,
+    945
+   ],
+   "label": "quiz register",
+   "status": "SHIFTED",
+   "new": 976
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    962,
+    968
+   ],
+   "label": "AWAITING_INPUT",
+   "status": "SHIFTED",
+   "new": 993
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    978,
+    984
+   ],
+   "label": "end_turn",
+   "status": "SHIFTED",
+   "new": 1009
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1035,
+    1035
+   ],
+   "label": "mastery_grade cls",
+   "status": "SHIFTED",
+   "new": 1066
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1068,
+    1068
+   ],
+   "label": "mastery_grade exec",
+   "status": "SHIFTED",
+   "new": 1099
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1257,
+    1257
+   ],
+   "label": "mastery_assess cls",
+   "status": "SHIFTED",
+   "new": 1288
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1291,
+    1291
+   ],
+   "label": "mastery_assess exec",
+   "status": "SHIFTED",
+   "new": 1322
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1364,
+    1364
+   ],
+   "label": "mastery_skip cls",
+   "status": "SHIFTED",
+   "new": 1395
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1381,
+    1381
+   ],
+   "label": "mastery_skip exec",
+   "status": "SHIFTED",
+   "new": 1412
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1412,
+    1412
+   ],
+   "label": "mastery_repair cls",
+   "status": "SHIFTED",
+   "new": 1443
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1453,
+    1453
+   ],
+   "label": "mastery_repair exec",
+   "status": "SHIFTED",
+   "new": 1484
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1529,
+    1529
+   ],
+   "label": "mastery_defer cls",
+   "status": "SHIFTED",
+   "new": 1560
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1558,
+    1558
+   ],
+   "label": "mastery_defer exec",
+   "status": "SHIFTED",
+   "new": 1589
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1597,
+    1597
+   ],
+   "label": "mastery_build cls",
+   "status": "SHIFTED",
+   "new": 1628
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1703,
+    1703
+   ],
+   "label": "mastery_build exec",
+   "status": "SHIFTED",
+   "new": 1734
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1755,
+    1755
+   ],
+   "label": "mastery_mode cls",
+   "status": "SHIFTED",
+   "new": 1786
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1801,
+    1801
+   ],
+   "label": "mastery_mode exec",
+   "status": "SHIFTED",
+   "new": 1832
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1849,
+    1849
+   ],
+   "label": "mastery_profile cls",
+   "status": "SHIFTED",
+   "new": 1880
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1928,
+    1928
+   ],
+   "label": "mastery_profile exec",
+   "status": "SHIFTED",
+   "new": 1959
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    1983,
+    1983
+   ],
+   "label": "mastery_revise cls",
+   "status": "SHIFTED",
+   "new": 2014
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2086,
+    2086
+   ],
+   "label": "mastery_revise exec",
+   "status": "SHIFTED",
+   "new": 2117
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2179,
+    2179
+   ],
+   "label": "mastery_paths cls",
+   "status": "SHIFTED",
+   "new": 2210
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2195,
+    2195
+   ],
+   "label": "mastery_paths exec",
+   "status": "SHIFTED",
+   "new": 2226
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2220,
+    2220
+   ],
+   "label": "mastery_switch cls",
+   "status": "SHIFTED",
+   "new": 2251
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2246,
+    2246
+   ],
+   "label": "mastery_switch exec",
+   "status": "SHIFTED",
+   "new": 2226
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2283,
+    2283
+   ],
+   "label": "mastery_leave cls",
+   "status": "SHIFTED",
+   "new": 2314
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/tools.py",
+   "old": [
+    2300,
+    2300
+   ],
+   "label": "mastery_leave exec",
+   "status": "SHIFTED",
+   "new": 2277
+  },
+  {
+   "file": "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+   "old": [
+    30,
+    127
+   ],
+   "label": "loop.system",
+   "status": "INTACT",
+   "new": 30
+  },
+  {
+   "file": "deeptutor/agents/loop/pipeline.py",
+   "old": [
+    811,
+    815
+   ],
+   "label": "owned_tools apply",
+   "status": "INTACT",
+   "new": 811
+  },
+  {
+   "file": "deeptutor/agents/loop/pipeline.py",
+   "old": [
+    1450,
+    1488
+   ],
+   "label": "KB preseed",
+   "status": "SHIFTED",
+   "new": 1473
+  },
+  {
+   "file": "deeptutor/agents/loop/pipeline.py",
+   "old": [
+    1458,
+    1458
+   ],
+   "label": "query=user_message",
+   "status": "SHIFTED",
+   "new": 1481
+  },
+  {
+   "file": "deeptutor/agents/loop/pipeline.py",
+   "old": [
+    1490,
+    1523
+   ],
+   "label": "_seed_search_one_kb",
+   "status": "SHIFTED",
+   "new": 1515
+  },
+  {
+   "file": "deeptutor/agents/loop/pipeline.py",
+   "old": [
+    1507,
+    1512
+   ],
+   "label": "rag search",
+   "status": "SHIFTED",
+   "new": 1532
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    140,
+    141
+   ],
+   "label": "workspace_writer",
+   "status": "INTACT",
+   "new": 140
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    141,
+    141
+   ],
+   "label": "_run_turn",
+   "status": "INTACT",
+   "new": 141
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    186,
+    193
+   ],
+   "label": "ask_user enter",
+   "status": "INTACT",
+   "new": 186
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    200,
+    217
+   ],
+   "label": "ask_user resume",
+   "status": "INTACT",
+   "new": 200
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    760,
+    784
+   ],
+   "label": "explore_context guard",
+   "status": "SHIFTED",
+   "new": 766
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    790,
+    797
+   ],
+   "label": "card grade",
+   "status": "SHIFTED",
+   "new": 796
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    798,
+    806
+   ],
+   "label": "card skip",
+   "status": "SHIFTED",
+   "new": 804
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    884,
+    886
+   ],
+   "label": "user_message=answer",
+   "status": "SHIFTED",
+   "new": 890
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    935,
+    947
+   ],
+   "label": "ctx metadata",
+   "status": "SHIFTED",
+   "new": 941
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    1044,
+    1058
+   ],
+   "label": "path/mode events",
+   "status": "SHIFTED",
+   "new": 1054
+  },
+  {
+   "file": "deeptutor/services/session/turns/executor.py",
+   "old": [
+    1377,
+    1389
+   ],
+   "label": "finally release lease",
+   "status": "SHIFTED",
+   "new": 1387
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    115,
+    117
+   ],
+   "label": "turn status consts",
+   "status": "SHIFTED",
+   "new": 123
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    276,
+    276
+   ],
+   "label": "sessions table",
+   "status": "SHIFTED",
+   "new": 284
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    286,
+    286
+   ],
+   "label": "messages table",
+   "status": "SHIFTED",
+   "new": 294
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    313,
+    315
+   ],
+   "label": "turns table FK",
+   "status": "SHIFTED",
+   "new": 321
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    336,
+    336
+   ],
+   "label": "turn_events table",
+   "status": "SHIFTED",
+   "new": 344
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    1370,
+    1409
+   ],
+   "label": "active turns",
+   "status": "SHIFTED",
+   "new": 1397
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    1494,
+    1494
+   ],
+   "label": "transition_turn",
+   "status": "SHIFTED",
+   "new": 1521
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    2922,
+    2922
+   ],
+   "label": "update_session_preferences",
+   "status": "SHIFTED",
+   "new": 2950
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    3339,
+    3339
+   ],
+   "label": "record_assessment",
+   "status": "SHIFTED",
+   "new": 3367
+  },
+  {
+   "file": "deeptutor/services/session/sqlite_store.py",
+   "old": [
+    399,
+    421
+   ],
+   "label": "assessment tables",
+   "status": "SHIFTED",
+   "new": 407
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    101,
+    130
+   ],
+   "label": "_cancel_active_learning_turn",
+   "status": "SHIFTED",
+   "new": 107
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    132,
+    163
+   ],
+   "label": "_exclusive_path_mutation",
+   "status": "SHIFTED",
+   "new": 149
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    439,
+    439
+   ],
+   "label": "GET /topics",
+   "status": "SHIFTED",
+   "new": 456
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    451,
+    451
+   ],
+   "label": "GET /topics/index",
+   "status": "SHIFTED",
+   "new": 468
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    489,
+    489
+   ],
+   "label": "POST /topics/draft",
+   "status": "SHIFTED",
+   "new": 506
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    526,
+    526
+   ],
+   "label": "POST /topics",
+   "status": "SHIFTED",
+   "new": 543
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    585,
+    585
+   ],
+   "label": "GET /topics/{id}",
+   "status": "SHIFTED",
+   "new": 602
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    591,
+    600
+   ],
+   "label": "review settings",
+   "status": "SHIFTED",
+   "new": 608
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    630,
+    630
+   ],
+   "label": "PUT map",
+   "status": "SHIFTED",
+   "new": 647
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    671,
+    671
+   ],
+   "label": "objective override",
+   "status": "SHIFTED",
+   "new": 688
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    700,
+    700
+   ],
+   "label": "GET sessions",
+   "status": "SHIFTED",
+   "new": 717
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    721,
+    755
+   ],
+   "label": "PUT mode",
+   "status": "SHIFTED",
+   "new": 738
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    758,
+    758
+   ],
+   "label": "ask-hint",
+   "status": "SHIFTED",
+   "new": 775
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    771,
+    883
+   ],
+   "label": "ws mastery-paths",
+   "status": "SHIFTED",
+   "new": 788
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    830,
+    848
+   ],
+   "label": "after_revision",
+   "status": "SHIFTED",
+   "new": 823
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    864,
+    868
+   ],
+   "label": "list_events replay",
+   "status": "SHIFTED",
+   "new": 881
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    815,
+    815
+   ],
+   "label": "screen bypass",
+   "status": "SHIFTED",
+   "new": 832
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    886,
+    1249
+   ],
+   "label": "progress agg",
+   "status": "SHIFTED",
+   "new": 903
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    1114,
+    1114
+   ],
+   "label": "DELETE progress",
+   "status": "SHIFTED",
+   "new": 1131
+  },
+  {
+   "file": "deeptutor/api/routers/mastery_path.py",
+   "old": [
+    1143,
+    1143
+   ],
+   "label": "POST redo",
+   "status": "SHIFTED",
+   "new": 1160
+  },
+  {
+   "file": "deeptutor/api/routers/sessions.py",
+   "old": [
+    460,
+    493
+   ],
+   "label": "DELETE session",
+   "status": "SHIFTED",
+   "new": 466
+  },
+  {
+   "file": "deeptutor/api/routers/sessions.py",
+   "old": [
+    481,
+    488
+   ],
+   "label": "cancel loop",
+   "status": "SHIFTED",
+   "new": 487
+  },
+  {
+   "file": "deeptutor/api/routers/sessions.py",
+   "old": [
+    489,
+    492
+   ],
+   "label": "delete rows",
+   "status": "SHIFTED",
+   "new": 497
+  },
+  {
+   "file": "deeptutor/api/routers/sessions.py",
+   "old": [
+    496,
+    508
+   ],
+   "label": "detach_session",
+   "status": "SHIFTED",
+   "new": 504
+  },
+  {
+   "file": "deeptutor/app/service.py",
+   "old": [
+    260,
+    281
+   ],
+   "label": "app cancel",
+   "status": "SHIFTED",
+   "new": 262
+  },
+  {
+   "file": "deeptutor/app/service.py",
+   "old": [
+    313,
+    313
+   ],
+   "label": "_reclaim_unowned_active_turn",
+   "status": "SHIFTED",
+   "new": 349
+  },
+  {
+   "file": "deeptutor/services/session/_turn_runtime_shared.py",
+   "old": [
+    599,
+    599
+   ],
+   "label": "selection escape",
+   "status": "INTACT",
+   "new": 599
+  },
+  {
+   "file": "deeptutor/services/session/_turn_runtime_shared.py",
+   "old": [
+    603,
+    603
+   ],
+   "label": "normalize material id",
+   "status": "INTACT",
+   "new": 603
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    176,
+    188
+   ],
+   "label": "chat adapter",
+   "status": "INTACT",
+   "new": 176
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    190,
+    202
+   ],
+   "label": "session resolve",
+   "status": "INTACT",
+   "new": 190
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    292,
+    292
+   ],
+   "label": "pending hint",
+   "status": "SHIFTED",
+   "new": 307
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    323,
+    334
+   ],
+   "label": "hint consume",
+   "status": "SHIFTED",
+   "new": 312
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    370,
+    400
+   ],
+   "label": "celebrate diff",
+   "status": "SHIFTED",
+   "new": 385
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    418,
+    437
+   ],
+   "label": "answerMasteryQuestion",
+   "status": "SHIFTED",
+   "new": 433
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    441,
+    465
+   ],
+   "label": "skipMasteryQuestion",
+   "status": "SHIFTED",
+   "new": 456
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    467,
+    476
+   ],
+   "label": "startFromPrompt",
+   "status": "SHIFTED",
+   "new": 482
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    478,
+    487
+   ],
+   "label": "useMasteryOpening",
+   "status": "SHIFTED",
+   "new": 493
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    492,
+    516
+   ],
+   "label": "mode switch UI",
+   "status": "SHIFTED",
+   "new": 507
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    635,
+    647
+   ],
+   "label": "outline aside",
+   "status": "SHIFTED",
+   "new": 650
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    650,
+    816
+   ],
+   "label": "transcript",
+   "status": "SHIFTED",
+   "new": 665
+  },
+  {
+   "file": "web/components/space/learning/MasteryStudy.tsx",
+   "old": [
+    830,
+    837
+   ],
+   "label": "Composer",
+   "status": "SHIFTED",
+   "new": 846
+  },
+  {
+   "file": "web/components/space/learning/MasteryComposer.tsx",
+   "old": [
+    64,
+    72
+   ],
+   "label": "pin capability",
+   "status": "SHIFTED",
+   "new": 65
+  },
+  {
+   "file": "web/components/space/learning/MasteryComposer.tsx",
+   "old": [
+    83,
+    85
+   ],
+   "label": "awaitingUserReply",
+   "status": "SHIFTED",
+   "new": 86
+  },
+  {
+   "file": "web/components/space/learning/MasteryComposer.tsx",
+   "old": [
+    87,
+    126
+   ],
+   "label": "card answer route",
+   "status": "SHIFTED",
+   "new": 90
+  },
+  {
+   "file": "web/features/chat/messages/ChatMessageList.tsx",
+   "old": [
+    798,
+    826
+   ],
+   "label": "card render",
+   "status": "SHIFTED",
+   "new": 803
+  },
+  {
+   "file": "web/features/chat/messages/ChatMessageList.tsx",
+   "old": [
+    2032,
+    2039
+   ],
+   "label": "grade/skip collect",
+   "status": "SHIFTED",
+   "new": 2067
+  },
+  {
+   "file": "web/features/chat/components/ChatWorkspace.tsx",
+   "old": [
+    2140,
+    2160
+   ],
+   "label": "answer send chain",
+   "status": "SHIFTED",
+   "new": 2154
+  }
+ ],
+ "reading": [
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    54,
+    54
+   ],
+   "label": "2800 chars",
+   "status": "INTACT",
+   "new": 54
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    57,
+    57
+   ],
+   "label": "4200 cap",
+   "status": "INTACT",
+   "new": 57
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    67,
+    67
+   ],
+   "label": "RAW_VIEW_EXTENSIONS",
+   "status": "INTACT",
+   "new": 67
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    131,
+    131
+   ],
+   "label": "extract_material dispatch",
+   "status": "INTACT",
+   "new": 131
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    145,
+    145
+   ],
+   "label": "PDF branch",
+   "status": "INTACT",
+   "new": 145
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    147,
+    147
+   ],
+   "label": "EPUB branch",
+   "status": "INTACT",
+   "new": 147
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    156,
+    156
+   ],
+   "label": "MD branch",
+   "status": "INTACT",
+   "new": 156
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    359,
+    359
+   ],
+   "label": "_extract_sections",
+   "status": "SHIFTED",
+   "new": 366
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    429,
+    429
+   ],
+   "label": "split_md_headings",
+   "status": "SHIFTED",
+   "new": 436
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    446,
+    449
+   ],
+   "label": "MD <2 headings",
+   "status": "SHIFTED",
+   "new": 453
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    27,
+    35
+   ],
+   "label": "design note",
+   "status": "INTACT",
+   "new": 27
+  },
+  {
+   "file": "deeptutor/reading/extract.py",
+   "old": [
+    145,
+    160
+   ],
+   "label": "new format branch",
+   "status": "INTACT",
+   "new": 145
+  },
+  {
+   "file": "deeptutor/reading/store.py",
+   "old": [
+    273,
+    281
+   ],
+   "label": "normalize_epub call",
+   "status": "INTACT",
+   "new": 273
+  },
+  {
+   "file": "deeptutor/reading/store.py",
+   "old": [
+    283,
+    283
+   ],
+   "label": "content hash id",
+   "status": "INTACT",
+   "new": 283
+  },
+  {
+   "file": "deeptutor/reading/store.py",
+   "old": [
+    291,
+    299
+   ],
+   "label": "idempotent reuse",
+   "status": "INTACT",
+   "new": 291
+  },
+  {
+   "file": "deeptutor/reading/store.py",
+   "old": [
+    300,
+    300
+   ],
+   "label": "ReadingUpgradeConflict",
+   "status": "INTACT",
+   "new": 300
+  },
+  {
+   "file": "deeptutor/reading/models.py",
+   "old": [
+    16,
+    16
+   ],
+   "label": "SourceKind",
+   "status": "INTACT",
+   "new": 16
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    537,
+    537
+   ],
+   "label": "import-urls",
+   "status": "SHIFTED",
+   "new": 544
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1031,
+    1031
+   ],
+   "label": "upload_material",
+   "status": "SHIFTED",
+   "new": 1038
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1083,
+    1095
+   ],
+   "label": "reuse=false",
+   "status": "SHIFTED",
+   "new": 1090
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1131,
+    1155
+   ],
+   "label": "epub-pairings",
+   "status": "SHIFTED",
+   "new": 1138
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1240,
+    1240
+   ],
+   "label": "unit text",
+   "status": "SHIFTED",
+   "new": 1247
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1288,
+    1288
+   ],
+   "label": "raw",
+   "status": "SHIFTED",
+   "new": 1295
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1294,
+    1294
+   ],
+   "label": "render pack",
+   "status": "SHIFTED",
+   "new": 1301
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1382,
+    1382
+   ],
+   "label": "annotations",
+   "status": "SHIFTED",
+   "new": 1389
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1392,
+    1403
+   ],
+   "label": "position",
+   "status": "SHIFTED",
+   "new": 1399
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1473,
+    1473
+   ],
+   "label": "annotation write",
+   "status": "SHIFTED",
+   "new": 1484
+  },
+  {
+   "file": "deeptutor/api/routers/reading.py",
+   "old": [
+    1498,
+    1498
+   ],
+   "label": "export",
+   "status": "SHIFTED",
+   "new": 1509
+  },
+  {
+   "file": "deeptutor/api/routers/reading_extensions.py",
+   "old": [
+    34,
+    34
+   ],
+   "label": "120s timeout",
+   "status": "SHIFTED",
+   "new": 36
+  },
+  {
+   "file": "deeptutor/api/routers/reading_extensions.py",
+   "old": [
+    35,
+    35
+   ],
+   "label": "timeout value",
+   "status": "SHIFTED",
+   "new": 37
+  },
+  {
+   "file": "deeptutor/api/routers/reading_extensions.py",
+   "old": [
+    54,
+    54
+   ],
+   "label": "10k payload",
+   "status": "SHIFTED",
+   "new": 56
+  },
+  {
+   "file": "deeptutor/api/routers/reading_extensions.py",
+   "old": [
+    130,
+    152
+   ],
+   "label": "registry fuse",
+   "status": "SHIFTED",
+   "new": 136
+  },
+  {
+   "file": "deeptutor/api/routers/reading_extensions.py",
+   "old": [
+    145,
+    145
+   ],
+   "label": "HTTP auto",
+   "status": "SHIFTED",
+   "new": 195
+  },
+  {
+   "file": "deeptutor/utils/document_extractor.py",
+   "old": [
+    922,
+    922
+   ],
+   "label": "extract_epub_spine",
+   "status": "SHIFTED",
+   "new": 949
+  },
+  {
+   "file": "web/components/reading/ReaderPane.tsx",
+   "old": [
+    1,
+    1
+   ],
+   "label": "ReaderPane",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "web/components/reading/EpubDocumentView.tsx",
+   "old": [
+    162,
+    162
+   ],
+   "label": "EpubDocumentView",
+   "status": "SHIFTED",
+   "new": 167
+  },
+  {
+   "file": "web/components/reading/PdfDocumentView.tsx",
+   "old": [
+    69,
+    69
+   ],
+   "label": "PdfDocumentView",
+   "status": "SHIFTED",
+   "new": 76
+  },
+  {
+   "file": "web/components/reading/ReadingActionsProvider.tsx",
+   "old": [
+    1,
+    1
+   ],
+   "label": "reader_action consume",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "web/components/reading/workspace/ReadingComposer.tsx",
+   "old": [
+    1,
+    1
+   ],
+   "label": "ReadingComposer",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "tests/reading/test_engine.py",
+   "old": [
+    216,
+    226
+   ],
+   "label": "MD flat fallback",
+   "status": "SHIFTED",
+   "new": 238
+  },
+  {
+   "file": "tests/reading/test_engine.py",
+   "old": [
+    441,
+    480
+   ],
+   "label": "EPUB upgrade",
+   "status": "SHIFTED",
+   "new": 510
+  },
+  {
+   "file": "tests/reading/test_router.py",
+   "old": [
+    774,
+    774
+   ],
+   "label": "non-ascii export",
+   "status": "SHIFTED",
+   "new": 782
+  },
+  {
+   "file": "tests/reading/test_ingestion.py",
+   "old": [
+    128,
+    128
+   ],
+   "label": "revision reanchor",
+   "status": "INTACT",
+   "new": 128
+  },
+  {
+   "file": "deeptutor/reading/extensions.py",
+   "old": [
+    84,
+    84
+   ],
+   "label": "ReadingExtension protocol",
+   "status": "INTACT",
+   "new": 84
+  },
+  {
+   "file": "deeptutor/reading/extensions.py",
+   "old": [
+    109,
+    109
+   ],
+   "label": "registry",
+   "status": "INTACT",
+   "new": 109
+  },
+  {
+   "file": "deeptutor/reading/extensions.py",
+   "old": [
+    130,
+    152
+   ],
+   "label": "dedup+timeout",
+   "status": "INTACT",
+   "new": 130
+  },
+  {
+   "file": "deeptutor/reading/extensions.py",
+   "old": [
+    138,
+    142
+   ],
+   "label": "process fuse",
+   "status": "INTACT",
+   "new": 138
+  },
+  {
+   "file": "deeptutor/reading/extensions.py",
+   "old": [
+    178,
+    178
+   ],
+   "label": "registry2",
+   "status": "INTACT",
+   "new": 178
+  },
+  {
+   "file": "deeptutor/reading/service.py",
+   "old": [
+    26,
+    26
+   ],
+   "label": "24 locators",
+   "status": "INTACT",
+   "new": 26
+  },
+  {
+   "file": "deeptutor/reading/service.py",
+   "old": [
+    63,
+    63
+   ],
+   "label": "parse_locators",
+   "status": "INTACT",
+   "new": 63
+  },
+  {
+   "file": "deeptutor/reading/service.py",
+   "old": [
+    155,
+    155
+   ],
+   "label": "verify_quote",
+   "status": "INTACT",
+   "new": 155
+  },
+  {
+   "file": "deeptutor/reading/search.py",
+   "old": [
+    90,
+    90
+   ],
+   "label": "search_units",
+   "status": "INTACT",
+   "new": 90
+  },
+  {
+   "file": "deeptutor/reading/search.py",
+   "old": [
+    126,
+    126
+   ],
+   "label": "locate_quote",
+   "status": "INTACT",
+   "new": 126
+  },
+  {
+   "file": "deeptutor/reading/catalog_store.py",
+   "old": [
+    54,
+    54
+   ],
+   "label": "ReadingCatalogStore",
+   "status": "INTACT",
+   "new": 54
+  },
+  {
+   "file": "deeptutor/reading/catalog_models.py",
+   "old": [
+    16,
+    16
+   ],
+   "label": "SourceKind",
+   "status": "INTACT",
+   "new": 16
+  },
+  {
+   "file": "deeptutor/reading/ingestion.py",
+   "old": [
+    5,
+    7
+   ],
+   "label": "queued async",
+   "status": "INTACT",
+   "new": 5
+  },
+  {
+   "file": "deeptutor/reading/ingestion.py",
+   "old": [
+    151,
+    151
+   ],
+   "label": "ReadingIngestionService",
+   "status": "INTACT",
+   "new": 151
+  },
+  {
+   "file": "deeptutor/reading/ingestion.py",
+   "old": [
+    183,
+    199
+   ],
+   "label": "source_kind",
+   "status": "INTACT",
+   "new": 183
+  },
+  {
+   "file": "deeptutor/reading/ingestion.py",
+   "old": [
+    295,
+    295
+   ],
+   "label": "youtube",
+   "status": "INTACT",
+   "new": 295
+  },
+  {
+   "file": "deeptutor/reading/ingestion.py",
+   "old": [
+    348,
+    348
+   ],
+   "label": "bilibili",
+   "status": "INTACT",
+   "new": 348
+  },
+  {
+   "file": "deeptutor/reading/export.py",
+   "old": [
+    59,
+    59
+   ],
+   "label": "export_material",
+   "status": "INTACT",
+   "new": 59
+  },
+  {
+   "file": "deeptutor/reading/refresh.py",
+   "old": [
+    11,
+    11
+   ],
+   "label": "serial",
+   "status": "INTACT",
+   "new": 11
+  },
+  {
+   "file": "deeptutor/reading/refresh.py",
+   "old": [
+    16,
+    18
+   ],
+   "label": "serial note",
+   "status": "INTACT",
+   "new": 16
+  },
+  {
+   "file": "deeptutor/reading/epub_bilingual.py",
+   "old": [
+    174,
+    174
+   ],
+   "label": "create_epub_pairing",
+   "status": "INTACT",
+   "new": 174
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    112,
+    112
+   ],
+   "label": "ReadingCapability",
+   "status": "INTACT",
+   "new": 112
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    118,
+    130
+   ],
+   "label": "is_active",
+   "status": "INTACT",
+   "new": 118
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    135,
+    135
+   ],
+   "label": "system_block",
+   "status": "INTACT",
+   "new": 135
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    323,
+    345
+   ],
+   "label": "augment_kwargs",
+   "status": "INTACT",
+   "new": 323
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    323,
+    323
+   ],
+   "label": "id injection",
+   "status": "INTACT",
+   "new": 323
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    354,
+    354
+   ],
+   "label": "pre_loop_seed",
+   "status": "INTACT",
+   "new": 354
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    366,
+    366
+   ],
+   "label": "allowed check",
+   "status": "INTACT",
+   "new": 366
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    395,
+    399
+   ],
+   "label": "selection trunc",
+   "status": "INTACT",
+   "new": 395
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    404,
+    432
+   ],
+   "label": "pre_loop",
+   "status": "INTACT",
+   "new": 404
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    439,
+    439
+   ],
+   "label": "_locate",
+   "status": "INTACT",
+   "new": 439
+  },
+  {
+   "file": "deeptutor/capabilities/reading/capability.py",
+   "old": [
+    443,
+    443
+   ],
+   "label": "allowed check2",
+   "status": "INTACT",
+   "new": 443
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    17,
+    27
+   ],
+   "label": "annotation asymmetry",
+   "status": "INTACT",
+   "new": 17
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    29,
+    30
+   ],
+   "label": "reader_action",
+   "status": "INTACT",
+   "new": 29
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    38,
+    38
+   ],
+   "label": "READING_TOOL_NAMES",
+   "status": "INTACT",
+   "new": 38
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    166,
+    166
+   ],
+   "label": "switch_tab",
+   "status": "INTACT",
+   "new": 166
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    171,
+    171
+   ],
+   "label": "material_outline",
+   "status": "INTACT",
+   "new": 171
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    199,
+    199
+   ],
+   "label": "search_material",
+   "status": "INTACT",
+   "new": 199
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    311,
+    311
+   ],
+   "label": "read_material",
+   "status": "INTACT",
+   "new": 311
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    405,
+    405
+   ],
+   "label": "reader_goto",
+   "status": "INTACT",
+   "new": 405
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    491,
+    491
+   ],
+   "label": "reader_annotate",
+   "status": "INTACT",
+   "new": 491
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    577,
+    577
+   ],
+   "label": "annotate action",
+   "status": "INTACT",
+   "new": 577
+  },
+  {
+   "file": "deeptutor/capabilities/reading/tools.py",
+   "old": [
+    618,
+    618
+   ],
+   "label": "goto action",
+   "status": "INTACT",
+   "new": 618
+  },
+  {
+   "file": "deeptutor/capabilities/reading/mode.py",
+   "old": [
+    42,
+    42
+   ],
+   "label": "ImmersiveReadingCapability",
+   "status": "INTACT",
+   "new": 42
+  },
+  {
+   "file": "deeptutor/capabilities/reading/mode.py",
+   "old": [
+    51,
+    51
+   ],
+   "label": "cli_aliases",
+   "status": "INTACT",
+   "new": 51
+  },
+  {
+   "file": "deeptutor/capabilities/reading/mode.py",
+   "old": [
+    24,
+    60
+   ],
+   "label": "mode/loop split",
+   "status": "INTACT",
+   "new": 24
+  },
+  {
+   "file": "deeptutor/capabilities/reading/_tool_base.py",
+   "old": [
+    24,
+    66
+   ],
+   "label": "_ReadingToolBase",
+   "status": "INTACT",
+   "new": 24
+  },
+  {
+   "file": "deeptutor/runtime/bootstrap/builtin_capabilities.py",
+   "old": [
+    44,
+    44
+   ],
+   "label": "register reading",
+   "status": "INTACT",
+   "new": 44
+  },
+  {
+   "file": "deeptutor/api/main.py",
+   "old": [
+    644,
+    644
+   ],
+   "label": "reading mount",
+   "status": "INTACT",
+   "new": 644
+  },
+  {
+   "file": "deeptutor/api/main.py",
+   "old": [
+    646,
+    646
+   ],
+   "label": "ext mount",
+   "status": "INTACT",
+   "new": 646
+  },
+  {
+   "file": "web/lib/reading-turn-state.ts",
+   "old": [
+    153,
+    155
+   ],
+   "label": "material/revision",
+   "status": "INTACT",
+   "new": 153
+  },
+  {
+   "file": "deeptutor/services/session/turns/request_preparer.py",
+   "old": [
+    326,
+    326
+   ],
+   "label": "parse material",
+   "status": "INTACT",
+   "new": 326
+  },
+  {
+   "file": "web/app/(workspace)/learning/reading/page.tsx",
+   "old": [
+    7,
+    7
+   ],
+   "label": "library route",
+   "status": "INTACT",
+   "new": 7
+  },
+  {
+   "file": "web/components/reading/workspace/ReadingWorkspace.tsx",
+   "old": [
+    127,
+    127
+   ],
+   "label": "workspace",
+   "status": "INTACT",
+   "new": 127
+  },
+  {
+   "file": "web/components/reading/TextUnitView.tsx",
+   "old": [
+    86,
+    86
+   ],
+   "label": "TextUnitView",
+   "status": "INTACT",
+   "new": 86
+  },
+  {
+   "file": "web/vitest.config.mts",
+   "old": [
+    19,
+    19
+   ],
+   "label": "spec glob",
+   "status": "INTACT",
+   "new": 19
+  },
+  {
+   "file": "tests/reading/test_catalog_store.py",
+   "old": [
+    1,
+    1
+   ],
+   "label": "catalog tests",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "scripts/reading_refresh_figures.py",
+   "old": [
+    1,
+    1
+   ],
+   "label": "CLI ref",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "deeptutor/reading/page_render.py",
+   "old": [
+    1,
+    1
+   ],
+   "label": "page render",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "web/components/reading/ReadingExtensionBar.tsx",
+   "old": [
+    1,
+    1
+   ],
+   "label": "ext bar",
+   "status": "INTACT",
+   "new": 1
+  },
+  {
+   "file": "web/lib/reading-api.ts",
+   "old": [
+    1,
+    1
+   ],
+   "label": "reading api",
+   "status": "INTACT",
+   "new": 1
+  }
+ ]
+}
