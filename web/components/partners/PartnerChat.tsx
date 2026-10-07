@@ -377,6 +377,7 @@ export default function PartnerChat({
   } | null>(null);
   const [externalDrafts, setExternalDrafts] = useState<ExternalDraft[]>([]);
   const connectionRef = useRef<ReconnectingWebSocket | null>(null);
+  const retryTimersRef = useRef<Set<number>>(new Set());
   // Mirror the active session into a ref so the socket's onopen (which closes
   // over the effect's first render) attaches to the CURRENT session.
   const sessionKeyRef = useRef(sessionKey);
@@ -583,6 +584,7 @@ export default function PartnerChat({
 
   useEffect(() => {
     attachedRef.current = false;
+    const retryTimers = retryTimersRef.current;
     // Authoritative live-turn accumulator. Lives in the effect scope so
     // connection handlers can mutate it cheaply; renders see snapshots only.
     let live: { events: StreamEvent[]; content: string } | null = null;
@@ -731,11 +733,13 @@ export default function PartnerChat({
       }
       if (data.type === "attach_busy" && data.session_key === sessionKeyRef.current) {
         if (orphanPendingRef.current) {
-          window.setTimeout(() => {
+          const timer = window.setTimeout(() => {
+            retryTimersRef.current.delete(timer);
             if (!orphanPendingRef.current || sessionKeyRef.current !== data.session_key) return;
             attachedRef.current = false;
             tryAttach();
           }, 2_000);
+          retryTimersRef.current.add(timer);
         }
         return;
       }
@@ -764,11 +768,13 @@ export default function PartnerChat({
           })
           .catch(() => {
             if (sessionKeyRef.current !== key) return;
-            window.setTimeout(() => {
+            const timer = window.setTimeout(() => {
+              retryTimersRef.current.delete(timer);
               if (!orphanPendingRef.current || sessionKeyRef.current !== key) return;
               attachedRef.current = false;
               tryAttach();
             }, 2_000);
+            retryTimersRef.current.add(timer);
           });
         return;
       }
@@ -906,6 +912,8 @@ export default function PartnerChat({
     connection.start();
 
     return () => {
+      retryTimers.forEach((timer) => window.clearTimeout(timer));
+      retryTimers.clear();
       cancelPendingPublish();
       externalLive.clear();
       setExternalDrafts([]);
