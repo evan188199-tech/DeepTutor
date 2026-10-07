@@ -1,0 +1,2548 @@
+{
+ "meta": {
+  "task": "AGEN-1005 scan: 测试真实网络触达风险清点",
+  "repo": "HKUDS/DeepTutor",
+  "commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+  "generated_at": "2026-10-07T10:17:18.929916+00:00",
+  "method": "AST 静态扫描（ast.Call 归类网络 API / SDK 方法 / 网络型子进程）+ monkeypatch 目标正则提取 + 交叉引用 + 人工静态核实；未执行任何测试",
+  "dedup": "不复盖 scan-test-isolation(tmp/env 全局态)、scan-flaky-tests(时序)、scan-subprocess-timeouts(子进程超时)；env 仅在『触发真实外呼』时纳入"
+ },
+ "counts": {
+  "test_side_network_api_hits": 61,
+  "test_side_files": 25,
+  "httpx_constructed_in_tests": 45,
+  "sdk_create_calls_in_tests": 11,
+  "stdlib_urlopen_calls_in_tests": 3,
+  "subprocess_net_in_tests": 1,
+  "product_network_functions": 179,
+  "product_modules_with_network": 100,
+  "module_level_or_conftest_hits": 0,
+  "severity": {
+   "high": 0,
+   "medium": 3,
+   "low": 6
+  }
+ },
+ "verified_findings": [
+  {
+   "id": "V1",
+   "severity": "low",
+   "kind": "real-loopback-http",
+   "where": "tests/runtime/test_launcher.py:61",
+   "claim": "test_loopback_health_checks_ignore_configured_proxy 真实调用 urllib.urlopen，但目标仅为测试内自建的 127.0.0.1 ThreadingHTTPServer；代理行为通过 monkeypatch getproxies 注入，不触外网。",
+   "evidence": "tests/runtime/test_launcher.py:38-70 自建 loopback server；launcher.urlrequest.urlopen(url, timeout=1) 的 url 为 127.0.0.1:{ready.server_port}",
+   "guard_note": "未来若加全局禁 socket fixture，此测试需 localhost/loopback 豁免标记。"
+  },
+  {
+   "id": "V2",
+   "severity": "low",
+   "kind": "real-loopback-http",
+   "where": "tests/services/skill/test_skill_login.py:68,80",
+   "claim": "test_run_login_captures_token_and_rejects_bad_state 对 run_login 自建的 127.0.0.1 回调服务器发起真实 urllib 请求；run_login 本身不访问 hub.test（仅拼 URL 交给 on_url），无外网触达。",
+   "evidence": "deeptutor_cli/skill_login.py:70-131 全文仅含 loopback HTTPServer，无 urlopen/requests 对外调用",
+   "guard_note": "同 V1，需要 loopback 豁免。"
+  },
+  {
+   "id": "V3",
+   "severity": "medium",
+   "kind": "implicit-invariant",
+   "where": "tests/services/partners/test_channel_setup_status.py:32,50",
+   "claim": "5 个渠道 (Discord/Mattermost/Slack/Telegram/Zulip) 的 start() 无凭据用例依赖『先校验后连接』隐含约定：start() 在缺 token 时先行 return，不会触达 gateway/API。产品端一旦把连接逻辑提前或改动校验顺序，测试将发起真实外呼（websockets.connect 至 gateway 等），且当前无任何 socket 层拦截兜底。",
+   "evidence": "deeptutor/partners/channels/discord.py:84-92 start() 首行校验 self.config.token 后 return；连接循环在其后（:93-100）。Mattermost 同型（mattermost.py:125+）",
+   "guard_note": "建议在这些用例加 socket 拦截断言（见建议 G1），把不变量显式化。"
+  },
+  {
+   "id": "V4",
+   "severity": "medium",
+   "kind": "library-symbol-shadow-mock",
+   "where": "tests/services/test_provider_probe.py:29; tests/services/test_voice.py:85; tests/services/search/test_search_providers.py:98",
+   "claim": "以『替换库符号』为拦截手段：monkeypatch.setattr(requests, \"get\", ...) 全局替换 requests.get；setattr(httpx.AsyncClient, \"post\", fake_post) 类级替换；替换 provider 模块级 requests 对象。当前有效，但产品代码若从 requests 迁移到 httpx（或反之）、或改用 requests.Session，拦截静默失效并产生真实外呼。",
+   "evidence": "tests/services/test_provider_probe.py:29 setattr(requests,\"get\",get)；tests/services/test_voice.py:85 setattr(httpx.AsyncClient,\"post\",fake_post)；test_search_providers.py:98 setattr(\"...providers.jina.requests\", _FakeRequests)",
+   "guard_note": "拦截层与产品实现耦合，属于最易复发的缺口；建议统一改为 transport 注入（见建议 G2）。"
+  },
+  {
+   "id": "V5",
+   "severity": "medium",
+   "kind": "boundary-symbol-patch",
+   "where": "tests/agents/chat/test_context_budget.py:427; tests/services/test_web_source_sync.py:128",
+   "claim": "以产品内部符号为 patch 边界（pipeline._build_openai_client、crawl_docs_site、detect_context_window 等）。符号重命名/内联后 patch 失效，测试将走真实路径。属于单元测试常见取舍，但在无禁网兜底的仓库里失败模式是『真实外呼』而非显式报错。",
+   "evidence": "tests/agents/chat/test_context_budget.py:427 setattr(pipeline,\"_build_openai_client\",lambda: client)；tests/services/test_web_source_sync.py:128 setattr(...crawler.crawl_docs_site, AsyncMock)",
+   "guard_note": "G1 的 socket 兜底可把这类失效转化为显式失败。"
+  },
+  {
+   "id": "V6",
+   "severity": "low",
+   "kind": "env-gated-skipped",
+   "where": "tests/runtime/coordination/test_redis_integration.py:16-24; tests/runtime/coordination/test_redis_stress.py:22-24; tests/services/rag/test_pipeline_integration.py:414-424",
+   "claim": "环境变量门控的真实外呼测试均带 skip 守护：DEEPTUTOR_TEST_REDIS_URL 未配置时 pytest.skip，连接失败再 skip；RAG pipeline integration 用例带 pytest.mark.integration 并自行 skip。默认 CI 路径不触外网。",
+   "evidence": "test_redis_integration.py:16-18 空 URL 即 skip；test_pipeline_integration.py:424 pytest.skip",
+   "guard_note": "注意 pyproject addopts 未做 -m \"not integration\" 过滤，安全完全依赖每测自守；新增 integration 用例须带同样的 skip 守护。"
+  },
+  {
+   "id": "V7",
+   "severity": "low",
+   "kind": "env-key-isolation",
+   "where": "tests/conftest.py:93-115,224-264",
+   "claim": "根 conftest autouse fixture 已隔离两类『环境变量触发真实分支』：_isolate_codebuddy_login 删除 CODEBUDDY_API_KEY/BASE_URL/INTERNET_ENVIRONMENT 等（防内网分支与环境差异），_isolate_llm_config 替换 resolve_llm_runtime_config（防读到本机真实 LLM 配置后外呼）；另有 _restore_env 兜底清理 monkeypatch 之外的环境残留。",
+   "evidence": "tests/conftest.py:104-115 setenv/delenv CODEBUDDY_*；:263-264 setattr resolve_llm_runtime_config；:286-305 _restore_env",
+   "guard_note": "新增 env 触发的集成分支时按此模式补 autouse 隔离。"
+  },
+  {
+   "id": "V8",
+   "severity": "low",
+   "kind": "verified-safe-idiom",
+   "where": "tests/core/test_agentic_messages.py:104-105; tests/services/app_update.py\ttests/services/test_app_update.py:17; tests/services/llm/test_metrics.py:69",
+   "claim": "主流 mock 习惯为构造期注入：httpx.AsyncClient(transport=httpx.MockTransport(...)) 50 处、AsyncOpenAI(http_client=MockTransport) 1 处、SimpleNamespace 假 client 11 处 .create、getter/工厂替换（system_router、doctor online_probe、update_worker 注入 command_runner）。构造期注入不依赖符号 shadow，是最稳的一类。",
+   "evidence": "tests/core/test_agentic_messages.py:104-105；tests/services/test_app_update.py:17,44,72,94；tests/runtime/test_update_worker.py:24-27 注入 runnables",
+   "guard_note": "作为推荐 idiom 写入贡献指引。"
+  },
+  {
+   "id": "V9",
+   "severity": "low",
+   "kind": "non-collected-adjacent",
+   "where": "tests/fixtures/lightrag_bridge/extract_legacy_example.py:20; deeptutor/services/config/test_runner.py:221-325",
+   "claim": "两个『看起来是测试』的文件不在 pytest 收集范围：fixtures 脚本（文件名非 test_*，仅本地 git show 读对象，无网络）；deeptutor/services/config/test_runner.py 是产品代码（应用内连通性测试运行器，会真实调用 complete_with_config），但 pyproject testpaths 未包含它，不会被 CI 收集。",
+   "evidence": "pyproject.toml [tool.pytest.ini_options] testpaths=[\"tests\",\"deeptutor/learning/tests\"]；extract_legacy_example.py:20 check_output([\"git\",\"-C\",...,\"show\",...])",
+   "guard_note": "若未来调整 testpaths 把包内 test_* 全量纳入，需先排除或改造该文件，否则会引入真实 LLM 外呼。"
+  }
+ ],
+ "test_side_calls": [
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 384,
+   "func": "test_build_openai_client_tries_every_api_key_after_429",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(model=\"gpt-test\", messages=[])",
+   "file": "tests/core/test_agentic_client_provider_kwargs.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 503,
+   "func": "test_direct_openai_gpt5_agentic_tools_use_provider_adapter",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(\n        model=\"gpt-5.6-luna\",\n        messages=[{\"role\": \"user\", \"content\": \"Search\"}],\n        tools=tools,\n        tool_choice",
+   "file": "tests/core/test_agentic_client_provider_kwargs.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 621,
+   "func": "test_anthropic_adapter_streams_openai_style_chunks",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(\n        model=\"claude-test\",\n        messages=[{\"role\": \"user\", \"content\": \"hello\"}],\n        stream=True,\n        max_completio",
+   "file": "tests/core/test_agentic_client_provider_kwargs.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 658,
+   "func": "test_anthropic_adapter_emits_final_tool_call_delta",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(\n        model=\"claude-test\",\n        messages=[{\"role\": \"user\", \"content\": \"read\"}],\n        stream=True,\n        max_tokens=8,\n",
+   "file": "tests/core/test_agentic_client_provider_kwargs.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 104,
+   "func": "test_openai_sdk_keeps_gemini_signature_in_request_body",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/core/test_agentic_messages.py"
+  },
+  {
+   "kind": "call",
+   "api": "<init>.AsyncOpenAI",
+   "line": 105,
+   "func": "test_openai_sdk_keeps_gemini_signature_in_request_body",
+   "in_test": true,
+   "snippet": "AsyncOpenAI(\n        api_key=\"test\",\n        base_url=\"https://example.test/v1\",\n        http_client=http_client,\n    )",
+   "file": "tests/core/test_agentic_messages.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 123,
+   "func": "test_openai_sdk_keeps_gemini_signature_in_request_body",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(\n            model=\"gemini-test\",\n            messages=[\n                {\"role\": \"user\", \"content\": \"status\"},\n                m",
+   "file": "tests/core/test_agentic_messages.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 73,
+   "func": "run.create",
+   "in_test": true,
+   "snippet": "original.chat.completions.create(**kwargs)",
+   "file": "tests/integration/test_prompt_cache.py"
+  },
+  {
+   "kind": "call",
+   "api": "<bare>.urlopen",
+   "line": 61,
+   "func": "test_loopback_health_checks_ignore_configured_proxy",
+   "in_test": true,
+   "snippet": "launcher.urlrequest.urlopen(url, timeout=1)",
+   "file": "tests/runtime/test_launcher.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.Client",
+   "line": 50,
+   "func": "_client",
+   "in_test": false,
+   "snippet": "httpx.Client(\n        base_url=exporter_module.DISCORD_API_BASE,\n        transport=httpx.MockTransport(handler),\n    )",
+   "file": "tests/scripts/test_export_discord_history.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.Client",
+   "line": 73,
+   "func": "_mock_provider",
+   "in_test": false,
+   "snippet": "httpx.Client(transport=httpx.MockTransport(handler))",
+   "file": "tests/api/test_skills_hub_router.py"
+  },
+  {
+   "kind": "call",
+   "api": "<init>.AsyncClient",
+   "line": 229,
+   "func": "TestChannelOnboarding._install_feishu_manager",
+   "in_test": true,
+   "snippet": "__import__(\"httpx\").AsyncClient(transport=transport)",
+   "file": "tests/api/test_partners_router.py"
+  },
+  {
+   "kind": "subprocess_net",
+   "api": "check_output(git)",
+   "line": 20,
+   "func": "main",
+   "in_test": false,
+   "snippet": "subprocess.check_output(\n        [\"git\", \"-C\", str(repository), \"show\", f\"{COMMIT}:{SOURCE_PATH}\"], text=True\n    )",
+   "file": "tests/fixtures/lightrag_bridge/extract_legacy_example.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 17,
+   "func": "_client_factory",
+   "in_test": false,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_app_update.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 44,
+   "func": "test_version_check_caches_success_for_the_ttl",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_app_update.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 72,
+   "func": "test_version_check_falls_back_to_latest_redirect_when_api_is_rate_limited",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_app_update.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 94,
+   "func": "test_version_check_rejects_untrusted_latest_redirect",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_app_update.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 82,
+   "func": "test_fetch_page_blocks_private_redirect_before_request",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_web_source_sync.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 52,
+   "func": "_crawl",
+   "in_test": false,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_scope.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 68,
+   "func": "test_crawl_skips_disallowed_links_and_paces_concurrent_siblings",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_robots.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 91,
+   "func": "test_missing_robots_allows_pages_but_unreachable_policy_blocks",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_robots.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 110,
+   "func": "test_redirect_target_uses_its_own_origin_policy",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_robots.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 133,
+   "func": "test_robots_redirect_cannot_contact_private_network",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_robots.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 149,
+   "func": "test_concurrent_requests_fetch_robots_once_and_keep_minimum_pacing",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/test_crawler_robots.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 72,
+   "func": "test_stream_records_once_and_ignores_usage_trailer_for_generation",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(stream=True)",
+   "file": "tests/services/llm/test_metrics.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 102,
+   "func": "test_collectors_are_isolated_and_nested_instrumentation_does_not_duplicate.turn",
+   "in_test": true,
+   "snippet": "client.chat.completions.create()",
+   "file": "tests/services/llm/test_metrics.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 269,
+   "func": "test_forced_responses_agentic_stream_maps_tool_calls",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(\n        model=\"responses-only-model\",\n        messages=[{\"role\": \"user\", \"content\": \"Find it\"}],\n        tools=tools,\n        to",
+   "file": "tests/services/llm/test_openai_compat_wire_api.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 143,
+   "func": "test_stream_without_usage_aggregates_calls_once",
+   "in_test": true,
+   "snippet": "client.chat.completions.create(messages=messages, stream=True)",
+   "file": "tests/services/llm/test_usage_estimation.py"
+  },
+  {
+   "kind": "sdk_method",
+   "api": "<sdk>.chat.completions.create",
+   "line": 107,
+   "func": "test_owner_is_captured_before_async_work_and_nested_calls_count_once.user_call",
+   "in_test": true,
+   "snippet": "client.chat.completions.create()",
+   "file": "tests/services/llm/test_usage_ledger.py"
+  },
+  {
+   "kind": "call",
+   "api": "urllib.request.urlopen",
+   "line": 68,
+   "func": "test_run_login_captures_token_and_rejects_bad_state",
+   "in_test": true,
+   "snippet": "urllib.request.urlopen(bad, timeout=5)",
+   "file": "tests/services/skill/test_skill_login.py"
+  },
+  {
+   "kind": "call",
+   "api": "urllib.request.urlopen",
+   "line": 80,
+   "func": "test_run_login_captures_token_and_rejects_bad_state",
+   "in_test": true,
+   "snippet": "urllib.request.urlopen(good, timeout=5)",
+   "file": "tests/services/skill/test_skill_login.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.Client",
+   "line": 259,
+   "func": "_clawhub_client",
+   "in_test": false,
+   "snippet": "httpx.Client(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/skill/test_skill_hub.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.Client",
+   "line": 299,
+   "func": "test_clawhub_verify_states",
+   "in_test": true,
+   "snippet": "httpx.Client(transport=httpx.MockTransport(boom))",
+   "file": "tests/services/skill/test_skill_hub.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.Client",
+   "line": 356,
+   "func": "_browse_client",
+   "in_test": false,
+   "snippet": "httpx.Client(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/skill/test_skill_hub.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 77,
+   "func": "_catalog",
+   "in_test": false,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(queue))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 211,
+   "func": "test_late_catalog_response_does_not_restore_cache_after_logout",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(respond))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 268,
+   "func": "test_late_catalog_response_preserves_new_generation_cache",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(respond))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 298,
+   "func": "test_refresh_discovers_and_persists_version_without_sending_credentials",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 465,
+   "func": "test_new_version_falls_back_once_to_successful_version",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 505,
+   "func": "test_version_discovery_failure_reuses_persisted_success_after_restart",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 535,
+   "func": "test_version_change_never_reuses_old_etag_or_promotes_304",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 603,
+   "func": "test_new_version_does_not_retry_or_hide_unrelated_failures",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 623,
+   "func": "test_failed_fallback_does_not_loop_or_overwrite_success",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 650,
+   "func": "test_credential_rotation_keeps_version_but_not_catalog_or_etag",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 670,
+   "func": "test_invalid_json_does_not_retry_a_different_version",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 703,
+   "func": "test_auth_invalidation_preserves_version_history_but_no_usable_models",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_catalog.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 1050,
+   "func": "test_dynamic_catalog_login_and_refresh_keep_selection_and_skip_npm_on_status",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_service.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 24,
+   "func": "test_stable_versions_are_accepted",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(\n        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=payload))\n    )",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 58,
+   "func": "test_invalid_metadata_is_unavailable",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(\n        transport=httpx.MockTransport(lambda _: httpx.Response(200, json=payload))\n    )",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 89,
+   "func": "test_source_failure_is_unavailable",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 115,
+   "func": "test_json_recursion_failure_is_unavailable_and_closes_response",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(lambda _: response))",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 128,
+   "func": "test_client_defaults_cannot_leak_auth_or_cookies_to_npm",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(\n        transport=httpx.MockTransport(handler),\n        auth=(\"private\", \"private\"),\n        headers={\"Authorization\": \"Bearer private\", \"cha",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 142,
+   "func": "test_cancellation_is_not_swallowed",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 166,
+   "func": "test_stream_is_closed_at_size_limit_or_total_deadline",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(\n        transport=httpx.MockTransport(lambda _: httpx.Response(200, stream=stream))\n    )",
+   "file": "tests/services/codex_auth/test_client_version.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 60,
+   "func": "test_refresh_discovers_version_gated_model_and_preserves_selection",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(respond))",
+   "file": "tests/services/codex_auth/test_catalog_refresh.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 379,
+   "func": "test_oauth_http_requests_match_exchange_refresh_and_revoke_contracts",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_oauth.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 418,
+   "func": "test_oauth_http_failure_does_not_echo_upstream_body",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_oauth.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 433,
+   "func": "test_invalid_refresh_grant_requires_new_sign_in",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/codex_auth/test_oauth.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 232,
+   "func": "test_book_and_mastery_use_same_access_checked_rag_search",
+   "in_test": true,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(_transport))",
+   "file": "tests/services/rag/test_kiwix_pipeline.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 30,
+   "func": "_client_factory",
+   "in_test": false,
+   "snippet": "httpx.AsyncClient(transport=transport)",
+   "file": "tests/services/partners/test_channel_onboarding.py"
+  },
+  {
+   "kind": "call",
+   "api": "httpx.AsyncClient",
+   "line": 91,
+   "func": "_ready_wecom_manager",
+   "in_test": false,
+   "snippet": "httpx.AsyncClient(transport=httpx.MockTransport(handler))",
+   "file": "tests/services/partners/test_channel_onboarding.py"
+  }
+ ],
+ "product_network_functions": [
+  {
+   "module": "deeptutor/agents/loop/agent_loop.py",
+   "function": "AgentLoop._single_shot_stream",
+   "sites": [
+    {
+     "line": 1669,
+     "snippet": "response = await self.client.chat.completions.create(**request)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/agents/loop/agent_loop.py",
+   "function": "AgentLoop._create_response_stream",
+   "sites": [
+    {
+     "line": 1687,
+     "snippet": "return await self.client.chat.completions.create(**kwargs)"
+    },
+    {
+     "line": 1727,
+     "snippet": "return await self.client.chat.completions.create(**retry_kwargs)"
+    },
+    {
+     "line": 1731,
+     "snippet": "return await self.client.chat.completions.create(**retry_kwargs)"
+    },
+    {
+     "line": 1750,
+     "snippet": "return await self.client.chat.completions.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/agents/question/pipeline.py",
+   "function": "QuestionPipeline._summarize_tool_result",
+   "sites": [
+    {
+     "line": 1120,
+     "snippet": "response_stream = await client.chat.completions.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/agents/research/pipeline.py",
+   "function": "ResearchPipeline._summarise_tool_result",
+   "sites": [
+    {
+     "line": 1257,
+     "snippet": "response = await client.chat.completions.create("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/api/routers/video_learning.py",
+   "function": "_live_stream_url",
+   "sites": [
+    {
+     "line": 465,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/api/routers/video_learning.py",
+   "function": "_open_upstream",
+   "sites": [
+    {
+     "line": 490,
+     "snippet": ") -> tuple[httpx.AsyncClient, httpx.Response]:"
+    },
+    {
+     "line": 494,
+     "snippet": "client = httpx.AsyncClient(timeout=STREAM_TIMEOUT_SECONDS, follow_redirects=False)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/capabilities/explore_context/explorer.py",
+   "function": "ContextExplorer._call_llm",
+   "sites": [
+    {
+     "line": 348,
+     "snippet": "response_stream = await client.chat.completions.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/dingtalk.py",
+   "function": "DingTalkChannel.__init__",
+   "sites": [
+    {
+     "line": 143,
+     "snippet": "self._http: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/dingtalk.py",
+   "function": "DingTalkChannel.start",
+   "sites": [
+    {
+     "line": 175,
+     "snippet": "self._http = httpx.AsyncClient()"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/discord.py",
+   "function": "DiscordChannel.__init__",
+   "sites": [
+    {
+     "line": 67,
+     "snippet": "self._http: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/discord.py",
+   "function": "DiscordChannel.start",
+   "sites": [
+    {
+     "line": 85,
+     "snippet": "self._http = httpx.AsyncClient(timeout=30.0)"
+    },
+    {
+     "line": 91,
+     "snippet": "async with websockets.connect(self.config.gateway_url) as ws:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/lark_http.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 4,
+     "snippet": "call through the module-level ``requests.request()``, which builds a fresh"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/lark_http.py",
+   "function": "_session",
+   "sites": [
+    {
+     "line": 39,
+     "snippet": "def _session() -> requests.Session:"
+    },
+    {
+     "line": 43,
+     "snippet": "session = requests.Session()"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/mattermost.py",
+   "function": "MattermostChannel.__init__",
+   "sites": [
+    {
+     "line": 80,
+     "snippet": "self._http: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/mattermost.py",
+   "function": "MattermostChannel.start",
+   "sites": [
+    {
+     "line": 129,
+     "snippet": "self._http = httpx.AsyncClient("
+    },
+    {
+     "line": 149,
+     "snippet": "async with websockets.connect(ws_url, **connect_kwargs) as ws:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/mochat.py",
+   "function": "MochatChannel.__init__",
+   "sites": [
+    {
+     "line": 291,
+     "snippet": "self._http: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/mochat.py",
+   "function": "MochatChannel.start",
+   "sites": [
+    {
+     "line": 333,
+     "snippet": "self._http = httpx.AsyncClient(timeout=30.0)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/msteams.py",
+   "function": "MSTeamsChannel.__init__",
+   "sites": [
+    {
+     "line": 125,
+     "snippet": "self._http: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/msteams.py",
+   "function": "MSTeamsChannel.start",
+   "sites": [
+    {
+     "line": 174,
+     "snippet": "self._http = httpx.AsyncClient(timeout=30.0)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/napcat.py",
+   "function": "NapcatChannel.__init__",
+   "sites": [
+    {
+     "line": 77,
+     "snippet": "self._http: aiohttp.ClientSession | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/napcat.py",
+   "function": "NapcatChannel.start",
+   "sites": [
+    {
+     "line": 101,
+     "snippet": "self._http = aiohttp.ClientSession(timeout=_DOWNLOAD_TIMEOUT)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/weixin.py",
+   "function": "WeixinChannel.__init__",
+   "sites": [
+    {
+     "line": 160,
+     "snippet": "self._client: httpx.AsyncClient | None = None"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/weixin.py",
+   "function": "WeixinChannel.start",
+   "sites": [
+    {
+     "line": 358,
+     "snippet": "self._client = httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/weixin_qr.py",
+   "function": "fetch_qr_code",
+   "sites": [
+    {
+     "line": 141,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/weixin_qr.py",
+   "function": "poll_qr_code",
+   "sites": [
+    {
+     "line": 163,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/whatsapp.py",
+   "function": "WhatsAppChannel.start",
+   "sites": [
+    {
+     "line": 63,
+     "snippet": "async with websockets.connect(bridge_url) as ws:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/channels/zulip.py",
+   "function": "ZulipChannel._download_upload_path",
+   "sites": [
+    {
+     "line": 662,
+     "snippet": "resp = requests.get("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/network.py",
+   "function": "validate_url_target",
+   "sites": [
+    {
+     "line": 84,
+     "snippet": "infos = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/partners/transcription.py",
+   "function": "GroqTranscriptionProvider.transcribe",
+   "sites": [
+    {
+     "line": 41,
+     "snippet": "async with httpx.AsyncClient() as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/reading/ingestion.py",
+   "function": "_load_bilibili_media",
+   "sites": [
+    {
+     "line": 839,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/runtime/agentic/client.py",
+   "function": "_build_openai_client",
+   "sites": [
+    {
+     "line": 177,
+     "snippet": "return AsyncAzureOpenAI("
+    },
+    {
+     "line": 182,
+     "snippet": "return AsyncOpenAI(**sdk_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/runtime/agentic/client.py",
+   "function": "_KeyRotatingCompletions.create",
+   "sites": [
+    {
+     "line": 195,
+     "snippet": "return await self._clients[api_key].chat.completions.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/runtime/agentic/labeled_step.py",
+   "function": "run_labeled_step",
+   "sites": [
+    {
+     "line": 454,
+     "snippet": "return await client.chat.completions.create(**kwargs)"
+    },
+    {
+     "line": 459,
+     "snippet": "return await client.chat.completions.create(**retry_kwargs)"
+    },
+    {
+     "line": 473,
+     "snippet": "return await client.chat.completions.create(**retry_kwargs)"
+    },
+    {
+     "line": 491,
+     "snippet": "return await client.chat.completions.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/runtime/launcher.py",
+   "function": "_host_accepts_connection",
+   "sites": [
+    {
+     "line": 325,
+     "snippet": "with socket.create_connection((host, port), timeout=0.25):"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/app_update.py",
+   "function": "VersionCheckService.__init__",
+   "sites": [
+    {
+     "line": 299,
+     "snippet": "client_factory: Callable[[], httpx.AsyncClient] | None = None,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/app_update.py",
+   "function": "VersionCheckService._fetch",
+   "sites": [
+    {
+     "line": 335,
+     "snippet": "lambda: httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/app_update.py",
+   "function": "VersionCheckService._fetch_latest_redirect",
+   "sites": [
+    {
+     "line": 356,
+     "snippet": "async def _fetch_latest_redirect(self, client: httpx.AsyncClient) -> ReleaseInfo:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codebuddy_credentials.py",
+   "function": "refresh_credentials",
+   "sites": [
+    {
+     "line": 282,
+     "snippet": "async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=20.0)) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codebuddy_credentials.py",
+   "function": "probe_account",
+   "sites": [
+    {
+     "line": 329,
+     "snippet": "async with httpx.AsyncClient(timeout=httpx.Timeout(20.0, connect=15.0)) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codex_auth/catalog.py",
+   "function": "CodexModelCatalog.__init__",
+   "sites": [
+    {
+     "line": 133,
+     "snippet": "http: httpx.AsyncClient,"
+    },
+    {
+     "line": 134,
+     "snippet": "version_http: httpx.AsyncClient | None = None,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codex_auth/client_version.py",
+   "function": "latest_client_version",
+   "sites": [
+    {
+     "line": 19,
+     "snippet": "async def latest_client_version(http: httpx.AsyncClient | None = None) -> str | None:"
+    },
+    {
+     "line": 27,
+     "snippet": "async with httpx.AsyncClient(timeout=CODEX_VERSION_TIMEOUT_SECONDS) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codex_auth/oauth.py",
+   "function": "CodexOAuthClient.__init__",
+   "sites": [
+    {
+     "line": 279,
+     "snippet": "def __init__(self, http: httpx.AsyncClient) -> None:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codex_auth/service.py",
+   "function": "CodexOAuthService.__init__",
+   "sites": [
+    {
+     "line": 456,
+     "snippet": "self._owned_http: httpx.AsyncClient | None = None"
+    },
+    {
+     "line": 458,
+     "snippet": "self._owned_http = httpx.AsyncClient(timeout=30)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/codex_auth/service.py",
+   "function": "get_codex_oauth_service",
+   "sites": [
+    {
+     "line": 1289,
+     "snippet": "http = httpx.AsyncClient(timeout=30)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/config/context_window_detection.py",
+   "function": "_detect_from_models_endpoint",
+   "sites": [
+    {
+     "line": 140,
+     "snippet": "async with aiohttp.ClientSession("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/config/readiness.py",
+   "function": "_selected_remote_parser_reachable",
+   "sites": [
+    {
+     "line": 849,
+     "snippet": "async with httpx.AsyncClient(timeout=2.0, follow_redirects=True) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/cohere.py",
+   "function": "CohereEmbeddingAdapter.embed",
+   "sites": [
+    {
+     "line": 130,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/gemini.py",
+   "function": "GeminiEmbeddingAdapter._embed_native",
+   "sites": [
+    {
+     "line": 305,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/jina.py",
+   "function": "JinaEmbeddingAdapter.embed",
+   "sites": [
+    {
+     "line": 116,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/ollama.py",
+   "function": "OllamaEmbeddingAdapter.embed",
+   "sites": [
+    {
+     "line": 63,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/openai_compatible.py",
+   "function": "OpenAICompatibleEmbeddingAdapter.embed",
+   "sites": [
+    {
+     "line": 237,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/openai_sdk.py",
+   "function": "OpenAISDKEmbeddingAdapter._build_client",
+   "sites": [
+    {
+     "line": 47,
+     "snippet": "return AsyncOpenAI("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/embedding/adapters/openai_sdk.py",
+   "function": "OpenAISDKEmbeddingAdapter.embed",
+   "sites": [
+    {
+     "line": 82,
+     "snippet": "response = await client.embeddings.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/github_source/client.py",
+   "function": "GitHubClient._request_json",
+   "sites": [
+    {
+     "line": 83,
+     "snippet": "factory = self._client_factory or (lambda: httpx.AsyncClient(timeout=self._timeout_s))"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/github_source/client.py",
+   "function": "GitHubClient._request_bytes",
+   "sites": [
+    {
+     "line": 96,
+     "snippet": "factory = self._client_factory or (lambda: httpx.AsyncClient(timeout=self._timeout_s))"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/chat_completions.py",
+   "function": "ChatCompletionsImagegenAdapter.generate",
+   "sites": [
+    {
+     "line": 56,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/chat_completions.py",
+   "function": "ChatCompletionsImagegenAdapter._materialize",
+   "sites": [
+    {
+     "line": 108,
+     "snippet": "async def _materialize(self, client: httpx.AsyncClient, src: str) -> tuple[bytes, str]:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/dashscope.py",
+   "function": "DashScopeImagegenAdapter.generate",
+   "sites": [
+    {
+     "line": 42,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/dashscope.py",
+   "function": "DashScopeImagegenAdapter._poll",
+   "sites": [
+    {
+     "line": 98,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/dashscope.py",
+   "function": "DashScopeImagegenAdapter._materialize",
+   "sites": [
+    {
+     "line": 132,
+     "snippet": "async def _materialize(client: httpx.AsyncClient, result: dict[str, Any]) -> tuple[bytes, str]:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/openai_compat.py",
+   "function": "OpenAICompatImagegenAdapter.generate",
+   "sites": [
+    {
+     "line": 58,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/imagegen/adapters/openai_compat.py",
+   "function": "OpenAICompatImagegenAdapter._materialize",
+   "sites": [
+    {
+     "line": 80,
+     "snippet": "self, client: httpx.AsyncClient, item: dict[str, Any]"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/cloud_provider.py",
+   "function": "fetch_models",
+   "sites": [
+    {
+     "line": 93,
+     "snippet": "async with aiohttp.ClientSession("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/local_provider.py",
+   "function": "fetch_models",
+   "sites": [
+    {
+     "line": 49,
+     "snippet": "async with aiohttp.ClientSession(timeout=timeout) as session:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/openai_http_client.py",
+   "function": "build_openai_http_client",
+   "sites": [
+    {
+     "line": 97,
+     "snippet": "def build_openai_http_client(**kwargs: Any) -> httpx.AsyncClient | None:"
+    },
+    {
+     "line": 102,
+     "snippet": "return httpx.AsyncClient(verify=False, **kwargs)  # nosec B501"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/openai_http_client.py",
+   "function": "openai_client_kwargs",
+   "sites": [
+    {
+     "line": 105,
+     "snippet": "def openai_client_kwargs(**httpx_kwargs: Any) -> dict[str, httpx.AsyncClient]:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/openai_http_client.py",
+   "function": "openai_sdk_client_kwargs",
+   "sites": [
+    {
+     "line": 153,
+     "snippet": "http_client = httpx.AsyncClient(verify=False)  # nosec B501"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/anthropic_provider.py",
+   "function": "AnthropicProvider.chat",
+   "sites": [
+    {
+     "line": 535,
+     "snippet": "response = await self._client.messages.create(**kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/azure_openai_provider.py",
+   "function": "AzureOpenAIProvider.__init__",
+   "sites": [
+    {
+     "line": 105,
+     "snippet": "self._client = AsyncOpenAI("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/azure_openai_provider.py",
+   "function": "AzureOpenAIProvider.chat",
+   "sites": [
+    {
+     "line": 185,
+     "snippet": "return parse_response_output(await self._client.responses.create(**body))"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/azure_openai_provider.py",
+   "function": "AzureOpenAIProvider.chat_stream",
+   "sites": [
+    {
+     "line": 216,
+     "snippet": "stream = await self._client.responses.create(**body)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/github_copilot_provider.py",
+   "function": "GitHubCopilotProvider._exchange_token",
+   "sites": [
+    {
+     "line": 76,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/openai_codex_provider.py",
+   "function": "_request_codex",
+   "sites": [
+    {
+     "line": 209,
+     "snippet": "async with httpx.AsyncClient(timeout=60.0, verify=verify) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/openai_compat_provider.py",
+   "function": "OpenAICompatProvider.__init__",
+   "sites": [
+    {
+     "line": 211,
+     "snippet": "self._client = AsyncOpenAI("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+   "function": "consume_sdk_stream",
+   "sites": [
+    {
+     "line": 556,
+     "snippet": "\"\"\"Consume an SDK async stream from client.responses.create(stream=True).\"\"\""
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/mcp/manager.py",
+   "function": "MCPConnectionManager._open_transport",
+   "sites": [
+    {
+     "line": 816,
+     "snippet": ") -> httpx.AsyncClient:"
+    },
+    {
+     "line": 818,
+     "snippet": "return httpx.AsyncClient("
+    },
+    {
+     "line": 835,
+     "snippet": "httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/mcp/network.py",
+   "function": "validate_mcp_url",
+   "sites": [
+    {
+     "line": 89,
+     "snippet": "infos = socket.getaddrinfo(hostname, None, socket.AF_UNSPEC, socket.SOCK_STREAM)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/mcp/oauth.py",
+   "function": "begin_authorization",
+   "sites": [
+    {
+     "line": 386,
+     "snippet": "async with httpx.AsyncClient(auth=auth, timeout=30.0) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/docling/remote.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 9,
+     "snippet": "a blocking ``httpx.Client`` is the simplest correct choice (no nested event"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/docling/remote.py",
+   "function": "verify_remote",
+   "sites": [
+    {
+     "line": 84,
+     "snippet": "with httpx.Client(timeout=timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/docling/remote.py",
+   "function": "_convert_file",
+   "sites": [
+    {
+     "line": 105,
+     "snippet": "with httpx.Client("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/docling/remote.py",
+   "function": "_get_text",
+   "sites": [
+    {
+     "line": 169,
+     "snippet": "def _get_text(client: httpx.Client, url: str, headers: dict[str, str]) -> str:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 16,
+     "snippet": "spawns via ``asyncio.to_thread``, so a blocking ``httpx.Client`` is the"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "parse_cloud",
+   "sites": [
+    {
+     "line": 99,
+     "snippet": "with httpx.Client(base_url=base_url, headers={\"Accept\": \"application/json\"}) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_upload_and_fetch_archive",
+   "sites": [
+    {
+     "line": 140,
+     "snippet": "client: httpx.Client,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_parse_pdf_in_parts",
+   "sites": [
+    {
+     "line": 171,
+     "snippet": "client: httpx.Client,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_request_upload",
+   "sites": [
+    {
+     "line": 397,
+     "snippet": "client: httpx.Client, source_path: Path, config: MinerUConfig, key_pool: KeyPool"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_poll_for_zip",
+   "sites": [
+    {
+     "line": 435,
+     "snippet": "client: httpx.Client,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "verify_credentials",
+   "sites": [
+    {
+     "line": 501,
+     "snippet": "with httpx.Client(base_url=base_url, headers={\"Accept\": \"application/json\"}) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_download",
+   "sites": [
+    {
+     "line": 507,
+     "snippet": "response = httpx.get(zip_url, timeout=_DOWNLOAD_TIMEOUT_SECONDS, follow_redirects=True)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_post_json",
+   "sites": [
+    {
+     "line": 562,
+     "snippet": "def _post_json(client: httpx.Client, path: str, body: dict, key_pool: KeyPool) -> dict:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/mineru/cloud.py",
+   "function": "_get_json",
+   "sites": [
+    {
+     "line": 566,
+     "snippet": "def _get_json(client: httpx.Client, path: str, key_pool: KeyPool) -> dict:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/tika/remote.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 8,
+     "snippet": "a blocking ``httpx.Client`` is the simplest correct choice (no nested event"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/tika/remote.py",
+   "function": "verify_remote",
+   "sites": [
+    {
+     "line": 79,
+     "snippet": "with httpx.Client(timeout=timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/tika/remote.py",
+   "function": "_convert_file",
+   "sites": [
+    {
+     "line": 102,
+     "snippet": "with httpx.Client(base_url=base_url, timeout=_SUBMIT_TIMEOUT_SECONDS) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/parsing/engines/tika/remote.py",
+   "function": "_get_text",
+   "sites": [
+    {
+     "line": 130,
+     "snippet": "def _get_text(client: httpx.Client, url: str) -> str:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/partners/channel_onboarding.py",
+   "function": "ChannelOnboardingManager.__init__",
+   "sites": [
+    {
+     "line": 146,
+     "snippet": "client_factory: Callable[[], httpx.AsyncClient] | None = None,"
+    },
+    {
+     "line": 150,
+     "snippet": "lambda: httpx.AsyncClient(timeout=_REQUEST_TIMEOUT_SECONDS)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/partners/channel_onboarding.py",
+   "function": "ChannelOnboardingManager._post_feishu",
+   "sites": [
+    {
+     "line": 526,
+     "snippet": "self, client: httpx.AsyncClient, base_url: str, form: dict[str, str]"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/partners/weixin_onboarding.py",
+   "function": "start_login",
+   "sites": [
+    {
+     "line": 146,
+     "snippet": "async with httpx.AsyncClient(timeout=httpx.Timeout(30, connect=15)) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/partners/weixin_onboarding.py",
+   "function": "poll_login",
+   "sites": [
+    {
+     "line": 186,
+     "snippet": "async with httpx.AsyncClient(timeout=httpx.Timeout(30, connect=15)) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/partners/weixin_onboarding.py",
+   "function": "_reissue",
+   "sites": [
+    {
+     "line": 256,
+     "snippet": "async with httpx.AsyncClient(timeout=httpx.Timeout(30, connect=15)) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/pocketbase_client.py",
+   "function": "ping_pocketbase",
+   "sites": [
+    {
+     "line": 180,
+     "snippet": "async with httpx.AsyncClient(timeout=5.0) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/ima/media.py",
+   "function": "download_media",
+   "sites": [
+    {
+     "line": 93,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/ima/transport.py",
+   "function": "ImaTransport.post",
+   "sites": [
+    {
+     "line": 67,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/ima/transport.py",
+   "function": "ImaTransport.post_sync",
+   "sites": [
+    {
+     "line": 83,
+     "snippet": "with httpx.Client("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/kiwix/client.py",
+   "function": "KiwixClient._client",
+   "sites": [
+    {
+     "line": 226,
+     "snippet": "def _client(self) -> httpx.AsyncClient:"
+    },
+    {
+     "line": 227,
+     "snippet": "return httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/kiwix/client.py",
+   "function": "KiwixClient._get",
+   "sites": [
+    {
+     "line": 251,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/kiwix/client.py",
+   "function": "KiwixClient._read_article",
+   "sites": [
+    {
+     "line": 344,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/lightrag_server/client.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 14,
+     "snippet": "Mirrors :class:`PageIndexClient`: a fresh :class:`httpx.AsyncClient` per call so"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/lightrag_server/client.py",
+   "function": "LightRagServerClient._open",
+   "sites": [
+    {
+     "line": 49,
+     "snippet": "def _open(self) -> httpx.AsyncClient:"
+    },
+    {
+     "line": 55,
+     "snippet": "return httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py",
+   "function": "LlamaIndexDocumentLoader.load",
+   "sites": [
+    {
+     "line": 91,
+     "snippet": "# archive download) on a synchronous httpx.Client — running it on"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/rag/pipelines/weknora/client.py",
+   "function": "WeKnoraClient._open",
+   "sites": [
+    {
+     "line": 37,
+     "snippet": "def _open(self) -> httpx.AsyncClient:"
+    },
+    {
+     "line": 38,
+     "snippet": "return httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/sandbox/backends.py",
+   "function": "RunnerSidecarBackend.exec",
+   "sites": [
+    {
+     "line": 115,
+     "snippet": "async with httpx.AsyncClient(timeout=http_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/sandbox/backends.py",
+   "function": "RunnerSidecarBackend.health",
+   "sites": [
+    {
+     "line": 131,
+     "snippet": "async with httpx.AsyncClient(timeout=self._connect_timeout_s) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/aliyun_iqs.py",
+   "function": "AliyunIQSProvider.search",
+   "sites": [
+    {
+     "line": 106,
+     "snippet": "resp = requests.get(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/bocha.py",
+   "function": "BochaProvider.search",
+   "sites": [
+    {
+     "line": 77,
+     "snippet": "resp = requests.post(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/brave.py",
+   "function": "BraveProvider.search",
+   "sites": [
+    {
+     "line": 38,
+     "snippet": "resp = requests.get(self.BASE_URL, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/doubao.py",
+   "function": "DoubaoProvider.search",
+   "sites": [
+    {
+     "line": 92,
+     "snippet": "resp = requests.post(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/firecrawl.py",
+   "function": "FirecrawlProvider.search",
+   "sites": [
+    {
+     "line": 89,
+     "snippet": "resp = requests.post(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/jina.py",
+   "function": "JinaProvider.search",
+   "sites": [
+    {
+     "line": 84,
+     "snippet": "response = requests.get(url, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/perplexity.py",
+   "function": "PerplexityProvider.search",
+   "sites": [
+    {
+     "line": 74,
+     "snippet": "completion = self.client.chat.completions.create(model=model, messages=messages)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/qianfan.py",
+   "function": "QianfanProvider.search",
+   "sites": [
+    {
+     "line": 90,
+     "snippet": "resp = requests.post(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/searxng.py",
+   "function": "SearxngProvider.search",
+   "sites": [
+    {
+     "line": 58,
+     "snippet": "resp = requests.get(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/serper.py",
+   "function": "SerperProvider.search",
+   "sites": [
+    {
+     "line": 93,
+     "snippet": "response = requests.post(url, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/serply.py",
+   "function": "SerplyProvider.search",
+   "sites": [
+    {
+     "line": 82,
+     "snippet": "resp = requests.get(f\"{root}/{path}/{encoded_query}\", timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/tavily.py",
+   "function": "TavilyProvider.search",
+   "sites": [
+    {
+     "line": 91,
+     "snippet": "response = requests.post(self.BASE_URL, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/providers/zhipu.py",
+   "function": "ZhipuProvider.search",
+   "sites": [
+    {
+     "line": 92,
+     "snippet": "resp = requests.post(endpoint, timeout=timeout, **request_kwargs)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/source_filter.py",
+   "function": "_request_openai_moderation",
+   "sites": [
+    {
+     "line": 253,
+     "snippet": "with urllib.request.urlopen(request, timeout=_MODERATION_TIMEOUT_S) as response:  # nosec B310 - hardcoded https constan"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/search/source_filter.py",
+   "function": "_request_web_risk",
+   "sites": [
+    {
+     "line": 271,
+     "snippet": "with urllib.request.urlopen(request, timeout=_WEB_RISK_TIMEOUT_S) as response:  # nosec B310 - hardcoded https constant "
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/settings/provider_probe.py",
+   "function": "probe_provider",
+   "sites": [
+    {
+     "line": 201,
+     "snippet": "async with aiohttp.ClientSession("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/skill/hub.py",
+   "function": "ClawHubProvider.__init__",
+   "sites": [
+    {
+     "line": 281,
+     "snippet": "client: httpx.Client | None = None,"
+    },
+    {
+     "line": 285,
+     "snippet": "self._client = client or httpx.Client(timeout=_HTTP_TIMEOUT, follow_redirects=True)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/hermes_remote_client.py",
+   "function": "HermesRemoteClient.__init__",
+   "sites": [
+    {
+     "line": 44,
+     "snippet": "self._client = httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_family.py",
+   "function": "OpencodeFamilyBackend.consult",
+   "sites": [
+    {
+     "line": 144,
+     "snippet": "async with httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_family.py",
+   "function": "OpencodeFamilyBackend._create_session",
+   "sites": [
+    {
+     "line": 196,
+     "snippet": "async def _create_session(self, client: httpx.AsyncClient) -> str:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_family.py",
+   "function": "OpencodeFamilyBackend._listen",
+   "sites": [
+    {
+     "line": 233,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_family.py",
+   "function": "OpencodeFamilyBackend._handle_bus_event",
+   "sites": [
+    {
+     "line": 258,
+     "snippet": "client: httpx.AsyncClient | None,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_family.py",
+   "function": "OpencodeFamilyBackend._reply_permission",
+   "sites": [
+    {
+     "line": 355,
+     "snippet": "client: httpx.AsyncClient | None,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_server.py",
+   "function": "_wait_ready",
+   "sites": [
+    {
+     "line": 139,
+     "snippet": "async with httpx.AsyncClient(base_url=handle.base_url, auth=handle.auth) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/subagent/opencode_server.py",
+   "function": "_free_port",
+   "sites": [
+    {
+     "line": 155,
+     "snippet": "with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/async_task.py",
+   "function": "AsyncTaskVideogenAdapter.submit_task",
+   "sites": [
+    {
+     "line": 59,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/async_task.py",
+   "function": "AsyncTaskVideogenAdapter.generate",
+   "sites": [
+    {
+     "line": 77,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/async_task.py",
+   "function": "AsyncTaskVideogenAdapter._poll",
+   "sites": [
+    {
+     "line": 94,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/dashscope.py",
+   "function": "DashScopeVideogenAdapter.submit_task",
+   "sites": [
+    {
+     "line": 65,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/dashscope.py",
+   "function": "DashScopeVideogenAdapter.generate",
+   "sites": [
+    {
+     "line": 85,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/videogen/adapters/dashscope.py",
+   "function": "DashScopeVideogenAdapter._poll",
+   "sites": [
+    {
+     "line": 194,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/dashscope.py",
+   "function": "DashScopeTTSAdapter.synthesize",
+   "sites": [
+    {
+     "line": 163,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/dashscope.py",
+   "function": "DashScopeSTTAdapter.transcribe",
+   "sites": [
+    {
+     "line": 266,
+     "snippet": "async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/mimo.py",
+   "function": "MiMoTTSAdapter.synthesize",
+   "sites": [
+    {
+     "line": 48,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/minimax.py",
+   "function": "MiniMaxTTSAdapter.synthesize",
+   "sites": [
+    {
+     "line": 55,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenAICompatTTSAdapter.synthesize",
+   "sites": [
+    {
+     "line": 147,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenRouterTTSAdapter._synthesize_chat_audio",
+   "sites": [
+    {
+     "line": 238,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenAICompatSTTAdapter.transcribe",
+   "sites": [
+    {
+     "line": 321,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenAICompatSTTAdapter.transcribe_cues",
+   "sites": [
+    {
+     "line": 358,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenAICompatSTTAdapter._post_multipart",
+   "sites": [
+    {
+     "line": 388,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/openai_compat.py",
+   "function": "OpenAICompatSTTAdapter._post_base64",
+   "sites": [
+    {
+     "line": 409,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/volcengine.py",
+   "function": "VolcengineTTSAdapter.synthesize",
+   "sites": [
+    {
+     "line": 89,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/voice/adapters/volcengine.py",
+   "function": "VolcengineSTTAdapter._recognize",
+   "sites": [
+    {
+     "line": 151,
+     "snippet": "async with httpx.AsyncClient(timeout=config.request_timeout) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/web_source/crawler.py",
+   "function": "_fetch_page",
+   "sites": [
+    {
+     "line": 196,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/web_source/crawler.py",
+   "function": "_process_page",
+   "sites": [
+    {
+     "line": 286,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/web_source/crawler.py",
+   "function": "crawl_docs_site",
+   "sites": [
+    {
+     "line": 403,
+     "snippet": "lambda: httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/web_source/robots.py",
+   "function": "CrawlAccess.__init__",
+   "sites": [
+    {
+     "line": 108,
+     "snippet": "def __init__(self, client: httpx.AsyncClient) -> None:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/services/web_source/snapshot_assets.py",
+   "function": "_default_client_factory",
+   "sites": [
+    {
+     "line": 134,
+     "snippet": "def _default_client_factory(*, timeout: float) -> httpx.AsyncClient:"
+    },
+    {
+     "line": 135,
+     "snippet": "return httpx.AsyncClient(timeout=timeout, max_redirects=MAX_REDIRECTS)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/tex_downloader.py",
+   "function": "TexDownloader.download_arxiv_source",
+   "sites": [
+    {
+     "line": 83,
+     "snippet": "response = requests.get(source_url, timeout=30)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/vision/image_utils.py",
+   "function": "fetch_image_from_url",
+   "sites": [
+    {
+     "line": 79,
+     "snippet": "async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT, follow_redirects=True) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/web_fetch.py",
+   "function": "fetch_url_as_markdown",
+   "sites": [
+    {
+     "line": 85,
+     "snippet": "``httpx.AsyncClient``-compatible context manager. ``host_validator``"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/web_fetch.py",
+   "function": "_default_client_factory",
+   "sites": [
+    {
+     "line": 169,
+     "snippet": "def _default_client_factory(*, timeout: float, user_agent: str) -> httpx.AsyncClient:"
+    },
+    {
+     "line": 170,
+     "snippet": "return httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/web_fetch.py",
+   "function": "_is_disallowed_host",
+   "sites": [
+    {
+     "line": 197,
+     "snippet": "infos = socket.getaddrinfo(candidate, None)"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/zotero_search.py",
+   "function": "<module>",
+   "sites": [
+    {
+     "line": 21,
+     "snippet": "ClientFactory = Callable[[], AbstractAsyncContextManager[httpx.AsyncClient]]"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/tools/zotero_search.py",
+   "function": "ZoteroSearchClient.__init__",
+   "sites": [
+    {
+     "line": 38,
+     "snippet": "lambda: httpx.AsyncClient("
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/invidious_account_client.py",
+   "function": "request_preferences",
+   "sites": [
+    {
+     "line": 22,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/invidious_account_client.py",
+   "function": "revoke_token",
+   "sites": [
+    {
+     "line": 45,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/invidious_account_client.py",
+   "function": "request_catalog",
+   "sites": [
+    {
+     "line": 70,
+     "snippet": "async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "_youtube_metadata",
+   "sites": [
+    {
+     "line": 448,
+     "snippet": "async with httpx.AsyncClient(timeout=8.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "_invidious_metadata",
+   "sites": [
+    {
+     "line": 491,
+     "snippet": "client: httpx.AsyncClient, base: str, video_id: str"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "_invidious_transcript",
+   "sites": [
+    {
+     "line": 506,
+     "snippet": "client: httpx.AsyncClient,"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "_invidious_resolution",
+   "sites": [
+    {
+     "line": 550,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "resolve_youtube_captions",
+   "sites": [
+    {
+     "line": 600,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "refresh_invidious_transcript",
+   "sites": [
+    {
+     "line": 753,
+     "snippet": "async with httpx.AsyncClient(timeout=15.0, follow_redirects=False) as client:"
+    }
+   ]
+  },
+  {
+   "module": "deeptutor/video_learning/service.py",
+   "function": "test_invidious_connection",
+   "sites": [
+    {
+     "line": 825,
+     "snippet": "async with httpx.AsyncClient(timeout=8.0, follow_redirects=False) as client:"
+    }
+   ]
+  }
+ ]
+}
