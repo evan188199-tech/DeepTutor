@@ -1,0 +1,39 @@
+{
+  "card": "AGEN-1110 verify-test-pool-drift",
+  "date": "2026-10-07",
+  "baseline": {
+    "source": "myfork:scan/coverage-gaps-20261007 evidence/coverage-gaps-20261007/summary.json",
+    "root_commit": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+    "verified_against_origin_main": "f07029cfcf2c8dfccdb671cdfc343db8334f5741",
+    "drift": "none (scan root == origin/main HEAD, v1.6.13)"
+  },
+  "sample": {
+    "size": 18,
+    "selection": "oldest test-* cards in deeptour.auto.jsonl file order, cards citing explicit module coverage claims",
+    "keys": [
+      "test-knowledge-router", "test-quiz-judge", "test-citation-manager",
+      "test-book-engine", "test-research-pipeline", "test-kb-manager",
+      "test-feishu-channel", "test-reading-progress", "test-pocketbase-store",
+      "test-question-pipeline", "test-quiz-viewer", "test-telegram-channel",
+      "test-launcher-lifecycle", "test-co-writer", "test-read-aloud",
+      "test-epub-bilingual", "test-tex-tools", "test-docx-converter"
+    ]
+  },
+  "verdict_counts": {
+    "still_zero_no_dedicated_tests": 2,
+    "tests_added": 16,
+    "module_moved": 0
+  },
+  "still_zero": ["test-quiz-judge", "test-tex-tools"],
+  "tests_added_but_still_weak_1_testfile": ["test-co-writer", "test-epub-bilingual", "test-docx-converter"],
+  "removal_suggestions": [
+    {"key": "test-research-pipeline", "reason": "tests/agents/research/test_pipeline_partial_failure.py exists; open PR branch test/research-pipeline-stage-contract-pr indicates card already claimed"},
+    {"key": "test-kb-manager", "reason": "4 dedicated manager test files in tests/knowledge/"},
+    {"key": "test-feishu-channel", "reason": "8 dedicated feishu test files in tests/services/partners/"},
+    {"key": "test-read-aloud", "reason": "tests/reading/test_read_aloud.py exists"},
+    {"key": "test-citation-manager", "reason": "tests/agents/research/test_citation_manager.py covers the exact payload-normalization scenarios the card asks for"}
+  ],
+  "rescope_not_removal": ["test-co-writer", "test-epub-bilingual", "test-docx-converter"],
+  "out_of_list_scope": [{"key": "test-quiz-viewer", "note": "frontend component; 20261007 list is Python-only; judged by tree: 3 web/tests files reference QuizViewer"}],
+  "method": "read-only: module zero/weak membership in summary.json + module file existence + dedicated test file discovery via glob/rg in worktree at origin/main; no tests executed; no product code touched"
+}
