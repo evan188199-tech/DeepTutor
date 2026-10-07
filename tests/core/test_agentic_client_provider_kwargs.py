@@ -23,6 +23,22 @@ from deeptutor.services.llm.provider_core.base import LLMResponse, ToolCallReque
 from deeptutor.services.llm.request_compat import is_transient_transport_error
 
 
+class _CloseableEventStream:
+    """Wraps an async generator so it exposes ``close()`` like the SDK's streams."""
+
+    def __init__(self, agen) -> None:
+        self._agen = agen
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        return await self._agen.__anext__()
+
+    async def close(self) -> None:
+        await self._agen.aclose()
+
+
 def test_agentic_kwargs_leave_deepseek_flash_thinking_to_the_provider() -> None:
     """Flash is no longer switched off — see ``_THINKING_DISABLED_BY_DEFAULT_MODELS``."""
     kwargs = build_completion_kwargs(
@@ -462,7 +478,7 @@ async def test_direct_openai_gpt5_agentic_tools_use_provider_adapter(monkeypatch
                     response=SimpleNamespace(status="completed", usage=None),
                 )
 
-            return events()
+            return _CloseableEventStream(events())
 
     class UnexpectedChatCompletions:
         async def create(self, **_kwargs):

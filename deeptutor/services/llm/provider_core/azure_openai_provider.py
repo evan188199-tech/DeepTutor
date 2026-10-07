@@ -214,29 +214,42 @@ class AzureOpenAIProvider(LLMProvider):
 
         try:
             stream = await self._client.responses.create(**body)
+            try:
 
-            async def _timed_stream():
-                stream_iter = stream.__aiter__()
-                while True:
-                    try:
-                        yield await asyncio.wait_for(
-                            stream_iter.__anext__(), timeout=idle_timeout_s
-                        )
-                    except StopAsyncIteration:
-                        break
+                async def _timed_stream():
+                    stream_iter = stream.__aiter__()
+                    while True:
+                        try:
+                            yield await asyncio.wait_for(
+                                stream_iter.__anext__(), timeout=idle_timeout_s
+                            )
+                        except StopAsyncIteration:
+                            break
 
-            content, tool_calls, finish_reason, usage, reasoning_content = await consume_sdk_stream(
-                _timed_stream(),
-                on_content_delta,
-                on_reasoning_delta=on_reasoning_delta,
-            )
-            return LLMResponse(
-                content=content or None,
-                tool_calls=tool_calls,
-                finish_reason=finish_reason,
-                usage=usage,
-                reasoning_content=reasoning_content,
-            )
+                (
+                    content,
+                    tool_calls,
+                    finish_reason,
+                    usage,
+                    reasoning_content,
+                ) = await consume_sdk_stream(
+                    _timed_stream(),
+                    on_content_delta,
+                    on_reasoning_delta=on_reasoning_delta,
+                )
+                return LLMResponse(
+                    content=content or None,
+                    tool_calls=tool_calls,
+                    finish_reason=finish_reason,
+                    usage=usage,
+                    reasoning_content=reasoning_content,
+                )
+            finally:
+                # ``wait_for`` only cancels the pending ``__anext__``; without
+                # an explicit close the underlying response hangs around until
+                # GC and pins its connection (anthropic_provider closes via
+                # ``async with`` for the same reason).
+                await stream.close()
         except asyncio.TimeoutError:
             return LLMResponse(
                 content=f"Error calling Azure OpenAI: stream stalled for more than {idle_timeout_s} seconds",

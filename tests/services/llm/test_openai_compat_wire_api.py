@@ -58,6 +58,22 @@ def _provider(*, wire_api: str = "auto") -> OpenAICompatProvider:
     )
 
 
+class _CloseableEventStream:
+    """Wraps an async generator so it exposes ``close()`` like the SDK's streams."""
+
+    def __init__(self, agen) -> None:
+        self._agen = agen
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        return await self._agen.__anext__()
+
+    async def close(self) -> None:
+        await self._agen.aclose()
+
+
 def test_runtime_config_preserves_wire_api() -> None:
     resolved = resolve_llm_runtime_config(catalog=_catalog())
 
@@ -227,7 +243,7 @@ async def test_forced_responses_agentic_stream_maps_tool_calls(monkeypatch) -> N
                     response=SimpleNamespace(status="completed", usage=None),
                 )
 
-            return events()
+            return _CloseableEventStream(events())
 
     class UnexpectedChatCompletions:
         async def create(self, **_kwargs):

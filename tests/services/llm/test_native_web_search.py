@@ -54,6 +54,9 @@ class _SDKStream:
             raise StopAsyncIteration
         return self._events.pop(0)
 
+    async def close(self) -> None:
+        pass
+
 
 _TOOLS = [
     {
