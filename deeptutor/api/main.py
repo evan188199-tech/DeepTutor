@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 
+from deeptutor.api.error_mapping import service_error_handler
 from deeptutor.logging import configure_logging
 from deeptutor.services.config import (
     ensure_runtime_settings_files,
@@ -15,6 +16,7 @@ from deeptutor.services.config import (
     load_system_settings,
 )
 from deeptutor.services.config.origins import normalize_origins
+from deeptutor.services.errors import ServiceError
 from deeptutor.services.path_service import get_path_service
 
 ensure_runtime_settings_files()
@@ -412,6 +414,7 @@ app = FastAPI(
     redirect_slashes=False,
 )
 app.add_middleware(WorkspaceActivityMiddleware)
+app.add_exception_handler(ServiceError, service_error_handler)
 
 
 @app.middleware("http")

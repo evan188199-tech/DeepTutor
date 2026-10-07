@@ -6,8 +6,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from fastapi import HTTPException
-
 from deeptutor.knowledge.kb_types import SUBAGENT_KB_TYPE
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 from deeptutor.knowledge.manifest import (
@@ -16,6 +14,7 @@ from deeptutor.knowledge.manifest import (
     build_manifest,
     document_root,
 )
+from deeptutor.services.errors import AccessDeniedError, ResourceNotFoundError, ServiceError
 
 from .context import get_current_user
 from .grants import load_grant
@@ -131,11 +130,9 @@ def _resolve_kb(kb_ref: str, *, require_write: bool = False) -> KnowledgeResourc
 
     if requested_source == "admin":
         if name not in assigned_names:
-            raise HTTPException(status_code=403, detail="Knowledge base is not assigned to you")
+            raise AccessDeniedError("Knowledge base is not assigned to you")
         if require_write:
-            raise HTTPException(
-                status_code=403, detail="Assigned admin knowledge bases are read-only"
-            )
+            raise AccessDeniedError("Assigned admin knowledge bases are read-only")
         return KnowledgeResource(
             id=f"admin:kb:{name}",
             name=name,
@@ -180,9 +177,7 @@ def _resolve_kb(kb_ref: str, *, require_write: bool = False) -> KnowledgeResourc
 
     if name in assigned_names:
         if require_write:
-            raise HTTPException(
-                status_code=403, detail="Assigned admin knowledge bases are read-only"
-            )
+            raise AccessDeniedError("Assigned admin knowledge bases are read-only")
         return KnowledgeResource(
             id=f"admin:kb:{name}",
             name=name,
@@ -192,7 +187,7 @@ def _resolve_kb(kb_ref: str, *, require_write: bool = False) -> KnowledgeResourc
             read_only=True,
         )
 
-    raise HTTPException(status_code=404, detail=f"Knowledge base '{name}' not found")
+    raise ResourceNotFoundError(f"Knowledge base '{name}' not found")
 
 
 def _resolve_default_or_name(manager: KnowledgeBaseManager, name: str) -> str:
@@ -204,8 +199,8 @@ def _resolve_default_or_name(manager: KnowledgeBaseManager, name: str) -> str:
         default_kb = manager.get_default()
         if default_kb and default_kb in names:
             return default_kb
-        raise HTTPException(status_code=404, detail="No default knowledge base is configured")
-    raise HTTPException(status_code=404, detail=f"Knowledge base '{requested}' not found")
+        raise ResourceNotFoundError("No default knowledge base is configured")
+    raise ResourceNotFoundError(f"Knowledge base '{requested}' not found")
 
 
 def manager_for_resource(resource: KnowledgeResource) -> KnowledgeBaseManager:
@@ -356,7 +351,7 @@ def resolve_kb_metadata(kb_ref: str | None) -> dict[str, Any] | None:
         return None
     try:
         resource = resolve_kb(str(kb_ref), require_write=False)
-    except HTTPException:
+    except ServiceError:
         return None
     manager = _manager_for(str(resource.base_dir.resolve()))
     return manager.get_metadata(resource.name)
@@ -380,7 +375,7 @@ def resolve_kb_manifest(
         return None
     try:
         resource = resolve_kb(str(kb_ref), require_write=False)
-    except HTTPException:
+    except ServiceError:
         return None
     manager = _manager_for(str(resource.base_dir.resolve()))
     entry = manager.get_kb_entry(resource.name)
@@ -413,7 +408,7 @@ def resolve_kb_document_path(kb_ref: str | None, rel_path: str) -> Path | None:
         return None
     try:
         resource = resolve_kb(str(kb_ref), require_write=False)
-    except HTTPException:
+    except ServiceError:
         return None
     manager = _manager_for(str(resource.base_dir.resolve()))
     entry = manager.get_kb_entry(resource.name)

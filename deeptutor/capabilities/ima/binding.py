@@ -78,9 +78,10 @@ def resolve_client(kb_ref: str, *, for_write: bool = False):
     """An :class:`ImaClient` for *kb_ref*, after re-checking the user's access.
 
     Raises ``ImaNotConfiguredError`` when the KB (or the account settings) lacks
-    a complete credential pair, and ``fastapi.HTTPException`` when the reference
-    is not accessible to the current user — writes require write access, since
-    they modify the user's own IMA library.
+    a complete credential pair, and a service-layer domain error (mapped to
+    HTTP 403/404 by the API layer) when the reference is not accessible to the
+    current user — writes require write access, since they modify the user's
+    own IMA library.
     """
     from deeptutor.multi_user.knowledge_access import resolve_kb
     from deeptutor.services.rag.pipelines.ima.client import ImaClient

@@ -8,7 +8,7 @@ from dataclasses import replace
 import json
 from pathlib import Path
 
-from fastapi import HTTPException
+from deeptutor.services.errors import AccessDeniedError, ResourceNotFoundError
 
 library_request: ContextVar[bool] = ContextVar("knowledge_library_request", default=False)
 
@@ -43,7 +43,7 @@ def parse_kb_id(value: str) -> tuple[str, str] | None:
         prefix, separator, name = value.partition(":kb:")
         if separator and prefix[len("workspace:") :]:
             return prefix[len("workspace:") :], name
-        raise HTTPException(status_code=404, detail="Invalid knowledge resource reference")
+        raise ResourceNotFoundError("Invalid knowledge resource reference")
     return None
 
 
@@ -99,9 +99,7 @@ def resolve_qualified(kb_ref: str, *, require_write=False):
         finally:
             library_request.reset(token)
     except WorkspaceError as exc:
-        raise HTTPException(
-            status_code=404, detail="Knowledge resource workspace is unavailable"
-        ) from exc
+        raise ResourceNotFoundError("Knowledge resource workspace is unavailable") from exc
     return replace(resource, id=kb_ref)
 
 
@@ -169,7 +167,7 @@ def resolve_selected(kb_ref: str, selected: list[str], *, require_write=False):
         matches = selected[:1]
     if len(matches) == 1 and parse_kb_id(kb_ref) is None and not kb_ref.startswith("admin:kb:"):
         return resolve_qualified(matches[0], require_write=require_write)
-    raise HTTPException(status_code=403, detail="Knowledge base is not assigned to this workspace")
+    raise AccessDeniedError("Knowledge base is not assigned to this workspace")
 
 
 # Explicit learning-source choices add read access within the current account;

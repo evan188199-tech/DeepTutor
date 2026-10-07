@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from fastapi import HTTPException
 import pytest
 
 from deeptutor.multi_user import grants as grants_mod
@@ -12,6 +11,7 @@ from deeptutor.multi_user.skill_access import (
     assigned_skill_ids,
     assigned_skill_infos,
 )
+from deeptutor.services.errors import AccessDeniedError
 from deeptutor.services.skill.service import SkillService
 
 
@@ -57,7 +57,7 @@ def test_assigned_skill_loads_admin_skill_body(mu_isolated_root, as_user):
 
 def test_unassigned_skill_rejected(mu_isolated_root, as_user):
     with as_user("u_bob", role="user"):
-        with pytest.raises(HTTPException) as exc:
+        with pytest.raises(AccessDeniedError) as exc:
             assert_skill_allowed("forbidden-skill")
         assert exc.value.status_code == 403
 

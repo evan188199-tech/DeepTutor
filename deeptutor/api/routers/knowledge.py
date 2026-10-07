@@ -69,6 +69,7 @@ from deeptutor.multi_user.knowledge_access import (
     list_visible_knowledge_bases as list_visible_kb_access,
 )
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
+from deeptutor.services.errors import ServiceError
 from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.rag.factory import (
     DEFAULT_PROVIDER,
@@ -2153,6 +2154,8 @@ async def set_default_kb(kb_name: str):
         return {"status": "success", "default_kb": kb_name}
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except Exception as e:
         logger.error(f"Error setting default KB: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -2757,7 +2760,7 @@ def _resource_knowledge_bases() -> list[KnowledgeBaseInfo]:
                     }
                 )
             )
-        except (HTTPException, ValueError, OSError):
+        except (HTTPException, ValueError, OSError, ServiceError):
             result.append(
                 KnowledgeBaseInfo(
                     id=access["id"],
@@ -2954,6 +2957,8 @@ def _list_knowledge_bases():
         return result
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except Exception as e:
         error_msg = f"Error listing knowledge bases: {e}"
         logger.error(f"{error_msg}\n{traceback.format_exc()}")
@@ -2996,6 +3001,8 @@ async def get_knowledge_base_details(kb_name: str):
     except HTTPException:
         raise
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
@@ -3257,6 +3264,9 @@ def _delete_kb(kb_name: str) -> dict[str, str]:
         # Re-raised before the catch-all below, which used to turn a 404 from
         # ``_writable_kb`` into a 500 whose detail read "404: ... not found".
         raise
+    except ServiceError:
+        # Same seam: domain access errors keep their 403/404 codes.
+        raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
@@ -3415,6 +3425,8 @@ async def upload_files(
             "task_id": task_id,
         }
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
@@ -4166,6 +4178,8 @@ async def reindex_knowledge_base(
         }
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except Exception as e:
         logger.error(f"Failed to start reindex for '{kb_name}': {e}")
         raise HTTPException(status_code=500, detail=format_exception_message(e))
@@ -4215,6 +4229,8 @@ async def retry_knowledge_base(
         )
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except Exception as e:
         logger.error(f"Failed to retry KB '{kb_name}': {e}")
         raise HTTPException(status_code=500, detail=format_exception_message(e))
@@ -4234,6 +4250,8 @@ async def get_progress(kb_name: str):
         return progress
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4247,6 +4265,8 @@ async def clear_progress(kb_name: str):
         progress_tracker.clear()
         return {"status": "success", "message": f"Progress cleared for {kb_name}"}
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -4554,6 +4574,8 @@ async def link_folder(kb_name: str, request: LinkFolderRequest):
         if "not found" in error_msg.lower():
             raise HTTPException(status_code=404, detail=error_msg)
         raise HTTPException(status_code=400, detail=error_msg)
+    except ServiceError:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4567,6 +4589,8 @@ async def get_linked_folders(kb_name: str):
         folders = manager.get_linked_folders(resource.name)
         return [LinkedFolderInfo(**f) for f in folders]
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
@@ -4586,6 +4610,8 @@ async def unlink_folder(kb_name: str, folder_id: str):
         logger.info(f"Unlinked folder '{folder_id}' from KB '{kb_name}'")
         return {"message": "Folder unlinked successfully", "folder_id": folder_id}
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
@@ -4684,6 +4710,8 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
         )
     except HTTPException:
         raise
+    except ServiceError:
+        raise
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
     except Exception as e:
@@ -4770,6 +4798,8 @@ def _knowledge_source_errors(kb_name: str, *, validation_status: int = 404):
     try:
         yield
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except ValueError as exc:
         detail = str(exc)

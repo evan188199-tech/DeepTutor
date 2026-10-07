@@ -62,6 +62,7 @@ from deeptutor.reading.knowledge_capture import (
     send_workspace_to_notebook,
 )
 from deeptutor.reading.models import MAX_TEXT_SELECTOR_CHARS
+from deeptutor.services.errors import ServiceError
 from deeptutor.services.session.workspace_preferences import WORKSPACE_MODE_READING
 from deeptutor.utils.document_validator import DocumentValidator
 
@@ -652,6 +653,8 @@ async def import_zim_article(payload: ZimArticleImportRequest) -> dict[str, Any]
             "workspace": workspace.to_dict() if workspace else None,
         }
     except HTTPException:
+        raise
+    except ServiceError:
         raise
     except (KiwixError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

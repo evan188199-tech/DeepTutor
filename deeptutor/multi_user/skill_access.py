@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import HTTPException
+from deeptutor.services.errors import AccessDeniedError
 
 from .context import get_current_user
 from .grants import load_grant
@@ -71,4 +71,4 @@ def assert_skill_allowed(name: str) -> None:
     if user.is_admin:
         return
     if name not in assigned_skill_ids(user.id):
-        raise HTTPException(status_code=403, detail="Skill is not assigned to you")
+        raise AccessDeniedError("Skill is not assigned to you")
