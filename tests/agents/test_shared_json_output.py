@@ -84,3 +84,15 @@ def test_extract_json_object_preserves_fenced_example_inside_valid_json() -> Non
 def test_extract_json_object_does_not_fall_back_to_reasoning(text: str) -> None:
     with pytest.raises(json.JSONDecodeError, match="No JSON object found"):
         extract_json_object(text)
+
+
+def test_extract_json_object_unclosed_fence_falls_back_to_bare_object() -> None:
+    raw = 'Preface ```json\n{"value": 7}'
+
+    assert extract_json_object(raw) == {"value": 7}
+
+
+def test_extract_json_object_unclosed_think_block_keeps_tail_object_parse() -> None:
+    raw = '<think>still reasoning\n{"value": 8}'
+
+    assert extract_json_object(raw) == {"value": 8}

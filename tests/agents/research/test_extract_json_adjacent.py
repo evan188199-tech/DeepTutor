@@ -13,3 +13,7 @@ def test_object_then_array_returns_object() -> None:
 
 def test_trailing_prose_still_works() -> None:
     assert extract_json_from_text('result: {"x": true} done') == {"x": True}
+
+
+def test_unclosed_fence_falls_back_to_first_json_fragment() -> None:
+    assert extract_json_from_text('```json\n{"a": 1}') == {"a": 1}

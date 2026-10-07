@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 from typing import Any
 
+from deeptutor.agents._shared.delimited_blocks import iter_fenced_blocks, remove_think_blocks
 from deeptutor.agents.base_agent import BaseAgent
 
 
@@ -153,8 +154,8 @@ class VisionSolverAgent(BaseAgent):
             and drop everything after the final closing brace);
           * inline comments and trailing commas, common model slips.
         """
-        text = re.sub(r"<think>[\s\S]*?</think>", "", response)
-        matches = re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+        text = remove_think_blocks(response)
+        matches = list(iter_fenced_blocks(text))
         json_str = matches[-1] if matches else text
         json_str = re.sub(r"//.*?$", "", json_str, flags=re.MULTILINE)
         json_str = re.sub(r"/\*.*?\*/", "", json_str, flags=re.DOTALL)

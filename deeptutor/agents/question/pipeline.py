@@ -31,10 +31,10 @@ from enum import StrEnum
 import json
 import logging
 from pathlib import Path
-import re
 from typing import Any
 
 from deeptutor.agents._shared.capability_result import emit_capability_result
+from deeptutor.agents._shared.delimited_blocks import iter_fenced_blocks
 from deeptutor.agents._shared.tool_composition import (
     ToolMountFlags,
     compose_enabled_tools,
@@ -1387,9 +1387,9 @@ class QuestionPipeline:
         if not text:
             return {}
         # Strip a single fenced block if the model wrapped the JSON
-        fence = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
-        if fence:
-            text = fence.group(1).strip()
+        fence = next(iter_fenced_blocks(text), None)
+        if fence is not None:
+            text = fence.strip()
         try:
             parsed = json.loads(text)
         except json.JSONDecodeError:

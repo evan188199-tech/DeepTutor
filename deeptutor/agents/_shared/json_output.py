@@ -3,8 +3,12 @@
 from __future__ import annotations
 
 import json
-import re
 from typing import Any
+
+from deeptutor.agents._shared.delimited_blocks import (
+    iter_fenced_blocks,
+    strip_leading_think_blocks,
+)
 
 
 def extract_json_object(text: str) -> dict[str, Any]:
@@ -15,8 +19,7 @@ def extract_json_object(text: str) -> dict[str, Any]:
 
     # Only strip complete leading reasoning blocks; tags inside JSON strings
     # are payload data. Never fall back to JSON drafts from stripped reasoning.
-    while match := re.match(r"<think\b[^>]*>.*?</think>\s*", raw, re.DOTALL | re.IGNORECASE):
-        raw = raw[match.end() :]
+    raw = strip_leading_think_blocks(raw)
 
     # Preserve a complete object before looking for fenced examples in its
     # string values, including after a reasoning prelude has been removed.
@@ -27,7 +30,7 @@ def extract_json_object(text: str) -> dict[str, Any]:
     except json.JSONDecodeError:
         pass
 
-    fenced = re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", raw)
+    fenced = list(iter_fenced_blocks(raw))
     for candidate in [*fenced, raw]:
         try:
             parsed = json.loads(candidate)

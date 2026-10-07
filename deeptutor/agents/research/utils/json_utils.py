@@ -6,8 +6,9 @@ JSON Utils - JSON parsing and validation utilities
 """
 
 import json
-import re
 from typing import Any, Dict, Iterable, List, Union
+
+from deeptutor.agents._shared.delimited_blocks import iter_fenced_blocks
 
 
 def extract_json_from_text(text: str) -> Union[Dict[str, Any], List[Any], None]:
@@ -22,9 +23,9 @@ def extract_json_from_text(text: str) -> Union[Dict[str, Any], List[Any], None]:
         return None
 
     # 1) Code block
-    code_block = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
-    if code_block:
-        snippet = code_block.group(1).strip()
+    code_block = next(iter_fenced_blocks(text), None)
+    if code_block is not None:
+        snippet = code_block.strip()
         try:
             return json.loads(snippet)
         except json.JSONDecodeError:

@@ -1366,3 +1366,10 @@ def test_a_clean_quiz_is_still_reported_successful() -> None:
     assert summary["completed"] == 2
     assert summary["failed"] == 0
     assert summary["success"] is True
+
+
+def test_parse_quiz_payload_unclosed_fence_falls_back_to_brace_scan() -> None:
+    raw = '```json\n{"question": "What is 2+2?", "correct_answer": "4"}'
+    parsed = QuestionPipeline._parse_quiz_payload(raw)
+    assert parsed["question"] == "What is 2+2?"
+    assert parsed["correct_answer"] == "4"

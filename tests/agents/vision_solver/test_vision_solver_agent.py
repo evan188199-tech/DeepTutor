@@ -99,3 +99,23 @@ class TestCallVisionLlmKwargs:
         assert captured["model"] == "main-model"
         content = captured["messages"][0]["content"]
         assert any(part.get("type") == "image_url" for part in content)
+
+
+class TestExtractJsonUnclosedDelimiters:
+    """Delimiters that never close must not prevent tail-object extraction."""
+
+    def test_unclosed_fence_still_extracts_tail_object(self) -> None:
+        response = '```json\n{"commands": [{"command": "A = (1, 2)"}]}'
+
+        data = VisionSolverAgent._extract_json(response)
+
+        assert data["commands"][0]["command"] == "A = (1, 2)"
+
+    def test_unclosed_think_block_still_extracts_tail_object(self) -> None:
+        response = (
+            '<think>still reasoning about the figure\n{"commands": [{"command": "B = (2, 3)"}]}'
+        )
+
+        data = VisionSolverAgent._extract_json(response)
+
+        assert data["commands"][0]["command"] == "B = (2, 3)"
