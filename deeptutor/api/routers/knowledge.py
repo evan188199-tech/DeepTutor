@@ -17,6 +17,7 @@ import re
 import shutil
 import traceback
 from typing import TYPE_CHECKING, Annotated, Any
+import unicodedata
 from uuid import uuid4
 
 if TYPE_CHECKING:
@@ -377,9 +378,14 @@ _BAD_PATH_CHARS = re.compile(r'[\\:*?"<>|\x00-\x1f]')
 
 
 def _sanitize_path_segment(segment: str) -> str:
-    """Sanitize a single folder/file path segment for safe FS use."""
+    """Sanitize a single folder/file path segment for safe FS use.
+
+    The result is composed to NFC, matching the upload-filename defense in
+    ``document_validator``, so visually identical names cannot fork into
+    NFC/NFD duplicates on byte-sensitive filesystems.
+    """
     cleaned = _BAD_PATH_CHARS.sub("", segment).strip().strip(".")
-    return cleaned[:128]
+    return unicodedata.normalize("NFC", cleaned)[:128]
 
 
 def _sanitize_rel_subdir(rel_path: str | None) -> str:
@@ -892,7 +898,9 @@ def _enforce_provider_formats(provider: str, files: list[UploadFile]) -> None:
 
 def _resolve_registered_kb_name(manager: KnowledgeBaseManager, kb_name: str | None) -> str:
     """Resolve route-level default aliases to the configured default KB."""
-    requested = str(kb_name or "").strip()
+    # KB names are registered in NFC (knowledge/naming), so compose the request
+    # before the membership check to keep decomposed deep links working.
+    requested = unicodedata.normalize("NFC", str(kb_name or "").strip())
     kb_names = manager.list_knowledge_bases()
     if requested and requested in kb_names:
         return requested
@@ -3035,6 +3043,41 @@ def _resolve_kb_raw_dir(kb_name: str, *, allow_unsupported: bool = False) -> Pat
     return kb_path / "raw"
 
 
+def _unicode_equivalent_segment(directory: Path, segment: str) -> str | None:
+    """Return the entry name in ``directory`` equal to ``segment`` under NFC."""
+    wanted = unicodedata.normalize("NFC", segment)
+    try:
+        entries = list(os.scandir(directory))
+    except OSError:
+        return None
+    for entry in entries:
+        if unicodedata.normalize("NFC", entry.name) == wanted:
+            return entry.name
+    return None
+
+
+def _resolve_unicode_equivalent(raw_dir: Path, filename: str) -> Path | None:
+    """Walk ``filename`` under ``raw_dir``, matching each segment under NFC.
+
+    Miss-path fallback for byte-exact resolution: names placed on disk by
+    NFD-flavoured sources (e.g. macOS Finder copies, archives created on
+    macOS and extracted on Linux) stay reachable from composed requests
+    without migrating storage.
+    """
+    current = raw_dir
+    for segment in str(filename).split("/"):
+        if not segment or segment == "..":
+            return None
+        candidate = current / segment
+        if not candidate.exists() and current.is_dir():
+            sibling = _unicode_equivalent_segment(current, segment)
+            if sibling is None:
+                return None
+            candidate = current / sibling
+        current = candidate
+    return current if current.exists() else None
+
+
 def _resolve_kb_raw_file_or_404(kb_name: str, filename: str) -> Path:
     """Resolve a raw KB file while preventing traversal outside raw/."""
     raw_dir = _resolve_kb_raw_dir(kb_name)
@@ -3048,6 +3091,15 @@ def _resolve_kb_raw_file_or_404(kb_name: str, filename: str) -> Path:
         target.relative_to(raw_resolved)
     except ValueError:
         raise HTTPException(status_code=403, detail="Access denied")
+
+    if not target.exists():
+        fallback = _resolve_unicode_equivalent(raw_dir, filename)
+        if fallback is not None:
+            target = fallback.resolve()
+            try:
+                target.relative_to(raw_resolved)
+            except ValueError:
+                raise HTTPException(status_code=403, detail="Access denied")
 
     if not target.exists() or not target.is_file():
         raise HTTPException(status_code=404, detail="File not found")
@@ -3134,6 +3186,10 @@ async def move_kb_file(kb_name: str, payload: MoveFilePayload):
     if not source_rel:
         raise HTTPException(status_code=400, detail="Source path is required")
     src = _safe_join_raw(raw_dir, source_rel)
+    if not src.exists():
+        fallback = _resolve_unicode_equivalent(raw_dir, source_rel)
+        if fallback is not None:
+            src = fallback
     if not src.exists():
         raise HTTPException(status_code=404, detail="Source not found")
 

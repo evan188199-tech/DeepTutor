@@ -6,6 +6,8 @@ import importlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
+import unicodedata
+from urllib.parse import quote
 
 import pytest
 from starlette.routing import Match
@@ -1409,6 +1411,103 @@ def test_raw_file_download_rejects_traversal(monkeypatch, tmp_path: Path) -> Non
         response = client.get("/api/knowledge-bases/kb/files/%2E%2E/secret.txt")
 
     assert response.status_code == 403
+
+
+def test_serve_kb_file_resolves_unicode_equivalent_names(monkeypatch, tmp_path: Path) -> None:
+    """A file staged under a decomposed name is served for the composed request."""
+    manager = _ready_kb_manager(tmp_path)
+    raw = manager.base_dir / "kb" / "raw"
+    disk_name = unicodedata.normalize("NFD", "café-notes.txt")
+    (raw / disk_name).write_text("notes", encoding="utf-8")
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+
+    with TestClient(_build_app()) as client:
+        response = client.get(
+            "/api/knowledge-bases/kb/files/" + quote(unicodedata.normalize("NFC", "café-notes.txt"))
+        )
+
+    assert response.status_code == 200
+    assert response.text == "notes"
+
+
+def test_delete_kb_file_resolves_unicode_equivalent_names(monkeypatch, tmp_path: Path) -> None:
+    """Deleting via the composed name removes the decomposed on-disk file."""
+    manager = _real_manager(monkeypatch, tmp_path)
+    raw = tmp_path / "kbs" / "chem" / "raw"
+    raw.mkdir(parents=True, exist_ok=True)
+    disk_file = raw / unicodedata.normalize("NFD", "résumé.txt")
+    disk_file.write_text("cv", encoding="utf-8")
+    manager.config.setdefault("knowledge_bases", {})["chem"] = {
+        "rag_provider": "llamaindex",
+        "status": "ready",
+    }
+    manager._save_config()
+
+    with TestClient(_build_app()) as client:
+        response = client.delete(
+            "/api/knowledge-bases/chem/files/" + quote(unicodedata.normalize("NFC", "résumé.txt"))
+        )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+    assert not disk_file.exists()
+
+
+def test_create_folder_normalizes_segments_to_composed_form(monkeypatch, tmp_path: Path) -> None:
+    manager = _ready_kb_manager(tmp_path)
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_router_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    with TestClient(_build_app()) as client:
+        response = client.post(
+            "/api/knowledge-bases/kb/folders",
+            json={"path": unicodedata.normalize("NFD", "café/2024")},
+        )
+
+    assert response.status_code == 200
+    assert response.json()["path"] == unicodedata.normalize("NFC", "café/2024")
+    assert (
+        manager.base_dir / "kb" / "raw" / unicodedata.normalize("NFC", "café") / "2024"
+    ).is_dir()
+
+
+def test_file_routes_resolve_decomposed_kb_name(monkeypatch, tmp_path: Path) -> None:
+    manager = _real_manager(monkeypatch, tmp_path)
+    nfc_name = unicodedata.normalize("NFC", "café")
+    raw = tmp_path / "kbs" / nfc_name / "raw"
+    raw.mkdir(parents=True, exist_ok=True)
+    (raw / "a.txt").write_text("hi", encoding="utf-8")
+    manager.config.setdefault("knowledge_bases", {})[nfc_name] = {
+        "rag_provider": "llamaindex",
+        "status": "ready",
+    }
+    manager._save_config()
+
+    with TestClient(_build_app()) as client:
+        response = client.get(
+            "/api/knowledge-bases/" + quote(unicodedata.normalize("NFD", "café")) + "/files"
+        )
+
+    assert response.status_code == 200
+    assert [e["name"] for e in response.json()["files"]] == ["a.txt"]
+
+
+def test_move_kb_file_resolves_unicode_equivalent_source(monkeypatch, tmp_path: Path) -> None:
+    manager = _ready_kb_manager(tmp_path)
+    raw = manager.base_dir / "kb" / "raw"
+    disk_name = unicodedata.normalize("NFD", "café.txt")
+    (raw / disk_name).write_text("x", encoding="utf-8")
+    monkeypatch.setattr(knowledge_router_module, "get_kb_manager", lambda: manager)
+    monkeypatch.setattr(knowledge_router_module, "_kb_base_dir", tmp_path / "knowledge_bases")
+
+    with TestClient(_build_app()) as client:
+        response = client.post(
+            "/api/knowledge-bases/kb/files/move",
+            json={"source": disk_name, "dest_folder": "Archives"},
+        )
+
+    assert response.status_code == 200
+    assert (raw / "Archives" / disk_name).is_file()
 
 
 def test_upload_preserves_folder_structure(monkeypatch, tmp_path: Path) -> None:
