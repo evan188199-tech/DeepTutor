@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import builtins
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import os
 from pathlib import Path
+import subprocess
+import sys
 from threading import Thread
 from types import SimpleNamespace
 
@@ -201,6 +204,60 @@ def test_launcher_completes_update_only_after_restart(tmp_path: Path) -> None:
 
     assert launcher._complete_restarted_update(tmp_path) is True
     assert store.load().status == "succeeded"
+
+
+def _dead_worker_pid() -> int:
+    child = subprocess.Popen(  # noqa: S603 - fixed interpreter, no shell
+        [sys.executable, "-c", "pass"]
+    )
+    child.wait(timeout=60)
+    return child.pid
+
+
+def _running_job(tmp_path: Path) -> UpdateJobStore:
+    store = UpdateJobStore(update_store_root(tmp_path))
+    pending = store.create(current_version="1.6.1", target_version="1.7.0")
+    store.prepare_handoff(
+        pending.id,
+        home=tmp_path,
+        restart_argv=["start", "--home", str(tmp_path.resolve())],
+    )
+    store.mark_running(pending.id)
+    return store
+
+
+def test_launcher_recovers_stale_running_update(tmp_path: Path) -> None:
+    store = _running_job(tmp_path)
+    store.record_worker_pid(_dead_worker_pid())
+
+    assert launcher._recover_stale_running_update(tmp_path) is True
+
+    job = store.load()
+    assert job.status == "failed"
+    assert job.error == "Update worker exited before finishing the update"
+    assert not store.active_path.exists()
+    assert store.read_worker_pid() is None
+
+
+def test_launcher_recovers_running_update_without_worker_record(tmp_path: Path) -> None:
+    store = _running_job(tmp_path)
+
+    assert launcher._recover_stale_running_update(tmp_path) is True
+
+    job = store.load()
+    assert job.status == "failed"
+    assert not store.active_path.exists()
+
+
+def test_launcher_leaves_live_running_update_alone(tmp_path: Path) -> None:
+    store = _running_job(tmp_path)
+    store.record_worker_pid(os.getpid())
+
+    assert launcher._recover_stale_running_update(tmp_path) is False
+
+    assert store.load().status == "running"
+    assert store.active_path.exists()
+    assert store.read_worker_pid() == os.getpid()
 
 
 def test_packaged_web_cache_refreshes_when_public_settings_change(tmp_path: Path) -> None:

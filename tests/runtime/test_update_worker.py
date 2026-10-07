@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
+import signal
+import subprocess
+import sys
+import textwrap
 
 import pytest
 
 from deeptutor.runtime.update_worker import build_update_command, run_update_worker
 from deeptutor.services.app_update import UpdateJob, UpdateJobStore
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _handoff_job(tmp_path: Path) -> tuple[UpdateJobStore, UpdateJob]:
@@ -64,6 +71,98 @@ def test_worker_failure_is_durable_and_restores_app(tmp_path: Path) -> None:
     assert store.load().status == "failed"
     assert store.load().error == "pip exited with status 7"
     assert restarted and restarted[0].status == "failed"
+
+
+def test_worker_records_pid_while_running_and_clears_it_after(tmp_path: Path) -> None:
+    store, _job = _handoff_job(tmp_path)
+    observed: list[int | None] = []
+
+    def run(command: list[str], cwd: Path, log_path: Path) -> int:
+        observed.append(store.read_worker_pid())
+        return 0
+
+    result = run_update_worker(
+        store_root=store.root,
+        parent_pid=123,
+        wait_for_parent=lambda _pid: None,
+        command_runner=run,
+        restart_launcher=lambda _value, _log: None,
+    )
+
+    assert result == 0
+    assert observed == [os.getpid()]
+    assert store.read_worker_pid() is None
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX signal delivery semantics")
+def test_worker_interrupted_by_signal_marks_job_failed(tmp_path: Path) -> None:
+    store, _job = _handoff_job(tmp_path)
+    script = textwrap.dedent(
+        f"""
+        import os
+        import signal
+        import time
+        from pathlib import Path
+
+        from deeptutor.runtime.update_worker import run_update_worker
+        from deeptutor.services.app_update import UpdateJobStore
+
+        def interrupted_install(command, cwd, log_path):
+            os.kill(os.getpid(), signal.SIGTERM)
+            time.sleep(60)
+
+        store = UpdateJobStore(Path({str(store.root)!r}))
+        raise SystemExit(
+            run_update_worker(
+                store_root=store.root,
+                parent_pid={os.getpid()},
+                wait_for_parent=lambda _pid: None,
+                command_runner=interrupted_install,
+                restart_launcher=lambda _value, _log: None,
+            )
+        )
+        """
+    )
+    completed = subprocess.run(  # noqa: S603 - fixed interpreter, no shell
+        [sys.executable, "-c", script],
+        cwd=_REPO_ROOT,
+        env={**os.environ, "PYTHONPATH": str(_REPO_ROOT)},
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    assert completed.returncode == -signal.SIGTERM
+    job = store.load()
+    assert job.status == "failed"
+    assert job.error == "Update worker interrupted by a termination signal"
+    assert not store.active_path.exists()
+    # The killed worker cannot run its finally block, so the pid record
+    # survives as the marker a launcher startup uses to detect the stale job.
+    assert store.read_worker_pid() is not None
+    assert not _pid_is_alive(store.read_worker_pid())
+
+
+def _pid_is_alive(pid: int | None) -> bool:
+    from deeptutor.runtime.process import is_process_alive
+
+    return is_process_alive(pid)
+
+
+def test_worker_restores_previous_signal_handlers(tmp_path: Path) -> None:
+    store, _job = _handoff_job(tmp_path)
+    previous = signal.getsignal(signal.SIGTERM)
+
+    result = run_update_worker(
+        store_root=store.root,
+        parent_pid=123,
+        wait_for_parent=lambda _pid: None,
+        command_runner=lambda _command, _cwd, _log: 7,
+        restart_launcher=lambda _value, _log: None,
+    )
+
+    assert result == 1
+    assert signal.getsignal(signal.SIGTERM) is previous
 
 
 def test_update_command_rejects_non_stable_or_injected_versions() -> None:

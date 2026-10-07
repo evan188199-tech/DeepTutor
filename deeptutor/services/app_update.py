@@ -480,6 +480,28 @@ class UpdateJobStore:
         self.state_path = self.root / "state.json"
         self.active_path = self.root / "active"
         self.log_path = self.root / "worker.log"
+        self.worker_pid_path = self.root / "worker.pid"
+
+    def record_worker_pid(self, pid: int) -> None:
+        """Persist the executing worker's pid for stale-job detection."""
+        self.root.mkdir(parents=True, exist_ok=True)
+        self.worker_pid_path.write_text(f"{pid}\n", encoding="ascii")
+
+    def read_worker_pid(self) -> int | None:
+        try:
+            pid = int(self.worker_pid_path.read_text(encoding="ascii").strip())
+        except (OSError, ValueError):
+            return None
+        return pid if pid > 0 else None
+
+    def clear_worker_pid(self, pid: int | None = None) -> None:
+        """Remove the worker pid marker, only when ``pid`` still owns it."""
+        try:
+            owner = self.worker_pid_path.read_text(encoding="ascii").strip()
+        except OSError:
+            return
+        if pid is None or owner == str(pid):
+            self.worker_pid_path.unlink(missing_ok=True)
 
     def create(self, *, current_version: str, target_version: str) -> UpdateJob:
         current = _normalise_stable_version(current_version)

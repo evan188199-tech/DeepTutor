@@ -1275,6 +1275,31 @@ def _complete_restarted_update(runtime_home: Path) -> bool:
     return True
 
 
+def _recover_stale_running_update(runtime_home: Path) -> bool:
+    """Fail a ``running`` update whose detached worker no longer exists."""
+
+    from deeptutor.services.app_update import UpdateJobStore, update_store_root
+
+    store = UpdateJobStore(update_store_root(runtime_home))
+    try:
+        job = store.load()
+    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
+        return False
+    if job.status != "running":
+        return False
+    worker_pid = store.read_worker_pid()
+    if worker_pid is not None and is_process_alive(worker_pid):
+        return False
+    try:
+        store.mark_failed(job.id, "Update worker exited before finishing the update")
+    except Exception as exc:
+        _log(f"Could not recover stale running update: {exc}")
+        return False
+    store.clear_worker_pid(worker_pid)
+    _log(f"Recovered stale running update job {job.id}")
+    return True
+
+
 def start(
     home: str | Path | None = None,
     *,
@@ -1305,6 +1330,7 @@ def start(
         restart_argv.append("--dev")
     os.environ[DEEPTUTOR_HOME_ENV] = str(runtime_home)
     _reset_runtime_singletons()
+    _recover_stale_running_update(runtime_home)
 
     from deeptutor.services.config import (
         HTTP_KEEP_ALIVE_TIMEOUT,
