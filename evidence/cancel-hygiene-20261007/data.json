@@ -1,0 +1,2910 @@
+{
+  "summary": {
+    "root": "deeptutor",
+    "files_scanned": 1029,
+    "parse_errors": [],
+    "hits_total": 239,
+    "by_pattern": {
+      "P2": 17,
+      "P1": 105,
+      "P4": 93,
+      "P5": 19,
+      "P3": 5
+    },
+    "by_kind": {
+      "P2:suppress-cancelled": 17,
+      "P1:except-cancelled": 73,
+      "P4:asyncio-wait_for": 78,
+      "P4:asyncio-wait": 10,
+      "P4:asyncio-timeout": 5,
+      "P5:shield": 19,
+      "P1:except-baseexception": 32,
+      "P3:manual-acquire": 5
+    }
+  },
+  "hits": [
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/agents/loop/agent_loop.py",
+      "line": 1225,
+      "func": "_stop_reasoning_progress_task",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/agents/loop/agent_loop.py",
+      "line": 1357,
+      "func": "_call_llm",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: if text_parts or reasoning_parts: messages.append( _assistant_round_message( LLMCallResult( text=\"\".join(text_parts), reasoning_content=\"\".join(reasoning_parts), thinkin"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/agents/math_animator/retry_manager.py",
+      "line": 144,
+      "func": "render_with_retries",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self.repair_callback(code, str(exc), attempt + 1), timeout=self.repair_timeout_seconds, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/agents/math_animator/retry_manager.py",
+      "line": 70,
+      "func": "render_with_retries",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self.review_callback(code, render_result), timeout=self.review_timeout_seconds, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/agents/math_animator/retry_manager.py",
+      "line": 111,
+      "func": "render_with_retries",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self.repair_callback(code, retry_attempt.error, attempt + 1), timeout=self.repair_timeout_seconds, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/book.py",
+      "line": 1514,
+      "func": "close",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError",
+        "Exception"
+      ],
+      "excerpt": "except (asyncio.CancelledError, Exception): pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/api/routers/knowledge.py",
+      "line": 4449,
+      "func": "websocket_progress",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(websocket.receive_text(), timeout=1.0)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/api/routers/mastery_path.py",
+      "line": 816,
+      "func": "stop_forwarding",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/api/routers/partners.py",
+      "line": 1734,
+      "func": "_partner_chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(queue.get(), timeout=0.15)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/api/routers/partners.py",
+      "line": 1975,
+      "func": "_handle_channel_activity",
+      "in_finally": false,
+      "excerpt": "asyncio.wait( {get_task, wait_task}, return_when=asyncio.FIRST_COMPLETED, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/api/routers/partners.py",
+      "line": 1989,
+      "func": "partner_chat_ws",
+      "in_finally": false,
+      "excerpt": "asyncio.wait( [user_task, activity_task], return_when=asyncio.FIRST_COMPLETED, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/question.py",
+      "line": 334,
+      "func": "websocket_mimic_generate",
+      "is_async": true,
+      "in_finally": true,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/question.py",
+      "line": 564,
+      "func": "websocket_question_generate",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-timeout",
+      "file": "deeptutor/api/routers/quiz_judge.py",
+      "line": 433,
+      "func": "websocket_quiz_judge",
+      "in_finally": false,
+      "excerpt": "asyncio.timeout(2 * 60)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-timeout",
+      "file": "deeptutor/api/routers/reading_extensions.py",
+      "line": 257,
+      "func": "run_extension_action",
+      "in_finally": false,
+      "excerpt": "asyncio.timeout(ACTION_TIMEOUT_S)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/api/routers/reading_extensions.py",
+      "line": 265,
+      "func": "run_extension_action",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(worker)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/api/routers/space_mcp.py",
+      "line": 110,
+      "func": "list_servers",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(warm, timeout=_STATUS_WARM_TIMEOUT_S)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/unified_ws.py",
+      "line": 137,
+      "func": "stop_subscription",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/unified_ws.py",
+      "line": 145,
+      "func": "_forward",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/api/routers/unified_ws.py",
+      "line": 164,
+      "func": "_forward",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/api/routers/workspace.py",
+      "line": 61,
+      "func": "_data_operation",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(task)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/api/routers/workspace.py",
+      "line": 196,
+      "func": "_migrate_workspaces",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(task)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/api/utils/task_log_stream.py",
+      "line": 262,
+      "func": "stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(queue.get(), timeout=self._HEARTBEAT_SECONDS)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/book/blocks/base.py",
+      "line": 150,
+      "func": "generate",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/book/engine.py",
+      "line": 1257,
+      "func": "compile_page",
+      "in_finally": false,
+      "excerpt": "asyncio.wait({joined})"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/book/engine.py",
+      "line": 1266,
+      "func": "compile_page",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(task)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/book/engine.py",
+      "line": 1420,
+      "func": "_ensure_worker",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: activity.close() raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/book/engine.py",
+      "line": 1448,
+      "func": "_worker_loop_active",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(runtime.queue.get(), timeout=2.0)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/book/engine.py",
+      "line": 1477,
+      "func": "_worker_loop_active",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/capabilities/mastery/capability.py",
+      "line": 109,
+      "func": "run",
+      "is_async": true,
+      "in_finally": true,
+      "excerpt": "asyncio.shield(asyncio.to_thread(store.release_leases_for_turn, turn_id))"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/capabilities/mastery/tools.py",
+      "line": 397,
+      "func": "_sync_mastery_attempt_to_question_bank",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(record_assessment(record), timeout=5.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/capabilities/mastery/tools.py",
+      "line": 447,
+      "func": "_sync_qualitative_to_question_bank",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(record_assessment(record), timeout=5.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/capabilities/reading/figure_view.py",
+      "line": 160,
+      "func": "execute",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( client.complete( question, system_prompt=_FIGURE_SYSTEM_PROMPT, image_data=encoded, image_mime_type=mime, image_filename=name, ), timeout=timeout_seconds, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/events/event_bus.py",
+      "line": 139,
+      "func": "_process_events",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: logger.debug(\"Event processor cancelled\") break"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/events/event_bus.py",
+      "line": 112,
+      "func": "_process_events",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self._task_queue.get(), timeout=1.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/events/event_bus.py",
+      "line": 158,
+      "func": "flush",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self._task_queue.join(), timeout=timeout)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/events/event_bus.py",
+      "line": 172,
+      "func": "stop",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self._task_queue.join(), timeout=10.0)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/events/event_bus.py",
+      "line": 182,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/learning/tests/test_event_hub.py",
+      "line": 16,
+      "func": "test_topic_hub_wakes_an_event_loop_from_a_worker_thread",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(subscription.get(), timeout=1)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/learning/tests/test_event_hub.py",
+      "line": 35,
+      "func": "test_topic_hub_isolated_by_path_and_unsubscribes_cleanly",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(second.get(), timeout=1)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/learning/tests/test_event_hub.py",
+      "line": 49,
+      "func": "test_topic_hub_isolated_by_workspace_scope",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(first.get(), timeout=1)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/learning/tests/test_event_hub.py",
+      "line": 66,
+      "func": "test_topic_hub_coalesces_slow_subscriber_to_latest_signal",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(subscription.get(), timeout=1)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/learning/topic_naming.py",
+      "line": 147,
+      "func": "suggest_topic_name",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete( prompt=_render(cleaned_goal, source_labels or [], zh), system_prompt=_SYSTEM_ZH if zh else _SYSTEM_EN, temperature=0.3, max_tokens=60, max_retries=0, ), timeout=_TIMEOUT_SE"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/discord.py",
+      "line": 94,
+      "func": "start",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/discord.py",
+      "line": 504,
+      "func": "typing_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: return"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/feishu.py",
+      "line": 589,
+      "func": "run_ws",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 172,
+      "func": "send_with_retry",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 189,
+      "func": "send_with_retry",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 330,
+      "func": "_start_channel",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: start_task.cancel() with suppress(asyncio.CancelledError): await start_task raise"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 332,
+      "func": "_start_channel",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 364,
+      "func": "stop_all",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 458,
+      "func": "_dispatch_outbound",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/partners/channels/manager.py",
+      "line": 422,
+      "func": "_dispatch_outbound",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self.bus.consume_outbound(), timeout=1.0)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 289,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.TimeoutError",
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except (asyncio.TimeoutError, asyncio.CancelledError): self._sync_task.cancel() try: await self._sync_task except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 293,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 286,
+      "func": "stop",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.shield(self._sync_task), timeout=self.config.sync_stop_grace_seconds )"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 287,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(self._sync_task)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 544,
+      "func": "loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 554,
+      "func": "_stop_typing_keepalive",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/matrix.py",
+      "line": 563,
+      "func": "_sync_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/mattermost.py",
+      "line": 155,
+      "func": "start",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/mochat.py",
+      "line": 709,
+      "func": "_session_watch_worker",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/mochat.py",
+      "line": 742,
+      "func": "_panel_poll_worker",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/napcat.py",
+      "line": 108,
+      "func": "start",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/partners/channels/napcat.py",
+      "line": 145,
+      "func": "_run_once",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(ws.recv(), timeout=remaining)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/napcat.py",
+      "line": 236,
+      "func": "_done",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/partners/channels/napcat.py",
+      "line": 512,
+      "func": "_call_action",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(fut, timeout=timeout)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/partners/channels/slack.py",
+      "line": 110,
+      "func": "start",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self._socket_client.connect(), timeout=SLACK_SOCKET_CONNECT_TIMEOUT_S, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/telegram.py",
+      "line": 1108,
+      "func": "_typing_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/partners/channels/weixin.py",
+      "line": 1071,
+      "func": "send",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/partners/channels/weixin.py",
+      "line": 1129,
+      "func": "_stop_typing",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/whatsapp.py",
+      "line": 81,
+      "func": "start",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: break"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/partners/channels/zulip.py",
+      "line": 847,
+      "func": "_typing_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/reading/captions.py",
+      "line": 100,
+      "func": "_caption_one",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete_image_caption( client, CAPTION_PROMPT, system_prompt=CAPTION_SYSTEM_PROMPT, image_data=encoded, image_mime_type=mime, image_filename=name, force=force, ), timeout=timeout_se"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/reading/catalog_store.py",
+      "line": 249,
+      "func": "_remove_content_id_unique_constraint",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: conn.rollback() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/reading/store.py",
+      "line": 1167,
+      "func": "staged_delete",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: os.replace(staged_dir, material_dir) raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/agentic/labeled_step.py",
+      "line": 511,
+      "func": "run_labeled_step",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(stream_iter.__anext__(), timeout=timeout)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/agentic/tool_dispatch.py",
+      "line": 725,
+      "func": "_execute_with_policy",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( registry.execute( tool_name, # Withheld when there is nowhere to publish (a bare call with # neither meta): tools branch on the sink being present to decide # whether to do the work "
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 62,
+      "func": "close",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 104,
+      "func": "_run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 94,
+      "func": "_run",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self._leadership_lost.wait(), timeout=min( self.election_interval_seconds, self.renew_interval_seconds / 2, ), )"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 136,
+      "func": "_stop_heartbeat",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 147,
+      "func": "_heartbeat_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 177,
+      "func": "_while_leader",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 180,
+      "func": "_while_leader",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 165,
+      "func": "_while_leader",
+      "in_finally": false,
+      "excerpt": "asyncio.wait( {operation_task, lost_task}, return_when=asyncio.FIRST_COMPLETED )"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 170,
+      "func": "_while_leader",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/runtime/background_leader.py",
+      "line": 205,
+      "func": "_start_services",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await self._stop_started_services() raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/isolated_worker.py",
+      "line": 154,
+      "func": "_stop_async_process",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.wait(), timeout=1.0)"
+    },
+    {
+      "pattern": "P3",
+      "kind": "manual-acquire",
+      "file": "deeptutor/runtime/isolated_worker.py",
+      "line": 178,
+      "func": "run_in_isolated_process",
+      "in_finally": false,
+      "recv": "_WORKER_SLOTS",
+      "awaited": false,
+      "excerpt": "_WORKER_SLOTS.acquire(blocking=False)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/runtime/isolated_worker.py",
+      "line": 198,
+      "func": "run_in_isolated_process",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await asyncio.shield(_stop_async_process(process)) raise"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/runtime/isolated_worker.py",
+      "line": 199,
+      "func": "run_in_isolated_process",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(_stop_async_process(process))"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/isolated_worker.py",
+      "line": 192,
+      "func": "run_in_isolated_process",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.communicate(), timeout=timeout)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/runtime/orchestrator.py",
+      "line": 199,
+      "func": "handle",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/providers/view.py",
+      "line": 202,
+      "func": "_owned_tools",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( manager.ensure_scope(scope.owner_id), timeout=_OWNER_SCOPE_TIMEOUT_S, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/runtime/stream_bus.py",
+      "line": 337,
+      "func": "wait_for_input",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(input_queue.get(), timeout=timeout)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/runtime/worker_process.py",
+      "line": 31,
+      "func": "_execute",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException as exc: # noqa: BLE001 - this is a process boundary attrs = {} filename = getattr(exc, \"filename\", None) if filename is not None: attrs[\"filename\"] = str(filename) return { \"ok\": "
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/runtime/worker_process.py",
+      "line": 59,
+      "func": "main",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: traceback.print_exc() return 1"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/base_sync.py",
+      "line": 87,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/chat_hints.py",
+      "line": 248,
+      "func": "_call_llm",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete( prompt=_render(material, zh), system_prompt=_SYSTEM_ZH if zh else _SYSTEM_EN, temperature=0.7, max_tokens=120, max_retries=0, ), timeout=_LLM_TIMEOUT, )"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/services/cli_apps/provider.py",
+      "line": 389,
+      "func": "_with_heartbeat",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/codebuddy_auth.py",
+      "line": 170,
+      "func": "_wait_for_login",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: return"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-timeout",
+      "file": "deeptutor/services/codex_auth/client_version.py",
+      "line": 30,
+      "func": "latest_client_version",
+      "in_finally": false,
+      "excerpt": "asyncio.timeout(CODEX_VERSION_TIMEOUT_SECONDS)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/codex_auth/oauth.py",
+      "line": 126,
+      "func": "handle",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(reader.readuntil(b\"\\r\\n\\r\\n\"), timeout=2)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/codex_auth/oauth.py",
+      "line": 248,
+      "func": "wait",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError as exc: self._accepting = False await self._close() if self._cancelled: raise CodexAuthError( \"login_cancelled\", \"Codex sign-in was cancelled.\", 409, ) from exc raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/codex_auth/oauth.py",
+      "line": 235,
+      "func": "wait",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(asyncio.shield(self._result), timeout=timeout)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/codex_auth/oauth.py",
+      "line": 235,
+      "func": "wait",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(self._result)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/codex_auth/service.py",
+      "line": 651,
+      "func": "_run_login",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: operation.error_code = \"login_cancelled\" operation.operation_state = \"cancelled\""
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/readiness.py",
+      "line": 833,
+      "func": "_selected_remote_parser_reachable",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.to_thread(verify_tika_remote, config, 2.0), timeout=3.0 )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/readiness.py",
+      "line": 842,
+      "func": "_selected_remote_parser_reachable",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.to_thread(verify_docling_remote, config, 2.0), timeout=3.0 )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/readiness.py",
+      "line": 871,
+      "func": "_redis_reachable",
+      "in_finally": true,
+      "excerpt": "asyncio.wait_for(coordinator.close(), timeout=1.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/readiness.py",
+      "line": 865,
+      "func": "_redis_reachable",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(coordinator.health(), timeout=1.5)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/settings_spec.py",
+      "line": 536,
+      "func": "_probe_llm",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( llm_complete( model=resolved.model, prompt=\"ping\", system_prompt=\"Reply with the single word OK.\", binding=resolved.binding, api_key=resolved.api_key or \"sk-no-key-required\", base_ur"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/config/settings_spec.py",
+      "line": 606,
+      "func": "_probe_embedding",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(client.embed([\"ping\"]), timeout=_PROBE_TIMEOUT_SECONDS)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/cron/executor.py",
+      "line": 70,
+      "func": "_maybe_send_desktop_notification",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(proc.communicate(), timeout=5)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/cron/service.py",
+      "line": 327,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/cron/service.py",
+      "line": 335,
+      "func": "_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/cron/service.py",
+      "line": 342,
+      "func": "_loop",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self._wake.wait(), timeout=sleep_s)"
+    },
+    {
+      "pattern": "P3",
+      "kind": "manual-acquire",
+      "file": "deeptutor/services/embedding/client.py",
+      "line": 68,
+      "func": "_hold_spacing_lock",
+      "in_finally": false,
+      "recv": "lock",
+      "awaited": false,
+      "excerpt": "lock.acquire(blocking=False)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/services/llm/factory.py",
+      "line": 722,
+      "func": "stream",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/factory.py",
+      "line": 668,
+      "func": "stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(queue.get(), timeout=timeout)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/metrics.py",
+      "line": 207,
+      "func": "measure_provider_call",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: meter.finish(status=\"interrupted\") raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/metrics.py",
+      "line": 236,
+      "func": "__anext__",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: self.meter.finish(status=\"interrupted\") raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/metrics.py",
+      "line": 272,
+      "func": "measured_create",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: meter.finish(status=\"failed\") raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/provider_core/anthropic_provider.py",
+      "line": 578,
+      "func": "chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( stream_iter.__anext__(), timeout=idle_timeout_s, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/provider_core/anthropic_provider.py",
+      "line": 596,
+      "func": "chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( stream.get_final_message(), timeout=idle_timeout_s, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/provider_core/azure_openai_provider.py",
+      "line": 222,
+      "func": "chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( stream_iter.__anext__(), timeout=idle_timeout_s )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/llm/provider_core/base.py",
+      "line": 384,
+      "func": "_call_with_retry",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+      "line": 115,
+      "func": "_owner_loop",
+      "is_async": true,
+      "in_finally": true,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+      "line": 107,
+      "func": "_owner_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException as exc: if not ready.done(): ready.set_exception(exc) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+      "line": 104,
+      "func": "_owner_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException as exc: if not turn.future.done(): turn.future.set_exception(exc)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+      "line": 297,
+      "func": "_run_session",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: await self._drop_session(session_id, session) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+      "line": 359,
+      "func": "aclose",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: task = asyncio.current_task() if task is not None: task.uncancel()"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/provider_core/openai_compat_provider.py",
+      "line": 1131,
+      "func": "chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( stream_iter.__anext__(), timeout=idle_timeout_s, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/provider_core/openai_compat_provider.py",
+      "line": 1223,
+      "func": "chat_stream",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( stream_iter.__anext__(), timeout=idle_timeout_s, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/llm/traffic_control.py",
+      "line": 88,
+      "func": "__aenter__",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(self._semaphore.acquire(), timeout=self.acquisition_timeout)"
+    },
+    {
+      "pattern": "P3",
+      "kind": "manual-acquire",
+      "file": "deeptutor/services/llm/traffic_control.py",
+      "line": 88,
+      "func": "__aenter__",
+      "in_finally": false,
+      "recv": "",
+      "awaited": false,
+      "excerpt": "self._semaphore.acquire()"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mastery_hints.py",
+      "line": 330,
+      "func": "_generate",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete( prompt=_render(material, zh), system_prompt=_SYSTEM_ZH if zh else _SYSTEM_EN, temperature=0.7, max_tokens=120, max_retries=0, ), timeout=_LLM_TIMEOUT, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 463,
+      "func": "call_tool",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: # The MCP SDK's anyio scopes can leak CancelledError on internal # failures; re-raise only when our own task was cancelled. task = asyncio.current_task() if task is not "
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 503,
+      "func": "_call_watching_connection",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: # Unlike ``gather``, ``wait`` leaves the futures it was waiting on # running when the waiter itself is cancelled — and ``call`` is a # free-standing task, so nothing else would e"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 500,
+      "func": "_call_watching_connection",
+      "in_finally": false,
+      "excerpt": "asyncio.wait( {call, watcher}, return_when=asyncio.FIRST_COMPLETED )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 528,
+      "func": "_abandon",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: # Ours, not the turn's — unless this task is itself being cancelled, # in which case swallowing it would strand that cancellation. task = asyncio.current_task() if task "
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 547,
+      "func": "_call_once",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( conn.session.call_tool( tool_name, arguments=arguments, # Opt-in per call: the SDK only asks the server for progress when # a callback is supplied, so a call with no sub-trace to pub"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 642,
+      "func": "_connect",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(ready, timeout=_CONNECT_TIMEOUT_S)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 853,
+      "func": "_disconnect",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(conn.task, timeout=10)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mcp/manager.py",
+      "line": 925,
+      "func": "probe_server",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(_probe(), timeout=timeout)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/mcp/oauth.py",
+      "line": 398,
+      "func": "begin_authorization",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(url_ready, timeout=30.0)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/memory/consolidator/runs.py",
+      "line": 278,
+      "func": "_drive",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: run.status = \"cancelled\" await self._emit(run, {\"stage\": \"cancelled\"})"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/parsing/engines/docling/local_worker.py",
+      "line": 76,
+      "func": "parse_local",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: _stop_worker(process) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/parsing/engines/mineru/local.py",
+      "line": 284,
+      "func": "parse_document_with_mineru_result",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: if had_previous: backup.rename(output_dir) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 783,
+      "func": "approve_invocation",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: cancelled = invocations.transition( invocation.invocation_id, allowed={\"approved\"}, status=\"cancelled\", updated_at=utc_now(), error=\"Cancelled by user.\", ) await emit({\""
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 895,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await live.emit( { \"type\": \"cancelled\", \"operation\": \"message\", \"content\": \"Partner Group turn cancelled.\", } ) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 950,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await live.emit( { \"type\": \"cancelled\", \"operation\": \"invoke_other\", \"invocation_id\": proposal.invocation_id, \"content\": \"Partner invocation cancelled.\", } ) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 1009,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await live.emit( { \"type\": \"cancelled\", \"operation\": \"retry_partner\", \"turn_id\": turn_id, \"partner_id\": partner_id, \"content\": \"Partner retry cancelled.\", } ) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 1071,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: await live.emit( { \"type\": \"cancelled\", \"operation\": \"summarize_round\", \"turn_id\": turn_id, \"partner_id\": partner_id, \"content\": \"Partner Group round summary cancelled.\""
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partner_groups/manager.py",
+      "line": 1323,
+      "func": "_run_partner_reply",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 889,
+      "func": "_outbound_router",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: return"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 881,
+      "func": "_outbound_router",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 914,
+      "func": "stop_partner",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError",
+        "asyncio.TimeoutError"
+      ],
+      "excerpt": "except (asyncio.CancelledError, asyncio.TimeoutError): pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 913,
+      "func": "stop_partner",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(asyncio.shield(task), timeout=5.0)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 913,
+      "func": "stop_partner",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(task)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 1020,
+      "func": "_teardown_channel_listeners",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError",
+        "asyncio.TimeoutError"
+      ],
+      "excerpt": "except (asyncio.CancelledError, asyncio.TimeoutError): pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 1019,
+      "func": "_teardown_channel_listeners",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(asyncio.shield(t), timeout=5.0)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 1019,
+      "func": "_teardown_channel_listeners",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(t)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/manager.py",
+      "line": 1387,
+      "func": "_drive_web_turn",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: turn.finish([{\"type\": \"stopped\"}]) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/partners/runtime.py",
+      "line": 169,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: for task in list(self._tasks): task.cancel() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/ingress.py",
+      "line": 297,
+      "func": "freeze_document",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: shutil.rmtree(temp_bundle, ignore_errors=True) if staged_source.exists() and not staged_source.is_symlink(): staged_source.unlink() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 315,
+      "func": "job",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: for item in staged: ingress.remove_unaccepted(item) raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 360,
+      "func": "job",
+      "is_async": true,
+      "in_finally": true,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: if not failed: raise self.logger.exception(\"LightRAG cleanup failed while indexing was aborting\")"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 345,
+      "func": "job",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: if not enqueue_started: cleanup = staged elif not accepted: try: cleanup = await engine.confirmed_unaccepted(rag, staged) except BaseException: self.logger.exception( \"Could not "
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 351,
+      "func": "job",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: self.logger.exception( \"Could not confirm which LightRAG documents were rejected; \" \"retaining all staged ingress\" )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 412,
+      "func": "_publish_new_version",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: # A same-embedding rebuild would otherwise become the newest # compatible version even though its binding publication failed. # Withdraw only this new candidate's publication mar"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/rag/pipelines/lightrag/pipeline.py",
+      "line": 469,
+      "func": "_initialize_owned",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 144,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: coroutine.close() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 154,
+      "func": "run",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: future.cancel() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 195,
+      "func": "run_bound_job",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException as exc: finished.set_exception(exc)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 207,
+      "func": "submit",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException as exc: finished.set_exception(exc)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 218,
+      "func": "run_in_worker_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: bridge.cancel() controller.cancel() grace = max(float(cancel_grace_seconds), 0.0) deadline = owner_loop.time() + grace while not worker.done() and owner_loop.time() < de"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 227,
+      "func": "run_in_worker_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: # Repeated cancellation still must not strand the worker on a # request scheduled back to this owner loop. bridge.cancel() controller.cancel()"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 226,
+      "func": "run_in_worker_loop",
+      "in_finally": false,
+      "excerpt": "asyncio.wait({worker}, timeout=remaining)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 242,
+      "func": "run_in_worker_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: bridge.cancel() controller.cancel()"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 241,
+      "func": "run_in_worker_loop",
+      "in_finally": false,
+      "excerpt": "asyncio.wait({worker})"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 250,
+      "func": "run_in_worker_loop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: pass"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/rag/pipelines/lightrag/worker.py",
+      "line": 217,
+      "func": "run_in_worker_loop",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(worker)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py",
+      "line": 362,
+      "func": "_describe_one",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( self._describe_image( llm_client, source.path, image_payload[\"base64\"], image_payload[\"mimetype\"], ), timeout=timeout_seconds, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py",
+      "line": 439,
+      "func": "_describe_group",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( batcher.describe([payload for _, payload in prepared]), timeout=timeout_seconds, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py",
+      "line": 135,
+      "func": "_run_with_stall_guard",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: progress_live.clear() _release_index_worker(worker_key, worker_marker) raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py",
+      "line": 148,
+      "func": "_run_with_stall_guard",
+      "in_finally": false,
+      "excerpt": "asyncio.wait({future}, timeout=_INDEX_STALL_POLL_SECONDS)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/reading_hints.py",
+      "line": 422,
+      "func": "_call_llm",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete( prompt=_render(material, zh), system_prompt=_SYSTEM_ZH if zh else _SYSTEM_EN, temperature=0.7, max_tokens=120, max_retries=0, ), timeout=_LLM_TIMEOUT, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/sandbox/backends.py",
+      "line": 474,
+      "func": "_terminate_process_tree",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(killer.wait(), timeout=5.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/sandbox/backends.py",
+      "line": 500,
+      "func": "_communicate",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.wait(), timeout=5.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/sandbox/backends.py",
+      "line": 490,
+      "func": "_communicate",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.gather(wait_task, stdout_task, stderr_task), timeout=timeout_s, )"
+    },
+    {
+      "pattern": "P3",
+      "kind": "manual-acquire",
+      "file": "deeptutor/services/sandbox/quota.py",
+      "line": 74,
+      "func": "acquire",
+      "in_finally": false,
+      "recv": "sem",
+      "awaited": false,
+      "excerpt": "sem.acquire()"
+    },
+    {
+      "pattern": "P3",
+      "kind": "manual-acquire",
+      "file": "deeptutor/services/sandbox/service.py",
+      "line": 125,
+      "func": "run",
+      "in_finally": false,
+      "recv": "",
+      "awaited": false,
+      "excerpt": "self._quota.acquire(user_id)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/search/providers/doubao.py",
+      "line": 98,
+      "func": "search",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: meter.finish(status=\"failed\") raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/search/providers/perplexity.py",
+      "line": 75,
+      "func": "search",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: meter.finish(status=\"failed\") raise"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 206,
+      "func": "_wait_for_user_reply",
+      "is_async": true,
+      "in_finally": true,
+      "excerpt": "asyncio.shield( self.store.transition_turn( execution.turn_id, \"running\", expected_status=\"waiting_input\", fencing_token=( execution.lease.fencing_token if execution.lease is not None else None ), ) )"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 1395,
+      "func": "_run_turn",
+      "is_async": true,
+      "in_finally": true,
+      "excerpt": "asyncio.shield( asyncio.to_thread(LearningStore().release_leases_for_turn, turn_id) )"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 1412,
+      "func": "_run_turn",
+      "is_async": true,
+      "in_finally": true,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "contextlib.suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 1220,
+      "func": "_run_turn",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: if execution.lease_lost: # The owner can no longer prove it holds the fencing token. # Do not publish or persist anything else; leader recovery # preserves the shared st"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 1261,
+      "func": "_run_turn",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield( self.store.add_message( session_id=session_id, role=\"assistant\", content=partial_content, capability=capability_name, events=[], attachments=generated_attachments or None, metadata=( {"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/session/turns/executor.py",
+      "line": 1287,
+      "func": "_run_turn",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield( self.store.link_turn_message(turn_id, assistant_message_id) )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/session/turns/lifecycle.py",
+      "line": 93,
+      "func": "close",
+      "in_finally": false,
+      "excerpt": "asyncio.wait(tasks, timeout=float(drain_timeout_seconds))"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/session/turns/lifecycle.py",
+      "line": 295,
+      "func": "_coordinate_execution",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/session/turns/lifecycle.py",
+      "line": 321,
+      "func": "cancel_turn",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/session/turns/lifecycle.py",
+      "line": 446,
+      "func": "subscribe_turn",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(queue.get(), timeout=_SUBSCRIPTION_POLL_SECONDS)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/session/turns/request_preparer.py",
+      "line": 803,
+      "func": "start_turn",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: activity.close() raise"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/session/turns/title_service.py",
+      "line": 122,
+      "func": "_maybe_generate_session_title",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(_collect_title(), timeout=20.0)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/settings/provider_probe.py",
+      "line": 108,
+      "func": "probe_search_provider",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.to_thread( test_search_access, binding, base_url, api_key, proxy=proxy, require_results=False ), timeout=25, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/subagent/models.py",
+      "line": 299,
+      "func": "_list_cli_models",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.communicate(), timeout=60.0 if refresh else 20.0)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/subagent/opencode_family.py",
+      "line": 170,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/subagent/opencode_family.py",
+      "line": 163,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: # The user aborted the turn — best-effort stop the run so # the agent doesn't keep working into a dead session. with_abort = client.post(f\"/session/{sid}/abort\", timeout"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/subagent/opencode_family.py",
+      "line": 167,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(_swallow(with_abort))"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait",
+      "file": "deeptutor/services/subagent/opencode_family.py",
+      "line": 393,
+      "func": "_wait_attached",
+      "in_finally": false,
+      "excerpt": "asyncio.wait( {listener, waiter}, timeout=_ATTACH_TIMEOUT_SECONDS, return_when=asyncio.FIRST_COMPLETED, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/subagent/opencode_server.py",
+      "line": 189,
+      "func": "shutdown_servers",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(handle.process.wait(), timeout=_TERMINATE_GRACE_SECONDS)"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/services/subagent/partner.py",
+      "line": 144,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/subagent/partner.py",
+      "line": 146,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(existing.task)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/subagent/partner.py",
+      "line": 182,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: if live.task is not None and not live.task.done(): live.task.cancel() with suppress(asyncio.CancelledError): await live.task raise"
+    },
+    {
+      "pattern": "P2",
+      "kind": "suppress-cancelled",
+      "file": "deeptutor/services/subagent/partner.py",
+      "line": 185,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "args": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "suppress(asyncio.CancelledError)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/subagent/partner_group.py",
+      "line": 110,
+      "func": "consult",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: # Stopping the parent chat also stops any approved follow-up still # running; never leave a detached generation consuming resources. for operation in manager.subscribe_l"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/subagent/process.py",
+      "line": 131,
+      "func": "_terminate",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.wait(), timeout=_TERMINATE_GRACE_SECONDS)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/subagent/process.py",
+      "line": 175,
+      "func": "probe_version",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.communicate(), timeout=timeout)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/suggestions.py",
+      "line": 563,
+      "func": "_generate",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( complete( prompt=user_prompt, system_prompt=_SYSTEM_ZH if zh else _SYSTEM_EN, temperature=0.8, # suggestions may vary; these are not facts max_tokens=500, # This bounded UI task need"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/suggestions.py",
+      "line": 629,
+      "func": "refresh_suggestions",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(pending)"
+    },
+    {
+      "pattern": "P5",
+      "kind": "shield",
+      "file": "deeptutor/services/suggestions.py",
+      "line": 645,
+      "func": "refresh_suggestions",
+      "is_async": true,
+      "in_finally": false,
+      "excerpt": "asyncio.shield(task)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/suggestions.py",
+      "line": 658,
+      "func": "_bounded_generation",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(generate(), timeout=_REFRESH_TIMEOUT)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-timeout",
+      "file": "deeptutor/services/voice/adapters/volcengine.py",
+      "line": 88,
+      "func": "synthesize",
+      "in_finally": false,
+      "excerpt": "asyncio.timeout(config.request_timeout)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/voice/audio.py",
+      "line": 69,
+      "func": "normalize_wav",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "TimeoutError",
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except (TimeoutError, asyncio.CancelledError) as exc: if process.returncode is None: process.kill() await process.wait() if isinstance(exc, TimeoutError): raise VoiceProviderError(\"Audio conversion ti"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/services/voice/audio.py",
+      "line": 68,
+      "func": "normalize_wav",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(process.communicate(), timeout=60)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-timeout",
+      "file": "deeptutor/services/voice/base.py",
+      "line": 77,
+      "func": "synthesize_with_timeout",
+      "in_finally": false,
+      "excerpt": "asyncio.timeout(config.request_timeout)"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/web_source/scheduler.py",
+      "line": 99,
+      "func": "stop",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": false,
+      "swallow": true,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: pass"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-cancelled",
+      "file": "deeptutor/services/web_source/scheduler.py",
+      "line": 256,
+      "func": "_run_job",
+      "is_async": true,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "asyncio.CancelledError"
+      ],
+      "excerpt": "except asyncio.CancelledError: current = self.repo.get(key) if current is not None and current.cancel_requested: self.repo.mark_cancelled(claimed, _now_ms()) else: self.repo.mark_interrupted(claimed) "
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/workspace/activity.py",
+      "line": 33,
+      "func": "acquire_activity",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: handle.close() raise"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/services/workspace/kb_move.py",
+      "line": 417,
+      "func": "move_kb",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: if source_hidden is not None and source_hidden.exists(): source_hidden.rename(source_path) if source_config_existed: atomic_write_json(source_config_path, source_before) else: so"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/tools/builtin/__init__.py",
+      "line": 754,
+      "func": "execute",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( agent.process( question_text=question, image_base64=image_base64, ), timeout=self._VISION_ANALYSIS_TIMEOUT_S, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/tools/github_query.py",
+      "line": 212,
+      "func": "_default_command_runner",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for(proc.communicate(), timeout=timeout_s)"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/tools/paper_search_tool.py",
+      "line": 99,
+      "func": "search_papers",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.to_thread(lambda: list(self.client.results(search))), timeout=_REQUEST_TIMEOUT_S, )"
+    },
+    {
+      "pattern": "P4",
+      "kind": "asyncio-wait_for",
+      "file": "deeptutor/tools/paper_search_tool.py",
+      "line": 85,
+      "func": "search_papers",
+      "in_finally": false,
+      "excerpt": "asyncio.wait_for( asyncio.to_thread(lambda: list(self.client.results(search))), timeout=_REQUEST_TIMEOUT_S, )"
+    },
+    {
+      "pattern": "P1",
+      "kind": "except-baseexception",
+      "file": "deeptutor/utils/secret_files.py",
+      "line": 45,
+      "func": "write_secret_text",
+      "is_async": false,
+      "in_finally": false,
+      "reraises_cancelled": true,
+      "swallow": false,
+      "types": [
+        "BaseException"
+      ],
+      "excerpt": "except BaseException: with contextlib.suppress(OSError): path.unlink() raise"
+    }
+  ]
+}
