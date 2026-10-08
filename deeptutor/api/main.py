@@ -536,6 +536,7 @@ from deeptutor.api.routers import (
     file_preview,
     imports,
     knowledge,
+    lti,
     marginnote4,
     mastery_path,
     mcp_settings,
@@ -573,6 +574,10 @@ from deeptutor.api.routers.multi_user import router as multi_user_router  # noqa
 
 # Auth router is public — login/logout/register/status require no token
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+# LTI 1.3 router is platform-initiated (no DeepTutor session). Each endpoint
+# reports 404 unless LTI is explicitly enabled in lti.json, so a default
+# deployment is unaffected (upstream #567, first slice).
+app.include_router(lti.router, prefix="/api/lti", tags=["lti"])
 app.include_router(outputs.router, prefix="/files/outputs", tags=["outputs"])
 app.include_router(
     workspace.files_router,

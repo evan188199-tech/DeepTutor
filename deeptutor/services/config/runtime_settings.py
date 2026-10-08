@@ -106,6 +106,24 @@ DEFAULT_INTEGRATIONS_SETTINGS: dict[str, Any] = {
     },
 }
 
+# LTI 1.3 platform registrations (upstream #567, first slice). Disabled by
+# default; while ``enabled`` is false — or no platform is registered — every
+# ``/api/lti`` endpoint reports 404 and system behaviour is unchanged.
+#
+# Each ``platforms`` entry:
+#   issuer           platform issuer identifier (exact ``iss`` match)
+#   client_id        tool client_id registered with the platform
+#   deployment_ids   allowed deployment_id values for this registration
+#   auth_login_url   platform OIDC third-party login endpoint
+#   target_link_uri  the tool target the platform may launch
+#   key_set_url      platform JWKS URL (fetched and cached) — or —
+#   key_set          inline JWKS for offline deployments/tests
+DEFAULT_LTI_SETTINGS: dict[str, Any] = {
+    "version": 1,
+    "enabled": False,
+    "platforms": [],
+}
+
 # Document parsing settings. The parse layer (deeptutor/services/parsing)
 # supports several pluggable engines; one is active at a time. The persisted
 # shape is v2::
@@ -551,6 +569,21 @@ class RuntimeSettingsService:
         _atomic_write_json(self.path_for("integrations"), payload)
         return payload
 
+    def load_lti(self, *, include_process_overrides: bool = True) -> dict[str, Any]:
+        payload = self._load_or_create(
+            "lti",
+            DEFAULT_LTI_SETTINGS,
+            self._normalize_lti,
+        )
+        if include_process_overrides:
+            payload = self._apply_lti_process_overrides(payload)
+        return payload
+
+    def save_lti(self, settings: dict[str, Any]) -> dict[str, Any]:
+        payload = self._normalize_lti({**DEFAULT_LTI_SETTINGS, **settings})
+        _atomic_write_json(self.path_for("lti"), payload)
+        return payload
+
     def load_document_parsing(self, *, include_process_overrides: bool = True) -> dict[str, Any]:
         """Return the full v2 document-parsing structure (all engines)."""
         self._migrate_legacy_document_parsing_file()
@@ -693,6 +726,7 @@ class RuntimeSettingsService:
         self.load_system(include_process_overrides=False)
         self.load_auth(include_process_overrides=False)
         self.load_integrations(include_process_overrides=False)
+        self.load_lti(include_process_overrides=False)
         self.load_mineru(include_process_overrides=False)
         self.load_pageindex(include_process_overrides=False)
         self.load_ima(include_process_overrides=False)
@@ -920,6 +954,12 @@ class RuntimeSettingsService:
             coordination["key_prefix"] = value
         payload["turn_coordination"] = coordination
         return self._normalize_integrations(payload)
+
+    def _apply_lti_process_overrides(self, settings: dict[str, Any]) -> dict[str, Any]:
+        payload = dict(settings)
+        if value := self._process_env_value("LTI_ENABLED"):
+            payload["enabled"] = value
+        return self._normalize_lti(payload)
 
     def _apply_mineru_process_overrides(self, settings: dict[str, Any]) -> dict[str, Any]:
         payload = dict(settings)
@@ -1352,6 +1392,52 @@ class RuntimeSettingsService:
             },
         }
 
+    def _normalize_lti(self, settings: dict[str, Any]) -> dict[str, Any]:
+        platforms: list[dict[str, Any]] = []
+        raw_platforms = settings.get("platforms")
+        for entry in raw_platforms if isinstance(raw_platforms, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            issuer = _string(entry.get("issuer")).rstrip("/")
+            client_id = _string(entry.get("client_id"))
+            auth_login_url = _string(entry.get("auth_login_url"))
+            target_link_uri = _string(entry.get("target_link_uri"))
+            key_set_url = _string(entry.get("key_set_url"))
+            raw_deployments = entry.get("deployment_ids")
+            deployment_ids = (
+                [item for d in raw_deployments if (item := _string(d))]
+                if isinstance(raw_deployments, list)
+                else []
+            )
+            raw_key_set = entry.get("key_set")
+            key_set = raw_key_set if isinstance(raw_key_set, dict) else None
+            if not issuer.startswith(("http://", "https://")) or not client_id:
+                continue
+            if not auth_login_url.startswith(("http://", "https://")):
+                continue
+            if not target_link_uri.startswith(("http://", "https://")):
+                continue
+            if not deployment_ids:
+                continue
+            if key_set is None and not key_set_url.startswith(("http://", "https://")):
+                continue
+            platforms.append(
+                {
+                    "issuer": issuer,
+                    "client_id": client_id,
+                    "deployment_ids": deployment_ids,
+                    "auth_login_url": auth_login_url,
+                    "target_link_uri": target_link_uri,
+                    "key_set_url": key_set_url,
+                    "key_set": key_set,
+                }
+            )
+        return {
+            "version": 1,
+            "enabled": _coerce_bool(settings.get("enabled"), False),
+            "platforms": platforms,
+        }
+
 
 def _bool_env(value: Any) -> str:
     return "true" if _coerce_bool(value, False) else "false"
@@ -1474,6 +1560,10 @@ def load_auth_settings() -> dict[str, Any]:
 
 def load_integrations_settings() -> dict[str, Any]:
     return get_runtime_settings_service().load_integrations()
+
+
+def load_lti_settings() -> dict[str, Any]:
+    return get_runtime_settings_service().load_lti()
 
 
 def load_mineru_settings() -> dict[str, Any]:

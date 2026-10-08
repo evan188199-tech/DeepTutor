@@ -261,6 +261,45 @@ def save_user(
     return record
 
 
+def provision_external_user(
+    username: str,
+    role: Role = "user",
+    preset: AccountPreset = "standard",
+) -> dict[str, Any]:
+    """Create — or return the existing record for — an externally provisioned
+    account (currently LTI 1.3 launches).
+
+    Unlike ``save_user``, this never promotes the first account to ``admin``:
+    external provisioning must stay least-privilege whatever the local store
+    contains. The stored hash is an unusable random marker, so the account
+    cannot password-login; its identity is established by the external
+    provider at every launch.
+    """
+    if role == "admin":
+        raise ValueError("externally provisioned accounts cannot be admins")
+    effective_preset = preset if preset in {"standard", "learner", "custom"} else "standard"
+    USERS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with _USERS_WRITE_LOCK:
+        users = load_users()
+        existing = users.get(username)
+        if isinstance(existing, dict) and existing.get("hash"):
+            return existing
+        record = {
+            "id": new_user_id(),
+            "hash": f"!{secrets.token_hex(16)}",
+            "role": normalize_role(role, "user"),
+            "created_at": utc_now(),
+            "disabled": False,
+            "avatar": "",
+            "preset": effective_preset,
+            "book_permission": canonical_book_permission(None),
+            "learner_profile": normalize_profile(None),
+        }
+        users[username] = record
+        _write_users(users)
+    return record
+
+
 def list_user_info(  # nosec B107 - empty defaults mean "no env fallback supplied".
     env_username: str = "",
     env_password_hash: str = "",
