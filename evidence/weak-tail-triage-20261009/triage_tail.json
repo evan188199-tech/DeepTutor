@@ -1,0 +1,453 @@
+{
+ "n_selected": 23,
+ "basis": "triage.py reproduced rows.json @ f07029cf, filtered rank>100 & fanin>=2 & not-DONE; excluded services.github_source.sync_service (AGEN-1011 in_progress covers it)",
+ "rows": [
+  {
+   "rank": 101,
+   "module": "services.parsing.engines.liteparse.formats",
+   "path": "deeptutor/services/parsing/engines/liteparse/formats.py",
+   "fanin": 2,
+   "loc_scan": 58,
+   "loc_main": 58,
+   "score": 36,
+   "risk": "中",
+   "drift": false,
+   "doc": "LiteParse version floor and official multi-format input list.",
+   "defs": [
+    "installed_liteparse_version",
+    "liteparse_version_is_current"
+   ],
+   "ext_deps": [],
+   "focus_full": "LiteParse 解析引擎的版本下限与支持格式声明；焦点：installed_liteparse_version/liteparse_version_is_current 的版本比较边界与缺失/畸形版本串降级（纯函数、无网络，易测）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 109,
+   "module": "reading.epub_bilingual",
+   "path": "deeptutor/reading/epub_bilingual.py",
+   "fanin": 3,
+   "loc_scan": 248,
+   "loc_main": 248,
+   "score": 34,
+   "risk": "中",
+   "drift": false,
+   "doc": "Explicit EPUB pairing metadata.",
+   "defs": [
+    "recommend_epub_candidates",
+    "list_epub_pairings",
+    "create_epub_pairing",
+    "delete_epub_pairing",
+    "delete_epub_pairings_for_material"
+   ],
+   "ext_deps": [],
+   "focus_full": "EPUB 双语配对元数据的显式管理与候选推荐（增删查）；焦点：recommend_epub_candidates 匹配排序、create/delete 配对的幂等与删除不存在 material 的容错、list 配对返回排序稳定。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 119,
+   "module": "services.singleflight_cache",
+   "path": "deeptutor/services/singleflight_cache.py",
+   "fanin": 3,
+   "loc_scan": 78,
+   "loc_main": 78,
+   "score": 31,
+   "risk": "中",
+   "drift": false,
+   "doc": "Small in-process TTL cache with one async producer per key.",
+   "defs": [
+    "AsyncSingleFlightTTLCache"
+   ],
+   "ext_deps": [],
+   "focus_full": "进程内 TTL 缓存 + 每 key 单飞 async 生产者；焦点：并发同 key 只创建一次生产任务（coalescing）、TTL 过期后重建、limit/ttl 非法参数拒绝、生产者异常不污染缓存（asyncio 测试）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 124,
+   "module": "knowledge.naming",
+   "path": "deeptutor/knowledge/naming.py",
+   "fanin": 3,
+   "loc_scan": 40,
+   "loc_main": 40,
+   "score": 30,
+   "risk": "中",
+   "drift": false,
+   "doc": "Knowledge-base name validation helpers.",
+   "defs": [
+    "validate_knowledge_base_name"
+   ],
+   "ext_deps": [],
+   "focus_full": "知识库命名校验助手；焦点：validate_knowledge_base_name 合法字符/长度边界与非法输入的错误信息契约。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 125,
+   "module": "core.assessment",
+   "path": "deeptutor/core/assessment.py",
+   "fanin": 3,
+   "loc_scan": 15,
+   "loc_main": 15,
+   "score": 30,
+   "risk": "中",
+   "drift": false,
+   "doc": "Assessment values shared by producers, persistence, and the HTTP API.",
+   "defs": [],
+   "ext_deps": [],
+   "focus_full": "评估域共享 Literal 值对象（生产者/持久化/HTTP 三方契约源）；焦点：模块级导出契约冒烟，断言 4 个 frozenset 与对应 Literal get_args 一致。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 162,
+   "module": "services.session.legacy_migration",
+   "path": "deeptutor/services/session/legacy_migration.py",
+   "fanin": 2,
+   "loc_scan": 291,
+   "loc_main": 291,
+   "score": 25,
+   "risk": "中",
+   "drift": false,
+   "doc": "Idempotent migration of the removed v1 JSON chat session store.",
+   "defs": [
+    "LegacyMigrationError",
+    "LegacyMigrationReport",
+    "LegacyChatSessionMigrator",
+    "migrate_all_legacy_chat_scopes"
+   ],
+   "ext_deps": [],
+   "focus_full": "已移除的 v1 JSON 会话存储的幂等迁移器；焦点：migrate_all_legacy_chat_scopes 重复执行幂等、损坏 JSON 跳过并计入 LegacyMigrationReport、报告计数与实际迁移一致。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 163,
+   "module": "utils.bibtex_converter",
+   "path": "deeptutor/utils/bibtex_converter.py",
+   "fanin": 2,
+   "loc_scan": 287,
+   "loc_main": 287,
+   "score": 25,
+   "risk": "中",
+   "drift": false,
+   "doc": "Convert BibTeX source into readable Markdown for retrieval.",
+   "defs": [
+    "bibtex_to_markdown"
+   ],
+   "ext_deps": [],
+   "focus_full": "BibTeX→Markdown 转换（供检索索引）；焦点：bibtex_to_markdown 字段映射、多 entry 顺序保持、畸形 BibTeX 输入的降级输出不抛异常。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 164,
+   "module": "textbook_struct.chapter_rebuild",
+   "path": "deeptutor/textbook_struct/chapter_rebuild.py",
+   "fanin": 2,
+   "loc_scan": 273,
+   "loc_main": 273,
+   "score": 25,
+   "risk": "中",
+   "drift": false,
+   "doc": "Layered chapter rebuild from MinerU ``layout.json``.",
+   "defs": [
+    "Chapter",
+    "block_text",
+    "merge_adjacent",
+    "layout_page_count",
+    "rebuild",
+    "assign_page_ranges"
+   ],
+   "ext_deps": [],
+   "focus_full": "从 MinerU layout.json 分层重建章节结构；焦点：rebuild 层级聚合、merge_adjacent 相邻合并规则、assign_page_ranges 页码区间单调且全覆盖、空/畸形 layout 降级。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 167,
+   "module": "agents.vision_solver.vision_solver_agent",
+   "path": "deeptutor/agents/vision_solver/vision_solver_agent.py",
+   "fanin": 2,
+   "loc_scan": 205,
+   "loc_main": 205,
+   "score": 24,
+   "risk": "中",
+   "drift": false,
+   "doc": "Vision Solver Agent — single-call image → GeoGebra command generation.",
+   "defs": [
+    "VisionSolverAgent"
+   ],
+   "ext_deps": [],
+   "focus_full": "单次调用图片→GeoGebra 命令生成的 Agent；焦点：mock LLM 返回的解析契约、请求参数校验与透传、失败/超时路径（全 mock 不触网）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 168,
+   "module": "logging.stats.llm_stats",
+   "path": "deeptutor/logging/stats/llm_stats.py",
+   "fanin": 2,
+   "loc_scan": 200,
+   "loc_main": 200,
+   "score": 24,
+   "risk": "中",
+   "drift": false,
+   "doc": "LLM Stats Tracker",
+   "defs": [
+    "get_pricing",
+    "estimate_tokens",
+    "LLMCall",
+    "LLMStats"
+   ],
+   "ext_deps": [],
+   "focus_full": "LLM 调用统计（token 估算与计费聚合）；焦点：estimate_tokens/get_pricing 表驱动用例、LLMStats 聚合与导出契约、未知模型计费降级。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 169,
+   "module": "services.setup.data_volume",
+   "path": "deeptutor/services/setup/data_volume.py",
+   "fanin": 2,
+   "loc_scan": 197,
+   "loc_main": 197,
+   "score": 23,
+   "risk": "中",
+   "drift": false,
+   "doc": "Probe whether the runtime data volume is writable by the app user.",
+   "defs": [
+    "DataVolumePermissionError",
+    "current_process_ids",
+    "parse_id",
+    "resolve_runtime_ids",
+    "describe_path_ownership",
+    "format_data_volume_permission_error"
+   ],
+   "ext_deps": [],
+   "focus_full": "运行数据卷可写性探测与属主诊断；焦点：parse_id/resolve_runtime_ids 边界、describe_path_ownership、format_data_volume_permission_error 文案契约（文件系统相关用例走 tmp_path/mock）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 170,
+   "module": "reading.knowledge_capture",
+   "path": "deeptutor/reading/knowledge_capture.py",
+   "fanin": 2,
+   "loc_scan": 177,
+   "loc_main": 177,
+   "score": 23,
+   "risk": "中",
+   "drift": false,
+   "doc": "Turn reading annotations into durable Notebook and Mastery sources.",
+   "defs": [
+    "OrganizedReadingNotes",
+    "organize_workspace_notes",
+    "send_workspace_to_notebook",
+    "mastery_source_records"
+   ],
+   "ext_deps": [],
+   "focus_full": "阅读标注→Notebook/Mastery 持久来源转换；焦点：organize_workspace_notes 分组去重、mastery_source_records 记录形态、send_workspace_to_notebook 失败分支（mock 存储层）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 171,
+   "module": "services.session.event_preview",
+   "path": "deeptutor/services/session/event_preview.py",
+   "fanin": 2,
+   "loc_scan": 154,
+   "loc_main": 154,
+   "score": 23,
+   "risk": "中",
+   "drift": false,
+   "doc": "Bounded event previews used by session-detail responses.",
+   "defs": [
+    "compact_trace_preview"
+   ],
+   "ext_deps": [],
+   "focus_full": "会话详情响应使用的有界事件预览；焦点：compact_trace_preview 空/超长截断/unicode 边界与不可序列化事件的降级。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 173,
+   "module": "services.partners.runtime_status",
+   "path": "deeptutor/services/partners/runtime_status.py",
+   "fanin": 2,
+   "loc_scan": 132,
+   "loc_main": 132,
+   "score": 22,
+   "risk": "中",
+   "drift": false,
+   "doc": "Shared, credential-free Partner runtime status.",
+   "defs": [
+    "PartnerRuntimeStatusRepository",
+    "get_partner_runtime_status_repository"
+   ],
+   "ext_deps": [
+    "sqlite3"
+   ],
+   "focus_full": "Partner 运行时状态的共享无凭据仓储（sqlite 存储）；焦点：仓储读写幂等、缺表初始化、并发读写一致性（tmp_path sqlite）。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 174,
+   "module": "utils.config_manager",
+   "path": "deeptutor/utils/config_manager.py",
+   "fanin": 2,
+   "loc_scan": 129,
+   "loc_main": 129,
+   "score": 22,
+   "risk": "中",
+   "drift": false,
+   "doc": "",
+   "defs": [
+    "ConfigManager"
+   ],
+   "ext_deps": [],
+   "focus_full": "data/user/settings/main.yaml 的极简运行时 YAML 管理器（单例）；焦点：单例语义、mtime 缓存失效再读、缺文件/畸形 YAML 的默认值与降级。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 175,
+   "module": "textbook_struct.page_headers",
+   "path": "deeptutor/textbook_struct/page_headers.py",
+   "fanin": 2,
+   "loc_scan": 100,
+   "loc_main": 100,
+   "score": 22,
+   "risk": "中",
+   "drift": false,
+   "doc": "Header-driven chapter rebuild (v0.2) — running headers never lie.",
+   "defs": [
+    "normalize_header_chapter",
+    "page_facts",
+    "rebuild_from_headers"
+   ],
+   "ext_deps": [],
+   "focus_full": "页眉驱动的章节重建 v0.2（与 layout 驱动互为备份）；焦点：normalize_header_chapter 归一化、page_facts 事实提取、rebuild_from_headers 与 chapter_rebuild 基线的一致性。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 178,
+   "module": "services.settings.starter_settings",
+   "path": "deeptutor/services/settings/starter_settings.py",
+   "fanin": 2,
+   "loc_scan": 82,
+   "loc_main": 82,
+   "score": 21,
+   "risk": "中",
+   "drift": false,
+   "doc": "Starter-suggestion settings.",
+   "defs": [
+    "get_starter_settings",
+    "save_starter_settings"
+   ],
+   "ext_deps": [],
+   "focus_full": "起始建议（starter suggestion）设置的读写；焦点：get_starter_settings/save_starter_settings 缺省值、畸形文件降级、保存后回读一致。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 179,
+   "module": "agents._shared.json_output",
+   "path": "deeptutor/agents/_shared/json_output.py",
+   "fanin": 2,
+   "loc_scan": 76,
+   "loc_main": 76,
+   "score": 21,
+   "risk": "中",
+   "drift": false,
+   "doc": "Parsing helpers shared by agents that consume structured model output.",
+   "defs": [
+    "extract_json_object"
+   ],
+   "ext_deps": [],
+   "focus_full": "Agent 结构化模型输出解析的共享助手；焦点：extract_json_object 的噪声前后缀/嵌套围栏输入，及与 utils.json_parser 的契约一致性。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 181,
+   "module": "services.web_source.navigation",
+   "path": "deeptutor/services/web_source/navigation.py",
+   "fanin": 2,
+   "loc_scan": 72,
+   "loc_main": 72,
+   "score": 21,
+   "risk": "中",
+   "drift": false,
+   "doc": "Build navigation trees for web-source KBs.",
+   "defs": [
+    "flat_to_tree",
+    "build_navigation_manifest"
+   ],
+   "ext_deps": [],
+   "focus_full": "web 来源 KB 的导航树构建；焦点：flat_to_tree 层级组装（孤儿节点/环输入容错）、build_navigation_manifest 排序与去重契约。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 182,
+   "module": "logging.formatters",
+   "path": "deeptutor/logging/formatters.py",
+   "fanin": 2,
+   "loc_scan": 54,
+   "loc_main": 54,
+   "score": 21,
+   "risk": "中",
+   "drift": false,
+   "doc": "Formatters for DeepTutor's stdlib logging pipeline.",
+   "defs": [
+    "ContextFilter",
+    "JsonlFormatter",
+    "ConsoleFormatter"
+   ],
+   "ext_deps": [],
+   "focus_full": "DeepTutor stdlib logging 管道的格式化器（ContextFilter/JsonlFormatter/ConsoleFormatter）；焦点：record→JSONL 字段契约、缺上下文字段时行为、Console 输出快照回归。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 186,
+   "module": "services.partners.workspace_binding",
+   "path": "deeptutor/services/partners/workspace_binding.py",
+   "fanin": 2,
+   "loc_scan": 48,
+   "loc_main": 48,
+   "score": 20,
+   "risk": "中",
+   "drift": false,
+   "doc": "A Partner may use one of its owner's registered content workspaces.",
+   "defs": [
+    "workspace_owner",
+    "validate_partner_workspace",
+    "partner_content_context"
+   ],
+   "ext_deps": [],
+   "focus_full": "Partner 绑定属主已注册内容工作区的校验与内容上下文；焦点：validate_partner_workspace 的拒绝路径（非属主/不存在 workspace）、partner_content_context 组装契约。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 187,
+   "module": "services.practice.answers",
+   "path": "deeptutor/services/practice/answers.py",
+   "fanin": 2,
+   "loc_scan": 44,
+   "loc_main": 44,
+   "score": 20,
+   "risk": "中",
+   "drift": false,
+   "doc": "Conservative objective grading; prose and qualitative work uses self-assessment.",
+   "defs": [
+    "check_answer"
+   ],
+   "ext_deps": [],
+   "focus_full": "练习客观题保守判分（prose 走 self-assessment）；焦点：check_answer 等值/数值/多选判分边界与无法客观判定时的回退行为。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  },
+  {
+   "rank": 188,
+   "module": "utils.text_display",
+   "path": "deeptutor/utils/text_display.py",
+   "fanin": 2,
+   "loc_scan": 31,
+   "loc_main": 39,
+   "score": 20,
+   "risk": "中",
+   "drift": true,
+   "doc": "Helpers for learner-facing text that models sometimes double-encode.",
+   "defs": [
+    "decode_escaped_unicode_for_display"
+   ],
+   "ext_deps": [],
+   "focus_full": "学习者可见文本中密集 \\uXXXX 双重转义的显示解码；焦点：decode_escaped_unicode_for_display 密集 run 阈值（3+）、BMP 外 surrogate 对合并、非文本 run 保留原样与幂等性。",
+   "dedup": "未建卡（项目全库 151 卡扫描 2026-10-09 无命中）且不在 weak242 DONE60"
+  }
+ ]
+}
