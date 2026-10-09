@@ -28,7 +28,7 @@
 
 ## 2. 限流与重试语义差异
 
-- **R1 三层重试策略并存且口径不同**。base：最多 4 次尝试、退避 (1,2,4)s，按状态码 {408,429,500,502,503,504} + 文本标记分类（`base.py:76-90`、`base.py:334-437`），factory.complete/stream 走这一层（`factory.py:387`、`factory.py:612`）。agent_loop：退避 (0.5,1.5)s，只认 `is_transient_transport_error` 且只在未产出输出时重试（`agent_loop.py:110`、`agent_loop.py:1424-1460`），已产出输出时改为 salvage（`agent_loop.py:455-475`）。同一 provider 失败在两条调用链上的重试次数、退避、可重试集合都不同。
+- **R1 三层重试策略并存且口径不同**。base：最多 4 次尝试、退避 (1,2,4)s，按状态码 {408,429,500,502,503,504} + 文本标记分类（`base.py:76-90`、`base.py:334-437`），factory.complete/stream 走这一层（`factory.py:387`、`factory.py:612`）。agent_loop：退避 (0.5,1.5)s，只认 `is_transient_transport_error` 且只在未产出输出时重试（`agent_loop.py:110`、`agent_loop.py:1424-1460`），已产出输出时改为 salvage（`agent_loop.py:452-475`）。同一 provider 失败在两条调用链上的重试次数、退避、可重试集合都不同。
 - **R2 结构化重试信号在 base 层丢失**。Codex 把传输类失败 re-raise 为 `LLMProviderTransportError`（`openai_codex_provider.py:123-128`），agent_loop 会重试它；但 base `_is_transient_error` 只认 TimeoutError/ConnectionError 实例与文本标记，不认 `LLMProviderTransportError`/`retryable` 属性（`base.py:316-332`；`exceptions.py:57-64` 的 `retryable=True` 无人读取）——同一次 Codex 网络抖动经 factory.chat_with_retry 时不重试、经 agent_loop 时重试。
 - **R3 429 KeyPool 轮换仅 compat 一家**：`_create_with_key_rotation` 在 429 时换 key 重试 `max(2, len(pool))` 次（`openai_compat_provider.py:230-249`），Anthropic/Azure/Codex/Copilot/CodeBuddy 均单凭据无轮换。已有测试：`tests/services/llm/test_key_rotation.py::test_openai_compatible_llm_tries_every_api_key_after_429`。
 - **R4 Responses 断路器仅 compat 有**：同一 (model|effort) 连续 2 次失败后 300s 内不再尝试 Responses 端点（`openai_compat_provider.py:74-75`、`openai_compat_provider.py:494-505`、`openai_compat_provider.py:526-536`）；Azure 是 Responses-only 无此保护，失败直接每次打到端点。
@@ -57,7 +57,7 @@
 
 - **C1 统一的部分**：所有 `except Exception` 均不会捕获 CancelledError（Python 3.8+ 为 BaseException），base 重试循环显式 re-raise（`base.py:384-385`）。✅
 - **C2 CodeBuddy 会话取消不传播**：`run_turn` 只往队列投递并 await future（`codebuddy_provider.py:121-133`），等待方被取消后 owner task 继续生成到结束，仅结果被丢弃；HTTP 系 provider 取消即断连。`aclose()` 还会 `uncancel()` 吞掉清理期取消（`codebuddy_provider.py:355-367`）。
-- **C3 agent_loop 消费侧**：取消时把已积累文本写回 messages 再 raise（`agent_loop.py:1416-1432`），provider 层无对应行为。
+- **C3 agent_loop 消费侧**：取消时把已积累文本写回 messages 再 raise（`agent_loop.py:1411-1422`），provider 层无对应行为。
 
 ## 6. 能力开关覆盖面差异（配置开关）
 
