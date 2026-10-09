@@ -1,0 +1,82 @@
+{
+  "card": "AGEN-1273",
+  "scan": "web in-memory cache layer (web/lib/client-cache.ts) full usage inventory",
+  "generated_at": "2026-10-09",
+  "repo": "HKUDS/DeepTutor",
+  "ref": "origin/main",
+  "commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "dedup_note": "localStorage persistence axis is covered by scan-web-storage-schema; this card covers the in-memory layer only",
+  "module": {
+    "file": "web/lib/client-cache.ts",
+    "lines": "1-69",
+    "exports": {
+      "withClientCache": "web/lib/client-cache.ts:16",
+      "invalidateClientCache": "web/lib/client-cache.ts:63"
+    },
+    "storage": "module-level Map<string, CacheEntry> (client-cache.ts:9); entry holds either in-flight promise or settled data + expiresAt",
+    "key_convention": "<module>:<resource>[:<params>]:workspace=<activeWorkspaceId()> — suffix appended unconditionally at client-cache.ts:28 from web/lib/workspace-scope.ts:2 (URL query dt_workspace ?? workspace)",
+    "default_ttl_ms": 30000,
+    "ttl_semantics": "expiresAt checked only on read (lazy); expired entries are overwritten, not proactively evicted",
+    "ssr_bypass": "client-cache.ts:23-25 — server-side calls bypass the Map and invoke loader directly",
+    "stale_repopulation_guard": "client-cache.ts:42,51 — a settled promise only writes data / deletes its entry if it is still the registered promise for the key; regression test web/tests/workspace-navigation.spec.tsx:58-65"
+  },
+  "with_client_cache_calls": [
+    {"id": "R01", "file": "web/features/capabilities/api.ts", "line": 12, "module": "capabilities", "key": "capabilities:catalog", "ttl_ms": 300000, "force": true, "request": "GET /api/capabilities/registered", "notes": "no writer-side invalidation anywhere in web/ (only TTL/force); consumers: useCapabilityCatalog.ts:32 (never force)"},
+    {"id": "R02", "file": "web/features/knowledge/api/client.ts", "line": 290, "module": "knowledge", "key": "knowledge:list:<library|workspace> (ternary on options.library || inKnowledgeLibrary(), client.ts:291)", "ttl_ms": 30000, "force": true, "request": "GET /api/knowledge-bases/list; resource_library=true added by explicit ternary (client.ts:292-295) OR by local apiUrl wrapper on /knowledge-bases routes (client.ts:6-13)", "notes": "key/URL consistency currently holds but depends on the wrapper side effect"},
+    {"id": "R03", "file": "web/features/knowledge/api/client.ts", "line": 322, "module": "knowledge", "key": "knowledge:providers", "ttl_ms": 30000, "force": true, "request": "GET /api/knowledge-bases/rag-providers", "notes": ""},
+    {"id": "R04", "file": "web/features/knowledge/api/client.ts", "line": 346, "module": "knowledge", "key": "knowledge:upload-policy", "ttl_ms": 30000, "force": true, "request": "GET /api/knowledge-bases/supported-file-types", "notes": ""},
+    {"id": "R05", "file": "web/features/knowledge/api/client.ts", "line": 379, "module": "knowledge", "key": "knowledge:pageindex-config", "ttl_ms": 15000, "force": true, "request": "GET /api/knowledge-bases/rag-pipelines/pageindex/config", "notes": ""},
+    {"id": "R06", "file": "web/features/knowledge/api/client.ts", "line": 420, "module": "knowledge", "key": "knowledge:ima-config", "ttl_ms": 15000, "force": true, "request": "GET /api/knowledge-bases/rag-pipelines/ima/config", "notes": ""},
+    {"id": "R07", "file": "web/features/knowledge/api/client.ts", "line": 463, "module": "knowledge", "key": "knowledge:llamaindex-config", "ttl_ms": 15000, "force": true, "request": "GET /api/knowledge-bases/rag-pipelines/llamaindex/config", "notes": ""},
+    {"id": "R08", "file": "web/features/knowledge/api/client.ts", "line": 502, "module": "knowledge", "key": "knowledge:<cacheKey> — only caller: graphrag-config (client.ts:528)", "ttl_ms": 15000, "force": true, "request": "GET /api/knowledge-bases/rag-pipelines/<provider>/config", "notes": "provider and cacheKey are 1:1 at the single call site today; helper signature allows future mismatch"},
+    {"id": "R09", "file": "web/features/knowledge/api/client.ts", "line": 691, "module": "knowledge", "key": "knowledge:files:<name> (raw name in key, encodeURIComponent only in URL)", "ttl_ms": 15000, "force": true, "request": "GET /api/knowledge-bases/<encodeURIComponent(name)>/files", "notes": "prefix invalidation from KbDocumentList.tsx:134 can over-invalidate sibling names sharing a prefix (safe direction)"},
+    {"id": "R10", "file": "web/lib/courses-api.ts", "line": 175, "module": "courses", "key": "courses:list", "ttl_ms": 15000, "force": true, "request": "GET /api/courses", "notes": ""},
+    {"id": "R11", "file": "web/lib/courses-api.ts", "line": 277, "module": "courses", "key": "courses:state:<courseId>", "ttl_ms": 10000, "force": true, "request": "GET /api/courses/<courseId>/state", "notes": "not invalidated by session mutations (updateSessionOrganization etc. only drop sessions:) — bounded by 10s TTL"},
+    {"id": "R12", "file": "web/lib/courses-api.ts", "line": 298, "module": "courses", "key": "courses:candidates", "ttl_ms": 30000, "force": true, "request": "GET /api/courses/resource-candidates", "notes": ""},
+    {"id": "R13", "file": "web/lib/imports-api.ts", "line": 87, "module": "imports", "key": "imported-sessions:<limit>:<offset>", "ttl_ms": 15000, "force": true, "request": "GET /api/imports/chat-history?limit&offset", "notes": ""},
+    {"id": "R14", "file": "web/lib/llm-options.ts", "line": 49, "module": "llm-options", "key": "llm-options:list", "ttl_ms": 30000, "force": true, "request": "GET /api/settings/llm-options with AbortController timeout (request-only option, correctly not part of key)", "notes": ""},
+    {"id": "R15", "file": "web/lib/personas-api.ts", "line": 53, "module": "personas", "key": "personas:list", "ttl_ms": 30000, "force": true, "request": "GET /api/personas", "notes": ""},
+    {"id": "R16", "file": "web/lib/session-api.ts", "line": 210, "module": "sessions", "key": "sessions:<limit>:<offset>:<account|scope>[:workspace:<workspaceId>]", "ttl_ms": 15000, "force": true, "request": "GET /api/sessions?limit&offset[&all_workspaces=true][&dt_workspace=]", "notes": "explicit workspace segment plus automatic :workspace= suffix — redundant but consistent"},
+    {"id": "R17", "file": "web/lib/skills-api.ts", "line": 68, "module": "skills", "key": "skills:list:<skill_workspace query param>", "ttl_ms": 30000, "force": true, "request": "GET /api/skills/list; skill_workspace injected by local apiUrl wrapper (skills-api.ts:9-11)", "notes": "same wrapper-coupling pattern as R02"},
+    {"id": "R18", "file": "web/lib/skills-api.ts", "line": 298, "module": "skills", "key": "skills:tags", "ttl_ms": 30000, "force": true, "request": "GET /api/skills/tags/list", "notes": ""},
+    {"id": "R19", "file": "web/lib/subagents-api.ts", "line": 206, "module": "subagents", "key": "subagents:settings", "ttl_ms": 30000, "force": true, "request": "GET /api/subagents/settings", "notes": ""},
+    {"id": "R20", "file": "web/lib/workspaces-api.ts", "line": 56, "module": "workspaces", "key": "workspaces:list", "ttl_ms": 15000, "force": true, "request": "GET /api/settings/workspace/registrations", "notes": ""}
+  ],
+  "invalidate_client_cache_calls": [
+    {"id": "I01", "file": "web/features/knowledge/api/client.ts", "line": 369, "module": "knowledge", "prefix": "knowledge:", "kind": "wrapper invalidateKnowledgeCaches()", "callers": "30 mutation call sites in the same file: 411, 453, 493, 537, 648, 672, 801, 852, 895, 926, 1011, 1059, 1078, 1096, 1219, 1282, 1336, 1369, 1388, 1407, 1426, 1440, 1496, 1515, 1539, 1616, 1638, 1787, 1806, 1847", "notes": "broad sweep: any config/mutation drops file lists and all engine configs too"},
+    {"id": "I02", "file": "web/components/knowledge/KbDocumentList.tsx", "line": 134, "module": "knowledge", "prefix": "knowledge:files:<kbName>", "kind": "targeted", "callers": "local refresh path only; redundant with force option of listKnowledgeBaseFiles", "notes": "startsWith matching over-invalidates sibling KB names sharing a prefix (safe direction)"},
+    {"id": "I03", "file": "web/lib/personas-api.ts", "line": 127, "module": "personas", "prefix": "personas:", "kind": "wrapper invalidatePersonasCache()", "callers": "create/update/delete: personas-api.ts:94, 111, 123", "notes": ""},
+    {"id": "I04", "file": "web/lib/courses-api.ts", "line": 205, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "createCourse", "notes": ""},
+    {"id": "I05", "file": "web/lib/courses-api.ts", "line": 231, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "updateCourse", "notes": ""},
+    {"id": "I06", "file": "web/lib/courses-api.ts", "line": 240, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "deleteCourse", "notes": ""},
+    {"id": "I07", "file": "web/lib/courses-api.ts", "line": 257, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "attachCourseResource", "notes": ""},
+    {"id": "I08", "file": "web/lib/courses-api.ts", "line": 270, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "detachCourseResource", "notes": ""},
+    {"id": "I09", "file": "web/lib/courses-api.ts", "line": 325, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "setCourseSyllabus", "notes": ""},
+    {"id": "I10", "file": "web/lib/courses-api.ts", "line": 343, "module": "courses", "prefix": "courses:", "kind": "direct", "callers": "setSyllabusUnitCovered", "notes": ""},
+    {"id": "I11", "file": "web/lib/imports-api.ts", "line": 44, "module": "imports", "prefix": "imported-sessions:", "kind": "direct", "callers": "importChatHistory", "notes": "does not also drop sessions: — imported sessions surface in /api/sessions lists only after the 15s TTL"},
+    {"id": "I12", "file": "web/lib/llm-options.ts", "line": 79, "module": "llm-options", "prefix": "llm-options:list (exact key)", "kind": "wrapper invalidateLLMOptionsCache()", "callers": "SettingsStore.tsx:1539, 1620, 1716, 1788; CodexOAuthCard.tsx:141; tests/llm-options-transport.test.ts:39", "notes": ""},
+    {"id": "I13", "file": "web/lib/subagents-api.ts", "line": 228, "module": "subagents", "prefix": "subagents:settings (exact key)", "kind": "direct", "callers": "updateSubagentSettings", "notes": ""},
+    {"id": "I14", "file": "web/lib/skills-api.ts", "line": 351, "module": "skills", "prefix": "skills:", "kind": "wrapper invalidateSkillsCache()", "callers": "installSkillFromHub 141, createSkill 255, updateSkill 276, deleteSkill 292, createSkillTag 318, renameSkillTag 335, deleteSkillTag 347", "notes": ""},
+    {"id": "I15", "file": "web/lib/workspaces-api.ts", "line": 78, "module": "workspaces", "prefix": "workspaces:", "kind": "direct", "callers": "saveWorkspace (paired with knowledge: at line 79)", "notes": "cross-module invalidation by design: KB scoping depends on workspace registration"},
+    {"id": "I16", "file": "web/lib/workspaces-api.ts", "line": 79, "module": "knowledge (from workspaces module)", "prefix": "knowledge:", "kind": "direct", "callers": "saveWorkspace", "notes": ""},
+    {"id": "I17", "file": "web/lib/workspaces-api.ts", "line": 131, "module": "workspaces", "prefix": "workspaces:", "kind": "direct", "callers": "migrateWorkspace (paired with knowledge: at line 132)", "notes": ""},
+    {"id": "I18", "file": "web/lib/workspaces-api.ts", "line": 132, "module": "knowledge (from workspaces module)", "prefix": "knowledge:", "kind": "direct", "callers": "migrateWorkspace", "notes": ""},
+    {"id": "I19", "file": "web/lib/workspaces-api.ts", "line": 191, "module": "workspaces", "prefix": "workspaces:", "kind": "direct", "callers": "moveKnowledgeBase (paired with knowledge: at line 192)", "notes": ""},
+    {"id": "I20", "file": "web/lib/workspaces-api.ts", "line": 192, "module": "knowledge (from workspaces module)", "prefix": "knowledge:", "kind": "direct", "callers": "moveKnowledgeBase", "notes": ""},
+    {"id": "I21", "file": "web/lib/session-api.ts", "line": 350, "module": "sessions", "prefix": "sessions:", "kind": "direct", "callers": "session title update", "notes": ""},
+    {"id": "I22", "file": "web/lib/session-api.ts", "line": 368, "module": "sessions", "prefix": "sessions:", "kind": "direct", "callers": "updateSessionReplyLanguage", "notes": ""},
+    {"id": "I23", "file": "web/lib/session-api.ts", "line": 410, "module": "sessions", "prefix": "sessions:", "kind": "direct", "callers": "updateSessionOrganization", "notes": ""},
+    {"id": "I24", "file": "web/lib/session-api.ts", "line": 420, "module": "sessions", "prefix": "sessions:", "kind": "direct", "callers": "deleteSession", "notes": ""}
+  ],
+  "tests": [
+    {"file": "web/tests/workspace-navigation.spec.tsx", "line": 58, "covers": "invalidated in-flight request must not overwrite fresh cache entry (stale-repopulation guard)"}
+  ],
+  "counts": {
+    "with_client_cache_call_sites_product": 20,
+    "with_client_cache_call_sites_tests": 3,
+    "invalidate_client_cache_call_sites_product": 24,
+    "invalidateKnowledgeCaches_mutation_call_sites": 30,
+    "invalidate_client_cache_call_sites_tests": 1,
+    "files_importing_client_cache": 12
+  }
+}
