@@ -9,10 +9,10 @@
 | --- | --- | --- |
 | 聊天自动路由 | 系统设置 `capability_routing_enabled`（默认 **False**，`deeptutor/services/config/runtime_settings.py:40`）或单轮 `auto_route`（`deeptutor/services/session/turns/request_preparer.py:166-174`） | `route_explicit_quiz_request`（`deeptutor/runtime/capability_routing.py:49`） |
 | 手动选择动作 | 前端 capability 下拉选 `deep_question` | 同一 `start_turn` 流程，跳过路由 |
-| CLI | alias `quiz`（`deeptutor/runtime/bootstrap/builtin_capabilities.py:103`） | 同一 capability |
+| CLI | alias `quiz`（`deeptutor/runtime/bootstrap/builtin_capabilities.py:105`） | 同一 capability |
 | REST 任务 API | `/api/question/*`（挂载 `deeptutor/api/main.py:605`） | `deeptutor/api/routers/question.py` |
-| 阅读工作区 "Quiz me" | Reading 扩展 | `ReadingQuizExtension`（`deeptutor/reading/quiz.py:88` 起） |
-| 书本 Focus-check | 书页 quiz block | 复用 `QuestionPipeline`（`deeptutor/book/blocks/quiz.py:47-69`） |
+| 阅读工作区 "Quiz me" | Reading 扩展 | `ReadingQuizExtension`（`deeptutor/reading/quiz.py:81` 起） |
+| 书本 Focus-check | 书页 quiz block | 复用 `QuestionPipeline`（`deeptutor/book/blocks/quiz.py:43-63`） |
 
 路由规则要点（`deeptutor/runtime/capability_routing.py`）：
 
@@ -33,7 +33,7 @@
 
 终局：`_build_result_payload`（`pipeline.py:1320-1379`）→ `emit_capability_result`（:613，仅 `stream.result`，实现在 `deeptutor/agents/_shared/capability_result.py:30-40`）。**整条生成链路没有任何落库调用。**
 
-出题历史来自题库表而非消息（`deeptutor/agents/question/history.py:27-31` 明示 source of truth 是 `POST /sessions/{id}/quiz-results` 写入的 `notebook_entries`）：`load_session_quiz_history`（`history.py:38`）。
+出题历史来自题库表而非消息（`deeptutor/agents/question/history.py:14` 明示 source of truth 是 `POST /sessions/{id}/quiz-results` 写入的 `notebook_entries`）：`load_session_quiz_history`（`history.py:34`）。
 
 followup 上下文由 turn 执行器注入 metadata（`deeptutor/services/session/turns/executor.py:950`）。
 
@@ -97,8 +97,8 @@ followup 上下文由 turn 执行器注入 metadata（`deeptutor/services/sessio
 | `web/components/quiz/QuizViewer.tsx` | 答题、判分展示、**触发入库** |
 | `web/lib/quiz-types.ts` | 事件→QuizQuestion 解析、turn_id 提取 |
 | `web/lib/notebook-api.ts` | 题库 HTTP 客户端 |
-| `web/lib/practice-api.ts` | 练习 API 客户端 |
-| `web/components/space/question-bank/useQuestionBank.ts` | 题库列表页数据源 |
+| `web/lib/practice-api.ts:2` | 练习 API 客户端 |
+| `web/components/space/question-bank/useQuestionBank.ts:149` | 题库列表页数据源 |
 
 ## 4. 扩展点
 
@@ -117,8 +117,8 @@ followup 上下文由 turn 执行器注入 metadata（`deeptutor/services/sessio
 4. **未答/未全答不写库**：单题 upsert 只在 submit 时调用；批量 `recordQuizResults` 要求全部答完（`QuizViewer.tsx:446`）。
 5. **静默失败**：`sessionId/turnId` 缺失直接 return（`QuizViewer.tsx:479`）；upsert 异常 `catch {}`（:531-533）；服务端 upsert 失败仅 warning（`sessions.py:717-720`）。三者叠加时用户无感知。
 6. **legacy 题卡本地化**：无 turn_id 的事件流使题卡不读写题库（`quiz-types.ts:171-184`）。
-7. **出题历史失忆连锁**：`load_session_quiz_history` 只信题库表（`history.py:27-31`）——上面任何断点吞掉写入，后续出题的去重/补弱也会失效。
-8. **书本 quiz block 无会话落库**：复用 pipeline 但 `session_id=f"book-{book_id}"` 且流到 book bus（`book/blocks/quiz.py:54,58`），不走 quiz-results 端点。
+7. **出题历史失忆连锁**：`load_session_quiz_history` 只信题库表（`history.py:14`）——上面任何断点吞掉写入，后续出题的去重/补弱也会失效。
+8. **书本 quiz block 无会话落库**：复用 pipeline 但 `session_id=f"book-{book_id}"` 且流到 book bus（`book/blocks/quiz.py:53,63`），不走 quiz-results 端点。
 9. **source 静默回落**：未知 source 被归一成 `deep_question`（`learning/assessment.py:115-119`），统计口径可能被悄悄污染。
 
 ## 6. 「出题结果未持久化」可疑断点清单（对应 #575）
