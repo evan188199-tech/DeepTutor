@@ -1,0 +1,1900 @@
+{
+ "root_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "totals": {
+  "modules": 1030,
+  "tests": 828,
+  "intree_tests": 25,
+  "noninit": 898,
+  "zero_noninit": 93,
+  "weak_single_test": 236
+ },
+ "subpackages": {
+  "": {
+   "total": 1,
+   "init": 1,
+   "covered": 1,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "__main__": {
+   "total": 1,
+   "init": 0,
+   "covered": 0,
+   "zero": 1,
+   "zero_loc": 6
+  },
+  "__version__": {
+   "total": 1,
+   "init": 0,
+   "covered": 0,
+   "zero": 1,
+   "zero_loc": 11
+  },
+  "agents": {
+   "total": 67,
+   "init": 13,
+   "covered": 58,
+   "zero": 9,
+   "zero_loc": 1111
+  },
+  "api": {
+   "total": 58,
+   "init": 3,
+   "covered": 56,
+   "zero": 2,
+   "zero_loc": 97
+  },
+  "app": {
+   "total": 6,
+   "init": 1,
+   "covered": 6,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "book": {
+   "total": 42,
+   "init": 3,
+   "covered": 28,
+   "zero": 14,
+   "zero_loc": 1465
+  },
+  "capabilities": {
+   "total": 69,
+   "init": 14,
+   "covered": 68,
+   "zero": 1,
+   "zero_loc": 86
+  },
+  "co_writer": {
+   "total": 4,
+   "init": 1,
+   "covered": 4,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "config": {
+   "total": 2,
+   "init": 1,
+   "covered": 1,
+   "zero": 1,
+   "zero_loc": 0
+  },
+  "core": {
+   "total": 10,
+   "init": 1,
+   "covered": 9,
+   "zero": 1,
+   "zero_loc": 28
+  },
+  "events": {
+   "total": 2,
+   "init": 1,
+   "covered": 2,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "i18n": {
+   "total": 3,
+   "init": 1,
+   "covered": 0,
+   "zero": 3,
+   "zero_loc": 163
+  },
+  "knowledge": {
+   "total": 10,
+   "init": 1,
+   "covered": 9,
+   "zero": 1,
+   "zero_loc": 45
+  },
+  "learning": {
+   "total": 22,
+   "init": 2,
+   "covered": 19,
+   "zero": 3,
+   "zero_loc": 380
+  },
+  "logging": {
+   "total": 11,
+   "init": 3,
+   "covered": 9,
+   "zero": 2,
+   "zero_loc": 137
+  },
+  "multi_user": {
+   "total": 20,
+   "init": 1,
+   "covered": 20,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "partners": {
+   "total": 32,
+   "init": 4,
+   "covered": 27,
+   "zero": 5,
+   "zero_loc": 1988
+  },
+  "plugins": {
+   "total": 11,
+   "init": 1,
+   "covered": 10,
+   "zero": 1,
+   "zero_loc": 50
+  },
+  "reading": {
+   "total": 23,
+   "init": 1,
+   "covered": 23,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "response_languages": {
+   "total": 1,
+   "init": 0,
+   "covered": 0,
+   "zero": 1,
+   "zero_loc": 8
+  },
+  "runtime": {
+   "total": 52,
+   "init": 6,
+   "covered": 45,
+   "zero": 7,
+   "zero_loc": 538
+  },
+  "services": {
+   "total": 514,
+   "init": 65,
+   "covered": 483,
+   "zero": 31,
+   "zero_loc": 6420
+  },
+  "textbook_struct": {
+   "total": 4,
+   "init": 1,
+   "covered": 3,
+   "zero": 1,
+   "zero_loc": 41
+  },
+  "tools": {
+   "total": 38,
+   "init": 5,
+   "covered": 27,
+   "zero": 11,
+   "zero_loc": 2099
+  },
+  "utils": {
+   "total": 11,
+   "init": 0,
+   "covered": 10,
+   "zero": 1,
+   "zero_loc": 81
+  },
+  "video_learning": {
+   "total": 8,
+   "init": 1,
+   "covered": 8,
+   "zero": 0,
+   "zero_loc": 0
+  },
+  "visualizers": {
+   "total": 7,
+   "init": 1,
+   "covered": 6,
+   "zero": 1,
+   "zero_loc": 125
+  }
+ },
+ "fanin_top50": [
+  [
+   "deeptutor.services.path_service",
+   76
+  ],
+  [
+   "deeptutor.multi_user.paths",
+   70
+  ],
+  [
+   "deeptutor.services.path_service.get_path_service",
+   68
+  ],
+  [
+   "deeptutor.core.context",
+   65
+  ],
+  [
+   "deeptutor.services.config",
+   60
+  ],
+  [
+   "deeptutor.core.context.UnifiedContext",
+   58
+  ],
+  [
+   "deeptutor.multi_user.context",
+   55
+  ],
+  [
+   "deeptutor.services.llm",
+   51
+  ],
+  [
+   "deeptutor.services.file_io",
+   49
+  ],
+  [
+   "deeptutor.services.workspace.context",
+   43
+  ],
+  [
+   "deeptutor.multi_user.context.get_current_user",
+   40
+  ],
+  [
+   "deeptutor.core.tool_protocol",
+   38
+  ],
+  [
+   "deeptutor.services.file_io.atomic_write_json",
+   35
+  ],
+  [
+   "deeptutor.learning.models",
+   34
+  ],
+  [
+   "deeptutor.core.tool_protocol.BaseTool",
+   33
+  ],
+  [
+   "deeptutor.services.llm.config",
+   33
+  ],
+  [
+   "deeptutor.services.session",
+   33
+  ],
+  [
+   "deeptutor.runtime.stream_bus",
+   33
+  ],
+  [
+   "deeptutor.runtime.stream_bus.StreamBus",
+   32
+  ],
+  [
+   "deeptutor.book.models",
+   32
+  ],
+  [
+   "deeptutor.core.tool_protocol.ToolDefinition",
+   31
+  ],
+  [
+   "deeptutor.learning.storage",
+   31
+  ],
+  [
+   "deeptutor.services.workspace",
+   30
+  ],
+  [
+   "deeptutor.services.workspace.get_content_workspace_service",
+   30
+  ],
+  [
+   "deeptutor.learning.storage.LearningStore",
+   30
+  ],
+  [
+   "deeptutor.core.tool_protocol.ToolResult",
+   29
+  ],
+  [
+   "deeptutor.multi_user.knowledge_access",
+   26
+  ],
+  [
+   "deeptutor.core.trace",
+   26
+  ],
+  [
+   "deeptutor.services.config.runtime_settings",
+   25
+  ],
+  [
+   "deeptutor.services.workspace.models",
+   24
+  ],
+  [
+   "deeptutor.services.workspace.models.WorkspaceError",
+   24
+  ],
+  [
+   "deeptutor.partners.bus.events",
+   24
+  ],
+  [
+   "deeptutor.core.stream",
+   23
+  ],
+  [
+   "deeptutor.partners.bus.events.OutboundMessage",
+   23
+  ],
+  [
+   "deeptutor.core.trace.build_trace_metadata",
+   22
+  ],
+  [
+   "deeptutor.multi_user.models",
+   22
+  ],
+  [
+   "deeptutor.core.tool_protocol.ToolParameter",
+   21
+  ],
+  [
+   "deeptutor.core.trace.new_call_id",
+   21
+  ],
+  [
+   "deeptutor.services.settings.interface_settings",
+   21
+  ],
+  [
+   "deeptutor.partners.config.schema",
+   21
+  ],
+  [
+   "deeptutor.partners.bus.queue",
+   21
+  ],
+  [
+   "deeptutor.partners.bus.queue.MessageBus",
+   21
+  ],
+  [
+   "deeptutor.book.models.BlockType",
+   21
+  ],
+  [
+   "deeptutor.services.prompt.language",
+   20
+  ],
+  [
+   "deeptutor.core.stream.StreamEventType",
+   20
+  ],
+  [
+   "deeptutor.capabilities.protocol",
+   20
+  ],
+  [
+   "deeptutor.learning.models.LearningProgress",
+   20
+  ],
+  [
+   "deeptutor.services.session.get_session_store",
+   20
+  ],
+  [
+   "deeptutor.services.provider_registry",
+   20
+  ],
+  [
+   "deeptutor.services.llm.complete",
+   19
+  ]
+ ],
+ "zero_top200": [
+  {
+   "module": "services.session.turns.executor",
+   "loc": 1441,
+   "fanin": 1,
+   "path": "deeptutor/services/session/turns/executor.py"
+  },
+  {
+   "module": "services.session.turns.request_preparer",
+   "loc": 1155,
+   "fanin": 1,
+   "path": "deeptutor/services/session/turns/request_preparer.py"
+  },
+  {
+   "module": "partners.channels.mochat",
+   "loc": 1075,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/mochat.py"
+  },
+  {
+   "module": "services.voice.speech_text",
+   "loc": 825,
+   "fanin": 1,
+   "path": "deeptutor/services/voice/speech_text.py"
+  },
+  {
+   "module": "partners.channels.dingtalk",
+   "loc": 548,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/dingtalk.py"
+  },
+  {
+   "module": "tools.vision.coord_transform",
+   "loc": 436,
+   "fanin": 1,
+   "path": "deeptutor/tools/vision/coord_transform.py"
+  },
+  {
+   "module": "tools.question.question_extractor",
+   "loc": 413,
+   "fanin": 2,
+   "path": "deeptutor/tools/question/question_extractor.py"
+  },
+  {
+   "module": "agents.notebook.analysis_agent",
+   "loc": 380,
+   "fanin": 1,
+   "path": "deeptutor/agents/notebook/analysis_agent.py"
+  },
+  {
+   "module": "services.mastery_hints",
+   "loc": 380,
+   "fanin": 1,
+   "path": "deeptutor/services/mastery_hints.py"
+  },
+  {
+   "module": "services.session.turns.learning_adapter",
+   "loc": 371,
+   "fanin": 1,
+   "path": "deeptutor/services/session/turns/learning_adapter.py"
+  },
+  {
+   "module": "book.blocks.section",
+   "loc": 369,
+   "fanin": 1,
+   "path": "deeptutor/book/blocks/section.py"
+  },
+  {
+   "module": "tools.knowledge_frontier",
+   "loc": 321,
+   "fanin": 1,
+   "path": "deeptutor/tools/knowledge_frontier.py"
+  },
+  {
+   "module": "services.memory.consolidator.modes._runtime",
+   "loc": 319,
+   "fanin": 4,
+   "path": "deeptutor/services/memory/consolidator/modes/_runtime.py"
+  },
+  {
+   "module": "tools.vision.block_parser",
+   "loc": 251,
+   "fanin": 1,
+   "path": "deeptutor/tools/vision/block_parser.py"
+  },
+  {
+   "module": "learning.visual_practice",
+   "loc": 250,
+   "fanin": 3,
+   "path": "deeptutor/learning/visual_practice.py"
+  },
+  {
+   "module": "tools.vision.image_utils",
+   "loc": 210,
+   "fanin": 1,
+   "path": "deeptutor/tools/vision/image_utils.py"
+  },
+  {
+   "module": "tools.paper_search_tool",
+   "loc": 207,
+   "fanin": 2,
+   "path": "deeptutor/tools/paper_search_tool.py"
+  },
+  {
+   "module": "partners.channels.qq",
+   "loc": 203,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/qq.py"
+  },
+  {
+   "module": "services.pocketbase_client",
+   "loc": 196,
+   "fanin": 7,
+   "path": "deeptutor/services/pocketbase_client.py"
+  },
+  {
+   "module": "book.agents.spine_agent",
+   "loc": 189,
+   "fanin": 1,
+   "path": "deeptutor/book/agents/spine_agent.py"
+  },
+  {
+   "module": "agents.math_animator.visual_review",
+   "loc": 154,
+   "fanin": 1,
+   "path": "deeptutor/agents/math_animator/visual_review.py"
+  },
+  {
+   "module": "agents.research.mode_strategy",
+   "loc": 147,
+   "fanin": 1,
+   "path": "deeptutor/agents/research/mode_strategy.py"
+  },
+  {
+   "module": "book.blocks._rag_helpers",
+   "loc": 142,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/_rag_helpers.py"
+  },
+  {
+   "module": "services.search.providers.zhipu",
+   "loc": 142,
+   "fanin": 0,
+   "path": "deeptutor/services/search/providers/zhipu.py"
+  },
+  {
+   "module": "logging.process_stream",
+   "loc": 137,
+   "fanin": 2,
+   "path": "deeptutor/logging/process_stream.py"
+  },
+  {
+   "module": "services.search.providers.firecrawl",
+   "loc": 136,
+   "fanin": 0,
+   "path": "deeptutor/services/search/providers/firecrawl.py"
+  },
+  {
+   "module": "book.learning_overlay",
+   "loc": 134,
+   "fanin": 1,
+   "path": "deeptutor/book/learning_overlay.py"
+  },
+  {
+   "module": "services.session.ask_user_trace",
+   "loc": 133,
+   "fanin": 3,
+   "path": "deeptutor/services/session/ask_user_trace.py"
+  },
+  {
+   "module": "book.blocks.animation",
+   "loc": 133,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/animation.py"
+  },
+  {
+   "module": "agents._shared.tool_runtime",
+   "loc": 131,
+   "fanin": 3,
+   "path": "deeptutor/agents/_shared/tool_runtime.py"
+  },
+  {
+   "module": "services.rag.pipelines.ima.transport",
+   "loc": 130,
+   "fanin": 2,
+   "path": "deeptutor/services/rag/pipelines/ima/transport.py"
+  },
+  {
+   "module": "learning.question_card",
+   "loc": 130,
+   "fanin": 1,
+   "path": "deeptutor/learning/question_card.py"
+  },
+  {
+   "module": "services.memory.consolidator.modes._shims",
+   "loc": 129,
+   "fanin": 2,
+   "path": "deeptutor/services/memory/consolidator/modes/_shims.py"
+  },
+  {
+   "module": "services.subagent.hermes_remote_events",
+   "loc": 125,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/hermes_remote_events.py"
+  },
+  {
+   "module": "visualizers.loop_capability",
+   "loc": 125,
+   "fanin": 0,
+   "path": "deeptutor/visualizers/loop_capability.py"
+  },
+  {
+   "module": "runtime.coordination.types",
+   "loc": 116,
+   "fanin": 6,
+   "path": "deeptutor/runtime/coordination/types.py"
+  },
+  {
+   "module": "book.blocks.interactive",
+   "loc": 113,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/interactive.py"
+  },
+  {
+   "module": "runtime.capability_catalog",
+   "loc": 104,
+   "fanin": 4,
+   "path": "deeptutor/runtime/capability_catalog.py"
+  },
+  {
+   "module": "tools.brainstorm",
+   "loc": 104,
+   "fanin": 1,
+   "path": "deeptutor/tools/brainstorm.py"
+  },
+  {
+   "module": "services.search.providers.searxng",
+   "loc": 104,
+   "fanin": 1,
+   "path": "deeptutor/services/search/providers/searxng.py"
+  },
+  {
+   "module": "services.session.usage_recovery",
+   "loc": 104,
+   "fanin": 1,
+   "path": "deeptutor/services/session/usage_recovery.py"
+  },
+  {
+   "module": "i18n.metadata_i18n",
+   "loc": 103,
+   "fanin": 4,
+   "path": "deeptutor/i18n/metadata_i18n.py"
+  },
+  {
+   "module": "partners.network",
+   "loc": 101,
+   "fanin": 1,
+   "path": "deeptutor/partners/network.py"
+  },
+  {
+   "module": "agents.math_animator.agents.visual_review_agent",
+   "loc": 100,
+   "fanin": 1,
+   "path": "deeptutor/agents/math_animator/agents/visual_review_agent.py"
+  },
+  {
+   "module": "runtime.agentic.think_stream",
+   "loc": 93,
+   "fanin": 2,
+   "path": "deeptutor/runtime/agentic/think_stream.py"
+  },
+  {
+   "module": "capabilities.reading._tool_base",
+   "loc": 86,
+   "fanin": 2,
+   "path": "deeptutor/capabilities/reading/_tool_base.py"
+  },
+  {
+   "module": "utils.error_utils",
+   "loc": 81,
+   "fanin": 3,
+   "path": "deeptutor/utils/error_utils.py"
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.errors",
+   "loc": 76,
+   "fanin": 1,
+   "path": "deeptutor/services/rag/pipelines/llamaindex/errors.py"
+  },
+  {
+   "module": "agents.visualize.agents.review_agent",
+   "loc": 75,
+   "fanin": 1,
+   "path": "deeptutor/agents/visualize/agents/review_agent.py"
+  },
+  {
+   "module": "book.blocks.flash_cards",
+   "loc": 74,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/flash_cards.py"
+  },
+  {
+   "module": "book.blocks.deep_dive",
+   "loc": 70,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/deep_dive.py"
+  },
+  {
+   "module": "tools.question.exam_mimic",
+   "loc": 70,
+   "fanin": 1,
+   "path": "deeptutor/tools/question/exam_mimic.py"
+  },
+  {
+   "module": "services.memory.snapshot.diff",
+   "loc": 67,
+   "fanin": 1,
+   "path": "deeptutor/services/memory/snapshot/diff.py"
+  },
+  {
+   "module": "services.practice.analytics",
+   "loc": 67,
+   "fanin": 1,
+   "path": "deeptutor/services/practice/analytics.py"
+  },
+  {
+   "module": "book.blocks.timeline",
+   "loc": 66,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/timeline.py"
+  },
+  {
+   "module": "tools.web_search",
+   "loc": 65,
+   "fanin": 2,
+   "path": "deeptutor/tools/web_search.py"
+  },
+  {
+   "module": "runtime.worker_process",
+   "loc": 65,
+   "fanin": 0,
+   "path": "deeptutor/runtime/worker_process.py"
+  },
+  {
+   "module": "services.cli_apps.vendor.build_snapshot",
+   "loc": 65,
+   "fanin": 0,
+   "path": "deeptutor/services/cli_apps/vendor/build_snapshot.py"
+  },
+  {
+   "module": "services.search.providers.duckduckgo",
+   "loc": 65,
+   "fanin": 0,
+   "path": "deeptutor/services/search/providers/duckduckgo.py"
+  },
+  {
+   "module": "book.blocks.callout",
+   "loc": 64,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/callout.py"
+  },
+  {
+   "module": "runtime.cache_reset",
+   "loc": 63,
+   "fanin": 1,
+   "path": "deeptutor/runtime/cache_reset.py"
+  },
+  {
+   "module": "book.estimate",
+   "loc": 62,
+   "fanin": 1,
+   "path": "deeptutor/book/estimate.py"
+  },
+  {
+   "module": "partners.transcription",
+   "loc": 61,
+   "fanin": 1,
+   "path": "deeptutor/partners/transcription.py"
+  },
+  {
+   "module": "i18n.status_i18n",
+   "loc": 60,
+   "fanin": 1,
+   "path": "deeptutor/i18n/status_i18n.py"
+  },
+  {
+   "module": "agents._shared.workspace_prompt",
+   "loc": 59,
+   "fanin": 3,
+   "path": "deeptutor/agents/_shared/workspace_prompt.py"
+  },
+  {
+   "module": "services.mcp.session_state",
+   "loc": 59,
+   "fanin": 2,
+   "path": "deeptutor/services/mcp/session_state.py"
+  },
+  {
+   "module": "api.routers.agent_config",
+   "loc": 59,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/agent_config.py"
+  },
+  {
+   "module": "runtime.worker_tasks",
+   "loc": 56,
+   "fanin": 0,
+   "path": "deeptutor/runtime/worker_tasks.py"
+  },
+  {
+   "module": "services.config.origins",
+   "loc": 55,
+   "fanin": 3,
+   "path": "deeptutor/services/config/origins.py"
+  },
+  {
+   "module": "agents._shared.capability_result",
+   "loc": 51,
+   "fanin": 7,
+   "path": "deeptutor/agents/_shared/capability_result.py"
+  },
+  {
+   "module": "services.session.workspace_preferences",
+   "loc": 50,
+   "fanin": 6,
+   "path": "deeptutor/services/session/workspace_preferences.py"
+  },
+  {
+   "module": "plugins.transactions",
+   "loc": 50,
+   "fanin": 2,
+   "path": "deeptutor/plugins/transactions.py"
+  },
+  {
+   "module": "services.embedding.request_options",
+   "loc": 46,
+   "fanin": 4,
+   "path": "deeptutor/services/embedding/request_options.py"
+  },
+  {
+   "module": "knowledge.progress_events",
+   "loc": 45,
+   "fanin": 2,
+   "path": "deeptutor/knowledge/progress_events.py"
+  },
+  {
+   "module": "runtime.turn_engine",
+   "loc": 41,
+   "fanin": 5,
+   "path": "deeptutor/runtime/turn_engine.py"
+  },
+  {
+   "module": "textbook_struct.column_blacklist",
+   "loc": 41,
+   "fanin": 2,
+   "path": "deeptutor/textbook_struct/column_blacklist.py"
+  },
+  {
+   "module": "services.parsing.engines._versions",
+   "loc": 38,
+   "fanin": 12,
+   "path": "deeptutor/services/parsing/engines/_versions.py"
+  },
+  {
+   "module": "api.routers.capabilities_settings",
+   "loc": 38,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/capabilities_settings.py"
+  },
+  {
+   "module": "services.llm.provider_core.codebuddy_models",
+   "loc": 36,
+   "fanin": 1,
+   "path": "deeptutor/services/llm/provider_core/codebuddy_models.py"
+  },
+  {
+   "module": "services.partners.model_runtime",
+   "loc": 36,
+   "fanin": 1,
+   "path": "deeptutor/services/partners/model_runtime.py"
+  },
+  {
+   "module": "services.parsing.engines.formats",
+   "loc": 29,
+   "fanin": 1,
+   "path": "deeptutor/services/parsing/engines/formats.py"
+  },
+  {
+   "module": "core.response_languages",
+   "loc": 28,
+   "fanin": 2,
+   "path": "deeptutor/core/response_languages.py"
+  },
+  {
+   "module": "book.blocks.user_note",
+   "loc": 26,
+   "fanin": 2,
+   "path": "deeptutor/book/blocks/user_note.py"
+  },
+  {
+   "module": "tools.solve_tool",
+   "loc": 22,
+   "fanin": 0,
+   "path": "deeptutor/tools/solve_tool.py"
+  },
+  {
+   "module": "services.session.turns.context_assembler",
+   "loc": 20,
+   "fanin": 1,
+   "path": "deeptutor/services/session/turns/context_assembler.py"
+  },
+  {
+   "module": "services.config.image_description",
+   "loc": 18,
+   "fanin": 2,
+   "path": "deeptutor/services/config/image_description.py"
+  },
+  {
+   "module": "book.blocks._language",
+   "loc": 15,
+   "fanin": 3,
+   "path": "deeptutor/book/blocks/_language.py"
+  },
+  {
+   "module": "agents.notebook._text",
+   "loc": 14,
+   "fanin": 2,
+   "path": "deeptutor/agents/notebook/_text.py"
+  },
+  {
+   "module": "__version__",
+   "loc": 11,
+   "fanin": 3,
+   "path": "deeptutor/__version__.py"
+  },
+  {
+   "module": "response_languages",
+   "loc": 8,
+   "fanin": 2,
+   "path": "deeptutor/response_languages.py"
+  },
+  {
+   "module": "book.errors",
+   "loc": 8,
+   "fanin": 2,
+   "path": "deeptutor/book/errors.py"
+  },
+  {
+   "module": "__main__",
+   "loc": 6,
+   "fanin": 0,
+   "path": "deeptutor/__main__.py"
+  },
+  {
+   "module": "services.llm.provider_registry",
+   "loc": 3,
+   "fanin": 0,
+   "path": "deeptutor/services/llm/provider_registry.py"
+  }
+ ],
+ "weak_top100": [
+  {
+   "module": "services.config.readiness",
+   "loc": 1038,
+   "fanin": 1,
+   "path": "deeptutor/services/config/readiness.py",
+   "tests": [
+    "tests/services/config/test_readiness.py"
+   ]
+  },
+  {
+   "module": "services.llm.provider_core.codebuddy_provider",
+   "loc": 851,
+   "fanin": 3,
+   "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "tests": [
+    "tests/services/llm/test_codebuddy_provider.py"
+   ]
+  },
+  {
+   "module": "partners.channels.msteams",
+   "loc": 847,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/msteams.py",
+   "tests": [
+    "tests/services/partners/test_msteams_channel.py"
+   ]
+  },
+  {
+   "module": "partners.channels.matrix",
+   "loc": 842,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/matrix.py",
+   "tests": [
+    "tests/test_matrix_requirements.py"
+   ]
+  },
+  {
+   "module": "api.routers.question_notebook",
+   "loc": 595,
+   "fanin": 2,
+   "path": "deeptutor/api/routers/question_notebook.py",
+   "tests": [
+    "tests/api/test_practice.py"
+   ]
+  },
+  {
+   "module": "partners.channels.napcat",
+   "loc": 594,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/napcat.py",
+   "tests": [
+    "tests/services/partners/test_napcat_channel.py"
+   ]
+  },
+  {
+   "module": "services.search.source_filter",
+   "loc": 582,
+   "fanin": 1,
+   "path": "deeptutor/services/search/source_filter.py",
+   "tests": [
+    "tests/services/search/test_web_search_runtime.py"
+   ]
+  },
+  {
+   "module": "services.doctor",
+   "loc": 571,
+   "fanin": 0,
+   "path": "deeptutor/services/doctor.py",
+   "tests": [
+    "tests/cli/test_doctor_cli.py"
+   ]
+  },
+  {
+   "module": "learning.assessment",
+   "loc": 558,
+   "fanin": 6,
+   "path": "deeptutor/learning/assessment.py",
+   "tests": [
+    "deeptutor/learning/tests/test_assessment.py"
+   ]
+  },
+  {
+   "module": "tools.question_bank",
+   "loc": 536,
+   "fanin": 1,
+   "path": "deeptutor/tools/question_bank.py",
+   "tests": [
+    "tests/tools/test_question_bank_tool.py"
+   ]
+  },
+  {
+   "module": "api.routers.partner_groups",
+   "loc": 534,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/partner_groups.py",
+   "tests": [
+    "tests/api/test_partner_groups_router.py"
+   ]
+  },
+  {
+   "module": "services.subagent.opencode_family",
+   "loc": 508,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/opencode_family.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "services.reading_hints",
+   "loc": 503,
+   "fanin": 1,
+   "path": "deeptutor/services/reading_hints.py",
+   "tests": [
+    "tests/reading/test_reading_hints.py"
+   ]
+  },
+  {
+   "module": "tools.mastery_nav",
+   "loc": 500,
+   "fanin": 2,
+   "path": "deeptutor/tools/mastery_nav.py",
+   "tests": [
+    "deeptutor/learning/tests/test_mastery_navigation.py"
+   ]
+  },
+  {
+   "module": "tools.write_note",
+   "loc": 492,
+   "fanin": 1,
+   "path": "deeptutor/tools/write_note.py",
+   "tests": [
+    "tests/tools/test_write_note.py"
+   ]
+  },
+  {
+   "module": "services.research.primitives",
+   "loc": 488,
+   "fanin": 1,
+   "path": "deeptutor/services/research/primitives.py",
+   "tests": [
+    "tests/services/research/test_primitives.py"
+   ]
+  },
+  {
+   "module": "services.memory.consolidator.modes.audit",
+   "loc": 484,
+   "fanin": 1,
+   "path": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "tests": [
+    "tests/services/memory/test_modes.py"
+   ]
+  },
+  {
+   "module": "services.memory.consolidator.line_doc",
+   "loc": 482,
+   "fanin": 3,
+   "path": "deeptutor/services/memory/consolidator/line_doc.py",
+   "tests": [
+    "tests/services/memory/test_line_doc.py"
+   ]
+  },
+  {
+   "module": "services.voice.adapters.openai_compat",
+   "loc": 477,
+   "fanin": 2,
+   "path": "deeptutor/services/voice/adapters/openai_compat.py",
+   "tests": [
+    "tests/services/test_voice.py"
+   ]
+  },
+  {
+   "module": "partners.channels.email",
+   "loc": 470,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/email.py",
+   "tests": [
+    "tests/services/partners/test_channel_setup_status.py"
+   ]
+  },
+  {
+   "module": "services.embedding.adapters.gemini",
+   "loc": 462,
+   "fanin": 1,
+   "path": "deeptutor/services/embedding/adapters/gemini.py",
+   "tests": [
+    "tests/services/embedding/test_gemini_adapter.py"
+   ]
+  },
+  {
+   "module": "api.routers.space_mcp",
+   "loc": 460,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/space_mcp.py",
+   "tests": [
+    "tests/api/test_space_mcp.py"
+   ]
+  },
+  {
+   "module": "knowledge.indexing_run",
+   "loc": 447,
+   "fanin": 7,
+   "path": "deeptutor/knowledge/indexing_run.py",
+   "tests": [
+    "tests/knowledge/test_indexing_run.py"
+   ]
+  },
+  {
+   "module": "services.workspace.kb_move",
+   "loc": 446,
+   "fanin": 1,
+   "path": "deeptutor/services/workspace/kb_move.py",
+   "tests": [
+    "tests/multi_user/test_kb_move.py"
+   ]
+  },
+  {
+   "module": "book.agents.page_planner",
+   "loc": 427,
+   "fanin": 4,
+   "path": "deeptutor/book/agents/page_planner.py",
+   "tests": [
+    "tests/book/test_block_type_controls.py"
+   ]
+  },
+  {
+   "module": "api.routers.plugins",
+   "loc": 416,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/plugins.py",
+   "tests": [
+    "tests/api/test_plugins_router.py"
+   ]
+  },
+  {
+   "module": "tools.vision.ggb_validator",
+   "loc": 411,
+   "fanin": 3,
+   "path": "deeptutor/tools/vision/ggb_validator.py",
+   "tests": [
+    "tests/visualizers/test_ggb_validator.py"
+   ]
+  },
+  {
+   "module": "services.memory.consolidator.runs",
+   "loc": 405,
+   "fanin": 2,
+   "path": "deeptutor/services/memory/consolidator/runs.py",
+   "tests": [
+    "tests/services/memory/test_runs.py"
+   ]
+  },
+  {
+   "module": "partners.channels.wecom",
+   "loc": 398,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/wecom.py",
+   "tests": [
+    "tests/services/partners/test_wecom_channel.py"
+   ]
+  },
+  {
+   "module": "services.workspace.dependencies",
+   "loc": 390,
+   "fanin": 1,
+   "path": "deeptutor/services/workspace/dependencies.py",
+   "tests": [
+    "tests/services/workspace/test_data_migration.py"
+   ]
+  },
+  {
+   "module": "tools.ask_user",
+   "loc": 383,
+   "fanin": 3,
+   "path": "deeptutor/tools/ask_user.py",
+   "tests": [
+    "tests/tools/test_ask_user.py"
+   ]
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.exercise_lookup",
+   "loc": 373,
+   "fanin": 1,
+   "path": "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py",
+   "tests": [
+    "tests/services/rag/test_exercise_lookup.py"
+   ]
+  },
+  {
+   "module": "services.search.consolidation",
+   "loc": 372,
+   "fanin": 1,
+   "path": "deeptutor/services/search/consolidation.py",
+   "tests": [
+    "tests/services/search/test_search_providers.py"
+   ]
+  },
+  {
+   "module": "services.subagent.claude_code",
+   "loc": 364,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/claude_code.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "api.utils.task_log_stream",
+   "loc": 362,
+   "fanin": 2,
+   "path": "deeptutor/api/utils/task_log_stream.py",
+   "tests": [
+    "tests/logging/test_task_log_stream.py"
+   ]
+  },
+  {
+   "module": "video_learning.invidious_account",
+   "loc": 360,
+   "fanin": 2,
+   "path": "deeptutor/video_learning/invidious_account.py",
+   "tests": [
+    "tests/video_learning/test_invidious_account.py"
+   ]
+  },
+  {
+   "module": "agents.loop.context_budget",
+   "loc": 347,
+   "fanin": 2,
+   "path": "deeptutor/agents/loop/context_budget.py",
+   "tests": [
+    "tests/agents/chat/test_context_budget.py"
+   ]
+  },
+  {
+   "module": "services.subagent.deepseek_harness",
+   "loc": 347,
+   "fanin": 2,
+   "path": "deeptutor/services/subagent/deepseek_harness.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "tools.tex_chunker",
+   "loc": 341,
+   "fanin": 0,
+   "path": "deeptutor/tools/tex_chunker.py",
+   "tests": [
+    "tests/tools/test_tex_tools.py"
+   ]
+  },
+  {
+   "module": "capabilities.obsidian.vault",
+   "loc": 324,
+   "fanin": 1,
+   "path": "deeptutor/capabilities/obsidian/vault.py",
+   "tests": [
+    "tests/capabilities/test_obsidian_capability.py"
+   ]
+  },
+  {
+   "module": "services.partners.weixin_onboarding",
+   "loc": 324,
+   "fanin": 1,
+   "path": "deeptutor/services/partners/weixin_onboarding.py",
+   "tests": [
+    "tests/services/partners/test_weixin_onboarding.py"
+   ]
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.sidecar",
+   "loc": 320,
+   "fanin": 1,
+   "path": "deeptutor/services/rag/pipelines/lightrag/sidecar.py",
+   "tests": [
+    "tests/services/rag/test_lightrag_ingress.py"
+   ]
+  },
+  {
+   "module": "tools.partner_memory",
+   "loc": 315,
+   "fanin": 0,
+   "path": "deeptutor/tools/partner_memory.py",
+   "tests": [
+    "tests/services/partners/test_partner_memory_tools.py"
+   ]
+  },
+  {
+   "module": "api.routers.skills",
+   "loc": 315,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/skills.py",
+   "tests": [
+    "tests/api/test_skills_hub_router.py"
+   ]
+  },
+  {
+   "module": "services.skill.taxonomy",
+   "loc": 314,
+   "fanin": 0,
+   "path": "deeptutor/services/skill/taxonomy.py",
+   "tests": [
+    "tests/services/skill/test_skill_publish_flow.py"
+   ]
+  },
+  {
+   "module": "services.subagent.antigravity",
+   "loc": 313,
+   "fanin": 2,
+   "path": "deeptutor/services/subagent/antigravity.py",
+   "tests": [
+    "tests/services/test_antigravity_backend.py"
+   ]
+  },
+  {
+   "module": "api.contracts.turn_protocol",
+   "loc": 309,
+   "fanin": 4,
+   "path": "deeptutor/api/contracts/turn_protocol.py",
+   "tests": [
+    "tests/runtime/test_request_contracts_subagent.py"
+   ]
+  },
+  {
+   "module": "services.chat_hints",
+   "loc": 309,
+   "fanin": 1,
+   "path": "deeptutor/services/chat_hints.py",
+   "tests": [
+    "tests/services/test_chat_hints.py"
+   ]
+  },
+  {
+   "module": "tools.media_gen_tool",
+   "loc": 308,
+   "fanin": 0,
+   "path": "deeptutor/tools/media_gen_tool.py",
+   "tests": [
+    "tests/services/test_media_gen.py"
+   ]
+  },
+  {
+   "module": "agents.loop.dsml_tool_calls",
+   "loc": 292,
+   "fanin": 1,
+   "path": "deeptutor/agents/loop/dsml_tool_calls.py",
+   "tests": [
+    "tests/agents/chat/test_dsml_tool_calls.py"
+   ]
+  },
+  {
+   "module": "tools.file_tools",
+   "loc": 291,
+   "fanin": 0,
+   "path": "deeptutor/tools/file_tools.py",
+   "tests": [
+    "tests/tools/test_file_tools.py"
+   ]
+  },
+  {
+   "module": "services.session.legacy_migration",
+   "loc": 291,
+   "fanin": 2,
+   "path": "deeptutor/services/session/legacy_migration.py",
+   "tests": [
+    "tests/services/session/test_legacy_migration.py"
+   ]
+  },
+  {
+   "module": "api.routers.subagents",
+   "loc": 288,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/subagents.py",
+   "tests": [
+    "tests/api/test_subagents_router.py"
+   ]
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.vector_store",
+   "loc": 288,
+   "fanin": 2,
+   "path": "deeptutor/services/rag/pipelines/llamaindex/vector_store.py",
+   "tests": [
+    "tests/services/rag/test_llamaindex_faiss_vector_store.py"
+   ]
+  },
+  {
+   "module": "utils.bibtex_converter",
+   "loc": 287,
+   "fanin": 2,
+   "path": "deeptutor/utils/bibtex_converter.py",
+   "tests": [
+    "tests/utils/test_bibtex_converter.py"
+   ]
+  },
+  {
+   "module": "services.parsing.engines._install",
+   "loc": 287,
+   "fanin": 3,
+   "path": "deeptutor/services/parsing/engines/_install.py",
+   "tests": [
+    "tests/services/parsing/test_engines.py"
+   ]
+  },
+  {
+   "module": "learning.pending",
+   "loc": 283,
+   "fanin": 9,
+   "path": "deeptutor/learning/pending.py",
+   "tests": [
+    "deeptutor/learning/tests/test_mastery_choices.py"
+   ]
+  },
+  {
+   "module": "app.facade",
+   "loc": 281,
+   "fanin": 1,
+   "path": "deeptutor/app/facade.py",
+   "tests": [
+    "tests/cli/test_notebook_cli.py"
+   ]
+  },
+  {
+   "module": "agents.research.utils.token_tracker",
+   "loc": 281,
+   "fanin": 1,
+   "path": "deeptutor/agents/research/utils/token_tracker.py",
+   "tests": [
+    "tests/agents/research/test_token_tracker_pricing.py"
+   ]
+  },
+  {
+   "module": "capabilities.setup.jobs",
+   "loc": 280,
+   "fanin": 1,
+   "path": "deeptutor/capabilities/setup/jobs.py",
+   "tests": [
+    "tests/capabilities/test_setup_capability.py"
+   ]
+  },
+  {
+   "module": "textbook_struct.chapter_rebuild",
+   "loc": 273,
+   "fanin": 2,
+   "path": "deeptutor/textbook_struct/chapter_rebuild.py",
+   "tests": [
+    "tests/textbook_struct/test_page_headers.py"
+   ]
+  },
+  {
+   "module": "services.subagent.kimi",
+   "loc": 268,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/kimi.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.block_policy",
+   "loc": 266,
+   "fanin": 2,
+   "path": "deeptutor/services/rag/pipelines/lightrag/block_policy.py",
+   "tests": [
+    "tests/services/rag/test_lightrag_block_policy.py"
+   ]
+  },
+  {
+   "module": "agents.math_animator.agents.code_generator_agent",
+   "loc": 261,
+   "fanin": 1,
+   "path": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "tests": [
+    "tests/agents/math_animator/test_code_generator_agent.py"
+   ]
+  },
+  {
+   "module": "services.llm.provider_core.codebuddy_http_provider",
+   "loc": 258,
+   "fanin": 3,
+   "path": "deeptutor/services/llm/provider_core/codebuddy_http_provider.py",
+   "tests": [
+    "tests/services/llm/test_codebuddy_http_provider.py"
+   ]
+  },
+  {
+   "module": "tools.tex_downloader",
+   "loc": 256,
+   "fanin": 0,
+   "path": "deeptutor/tools/tex_downloader.py",
+   "tests": [
+    "tests/tools/test_tex_tools.py"
+   ]
+  },
+  {
+   "module": "services.subagent.grok",
+   "loc": 252,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/grok.py",
+   "tests": [
+    "tests/services/test_grok_backend.py"
+   ]
+  },
+  {
+   "module": "services.rag.pipelines.graphrag.completion_adapter",
+   "loc": 251,
+   "fanin": 1,
+   "path": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py",
+   "tests": [
+    "tests/services/rag/test_graphrag_completion_adapter.py"
+   ]
+  },
+  {
+   "module": "capabilities.setup.apply",
+   "loc": 249,
+   "fanin": 1,
+   "path": "deeptutor/capabilities/setup/apply.py",
+   "tests": [
+    "tests/capabilities/test_setup_capability.py"
+   ]
+  },
+  {
+   "module": "services.rag.eval.dataset",
+   "loc": 244,
+   "fanin": 2,
+   "path": "deeptutor/services/rag/eval/dataset.py",
+   "tests": [
+    "tests/services/rag/eval/test_eval_dataset.py"
+   ]
+  },
+  {
+   "module": "agents.question.coordinator",
+   "loc": 242,
+   "fanin": 0,
+   "path": "deeptutor/agents/question/coordinator.py",
+   "tests": [
+    "tests/runtime/coordination/test_memory_coordinator.py"
+   ]
+  },
+  {
+   "module": "services.embedding.adapters.dashscope_native",
+   "loc": 242,
+   "fanin": 1,
+   "path": "deeptutor/services/embedding/adapters/dashscope_native.py",
+   "tests": [
+    "tests/services/embedding/test_dashscope_adapter.py"
+   ]
+  },
+  {
+   "module": "services.codebuddy_auth",
+   "loc": 239,
+   "fanin": 1,
+   "path": "deeptutor/services/codebuddy_auth.py",
+   "tests": [
+    "tests/services/test_codebuddy_auth.py"
+   ]
+  },
+  {
+   "module": "services.subagent.claude_models",
+   "loc": 238,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/claude_models.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "services.rag.linked_kb",
+   "loc": 237,
+   "fanin": 2,
+   "path": "deeptutor/services/rag/linked_kb.py",
+   "tests": [
+    "tests/services/rag/test_linked_kb.py"
+   ]
+  },
+  {
+   "module": "tools.github_query",
+   "loc": 229,
+   "fanin": 1,
+   "path": "deeptutor/tools/github_query.py",
+   "tests": [
+    "tests/tools/test_github_query.py"
+   ]
+  },
+  {
+   "module": "services.memory.consolidator.modes.dedup",
+   "loc": 228,
+   "fanin": 2,
+   "path": "deeptutor/services/memory/consolidator/modes/dedup.py",
+   "tests": [
+    "tests/services/memory/test_modes.py"
+   ]
+  },
+  {
+   "module": "runtime.background_leader",
+   "loc": 227,
+   "fanin": 1,
+   "path": "deeptutor/runtime/background_leader.py",
+   "tests": [
+    "tests/runtime/test_background_leader.py"
+   ]
+  },
+  {
+   "module": "services.settings.registry_edit",
+   "loc": 224,
+   "fanin": 1,
+   "path": "deeptutor/services/settings/registry_edit.py",
+   "tests": [
+    "tests/services/test_provider_registry_workflow.py"
+   ]
+  },
+  {
+   "module": "services.workspace.resources",
+   "loc": 223,
+   "fanin": 9,
+   "path": "deeptutor/services/workspace/resources.py",
+   "tests": [
+    "tests/multi_user/test_workspace_resources.py"
+   ]
+  },
+  {
+   "module": "api.routers.space_cli_apps",
+   "loc": 222,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/space_cli_apps.py",
+   "tests": [
+    "tests/api/test_space_cli_apps.py"
+   ]
+  },
+  {
+   "module": "services.rag.eval.matching",
+   "loc": 218,
+   "fanin": 3,
+   "path": "deeptutor/services/rag/eval/matching.py",
+   "tests": [
+    "tests/services/rag/eval/test_eval_matching.py"
+   ]
+  },
+  {
+   "module": "services.parsing.engines.tika.formats",
+   "loc": 217,
+   "fanin": 3,
+   "path": "deeptutor/services/parsing/engines/tika/formats.py",
+   "tests": [
+    "tests/services/parsing/test_engines.py"
+   ]
+  },
+  {
+   "module": "runtime.isolated_worker",
+   "loc": 215,
+   "fanin": 2,
+   "path": "deeptutor/runtime/isolated_worker.py",
+   "tests": [
+    "tests/runtime/test_isolated_worker.py"
+   ]
+  },
+  {
+   "module": "services.search.providers.serper",
+   "loc": 215,
+   "fanin": 0,
+   "path": "deeptutor/services/search/providers/serper.py",
+   "tests": [
+    "tests/services/search/test_search_providers.py"
+   ]
+  },
+  {
+   "module": "services.practice.importing",
+   "loc": 212,
+   "fanin": 1,
+   "path": "deeptutor/services/practice/importing.py",
+   "tests": [
+    "tests/api/test_practice.py"
+   ]
+  },
+  {
+   "module": "tools.list_notebook",
+   "loc": 211,
+   "fanin": 1,
+   "path": "deeptutor/tools/list_notebook.py",
+   "tests": [
+    "tests/tools/test_list_notebook.py"
+   ]
+  },
+  {
+   "module": "partners.channels.whatsapp",
+   "loc": 210,
+   "fanin": 0,
+   "path": "deeptutor/partners/channels/whatsapp.py",
+   "tests": [
+    "tests/services/partners/test_whatsapp_channel.py"
+   ]
+  },
+  {
+   "module": "plugins.distribution",
+   "loc": 209,
+   "fanin": 1,
+   "path": "deeptutor/plugins/distribution.py",
+   "tests": [
+    "tests/plugins/test_distribution.py"
+   ]
+  },
+  {
+   "module": "services.voice.adapters.volcengine",
+   "loc": 207,
+   "fanin": 1,
+   "path": "deeptutor/services/voice/adapters/volcengine.py",
+   "tests": [
+    "tests/services/test_volcengine_voice.py"
+   ]
+  },
+  {
+   "module": "agents.vision_solver.vision_solver_agent",
+   "loc": 205,
+   "fanin": 2,
+   "path": "deeptutor/agents/vision_solver/vision_solver_agent.py",
+   "tests": [
+    "tests/agents/vision_solver/test_vision_solver_agent.py"
+   ]
+  },
+  {
+   "module": "api.routers.file_preview",
+   "loc": 205,
+   "fanin": 1,
+   "path": "deeptutor/api/routers/file_preview.py",
+   "tests": [
+    "tests/api/test_file_preview.py"
+   ]
+  },
+  {
+   "module": "events.event_bus",
+   "loc": 205,
+   "fanin": 4,
+   "path": "deeptutor/events/event_bus.py",
+   "tests": [
+    "tests/runtime/test_orchestrator.py"
+   ]
+  },
+  {
+   "module": "services.subagent.opencode_server",
+   "loc": 204,
+   "fanin": 1,
+   "path": "deeptutor/services/subagent/opencode_server.py",
+   "tests": [
+    "tests/services/test_subagent_backends.py"
+   ]
+  },
+  {
+   "module": "partners.channels.weixin_qr",
+   "loc": 202,
+   "fanin": 2,
+   "path": "deeptutor/partners/channels/weixin_qr.py",
+   "tests": [
+    "tests/services/partners/test_weixin_onboarding.py"
+   ]
+  },
+  {
+   "module": "utils.json_parser",
+   "loc": 201,
+   "fanin": 15,
+   "path": "deeptutor/utils/json_parser.py",
+   "tests": [
+    "tests/utils/test_json_parser.py"
+   ]
+  },
+  {
+   "module": "multi_user.book_access",
+   "loc": 200,
+   "fanin": 2,
+   "path": "deeptutor/multi_user/book_access.py",
+   "tests": [
+    "tests/multi_user/test_book_permission.py"
+   ]
+  },
+  {
+   "module": "utils.archive_extractor",
+   "loc": 200,
+   "fanin": 1,
+   "path": "deeptutor/utils/archive_extractor.py",
+   "tests": [
+    "tests/utils/test_archive_extractor.py"
+   ]
+  },
+  {
+   "module": "logging.stats.llm_stats",
+   "loc": 200,
+   "fanin": 2,
+   "path": "deeptutor/logging/stats/llm_stats.py",
+   "tests": [
+    "tests/logging/test_llm_stats.py"
+   ]
+  },
+  {
+   "module": "services.office_preview",
+   "loc": 198,
+   "fanin": 1,
+   "path": "deeptutor/services/office_preview.py",
+   "tests": [
+    "tests/api/test_file_preview.py"
+   ]
+  }
+ ],
+ "intree_test_modules": [
+  "learning.tests.test_mastery_choices",
+  "learning.tests.test_mastery_build_shapes",
+  "learning.tests.test_grading",
+  "learning.tests.test_prompt_language_fallback",
+  "learning.tests.test_topic_materials",
+  "learning.tests.test_mastery_tools",
+  "learning.tests.test_mastery_navigation",
+  "learning.tests.test_mastery_mode",
+  "learning.tests.test_topic_coverage",
+  "learning.tests.test_guided_mastery_updates",
+  "learning.tests.test_topic_generation",
+  "learning.tests.test_scheduler",
+  "learning.tests.test_visual_learning_workflow",
+  "learning.tests.test_service_replace_merge",
+  "learning.tests.test_storage",
+  "learning.tests.test_mastery_state_integrity",
+  "learning.tests.test_models",
+  "learning.tests.test_v2_migration",
+  "learning.tests.test_topic_naming",
+  "learning.tests.test_objective_relations",
+  "learning.tests.test_assessment",
+  "learning.tests.test_event_hub",
+  "learning.tests.test_policy",
+  "learning.tests.test_api_endpoints",
+  "services.config.test_runner"
+ ]
+}
