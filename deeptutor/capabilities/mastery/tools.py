@@ -1222,11 +1222,12 @@ class MasteryGradeTool(BaseTool):
         path_id = _resolve_path_id(kwargs)
         if not path_id:
             return _no_path_result()
-        from deeptutor.learning.scheduler import SpacedRepetitionScheduler
+        from deeptutor.learning.review_strategy import scheduler_for_path
 
         answer = str(kwargs.get("answer") or "")
         service = _new_service()
-        scheduler = SpacedRepetitionScheduler()
+        # Scheduling follows the path's bound review strategy (#1908).
+        scheduler = scheduler_for_path(service.store, path_id)
         submitted_question_id = str(kwargs.get("question_id") or "").strip()
         interaction = (
             service.store.get_interaction(path_id, submitted_question_id)
@@ -1459,7 +1460,6 @@ class MasteryAssessTool(BaseTool):
         path_id = _resolve_path_id(kwargs)
         if not path_id:
             return _no_path_result()
-        from deeptutor.learning.scheduler import SpacedRepetitionScheduler
 
         kp_id = str(kwargs.get("knowledge_point_id") or "").strip()
         if not kp_id:
@@ -1488,6 +1488,7 @@ class MasteryAssessTool(BaseTool):
                 ),
                 success=False,
             )
+        from deeptutor.learning.review_strategy import scheduler_for_path
         from deeptutor.learning.service import MasteryInteractionError
 
         try:
@@ -1496,7 +1497,7 @@ class MasteryAssessTool(BaseTool):
                 kp_id,
                 passed=passed,
                 evidence=feedback,
-                scheduler=SpacedRepetitionScheduler(),
+                scheduler=scheduler_for_path(service.store, path_id),
                 session_id=_resolve_session_id(kwargs),
                 turn_id=_resolve_turn_id(kwargs),
             )
@@ -1621,7 +1622,7 @@ class MasteryRepairQuestionTool(BaseTool):
         path_id = _resolve_path_id(kwargs)
         if not path_id:
             return _no_path_result()
-        from deeptutor.learning.scheduler import SpacedRepetitionScheduler
+        from deeptutor.learning.review_strategy import scheduler_for_path
         from deeptutor.learning.service import MasteryInteractionError
 
         service = _new_service()
@@ -1634,7 +1635,7 @@ class MasteryRepairQuestionTool(BaseTool):
                 action=str(kwargs.get("action") or ""),
                 expected_answer=str(kwargs.get("expected_answer") or ""),
                 reason=str(kwargs.get("reason") or ""),
-                scheduler=SpacedRepetitionScheduler(),
+                scheduler=scheduler_for_path(service.store, path_id),
                 session_id=_resolve_session_id(kwargs),
                 turn_id=_resolve_turn_id(kwargs),
             )
