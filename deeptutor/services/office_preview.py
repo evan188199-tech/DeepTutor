@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import logging
 import os
 from pathlib import Path
 import shutil
@@ -15,6 +16,8 @@ import signal
 import subprocess
 import tempfile
 import time
+
+logger = logging.getLogger(__name__)
 
 MAX_OFFICE_BYTES = 25 * 1024 * 1024
 MAX_PREVIEW_PDF_BYTES = 60 * 1024 * 1024
@@ -87,7 +90,7 @@ def _render_sync(data: bytes, suffix: str, cache_dir: Path, key: str, soffice: s
     except OSError:
         cache_available = False
     if cache_available:
-        _prune_cache(cache_dir)
+        _prune_cache(cache_dir, key)
     cached = cache_dir / f"{key}.pdf"
     if cache_available and not cached.is_symlink() and cached.is_file():
         try:
@@ -95,8 +98,8 @@ def _render_sync(data: bytes, suffix: str, cache_dir: Path, key: str, soffice: s
                 result = cached.read_bytes()
                 if result.startswith(b"%PDF-"):
                     return result
-        except OSError:
-            pass
+        except OSError as exc:
+            logger.warning("Office preview cache read failed for document %s: %s", key, exc)
 
     with tempfile.TemporaryDirectory(prefix="deeptutor-office-preview-") as workdir:
         work = Path(workdir)
@@ -136,11 +139,17 @@ def _render_sync(data: bytes, suffix: str, cache_dir: Path, key: str, soffice: s
                     os.killpg(process.pid, signal.SIGKILL)
                 else:
                     process.kill()
-            except OSError:
+            except OSError as stop_exc:
                 try:
                     process.kill()
-                except OSError:
-                    pass
+                except OSError as kill_exc:
+                    logger.warning(
+                        "Office preview conversion cleanup failed to stop LibreOffice "
+                        "for document %s: killpg: %s; kill: %s",
+                        key,
+                        stop_exc,
+                        kill_exc,
+                    )
             process.communicate()
             raise OfficePreviewTimeout("Office preview conversion timed out") from exc
 
@@ -163,15 +172,15 @@ def _render_sync(data: bytes, suffix: str, cache_dir: Path, key: str, soffice: s
                 temporary = Path(tmp.name)
                 tmp.write(pdf)
             os.replace(temporary, cached)
-        except OSError:
-            pass
+        except OSError as exc:
+            logger.warning("Office preview cache write failed for document %s: %s", key, exc)
         finally:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)
     return pdf
 
 
-def _prune_cache(cache_dir: Path) -> None:
+def _prune_cache(cache_dir: Path, key: str) -> None:
     """Keep old previews from accumulating indefinitely in a user scope."""
     try:
         files = [entry for entry in cache_dir.iterdir() if entry.suffix == ".pdf"]
@@ -193,6 +202,6 @@ def _prune_cache(cache_dir: Path) -> None:
                 entry.unlink(missing_ok=True)
             else:
                 retained_bytes += stat.st_size
-    except OSError:
+    except OSError as exc:
         # Cache hygiene is best effort; a bad entry should not block preview.
-        pass
+        logger.warning("Office preview cache prune failed for document %s: %s", key, exc)

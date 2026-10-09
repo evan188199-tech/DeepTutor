@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from pathlib import Path
+import subprocess
 from types import SimpleNamespace
 
 from fastapi import FastAPI
@@ -279,3 +281,122 @@ def test_converter_reports_missing_libreoffice_and_rejects_oversized_input(
                 b"x" * (office_preview.MAX_OFFICE_BYTES + 1), "report.docx", tmp_path
             )
         )
+
+
+_PREVIEW_LOGGER = "deeptutor.services.office_preview"
+
+
+def _fake_converter_popen(args: list[str], **_kwargs) -> SimpleNamespace:
+    output = Path(args[args.index("--outdir") + 1])
+    (output / "source.pdf").write_bytes(b"%PDF-1.7\npreview")
+    return SimpleNamespace(returncode=0, communicate=lambda **_kwargs: (b"", b""))
+
+
+def test_cache_read_failure_warns_and_re_renders(
+    monkeypatch, tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(office_preview.shutil, "which", lambda _name: "/fake/soffice")
+    monkeypatch.setattr(office_preview.subprocess, "Popen", _fake_converter_popen)
+    cache_dir = tmp_path / "cache"
+    asyncio.run(office_preview.render_office_pdf(b"office", "report.docx", cache_dir))
+    assert list(cache_dir.glob("*.pdf"))
+
+    original_read_bytes = Path.read_bytes
+
+    def failing_read_bytes(self: Path) -> bytes:
+        if self.parent == cache_dir:
+            raise OSError("simulated cache read failure")
+        return original_read_bytes(self)
+
+    monkeypatch.setattr(Path, "read_bytes", failing_read_bytes)
+    with caplog.at_level(logging.WARNING, logger=_PREVIEW_LOGGER):
+        result = asyncio.run(office_preview.render_office_pdf(b"office", "report.docx", cache_dir))
+    assert result == b"%PDF-1.7\npreview"
+    assert any(
+        "cache read failed" in record.getMessage()
+        and "simulated cache read failure" in record.getMessage()
+        for record in caplog.records
+    )
+
+
+def test_cache_write_failure_warns_and_still_returns_preview(
+    monkeypatch, tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(office_preview.shutil, "which", lambda _name: "/fake/soffice")
+    monkeypatch.setattr(office_preview.subprocess, "Popen", _fake_converter_popen)
+
+    def failing_replace(_src, _dst) -> None:
+        raise OSError("simulated cache write failure")
+
+    monkeypatch.setattr(office_preview.os, "replace", failing_replace)
+    cache_dir = tmp_path / "cache"
+    with caplog.at_level(logging.WARNING, logger=_PREVIEW_LOGGER):
+        result = asyncio.run(office_preview.render_office_pdf(b"office", "report.docx", cache_dir))
+    assert result == b"%PDF-1.7\npreview"
+    assert any(
+        "cache write failed" in record.getMessage()
+        and "simulated cache write failure" in record.getMessage()
+        for record in caplog.records
+    )
+    assert not list(cache_dir.glob(".pending-*"))
+
+
+def test_prune_failure_warns_and_render_proceeds(
+    monkeypatch, tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(office_preview.shutil, "which", lambda _name: "/fake/soffice")
+    monkeypatch.setattr(office_preview.subprocess, "Popen", _fake_converter_popen)
+    cache_dir = tmp_path / "cache"
+
+    original_iterdir = Path.iterdir
+
+    def failing_iterdir(self: Path):
+        if self == cache_dir:
+            raise OSError("simulated prune failure")
+        return original_iterdir(self)
+
+    monkeypatch.setattr(Path, "iterdir", failing_iterdir)
+    with caplog.at_level(logging.WARNING, logger=_PREVIEW_LOGGER):
+        result = asyncio.run(office_preview.render_office_pdf(b"office", "report.docx", cache_dir))
+    assert result == b"%PDF-1.7\npreview"
+    assert any(
+        "cache prune failed" in record.getMessage()
+        and "simulated prune failure" in record.getMessage()
+        for record in caplog.records
+    )
+
+
+def test_timeout_kill_failure_warns_and_keeps_timeout_semantics(
+    monkeypatch, tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    monkeypatch.setattr(office_preview.shutil, "which", lambda _name: "/fake/soffice")
+    communicate_attempts: list[object] = []
+
+    def communicate(timeout: object = None):
+        communicate_attempts.append(timeout)
+        if len(communicate_attempts) == 1:
+            raise subprocess.TimeoutExpired(cmd="soffice", timeout=timeout)
+        return (b"", b"")
+
+    def failing_kill() -> None:
+        raise OSError("simulated kill failure")
+
+    process = SimpleNamespace(pid=4321, returncode=None, communicate=communicate, kill=failing_kill)
+    monkeypatch.setattr(office_preview.subprocess, "Popen", lambda _args, **_kwargs: process)
+
+    def failing_killpg(_pid, _sig) -> None:
+        raise OSError("simulated killpg failure")
+
+    monkeypatch.setattr(office_preview.os, "killpg", failing_killpg)
+    with caplog.at_level(logging.WARNING, logger=_PREVIEW_LOGGER):
+        with pytest.raises(office_preview.OfficePreviewTimeout):
+            asyncio.run(
+                office_preview.render_office_pdf(b"office", "report.docx", tmp_path / "cache")
+            )
+    assert len(communicate_attempts) == 2
+    assert any(
+        "cleanup failed" in record.getMessage()
+        and "simulated killpg failure" in record.getMessage()
+        and "simulated kill failure" in record.getMessage()
+        for record in caplog.records
+    )
