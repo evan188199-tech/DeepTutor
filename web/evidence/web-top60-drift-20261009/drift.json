@@ -1,0 +1,590 @@
+{
+ "card": "AGEN-1317",
+ "date": "2026-10-09",
+ "source": "myfork/scan/web-zero-triage-20261008:web/evidence/web-zero-triage-20261008/triage.md (Top60 + 顺延3)",
+ "baseline_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "origin_main_head": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "origin_main_head_equals_baseline": true,
+ "remote_check": "git ls-remote origin refs/heads/main -> 6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "worktree": "/Users/Shared/dt-agen1317-drift-wt (branch verify/web-top60-drift-20261009)",
+ "counts": {
+  "total": 63,
+  "exists": 63,
+  "missing": 0,
+  "renamed": 0,
+  "heavy_changed": 0,
+  "loc_match_yes": 60,
+  "loc_match_no": 0,
+  "done_in_triage": 13,
+  "new_seeds": 50
+ },
+ "items": [
+  {
+   "rank": 1,
+   "path": "web/lib/memory-graph.ts",
+   "triage_loc": 762,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 762,
+   "loc_match": true
+  },
+  {
+   "rank": 2,
+   "path": "web/components/partners/group/useGroupSession.ts",
+   "triage_loc": 574,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 574,
+   "loc_match": true
+  },
+  {
+   "rank": 3,
+   "path": "web/components/memory/useMemoryRun.ts",
+   "triage_loc": 471,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 471,
+   "loc_match": true
+  },
+  {
+   "rank": 4,
+   "path": "web/lib/code-languages.ts",
+   "triage_loc": 180,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 180,
+   "loc_match": true
+  },
+  {
+   "rank": 5,
+   "path": "web/lib/latex-commands.ts",
+   "triage_loc": 172,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 172,
+   "loc_match": true
+  },
+  {
+   "rank": 6,
+   "path": "web/hooks/useDragSort.ts",
+   "triage_loc": 404,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 404,
+   "loc_match": true
+  },
+  {
+   "rank": 7,
+   "path": "web/lib/personas-api.ts",
+   "triage_loc": 128,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 128,
+   "loc_match": true
+  },
+  {
+   "rank": 8,
+   "path": "web/lib/research-types.ts",
+   "triage_loc": 125,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 125,
+   "loc_match": true
+  },
+  {
+   "rank": 9,
+   "path": "web/hooks/useMcpServers.ts",
+   "triage_loc": 248,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 248,
+   "loc_match": true
+  },
+  {
+   "rank": 10,
+   "path": "web/lib/visualizers-api.ts",
+   "triage_loc": 78,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 78,
+   "loc_match": true
+  },
+  {
+   "rank": 11,
+   "path": "web/lib/space-items.ts",
+   "triage_loc": 75,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 75,
+   "loc_match": true
+  },
+  {
+   "rank": 12,
+   "path": "web/components/notebook/useNotebookSelection.ts",
+   "triage_loc": 170,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 170,
+   "loc_match": true
+  },
+  {
+   "rank": 13,
+   "path": "web/hooks/useKnowledgeHistory.ts",
+   "triage_loc": 149,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 149,
+   "loc_match": true
+  },
+  {
+   "rank": 14,
+   "path": "web/components/reading/workspace/useLearningMode.ts",
+   "triage_loc": 143,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 143,
+   "loc_match": true
+  },
+  {
+   "rank": 15,
+   "path": "web/lib/book-references.ts",
+   "triage_loc": 62,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 62,
+   "loc_match": true
+  },
+  {
+   "rank": 16,
+   "path": "web/lib/relative-time.ts",
+   "triage_loc": 59,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 59,
+   "loc_match": true
+  },
+  {
+   "rank": 17,
+   "path": "web/lib/tool-event.ts",
+   "triage_loc": 56,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 56,
+   "loc_match": true
+  },
+  {
+   "rank": 18,
+   "path": "web/hooks/useVoiceRecorder.ts",
+   "triage_loc": 119,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 119,
+   "loc_match": true
+  },
+  {
+   "rank": 19,
+   "path": "web/hooks/useSidebarResize.ts",
+   "triage_loc": 116,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 116,
+   "loc_match": true
+  },
+  {
+   "rank": 20,
+   "path": "web/lib/session-handoff-api.ts",
+   "triage_loc": 51,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 51,
+   "loc_match": true
+  },
+  {
+   "rank": 21,
+   "path": "web/lib/quiz-judge.ts",
+   "triage_loc": 157,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 157,
+   "loc_match": true
+  },
+  {
+   "rank": 22,
+   "path": "web/lib/picker-origin.ts",
+   "triage_loc": 48,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 48,
+   "loc_match": true
+  },
+  {
+   "rank": 23,
+   "path": "web/hooks/useSetupSync.ts",
+   "triage_loc": 93,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 93,
+   "loc_match": true
+  },
+  {
+   "rank": 24,
+   "path": "web/lib/session-unread.ts",
+   "triage_loc": 92,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 92,
+   "loc_match": true
+  },
+  {
+   "rank": 25,
+   "path": "web/lib/notebook-selection-types.ts",
+   "triage_loc": 40,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 40,
+   "loc_match": true
+  },
+  {
+   "rank": 26,
+   "path": "web/lib/random-uuid.ts",
+   "triage_loc": 40,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 40,
+   "loc_match": true
+  },
+  {
+   "rank": 27,
+   "path": "web/hooks/useModalDialog.ts",
+   "triage_loc": 86,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 86,
+   "loc_match": true
+  },
+  {
+   "rank": 28,
+   "path": "web/components/chat/preview/previewers/useTextSource.ts",
+   "triage_loc": 80,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 80,
+   "loc_match": true
+  },
+  {
+   "rank": 29,
+   "path": "web/components/reading/reading-actions-context.ts",
+   "triage_loc": 80,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 80,
+   "loc_match": true
+  },
+  {
+   "rank": 30,
+   "path": "web/lib/tools-settings.ts",
+   "triage_loc": 35,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 35,
+   "loc_match": true
+  },
+  {
+   "rank": 31,
+   "path": "web/hooks/use-linger-expand.ts",
+   "triage_loc": 77,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 77,
+   "loc_match": true
+  },
+  {
+   "rank": 32,
+   "path": "web/hooks/useVoiceMathSpeak.ts",
+   "triage_loc": 74,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 74,
+   "loc_match": true
+  },
+  {
+   "rank": 33,
+   "path": "web/lib/book-errors.ts",
+   "triage_loc": 32,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 32,
+   "loc_match": true
+  },
+  {
+   "rank": 34,
+   "path": "web/lib/datetime.ts",
+   "triage_loc": 32,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 32,
+   "loc_match": true
+  },
+  {
+   "rank": 35,
+   "path": "web/lib/kb-name.ts",
+   "triage_loc": 32,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 32,
+   "loc_match": true
+  },
+  {
+   "rank": 36,
+   "path": "web/components/reading/workspace-menu-context.ts",
+   "triage_loc": 66,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 66,
+   "loc_match": true
+  },
+  {
+   "rank": 37,
+   "path": "web/components/memory/MemorySection.tsx",
+   "triage_loc": 1547,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 1547,
+   "loc_match": true
+  },
+  {
+   "rank": 38,
+   "path": "web/components/chat/preview/previewers/useBinarySource.ts",
+   "triage_loc": 64,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 64,
+   "loc_match": true
+  },
+  {
+   "rank": 39,
+   "path": "web/components/common/markdown-renderer-core.ts",
+   "triage_loc": 60,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 60,
+   "loc_match": true
+  },
+  {
+   "rank": 40,
+   "path": "web/hooks/useCollapsiblePanel.ts",
+   "triage_loc": 60,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 60,
+   "loc_match": true
+  },
+  {
+   "rank": 41,
+   "path": "web/lib/youtube-iframe-api.ts",
+   "triage_loc": 80,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 80,
+   "loc_match": true
+  },
+  {
+   "rank": 42,
+   "path": "web/lib/settings-presets.ts",
+   "triage_loc": 25,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 25,
+   "loc_match": true
+  },
+  {
+   "rank": 43,
+   "path": "web/hooks/use-card-submission.ts",
+   "triage_loc": 54,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 54,
+   "loc_match": true
+  },
+  {
+   "rank": 44,
+   "path": "web/lib/workspace-drafts.ts",
+   "triage_loc": 72,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 72,
+   "loc_match": true
+  },
+  {
+   "rank": 45,
+   "path": "web/hooks/useResearchOutlineContinuation.ts",
+   "triage_loc": 52,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 52,
+   "loc_match": true
+  },
+  {
+   "rank": 46,
+   "path": "web/components/space/SkillsSection.tsx",
+   "triage_loc": 1038,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 1038,
+   "loc_match": true
+  },
+  {
+   "rank": 47,
+   "path": "web/components/cli-apps/CliAppsSection.tsx",
+   "triage_loc": 1025,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 1025,
+   "loc_match": true
+  },
+  {
+   "rank": 48,
+   "path": "web/components/memory/MemoryGraph.tsx",
+   "triage_loc": 992,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 992,
+   "loc_match": true
+  },
+  {
+   "rank": 49,
+   "path": "web/components/memory/MemoryRunPanel.tsx",
+   "triage_loc": 952,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 952,
+   "loc_match": true
+  },
+  {
+   "rank": 50,
+   "path": "web/lib/reading-media-time.ts",
+   "triage_loc": 18,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 18,
+   "loc_match": true
+  },
+  {
+   "rank": 51,
+   "path": "web/components/quiz/QuizConfigPanel.tsx",
+   "triage_loc": 767,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 767,
+   "loc_match": true
+  },
+  {
+   "rank": 52,
+   "path": "web/components/settings/ConnectionsEditor.tsx",
+   "triage_loc": 762,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 762,
+   "loc_match": true
+  },
+  {
+   "rank": 53,
+   "path": "web/components/mcp/McpCatalogBrowser.tsx",
+   "triage_loc": 760,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 760,
+   "loc_match": true
+  },
+  {
+   "rank": 54,
+   "path": "web/components/reading/library/MaterialLibrary.tsx",
+   "triage_loc": 744,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 744,
+   "loc_match": true
+  },
+  {
+   "rank": 55,
+   "path": "web/components/sidebar/SidebarNav.tsx",
+   "triage_loc": 720,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 720,
+   "loc_match": true
+  },
+  {
+   "rank": 56,
+   "path": "web/lib/floating-menu.ts",
+   "triage_loc": 51,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 51,
+   "loc_match": true
+  },
+  {
+   "rank": 57,
+   "path": "web/components/space/MyAgentsSection.tsx",
+   "triage_loc": 696,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 696,
+   "loc_match": true
+  },
+  {
+   "rank": 58,
+   "path": "web/components/chat/MyAgentsPicker.tsx",
+   "triage_loc": 685,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 685,
+   "loc_match": true
+  },
+  {
+   "rank": 59,
+   "path": "web/lib/use-auto-sized-textarea.ts",
+   "triage_loc": 37,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 37,
+   "loc_match": true
+  },
+  {
+   "rank": 60,
+   "path": "web/components/visualize/VisualizationViewer.tsx",
+   "triage_loc": 677,
+   "done_in_triage": true,
+   "status": "exists",
+   "main_loc": 677,
+   "loc_match": true
+  },
+  {
+   "rank": 61,
+   "path": "web/components/reading/library/ReadingLibrary.tsx",
+   "triage_loc": null,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 623,
+   "loc_match": null
+  },
+  {
+   "rank": 62,
+   "path": "web/components/knowledge/KbDocumentList.tsx",
+   "triage_loc": null,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 597,
+   "loc_match": null
+  },
+  {
+   "rank": 63,
+   "path": "web/components/space/EduHubImportModal.tsx",
+   "triage_loc": null,
+   "done_in_triage": false,
+   "status": "exists",
+   "main_loc": 587,
+   "loc_match": null
+  }
+ ]
+}
