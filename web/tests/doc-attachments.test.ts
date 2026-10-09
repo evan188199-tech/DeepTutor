@@ -2,11 +2,18 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  ATTACHMENT_ACCEPT,
   classifyFile,
+  DEFAULT_MAX_ATTACHMENT_BYTES,
+  DEFAULT_MAX_TOTAL_ATTACHMENT_BYTES,
   docIconFor,
+  extOf,
   formatBytes,
   isSvgFilename,
-  DEFAULT_MAX_ATTACHMENT_BYTES,
+  OFFICE_EXTS,
+  SUPPORTED_DOC_EXTS,
+  SUPPORTED_DOC_MIMES,
+  TEXT_LIKE_EXTS,
 } from "../lib/doc-attachments";
 
 function makeFile(name: string, type = "", size = 0): File {
@@ -126,4 +133,89 @@ test("docIconFor: fallback for unknown extension", () => {
 
 test("DEFAULT_MAX_ATTACHMENT_BYTES is 20 MB", () => {
   assert.equal(DEFAULT_MAX_ATTACHMENT_BYTES, 20 * 1024 * 1024);
+});
+
+test("DEFAULT_MAX_TOTAL_ATTACHMENT_BYTES is 25 MB", () => {
+  assert.equal(DEFAULT_MAX_TOTAL_ATTACHMENT_BYTES, 25 * 1024 * 1024);
+});
+
+// extOf ---------------------------------------------------------------------
+
+test("extOf: extracts the lowercase extension from the last dot", () => {
+  assert.equal(extOf("report.pdf"), ".pdf");
+  assert.equal(extOf("archive.tar.gz"), ".gz");
+  assert.equal(extOf("README.MD"), ".md");
+});
+
+test("extOf: returns empty string when there is no extension", () => {
+  assert.equal(extOf("noext"), "");
+  assert.equal(extOf(""), "");
+});
+
+// Extension / MIME sets ------------------------------------------------------
+
+test("SUPPORTED_DOC_EXTS covers office and text-like sets without dupes", () => {
+  assert.equal(SUPPORTED_DOC_EXTS.length, OFFICE_EXTS.length + TEXT_LIKE_EXTS.length);
+  const seen = new Set<string>();
+  for (const ext of SUPPORTED_DOC_EXTS) {
+    assert.ok(ext.startsWith("."), `extension must start with '.': ${ext}`);
+    assert.equal(ext, ext.toLowerCase(), `extension must be lowercase: ${ext}`);
+    assert.ok(!seen.has(ext), `duplicate extension: ${ext}`);
+    seen.add(ext);
+  }
+});
+
+test("ATTACHMENT_ACCEPT merges image, extensions and MIMEs", () => {
+  const parts = ATTACHMENT_ACCEPT.split(",");
+  assert.equal(parts[0], "image/*");
+  for (const ext of SUPPORTED_DOC_EXTS) {
+    assert.ok(parts.includes(ext));
+  }
+  for (const mime of SUPPORTED_DOC_MIMES) {
+    assert.ok(parts.includes(mime));
+  }
+});
+
+// classifyFile boundary behaviour ---------------------------------------------
+
+test("classifyFile: unsupported MIME falls back to a supported extension", () => {
+  // Browsers commonly report octet-stream for code/config files.
+  assert.equal(classifyFile(makeFile("data.json", "application/octet-stream")), "doc");
+});
+
+test("classifyFile: SVG via MIME alone even without the extension", () => {
+  assert.equal(classifyFile(makeFile("drawing", "image/svg+xml")), "doc");
+});
+
+test("classifyFile: unknown MIME with unsupported extension is rejected", () => {
+  assert.equal(classifyFile(makeFile("bundle.tar.gz", "application/gzip")), null);
+  assert.equal(classifyFile(makeFile("payload.bin", "application/octet-stream")), null);
+});
+
+// formatBytes boundary values --------------------------------------------------
+
+test("formatBytes: boundaries just below and at the unit thresholds", () => {
+  assert.equal(formatBytes(1023), "1023 B");
+  assert.equal(formatBytes(1024 * 1024 - 1), "1024.0 KB");
+  assert.equal(formatBytes(1.5 * 1024 * 1024), "1.5 MB");
+});
+
+test("formatBytes: non-finite values return empty string", () => {
+  assert.equal(formatBytes(Number.POSITIVE_INFINITY), "");
+});
+
+// docIconFor categories ----------------------------------------------------------
+
+test("docIconFor: shell, config, code and plain categories stay distinct", () => {
+  assert.equal(docIconFor("deploy.sh").label, "SH");
+  assert.ok(docIconFor("deploy.sh").tint.includes("slate"));
+  assert.ok(docIconFor("pyproject.toml").tint.includes("slate"));
+  assert.equal(docIconFor("settings.json5").label, "JSON5");
+  assert.ok(docIconFor("component.tsx").tint.includes("violet"));
+  assert.ok(docIconFor("run.log").tint.includes("muted-foreground"));
+});
+
+test("docIconFor: dockerfile and protobuf map to config / markup groups", () => {
+  assert.equal(docIconFor("app.dockerfile").label, "DOCKERFILE");
+  assert.ok(docIconFor("schema.proto").tint.includes("sky"));
 });
