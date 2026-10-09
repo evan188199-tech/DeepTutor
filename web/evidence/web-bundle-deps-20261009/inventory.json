@@ -1,0 +1,952 @@
+{
+ "tool": "read-only static scan (quoted import/require specifier grep + manual verification)",
+ "scan_date": "2026-10-09",
+ "repo_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "repo_ref": "origin/main (v1.6.14)",
+ "manifest": "web/package.json",
+ "totals": {
+  "dependencies": 27,
+  "devDependencies": 21,
+  "files_scanned": 1323,
+  "missing_from_lockfile": 0,
+  "findings": {
+   "high": 2,
+   "medium": 5,
+   "low": 4
+  },
+  "phantom_undeclared": 3
+ },
+ "exclusions": [
+  "node_modules",
+  ".next",
+  "package-lock.json (excluded from usage buckets; used for versions)"
+ ],
+ "method_notes": [
+  "usage = quoted import/require/dynamic specifier of package root or subpath, any file type",
+  "unquoted identifier pass done for config keys (postcss/tailwind/webpack alias)",
+  "computed dynamic imports checked: none found, so static scan is complete",
+  "lockfile used only for resolved versions, never counted as usage"
+ ],
+ "items": [
+  {
+   "name": "@recogito/text-annotator",
+   "kind": "dependencies",
+   "declared_range": "4.2.5",
+   "locked_version": "4.2.5",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/reading/TextUnitView.tsx:276",
+    "manifest": "package.json:36",
+    "tests": "tests/reading-text-navigation.spec.tsx:21"
+   },
+   "classification": "used-lazy",
+   "risk": "info",
+   "finding_id": null,
+   "note": "dynamically imported at components/reading/TextUnitView.tsx:276 (bundle-safe)"
+  },
+  {
+   "name": "chart.js",
+   "kind": "dependencies",
+   "declared_range": "^4.5.1",
+   "locked_version": "4.5.1",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/visualize/VisualizationViewer.tsx:62",
+    "manifest": "package.json:37",
+    "tests": "tests/visualize/VisualizationViewer.spec.tsx:36"
+   },
+   "classification": "used-lazy",
+   "risk": "info",
+   "finding_id": null,
+   "note": "dynamically imported at components/visualize/VisualizationViewer.tsx:62 (bundle-safe)"
+  },
+  {
+   "name": "clsx",
+   "kind": "dependencies",
+   "declared_range": "^2.1.1",
+   "locked_version": "2.1.1",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "app-src": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:38",
+    "app-src": "shared/ui/styles.ts:1"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "cytoscape",
+   "kind": "dependencies",
+   "declared_range": "^3.33.1",
+   "locked_version": "3.33.1",
+   "code_reference_buckets": {
+    "config": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "config": "next.config.js:180",
+    "manifest": "package.json:39"
+   },
+   "classification": "transitive-only",
+   "risk": "medium",
+   "finding_id": "F4",
+   "note": "zero source imports; consumed transitively by mermaid; declared only to pin webpack/turbopack alias path (next.config.js:179-196); document or drop"
+  },
+  {
+   "name": "docx-preview",
+   "kind": "dependencies",
+   "declared_range": "^0.3.7",
+   "locked_version": "0.3.7",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/chat/preview/previewers/DocxPreview.tsx:77",
+    "manifest": "package.json:40"
+   },
+   "classification": "used-lazy",
+   "risk": "low",
+   "finding_id": "F10",
+   "note": "^0.3.7 caret on 0.x pins to 0.3.x while 0.4.1 exists upstream"
+  },
+  {
+   "name": "epubjs",
+   "kind": "dependencies",
+   "declared_range": "^0.3.93",
+   "locked_version": "0.3.93",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 2,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/reading/EpubDocumentView.tsx:417",
+    "manifest": "package.json:41",
+    "tests": "tests/epub-display-preferences.spec.tsx:42"
+   },
+   "classification": "used-lazy",
+   "risk": "medium",
+   "finding_id": "F9",
+   "note": "upstream last release 2023-09 (0.3.93), 3y stale; core EPUB view; repo carries @xmldom/xmldom override as symptom"
+  },
+  {
+   "name": "exceljs",
+   "kind": "dependencies",
+   "declared_range": "^4.4.0",
+   "locked_version": "4.4.0",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/chat/preview/previewers/XlsxPreview.tsx:44",
+    "manifest": "package.json:42"
+   },
+   "classification": "used-lazy",
+   "risk": "info",
+   "finding_id": null,
+   "note": "dynamically imported at components/chat/preview/previewers/XlsxPreview.tsx:44 (bundle-safe)"
+  },
+  {
+   "name": "framer-motion",
+   "kind": "dependencies",
+   "declared_range": "^12.24.0",
+   "locked_version": "12.24.11",
+   "code_reference_buckets": {
+    "app-src": 8,
+    "config": 1,
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/chat/home/ComposerResources.tsx:8",
+    "config": "eslint.config.mjs:31",
+    "manifest": "package.json:43",
+    "tests": "tests/learning-dashboard.spec.tsx:38"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "html2canvas",
+   "kind": "dependencies",
+   "declared_range": "^1.4.1",
+   "locked_version": "1.4.1",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:44"
+   },
+   "classification": "unused",
+   "risk": "high",
+   "finding_id": "F2",
+   "note": "zero references outside manifest+lockfile; upstream effectively unmaintained (latest still 1.4.1); remove"
+  },
+  {
+   "name": "i18next",
+   "kind": "dependencies",
+   "declared_range": "^25.8.0",
+   "locked_version": "25.8.0",
+   "code_reference_buckets": {
+    "app-src": 9,
+    "manifest": 1,
+    "tests": 2
+   },
+   "sample_anchors": {
+    "app-src": "components/learning/LibraryWorkspace.tsx:6",
+    "manifest": "package.json:45",
+    "tests": "tests/codex-oauth-settings-contract.test.ts:5"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "jspdf",
+   "kind": "dependencies",
+   "declared_range": "^4.2.0",
+   "locked_version": "4.2.1",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:46",
+    "tests": "tests/e2e/pdf-reading-resize.audit.ts:2"
+   },
+   "classification": "test-only",
+   "risk": "medium",
+   "finding_id": "F3",
+   "note": "only imported by tests/e2e/pdf-reading-resize.audit.ts:2; belongs in devDependencies"
+  },
+  {
+   "name": "lucide-react",
+   "kind": "dependencies",
+   "declared_range": "^0.562.0",
+   "locked_version": "0.562.0",
+   "code_reference_buckets": {
+    "app-src": 346,
+    "manifest": 1,
+    "tests": 3
+   },
+   "sample_anchors": {
+    "app-src": "app/(admin)/admin/users/page.tsx:40",
+    "manifest": "package.json:47",
+    "tests": "tests/composer-draft-restore-failure.spec.tsx:4"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "mdast-util-from-markdown",
+   "kind": "dependencies",
+   "declared_range": "^2.0.2",
+   "locked_version": "2.0.2",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/InlineFileCard.tsx:4",
+    "manifest": "package.json:48"
+   },
+   "classification": "used-static",
+   "risk": "low",
+   "finding_id": "F11",
+   "note": "second markdown parse path alongside react-markdown/remark stack; single call site components/common/InlineFileCard.tsx:4"
+  },
+  {
+   "name": "mermaid",
+   "kind": "dependencies",
+   "declared_range": "^11.14.0",
+   "locked_version": "11.14.0",
+   "code_reference_buckets": {
+    "app-src": 15,
+    "config": 1,
+    "manifest": 1,
+    "tests": 22
+   },
+   "sample_anchors": {
+    "app-src": "app/(workspace)/learning/books/components/blocks/FigureBlock.tsx:19",
+    "config": "next.config.js:141",
+    "manifest": "package.json:49",
+    "tests": "tests/fixtures/provider-trace-events.json:9"
+   },
+   "classification": "used-lazy",
+   "risk": "info",
+   "finding_id": null,
+   "note": "dynamically imported at components/Mermaid.tsx:43 (bundle-safe)"
+  },
+  {
+   "name": "next",
+   "kind": "dependencies",
+   "declared_range": "^16.2.3",
+   "locked_version": "16.2.3",
+   "code_reference_buckets": {
+    "app-src": 214,
+    "other": 6,
+    "config": 3,
+    "manifest": 1,
+    "scripts": 5,
+    "tests": 58
+   },
+   "sample_anchors": {
+    "app-src": "app/(admin)/admin/users/page.tsx:5",
+    "other": "next-env.d.ts:1",
+    "config": "next.config.js:1",
+    "manifest": "package.json:50",
+    "scripts": "scripts/build.mjs:18",
+    "tests": "tests/archived-chats-settings.spec.tsx:13"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "pdfjs-dist",
+   "kind": "dependencies",
+   "declared_range": "^6.2.108",
+   "locked_version": "6.2.108",
+   "code_reference_buckets": {
+    "app-src": 3,
+    "manifest": 1,
+    "scripts": 1,
+    "tests": 2
+   },
+   "sample_anchors": {
+    "app-src": "lib/pdfjs-loader.ts:26",
+    "manifest": "package.json:51",
+    "scripts": "scripts/copy-pdfjs-assets.mjs:9",
+    "tests": "tests/build-wrapper.test.ts:71"
+   },
+   "classification": "used-lazy",
+   "risk": "info",
+   "finding_id": null,
+   "note": "dynamically imported at lib/pdfjs-loader.ts:39 (bundle-safe)"
+  },
+  {
+   "name": "react",
+   "kind": "dependencies",
+   "declared_range": "^19.0.0",
+   "locked_version": "19.2.3",
+   "code_reference_buckets": {
+    "app-src": 923,
+    "config": 2,
+    "manifest": 6,
+    "tests": 138
+   },
+   "sample_anchors": {
+    "app-src": "app/(admin)/admin/users/page.tsx:4",
+    "config": "eslint.config.mjs:63",
+    "manifest": "package.json:52",
+    "tests": "tests/annotation-layer-tooltip.spec.tsx:7"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "react-chartjs-2",
+   "kind": "dependencies",
+   "declared_range": "^5.3.1",
+   "locked_version": "5.3.1",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:53"
+   },
+   "classification": "unused",
+   "risk": "high",
+   "finding_id": "F1",
+   "note": "zero source imports; chart.js used directly via chart.js/auto (components/visualize/VisualizationViewer.tsx:62); remove"
+  },
+  {
+   "name": "react-dom",
+   "kind": "dependencies",
+   "declared_range": "^19.0.0",
+   "locked_version": "19.2.3",
+   "code_reference_buckets": {
+    "app-src": 8,
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/courses/OrganizedSessionList.tsx:5",
+    "manifest": "package.json:54",
+    "tests": "tests/reading-inline-markdown.test.ts:4"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "react-i18next",
+   "kind": "dependencies",
+   "declared_range": "^16.5.3",
+   "locked_version": "16.5.3",
+   "code_reference_buckets": {
+    "app-src": 404,
+    "manifest": 1,
+    "tests": 74
+   },
+   "sample_anchors": {
+    "app-src": "app/(admin)/admin/users/page.tsx:6",
+    "manifest": "package.json:55",
+    "tests": "tests/annotation-layer-tooltip.spec.tsx:7"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "react-markdown",
+   "kind": "dependencies",
+   "declared_range": "^10.1.0",
+   "locked_version": "10.1.0",
+   "code_reference_buckets": {
+    "app-src": 3,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichInlineMarkdown.tsx:5",
+    "manifest": "package.json:56"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "react-syntax-highlighter",
+   "kind": "dependencies",
+   "declared_range": "^16.1.1",
+   "locked_version": "16.1.1",
+   "code_reference_buckets": {
+    "app-src": 48,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichCodeBlock.tsx:3",
+    "manifest": "package.json:57"
+   },
+   "classification": "used-static",
+   "risk": "medium",
+   "finding_id": "F8",
+   "note": "root import pulls full Prism language set into async chunk (component lazy-loaded); use PrismLight + selective registration; upstream active (16.1.2, 2026-10)"
+  },
+  {
+   "name": "rehype-katex",
+   "kind": "dependencies",
+   "declared_range": "^7.0.1",
+   "locked_version": "7.0.1",
+   "code_reference_buckets": {
+    "app-src": 2,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichInlineMarkdown.tsx:56",
+    "manifest": "package.json:58"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "rehype-raw",
+   "kind": "dependencies",
+   "declared_range": "^7.0.0",
+   "locked_version": "7.0.0",
+   "code_reference_buckets": {
+    "app-src": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichMarkdownRenderer.tsx:156",
+    "manifest": "package.json:59"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "remark-gfm",
+   "kind": "dependencies",
+   "declared_range": "^4.0.0",
+   "locked_version": "4.0.1",
+   "code_reference_buckets": {
+    "app-src": 3,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichInlineMarkdown.tsx:6",
+    "manifest": "package.json:60"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "remark-math",
+   "kind": "dependencies",
+   "declared_range": "^6.0.0",
+   "locked_version": "6.0.0",
+   "code_reference_buckets": {
+    "app-src": 2,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "app-src": "components/common/RichInlineMarkdown.tsx:55",
+    "manifest": "package.json:61"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "tailwind-merge",
+   "kind": "dependencies",
+   "declared_range": "^3.4.0",
+   "locked_version": "3.4.0",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "app-src": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:62",
+    "app-src": "shared/ui/styles.ts:2"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "@playwright/test",
+   "kind": "devDependencies",
+   "declared_range": "^1.53.2",
+   "locked_version": "1.57.0",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "config": 1,
+    "tests": 14
+   },
+   "sample_anchors": {
+    "manifest": "package.json:70",
+    "config": "playwright.config.ts:1",
+    "tests": "tests/e2e/book-reader-sequential.audit.ts:1"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "@testing-library/dom",
+   "kind": "devDependencies",
+   "declared_range": "^10.4.1",
+   "locked_version": "10.4.1",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:71"
+   },
+   "classification": "peer-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "required peer of @testing-library/react v16; keep"
+  },
+  {
+   "name": "@testing-library/jest-dom",
+   "kind": "devDependencies",
+   "declared_range": "^7.0.1",
+   "locked_version": "7.0.1",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "tests": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:72",
+    "tests": "tests/setup/rendered.ts:1"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "@testing-library/react",
+   "kind": "devDependencies",
+   "declared_range": "^16.3.3",
+   "locked_version": "16.3.3",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "tests": 132
+   },
+   "sample_anchors": {
+    "manifest": "package.json:73",
+    "tests": "tests/annotation-layer-tooltip.spec.tsx:1"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "@testing-library/user-event",
+   "kind": "devDependencies",
+   "declared_range": "^14.6.6",
+   "locked_version": "14.6.6",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "tests": 25
+   },
+   "sample_anchors": {
+    "manifest": "package.json:74",
+    "tests": "tests/ask-user-card-form.spec.tsx:2"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "@types/node",
+   "kind": "devDependencies",
+   "declared_range": "^25",
+   "locked_version": "25.0.3",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:75"
+   },
+   "classification": "types-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "TypeScript ambient types (tsconfig)"
+  },
+  {
+   "name": "@types/react",
+   "kind": "devDependencies",
+   "declared_range": "^19",
+   "locked_version": "19.2.7",
+   "code_reference_buckets": {
+    "manifest": 3
+   },
+   "sample_anchors": {
+    "manifest": "package.json:76"
+   },
+   "classification": "types-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "TypeScript ambient types (tsconfig)"
+  },
+  {
+   "name": "@types/react-dom",
+   "kind": "devDependencies",
+   "declared_range": "^19",
+   "locked_version": "19.2.3",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:77"
+   },
+   "classification": "types-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "TypeScript ambient types (tsconfig)"
+  },
+  {
+   "name": "@types/react-syntax-highlighter",
+   "kind": "devDependencies",
+   "declared_range": "^15.5.13",
+   "locked_version": "15.5.13",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:78"
+   },
+   "classification": "types-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "react-syntax-highlighter ships no types"
+  },
+  {
+   "name": "autoprefixer",
+   "kind": "devDependencies",
+   "declared_range": "^10.4.20",
+   "locked_version": "10.4.23",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:79"
+   },
+   "classification": "config-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "postcss.config.js plugins key (bare identifier)"
+  },
+  {
+   "name": "dependency-cruiser",
+   "kind": "devDependencies",
+   "declared_range": "^17.4.3",
+   "locked_version": "17.4.3",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:80"
+   },
+   "classification": "bin-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "used via depcruise CLI in scripts.architecture:check"
+  },
+  {
+   "name": "eslint",
+   "kind": "devDependencies",
+   "declared_range": "^9",
+   "locked_version": "9.39.2",
+   "code_reference_buckets": {
+    "config": 1,
+    "manifest": 2,
+    "tests": 2
+   },
+   "sample_anchors": {
+    "config": "eslint.config.mjs:1",
+    "manifest": "package.json:81",
+    "tests": "tests/architecture-contracts.test.ts:89"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "eslint-config-next",
+   "kind": "devDependencies",
+   "declared_range": "16.2.3",
+   "locked_version": "16.2.3",
+   "code_reference_buckets": {
+    "config": 1,
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "config": "eslint.config.mjs:1",
+    "manifest": "package.json:82"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "jsdom",
+   "kind": "devDependencies",
+   "declared_range": "^29.1.1",
+   "locked_version": "29.1.1",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "config": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:83",
+    "config": "vitest.config.mts:14"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "json-schema-to-typescript",
+   "kind": "devDependencies",
+   "declared_range": "^16.0.0",
+   "locked_version": "16.0.0",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "scripts": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:84",
+    "scripts": "scripts/generate-contracts.mjs:33"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "openapi-typescript",
+   "kind": "devDependencies",
+   "declared_range": "^7.13.0",
+   "locked_version": "7.13.0",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "scripts": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:85",
+    "scripts": "scripts/generate-contracts.mjs:18"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "postcss",
+   "kind": "devDependencies",
+   "declared_range": "^8",
+   "locked_version": "8.5.26",
+   "code_reference_buckets": {
+    "manifest": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:86"
+   },
+   "classification": "toolchain-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "runs postcss.config.js (tailwindcss+autoprefixer) via Next.js build pipeline; no direct source import by design"
+  },
+  {
+   "name": "simple-icons",
+   "kind": "devDependencies",
+   "declared_range": "^16.27.1",
+   "locked_version": "16.27.1",
+   "code_reference_buckets": {
+    "app-src": 2,
+    "manifest": 1,
+    "scripts": 2
+   },
+   "sample_anchors": {
+    "app-src": "lib/brand-icons.generated.ts:6",
+    "manifest": "package.json:87",
+    "scripts": "scripts/build-brand-icons.mts:11"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "tailwindcss",
+   "kind": "devDependencies",
+   "declared_range": "^3.4.17",
+   "locked_version": "3.4.19",
+   "code_reference_buckets": {
+    "manifest": 1,
+    "config": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:88",
+    "config": "tailwind.config.js:1"
+   },
+   "classification": "config-implied",
+   "risk": "info",
+   "finding_id": null,
+   "note": "tailwind.config.js + postcss.config.js"
+  },
+  {
+   "name": "typescript",
+   "kind": "devDependencies",
+   "declared_range": "^5",
+   "locked_version": "5.9.3",
+   "code_reference_buckets": {
+    "app-src": 3,
+    "manifest": 1,
+    "scripts": 3,
+    "tests": 2
+   },
+   "sample_anchors": {
+    "app-src": "lib/code-languages.ts:27",
+    "manifest": "package.json:89",
+    "scripts": "scripts/i18n_audit.mjs:3",
+    "tests": "tests/native-button-title.test.ts:5"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  },
+  {
+   "name": "vitest",
+   "kind": "devDependencies",
+   "declared_range": "^4.1.11",
+   "locked_version": "4.1.11",
+   "code_reference_buckets": {
+    "manifest": 2,
+    "tests": 147,
+    "config": 1
+   },
+   "sample_anchors": {
+    "manifest": "package.json:16",
+    "tests": "tests/annotation-layer-tooltip.spec.tsx:2",
+    "config": "vitest.config.mts:3"
+   },
+   "classification": "used-static",
+   "risk": "info",
+   "finding_id": null,
+   "note": null
+  }
+ ],
+ "phantom_dependencies": [
+  {
+   "name": "prettier",
+   "risk": "medium",
+   "finding_id": "F5",
+   "imported_by": "scripts/generate-contracts.mjs:8",
+   "resolves_via": "transitive of json-schema-to-typescript (prettier 3.9.6, hoisted, dev:true in lockfile)",
+   "fix": "declare prettier in devDependencies (or drop the format() call)"
+  },
+  {
+   "name": "playwright",
+   "risk": "low",
+   "finding_id": "F6",
+   "imported_by": "scripts/probe-right-edge.mjs:1",
+   "resolves_via": "transitive of @playwright/test 1.57.0 (hoisted)",
+   "fix": "declare playwright in devDependencies or import chromium from playwright-core; script not wired to any npm script"
+  },
+  {
+   "name": "jszip",
+   "risk": "low",
+   "finding_id": "F7",
+   "imported_by": "tests/epub-reader.audit.ts:2",
+   "resolves_via": "transitive of epubjs (jszip ^3.7.1, hoisted)",
+   "fix": "declare jszip in devDependencies"
+  }
+ ]
+}
