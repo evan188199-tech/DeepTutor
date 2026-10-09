@@ -35,7 +35,13 @@ _LOCAL_CLI_COMMANDS = ("mineru", "magic-pdf")
 #: hint is deliberately limited to ``CLI_MISSING``: a runtime failure must not
 #: be reported as a missing installation (issue #1612, outcome 4).
 _LOCAL_FAILURE_MESSAGES: dict[LocalParseReason, str] = {
-    LocalParseReason.TIMEOUT: "Local MinerU parsing timed out: {detail}",
+    LocalParseReason.TIMEOUT: "Local MinerU parsing reached its maximum runtime: {detail}",
+    LocalParseReason.IDLE_TIMEOUT: (
+        "Local MinerU parsing was stopped with no observable progress: {detail}\n"
+        "Progress could not be confirmed from parser milestones, so a quiet but "
+        "working stage is not ruled out; retry reuses completed checkpoints, or "
+        "switch to cloud mode in Settings → MinerU."
+    ),
     LocalParseReason.CANCELLED: "Local MinerU parsing was cancelled: {detail}",
     LocalParseReason.CLI_MISSING: (
         "Local MinerU parsing failed. Ensure MinerU is installed "
