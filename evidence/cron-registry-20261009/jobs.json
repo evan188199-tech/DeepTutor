@@ -1,0 +1,216 @@
+{
+  "scan": {
+    "id": "cron-registry-20261009",
+    "issue": "AGEN-1271",
+    "date": "2026-10-09",
+    "mode": "read-only inventory",
+    "repo": "https://github.com/HKUDS/DeepTutor",
+    "base_ref": "origin/main",
+    "base_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+    "base_tag": "v1.6.14",
+    "scope": [
+      "deeptutor/services/cron/service.py",
+      "deeptutor/services/cron/executor.py",
+      "deeptutor/services/cron/repository.py",
+      "deeptutor/services/cron/__init__.py",
+      "deeptutor/tools/cron_tool.py",
+      "deeptutor/tools/builtin/__init__.py",
+      "deeptutor/tools/builtin_specs.py",
+      "deeptutor/agents/loop/pipeline.py",
+      "deeptutor/agents/_shared/tool_composition.py",
+      "deeptutor/api/main.py",
+      "deeptutor/services/partners/manager.py",
+      "deeptutor/runtime/background_leader.py"
+    ],
+    "dedup_notes": [
+      "test-cron-executor: executor unit-test card, out of scope",
+      "scan-async-tasks: async-task axis, out of scope",
+      "guide-cron: historical guide, out of scope"
+    ]
+  },
+  "registration_points": [
+    {
+      "id": "R1",
+      "kind": "in-store registration entry",
+      "symbol": "CronService.add_job",
+      "anchor": "deeptutor/services/cron/service.py:232",
+      "notes": "validates schedule (:242), computes next_run (:257), upserts (:259), wakes loop (:260)"
+    },
+    {
+      "id": "R2",
+      "kind": "singleton factory",
+      "symbol": "get_cron_service",
+      "anchor": "deeptutor/services/cron/service.py:406-419",
+      "notes": "store <admin>/cron/jobs.sqlite3 (:413-416), legacy jobs.json (:417), on_job=execute_job (:418)"
+    },
+    {
+      "id": "R3",
+      "kind": "deserialization",
+      "symbol": "CronJob.from_dict",
+      "anchor": "deeptutor/services/cron/service.py:101-115",
+      "notes": "snapshot reload path via _load (:208-217, revision-gated)"
+    },
+    {
+      "id": "R4",
+      "kind": "legacy import",
+      "symbol": "SQLiteCronRepository._prepare_legacy_file/_initialize",
+      "anchor": "deeptutor/services/cron/repository.py:85-104,113-148",
+      "notes": "jobs.json imported under migration lock, archived, ids/state preserved"
+    },
+    {
+      "id": "R5",
+      "kind": "store schema",
+      "symbol": "cron_jobs + cron_meta",
+      "anchor": "deeptutor/services/cron/repository.py:115-137",
+      "notes": "revision counter singleton; owner index :127"
+    },
+    {
+      "id": "R6",
+      "kind": "product call site",
+      "symbol": "run_cron_action -> service.add_job",
+      "anchor": "deeptutor/tools/cron_tool.py:120",
+      "notes": "only add_job call site in repo; schedule build :59-73; owner from injected _cron_owner (:77-83)"
+    },
+    {
+      "id": "R7",
+      "kind": "tool definition",
+      "symbol": "CronTool (tool name 'cron')",
+      "anchor": "deeptutor/tools/builtin/__init__.py:1866-1960",
+      "notes": "registry spec at deeptutor/tools/builtin_specs.py:69"
+    },
+    {
+      "id": "R8",
+      "kind": "owner injection / anti-nesting",
+      "symbol": "pipeline cron branch",
+      "anchor": "deeptutor/agents/loop/pipeline.py:1374-1410",
+      "notes": "partner owner :1384-1394, chat owner :1396-1410, _cron_in_context guard :1379-1381"
+    },
+    {
+      "id": "R9",
+      "kind": "tool mounting",
+      "symbol": "always-on tools",
+      "anchor": "deeptutor/agents/_shared/tool_composition.py:268-277",
+      "notes": "cron mounted on both chat and partner composition paths"
+    },
+    {
+      "id": "R10",
+      "kind": "lifecycle wiring",
+      "symbol": "_start_cron/_stop_cron + CRON_RELOAD + change_notifier",
+      "anchor": "deeptutor/api/main.py:195-203,233-236,271-286,289-305",
+      "notes": "scheduler started only by BackgroundLeaderSupervisor lease holder (cross-process overlap guard)"
+    },
+    {
+      "id": "R11",
+      "kind": "deregistration",
+      "symbol": "destroy_partner -> remove_owner_jobs",
+      "anchor": "deeptutor/services/partners/manager.py:1446-1456",
+      "notes": "service side: deeptutor/services/cron/service.py:288-297"
+    },
+    {
+      "id": "R12",
+      "kind": "deregistration",
+      "symbol": "CronService.cancel_job",
+      "anchor": "deeptutor/services/cron/service.py:274-286",
+      "notes": "tool surface: deeptutor/tools/cron_tool.py:98-104, owner_key scoped"
+    }
+  ],
+  "schedule_kinds": [
+    {
+      "kind": "at",
+      "anchor": "deeptutor/services/cron/service.py:120-123",
+      "expression": "epoch ms, one-shot",
+      "timezone": "absolute epoch (tz-safe); naive ISO input interpreted server-local at deeptutor/tools/cron_tool.py:54-56",
+      "validation": "must be in the future: service.py:154-157",
+      "default_delete_after_run": true
+    },
+    {
+      "kind": "every",
+      "anchor": "deeptutor/services/cron/service.py:125-128",
+      "expression": "interval seconds, re-anchored at each run completion",
+      "timezone": "n/a (relative)",
+      "validation": "min 30s: service.py:159-162",
+      "drift": "next = now + interval after each run (service.py:394); phase shifts on long runs/outages"
+    },
+    {
+      "kind": "cron",
+      "anchor": "deeptutor/services/cron/service.py:130-139",
+      "expression": "5-field croniter expression",
+      "timezone": "optional IANA tz; fallback to server-local when tz omitted: service.py:136",
+      "validation": "ZoneInfo check service.py:163-170; must fire service.py:171-173; croniter required service.py:140-144"
+    }
+  ],
+  "behavior": {
+    "missed_trigger": [
+      {
+        "scenario": "expired one-shot 'at' while down",
+        "behavior": "silently deleted at start(), never run",
+        "anchor": "deeptutor/services/cron/service.py:311-314"
+      },
+      {
+        "scenario": "past-due every/cron while down",
+        "behavior": "runs once immediately after start; N missed intervals collapse to 1 (catch-up), then re-anchored from now",
+        "anchor": "deeptutor/services/cron/service.py:304-307,360-365,394"
+      },
+      {
+        "scenario": "external store edits",
+        "behavior": "revision-gated reload; max 60s sleep floor; CRON_RELOAD wakes immediately",
+        "anchor": "deeptutor/services/cron/service.py:31,208-217,331-344; deeptutor/api/main.py:233-236"
+      },
+      {
+        "scenario": "audit of misses",
+        "behavior": "none; run_history only records executed runs (max 10)",
+        "anchor": "deeptutor/services/cron/service.py:32,380-388"
+      }
+    ],
+    "overlap": [
+      {
+        "layer": "cross-process",
+        "mechanism": "leader lease via BackgroundLeaderSupervisor; lease holder alone starts the scheduler",
+        "anchor": "deeptutor/api/main.py:289-305; deeptutor/runtime/background_leader.py:66-80"
+      },
+      {
+        "layer": "in-process",
+        "mechanism": "module singleton; _tick awaits jobs sequentially; no same-job overlap but head-of-line blocking, no per-job timeout",
+        "anchor": "deeptutor/services/cron/service.py:357-365"
+      },
+      {
+        "layer": "failover",
+        "mechanism": "state written only after job completes; mid-run handover re-triggers the job on the new leader (at-least-once)",
+        "anchor": "deeptutor/services/cron/service.py:377-399"
+      }
+    ],
+    "repository_locks": [
+      {
+        "lock": "migration lock .<db>.migration.lock",
+        "mechanism": "fcntl.flock / msvcrt.locking exclusive",
+        "anchor": "deeptutor/services/cron/repository.py:44-75",
+        "protects": "legacy JSON->SQLite migration and table init (:86, :114)"
+      },
+      {
+        "lock": "SQLite write transactions",
+        "mechanism": "WAL, busy_timeout=30000, synchronous=NORMAL, BEGIN IMMEDIATE on all writes",
+        "anchor": "deeptutor/services/cron/repository.py:106-111,195-242"
+      },
+      {
+        "lock": "revision counter",
+        "mechanism": "cron_meta singleton incremented on every write; _load invalidation",
+        "anchor": "deeptutor/services/cron/repository.py:131-137,183-186; deeptutor/services/cron/service.py:208-217"
+      },
+      {
+        "lock": "in-process",
+        "mechanism": "none around _jobs; single event-loop thread assumption; workers write store only",
+        "anchor": "deeptutor/services/cron/service.py:199,224-229"
+      }
+    ]
+  },
+  "risks": [
+    {"id": "T1", "category": "timezone", "severity": "medium", "summary": "cron jobs without explicit tz compute next fire in server-local tz; server tz change shifts all such jobs", "anchor": "deeptutor/services/cron/service.py:136"},
+    {"id": "T2", "category": "timezone", "severity": "low", "summary": "naive 'at' ISO times interpreted as server-local", "anchor": "deeptutor/tools/cron_tool.py:54-56"},
+    {"id": "O1", "category": "overlap", "severity": "medium", "summary": "leader failover window: job state persisted only after completion, so mid-run handover re-executes the job (at-least-once, duplicate delivery possible)", "anchor": "deeptutor/services/cron/service.py:377-399"},
+    {"id": "O2", "category": "overlap", "severity": "medium", "summary": "head-of-line blocking: sequential execution, no per-job timeout; one hung turn stalls all scheduled tasks", "anchor": "deeptutor/services/cron/service.py:357-365; deeptutor/services/cron/executor.py:98,170"},
+    {"id": "M1", "category": "missed-trigger", "severity": "medium", "summary": "expired one-shot jobs silently deleted on startup without running or recording", "anchor": "deeptutor/services/cron/service.py:311-314"},
+    {"id": "M2", "category": "missed-trigger", "severity": "low", "summary": "catch-up collapses N missed intervals into 1 run; semantics undocumented at tool surface", "anchor": "deeptutor/services/cron/service.py:304-307,394"},
+    {"id": "M3", "category": "missed-trigger", "severity": "low", "summary": "'every' re-anchored from now after each run; long runs/outages shift the phase", "anchor": "deeptutor/services/cron/service.py:125-128,394"},
+    {"id": "M4", "category": "missed-trigger", "severity": "low", "summary": "missed triggers leave no trace in run_history", "anchor": "deeptutor/services/cron/service.py:380-388"}
+  ]
+}
