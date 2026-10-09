@@ -8,6 +8,7 @@ minimum-size budget.
 from __future__ import annotations
 
 import io
+import logging
 import random
 
 from docx import Document as DocxDocument
@@ -236,3 +237,37 @@ def test_pdf_images_default_budget_caps_at_twelve(tmp_path) -> None:
     assert len(result.collection.images) == 12
     assert result.collection.skipped_budget == 2
     assert result.collection.skipped_page_budget == 0
+
+
+def test_pdf_images_page_failure_warns_and_keeps_other_pages(tmp_path, monkeypatch, caplog) -> None:
+    """A per-page extraction failure is logged; the other pages stay complete."""
+    pymupdf = pytest.importorskip("pymupdf")
+    doc = pymupdf.open()
+    page_one = doc.new_page(width=612, height=792)
+    page_one.insert_image(pymupdf.Rect(72, 72, 180, 108), stream=_png_for_index(0))
+    page_two = doc.new_page(width=612, height=792)
+    page_two.insert_image(pymupdf.Rect(72, 72, 180, 108), stream=_png_for_index(1))
+    pdf_path = tmp_path / "partial.pdf"
+    broken_xref = doc[0].get_images(full=True)[0][0]
+    doc.save(str(pdf_path))
+    doc.close()
+
+    original_extract_image = pymupdf.Document.extract_image
+
+    def extract_image(self, xref):
+        if xref == broken_xref:
+            raise RuntimeError("synthetic extraction failure")
+        return original_extract_image(self, xref)
+
+    monkeypatch.setattr(pymupdf.Document, "extract_image", extract_image)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.utils.document_images"):
+        result = extract_pdf_images(pdf_path.read_bytes())
+
+    assert len(result.collection.images) == 1, "the healthy page keeps its image"
+    assert result.collection.images[0].data
+    assert result.page_map == ((2, (0,)),)
+    warnings = [
+        record.getMessage() for record in caplog.records if record.levelno == logging.WARNING
+    ]
+    assert any("page 1" in message and str(broken_xref) in message for message in warnings)

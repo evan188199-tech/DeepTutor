@@ -554,7 +554,13 @@ def extract_pdf_images(data: bytes, *, budget: ImageBudget | None = None) -> Pdf
                     rejected_xrefs.add(xref)
                     try:
                         extracted = doc.extract_image(xref)
-                    except Exception:
+                    except Exception as exc:
+                        logger.warning(
+                            "pdf image extraction failed on page %s (xref %s): %s — skipping that image",
+                            page_number,
+                            xref,
+                            exc,
+                        )
                         continue
                     raw = extracted.get("image") or b""
                     if (
