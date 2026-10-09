@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "scan_id": "web-storage-schema-20261009",
+    "repo": "HKUDS/DeepTutor",
+    "commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+    "scan_date": "2026-10-09",
+    "scope": "web/ (product code only; web/tests/** excluded from findings, counted separately)",
+    "method": [
+      "rg -n 'localStorage|sessionStorage' web -g '*.{ts,tsx,js,jsx}' (raw Web Storage API sites)",
+      "rg -n 'browserStorage\\.(readRaw|writeRaw|removeRaw|read|write|remove|listRaw|subscribe|clearNamespace)' web (wrapper-layer sites)",
+      "rg -n 'defineStorageKey|dynamicStorageKey' web (typed StorageKey definitions)",
+      "manual read of every hit file to resolve key constants, scopes, value schemas and fallback paths"
+    ],
+    "excluded": [
+      "web/lib/client-cache.ts — in-memory Map cache (prefix 'knowledge:'), not Web Storage",
+      "web/tests/** — test fixtures/mocks (24 files reference storage APIs)",
+      "web/scripts/**, web/vendor/** — no Web Storage references found"
+    ]
+  },
+  "storage_layer": {
+    "wrapper": "web/shared/storage/store.ts — StorageStore.readRaw/writeRaw/removeRaw/listRaw; internally guarded (provider missing -> null/false), all exceptions swallowed",
+    "typed_typed_keys": {
+      "namespace": "deeptutor:v2:<scope>:<name>",
+      "envelope": "{version:number, value:T, writtenAt:number} (web/shared/storage/schema.ts:3-7)",
+      "production_consumers": 0,
+      "note": "defineStorageKey/dynamicStorageKey and StorageStore.read/write/remove/subscribe/clearNamespace have zero production call sites; only web/tests/storage.test.ts exercises them"
+    }
+  },
+  "summary": {
+    "key_families": 47,
+    "local_families": 34,
+    "session_families": 13,
+    "product_files_with_direct_ops": 33,
+    "files_referencing_window_localstorage_directly": 5,
+    "versioned_keys": 6,
+    "unversioned_keys": 41,
+    "notes": "session_families counts families whose scope includes session (3 failedSubmissions families are dual local+session); versioned_keys = payload version (co_writer.draft.v2) or version suffix in key (draft.legacy axis, split_ratio.v2, sync_scroll.v2, diagnosticsResults.v1, knowledge:history:v1)"
+  },
+  "keys": [
+    {"key": "deeptutor-theme", "scope": "local", "sites": [{"file": "web/components/ThemeScript.tsx", "line": 14, "op": "read", "note": "direct localStorage.getItem, pre-hydration inline script"}, {"file": "web/components/ThemeScript.tsx", "line": 31, "op": "write", "note": "writes only 'dark'"}, {"file": "web/components/ThemeScript.tsx", "line": 34, "op": "write", "note": "writes only 'snow'"}, {"file": "web/lib/theme.ts", "line": 39, "op": "read"}, {"file": "web/lib/theme.ts", "line": 62, "op": "write"}], "writers": ["components/ThemeScript.tsx", "lib/theme.ts"], "schema": "enum string: light|dark|glass|snow", "version": "none", "corrupt_fallback": "enum whitelist else system preference (lib/theme.ts:39-52)"},
+
+    {"key": "deeptutor-language", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 161, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 178, "op": "read", "note": "hasStoredLanguage presence check"}, {"file": "web/context/app-shell-storage.ts", "line": 187, "op": "write"}], "schema": "language code string", "version": "none", "corrupt_fallback": "normalizeLanguage -> 'en'"},
+
+    {"key": "deeptutor-response-language", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 210, "op": "read", "note": "presence check"}, {"file": "web/context/app-shell-storage.ts", "line": 221, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 232, "op": "write"}], "schema": "ResponseLanguage code string", "version": "none", "corrupt_fallback": "resolveResponseLanguage alias map -> legacy interface language -> 'en'"},
+
+    {"key": "deeptutor.sidebarCollapsed", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 274, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 284, "op": "write"}], "schema": "\"1\"|\"0\"", "version": "none", "corrupt_fallback": "===\"1\" else false"},
+
+    {"key": "deeptutor.chatResponseTimeout", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 104, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 120, "op": "write"}], "writers": ["components/settings/ChatResponseTimeoutSection.tsx:53,84 (mirror)", "features/chat watchdog reads via readStoredChatResponseTimeout"], "schema": "integer seconds string", "version": "none", "corrupt_fallback": "parseInt+clamp(30..1800) else 180"},
+
+    {"key": "deeptutor.code-block-theme", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 314, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 324, "op": "write"}], "schema": "string", "version": "none", "corrupt_fallback": "trim else 'oneDark'"},
+
+    {"key": "deeptutor.code-block-show-line-numbers", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 351, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 364, "op": "write"}], "schema": "\"true\"|\"false\"", "version": "none", "corrupt_fallback": "strict match else false"},
+
+    {"key": "deeptutor.code-block-wrap-long-lines", "scope": "local", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 390, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 403, "op": "write"}], "schema": "\"true\"|\"false\"", "version": "none", "corrupt_fallback": "strict match else false"},
+
+    {"key": "deeptutor.activeSessionId.tab:<workspaceId>", "scope": "session", "sites": [{"file": "web/context/app-shell-storage.ts", "line": 246, "op": "read"}, {"file": "web/context/app-shell-storage.ts", "line": 256, "op": "write"}, {"file": "web/context/app-shell-storage.ts", "line": 258, "op": "remove"}], "schema": "session id string", "version": "none", "corrupt_fallback": "null; workspace id from URL query (lib/workspace-scope.ts:4-7)"},
+
+    {"key": "deeptutor.co_writer.draft.v2.<encodeURIComponent(docId)>", "scope": "local", "sites": [{"file": "web/features/co-writer/storage/drafts.ts", "line": 60, "op": "read"}, {"file": "web/features/co-writer/storage/drafts.ts", "line": 93, "op": "write"}, {"file": "web/features/co-writer/components/CoWriterWorkspace.tsx", "line": 305, "op": "read"}, {"file": "web/features/co-writer/components/CoWriterWorkspace.tsx", "line": 341, "op": "write"}, {"file": "web/features/co-writer/components/CoWriterWorkspace.tsx", "line": 366, "op": "remove"}], "schema": "JSON {version:2, docId, content, revision, updatedAt}", "version": "payload version=2 (DRAFT_STORAGE_VERSION)", "corrupt_fallback": "strict field validation -> null; StorageLike = window.localStorage passed by caller"},
+
+    {"key": "deeptutor.co_writer.draft.<docId>", "scope": "local", "sites": [{"file": "web/features/co-writer/storage/drafts.ts", "line": 66, "op": "read", "note": "legacy migration source"}, {"file": "web/features/co-writer/storage/drafts.ts", "line": 74, "op": "remove", "note": "removed after v2 rewrite"}], "schema": "raw markdown string (legacy)", "version": "legacy", "corrupt_fallback": "migrated to v2 key"},
+
+    {"key": "deeptutor.co_writer.split_ratio.v2", "scope": "local", "sites": [{"file": "web/features/co-writer/storage/drafts.ts", "line": 107, "op": "read"}, {"file": "web/features/co-writer/storage/drafts.ts", "line": 119, "op": "write"}], "callers": ["web/features/co-writer/hooks/useSplitPane.ts:26,33"], "schema": "float string", "version": "v2 in key name", "corrupt_fallback": "parseFloat+clamp else 0.5"},
+
+    {"key": "deeptutor.co_writer.sync_scroll.v2", "scope": "local", "sites": [{"file": "web/features/co-writer/storage/drafts.ts", "line": 128, "op": "read"}, {"file": "web/features/co-writer/storage/drafts.ts", "line": 139, "op": "write"}], "callers": ["web/features/co-writer/hooks/useSynchronizedScroll.ts:20,27"], "schema": "\"1\"|\"0\"", "version": "v2 in key name", "corrupt_fallback": "!=='0' -> true"},
+
+    {"key": "deeptutor.sidebar.width", "scope": "local", "sites": [{"file": "web/hooks/useSidebarResize.ts", "line": 33, "op": "read"}, {"file": "web/hooks/useSidebarResize.ts", "line": 65, "op": "write"}], "schema": "numeric string", "version": "none", "corrupt_fallback": "Number()+isFinite>0 else default"},
+
+    {"key": "deeptutor.sidebar.navLayout", "scope": "local", "sites": [{"file": "web/lib/sidebar-layout.ts", "line": 247, "op": "read", "note": "generic readJsonLocal"}, {"file": "web/lib/sidebar-layout.ts", "line": 258, "op": "write", "note": "generic writeJsonLocal"}], "callers": ["web/components/sidebar/SidebarNav.tsx:110"], "schema": "JSON", "version": "none", "corrupt_fallback": "try/catch -> fallback; JSON.parse result cast as T without shape validation"},
+
+    {"key": "deeptutor.sidebar.sessionOrder", "scope": "local", "sites": [{"file": "web/lib/sidebar-layout.ts", "line": 247, "op": "read"}, {"file": "web/lib/sidebar-layout.ts", "line": 258, "op": "write"}], "schema": "JSON", "version": "none", "corrupt_fallback": "try/catch -> fallback, unvalidated cast"},
+
+    {"key": "deeptutor.sidebar.collapsedGroups", "scope": "local", "sites": [{"file": "web/lib/sidebar-layout.ts", "line": 247, "op": "read"}, {"file": "web/lib/sidebar-layout.ts", "line": 258, "op": "write"}], "schema": "JSON", "version": "none", "corrupt_fallback": "try/catch -> fallback, unvalidated cast"},
+
+    {"key": "deeptutor.sidebar.moreExpanded", "scope": "local", "sites": [{"file": "web/components/sidebar/SidebarNav.tsx", "line": 111, "op": "read"}, {"file": "web/components/sidebar/SidebarNav.tsx", "line": 140, "op": "write"}], "schema": "\"1\"|\"0\"", "version": "none", "corrupt_fallback": "===\"1\" else false"},
+
+    {"key": "deeptutor.failedSubmissions", "scope": "local", "sites": [{"file": "web/lib/failed-submissions.ts", "line": 84, "op": "read", "note": "legacy whole-map read during migration"}], "schema": "JSON {sessionId: record|record[]}", "version": "none", "corrupt_fallback": "try/catch -> []; records without submissionId get 'legacy:'+savedAt + retryRequiresReview"},
+
+    {"key": "deeptutor.failedSubmissions.fallback.<enc(sid)>", "scope": "session", "sites": [{"file": "web/lib/failed-submissions.ts", "line": 95, "op": "read", "note": "legacy per-session fallback"}], "schema": "JSON record|record[]", "version": "none", "corrupt_fallback": "validate else ignore"},
+
+    {"key": "deeptutor.failedSubmissions.record.<enc(sid)>:<enc(subId)>", "scope": "local+session", "sites": [{"file": "web/lib/failed-submissions.ts", "line": 202, "op": "write", "note": "local full"}, {"file": "web/lib/failed-submissions.ts", "line": 210, "op": "write", "note": "local retry after prune"}, {"file": "web/lib/failed-submissions.ts", "line": 216, "op": "write", "note": "session full when local quota exceeded"}, {"file": "web/lib/failed-submissions.ts", "line": 221, "op": "write", "note": "local text-only downgrade"}, {"file": "web/lib/failed-submissions.ts", "line": 227, "op": "write", "note": "session text-only"}, {"file": "web/lib/failed-submissions.ts", "line": 111, "op": "read"}, {"file": "web/lib/failed-submissions.ts", "line": 186, "op": "remove", "note": "TTL 7d prune"}], "schema": "JSON FailedSubmissionRecord", "version": "none", "corrupt_fallback": "strict isRecord validation + key match -> dropped"},
+
+    {"key": "deeptutor.failedSubmissions.cleared.<enc(sid)>:<enc(subId)>", "scope": "local+session", "sites": [{"file": "web/lib/failed-submissions.ts", "line": 394, "op": "write", "note": "tombstone epoch ms"}, {"file": "web/lib/failed-submissions.ts", "line": 397, "op": "write"}, {"file": "web/lib/failed-submissions.ts", "line": 398, "op": "write", "note": "session tombstone when local full"}, {"file": "web/lib/failed-submissions.ts", "line": 126, "op": "read"}, {"file": "web/lib/failed-submissions.ts", "line": 129, "op": "remove", "note": "TTL prune"}, {"file": "web/lib/failed-submissions.ts", "line": 395, "op": "remove"}, {"file": "web/lib/failed-submissions.ts", "line": 396, "op": "remove"}], "schema": "epoch-ms numeric string", "version": "none", "corrupt_fallback": "Number()+TTL check else removed"},
+
+    {"key": "deeptutor.failedSubmissions.binding.<enc(sid)>:<enc(subId)>", "scope": "session", "sites": [{"file": "web/lib/failed-submissions.ts", "line": 363, "op": "write"}, {"file": "web/lib/failed-submissions.ts", "line": 239, "op": "read"}, {"file": "web/lib/failed-submissions.ts", "line": 248, "op": "remove", "note": "TTL/malformed"}, {"file": "web/lib/failed-submissions.ts", "line": 253, "op": "remove"}, {"file": "web/lib/failed-submissions.ts", "line": 386, "op": "remove"}], "schema": "JSON DraftBinding {sourceKey, submissionId, targetSessionId, savedAt}", "version": "none", "corrupt_fallback": "strict validation + TTL -> removed"},
+
+    {"key": "deeptutor.pendingPrompt[.<scope>]", "scope": "session", "sites": [{"file": "web/lib/pending-prompt.ts", "line": 33, "op": "write"}, {"file": "web/lib/pending-prompt.ts", "line": 44, "op": "read"}, {"file": "web/lib/pending-prompt.ts", "line": 45, "op": "remove", "note": "consume-once"}], "schema": "raw prompt text", "version": "none", "corrupt_fallback": "n/a (plain string); silent skip when storage unavailable"},
+
+    {"key": "deeptutor.bookChat.width", "scope": "local", "sites": [{"file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx", "line": 130, "op": "read"}, {"file": "web/app/(workspace)/learning/books/components/BookChatPanel.tsx", "line": 140, "op": "write"}], "schema": "numeric string", "version": "none", "corrupt_fallback": "Number()+range 300..720 else default"},
+
+    {"key": "deeptutor.book.pendingChapterEnd", "scope": "session", "sites": [{"file": "web/app/(workspace)/learning/books/components/PageReader.tsx", "line": 58, "op": "write"}, {"file": "web/app/(workspace)/learning/books/components/PageReader.tsx", "line": 66, "op": "read"}, {"file": "web/app/(workspace)/learning/books/components/PageReader.tsx", "line": 74, "op": "remove", "note": "TTL expiry"}, {"file": "web/app/(workspace)/learning/books/components/PageReader.tsx", "line": 79, "op": "remove", "note": "corrupt"}, {"file": "web/app/(workspace)/learning/books/components/PageReader.tsx", "line": 248, "op": "remove"}], "schema": "JSON {bookId, pageId, createdAt} with TTL", "version": "none", "corrupt_fallback": "validate+TTL else removed"},
+
+    {"key": "deeptutor:settings-return", "scope": "session", "sites": [{"file": "web/components/settings/SettingsReturnTracker.tsx", "line": 22, "op": "write"}, {"file": "web/components/settings/SettingsMain.tsx", "line": 39, "op": "read"}], "schema": "path string", "version": "none", "corrupt_fallback": "startsWith('/') && not '//' && not '/settings' else '/'"},
+
+    {"key": "deeptutor.settings.diagnosticsResults.v1", "scope": "session", "sites": [{"file": "web/features/settings/store/SettingsStore.tsx", "line": 431, "op": "read"}, {"file": "web/features/settings/store/SettingsStore.tsx", "line": 900, "op": "write"}], "schema": "JSON map service->DiagnosticsResult", "version": "v1 in key name", "corrupt_fallback": "JSON.parse + object shape check else {}"},
+
+    {"key": "deeptutor:partner-group:<groupId>:session", "scope": "local", "sites": [{"file": "web/lib/partner-groups-api.ts", "line": 201, "op": "read"}, {"file": "web/lib/partner-groups-api.ts", "line": 204, "op": "write"}, {"file": "web/lib/partner-groups-api.ts", "line": 244, "op": "write"}], "schema": "generated id string 'group-<ts36>-<rand>'", "version": "none", "corrupt_fallback": "n/a (opaque string)"},
+
+    {"key": "partner-session:<accountId>:<partnerId> (legacy: partner-session:<partnerId>)", "scope": "local", "sites": [{"file": "web/lib/partner-session.ts", "line": 23, "op": "read"}, {"file": "web/lib/partner-session.ts", "line": 31, "op": "read", "note": "legacy un-scoped key, ownership-checked migration"}, {"file": "web/lib/partner-session.ts", "line": 72, "op": "read"}, {"file": "web/lib/partner-session.ts", "line": 75, "op": "write"}, {"file": "web/lib/partner-session.ts", "line": 88, "op": "write"}], "schema": "session key string 'web-<rand>'", "version": "none", "corrupt_fallback": "n/a (opaque string); fallback to fresh random key"},
+
+    {"key": "dt:chat-markdown-note:<owner>:<sessionId|null>", "scope": "local", "sites": [{"file": "web/lib/chat-markdown-note.ts", "line": 85, "op": "read"}, {"file": "web/lib/chat-markdown-note.ts", "line": 88, "op": "write", "note": "pending draft adoption into session key"}, {"file": "web/lib/chat-markdown-note.ts", "line": 89, "op": "remove", "note": "pending key after adoption"}, {"file": "web/lib/chat-markdown-note.ts", "line": 109, "op": "write"}], "schema": "JSON draft", "version": "none", "corrupt_fallback": "parseDraft validate -> null; direct window.localStorage param default (null on SSR)"},
+
+    {"key": "dt:chat:capability-config:<sessionId>", "scope": "local", "sites": [{"file": "web/features/chat/components/ChatWorkspace.tsx", "line": 509, "op": "read"}, {"file": "web/features/chat/components/ChatWorkspace.tsx", "line": 527, "op": "write"}], "schema": "JSON {quizConfig?, visualizeConfig?, researchConfig?, capabilityConfigConfirmed?}", "version": "none", "corrupt_fallback": "try/catch ignore -> defaults"},
+
+    {"key": "dt:memory:active-run:<layer>:<key>", "scope": "local", "sites": [{"file": "web/components/memory/useMemoryRun.ts", "line": 65, "op": "read"}, {"file": "web/components/memory/useMemoryRun.ts", "line": 71, "op": "write"}, {"file": "web/components/memory/useMemoryRun.ts", "line": 73, "op": "remove"}], "schema": "run id string", "version": "none", "corrupt_fallback": "n/a (opaque string); stale run id tolerated by re-attach attempt"},
+
+    {"key": "dt:memory:banner-dismissed", "scope": "local", "sites": [{"file": "web/components/memory/MemoryArchivedBanner.tsx", "line": 22, "op": "read"}, {"file": "web/components/memory/MemoryArchivedBanner.tsx", "line": 30, "op": "write"}, {"file": "web/components/memory/MemorySection.tsx", "line": 289, "op": "read"}, {"file": "web/components/memory/MemorySection.tsx", "line": 299, "op": "write"}], "writers": ["components/memory/MemoryArchivedBanner.tsx", "components/memory/MemorySection.tsx"], "schema": "backup name string", "version": "none", "corrupt_fallback": "n/a; key literal duplicated in two files without shared constant"},
+
+    {"key": "dt.mastery.outline", "scope": "local", "sites": [{"file": "web/components/space/learning/MasteryStudy.tsx", "line": 316, "op": "read"}, {"file": "web/components/space/learning/MasteryStudy.tsx", "line": 326, "op": "write"}], "schema": "\"1\"|\"0\"", "version": "none", "corrupt_fallback": "!=='0' -> shown"},
+
+    {"key": "dt.reader.textPreferences", "scope": "local", "sites": [{"file": "web/lib/reading-display-preferences.ts", "line": 78, "op": "read"}, {"file": "web/lib/reading-display-preferences.ts", "line": 88, "op": "write"}], "schema": "JSON {fontSize, lineWidth, serif, readerTheme, spreadMode}", "version": "none", "corrupt_fallback": "normaliseReaderDisplayPreferences per-field whitelist + bounds -> defaults"},
+
+    {"key": "dt.reader.history.<encodeURIComponent(sessionId)>", "scope": "local", "sites": [{"file": "web/lib/reading-location-history.ts", "line": 185, "op": "read"}, {"file": "web/lib/reading-location-history.ts", "line": 198, "op": "write"}], "schema": "JSON {entries[<=50], index}", "version": "none", "corrupt_fallback": "strict per-entry validation -> EMPTY_READING_HISTORY"},
+
+    {"key": "dt.reader.autoJump", "scope": "local", "sites": [{"file": "web/components/reading/ReaderPane.tsx", "line": 331, "op": "read"}, {"file": "web/components/reading/ReaderPane.tsx", "line": 342, "op": "write"}], "schema": "\"1\"|\"0\"", "version": "none", "corrupt_fallback": "===\"1\" else default"},
+
+    {"key": "dt.reader.navigatorWidth", "scope": "local", "sites": [{"file": "web/components/reading/workspace/useReadingPanelLayout.ts", "line": 61, "op": "read"}, {"file": "web/components/reading/workspace/useReadingPanelLayout.ts", "line": 96, "op": "write"}], "schema": "numeric string", "version": "none", "corrupt_fallback": "Number+clamp(210..max) else default"},
+
+    {"key": "dt.reader.companionWidth", "scope": "local", "sites": [{"file": "web/components/reading/workspace/useReadingPanelLayout.ts", "line": 64, "op": "read"}, {"file": "web/components/reading/workspace/useReadingPanelLayout.ts", "line": 103, "op": "write"}], "schema": "numeric string", "version": "none", "corrupt_fallback": "Number+clamp(380..2400) else default"},
+
+    {"key": "dt:viewer-width", "scope": "local", "sites": [{"file": "web/components/chat/home/SessionViewerPanel.tsx", "line": 143, "op": "read"}, {"file": "web/components/chat/home/SessionViewerPanel.tsx", "line": 341, "op": "write"}], "schema": "numeric string", "version": "none", "corrupt_fallback": "Number+isFinite+clamp else default"},
+
+    {"key": "panel:<name>:collapsed", "scope": "local", "sites": [{"file": "web/hooks/useCollapsiblePanel.ts", "line": 22, "op": "read"}, {"file": "web/hooks/useCollapsiblePanel.ts", "line": 40, "op": "write"}], "callers": ["web/components/knowledge/KbFilesTab.tsx:34 ('knowledge-file-list')"], "schema": "\"1\"|\"0\"", "version": "none", "corrupt_fallback": "===\"1\" else default"},
+
+    {"key": "knowledge:history:v1", "scope": "local", "sites": [{"file": "web/hooks/useKnowledgeHistory.ts", "line": 34, "op": "read"}, {"file": "web/hooks/useKnowledgeHistory.ts", "line": 49, "op": "write"}], "schema": "JSON {byKb}", "version": "v1 in key name", "corrupt_fallback": "JSON.parse + byKb presence check else {byKb:{}}; un-namespaced key"},
+
+    {"key": "deeptutor.voiceAutoplay.session:<scope|default>", "scope": "session", "sites": [{"file": "web/hooks/useVoiceAutoplay.ts", "line": 49, "op": "read"}, {"file": "web/hooks/useVoiceAutoplay.ts", "line": 62, "op": "write"}], "schema": "\"on\"|\"off\"", "version": "none", "corrupt_fallback": "strict match else null"},
+
+    {"key": "deeptutor.voiceAutoplay.prompted:<scope|default>", "scope": "session", "sites": [{"file": "web/hooks/useVoiceAutoplay.ts", "line": 169, "op": "write"}, {"file": "web/hooks/useVoiceAutoplay.ts", "line": 187, "op": "read"}], "schema": "\"1\"", "version": "none", "corrupt_fallback": "!==\"1\" -> prompt shown"},
+
+    {"key": "reading-learning", "scope": "session", "sites": [{"file": "web/components/reading/workspace/useLearningMode.ts", "line": 44, "op": "read"}, {"file": "web/components/reading/workspace/useLearningMode.ts", "line": 49, "op": "read"}, {"file": "web/components/reading/workspace/useLearningMode.ts", "line": 67, "op": "write"}, {"file": "web/components/reading/workspace/useLearningMode.ts", "line": 78, "op": "remove"}], "schema": "JSON snapshot (restoreReadingLearning validates)", "version": "none", "corrupt_fallback": "restore validator -> null; BARE un-namespaced key"},
+
+    {"key": "watching-browser:<userId|'local'>", "scope": "session", "sites": [{"file": "web/components/watching/WatchingBrowser.tsx", "line": 73, "op": "read"}, {"file": "web/components/watching/WatchingBrowser.tsx", "line": 110, "op": "read"}, {"file": "web/components/watching/WatchingBrowser.tsx", "line": 127, "op": "write"}, {"file": "web/components/watching/WatchingBrowser.tsx", "line": 163, "op": "remove"}], "schema": "JSON {scroll, items...}", "version": "none", "corrupt_fallback": "try/catch -> {} / 0; un-namespaced key family"}
+  ]
+}
