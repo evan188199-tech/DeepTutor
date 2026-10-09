@@ -36,6 +36,7 @@ from deeptutor.learning.storage import LearningStore
 
 if TYPE_CHECKING:
     from deeptutor.learning.scheduler import SpacedRepetitionScheduler
+    from deeptutor.learning.visual_practice import SemanticEvaluator
 
 
 # Long enough for a course title, short enough that a list row stays a row.
@@ -527,11 +528,18 @@ class LearningService:
         session_id: str = "",
         turn_id: str = "",
         visual_context: dict[str, Any] | None = None,
+        is_correct_override: bool | None = None,
     ) -> bool:
         """Mutate one aggregate with a grade without performing I/O."""
-        is_correct = bool(expected_answer) and grade_answer(
-            user_answer, expected_answer, question_type
-        )
+        if is_correct_override is None:
+            is_correct = bool(expected_answer) and grade_answer(
+                user_answer, expected_answer, question_type
+            )
+        else:
+            # A semantic visual verdict has already ruled on this answer; a
+            # near-miss string match must not upgrade a partial or contradicted
+            # explanation into full credit (#1901).
+            is_correct = is_correct_override
         # Capture the active retry before recording this answer graduates it.
         # Past retries on this or another question must not weaken later reviews.
         retrying = any(
@@ -855,12 +863,16 @@ class LearningService:
         scheduler: SpacedRepetitionScheduler | None = None,
         session_id: str = "",
         turn_id: str = "",
+        semantic_evaluator: SemanticEvaluator | None = None,
     ) -> tuple[LearningProgress, MasteryInteraction, bool]:
         """Grade and resolve an interaction in one idempotent transaction.
 
         Returns ``(progress, interaction, replayed)``.  A retry carrying the
         same ``question_id`` returns the stored result and never appends a
-        second attempt.
+        second attempt. ``semantic_evaluator`` is the optional on-demand
+        qualitative evaluator for free-form visual replies (#1901); it is
+        consulted only after the deterministic fast paths and its uncertainty
+        stays ungraded rather than recording negative evidence.
         """
 
         def grade(tx):
@@ -945,7 +957,9 @@ class LearningService:
                 pending.visual_context = account_for_recent_assistance(
                     pending.visual_context, tx.progress.quiz_attempts, pending.knowledge_point_id
                 )
-                visual_result, visual_diagnosis = evaluate_visual(pending, raw_answer)
+                visual_result, visual_diagnosis = evaluate_visual(
+                    pending, raw_answer, semantic_evaluator=semantic_evaluator
+                )
                 if (
                     tx.progress.explained_objectives.get(pending.knowledge_point_id, {}).get(
                         "timestamp", 0
@@ -973,6 +987,10 @@ class LearningService:
                     session_id=session_id,
                     turn_id=turn_id,
                     visual_context=pending.visual_context,
+                    # The visual verdict has already ruled; a near-miss string
+                    # match must not upgrade partial/incorrect into full credit,
+                    # nor downgrade an accepted paraphrase (#1901).
+                    is_correct_override=(visual_result == "correct") if visual_result else None,
                 )
             )
             if (
