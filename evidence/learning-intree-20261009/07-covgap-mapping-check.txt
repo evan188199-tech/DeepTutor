@@ -1,0 +1,6 @@
+scanner summary: evidence/coverage-gaps-20261007/summary.json @ 0c93b0823
+MISREPORTED-AS-NO-TEST: weak_top100 deeptutor/learning/assessment.py loc=557 fanin=6 <- ['test_assessment.py']
+MISREPORTED-AS-NO-TEST: weak_top100 deeptutor/tools/mastery_nav.py loc=500 fanin=2 <- ['test_mastery_navigation.py']
+MISREPORTED-AS-NO-TEST: weak_top100 deeptutor/learning/pending.py loc=283 fanin=8 <- ['test_mastery_choices.py']
+scanner mechanism: scan_coverage_gaps.py line 24 TESTS=ROOT/tests, line 78 tests=py_files(TESTS)
+totals: {"modules": 1005, "tests": 775, "intree_tests": 24, "noninit": 874, "zero_noninit": 96, "weak_single_test": 242}
