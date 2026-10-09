@@ -116,16 +116,19 @@ def read_notebook_entities() -> list[Entity]:
         return []
     try:
         index = json.loads(index_file.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("notebook snapshot index unreadable: %s (%s)", index_file, exc)
         return []
     notebooks = index.get("notebooks") or []
     out: list[Entity] = []
     for nb in notebooks:
         if not isinstance(nb, dict):
+            logger.warning("notebook snapshot skipped malformed index entry: %s", index_file)
             continue
         nb_id = nb.get("id")
         nb_name = nb.get("name") or nb_id
         if not nb_id:
+            logger.warning("notebook snapshot skipped index entry without id: %s", index_file)
             continue
         nb_file = ps.get_notebook_file(nb_id)
         if not nb_file.exists():
@@ -189,6 +192,7 @@ def read_cowriter_entities() -> list[Entity]:
             continue
         doc_id = m.get("id")
         if not doc_id:
+            logger.warning("cowriter snapshot skipped manifest without id: %s", manifest)
             continue
         title = m.get("title", "") or ""
         content = m.get("content", "") or ""
@@ -223,6 +227,7 @@ def read_book_entities() -> list[Entity]:
             continue
         book_id = m.get("id")
         if not book_id:
+            logger.warning("book snapshot skipped manifest without id: %s", manifest_path)
             continue
         title = m.get("title", "") or ""
         description = m.get("description", "") or ""
@@ -237,7 +242,8 @@ def read_book_entities() -> list[Entity]:
                     for p in (spine.get("pages") or [])
                     if isinstance(p, dict)
                 ]
-            except (OSError, json.JSONDecodeError):
+            except (OSError, json.JSONDecodeError) as exc:
+                logger.warning("book snapshot skipped corrupt spine: %s (%s)", spine_path, exc)
                 page_titles = []
         content = "\n\n".join(
             part
@@ -305,11 +311,15 @@ def _partner_session_entity(path, partner_id: str, partner_name: str) -> Entity 
                     continue
                 try:
                     obj = json.loads(raw)
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as exc:
+                    logger.warning(
+                        "partner snapshot skipped corrupt session line: %s (%s)", path, exc
+                    )
                     continue
                 if isinstance(obj, dict):
                     records.append(obj)
-    except OSError:
+    except OSError as exc:
+        logger.warning("partner snapshot skipped unreadable session file: %s (%s)", path, exc)
         return None
 
     blocks: list[str] = []

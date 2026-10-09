@@ -16,12 +16,15 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Iterator
 
 from deeptutor.services.memory.paths import Surface, memory_root
 from deeptutor.services.memory.snapshot.entity import ChangeEntry
+
+logger = logging.getLogger(__name__)
 
 
 def snapshot_dir(surface: Surface) -> Path:
@@ -92,7 +95,8 @@ def iter_changes(surface: Surface) -> Iterator[ChangeEntry]:
                 continue
             try:
                 obj = json.loads(raw)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as exc:
+                logger.warning("change log skipped corrupt line: %s (%s)", path, exc)
                 continue
             yield ChangeEntry(
                 ts=obj.get("ts", ""),
@@ -109,5 +113,5 @@ def clear_changes(surface: Surface) -> None:
     if path.exists():
         try:
             path.unlink()
-        except OSError:
-            pass
+        except OSError as exc:
+            logger.warning("change log deletion failed: %s (%s)", path, exc)

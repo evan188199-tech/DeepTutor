@@ -278,3 +278,135 @@ def test_corrupt_book_manifest_skipped_with_warning(
     assert [e.id for e in entities] == ["ok"]
     warnings = _warn_records(caplog)
     assert any(str(corrupt) in w for w in warnings)
+
+
+def test_corrupt_notebook_index_warns_and_empties_surface(
+    snapshot_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    index = snapshot_tree / "notebook" / "notebooks_index.json"
+    index.parent.mkdir(parents=True)
+    index.write_text("{ broken", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_notebook_entities()
+
+    assert entities == []
+    warnings = _warn_records(caplog)
+    assert any(str(index) in w for w in warnings)
+
+
+def test_malformed_notebook_index_entries_skipped_with_warning(
+    snapshot_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    index = snapshot_tree / "notebook" / "notebooks_index.json"
+    index.parent.mkdir(parents=True)
+    index.write_text(
+        json.dumps({"notebooks": ["not-an-object", {"name": "NoId"}, {"id": "ok", "name": "Ok"}]}),
+        encoding="utf-8",
+    )
+    good = snapshot_tree / "notebook" / "ok.json"
+    good.write_text(
+        json.dumps({"records": [{"id": "r1", "title": "T", "output": "O"}]}),
+        encoding="utf-8",
+    )
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_notebook_entities()
+
+    assert [e.id for e in entities] == ["r1"]
+    warnings = _warn_records(caplog)
+    # one warning for the non-object entry, one for the id-less entry
+    assert sum(str(index) in w for w in warnings) == 2
+
+
+def test_cowriter_manifest_without_id_skipped_with_warning(
+    snapshot_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    docs = snapshot_tree / "co_writer" / "documents"
+    bad_dir = docs / "doc_bad"
+    bad_dir.mkdir(parents=True)
+    manifest = bad_dir / "manifest.json"
+    manifest.write_text(json.dumps({"title": "NoId"}), encoding="utf-8")
+    good_dir = docs / "doc_ok"
+    good_dir.mkdir()
+    (good_dir / "manifest.json").write_text(
+        json.dumps({"id": "ok", "title": "Doc", "content": "C"}),
+        encoding="utf-8",
+    )
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_cowriter_entities()
+
+    assert [e.id for e in entities] == ["ok"]
+    warnings = _warn_records(caplog)
+    assert any(str(manifest) in w for w in warnings)
+
+
+def test_book_manifest_without_id_and_corrupt_spine_warn(
+    snapshot_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    books = snapshot_tree / "book"
+    bad_dir = books / "book_bad"
+    bad_dir.mkdir(parents=True)
+    no_id = bad_dir / "manifest.json"
+    no_id.write_text(json.dumps({"title": "NoId"}), encoding="utf-8")
+    spine_dir = books / "book_spine"
+    spine_dir.mkdir()
+    (spine_dir / "manifest.json").write_text(
+        json.dumps({"id": "sp", "title": "Sp"}), encoding="utf-8"
+    )
+    spine = spine_dir / "spine.json"
+    spine.write_text("{ broken", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_book_entities()
+
+    # Corrupt spine degrades to no page titles; the entity survives.
+    assert [e.id for e in entities] == ["sp"]
+    assert "## Pages" not in entities[0].content
+    warnings = _warn_records(caplog)
+    assert any(str(no_id) in w for w in warnings)
+    assert any(str(spine) in w for w in warnings)
+
+
+def test_partner_corrupt_session_line_skipped_with_warning(
+    partner_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    pdir = partner_tree / "partners" / "bot1"
+    pdir.mkdir(parents=True)
+    sessions = pdir / "sessions"
+    sessions.mkdir()
+    sess = sessions / "web:s1.jsonl"
+    sess.write_text(
+        '{"role": "user", "content": "q", "timestamp": "2026-06-16T10:00:00"}\n'
+        "{ not json\n"
+        '{"role": "assistant", "content": "a", "timestamp": "2026-06-16T10:01:00"}\n',
+        encoding="utf-8",
+    )
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_partner_entities()
+
+    assert len(entities) == 1
+    assert "### user" in entities[0].content
+    assert "### assistant" in entities[0].content
+    warnings = _warn_records(caplog)
+    assert any(str(sess) in w for w in warnings)
+
+
+def test_partner_unreadable_session_file_skipped_with_warning(
+    partner_tree: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    pdir = partner_tree / "partners" / "bot1"
+    pdir.mkdir(parents=True)
+    sessions = pdir / "sessions"
+    sessions.mkdir()
+    # A directory where the JSONL file should be makes open() fail with OSError.
+    (sessions / "bad.jsonl").mkdir()
+
+    with caplog.at_level(logging.WARNING):
+        entities = adapters.read_partner_entities()
+
+    assert entities == []
+    warnings = _warn_records(caplog)
+    assert any(str(sessions / "bad.jsonl") in w for w in warnings)
