@@ -1,0 +1,651 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import re
+import sqlite3
+import zipfile
+
+import pytest
+
+from deeptutor.services.path_service import get_path_service
+from deeptutor.services.session import get_sqlite_session_store
+from deeptutor.services.workspace.context import workspace_context
+from deeptutor.services.workspace.data_migration import discover, export_data, migrate_data, preview
+from deeptutor.services.workspace.models import WorkspaceError
+from tests.services.workspace.test_data_scope import account as account
+
+
+def test_independent_task_board_is_not_part_of_workspace_data_migration(account):
+    from deeptutor.services.task_board import CreateCard, UpdateCard, get_task_board_store
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        store = get_task_board_store()
+        card = store.create(CreateCard(title="Review examples")).cards[0]
+        expected = store.update(card.id, UpdateCard(status="done", archived=True))
+    assert "task-board" not in {row["feature"] for row in discover()["features"]}
+    with workspace_context(target):
+        assert get_task_board_store().read() == expected
+    with workspace_context():
+        assert get_task_board_store().read() == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("interrupt_links", [False, True])
+async def test_conversation_move_preserves_task_links_and_recovers_cleanup(
+    account, monkeypatch, interrupt_links
+):
+    from deeptutor.services.task_board import (
+        CreateCard,
+        LinkStatus,
+        LinkTasks,
+        TaskBoardStore,
+        get_task_board_store,
+    )
+    from deeptutor.services.workspace.data_migration import operations, recover_operation
+    from deeptutor.services.workspace.session_move import move_chat
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    session = await get_sqlite_session_store().create_session("Task conversation")
+    board = get_task_board_store()
+    first = board.create(CreateCard(title="First")).cards[-1]
+    second = board.create(CreateCard(title="Latest")).cards[-1]
+    board.link_tasks(session["id"], LinkTasks(task_ids=[first.id, second.id]))
+    board.link_status(session["id"], LinkStatus(enabled=False))
+    original = TaskBoardStore.move_session_links
+    if interrupt_links:
+
+        def interrupted(*_args, **_kwargs):
+            raise RuntimeError("interrupted task association cleanup")
+
+        monkeypatch.setattr(TaskBoardStore, "move_session_links", interrupted)
+        with pytest.raises(RuntimeError, match="cleanup"):
+            move_chat(session["id"], target)
+        operation = operations()[0]
+        assert operation["status"] == "cleanup_required"
+        monkeypatch.setattr(TaskBoardStore, "move_session_links", original)
+        assert recover_operation(operation["id"])["status"] == "completed"
+    else:
+        move_chat(session["id"], target)
+    links = board.read().session_links
+    assert len(links) == 1
+    assert links[0].workspace_id == target
+    assert links[0].task_ids == [first.id, second.id]
+    assert not links[0].status_link_enabled
+    assert all(card.workspace_id is None for card in board.read().cards)
+    with workspace_context(target):
+        assert await get_sqlite_session_store().get_session(session["id"]) is not None
+
+
+@pytest.mark.asyncio
+async def test_migration_keeps_messages_branches_questions_and_source_backup(account):
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        store = get_sqlite_session_store()
+        session = await store.create_session("A learning conversation")
+        user_id = await store.add_message(session["id"], "user", "question")
+        reply_id = await store.add_message(
+            session["id"], "assistant", "answer", parent_message_id=user_id
+        )
+        await store.upsert_notebook_entries(
+            session["id"],
+            [{"question_id": "question-one", "question": "Keep this question"}],
+        )
+        notebook_id = (await store.find_notebook_entry(session["id"], "question-one"))["id"]
+        await store.append_assessment_attempt(
+            session["id"],
+            notebook_id,
+            {
+                "attempt_id": "attempt-one",
+                "question_id": "question-one",
+                "result": "correct",
+            },
+        )
+        paths = get_path_service()
+        book = paths.get_book_dir() / "book_one"
+        book.mkdir(parents=True)
+        (book / "inputs.json").write_text(
+            json.dumps(
+                {
+                    "chat_selections": [
+                        {"session_id": session["id"], "message_ids": [user_id, reply_id]}
+                    ]
+                }
+            )
+        )
+    plan = preview("", target, ["book"])
+    assert session["id"] in plan["session_ids"]
+    assert not plan["blockers"]
+    result = migrate_data("", target, ["book"])
+    assert result["status"] == "completed"
+    backup = Path(result["recovery_path"]) / "snapshot" / "sessions" / "chat_history.db"
+    with sqlite3.connect(backup) as conn:
+        assert conn.execute("SELECT count(*) FROM messages").fetchone()[0] == 2
+    with workspace_context(target):
+        migrated = get_sqlite_session_store()
+        saved = await migrated.get_session(session["id"])
+        assert saved["preferences"]["workspace_id"] == target
+        messages = await migrated.get_messages(session["id"])
+        assert [row["id"] for row in messages] == [user_id, reply_id]
+        assert messages[1]["parent_message_id"] == user_id
+        questions = await migrated.list_notebook_entries(session_id=session["id"])
+        assert questions["items"][0]["question"] == "Keep this question"
+        attempts = await migrated.list_assessment_attempts(
+            session["id"], question_id="question-one"
+        )
+        assert attempts[0]["attempt_id"] == "attempt-one"
+        assert (get_path_service().get_book_dir() / "book_one" / "inputs.json").exists()
+    with workspace_context():
+        assert await store.get_session(session["id"]) is None
+        assert not (await store.list_notebook_entries(session_id=session["id"]))["items"]
+        assert not await store.list_assessment_attempts(session["id"], question_id="question-one")
+        assert not book.exists()
+
+
+@pytest.mark.asyncio
+async def test_active_turn_and_conflicting_target_refuse_without_changes(account):
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        store = get_sqlite_session_store()
+        session = await store.create_session()
+        turn = await store.create_turn(session["id"])
+    with pytest.raises(WorkspaceError, match="active"):
+        migrate_data("", target, ["chat"])
+    assert await store.get_session(session["id"]) is not None
+    await store.update_turn_status(turn["id"], "completed")
+    with workspace_context(target):
+        book = get_path_service().get_book_dir()
+        book.mkdir(parents=True)
+        (book / "existing.txt").write_text("keep")
+    with workspace_context():
+        original = get_path_service().get_book_dir()
+        original.mkdir(parents=True, exist_ok=True)
+        (original / "source.txt").write_text("keep")
+    with pytest.raises(WorkspaceError, match="already contains"):
+        migrate_data("", target, ["book"])
+    assert (book / "existing.txt").read_text() == "keep"
+    assert (original / "source.txt").read_text() == "keep"
+
+
+def test_export_checksums_and_symlink_exclusion(account, tmp_path):
+    root = get_path_service().get_book_dir()
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "notes.txt").write_text("notes")
+    export = export_data("", ["book"])
+    from deeptutor.services.workspace.data_migration import export_path
+
+    with zipfile.ZipFile(export_path(export["id"])) as archive:
+        assert archive.read("book/notes.txt") == b"notes"
+        manifest = json.loads(archive.read("manifest.json"))
+        assert "notes.txt" in manifest["sha256"]["book"]
+    secret = tmp_path / "outside.txt"
+    secret.write_text("outside")
+    (root / "link").symlink_to(secret)
+    assert next(row for row in discover()["features"] if row["feature"] == "book")["error"]
+    with pytest.raises(WorkspaceError, match="Symbolic"):
+        export_data("", ["book"])
+
+
+@pytest.mark.asyncio
+async def test_reverse_dependencies_include_books_but_not_unrelated_chats(account):
+    with workspace_context():
+        store = get_sqlite_session_store()
+        a = await store.create_session("Cited")
+        b = await store.create_session("Unrelated")
+        root = get_path_service().get_book_dir() / "book_reverse"
+        root.mkdir(parents=True)
+        (root / "inputs.json").write_text(
+            json.dumps({"chat_selections": [{"session_id": a["id"]}]})
+        )
+        from deeptutor.services.workspace.data_migration import _sessions
+        from deeptutor.services.workspace.dependencies import dependency_closure
+
+        features, ids = dependency_closure(
+            get_path_service(), _sessions(get_path_service()), ["chat"], session_ids={a["id"]}
+        )
+        assert "book" in features
+        assert ids == {a["id"]}
+        assert b["id"] not in ids
+
+
+@pytest.mark.asyncio
+async def test_move_chat_preserves_presented_file_and_denies_source(account):
+    from deeptutor.services.workspace.session_move import move_chat
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        store = get_sqlite_session_store()
+        session = await store.create_session("Chat with file")
+        output = account.create_runtime_context(
+            capability="chat", session_id=session["id"], turn_id="turn_one", workspace_id=""
+        )
+        (Path(output.output_dir) / "hello.txt").write_text("hello")
+        item = account.publish(
+            account.general_binding(), [{"path": output.logical_output_dir + "/hello.txt"}]
+        )[0]
+        await store.add_message(session["id"], "assistant", item.url)
+        moved = move_chat(session["id"], target)
+        assert moved["preferences"]["workspace_id"] == target
+        with pytest.raises(WorkspaceError):
+            account.resolve_published_item(item.workspace_id, item.workspace_item_id)
+        assert not (Path(output.output_dir) / "hello.txt").exists()
+    with workspace_context(target):
+        path, updated = account.resolve_published_item(item.workspace_id, item.workspace_item_id)
+        assert path.read_text() == "hello"
+        assert updated.data_workspace_id == target
+        messages = await get_sqlite_session_store().get_messages(session["id"])
+        assert "dt_workspace=" + target in messages[0]["content"]
+
+
+@pytest.mark.asyncio
+async def test_crash_after_session_commit_can_restore_both_stores(account, monkeypatch):
+    from deeptutor.services.workspace import session_transfer
+    from deeptutor.services.workspace.data_migration import (
+        assert_no_pending_recovery,
+        operations,
+        recover_operation,
+    )
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    store = get_sqlite_session_store()
+    session = await store.create_session("Recover me")
+    await store.add_message(session["id"], "user", "retained")
+    transfer = session_transfer.transfer_sessions
+
+    def crash(*args, **kwargs):
+        transfer(*args, **kwargs)
+        raise KeyboardInterrupt("simulated process termination")
+
+    monkeypatch.setattr(session_transfer, "transfer_sessions", crash)
+    with pytest.raises(KeyboardInterrupt):
+        migrate_data("", target, ["chat"])
+    op = operations()[0]
+    assert op["status"] == "transferring"
+    with pytest.raises(WorkspaceError, match="recovery"):
+        assert_no_pending_recovery()
+    assert recover_operation(op["id"])["status"] == "recovered"
+    assert (await store.get_messages(session["id"]))[0]["content"] == "retained"
+    with workspace_context(target):
+        assert await get_sqlite_session_store().get_session(session["id"]) is None
+    assert_no_pending_recovery()
+
+
+def test_unreadable_journal_blocks_only_migration_paths(account):
+    from deeptutor.services.workspace.activity import acquire_activity
+    from deeptutor.services.workspace.data_migration import (
+        _journal_root,
+        assert_no_pending_recovery,
+        operations,
+        recover_operation,
+    )
+
+    valid_id = "1" * 32
+    valid_dir = _journal_root() / valid_id
+    valid_dir.mkdir(parents=True, exist_ok=True)
+    (valid_dir / "operation.json").write_text(
+        json.dumps({"id": valid_id, "status": "completed", "created_at": "2026-01-01T00:00:00Z"})
+    )
+    corrupt_id = "0" * 32
+    corrupt_dir = _journal_root() / corrupt_id
+    corrupt_dir.mkdir(parents=True, exist_ok=True)
+    corrupt_journal = corrupt_dir / "operation.json"
+    corrupt_journal.write_text("{ truncated journal")
+
+    # Settings → Data migration lists the unreadable journal instead of hiding it.
+    listed = {row["id"]: row for row in operations()}
+    assert listed[corrupt_id]["status"] == "unreadable"
+    assert str(corrupt_journal) in listed[corrupt_id]["error"]
+    # The per-request precheck (and therefore normal requests) keeps working.
+    assert_no_pending_recovery()
+    handle = acquire_activity()
+    handle.close()
+    # Migration-class prechecks reject the journal and name its full path.
+    with pytest.raises(WorkspaceError, match=re.escape(str(corrupt_journal))):
+        assert_no_pending_recovery(reject_unreadable=True)
+    with pytest.raises(WorkspaceError, match=re.escape(str(corrupt_journal))):
+        migrate_data("", account.create_workspace("Destination")["workspace_id"], ["chat"])
+    snapshot = corrupt_dir / "snapshot" / "chat.db"
+    snapshot.parent.mkdir()
+    snapshot.write_bytes(b"preserve this recovery copy")
+    # Failed recovery must not hide the blocker or overwrite recovery evidence.
+    for _ in range(2):
+        with pytest.raises(WorkspaceError, match="preserved for manual repair"):
+            recover_operation(corrupt_id)
+        assert corrupt_journal.read_text() == "{ truncated journal"
+        assert snapshot.read_bytes() == b"preserve this recovery copy"
+        assert not (corrupt_dir / "operation.json.corrupt").exists()
+        with pytest.raises(WorkspaceError, match="manual repair"):
+            assert_no_pending_recovery(reject_unreadable=True)
+        assert_no_pending_recovery()
+
+
+def test_crash_during_copy_tracks_partial_destination(account, monkeypatch):
+    import shutil
+
+    from deeptutor.services.workspace.data_migration import operations, recover_operation
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    source = get_path_service().get_book_dir()
+    source.mkdir(parents=True, exist_ok=True)
+    (source / "draft.md").write_text("keep source")
+
+    def interrupted(src, dst, **kwargs):
+        Path(dst).mkdir(parents=True, exist_ok=True)
+        (Path(dst) / "partial.txt").write_text("partial")
+        raise KeyboardInterrupt("simulated process termination")
+
+    monkeypatch.setattr(shutil, "copytree", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        migrate_data("", target, ["book"])
+    op = operations()[0]
+    assert recover_operation(op["id"])["status"] == "recovered"
+    assert (source / "draft.md").read_text() == "keep source"
+    with workspace_context(target):
+        assert not get_path_service().get_book_dir().exists()
+
+
+@pytest.mark.asyncio
+async def test_legacy_bindings_adopt_default_once_without_copying_materials(account):
+    from deeptutor.services.workspace.session_move import migrate_legacy_bindings
+
+    target = account.create_workspace("Legacy")["workspace_id"]
+    store = get_sqlite_session_store()
+    session = await store.create_session()
+    await store.update_session_preferences(session["id"], {"workspace_id": target})
+    assert migrate_legacy_bindings() == 1
+    prefs = (await store.get_session(session["id"]))["preferences"]
+    assert prefs["workspace_id"] == ""
+    assert prefs["legacy_workspace_id"] == target
+    assert migrate_legacy_bindings() == 0
+    with workspace_context(target):
+        assert await get_sqlite_session_store().get_session(session["id"]) is None
+
+
+def test_activity_leases_are_shared_and_exclude_migration(account):
+    from deeptutor.services.workspace.activity import data_activity
+
+    with data_activity(), data_activity():
+        with pytest.raises(WorkspaceError, match="busy"):
+            with data_activity(exclusive=True):
+                pass
+    with data_activity(exclusive=True):
+        with pytest.raises(WorkspaceError, match="busy"):
+            with data_activity():
+                pass
+
+
+def test_historical_data_can_be_retained_in_workspace_and_exported(account):
+    from deeptutor.multi_user.paths import get_account_path_service
+
+    origin = get_account_path_service().workspace_root / "agent"
+    origin.mkdir()
+    (origin / "old-result.md").write_text("Historical result /files/outputs/original.txt")
+    target = account.create_workspace("Historical")["workspace_id"]
+    result = migrate_data("", target, ["historical_agent"])
+    assert result["status"] == "completed"
+    assert not origin.exists()
+    with workspace_context(target):
+        saved = (
+            get_path_service().get_workspace_dir()
+            / "historical"
+            / "historical_agent"
+            / "old-result.md"
+        )
+        assert saved.read_text() == "Historical result /files/outputs/original.txt"
+    exported = export_data(target, ["historical_agent"])
+    from deeptutor.services.workspace.data_migration import export_path
+
+    with zipfile.ZipFile(export_path(exported["id"])) as archive:
+        assert archive.read("historical_agent/old-result.md").startswith(b"Historical result")
+
+
+@pytest.mark.asyncio
+async def test_custom_attachment_root_moves_original_files(account, monkeypatch, tmp_path):
+    from deeptutor.services.storage import attachment_store
+    from deeptutor.services.workspace.session_move import move_chat
+
+    external = tmp_path / "uploads"
+    monkeypatch.setattr(
+        attachment_store, "load_system_settings", lambda: {"chat_attachment_dir": str(external)}
+    )
+    target = account.create_workspace("With attachment")["workspace_id"]
+    session = await get_sqlite_session_store().create_session()
+    with workspace_context():
+        url = await attachment_store.get_attachment_store().put(
+            session_id=session["id"], attachment_id="doc", filename="notes.txt", data=b"original"
+        )
+        await get_sqlite_session_store().add_message(session["id"], "user", url)
+        move_chat(session["id"], target)
+    assert not (external / session["id"] / "doc_notes.txt").exists()
+    with workspace_context(target):
+        path = attachment_store.get_attachment_store().resolve_path(
+            session_id=session["id"], attachment_id="doc", filename="notes.txt"
+        )
+        assert path.read_bytes() == b"original"
+
+
+@pytest.mark.asyncio
+async def test_moving_chat_moves_legacy_attachment_into_selected_workspace(account):
+    from deeptutor.services.storage.attachment_store import (
+        _legacy_attachment_root,
+        get_attachment_store,
+    )
+    from deeptutor.services.workspace.session_move import move_chat
+
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        session = await get_sqlite_session_store().create_session()
+        legacy = _legacy_attachment_root() / session["id"] / "doc_notes.txt"
+        legacy.parent.mkdir(parents=True, exist_ok=True)
+        legacy.write_bytes(b"old upload")
+        await get_sqlite_session_store().add_message(
+            session["id"], "user", "/files/attachments/{}/doc/notes.txt".format(session["id"])
+        )
+        move_chat(session["id"], target)
+        assert not legacy.exists()
+        assert not account.search(account.general_binding(), "notes.txt")
+    with workspace_context(target):
+        store = get_attachment_store()
+        resolved = store.resolve_path(
+            session_id=session["id"], attachment_id="doc", filename="notes.txt"
+        )
+        assert (
+            resolved
+            == account.binding_by_id(target).root
+            / "chat"
+            / "attachments"
+            / session["id"]
+            / "doc_notes.txt"
+        )
+        assert resolved.read_bytes() == b"old upload"
+        assert account.search(account.binding_by_id(target), "notes.txt")[0]["path"].startswith(
+            "chat/attachments/"
+        )
+
+
+def test_initialized_empty_feature_can_receive_migration(account):
+    target = account.create_workspace("Empty initialized")["workspace_id"]
+    source = get_path_service().get_workspace_dir() / "reading"
+    source.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(source / "_catalog.sqlite3") as conn:
+        conn.execute("CREATE TABLE materials(id TEXT PRIMARY KEY)")
+        conn.execute("INSERT INTO materials VALUES ('material')")
+    with workspace_context(target):
+        destination = get_path_service().get_workspace_dir() / "reading"
+        destination.mkdir(parents=True, exist_ok=True)
+        with sqlite3.connect(destination / "_catalog.sqlite3") as conn:
+            conn.execute("CREATE TABLE materials(id TEXT PRIMARY KEY)")
+    assert not preview("", target, ["reading"])["blockers"]
+    assert migrate_data("", target, ["reading"])["status"] == "completed"
+    with sqlite3.connect(destination / "_catalog.sqlite3") as conn:
+        assert conn.execute("SELECT id FROM materials").fetchone() == ("material",)
+
+
+def test_explicit_outputs_include_files_without_sessions(account):
+    from deeptutor.services.workspace.data_migration import _feature_path, export_path
+
+    root = _feature_path(get_path_service(), "outputs")
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "orphan.txt").write_text("preserved")
+    result = export_data("", ["outputs"])
+    with zipfile.ZipFile(export_path(result["id"])) as archive:
+        assert archive.read("outputs/orphan.txt") == b"preserved"
+
+
+def test_legacy_adoption_waits_for_recovery(account):
+    from deeptutor.services.workspace.data_migration import _journal_root
+    from deeptutor.services.workspace.session_move import migrate_legacy_bindings
+
+    root = _journal_root() / ("a" * 32)
+    root.mkdir()
+    (root / "operation.json").write_text(json.dumps({"status": "copying"}))
+    with pytest.raises(WorkspaceError, match="recovery"):
+        migrate_legacy_bindings()
+    assert not (_journal_root() / "default-adoption-v1.json").exists()
+
+
+@pytest.mark.asyncio
+async def test_old_request_snapshot_keeps_cited_material(account):
+    from deeptutor.services.workspace.data_migration import _sessions
+    from deeptutor.services.workspace.dependencies import dependency_closure
+
+    store = get_sqlite_session_store()
+    row = await store.create_session("Earlier citation")
+    await store.add_message(
+        row["id"],
+        "user",
+        "Read it",
+        metadata={"request_snapshot": {"readingReferences": [{"material_id": "old"}]}},
+    )
+    features, ids = dependency_closure(
+        get_path_service(), _sessions(get_path_service()), ["chat"], session_ids={row["id"]}
+    )
+    assert "reading" in features
+    assert row["id"] in ids
+
+
+@pytest.mark.asyncio
+async def test_corrupt_book_manifest_and_feature_json_are_skipped_with_warnings(account, caplog):
+    from deeptutor.services.workspace.data_migration import _sessions
+    from deeptutor.services.workspace.dependencies import dependency_closure
+
+    with workspace_context():
+        store = get_sqlite_session_store()
+        cited = await store.create_session("Cited by good book")
+        notebook_chat = await store.create_session("Cited by notebook document")
+        books = get_path_service().get_book_dir()
+        corrupt_book = books / "book_corrupt"
+        corrupt_book.mkdir(parents=True, exist_ok=True)
+        (corrupt_book / "manifest.json").write_text("{corrupt manifest payload")
+        good_book = books / "book_good"
+        good_book.mkdir(parents=True, exist_ok=True)
+        (good_book / "inputs.json").write_text(
+            json.dumps(
+                {
+                    "chat_selections": [{"session_id": cited["id"]}],
+                    "notebook_refs": ["notebook-one"],
+                }
+            )
+        )
+        notebook_dir = get_path_service().get_workspace_dir() / "notebook"
+        notebook_dir.mkdir(parents=True, exist_ok=True)
+        (notebook_dir / "corrupt.json").write_text("[corrupt notebook payload")
+        (notebook_dir / "refs.json").write_text(
+            json.dumps({"entries": [{"kind": "chat", "ref_id": notebook_chat["id"]}]})
+        )
+
+        warnings: list[str] = []
+        with caplog.at_level("WARNING", logger="deeptutor.services.workspace.dependencies"):
+            features, ids = dependency_closure(
+                get_path_service(),
+                _sessions(get_path_service()),
+                ["chat"],
+                session_ids={cited["id"]},
+                warnings=warnings,
+            )
+        assert "book" in features
+        assert "notebook" in features
+        assert cited["id"] in ids
+        assert notebook_chat["id"] in ids
+        assert any("book_corrupt/manifest.json" in message for message in warnings)
+        assert any(str(notebook_dir / "corrupt.json") in message for message in warnings)
+        assert not any("payload" in message for message in warnings)
+        logged = [record.getMessage() for record in caplog.records]
+        assert any("book_corrupt/manifest.json" in message for message in logged)
+        assert any(str(notebook_dir / "corrupt.json") in message for message in logged)
+
+
+@pytest.mark.asyncio
+async def test_corrupt_message_metadata_is_skipped_with_session_warning(account):
+    from deeptutor.services.workspace.data_migration import _sessions
+    from deeptutor.services.workspace.dependencies import dependency_closure
+
+    with workspace_context():
+        store = get_sqlite_session_store()
+        row = await store.create_session("Damaged metadata")
+        await store.add_message(row["id"], "user", "hello")
+        with sqlite3.connect(get_path_service().get_chat_history_db()) as conn:
+            conn.execute(
+                "UPDATE messages SET metadata_json='{corrupt' WHERE session_id=?",
+                (row["id"],),
+            )
+
+        warnings: list[str] = []
+        features, ids = dependency_closure(
+            get_path_service(),
+            _sessions(get_path_service()),
+            ["chat"],
+            session_ids={row["id"]},
+            warnings=warnings,
+        )
+        assert row["id"] in ids
+        assert any(row["id"] in message and "metadata" in message for message in warnings)
+        assert not any("corrupt" in message for message in warnings)
+
+
+def test_migration_preview_returns_skip_warnings(account):
+    target = account.create_workspace("Destination")["workspace_id"]
+    with workspace_context():
+        books = get_path_service().get_book_dir()
+        corrupt_book = books / "book_corrupt"
+        corrupt_book.mkdir(parents=True, exist_ok=True)
+        (corrupt_book / "manifest.json").write_text("{corrupt")
+    plan = preview("", target, ["book"])
+    assert "warnings" in plan
+    assert any("book_corrupt/manifest.json" in message for message in plan["warnings"])
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        "{}",
+        "[]",
+        '{"status":"completed"}',
+        '{"id":"ID","status":"unknown"}',
+        '{"id":"ID","status":"copying","plan":{}}',
+        '{"id":"ID","status":[]}',
+    ],
+)
+def test_structurally_invalid_journal_requires_manual_repair(account, payload):
+    from deeptutor.services.workspace.data_migration import (
+        _journal_root,
+        assert_no_pending_recovery,
+        operations,
+        recover_operation,
+    )
+
+    operation_id = "a" * 32
+    root = _journal_root() / operation_id
+    root.mkdir()
+    journal = root / "operation.json"
+    content = payload.replace("ID", operation_id)
+    journal.write_text(content)
+
+    assert operations()[0]["status"] == "unreadable"
+    assert_no_pending_recovery()
+    with pytest.raises(WorkspaceError, match="manual repair"):
+        assert_no_pending_recovery(reject_unreadable=True)
+    with pytest.raises(WorkspaceError, match="manual repair"):
+        recover_operation(operation_id)
+    assert journal.read_text() == content

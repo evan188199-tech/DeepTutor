@@ -1,0 +1,166 @@
+from deeptutor.services.provider_registry import find_by_name, find_gateway
+
+
+def test_nvidia_nim_gateway_detection_by_key_and_base() -> None:
+    spec = find_by_name("nvidia_nim")
+
+    assert spec is not None
+    assert spec.supports_stream_options is False
+    assert find_gateway(api_key="nvapi-test-key") == spec
+    assert find_gateway(api_base="https://integrate.api.nvidia.com/v1") == spec
+
+
+def test_atlascloud_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("atlascloud")
+
+    assert spec is not None
+    assert spec.display_name == "Atlas Cloud"
+    assert spec.env_key == "ATLASCLOUD_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.atlascloud.ai/v1"
+    assert find_by_name("atlas-cloud") == spec
+    assert find_by_name("atlas_cloud") == spec
+    assert find_by_name("atlas") == spec
+    assert find_gateway(api_base="https://api.atlascloud.ai/v1") == spec
+
+
+def test_edenai_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("edenai")
+
+    assert spec is not None
+    assert spec.display_name == "Eden AI"
+    assert spec.env_key == "EDENAI_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.edenai.run/v3"
+    assert find_by_name("eden-ai") == spec
+    assert find_by_name("eden_ai") == spec
+    assert find_gateway(api_base="https://api.edenai.run/v3") == spec
+
+
+def test_novita_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("novita")
+
+    assert spec is not None
+    assert spec.display_name == "Novita AI"
+    assert spec.env_key == "NOVITA_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.novita.ai/openai"
+    assert find_by_name("novita-ai") == spec
+    assert find_by_name("novita_ai") == spec
+    assert find_gateway(api_base="https://api.novita.ai/openai") == spec
+
+
+def test_unifically_provider_lookup_and_base_detection() -> None:
+    spec = find_by_name("unifically")
+
+    assert spec is not None
+    assert spec.display_name == "Unifically"
+    assert spec.env_key == "UNIFICALLY_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.unifically.com/v1"
+    assert find_gateway(api_base="https://api.unifically.com/v1") == spec
+
+
+def test_cheaperinference_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("cheaperinference")
+
+    assert spec is not None
+    assert spec.display_name == "Cheaper Inference"
+    assert spec.env_key == "CHEAPER_INFERENCE_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.cheaperinference.com/v1"
+    assert find_by_name("cheaper-inference") == spec
+    assert find_by_name("cheaper_inference") == spec
+    assert find_gateway(api_base="https://api.cheaperinference.com/v1") == spec
+
+
+def test_api_route_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("api_route")
+
+    assert spec is not None
+    assert spec.display_name == "API Route"
+    assert spec.env_key == "API_ROUTE_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://global.api-route.com/v1"
+    assert find_by_name("api-route") == spec
+    assert find_by_name("API Route") == spec
+    assert find_gateway(api_base="https://global.api-route.com/v1") == spec
+
+
+def test_requesty_provider_lookup_and_base_detection() -> None:
+    spec = find_by_name("requesty")
+
+    assert spec is not None
+    assert spec.display_name == "Requesty"
+    assert spec.env_key == "REQUESTY_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://router.requesty.ai/v1"
+    assert find_gateway(api_base="https://router.requesty.ai/v1") == spec
+    assert find_gateway(api_base="https://router.eu.requesty.ai/v1") == spec
+
+
+def test_futureinfra_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("futureinfra")
+
+    assert spec is not None
+    assert spec.display_name == "FutureInfra"
+    assert spec.env_key == "FUTUREINFRA_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://futureinfra.ai/v1/ai"
+    assert find_by_name("FutureInfra") == spec
+    assert find_by_name("future-infra") == spec
+    assert find_by_name("future_infra") == spec
+    assert find_gateway(api_base="https://futureinfra.ai/v1/ai") == spec
+
+
+def test_opper_provider_lookup_and_base_detection() -> None:
+    spec = find_by_name("opper")
+
+    assert spec is not None
+    assert spec.display_name == "Opper"
+    assert spec.env_key == "OPPER_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.opper.ai/v3/compat"
+    assert find_by_name("Opper") == spec
+    assert find_gateway(api_base="https://api.opper.ai/v3/compat") == spec
+    # Detection keys on the API host, so a base URL that merely contains
+    # "opper" (e.g. a self-hosted "copper" endpoint) is not claimed.
+    assert find_gateway(api_base="https://llm.copper.example/v1") is None
+
+
+def test_openai_codex_is_not_detected_from_api_base() -> None:
+    assert find_gateway(api_base="https://codex.example.com/v1") is None
+
+
+def test_openai_codex_provider_is_oauth_backed() -> None:
+    spec = find_by_name("openai_codex")
+
+    assert spec is not None
+    assert spec.auth_mode == "oauth"
+    assert spec.env_key == ""
+
+
+def test_github_copilot_is_oauth_backed() -> None:
+    spec = find_by_name("github_copilot")
+
+    assert spec is not None
+    assert spec.auth_mode == "oauth"
+    assert spec.env_key == ""
+
+
+def test_orcarouter_is_not_a_builtin_provider() -> None:
+    assert find_by_name("orcarouter") is None
+    assert find_by_name("orca_router") is None
+    assert find_by_name("orca-router") is None
+    assert find_gateway(api_key="sk-orca-test-key") is None
+    assert find_gateway(api_base="https://api.orcarouter.ai/v1") is None
+    assert find_gateway(api_key="sk-or-v1-abcdef") == find_by_name("openrouter")
