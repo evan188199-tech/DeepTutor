@@ -27,6 +27,7 @@ personas root on first service access for a workspace.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 from pathlib import Path
 import re
 import shutil
@@ -35,6 +36,8 @@ from typing import Any
 import yaml
 
 from deeptutor.services.path_service import get_path_service
+
+logger = logging.getLogger(__name__)
 
 _FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
 _NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
@@ -166,7 +169,13 @@ class PersonaService:
                 continue
             try:
                 text = file.read_text(encoding="utf-8")
-            except OSError:
+            except OSError as exc:
+                logger.warning(
+                    "Skipping persona %s in catalog: failed to read %s: %s",
+                    entry.name,
+                    file,
+                    exc,
+                )
                 continue
             meta, _ = self._parse_frontmatter(text)
             out.append(
@@ -286,13 +295,24 @@ class PersonaService:
                 continue
             try:
                 name = self._validate_name(preset_dir.name)
-            except InvalidPersonaNameError:
+            except InvalidPersonaNameError as exc:
+                logger.warning(
+                    "Skipping bundled persona preset in %s: invalid name: %s",
+                    preset_dir,
+                    exc,
+                )
                 continue
             if self._persona_dir(name).exists():
                 continue
             try:
                 text = source_file.read_text(encoding="utf-8")
-            except OSError:
+            except OSError as exc:
+                logger.warning(
+                    "Skipping bundled persona preset %s: failed to read %s: %s",
+                    name,
+                    source_file,
+                    exc,
+                )
                 continue
             target_dir = self._persona_dir(name)
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -323,7 +343,13 @@ class PersonaService:
                 continue
             try:
                 text = source_file.read_text(encoding="utf-8")
-            except OSError:
+            except OSError as exc:
+                logger.warning(
+                    "Legacy persona skill %s not migrated: failed to read %s: %s",
+                    name,
+                    source_file,
+                    exc,
+                )
                 continue
             meta, body = self._parse_frontmatter(text)
             description = str(meta.get("description") or "").strip()

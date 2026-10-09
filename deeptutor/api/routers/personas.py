@@ -16,6 +16,8 @@ Mounted at ``/api/personas``.
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -28,6 +30,8 @@ from deeptutor.services.persona import (
     PersonaService,
     get_persona_service,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -88,8 +92,15 @@ async def get_persona(name: str) -> dict[str, object]:
     service = get_persona_service()
     try:
         return service.get_detail(name).to_dict()
-    except PersonaNotFoundError:
-        pass
+    except PersonaNotFoundError as exc:
+        logger.warning(
+            "Persona %s not found in workspace personas root %s (%s: %s); "
+            "falling back to admin presets",
+            name,
+            service.root,
+            type(exc).__name__,
+            exc,
+        )
     except InvalidPersonaNameError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -99,8 +110,14 @@ async def get_persona(name: str) -> dict[str, object]:
             detail = presets.get_detail(name).to_dict()
             detail.update({"source": "admin", "read_only": True})
             return detail
-        except (PersonaNotFoundError, InvalidPersonaNameError):
-            pass
+        except (PersonaNotFoundError, InvalidPersonaNameError) as exc:
+            logger.warning(
+                "Persona %s not found in admin presets root %s (%s: %s); returning 404",
+                name,
+                presets.root,
+                type(exc).__name__,
+                exc,
+            )
     raise HTTPException(status_code=404, detail=t("api.persona_not_found", name=name))
 
 

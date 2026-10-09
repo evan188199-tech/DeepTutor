@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
+import deeptutor.services.persona.service as service_module
 from deeptutor.services.persona.service import (
+    PERSONA_FILE,
     InvalidPersonaNameError,
     PersonaExistsError,
     PersonaNotFoundError,
@@ -160,3 +163,85 @@ def test_load_visible_for_context_prefers_workspace_shadow(
     rendered = load_visible_for_context("teacher", workspace=workspace, admin=admin)
     assert "Local voice." in rendered
     assert "Teacher Mode" not in rendered
+
+
+def test_list_personas_warns_and_skips_on_read_failure(
+    service: PersonaService, caplog: pytest.LogCaptureFixture
+) -> None:
+    """An unreadable PERSONA.md must leave a trace instead of vanishing silently."""
+    service.create("good", "Readable", "body")
+    broken = service.root / "broken"
+    broken.mkdir(parents=True)
+    # A directory named PERSONA.md: exists() is True, read_text() raises OSError.
+    (broken / PERSONA_FILE).mkdir()
+
+    with caplog.at_level(logging.WARNING, logger=service_module.logger.name):
+        names = {p.name for p in service.list_personas()}
+
+    assert names == {"good"}
+    assert "broken" in caplog.text
+    assert str(broken / PERSONA_FILE) in caplog.text
+
+
+def test_seed_presets_warns_on_invalid_preset_name(
+    service: PersonaService,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    bundled = tmp_path / "bundled-presets"
+    invalid = bundled / "Bad Name"
+    invalid.mkdir(parents=True)
+    (invalid / PERSONA_FILE).write_text("---\nname: Bad Name\ndescription: x\n---\n\nb\n")
+    monkeypatch.setattr(service_module, "PRESETS_DIR", bundled)
+
+    with caplog.at_level(logging.WARNING, logger=service_module.logger.name):
+        seeded = service.seed_presets()
+
+    assert seeded == []
+    assert "Bad Name" in caplog.text
+    assert str(invalid) in caplog.text
+
+
+def test_seed_presets_warns_on_unreadable_preset(
+    service: PersonaService,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    bundled = tmp_path / "bundled-presets"
+    good = bundled / "study-buddy"
+    good.mkdir(parents=True)
+    (good / PERSONA_FILE).write_text("---\nname: study-buddy\ndescription: d\n---\n\nbody\n")
+    broken = bundled / "broken"
+    broken.mkdir(parents=True)
+    # A directory named PERSONA.md: exists() is True, read_text() raises OSError.
+    (broken / PERSONA_FILE).mkdir()
+    monkeypatch.setattr(service_module, "PRESETS_DIR", bundled)
+
+    with caplog.at_level(logging.WARNING, logger=service_module.logger.name):
+        seeded = service.seed_presets()
+
+    assert seeded == ["study-buddy"]
+    assert "broken" in caplog.text
+    assert str(broken / PERSONA_FILE) in caplog.text
+
+
+def test_migrate_legacy_skills_warns_on_read_failure(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    skills_root = tmp_path / "skills"
+    peer_dir = skills_root / "peer"
+    peer_dir.mkdir(parents=True)
+    # A directory named SKILL.md: exists() is True, read_text() raises OSError.
+    (peer_dir / "SKILL.md").mkdir()
+
+    service = PersonaService(root=tmp_path / "personas")
+    with caplog.at_level(logging.WARNING, logger=service_module.logger.name):
+        migrated = service.migrate_legacy_skills(skills_root)
+
+    assert migrated == []
+    assert "peer" in caplog.text
+    assert str(peer_dir / "SKILL.md") in caplog.text
+    # The unreadable source is left in place, not half-deleted.
+    assert peer_dir.exists()
