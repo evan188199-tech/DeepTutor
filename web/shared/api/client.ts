@@ -56,19 +56,97 @@ function correlationId(response: Response): string | undefined {
   );
 }
 
-function messageFromBody(body: unknown, fallback: string): string {
-  if (!body || typeof body !== "object") return fallback;
-  const value = body as Record<string, unknown>;
-  if (typeof value.message === "string" && value.message.trim())
-    return value.message;
-  if (typeof value.detail === "string" && value.detail.trim())
-    return value.detail;
-  if (value.detail && typeof value.detail === "object") {
-    const detail = value.detail as Record<string, unknown>;
-    if (typeof detail.message === "string" && detail.message.trim())
-      return detail.message;
+/** Longest error text shown to users; server prose beyond this is logs, not a toast. */
+export const API_ERROR_MESSAGE_LIMIT = 200;
+
+/**
+ * Stable, user-facing wording for backend error codes that travel in HTTP
+ * error envelopes, following the CODE_MESSAGES pattern of
+ * `web/lib/book-errors.ts`. The raw backend `detail` is prose written for
+ * whoever reads the logs; relaying it verbatim put it in ~250 toast and
+ * banner call sites. The code is the stable part of the contract, so the
+ * wording belongs here.
+ */
+const CODE_MESSAGES: Record<string, string> = {
+  worker_lost: "The assistant worker stopped unexpectedly. Please try again.",
+  knowledge_task_failed:
+    "Background learning failed before finishing. Try starting it again.",
+  knowledge_task_interrupted:
+    "Background learning was interrupted. Try starting it again.",
+};
+
+/** The codes this module has wording for — exported for the test to assert on. */
+export const KNOWN_API_ERROR_CODES = Object.keys(CODE_MESSAGES);
+
+/** Stable per-status wording used when no code mapping applies. */
+const STATUS_MESSAGES: Record<number, string> = {
+  400: "The request was rejected.",
+  401: "Please sign in again.",
+  403: "You do not have access to this.",
+  404: "This was not found. Refresh and try again.",
+  409: "This conflicts with the current state. Refresh and try again.",
+  413: "The upload is too large.",
+  422: "The request was invalid.",
+  429: "Too many requests. Wait a moment and try again.",
+  500: "The server hit an unexpected error. Try again.",
+  502: "The server is unreachable. Try again shortly.",
+  503: "The server is unavailable. Try again shortly.",
+  504: "The server took too long to respond. Try again.",
+};
+
+function truncateForDisplay(text: string): string {
+  const trimmed = text.trim();
+  return trimmed.length <= API_ERROR_MESSAGE_LIMIT
+    ? trimmed
+    : `${trimmed.slice(0, API_ERROR_MESSAGE_LIMIT - 3)}...`;
+}
+
+/**
+ * The message to show a user for a failed response.
+ *
+ * Structured envelopes carry a curated top-level `message`; it stays. FastAPI's
+ * `detail` (string or `detail.message`) never reaches the user: known codes map
+ * to stable wording, everything else falls back to per-status copy. The dropped
+ * detail goes to the console so debugging keeps the server's own text.
+ */
+function userFacingMessage(
+  body: unknown,
+  fallback: string,
+  code: string,
+  status: number,
+): string {
+  const value =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+  const nestedDetail =
+    value.detail && typeof value.detail === "object"
+      ? (value.detail as Record<string, unknown>)
+      : {};
+
+  const structuredMessage =
+    typeof value.message === "string" && value.message.trim()
+      ? value.message
+      : undefined;
+  const rawDetail =
+    typeof value.detail === "string" && value.detail.trim()
+      ? value.detail
+      : typeof nestedDetail.message === "string" &&
+          nestedDetail.message.trim()
+        ? nestedDetail.message
+        : undefined;
+
+  const stable =
+    (code && CODE_MESSAGES[code]) || STATUS_MESSAGES[status] || fallback;
+  const chosen = structuredMessage ?? stable;
+
+  if (rawDetail && rawDetail.trim() !== chosen.trim()) {
+    console.warn(
+      "[api] server error detail:",
+      rawDetail,
+      `(code=${code || "none"} status=${status})`,
+    );
   }
-  return fallback;
+
+  return truncateForDisplay(chosen);
 }
 
 function normalizedHttpError(
@@ -93,12 +171,18 @@ function normalizedHttpError(
       response.status === 429 ||
       response.status >= 500;
   }
+  const code =
+    (typeof value.error_code === "string" && value.error_code) ||
+    (typeof detail.error_code === "string" && detail.error_code) ||
+    `http_${response.status}`;
   return {
-    code:
-      (typeof value.error_code === "string" && value.error_code) ||
-      (typeof detail.error_code === "string" && detail.error_code) ||
-      `http_${response.status}`,
-    message: messageFromBody(body, response.statusText || "Request failed"),
+    code,
+    message: userFacingMessage(
+      body,
+      response.statusText || "Request failed",
+      code,
+      response.status,
+    ),
     retryable,
     scope,
     correlationId:
@@ -203,22 +287,42 @@ export async function requestBlob(
 }
 
 /**
- * Parse a response, throwing FastAPI's ``detail`` as the message on failure.
+ * Parse a response, throwing a stable message on failure.
  *
- * The status line alone ("500 Internal Server Error") tells a reader nothing;
- * the backend's own detail is what names the actual problem. Callers wanting
- * structured refusals (an error code, a log tail) parse the body themselves.
+ * The backend's raw `detail` used to become the thrown message and reached
+ * toasts verbatim; it now goes to the console, and the thrown message comes
+ * from the error-code wording table (or a stable status fallback). Callers
+ * wanting structured refusals (an error code, a log tail) parse the body
+ * themselves.
  */
 export async function asJsonOrThrow(response: Response): Promise<any> {
   if (!response.ok) {
-    let detail = `${response.status} ${response.statusText}`;
+    let code = "";
+    let rawDetail = "";
     try {
       const body = await response.json();
-      if (body?.detail) detail = String(body.detail);
+      if (body && typeof body === "object") {
+        const value = body as Record<string, unknown>;
+        if (typeof value.error_code === "string") code = value.error_code;
+        if (typeof value.detail === "string") rawDetail = value.detail;
+      }
     } catch {
       /* the body was not JSON; the status line is all we have */
     }
-    throw new Error(detail);
+    if (rawDetail) {
+      console.warn(
+        "[api] server error detail:",
+        rawDetail,
+        `(code=${code || "none"} status=${response.status})`,
+      );
+    }
+    throw new Error(
+      truncateForDisplay(
+        (code && CODE_MESSAGES[code]) ||
+          STATUS_MESSAGES[response.status] ||
+          `${response.status} ${response.statusText}`,
+      ),
+    );
   }
   return response.json();
 }
