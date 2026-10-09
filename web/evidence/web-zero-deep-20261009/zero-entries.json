@@ -1,0 +1,21 @@
+{
+  "source": "myfork:scan/web-test-gaps-20261007 web/evidence/web-test-gaps-20261007/summary.json (zero list, 368 entries)",
+  "baseline_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "entries": [
+    {
+      "path": "components/sidebar/SidebarNav.tsx",
+      "category": "components",
+      "loc": 703,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "components/chat/home/SessionActivityPanel.tsx",
+      "category": "components",
+      "loc": 571,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    }
+  ],
+  "note": "loc 值为扫描时快照；当前基线上两文件分别为 720/571 行。"
+}
