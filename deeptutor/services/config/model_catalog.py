@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from copy import deepcopy
 import json
+import logging
 import os
 from pathlib import Path
 import tempfile
@@ -23,6 +24,8 @@ from .embedding_endpoint import (
     is_gemini_native_embedding_endpoint,
     normalize_embedding_endpoint_for_display,
 )
+
+logger = logging.getLogger(__name__)
 
 # Fallback only — frozen at admin scope at import time. Production code should
 # enter through ``get_model_catalog_service()`` so the path is resolved from the
@@ -654,8 +657,14 @@ def get_model_catalog_service() -> ModelCatalogService:
             return ModelCatalogService.get_instance(
                 get_admin_path_service().get_settings_file("model_catalog")
             )
-    except Exception:
-        pass
+    except Exception as exc:
+        # Best effort only: outside a request context there is no per-user
+        # catalog to resolve, and the deployment-wide catalog below is the
+        # documented fallback. But a genuine breakage must not vanish either.
+        logger.warning(
+            f"Resolving the caller-scoped model catalog path failed; "
+            f"falling back to the deployment catalog: {exc}"
+        )
     return ModelCatalogService.get_instance(get_path_service().get_settings_file("model_catalog"))
 
 

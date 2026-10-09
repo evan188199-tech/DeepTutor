@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 
 import pytest
 
@@ -10,6 +11,7 @@ from deeptutor.services.config.readiness import (
     DETAIL_CODES,
     PARSER_REPORT_REASONS,
     READINESS_STATES,
+    _redis_reachable,
     catalog_service_rows,
     coordination_rows,
     document_parser_rows,
@@ -348,3 +350,36 @@ def test_declared_row_labels_cover_the_label_tables() -> None:
 
     from_tables = set(_SERVICE_LABELS.values()) | set(_TOOL_LABELS.values())
     assert from_tables <= TRANSLATABLE_ROW_LABELS, sorted(from_tables - TRANSLATABLE_ROW_LABELS)
+
+
+@pytest.mark.asyncio
+async def test_redis_probe_close_failure_is_logged_and_does_not_mask_health(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The health verdict must survive a failing close, and the close must
+    not vanish: otherwise the probe reads green while leaking a client."""
+
+    class _Coordinator:
+        def __init__(self, redis_url: str) -> None:
+            self.redis_url = redis_url
+
+        async def health(self) -> bool:
+            return True
+
+        async def close(self) -> None:
+            raise RuntimeError("close sink offline")
+
+    monkeypatch.setattr("deeptutor.runtime.coordination.redis.RedisCoordinator", _Coordinator)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.config.readiness"):
+        reachable = await _redis_reachable("redis://localhost:6379/0")
+
+    assert reachable is True
+    warnings = [
+        record
+        for record in caplog.records
+        if record.name == "deeptutor.services.config.readiness"
+        and record.levelno >= logging.WARNING
+    ]
+    assert any("Redis coordinator" in record.getMessage() for record in warnings)
+    assert any("close sink offline" in record.getMessage() for record in warnings)

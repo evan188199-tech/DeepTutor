@@ -53,7 +53,10 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
+import logging
 from typing import Any, Literal
+
+logger = logging.getLogger(__name__)
 
 Scope = Literal["personal", "global"]
 Effect = Literal["instant", "restart", "reindex"]
@@ -469,8 +472,13 @@ def _clear_runtime_caches() -> None:
         from deeptutor.services.llm import clear_llm_config_cache
 
         clear_llm_config_cache()
-    except Exception:  # noqa: BLE001 - best effort; a stale cache is not fatal
-        pass
+    except Exception as exc:  # noqa: BLE001 - best effort; a stale cache is not fatal
+        # The write itself already succeeded; failing to drop the cache only
+        # delays the effect. Say so instead of swallowing it whole.
+        logger.warning(
+            f"Clearing runtime config caches after a catalog write failed; "
+            f"the change may not take effect until restart: {exc}"
+        )
 
 
 def _candidate_catalog(service_name: str, value: str, *, with_model: bool) -> dict[str, Any]:

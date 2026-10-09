@@ -434,6 +434,38 @@ def test_embedding_client_multimodal_detection_uses_model_level_metadata() -> No
     assert cohere_v3.supports_multimodal_contents() is False
 
 
+def test_multimodal_detection_probe_failure_logged_and_degrades_to_provider_default(
+    monkeypatch, caplog
+) -> None:
+    """A broken get_model_info() must fall back to the provider-level default
+    (Cohere is multimodal) instead of answering from nothing — and the probe
+    failure must leave a trace."""
+
+    class _BrokenInfoAdapter(_FakeAdapter):
+        def get_model_info(self):
+            raise RuntimeError("model info offline")
+
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class",
+        lambda _b: _BrokenInfoAdapter,
+    )
+    client = EmbeddingClient(
+        _build_config(
+            "cohere",
+            model="embed-multilingual-v3.0",
+            base_url="https://api.cohere.com/v2/embed",
+        )
+    )
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.embedding.client"):
+        supports = client.supports_multimodal_contents()
+
+    assert supports is True
+    warnings = [r for r in caplog.records if r.levelno >= logging.WARNING]
+    assert any("multimodal detection" in r.getMessage() for r in warnings)
+    assert any("model info offline" in r.getMessage() for r in warnings)
+
+
 @pytest.mark.asyncio
 async def test_embed_progress_callback_failure_logged_and_not_fatal(monkeypatch, caplog) -> None:
     """A failing progress callback must not break embedding, but the failure

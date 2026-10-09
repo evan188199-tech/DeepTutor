@@ -223,8 +223,13 @@ class EmbeddingClient:
             info = self.adapter.get_model_info()
             if "multimodal" in info:
                 return bool(info.get("multimodal"))
-        except Exception:
-            pass
+        except Exception as exc:
+            # Detection degrades to the provider-level default below; a probe
+            # that broke must still leave a trace.
+            self.logger.warning(
+                f"Reading adapter model info for multimodal detection failed "
+                f"({self.config.binding}); using the provider default: {exc}"
+            )
 
         spec = EMBEDDING_PROVIDERS.get(self.config.binding)
         return bool(spec and spec.multimodal)

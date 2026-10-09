@@ -27,10 +27,13 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 import importlib.util
+import logging
 from typing import Any, Literal
 
 from deeptutor.services.config.model_catalog import SERVICE_NAMES
 from deeptutor.tools.builtin import USER_TOGGLEABLE_TOOL_NAMES
+
+logger = logging.getLogger(__name__)
 
 ReadinessState = Literal[
     "enabled_verified",
@@ -869,8 +872,13 @@ async def _redis_reachable(redis_url: str) -> bool:
         if coordinator is not None:
             try:
                 await asyncio.wait_for(coordinator.close(), timeout=1.0)
-            except Exception:
-                pass
+            except Exception as exc:
+                # The probe verdict has already been returned; a close failure
+                # must not mask it, but leaking the coordinator silently is
+                # not acceptable either.
+                logger.warning(
+                    f"Closing the Redis coordinator after the readiness probe failed: {exc}"
+                )
 
 
 def _module_available(name: str) -> bool:
