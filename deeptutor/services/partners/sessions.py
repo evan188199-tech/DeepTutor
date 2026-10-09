@@ -257,7 +257,12 @@ class PartnerSessionStore:
                         continue
                     try:
                         data = json.loads(line)
-                    except json.JSONDecodeError:
+                    except json.JSONDecodeError as exc:
+                        logger.warning(
+                            "Skipping unreadable record in partner session %s: %s",
+                            session_key,
+                            exc,
+                        )
                         continue
                     if isinstance(data, dict) and data.get("role") and data.get("content"):
                         records.append(data)
@@ -322,7 +327,12 @@ class PartnerSessionStore:
                     for line in handle:
                         try:
                             record = json.loads(line)
-                        except json.JSONDecodeError:
+                        except json.JSONDecodeError as exc:
+                            logger.warning(
+                                "Skipping unreadable record in partner session %s: %s",
+                                session_key,
+                                exc,
+                            )
                             continue
                         if (
                             not isinstance(record, dict)

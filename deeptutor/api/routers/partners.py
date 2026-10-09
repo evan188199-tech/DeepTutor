@@ -1722,6 +1722,12 @@ async def _partner_chat_stream(
                     session_key=payload.session_key,
                 )
         except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Partner chat stream failed for partner %s session %s: %s",
+                partner_id,
+                session_id,
+                exc,
+            )
             holder["error"] = str(exc)
         finally:
             done.set()

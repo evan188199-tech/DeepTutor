@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import logging
 from pathlib import Path
 import threading
 from typing import Protocol
 
 from deeptutor.services.partner_groups.models import GroupMessage
 from deeptutor.services.partner_groups.store import render_recent_lines
+
+logger = logging.getLogger(__name__)
 
 _WHITEBOARD_LOCKS: dict[Path, threading.Lock] = {}
 _WHITEBOARD_LOCKS_GUARD = threading.Lock()
@@ -150,7 +153,12 @@ class WhiteboardMemory:
                 for line in handle:
                     try:
                         row = json.loads(line)
-                    except json.JSONDecodeError:
+                    except json.JSONDecodeError as exc:
+                        logger.warning(
+                            "Skipping unreadable entry in shared whiteboard %s: %s",
+                            self.path,
+                            exc,
+                        )
                         continue
                     # Version-1 rows were automatic copies of user messages.
                     # Leaving them on disk but excluding them keeps migration
@@ -169,7 +177,8 @@ class WhiteboardMemory:
                         if event_id in order:
                             order.remove(event_id)
                         order.append(event_id)
-        except OSError:
+        except OSError as exc:
+            logger.warning("Failed to read shared whiteboard %s: %s", self.path, exc)
             return []
         return [active[event_id] for event_id in order if event_id in active]
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 import json
+import logging
 from pathlib import Path
 import re
 import shutil
@@ -19,6 +20,9 @@ from deeptutor.services.partner_groups.models import (
 )
 
 _SAFE_ID = re.compile(r"^[a-z0-9][a-z0-9_-]{0,79}$")
+
+logger = logging.getLogger(__name__)
+
 _LOCKS: dict[Path, threading.Lock] = {}
 _LOCKS_GUARD = threading.Lock()
 
@@ -289,9 +293,15 @@ class GroupTranscriptStore:
                     try:
                         data = json.loads(line)
                         rows.append(GroupMessage(**data))
-                    except (TypeError, ValueError, json.JSONDecodeError):
+                    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+                        logger.warning(
+                            "Skipping unreadable record in group transcript %s: %s",
+                            path,
+                            exc,
+                        )
                         continue
-        except OSError:
+        except OSError as exc:
+            logger.warning("Failed to read group transcript %s: %s", path, exc)
             return []
         return rows
 
