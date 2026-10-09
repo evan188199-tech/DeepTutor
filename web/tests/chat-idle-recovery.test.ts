@@ -59,6 +59,53 @@ test("a stale stream without a server turn id requests reconciliation", () => {
   assert.equal(decision.kind, "reconcile");
 });
 
+/* ── Window edges: quiet is only a signal once the whole window passes ── */
+
+test("a stream quiet for exactly the idle window is not yet idle", () => {
+  assert.deepEqual(
+    decideIdleTurnRecovery({
+      isStreaming: true,
+      hasPendingUserInput: false,
+      activeTurnId: "turn_boundary",
+      lastSeq: 9,
+      updatedAt: 1_000,
+      now: 181_000,
+      idleTimeoutMs: 180_000,
+    }),
+    { kind: "none" },
+  );
+});
+
+test("a stopped stream is never rescued, however stale it is", () => {
+  assert.deepEqual(
+    decideIdleTurnRecovery({
+      isStreaming: false,
+      hasPendingUserInput: false,
+      activeTurnId: "turn_done",
+      lastSeq: 12,
+      updatedAt: 1_000,
+      now: 10_001_000,
+      idleTimeoutMs: 180_000,
+    }),
+    { kind: "none" },
+  );
+});
+
+test("a future-dated update (clock skew) is not an idle signal", () => {
+  assert.deepEqual(
+    decideIdleTurnRecovery({
+      isStreaming: true,
+      hasPendingUserInput: false,
+      activeTurnId: "turn_skew",
+      lastSeq: 3,
+      updatedAt: 999_000,
+      now: 1_000,
+      idleTimeoutMs: 180_000,
+    }),
+    { kind: "none" },
+  );
+});
+
 /* ── Opening a conversation the backend never closed out ────────────────
    The backend marks a session `running` when a turn starts and clears it at
    the end, so a process that dies mid-turn leaves the row saying `running`
@@ -97,6 +144,22 @@ test("a missing timestamp leaves the server's word alone", () => {
   assert.equal(resolveLoadedRunStatus("running", 0, now, 180_000), "running");
   assert.equal(
     resolveLoadedRunStatus("running", Number.NaN, now, 180_000),
+    "running",
+  );
+});
+
+test("a running turn at exactly the window edge is still live", () => {
+  const now = NOW;
+  assert.equal(
+    resolveLoadedRunStatus("running", now - 180_000, now, 180_000),
+    "running",
+  );
+});
+
+test("a negative timestamp is unusable, so the server's word stands", () => {
+  const now = NOW;
+  assert.equal(
+    resolveLoadedRunStatus("running", -1, now, 180_000),
     "running",
   );
 });

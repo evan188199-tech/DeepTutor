@@ -21,3 +21,28 @@ test("an empty search has no launch intent", () => {
     tools: [],
   });
 });
+
+test("repeated capability parameters collapse to the first value", () => {
+  assert.equal(
+    readChatLaunchIntent("?capability=exam&capability=quiz").capability,
+    "exam",
+  );
+});
+
+test("a whitespace-only capability is trimmed to plain chat", () => {
+  assert.equal(readChatLaunchIntent("?capability=%20").capability, "");
+});
+
+test("empty tool values are kept so the caller sees the parameter was there", () => {
+  assert.deepEqual(readChatLaunchIntent("?tool=&tool=web_search").tools, [
+    "",
+    "web_search",
+  ]);
+});
+
+test("the parser does not require the leading question mark", () => {
+  assert.deepEqual(readChatLaunchIntent("capability=reading&tool=outline"), {
+    capability: "reading",
+    tools: ["outline"],
+  });
+});
