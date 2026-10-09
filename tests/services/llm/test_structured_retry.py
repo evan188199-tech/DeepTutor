@@ -12,6 +12,7 @@ happens, and deciding "the model answered" stays with the caller.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import pytest
@@ -116,3 +117,133 @@ async def test_nothing_usable_and_nothing_non_empty_is_none() -> None:
 )
 def test_object_usability_rule(payload: Any, expected_key: str | None, usable: bool) -> None:
     assert json_payload_is_usable(payload, expected_key) is usable
+
+
+# --- Degradation branches: malformed bodies, transport errors, fallback order ---
+#
+# A starved call rarely comes back as a clean empty string. The provider may
+# return reasoning prose with no JSON in it, a body cut off mid-object, or no
+# body at all because the request timed out or the key hit its rate limit.
+# These tests pin how the one rule degrades in each of those shapes.
+
+
+@pytest.mark.asyncio
+async def test_prose_without_json_is_retried_and_the_retry_answers() -> None:
+    """Reasoning prose that never reaches the JSON is the #1316 body shape."""
+    run, efforts = _recorder("Thinking about the book structure...", '{"spine": ["Overview"]}')
+    result = await json_with_reasoning_retry(run, expected_key="spine")
+    assert result == {"spine": ["Overview"]}
+    assert efforts == [None, RETRY_REASONING_EFFORT]
+
+
+@pytest.mark.asyncio
+async def test_both_attempts_malformed_return_the_empty_fallback() -> None:
+    run, efforts = _recorder("no json here at all", "```json\nnot even json\n```")
+    result = await json_with_reasoning_retry(run, expected_key="spine")
+    assert result == {}
+    assert efforts == [None, RETRY_REASONING_EFFORT]
+
+
+@pytest.mark.asyncio
+async def test_timeout_on_the_first_attempt_propagates_without_a_retry() -> None:
+    """A transport failure is not a starved answer — it must stay visible."""
+
+    calls: list[str | None] = []
+
+    async def run(reasoning_effort: str | None) -> str:
+        calls.append(reasoning_effort)
+        raise TimeoutError("provider timed out")
+
+    with pytest.raises(TimeoutError):
+        await json_with_reasoning_retry(run, expected_key="spine")
+    assert calls == [None], "an exception must not be retried or swallowed"
+
+
+class _ProviderRateLimited(RuntimeError):
+    """Stand-in for a provider rate-limit error, like the real 429 paths."""
+
+
+@pytest.mark.asyncio
+async def test_rate_limit_on_the_first_attempt_propagates_without_a_retry() -> None:
+    calls: list[str | None] = []
+
+    async def run(reasoning_effort: str | None) -> str:
+        calls.append(reasoning_effort)
+        raise _ProviderRateLimited("429 too many requests")
+
+    with pytest.raises(_ProviderRateLimited):
+        await payload_with_reasoning_retry(run, is_usable=lambda value: bool(value))
+    assert calls == [None]
+
+
+@pytest.mark.asyncio
+async def test_two_unusable_but_non_empty_attempts_keep_the_first() -> None:
+    """When both attempts answered something, the first one is what returns."""
+    run, efforts = _recorder('{"notes": "half a thought"}', '{"other": 1}')
+    result = await payload_with_reasoning_retry(
+        run,
+        is_usable=lambda value: json_payload_is_usable(value, "spine"),
+    )
+    assert result == {"notes": "half a thought"}
+    assert efforts == [None, RETRY_REASONING_EFFORT]
+
+
+@pytest.mark.asyncio
+async def test_a_generic_retry_that_never_succeeds_returns_the_first_body() -> None:
+    run, _ = _recorder("[1, 2]", "just prose")
+    result = await payload_with_reasoning_retry(run, is_usable=lambda value: False)
+    assert result == [1, 2]
+
+
+@pytest.mark.asyncio
+async def test_retry_runs_at_most_twice() -> None:
+    """The rule is one retry, not a loop — a hopeless call stops paying."""
+    run, efforts = _recorder("", "", "")
+    assert await json_with_reasoning_retry(run, expected_key="spine") == {}
+    assert efforts == [None, RETRY_REASONING_EFFORT]
+
+
+@pytest.mark.asyncio
+async def test_the_callers_logger_reaches_the_parser(monkeypatch: pytest.MonkeyPatch) -> None:
+    import deeptutor.services.llm.structured_retry as structured_retry
+
+    seen: list[Any] = []
+    original = structured_retry.parse_json_response
+
+    def spy(response: str, logger_instance: Any = None, fallback: Any = None) -> Any:
+        seen.append(logger_instance)
+        return original(response, logger_instance=logger_instance, fallback=fallback)
+
+    monkeypatch.setattr(structured_retry, "parse_json_response", spy)
+    logger = logging.getLogger("structured-retry-test")
+    run, _ = _recorder("", '{"spine": [1]}')
+    await payload_with_reasoning_retry(
+        run, is_usable=lambda value: bool(value), logger_instance=logger
+    )
+    assert seen == [logger, logger]
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_key", "usable"),
+    [
+        ({"spine": {"nested": 1}}, "spine", True),
+        ({"spine": "text"}, "spine", True),
+        ({"spine": ""}, "spine", False),
+        ({"spine": 0}, "spine", False),
+        ({"spine": None}, "spine", False),
+        (None, "spine", False),
+        (3, "spine", False),
+    ],
+)
+def test_falsy_expected_key_values_are_not_answers(
+    payload: Any, expected_key: str | None, usable: bool
+) -> None:
+    assert json_payload_is_usable(payload, expected_key) is usable
+
+
+@pytest.mark.asyncio
+async def test_expected_key_none_accepts_any_non_empty_object() -> None:
+    run, efforts = _recorder('{"anything": [1]}')
+    result = await json_with_reasoning_retry(run, expected_key=None)
+    assert result == {"anything": [1]}
+    assert efforts == [None]
