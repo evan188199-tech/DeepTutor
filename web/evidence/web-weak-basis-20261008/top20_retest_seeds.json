@@ -1,0 +1,182 @@
+[
+ {
+  "rank": 1,
+  "path": "lib/guardian-api.ts",
+  "category": "lib",
+  "loc": 183,
+  "score": 11.43,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：guardian-management.test.ts readWebFile('lib','guardian-api.ts') 分段路径读源码（扫描器路径匹配盲区）；仅结构性"
+ },
+ {
+  "rank": 2,
+  "path": "lib/chat-import/shared.ts",
+  "category": "lib",
+  "loc": 49,
+  "score": 8.85,
+  "disposition": "keep-weak",
+  "suggested_basis": "非 meta 命中均为 'shared' 词撞（usage-statistics 导入 components/settings/shared.tsx）；但 chat-import/index.ts 具名再导出 SOURCE_LABEL 等（depth1，barrel 被 chat-import-chatgpt.spec 路径覆盖）→ 间接可达成立"
+ },
+ {
+  "rank": 3,
+  "path": "features/settings/sections/GuardianSettingsSection.tsx",
+  "category": "features",
+  "loc": 467,
+  "score": 8.04,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：guardian-management.test.ts 源文件名清单列出；仅结构性"
+ },
+ {
+  "rank": 4,
+  "path": "features/multi-user/components/GuardianRelationshipsEditor.tsx",
+  "category": "features",
+  "loc": 338,
+  "score": 7.62,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：guardian-management.test.ts 源文件名清单列出；仅结构性"
+ },
+ {
+  "rank": 5,
+  "path": "features/runtime-status/useRuntimeStatus.ts",
+  "category": "features",
+  "loc": 117,
+  "score": 6.31,
+  "disposition": "keep-weak",
+  "suggested_basis": "barrel 引用真实：index.ts L16 具名再导出（depth1），barrel 被路径覆盖"
+ },
+ {
+  "rank": 6,
+  "path": "features/co-writer/hooks/useSplitPane.ts",
+  "category": "features",
+  "loc": 82,
+  "score": 5.89,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：同上模式；仅结构性"
+ },
+ {
+  "rank": 7,
+  "path": "i18n/I18nProvider.tsx",
+  "category": "i18n",
+  "loc": 68,
+  "score": 5.68,
+  "disposition": "keep-weak",
+  "suggested_basis": "barrel 引用真实：i18n/index.ts L1 具名再导出（depth1），barrel 被路径覆盖"
+ },
+ {
+  "rank": 8,
+  "path": "shared/ui/Skeleton.tsx",
+  "category": "shared",
+  "loc": 15,
+  "score": 5.59,
+  "disposition": "keep-weak",
+  "suggested_basis": "barrel 引用真实：shared/ui/index.ts L13 具名再导出（depth1），barrel 被路径覆盖"
+ },
+ {
+  "rank": 9,
+  "path": "features/co-writer/hooks/useSynchronizedScroll.ts",
+  "category": "features",
+  "loc": 50,
+  "score": 5.33,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：同上模式；仅结构性"
+ },
+ {
+  "rank": 10,
+  "path": "features/settings/navigation/SettingsAccessProvider.tsx",
+  "category": "features",
+  "loc": 42,
+  "score": 5.15,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：guardian-management.test.ts 断言 layout 含 <SettingsAccessProvider>；仅结构性"
+ },
+ {
+  "rank": 11,
+  "path": "features/co-writer/hooks/useDocumentLifecycle.ts",
+  "category": "features",
+  "loc": 32,
+  "score": 4.87,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：co-writer-workspace.spec 断言 workspace 源码含 useDocumentLifecycle() 调用；仅结构性"
+ },
+ {
+  "rank": 12,
+  "path": "features/co-writer/hooks/useSelectionEdit.ts",
+  "category": "features",
+  "loc": 31,
+  "score": 4.84,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：同上模式（源码含 useSelectionEdit() 断言）；仅结构性"
+ },
+ {
+  "rank": 13,
+  "path": "scripts/i18n_audit.mjs",
+  "category": "scripts",
+  "loc": 252,
+  "score": 4.84,
+  "disposition": "keep-weak",
+  "suggested_basis": "meta 路径引用真实（i18n-audit.spec.ts）；工具脚本，低优先"
+ },
+ {
+  "rank": 14,
+  "path": "shared/ui/styles.ts",
+  "category": "shared",
+  "loc": 6,
+  "score": 4.82,
+  "disposition": "keep-weak",
+  "suggested_basis": "命中为注释词撞，但 shared/ui/index.ts L18 具名再导出 { cn }（depth1，barrel covered）→ 间接可达成立"
+ },
+ {
+  "rank": 15,
+  "path": "components/notebook/SaveToNotebookModal.tsx",
+  "category": "components",
+  "loc": 710,
+  "score": 4.29,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：mastery-study-layout.test.ts 断言渲染页含 <SaveToNotebookModal；仅结构性"
+ },
+ {
+  "rank": 16,
+  "path": "i18n/I18nClientBridge.tsx",
+  "category": "i18n",
+  "loc": 14,
+  "score": 4.14,
+  "disposition": "keep-weak",
+  "suggested_basis": "barrel 引用真实：i18n/index.ts L2 具名再导出（depth1），barrel 被路径覆盖"
+ },
+ {
+  "rank": 17,
+  "path": "components/reading/library/ReadingFolder.tsx",
+  "category": "components",
+  "loc": 459,
+  "score": 4.01,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实但为否定断言（doesNotMatch API 面含 ReadingFolder）"
+ },
+ {
+  "rank": 18,
+  "path": "components/agents/ConnectedAgents.tsx",
+  "category": "components",
+  "loc": 380,
+  "score": 3.89,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：subagent-harnesses.test.ts 以 readWebFile('components','agents','ConnectedAgents.tsx') 分段路径读源码做结构断言（扫描器路径匹配盲区）；仅结构性"
+ },
+ {
+  "rank": 19,
+  "path": "components/agents/agent-icons.tsx",
+  "category": "components",
+  "loc": 242,
+  "score": 3.6,
+  "disposition": "keep-weak",
+  "suggested_basis": "引用真实：同测试 readWebFile 分段路径读取 + public/agent-icons 资产存在性断言；仅结构性"
+ },
+ {
+  "rank": 20,
+  "path": "scripts/typecheck.mjs",
+  "category": "scripts",
+  "loc": 52,
+  "score": 3.58,
+  "disposition": "keep-weak",
+  "suggested_basis": "meta 路径引用真实（tooling-config.test.ts）；工具脚本，低优先"
+ }
+]
