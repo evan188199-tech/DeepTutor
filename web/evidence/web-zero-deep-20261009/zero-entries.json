@@ -1,0 +1,21 @@
+{
+  "source": "myfork:scan/web-test-gaps-20261007 web/evidence/web-test-gaps-20261007/summary.json (zero list, 368 entries)",
+  "baseline_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "entries": [
+    {
+      "path": "features/settings/sections/CapabilitiesSettingsSection.tsx",
+      "category": "features",
+      "loc": 642,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    },
+    {
+      "path": "features/settings/sections/ToolsSettingsSection.tsx",
+      "category": "features",
+      "loc": 594,
+      "actionable": true,
+      "basis": "no test file references this path or basename"
+    }
+  ],
+  "note": "loc 为扫描时快照，与当前基线一致。"
+}
