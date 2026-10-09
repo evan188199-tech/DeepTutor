@@ -14,6 +14,7 @@ from deeptutor.services.llm.context_window import (
     coerce_positive_int,
     resolve_effective_context_window,
 )
+from deeptutor.services.llm.image_replay import deduplicate_user_images
 from deeptutor.services.prompt.language import language_label
 
 from .ask_user_trace import (
@@ -42,7 +43,9 @@ MAX_RAW_REBUILD_TOKENS = 131_072
 # Planning allowance per image, not provider-reported usage. Counting encoded
 # image bytes as text can exhaust the entire history budget on one screenshot.
 # Reserve nonzero headroom for vision while keeping it independent of PNG/JPEG
-# compression and URL length. Repeated images each consume this allowance.
+# compression and URL length. Every image occurrence retained in the effective
+# request consumes this allowance; copies the request-only projection replaces
+# with a reference cost only that reference's text tokens.
 IMAGE_CONTEXT_TOKEN_ESTIMATE = 4096
 
 
@@ -180,6 +183,11 @@ class ContextBuildResult:
     budget: int
     model_history: list[dict[str, Any]] | None = None
     previous_model_turn: dict[str, Any] | None = None
+    #: Same rows as ``token_count``, measured on the durable replay without
+    #: the request-only image projection. The gap between the two numbers is
+    #: the budget duplicate inline images would have wasted had compaction
+    #: budgeted the raw representation instead of the effective request.
+    raw_token_count: int | None = None
 
 
 class _ContextSummaryAgent(BaseAgent):
@@ -307,11 +315,24 @@ class ContextBuilder:
         return messages[:cutoff], selected
 
     def _model_tokens(self, messages: list[dict[str, Any]], summary: str = "") -> int:
+        # Budget the representation the next request will actually send. The
+        # answering AgentLoop projects repeated inline user images to short
+        # references (#1714); budgeting the raw durable replay instead reserves
+        # pixel allowances for copies that never reach the provider and fires
+        # an avoidable synchronous summary while the request still fits.
         if any(model_turn(row) is not None for row in messages):
-            return _count_model_context_tokens(replay_history(messages, summary))
+            return _count_model_context_tokens(
+                deduplicate_user_images(replay_history(messages, summary))
+            )
         return count_tokens(build_history_text(self._build_history(summary, messages))) + sum(
             _provider_response_state_tokens(row) for row in messages
         )
+
+    def _raw_model_tokens(self, messages: list[dict[str, Any]], summary: str = "") -> int:
+        """Measure the durable replay itself, without the request projection."""
+        if any(model_turn(row) is not None for row in messages):
+            return _count_model_context_tokens(replay_history(messages, summary))
+        return self._model_tokens(messages, summary)
 
     async def _summarize(
         self,
@@ -562,6 +583,7 @@ class ContextBuilder:
                 budget=budget,
                 model_history=replay_history(unsummarized, stored_summary, route),
                 previous_model_turn=previous_model_turn,
+                raw_token_count=self._raw_model_tokens(unsummarized, stored_summary),
             )
 
         older_unsummarized, recent_messages = self._select_recent_messages(
@@ -605,7 +627,9 @@ class ContextBuilder:
                     {"role": "system", "content": previous_model_turn["system"]},
                     *[
                         {key: value for key, value in message.items() if key != "_context_snapshot"}
-                        for message in replay_history(older_unsummarized, stored_summary, route)
+                        for message in deduplicate_user_images(
+                            replay_history(older_unsummarized, stored_summary, route)
+                        )
                     ],
                 ],
                 "tools": previous_model_turn.get("tools"),
@@ -656,6 +680,7 @@ class ContextBuilder:
             budget=budget,
             model_history=replay_history(retained_rows, stored_summary, route),
             previous_model_turn=previous_model_turn,
+            raw_token_count=self._raw_model_tokens(retained_rows, stored_summary),
         )
 
 
