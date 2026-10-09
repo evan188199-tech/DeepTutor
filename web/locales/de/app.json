@@ -4570,6 +4570,7 @@
   "Next year": "Nächstes Jahr",
   "Refresh usage": "Nutzung aktualisieren",
   "Unable to load usage statistics.": "Nutzungsstatistik konnte nicht geladen werden.",
+  "Unexpected error": "Unerwarteter Fehler",
   "Loading usage…": "Nutzung wird geladen…",
   "Usage by model": "Nutzung nach Modell",
   "{{calls}} LLM calls · {{sessions}} sessions": "{{calls}} LLM-Aufrufe · {{sessions}} Unterhaltungen",

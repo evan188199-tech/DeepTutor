@@ -4573,6 +4573,7 @@
   "Next year": "下一年",
   "Refresh usage": "刷新用量",
   "Unable to load usage statistics.": "无法加载用量统计。",
+  "Unexpected error": "意外错误",
   "Loading usage…": "正在加载用量…",
   "Usage by model": "模型用量",
   "{{calls}} LLM calls · {{sessions}} sessions": "{{calls}} 次 LLM 调用 · {{sessions}} 个会话",

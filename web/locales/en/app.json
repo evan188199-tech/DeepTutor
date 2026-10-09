@@ -4573,6 +4573,7 @@
   "Next year": "Next year",
   "Refresh usage": "Refresh usage",
   "Unable to load usage statistics.": "Unable to load usage statistics.",
+  "Unexpected error": "Unexpected error",
   "Loading usage…": "Loading usage…",
   "Usage by model": "Usage by model",
   "{{calls}} LLM calls · {{sessions}} sessions": "{{calls}} LLM calls · {{sessions}} sessions",

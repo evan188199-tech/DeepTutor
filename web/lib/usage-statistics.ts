@@ -1,5 +1,5 @@
 import type { components } from '@/contracts/generated/api'
-import { apiFetch, apiUrl } from '@/lib/api'
+import { apiUrl, requestJson } from '@/shared/api/client'
 
 export type UsageStatistics = components['schemas']['UsageStatistics']
 export type DailyUsage = components['schemas']['DailyUsage']
@@ -10,9 +10,12 @@ export async function fetchUsageStatistics(
 ): Promise<UsageStatistics> {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
   const query = new URLSearchParams({ year: String(year), timezone })
-  const response = await apiFetch(apiUrl(`/api/settings/usage?${query}`), { signal })
-  if (!response.ok) throw new Error(`Usage request failed (${response.status})`)
-  return response.json()
+  // requestJson throws the backend's `detail` (not just the status), so the
+  // panel can show why the request failed instead of a bare retry banner.
+  return requestJson<UsageStatistics>(apiUrl(`/api/settings/usage?${query}`), {
+    scope: 'settings',
+    signal,
+  })
 }
 
 export function usageYear(value: string | null, current: number): number {

@@ -40,9 +40,11 @@ class TurnUsage:
             )
         }
         cache_calls = [c for c in calls if c.get("cache_read_input_tokens") is not None]
-        cache_input = sum(c["prompt_tokens"] for c in cache_calls)
+        # Ledger rows written by older releases may lack optional accounting
+        # fields; a single incomplete row must not break usage rollups.
+        cache_input = sum(c.get("prompt_tokens") or 0 for c in cache_calls)
         timed = [c for c in calls if c.get("ttft_seconds") is not None]
-        generated = [c for c in calls if c.get("generation_seconds") and not c["estimated"]]
+        generated = [c for c in calls if c.get("generation_seconds") and not c.get("estimated")]
         generation_seconds = sum(c["generation_seconds"] for c in generated)
         return {
             **totals,
@@ -55,13 +57,13 @@ class TurnUsage:
             "ttft_seconds": (sum(c["ttft_seconds"] for c in timed) / len(timed) if timed else None),
             "ttft_calls": len(timed),
             "generation_seconds": generation_seconds,
-            "timed_completion_tokens": sum(c["completion_tokens"] for c in generated),
+            "timed_completion_tokens": sum(c.get("completion_tokens") or 0 for c in generated),
             "tokens_per_second": (
-                sum(c["completion_tokens"] for c in generated) / generation_seconds
+                sum(c.get("completion_tokens") or 0 for c in generated) / generation_seconds
                 if generation_seconds
                 else None
             ),
-            "estimated_calls": sum(c["estimated"] for c in calls),
+            "estimated_calls": sum(1 for c in calls if c.get("estimated")),
             "call_details": list(calls),
         }
 

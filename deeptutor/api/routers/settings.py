@@ -2435,18 +2435,30 @@ async def get_usage_statistics(
     from deeptutor.services.workspace.models import WorkspaceError
 
     records = []
-    with data_activity():
-        workspace_ids = [""] + [
-            row["workspace_id"]
-            for row in get_content_workspace_service()._catalog()
-            if row.get("kind") == "workspace"
-        ]
-        for workspace_id in workspace_ids:
-            try:
-                with workspace_context(workspace_id):
-                    records.extend(await get_session_store().usage_records(start, end))
-            except WorkspaceError:
-                continue
+    try:
+        with data_activity():
+            workspace_ids = [""] + [
+                row["workspace_id"]
+                for row in get_content_workspace_service()._catalog()
+                if row.get("kind") == "workspace"
+            ]
+            for workspace_id in workspace_ids:
+                try:
+                    with workspace_context(workspace_id):
+                        records.extend(await get_session_store().usage_records(start, end))
+                except WorkspaceError:
+                    continue
+                except Exception:
+                    # One workspace's unreadable history must not blank the
+                    # whole account panel; report it and keep the rest.
+                    logging.getLogger(__name__).exception(
+                        "Skipping usage records for workspace %r", workspace_id
+                    )
+                    continue
+    except WorkspaceError as exc:
+        # Busy lease or a pending data-migration recovery: retryable or
+        # user-actionable, so surface the reason instead of an opaque 500.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     from deeptutor.services.llm.usage_ledger import combined_usage_records
 
     combined = await asyncio.to_thread(combined_usage_records, records, start, end)

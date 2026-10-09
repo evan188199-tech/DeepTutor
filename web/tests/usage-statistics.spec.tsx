@@ -4,11 +4,12 @@ import { beforeEach, expect, it, vi } from 'vitest'
 import UsageSettingsSection from '@/features/settings/sections/UsageSettingsSection'
 import UsageActivity from '@/features/settings/components/UsageActivity'
 import { activityCalendar, usageYear, type UsageStatistics } from '@/lib/usage-statistics'
-const mocks = vi.hoisted(() => ({ fetch: vi.fn(), push: vi.fn(), search: 'year=2024' }))
+// react-i18next keeps `t` stable across renders; an unstable mock would retrigger effects that list `t` in their dependencies.
+const mocks = vi.hoisted(() => ({ fetch: vi.fn(), push: vi.fn(), search: 'year=2024', t: (key: string, vars?: Record<string, unknown>) => key.replace(/{{(.*?)}}/g, (_, k) => String(vars?.[k] ?? k)) }))
 vi.mock('@/lib/usage-statistics', async original => ({ ...await original<object>(), fetchUsageStatistics: mocks.fetch }))
 vi.mock('next/navigation', () => ({ useRouter: () => ({push: mocks.push}), useSearchParams: () => new URLSearchParams(mocks.search) }))
 vi.mock('@/components/settings/shared', () => ({ SettingsPageHeader: ({title}: {title: string}) => <h1>{title}</h1> }))
-vi.mock('react-i18next', () => ({useTranslation: () => ({t: (key: string, vars?: Record<string, unknown>) => key.replace(/{{(.*?)}}/g, (_, k) => String(vars?.[k] ?? k)), i18n: {language: 'en'}})}))
+vi.mock('react-i18next', () => ({useTranslation: () => ({t: mocks.t, i18n: {language: 'en'}})}))
 const day = {date: '2024-02-29', turns: 3, total_calls: 5, total_tokens: 200, tracked_turns: 3}
 const totals = {total_tokens: 200, prompt_tokens: 180, completion_tokens: 20, total_calls: 5, cache_read_input_tokens: 90, cache_creation_input_tokens: 0, cache_input_tokens: 180, cache_reported_calls: 5, cache_hit_rate: .5, ttft_seconds: 1.2, tokens_per_second: 40, duration_seconds: 8, estimated_calls: 0}
 const data: UsageStatistics = {year: 2024, timezone: 'UTC', totals, days: activityCalendar([day], 2024).dates, models: [{...totals, provider: 'zhipu', model: 'glm-test'}], active_days: 1, sessions: 1, turns: 3, tracked_turns: 3, updated_at: 1709164800}
@@ -45,6 +46,12 @@ it('shows errors and retries instead of presenting failure as zero usage', async
   expect(screen.queryByText('No recorded model usage for this year.')).toBeNull()
   fireEvent.click(screen.getByRole('button', {name: 'Retry'}))
   expect(await screen.findByText('glm-test')).toBeVisible()
+})
+it('shows why the request failed instead of a bare retry banner', async () => {
+  mocks.fetch.mockRejectedValueOnce(new Error('A data migration needs recovery. Open Settings → Data migration before changing learning data.'))
+  render(<UsageSettingsSection />)
+  expect(await screen.findByRole('alert')).toHaveTextContent('Unable to load usage statistics.')
+  expect(screen.getByText('A data migration needs recovery. Open Settings → Data migration before changing learning data.')).toBeVisible()
 })
 it('discards a late response after the requested year changes', async () => {
   let finish: (data: UsageStatistics) => void = () => {}

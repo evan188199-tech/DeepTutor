@@ -4584,6 +4584,7 @@
   "Next year": "Наступний рік",
   "Refresh usage": "Оновити використання",
   "Unable to load usage statistics.": "Не вдалося завантажити статистику використання.",
+  "Unexpected error": "Неочікувана помилка",
   "Loading usage…": "Завантаження використання…",
   "Usage by model": "Використання за моделлю",
   "{{calls}} LLM calls · {{sessions}} sessions": "{{calls}} LLM викликів · {{sessions}} сесій",

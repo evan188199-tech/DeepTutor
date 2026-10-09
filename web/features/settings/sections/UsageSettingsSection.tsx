@@ -17,25 +17,30 @@ export default function UsageSettingsSection() {
   const [snapshot, setSnapshot] = useState<{
     key: string
     data: UsageStatistics | null
-    error: boolean
+    error: string | null
   } | null>(null)
   const [revision, setRevision] = useState(0)
   const requestKey = `${year}:${revision}`
   const data = snapshot?.data
   const loading = snapshot?.key !== requestKey
   const error = !loading && Boolean(snapshot?.error)
+  const errorDetail = !loading ? snapshot?.error : null
   useEffect(() => {
     const controller = new AbortController()
     fetchUsageStatistics(year, controller.signal)
       .then(value => {
-        if (!controller.signal.aborted) setSnapshot({ key: requestKey, data: value, error: false })
+        if (!controller.signal.aborted) setSnapshot({ key: requestKey, data: value, error: null })
       })
-      .catch(() => {
+      .catch(cause => {
         if (!controller.signal.aborted)
-          setSnapshot(previous => ({ key: requestKey, data: previous?.data ?? null, error: true }))
+          setSnapshot(previous => ({
+            key: requestKey,
+            data: previous?.data ?? null,
+            error: cause instanceof Error && cause.message ? cause.message : t('Unexpected error'),
+          }))
       })
     return () => controller.abort()
-  }, [year, requestKey])
+  }, [year, requestKey, t])
   const changeYear = (next: number) => {
     const query = new URLSearchParams(search.toString())
     query.set('year', String(next))
@@ -51,7 +56,9 @@ export default function UsageSettingsSection() {
     <div>
       <SettingsPageHeader
         title={t('Usage statistics')}
-        description={t('Model usage across conversations, personalized learning, and background tasks.')}
+        description={t(
+          'Model usage across conversations, personalized learning, and background tasks.'
+        )}
       />
       <div className="mb-6 flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-3 rounded-lg border border-[var(--border)] px-1 py-1">
@@ -88,9 +95,14 @@ export default function UsageSettingsSection() {
       {error && (
         <div
           role="alert"
-          className="mb-5 flex items-center justify-between rounded-lg bg-[var(--destructive)]/5 px-3 py-2 text-xs text-[var(--destructive)]"
+          className="mb-5 flex items-center justify-between gap-3 rounded-lg bg-[var(--destructive)]/5 px-3 py-2 text-xs text-[var(--destructive)]"
         >
-          <span>{t('Unable to load usage statistics.')}</span>
+          <span>
+            <span className="block">{t('Unable to load usage statistics.')}</span>
+            {errorDetail && (
+              <span className="mt-0.5 block break-words opacity-80">{errorDetail}</span>
+            )}
+          </span>
           <button
             type="button"
             onClick={() => setRevision(value => value + 1)}
@@ -209,7 +221,9 @@ export default function UsageSettingsSection() {
             {historical.length > 0 && (
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--muted-foreground)]">
                 <span>{t('Historical usage without recoverable model details')}</span>
-                <span className="tabular-nums">{n(historical.reduce((sum, model) => sum + model.total_tokens, 0))} tokens</span>
+                <span className="tabular-nums">
+                  {n(historical.reduce((sum, model) => sum + model.total_tokens, 0))} tokens
+                </span>
               </div>
             )}
           </section>

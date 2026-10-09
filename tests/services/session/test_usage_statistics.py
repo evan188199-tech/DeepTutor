@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import json
 from types import SimpleNamespace as NS
 from unittest.mock import AsyncMock
 
@@ -210,6 +211,76 @@ async def test_usage_endpoint_validates_timezone_and_uses_active_store(monkeypat
         store.usage_records.call_args.args[0]
         == datetime(2025, 12, 31, 16, tzinfo=timezone.utc).timestamp()
     )
+
+
+@pytest.mark.asyncio
+async def test_usage_endpoint_reports_activity_lease_failure_with_reason(monkeypatch):
+    """A busy lease or pending recovery must reach the client, not a bare 500."""
+    from fastapi import HTTPException
+
+    from deeptutor.api.routers.settings import get_usage_statistics
+    from deeptutor.services.workspace import activity
+    from deeptutor.services.workspace.models import WorkspaceError
+
+    def busy(**kwargs):
+        raise WorkspaceError(
+            "Workspace data is busy. Wait for active requests and tasks before retrying."
+        )
+
+    monkeypatch.setattr(activity, "data_activity", busy)
+    store = NS(usage_records=AsyncMock(return_value=[]))
+    monkeypatch.setattr("deeptutor.services.session.get_session_store", lambda: store)
+    with pytest.raises(HTTPException) as excinfo:
+        await get_usage_statistics(year=2026, timezone="UTC")
+    assert excinfo.value.status_code == 503
+    assert "busy" in str(excinfo.value.detail)
+
+
+@pytest.mark.asyncio
+async def test_usage_endpoint_survives_a_broken_workspace_store(monkeypatch):
+    """One unreadable workspace history must not blank the whole panel."""
+    from deeptutor.api.routers.settings import get_usage_statistics
+
+    store = NS(usage_records=AsyncMock(side_effect=RuntimeError("corrupt history db")))
+    monkeypatch.setattr("deeptutor.services.session.get_session_store", lambda: store)
+    result = await get_usage_statistics(year=2026, timezone="UTC")
+    assert result.year == 2026
+    assert result.totals.total_tokens == 0
+
+
+@pytest.mark.asyncio
+async def test_ledger_rows_missing_optional_fields_still_roll_up(monkeypatch):
+    """Older ledger rows without optional accounting fields must aggregate (#1907)."""
+    import sqlite3
+
+    from deeptutor.api.routers.settings import get_usage_statistics
+    from deeptutor.services.llm import usage_ledger
+
+    path = usage_ledger.ledger_path()
+    with sqlite3.connect(path) as conn:
+        conn.execute(
+            """CREATE TABLE IF NOT EXISTS llm_calls (
+            call_id TEXT PRIMARY KEY, started_at REAL NOT NULL,
+            session_id TEXT NOT NULL, turn_id TEXT NOT NULL, source TEXT NOT NULL,
+            usage_json TEXT NOT NULL)"""
+        )
+        conn.execute(
+            "INSERT INTO llm_calls VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                "legacy-call",
+                1767225600.0,
+                "session",
+                "turn",
+                "",
+                json.dumps({"call_id": "legacy-call", "model": "gpt-5", "total_tokens": 42}),
+            ),
+        )
+    store = NS(usage_records=AsyncMock(return_value=[]))
+    monkeypatch.setattr("deeptutor.services.session.get_session_store", lambda: store)
+    result = await get_usage_statistics(year=2026, timezone="UTC")
+    assert result.totals.total_tokens == 42
+    assert result.totals.estimated_calls == 0
+    assert result.models[0].model == "gpt-5"
 
 
 def test_recovers_legacy_models_from_llm_traces_but_not_search_tool_models():

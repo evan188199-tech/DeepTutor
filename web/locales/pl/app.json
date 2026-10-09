@@ -4569,6 +4569,7 @@
   "Next year": "Następny rok",
   "Refresh usage": "Odśwież dane",
   "Unable to load usage statistics.": "Nie udało się wczytać statystyk użycia.",
+  "Unexpected error": "Nieoczekiwany błąd",
   "Loading usage…": "Wczytywanie danych…",
   "Usage by model": "Użycie według modelu",
   "{{calls}} LLM calls · {{sessions}} sessions": "{{calls}} wywołania LLM · {{sessions}} sesji",
