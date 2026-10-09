@@ -125,7 +125,7 @@ zero_noninit.sort(key=lambda m: (-m["loc"], -len(fanin.get(fk(m["module"]), ()))
 covered_weak.sort(key=lambda m: (m["loc"], ), reverse=True)
 
 summary = {
-    "root_commit": raw.get("root_commit"),
+    "deeptutor_tree": raw.get("deeptutor_tree"),
     "totals": {"modules": raw["n_modules"] - len(INTREE_TESTS), "tests": raw["n_tests"],
                "intree_tests": len(INTREE_TESTS),
                "noninit": sum(1 for m in mods if not m["is_init"]),

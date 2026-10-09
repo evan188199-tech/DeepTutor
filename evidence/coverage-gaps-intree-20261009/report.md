@@ -12,6 +12,7 @@
 1. 测试宇宙扩为「根 `tests/` + 包内 `deeptutor/**/test_*.py`」：24 个 `deeptutor/learning/tests/test_*.py` 全部并入；另有 1 个包内测试文件 `deeptutor/services/config/test_runner.py` 一并并入——它本就是 aggregate 既有"包内 test 按测试计"口径的一部分（AGEN-662 报告同口径计 24=23+1），并入后 `n_tests` 与 `totals.intree_tests` 同源（同一 basename 判据），不重不漏。卡片点名的 24 个 learning intree 文件 100% 在宇宙内（`raw.n_intree_tests=25`，learning 24 + 包内 1）。
 2. 包内测试文件的相对导入按各自包根解析（learning intree 24 个全部绝对导入，不受影响；`test_runner.py` 用相对导入，按 learning-intree-20261009 修复建议第 2 条以自身包根解析，避免其覆盖被漏算）。根 `tests/` 的相对导入解析分支保持原样未动。
 3. raw 新增 `n_root_tests` / `n_intree_tests` / `intree_test_files` 字段，输出路径改写至本目录；确定性（排序迭代）逻辑不变。
+4. 溯源字段由 `root_commit`（扫描时 HEAD，分支 tip 提交后复跑必漂移）改为 `deeptutor_tree`（`git rev-parse HEAD:deeptutor` 子树对象名，当前值 `f05ae923…`，与基线 6cf793bd8 的产品树完全一致）；evidence-only 提交不改产品树，故分支 tip 上复跑输出字节稳定。aggregate 的 summary 同步该字段。
 
 `aggregate.py`：
 
@@ -48,7 +49,7 @@
 ## 3. 验收核对
 
 1. ✅ intree 24 文件全部进入测试宇宙（`raw.n_intree_tests=25`，其中 learning 24；`intree_test_files` 逐一在列）
-2. ✅ 复跑输出字节级一致：scan+aggregate 复跑两次（第二次含 `PYTHONHASHSEED=random`），`coverage_raw.json`/`summary.json` SHA256 前后一致（`shasum -a 256 -c` 全 OK）
+2. ✅ 分支 tip 上复跑输出字节级一致：scan+aggregate 复跑两次（第二次含 `PYTHONHASHSEED=random`），`coverage_raw.json`/`summary.json` SHA256 前后一致（`shasum -a 256 -c` 全 OK）；溯源字段 `deeptutor_tree` 与基线产品树一致，复跑不随 HEAD 漂移
 3. ✅ `git status` 仅新增本 evidence 目录，未改任何产品/测试代码
 
 ## 4. 复现命令（仓库根，仅标准库）
@@ -62,6 +63,6 @@ shasum -a 256 -c evidence/coverage-gaps-intree-20261009/SHA256SUMS     # 校验
 ## 5. 证据文件
 
 - `scan_coverage_gaps.py` / `aggregate.py` —— 改后扫描器与聚合器
-- `coverage_raw.json` —— 修正版逐模块 T1/T2/covered（含 intree 宇宙与 `n_intree_tests`/`intree_test_files`）
+- `coverage_raw.json` —— 修正版逐模块 T1/T2/covered（含 intree 宇宙与 `n_intree_tests`/`intree_test_files`，溯源字段 `deeptutor_tree`）
 - `summary.json` —— 修正版 zero/weak 清单（weak 条目 `tests` 如实列出 intree 路径）
 - `SHA256SUMS` —— 本目录（除自身）SHA256

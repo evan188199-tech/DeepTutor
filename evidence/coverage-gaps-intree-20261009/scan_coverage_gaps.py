@@ -12,7 +12,10 @@ package-internal deeptutor/services/config/test_runner.py), so T1/T2 mapping
 and n_tests see the full test universe. In-tree tests import via absolute
 ``deeptutor.*`` names (learning: 24/24, see evidence/learning-intree-20261009);
 the one intree file using relative imports (test_runner.py) is resolved
-against its own package root instead of tests/.
+against its own package root instead of tests/. Provenance is recorded as
+``deeptutor_tree`` (object name of HEAD:deeptutor) instead of the old
+HEAD sha, so re-runs at a branch tip that only adds evidence files stay
+byte-identical.
 
 Deterministic (AGEN-873): T2 previously matched via `" ".join(set)` substring
 concatenation, whose result depended on PYTHONHASHSEED-driven set iteration
@@ -135,7 +138,7 @@ def main():
         })
 
     out = {
-        "root_commit": os.popen("git rev-parse HEAD").read().strip() if os.path.isdir(os.path.join(ROOT, ".git")) or os.path.exists(os.path.join(ROOT, ".git")) else "unknown",
+        "deeptutor_tree": os.popen("git rev-parse HEAD:deeptutor").read().strip() if os.path.isdir(os.path.join(ROOT, ".git")) or os.path.exists(os.path.join(ROOT, ".git")) else "unknown",
         "n_modules": len(modules),
         "n_tests": len(tests),
         "n_root_tests": len(root_tests),
