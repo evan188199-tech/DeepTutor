@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from pathlib import Path
 import tempfile
 from typing import Any
@@ -28,6 +29,9 @@ from deeptutor.services.voice.options import is_qwen_audio_tts
 
 _TTS_PATH = "services/aigc/multimodal-generation/generation"
 _QWEN_AUDIO_TTS_PATH = "services/audio/tts/SpeechSynthesizer"
+
+logger = logging.getLogger(__name__)
+
 _AUDIO_CONTENT_TYPES = {
     "mp3": "audio/mpeg",
     "wav": "audio/wav",
@@ -41,9 +45,16 @@ def _provider_error(
 ) -> None:
     if resp.status_code < 400:
         return
-    detail = (resp.text or "").strip()[:400]
+    # The upstream body stays in server-side logs only; the raised message is
+    # stable application text so it can surface to end users safely.
+    logger.warning(
+        "%s failed with HTTP %s; body=%s",
+        action,
+        resp.status_code,
+        (resp.text or "")[:500],
+    )
     raise VoiceProviderHTTPError(
-        f"{action} failed with HTTP {resp.status_code}" + (f": {detail}" if detail else "."),
+        f"{action} failed with HTTP {resp.status_code}.",
         status_code=resp.status_code,
         body=resp.text,
         public_message=public_message,
@@ -54,8 +65,9 @@ def _dashscope_error(data: dict[str, Any], action: str) -> None:
     if data.get("code") not in (None, "", 0, "0") or data.get("success") is False:
         code = data.get("code") or "unknown"
         message = data.get("message") or "no detail provided"
+        logger.warning("%s failed (provider code %s): %s", action, code, message)
         raise VoiceProviderError(
-            f"{action} failed ({code}): {message}",
+            f"{action} failed with a provider error.",
             public_message=(
                 "Speech parameters were rejected. Check the model, voice, language and audio format."
                 if code == "InvalidParameter"
@@ -422,7 +434,8 @@ class DashScopeSTTAdapter(BaseSTTAdapter):
             elif event == "task-failed":
                 code = header.get("error_code") or "unknown"
                 detail = header.get("error_message") or "no detail provided"
-                raise VoiceProviderError(f"DashScope STT failed ({code}): {detail}")
+                logger.warning("DashScope STT failed (provider code %s): %s", code, detail)
+                raise VoiceProviderError("DashScope STT failed with a provider error.")
             elif event == "task-finished":
                 texts.extend(self._sentence_texts((data.get("payload") or {}).get("output")))
                 break
@@ -451,10 +464,12 @@ class DashScopeSTTAdapter(BaseSTTAdapter):
         if header.get("task_id") != task_id:
             raise VoiceProviderError("DashScope STT returned an unexpected task id.")
         if header.get("event") == "task-failed":
-            raise VoiceProviderError(
-                "DashScope STT failed to start: "
-                + str(header.get("error_message") or "no detail provided")
+            logger.warning(
+                "DashScope STT failed to start (provider code %s): %s",
+                header.get("error_code") or "unknown",
+                header.get("error_message") or "no detail provided",
             )
+            raise VoiceProviderError("DashScope STT failed to start.")
         if header.get("event") != "task-started":
             raise VoiceProviderError("DashScope STT returned an unexpected start event.")
 

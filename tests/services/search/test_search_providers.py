@@ -342,7 +342,7 @@ def test_aliyun_iqs_caps_results_client_side(monkeypatch) -> None:
     assert result.citations[0].date.count("-") == 2
 
 
-def test_bocha_surfaces_an_error_carried_inside_a_200(monkeypatch) -> None:
+def test_bocha_reports_a_200_carried_error_with_a_stable_message(monkeypatch, caplog) -> None:
     class _FakeRequests:
         @staticmethod
         def post(url: str, **kwargs: Any) -> _FakeResponse:
@@ -352,8 +352,10 @@ def test_bocha_surfaces_an_error_carried_inside_a_200(monkeypatch) -> None:
 
     from deeptutor.services.search.providers.bocha import BochaProvider
 
-    with pytest.raises(Exception, match="quota exhausted"):
-        BochaProvider(api_key="k").search("q")
+    with caplog.at_level("ERROR", logger="deeptutor.services.search.providers.bocha"):
+        with pytest.raises(Exception, match="^Bocha API error: the request was rejected\\.$"):
+            BochaProvider(api_key="k").search("q")
+    assert "quota exhausted" in caplog.text
 
 
 # --------------------------------------------------------------------------
@@ -497,3 +499,93 @@ def test_serply_rejects_an_unknown_mode() -> None:
 
     with pytest.raises(ValueError, match="mode"):
         SerplyProvider(api_key="k").search("q", mode="images")
+
+
+# --------------------------------------------------------------------------
+# Error-message contract: provider failures raise a stable application-authored
+# message (provider name + HTTP status or fixed wording); upstream response
+# content is written to server-side logs only.
+# --------------------------------------------------------------------------
+
+_FAILURE_DETAIL = "upstream-failure-detail-774f31"
+
+# (module, provider class, HTTP status, expected message)
+_HTTP_ERROR_PROVIDERS = [
+    ("serply", "SerplyProvider", 401, "Serply API error: HTTP 401."),
+    ("firecrawl", "FirecrawlProvider", 500, "Firecrawl API error: HTTP 500."),
+    ("jina", "JinaProvider", 503, "Jina API error: HTTP 503."),
+    ("doubao", "DoubaoProvider", 429, "Doubao API error: HTTP 429."),
+    ("zhipu", "ZhipuProvider", 401, "Zhipu API error: HTTP 401."),
+    ("qianfan", "QianfanProvider", 500, "Qianfan API error: HTTP 500."),
+    ("aliyun_iqs", "AliyunIQSProvider", 403, "Aliyun IQS API error: HTTP 403."),
+    ("bocha", "BochaProvider", 429, "Bocha API error: HTTP 429."),
+]
+
+
+class _FakeHTTPErrorResponse:
+    def __init__(self, status_code: int, text: str) -> None:
+        self.status_code = status_code
+        self.text = text
+
+    def json(self) -> dict[str, Any]:
+        return {}
+
+
+@pytest.mark.parametrize(("module", "cls_name", "status", "expected"), _HTTP_ERROR_PROVIDERS)
+def test_http_error_raises_a_stable_message(
+    module, cls_name, status, expected, monkeypatch, caplog
+) -> None:
+    response = _FakeHTTPErrorResponse(status, _FAILURE_DETAIL)
+
+    class _FakeRequests:
+        get = staticmethod(lambda *args, **kwargs: response)
+        post = staticmethod(lambda *args, **kwargs: response)
+
+    monkeypatch.setattr(f"deeptutor.services.search.providers.{module}.requests", _FakeRequests)
+    with caplog.at_level("ERROR"):
+        with pytest.raises(Exception) as raised:
+            _provider_class(module, cls_name)(api_key="k").search("q")
+    assert str(raised.value) == expected
+    assert _FAILURE_DETAIL not in str(raised.value)
+    assert _FAILURE_DETAIL in caplog.text
+
+
+# (module, provider class, 200 body carrying an error envelope, expected message)
+_ENVELOPE_ERROR_PROVIDERS = [
+    (
+        "firecrawl",
+        "FirecrawlProvider",
+        {"success": False, "error": f"plan {_FAILURE_DETAIL}"},
+        "Firecrawl API error: the request was rejected.",
+    ),
+    (
+        "doubao",
+        "DoubaoProvider",
+        {"error": {"code": "Throttling", "message": f"qps {_FAILURE_DETAIL}"}},
+        "Doubao API error: the request was rejected.",
+    ),
+    (
+        "qianfan",
+        "QianfanProvider",
+        {"code": "AccessDenied", "message": f"quota {_FAILURE_DETAIL}"},
+        "Qianfan API error: the request was rejected.",
+    ),
+]
+
+
+@pytest.mark.parametrize(("module", "cls_name", "body", "expected"), _ENVELOPE_ERROR_PROVIDERS)
+def test_error_envelope_inside_a_200_raises_a_stable_message(
+    module, cls_name, body, expected, monkeypatch, caplog
+) -> None:
+    class _FakeRequests:
+        @staticmethod
+        def post(url: str, **kwargs: Any) -> _FakeResponse:
+            return _FakeResponse(body)
+
+    monkeypatch.setattr(f"deeptutor.services.search.providers.{module}.requests", _FakeRequests)
+    with caplog.at_level("ERROR"):
+        with pytest.raises(Exception) as raised:
+            _provider_class(module, cls_name)(api_key="k").search("q")
+    assert str(raised.value) == expected
+    assert _FAILURE_DETAIL not in str(raised.value)
+    assert _FAILURE_DETAIL in caplog.text

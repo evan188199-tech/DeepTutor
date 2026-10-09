@@ -88,11 +88,15 @@ class FirecrawlProvider(BaseSearchProvider):
             request_kwargs["proxies"] = {"http": self.proxy, "https": self.proxy}
         resp = requests.post(endpoint, timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Firecrawl API error: {resp.status_code} - {resp.text}")
+            self.logger.error(
+                "Firecrawl API error: HTTP %s; body=%s", resp.status_code, resp.text[:500]
+            )
+            raise Exception(f"Firecrawl API error: HTTP {resp.status_code}.")
 
         data = resp.json()
         if not data.get("success", True):
-            raise Exception(f"Firecrawl API error: {data.get('error') or data}")
+            self.logger.error("Firecrawl API error envelope: %s", data.get("error") or data)
+            raise Exception("Firecrawl API error: the request was rejected.")
         rows = (data.get("data") or {}).get("web") or []
 
         citations: list[Citation] = []

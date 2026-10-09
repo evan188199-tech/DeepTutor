@@ -57,18 +57,18 @@ _OPENAI_TTS_VOICES = {
 }
 
 
-def _provider_error_message(action: str, status_code: int, body: str = "") -> str:
-    detail = (body or "").strip()[:400]
-    return f"{action} failed with HTTP {status_code}" + (f": {detail}" if detail else ".")
-
-
 def _raise_for_provider(resp: httpx.Response, action: str) -> None:
-    """Surface a provider error with a trimmed body for diagnostics."""
+    """Raise on a provider HTTP error with a stable, status-only message.
+
+    The upstream body is kept for server-side diagnostics only; exception
+    messages are application-authored text so they can surface to end users.
+    """
     if resp.status_code < 400:
         return
     body = resp.text or ""
+    logger.warning("%s failed with HTTP %s; body=%s", action, resp.status_code, body[:500])
     raise VoiceProviderHTTPError(
-        _provider_error_message(action, resp.status_code, body),
+        f"{action} failed with HTTP {resp.status_code}.",
         status_code=resp.status_code,
         body=body,
     )
@@ -280,7 +280,8 @@ class OpenRouterTTSAdapter(BaseTTSAdapter):
         error = chunk.get("error")
         if isinstance(error, dict):
             message = error.get("message") or error.get("code") or "unknown error"
-            raise VoiceProviderError(f"OpenRouter chat audio error: {message}")
+            logger.warning("OpenRouter chat audio error: %s", message)
+            raise VoiceProviderError("OpenRouter chat audio returned a provider error.")
         choices = chunk.get("choices")
         if not isinstance(choices, list):
             return

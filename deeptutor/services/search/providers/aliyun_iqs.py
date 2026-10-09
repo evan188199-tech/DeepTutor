@@ -105,7 +105,10 @@ class AliyunIQSProvider(BaseSearchProvider):
             request_kwargs["proxies"] = {"http": self.proxy, "https": self.proxy}
         resp = requests.get(endpoint, timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Aliyun IQS API error: {resp.status_code} - {resp.text}")
+            self.logger.error(
+                "Aliyun IQS API error: HTTP %s; body=%s", resp.status_code, resp.text[:500]
+            )
+            raise Exception(f"Aliyun IQS API error: HTTP {resp.status_code}.")
 
         data = resp.json()
         rows = (data.get("pageItems") or [])[: max(1, min(int(max_results), _PAGE_SIZE))]

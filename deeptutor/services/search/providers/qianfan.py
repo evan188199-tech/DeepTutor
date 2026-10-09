@@ -89,14 +89,22 @@ class QianfanProvider(BaseSearchProvider):
             request_kwargs["proxies"] = {"http": self.proxy, "https": self.proxy}
         resp = requests.post(endpoint, timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Qianfan API error: {resp.status_code} - {resp.text}")
+            self.logger.error(
+                "Qianfan API error: HTTP %s; body=%s", resp.status_code, resp.text[:500]
+            )
+            raise Exception(f"Qianfan API error: HTTP {resp.status_code}.")
 
         data = resp.json()
         # Errors arrive as a 200 carrying `code`/`message` and no references.
         # `code` is documented as error-only, but treat the success codes as
         # success rather than assuming any code at all means failure.
         if data.get("code") not in (None, 0, 200, "0", "200"):
-            raise Exception(f"Qianfan API error: {data.get('code')} - {data.get('message')}")
+            self.logger.error(
+                "Qianfan API error envelope: code=%s message=%s",
+                data.get("code"),
+                data.get("message"),
+            )
+            raise Exception("Qianfan API error: the request was rejected.")
         rows = data.get("references") or []
 
         citations: list[Citation] = []

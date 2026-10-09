@@ -922,3 +922,157 @@ def test_math_speak_off_keeps_tex_scripts_separate_from_prose_emphasis():
         strip_markdown_for_speech(r"*Use* $x_i*y_j$ in file_name.", math_speak=False)
         == "Use x_i*y_j in file_name."
     )
+
+
+# ── provider error messages: stable text only, upstream bodies stay in logs ─
+
+
+def _dashscope_tts_config(**kwargs: Any) -> TTSConfig:
+    return TTSConfig(
+        model="qwen3-tts-instruct-flash",
+        provider_name="dashscope",
+        adapter="dashscope",
+        base_url="https://dashscope.aliyuncs.com/api/v1",
+        api_key="dash-key",
+        voice="Cherry",
+        **kwargs,
+    )
+
+
+@pytest.mark.asyncio
+async def test_openai_compat_tts_http_error_message_is_stable(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from deeptutor.services.voice.base import VoiceProviderHTTPError
+
+    _capture_post(monkeypatch, httpx.Response(503, text="openai-compat-failure-detail"))
+    config = TTSConfig(model="m", base_url="https://x/v1", api_key="k", voice="alloy")
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.openai_compat"):
+        with pytest.raises(VoiceProviderHTTPError) as raised:
+            await OpenAICompatTTSAdapter().synthesize("hi", config)
+    assert str(raised.value) == "TTS synthesis failed with HTTP 503."
+    assert raised.value.status_code == 503
+    assert "openai-compat-failure-detail" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_openai_compat_stt_http_error_message_is_stable(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from deeptutor.services.voice.base import VoiceProviderHTTPError
+
+    _capture_post(monkeypatch, httpx.Response(401, text="stt-failure-detail"))
+    config = STTConfig(model="whisper-1", base_url="https://x/v1", api_key="k")
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.openai_compat"):
+        with pytest.raises(VoiceProviderHTTPError) as raised:
+            await OpenAICompatSTTAdapter().transcribe(b"audiobytes", config)
+    assert str(raised.value) == "Transcription failed with HTTP 401."
+    assert raised.value.status_code == 401
+    assert "stt-failure-detail" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_dashscope_tts_http_error_message_is_stable(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from deeptutor.services.voice.base import VoiceProviderHTTPError
+
+    _capture_post(monkeypatch, httpx.Response(402, text="dashscope-http-failure-detail"))
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.dashscope"):
+        with pytest.raises(VoiceProviderHTTPError) as raised:
+            await DashScopeTTSAdapter().synthesize("hello", _dashscope_tts_config())
+    assert str(raised.value) == "DashScope TTS failed with HTTP 402."
+    assert raised.value.status_code == 402
+    assert "dashscope-http-failure-detail" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_dashscope_tts_envelope_error_message_is_stable(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    _capture_post(
+        monkeypatch,
+        httpx.Response(
+            200,
+            json={"code": "InvalidParameter", "message": "dashscope-envelope-failure-detail"},
+        ),
+    )
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.dashscope"):
+        with pytest.raises(VoiceProviderError) as raised:
+            await DashScopeTTSAdapter().synthesize("hello", _dashscope_tts_config())
+    assert str(raised.value) == "DashScope TTS failed with a provider error."
+    assert raised.value.public_message == (
+        "Speech parameters were rejected. Check the model, voice, language and audio format."
+    )
+    assert "dashscope-envelope-failure-detail" in caplog.text
+    assert "dashscope-envelope-failure-detail" not in str(raised.value)
+
+
+def test_dashscope_stt_start_failure_message_is_stable(caplog: pytest.LogCaptureFixture) -> None:
+    message = _FakeWSMessage(
+        {
+            "header": {
+                "task_id": "t1",
+                "event": "task-failed",
+                "error_code": "E1",
+                "error_message": "dashscope-start-failure-detail",
+            }
+        }
+    )
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.dashscope"):
+        with pytest.raises(VoiceProviderError, match="^DashScope STT failed to start\\.$"):
+            DashScopeSTTAdapter._require_started(message, "t1")
+    assert "dashscope-start-failure-detail" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_dashscope_stt_task_failure_message_is_stable(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    websocket = _FakeWebSocket(
+        [
+            {"header": {"event": "task-started"}},
+            {
+                "header": {
+                    "event": "task-failed",
+                    "error_code": "E2",
+                    "error_message": "dashscope-task-failure-detail",
+                }
+            },
+        ]
+    )
+
+    seen_start = False
+
+    async def record_start(value: str) -> None:
+        nonlocal seen_start
+        if not seen_start:
+            seen_start = True
+            first = json.loads(value)["header"]["task_id"]
+            websocket.messages[0] = {"header": {"task_id": first, "event": "task-started"}}
+
+    websocket.send_str = record_start  # type: ignore[method-assign]
+    config = STTConfig(
+        model="paraformer-realtime-v2",
+        provider_name="dashscope",
+        adapter="dashscope",
+        base_url="https://dashscope.aliyuncs.com/api/v1",
+        api_key="dash-key",
+    )
+    with caplog.at_level("WARNING", logger="deeptutor.services.voice.adapters.dashscope"):
+        with pytest.raises(
+            VoiceProviderError, match="^DashScope STT failed with a provider error\\.$"
+        ):
+            await DashScopeSTTAdapter()._run_recognition(websocket, b"RIFFxxxx", config)
+    assert "dashscope-task-failure-detail" in caplog.text
+
+
+def test_openrouter_chat_audio_error_message_is_stable() -> None:
+    chunks: list[str] = []
+    with pytest.raises(
+        VoiceProviderError, match="^OpenRouter chat audio returned a provider error\\.$"
+    ):
+        OpenRouterTTSAdapter._collect_audio_line(
+            'data: {"error": {"message": "openrouter-sse-failure-detail"}}', chunks
+        )
+    assert chunks == []

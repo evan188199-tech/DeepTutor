@@ -81,7 +81,10 @@ class SerplyProvider(BaseSearchProvider):
         encoded_query = urlencode({"q": query, "num": num})
         resp = requests.get(f"{root}/{path}/{encoded_query}", timeout=timeout, **request_kwargs)
         if resp.status_code != 200:
-            raise Exception(f"Serply API error: {resp.status_code} - {resp.text}")
+            self.logger.error(
+                "Serply API error: HTTP %s; body=%s", resp.status_code, resp.text[:500]
+            )
+            raise Exception(f"Serply API error: HTTP {resp.status_code}.")
         payload = resp.json()
         rows = _result_rows(mode, payload)[:num]
 

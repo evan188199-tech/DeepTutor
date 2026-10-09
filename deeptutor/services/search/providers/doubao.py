@@ -91,10 +91,14 @@ class DoubaoProvider(BaseSearchProvider):
         try:
             resp = requests.post(endpoint, timeout=timeout, **request_kwargs)
             if resp.status_code != 200:
-                raise Exception(f"Doubao API error: {resp.status_code} - {resp.text}")
+                self.logger.error(
+                    "Doubao API error: HTTP %s; body=%s", resp.status_code, resp.text[:500]
+                )
+                raise Exception(f"Doubao API error: HTTP {resp.status_code}.")
             data = resp.json()
             if data.get("error"):
-                raise Exception(f"Doubao API error: {data['error']}")
+                self.logger.error("Doubao API error envelope: %s", data["error"])
+                raise Exception("Doubao API error: the request was rejected.")
         except BaseException:
             meter.finish(status="failed")
             raise
