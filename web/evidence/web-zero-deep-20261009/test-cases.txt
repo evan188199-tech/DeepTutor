@@ -1,0 +1,27 @@
+skills: renders loaded skills with badges, actions, and tag chips
+skills: shows the empty state and opens the create editor from it
+skills: filters by tag and untagged and shows the filter-empty state
+skills: opens the read-only viewer with stripped frontmatter
+skills: renders the viewer error when the detail request fails
+skills: validates the name on create, then saves and reloads
+skills: keeps the editor open with the error when createSkill rejects
+skills: loads the detail into the edit dialog and renames on save
+skills: guards delete behind confirm and reports workspace usage
+skills: creates, renames, and deletes tags from the tag manager
+skills: toggles a vocab tag chip and registers a new tag from the editor
+skills: shows the load error banner when listing fails
+cli apps: renders the installed list with switches, trust chips, and lock notes
+cli apps: renders the load error banner
+cli apps: shows the admin empty state and switches to the store
+cli apps: shows the non-admin empty-state copy
+cli apps: warns when the account cannot execute code
+cli apps: toggles an app off through setCliAppEnabled
+cli apps: keeps the switch and surfaces the failure when toggling fails
+cli apps: uninstalls after confirmation and skips the call on decline
+cli apps: paginates the catalog and applies category and availability filters
+cli apps: debounces the search draft into the catalog query
+cli apps: shows the store empty state
+cli apps: installs from the entry detail, surfacing the refusal log, then reinstalling
+cli apps: keeps the store read-only for non-admins
+cli apps: explains why an unavailable entry cannot be installed
+cli apps: hides install affordances while admin status is loading
