@@ -760,6 +760,7 @@ def normalize_transcript_segments(rows: Sequence[Any]) -> list[TranscriptSegment
             if end_value <= start_value:
                 end_value = start_value + max(0.0, float(duration or 0))
         except (TypeError, ValueError):
+            logger.warning("dropping transcript cue with non-numeric timing: %r", row)
             continue
         result.append(TranscriptSegment(start_value, max(start_value, end_value), text))
         total_bytes += len(encoded)

@@ -708,6 +708,23 @@ def test_transcript_normalization_has_a_storage_budget(monkeypatch) -> None:
     assert [cue.text for cue in cues] == ["1234", "5678"]
 
 
+def test_transcript_normalization_warns_when_timing_is_not_numeric(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.ingestion"):
+        cues = normalize_transcript_segments(
+            [
+                {"start": "soon", "duration": 1, "text": "broken timing"},
+                {"start": 1, "duration": 1, "text": "kept"},
+            ]
+        )
+
+    # Fallback semantics: only the unusable cue is dropped, and the drop is
+    # traced as a warning.
+    assert [cue.text for cue in cues] == ["kept"]
+    assert any("non-numeric timing" in m for m in caplog.messages)
+
+
 @pytest.mark.asyncio
 async def test_missing_youtube_captions_does_not_block_native_playback(stores) -> None:
     reading, catalog = stores

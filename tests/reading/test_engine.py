@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 from pathlib import Path
 import zipfile
 
@@ -31,6 +32,7 @@ from deeptutor.reading import (
 )
 from deeptutor.reading.extract import (
     SECTION_TARGET_CHARS,
+    _pdf_outline,
     extract_material,
     first_line_label,
     split_into_sections,
@@ -186,6 +188,19 @@ def test_pdf_without_bookmarks_does_not_invent_contents(tmp_path: Path) -> None:
     reading_store = ReadingStore(root=tmp_path / "plain-materials")
     manifest = reading_store.ingest(path)
     assert reading_store.outline(manifest.material_id) == []
+
+
+def test_pdf_outline_parse_failure_warns_and_keeps_the_empty_outline(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    class _BrokenTocDoc:
+        def get_toc(self) -> list[list[int]]:
+            raise RuntimeError("corrupt outline object")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.extract"):
+        assert _pdf_outline(_BrokenTocDoc(), page_count=3) == ()
+
+    assert any("continuing without an outline" in m for m in caplog.messages)
 
 
 def test_text_file_is_cut_into_sections_on_paragraph_boundaries(tmp_path: Path) -> None:
@@ -625,6 +640,30 @@ def test_delete_removes_everything(store: ReadingStore, pdf_path: Path) -> None:
     assert store.delete(manifest.material_id) is False
 
 
+def test_delete_material_state_warns_when_state_dir_cannot_be_removed(
+    store: ReadingStore, pdf_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    manifest = store.ingest(pdf_path)
+    material_id = manifest.material_id.lower()
+    annotations_dir = store.root / material_id / "annotations"
+    annotations_dir.mkdir(parents=True)
+    own_state = annotations_dir / f"{material_id}.json"
+    own_state.write_text("[]", encoding="utf-8")
+    # A sibling state file keeps the shared directory from being removable.
+    stray_state = annotations_dir / "othermaterial0000.json"
+    stray_state.write_text("[]", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.store"):
+        store.delete_material_state(material_id)
+
+    # Fallback semantics: the material's own state is gone, the sibling and
+    # the directory stay, and the leftover is traced as a warning.
+    assert not own_state.exists()
+    assert stray_state.exists()
+    assert annotations_dir.is_dir()
+    assert any("left in place" in m for m in caplog.messages)
+
+
 def test_partial_ingest_is_repaired_on_the_next_upload(store: ReadingStore, pdf_path: Path) -> None:
     manifest = store.ingest(pdf_path)
     # Simulate a crash between unit writes: the last unit is gone but the
@@ -756,6 +795,31 @@ def test_legacy_selector_parser_keeps_prefix_tail_nearest_the_quote() -> None:
 
     assert isinstance(parsed[0], TextQuoteSelector)
     assert parsed[0].prefix == "b" * 128
+
+
+def test_text_selector_parser_warns_when_it_drops_malformed_entries(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.models"):
+        from_junk = parse_text_selectors(
+            ["not-a-dict", {"type": "TextQuoteSelector", "exact": "kept"}]
+        )
+        from_bad_bounds = parse_text_selectors(
+            [
+                {"type": "TextPositionSelector", "start": "a", "end": 4},
+                {"type": "TextPositionSelector", "start": 1, "end": 5},
+            ]
+        )
+        from_unknown = parse_text_selectors([{"type": "CssSelector", "selector": "p"}])
+
+    # Fallback semantics: each shape still returns whatever parsed cleanly.
+    assert [type(selector) for selector in from_junk] == [TextQuoteSelector]
+    assert [type(selector) for selector in from_bad_bounds] == [TextPositionSelector]
+    assert from_unknown == ()
+    messages = " | ".join(caplog.messages)
+    assert "non-object text selector" in messages
+    assert "non-numeric bounds" in messages
+    assert "unsupported text selector type" in messages
 
 
 def test_selector_whitespace_is_canonicalised_to_stored_unit(
@@ -951,6 +1015,19 @@ def test_parse_locators_drops_out_of_range_and_raises_when_nothing_is_left() -> 
 
 def test_parse_locators_bounds_an_absurd_range_without_materialising_it() -> None:
     assert len(parse_locators("1-100000", unit_count=500)) <= 24
+
+
+def test_parse_locators_warns_when_it_drops_unparseable_input(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.WARNING, logger="deeptutor.reading.service"):
+        assert parse_locators("1, oops, 3", unit_count=3) == [1, 3]
+        assert parse_locators(["x", 2, None], unit_count=3) == [2]
+
+    dropped = [m for m in caplog.messages if m.startswith("dropping ")]
+    assert len(dropped) == 3
+    assert "oops" in dropped[0]
+    assert "None" in dropped[2]
 
 
 def test_render_units_labels_by_unit_kind(store: ReadingStore, pdf_path: Path) -> None:

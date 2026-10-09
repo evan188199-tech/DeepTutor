@@ -1195,10 +1195,15 @@ class ReadingStore:
             for state_dir in (ANNOTATIONS_DIR, POSITIONS_DIR):
                 state_path = content_dir / state_dir / f"{resolved_id}.json"
                 state_path.unlink(missing_ok=True)
+                state_dir_path = content_dir / state_dir
                 try:
-                    (content_dir / state_dir).rmdir()
-                except OSError:
+                    state_dir_path.rmdir()
+                except FileNotFoundError:
+                    # Nothing was ever written under this state dir; there is
+                    # no residue to report.
                     pass
+                except OSError as exc:
+                    logger.warning("reading state dir %s left in place: %s", state_dir_path, exc)
         from deeptutor.reading.epub_bilingual import delete_epub_pairings_for_material
 
         delete_epub_pairings_for_material(self, resolved_id)

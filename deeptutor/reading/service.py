@@ -14,12 +14,15 @@ of rules rather than a regex per call site.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
 import re
 from typing import Sequence
 
 from deeptutor.reading.models import MaterialManifest, OutlineEntry, ReadingError
 from deeptutor.reading.search import SearchResult, locate_quote, search_units
 from deeptutor.reading.store import MAX_READ_CHARS, ReadingStore
+
+logger = logging.getLogger(__name__)
 
 # How many locators one read may request. Guards the context budget before any
 # file is opened; the character ceiling in the store guards it afterwards.
@@ -81,6 +84,7 @@ def parse_locators(spec: str | int | Sequence[int], unit_count: int) -> list[int
                 continue
             match = _RANGE.match(chunk)
             if not match:
+                logger.warning("dropping unparseable locator chunk %r from spec %r", chunk, spec)
                 continue
             start = int(match.group(1))
             end = int(match.group(2)) if match.group(2) else start
@@ -94,6 +98,7 @@ def parse_locators(spec: str | int | Sequence[int], unit_count: int) -> list[int
             try:
                 raw.append(int(value))
             except (TypeError, ValueError):
+                logger.warning("dropping non-integer locator %r from spec %r", value, spec)
                 continue
 
     in_range = sorted({value for value in raw if 1 <= value <= unit_count})

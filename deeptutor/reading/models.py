@@ -16,8 +16,11 @@ re-render and export without a second transform.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+import logging
 import time
 from typing import Any, Literal
+
+logger = logging.getLogger(__name__)
 
 # What one locator addresses, per source format. Purely presentational for the
 # model and the UI ("page 12" vs "chapter 3"); the addressing is identical.
@@ -329,6 +332,7 @@ def parse_text_selectors(value: Any) -> tuple[TextSelector, ...]:
     parsed: list[TextSelector] = []
     for raw in value[:2]:
         if not isinstance(raw, dict):
+            logger.warning("dropping non-object text selector entry %r", raw)
             continue
         selector_type = str(raw.get("type") or "")
         if selector_type == "TextQuoteSelector":
@@ -344,14 +348,19 @@ def parse_text_selectors(value: Any) -> tuple[TextSelector, ...]:
                         suffix=str(raw.get("suffix") or "")[:128],
                     )
                 )
+            else:
+                logger.warning("dropping TextQuoteSelector without exact text")
         elif selector_type == "TextPositionSelector":
             try:
                 start = max(0, int(raw.get("start") or 0))
                 end = max(start, int(raw.get("end") or 0))
             except (TypeError, ValueError):
+                logger.warning("dropping TextPositionSelector with non-numeric bounds %r", raw)
                 continue
             if end > start:
                 parsed.append(TextPositionSelector(start=start, end=end))
+        else:
+            logger.warning("dropping unsupported text selector type %r", selector_type or None)
     return tuple(parsed)
 
 

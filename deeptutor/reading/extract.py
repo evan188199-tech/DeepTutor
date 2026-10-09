@@ -296,7 +296,10 @@ def _pdf_outline(doc: object, *, page_count: int) -> tuple[OutlineEntry, ...]:
     try:
         toc = doc.get_toc()  # type: ignore[attr-defined]
     except Exception:
-        logger.debug("PDF has no readable table of contents", exc_info=True)
+        logger.warning(
+            "PDF table of contents is unreadable; continuing without an outline",
+            exc_info=True,
+        )
         return ()
 
     entries: list[OutlineEntry] = []
