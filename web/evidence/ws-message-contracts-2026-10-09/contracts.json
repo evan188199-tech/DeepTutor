@@ -1,0 +1,311 @@
+{
+  "meta": {
+    "task": "AGEN-1269",
+    "title": "scan: WS message contract cross-check (web/lib event flow)",
+    "generated_at": "2026-10-09",
+    "repo": "HKUDS/DeepTutor",
+    "base_ref": "origin/main",
+    "base_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+    "read_only": true,
+    "frontend_scope": [
+      "web/lib/mastery-ws.ts",
+      "web/lib/session-events.ts",
+      "web/lib/book-ws-operation.ts",
+      "web/lib/co-writer-events.ts",
+      "web/lib/tool-event.ts",
+      "web/lib/stream.ts",
+      "web/lib/reconnecting-websocket.ts"
+    ],
+    "backend_axis": [
+      "deeptutor/api/routers/mastery_path.py",
+      "deeptutor/api/routers/book.py",
+      "deeptutor/learning/event_hub.py",
+      "deeptutor/learning/models.py",
+      "deeptutor/core/stream.py",
+      "deeptutor/core/trace.py",
+      "deeptutor/agents/loop/agent_loop.py",
+      "deeptutor/runtime/agentic/tool_dispatch.py",
+      "deeptutor/book/streaming.py",
+      "deeptutor/book/compiler.py"
+    ],
+    "method": "manual read-only cross-reference; every anchor re-derivable at base_commit with sed -n '<lines> <file>'",
+    "dedup": {
+      "scan-ws-endpoints": "backend endpoint inventory axis (separate card)",
+      "test-websocket-progress": "progress WS unit tests (separate card)"
+    },
+    "verdict_scale": {
+      "match": "fields, types and optionality agree on both sides",
+      "drift": "disagreement or asymmetry found (severity recorded on the finding)",
+      "na": "no wire contract by design (client-internal or transport-only)"
+    }
+  },
+  "summary": {
+    "entries": 26,
+    "match": 19,
+    "drift": 4,
+    "na": 3,
+    "findings": 6,
+    "by_severity": { "high": 0, "medium": 0, "low": 2, "info": 4 }
+  },
+  "entries": [
+    {
+      "id": "E01",
+      "topic": "mastery WS endpoint path /ws/mastery-paths",
+      "frontend": { "file": "web/lib/mastery-ws.ts", "lines": "8", "symbol": "MASTERY_WS_PATH" },
+      "backend": { "file": "deeptutor/api/main.py", "lines": "634-638", "symbol": "include_router(mastery_path.ws_router, prefix=\"/ws\") + mastery_path.py:791 @ws_router.websocket(\"/mastery-paths\")" },
+      "verdict": "match"
+    },
+    {
+      "id": "E02",
+      "topic": "mastery outbound subscribe {type,path_id,after_revision}",
+      "frontend": { "file": "web/lib/mastery-ws.ts", "lines": "40-49", "symbol": "masterySubscribePayload (after_revision clamped >=0 at :47)" },
+      "backend": { "file": "deeptutor/api/routers/mastery_path.py", "lines": "855-876", "symbol": "message.get(\"after_revision\") + cursor=min(requested, current_revision)" },
+      "verdict": "match",
+      "notes": "server additionally clamps cursor to durable head (:874-876); client clamps at :47 — semantics compatible"
+    },
+    {
+      "id": "E03",
+      "topic": "mastery inbound subscribed {type,path_id,revision,events}",
+      "frontend": { "file": "web/lib/mastery-ws.ts", "lines": "10-15,67-77", "symbol": "MasterySubscribedMessage / parseMasterySocketMessage" },
+      "backend": { "file": "deeptutor/api/routers/mastery_path.py", "lines": "892-899", "symbol": "send subscribed payload" },
+      "verdict": "match"
+    },
+    {
+      "id": "E04",
+      "topic": "mastery inbound topic_event {type,path_id,revision,reason,sequence,events}",
+      "frontend": { "file": "web/lib/mastery-ws.ts", "lines": "17-24,78-84", "symbol": "MasteryTopicEventMessage (requires reason:string, sequence:number)" },
+      "backend": { "file": "deeptutor/api/routers/mastery_path.py", "lines": "838-847", "symbol": "forward() topic_event payload; Signal fields event_hub.py:21-23 (revision:int, reason:str, sequence:int)" },
+      "verdict": "match"
+    },
+    {
+      "id": "E05",
+      "topic": "mastery inbound error {type,content}",
+      "frontend": { "file": "web/lib/mastery-ws.ts", "lines": "26-29,64-66", "symbol": "MasterySocketErrorMessage" },
+      "backend": { "file": "deeptutor/api/routers/mastery_path.py", "lines": "857,863,867", "symbol": "send({type:error, content:...})" },
+      "verdict": "match"
+    },
+    {
+      "id": "E06",
+      "topic": "mastery events[] item shape (MasteryEvent mirror)",
+      "frontend": { "file": "web/lib/learning-api.ts", "lines": "204-216", "symbol": "MasteryEvent (no path_id)" },
+      "backend": { "file": "deeptutor/learning/models.py", "lines": "335-345", "symbol": "MasteryEvent (id,path_id,revision,event_type,payload,session_id,turn_id,created_at); serialized via model_dump(mode=\"json\") mastery_path.py:845,897" },
+      "verdict": "drift",
+      "finding": "F-M1"
+    },
+    {
+      "id": "E07",
+      "topic": "books WS endpoint path /ws/books",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "23", "symbol": "BOOK_WS_PATH (also use-book-stream.ts:8)" },
+      "backend": { "file": "deeptutor/api/main.py", "lines": "645", "symbol": "include_router(book.ws_router, prefix=\"/ws\") + book.py:1519 @ws_router.websocket(\"/books\")" },
+      "verdict": "match"
+    },
+    {
+      "id": "E08",
+      "topic": "books outbound subscribe {type,book_id,after_seq}",
+      "frontend": { "file": "web/lib/use-book-stream.ts", "lines": "56-69", "symbol": "onopen subscribe send" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1609-1630", "symbol": "subscribe branch (after_seq parsed :1615, reset rule :1618-1619)" },
+      "verdict": "match"
+    },
+    {
+      "id": "E09",
+      "topic": "books inbound subscribed ack {type,book_id,latest_seq,reset}",
+      "frontend": { "file": "web/lib/use-book-stream.ts", "lines": "78-91", "symbol": "subscribed branch reads latest_seq/reset; synthesizes {type:\"__reset\"} at :88" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1622-1629", "symbol": "subscribed ack payload" },
+      "verdict": "match",
+      "finding": "F-B4",
+      "notes": "field contract matches; the __reset sentinel is a client-internal typing hygiene note, not a wire disagreement"
+    },
+    {
+      "id": "E10",
+      "topic": "books one-shot error event fields (status/code/current_revision, message text)",
+      "frontend": { "file": "web/lib/book-ws-operation.ts", "lines": "34-39,110-126", "symbol": "errorMessage (content ?? message ?? detail) + BookSocketOperationError" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1577,1582,1591,1611,1634,1778,1780-1807", "symbol": "error sends; HTTPException detail dict flattened into content+code+current_revision at :1790-1803; conflict codes from :301-346" },
+      "verdict": "drift",
+      "finding": "F-B1"
+    },
+    {
+      "id": "E11",
+      "topic": "books action create / create_result {book,proposal}",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "153-161", "symbol": "books.create" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1632-1662", "symbol": "create branch" },
+      "verdict": "match"
+    },
+    {
+      "id": "E12",
+      "topic": "books action confirm_proposal / confirm_proposal_result {book,spine,book_revision}",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "162-182", "symbol": "books.confirmProposal" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1664-1690", "symbol": "confirm_proposal branch" },
+      "verdict": "match"
+    },
+    {
+      "id": "E13",
+      "topic": "books action confirm_spine / confirm_spine_result",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "183-203", "symbol": "books.confirmSpine uses REST /books/confirm-spine (no WS consumer)" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1692-1718", "symbol": "confirm_spine WS branch emits confirm_spine_result" },
+      "verdict": "drift",
+      "finding": "F-B2"
+    },
+    {
+      "id": "E14",
+      "topic": "books action compile_page / compile_page_result {page,book_revision}",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "210-225", "symbol": "books.compilePage" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1720-1745", "symbol": "compile_page branch" },
+      "verdict": "match"
+    },
+    {
+      "id": "E15",
+      "topic": "books action regenerate_block / regenerate_block_result {block,book_revision}",
+      "frontend": { "file": "web/lib/book-api.ts", "lines": "226-249", "symbol": "books.regenerateBlock" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1747-1775", "symbol": "regenerate_block branch" },
+      "verdict": "match"
+    },
+    {
+      "id": "E16",
+      "topic": "books stream event envelope {type,source,stage,content,metadata,seq,timestamp}",
+      "frontend": { "file": "web/lib/book-ws-operation.ts", "lines": "1,98-104", "symbol": "BookWsEvent {type:string,[k:string]:unknown}; seq cast in use-book-stream.ts:92-96" },
+      "backend": { "file": "deeptutor/api/routers/book.py", "lines": "1467-1476", "symbol": "_serialize_event" },
+      "verdict": "drift",
+      "finding": "F-B3"
+    },
+    {
+      "id": "E17",
+      "topic": "books event kind via metadata.kind with content fallback",
+      "frontend": { "file": "web/lib/use-book-stream.ts", "lines": "139-143", "symbol": "bookEventKind" },
+      "backend": { "file": "deeptutor/book/streaming.py", "lines": "94-117", "symbol": "book_event (type=PROGRESS, content=kind, metadata={kind,...}; kind list :104-110)" },
+      "verdict": "match"
+    },
+    {
+      "id": "E18",
+      "topic": "books event page_id via metadata.page_id",
+      "frontend": { "file": "web/lib/use-book-stream.ts", "lines": "146-151", "symbol": "bookEventPageId" },
+      "backend": { "file": "deeptutor/book/compiler.py", "lines": "163-168,245-257,275-283,306-313,415-431", "symbol": "book_event data includes page_id" },
+      "verdict": "match"
+    },
+    {
+      "id": "E19",
+      "topic": "unified StreamEventType union (15 values)",
+      "frontend": { "file": "web/contracts/generated/turn-protocol.ts", "lines": "172-190", "symbol": "StreamEventType (generated)" },
+      "backend": { "file": "deeptutor/core/stream.py", "lines": "12-28", "symbol": "StreamEventType enum; schema source deeptutor/api/contracts/turn_protocol.py" },
+      "verdict": "match",
+      "notes": "web types are generated from the backend contract document (web/contracts/README.md)"
+    },
+    {
+      "id": "E20",
+      "topic": "unified StreamEvent envelope fields and optionality",
+      "frontend": { "file": "web/features/chat/model/protocol.ts", "lines": "31-40", "symbol": "StreamEvent tightening (content/metadata/source/stage required) over generated turn-protocol.ts:565-578" },
+      "backend": { "file": "deeptutor/core/stream.py", "lines": "39-60", "symbol": "StreamEvent + to_dict (always emits every field)" },
+      "verdict": "match",
+      "notes": "web tightening is deliberate and satisfied by to_dict"
+    },
+    {
+      "id": "E21",
+      "topic": "content gating call_kind values (llm_final_response / agent_loop_round)",
+      "frontend": { "file": "web/lib/stream.ts", "lines": "16-28", "symbol": "shouldAppendEventContent" },
+      "backend": { "file": "deeptutor/core/trace.py", "lines": "13-19", "symbol": "ANSWER_BEARING_CALL_KINDS; emitters agents/loop/agent_loop.py:443,878; parity test tests/core/test_answer_call_kinds.py" },
+      "verdict": "match"
+    },
+    {
+      "id": "E22",
+      "topic": "retraction marker metadata (trace_kind=call_status, call_state=complete, answer_visible=false, call_id)",
+      "frontend": { "file": "web/lib/stream.ts", "lines": "3-10,30-63", "symbol": "ContentMeta / collectRetractedCallIds / isRetractionMarker" },
+      "backend": { "file": "deeptutor/agents/loop/agent_loop.py", "lines": "1010-1028,1619-1636,1676,1706-1709", "symbol": "_discard_deferred_output + completion_metadata + merge_trace_metadata(core/trace.py:84-91); call_id from build_trace_metadata core/trace.py:30-52" },
+      "verdict": "match"
+    },
+    {
+      "id": "E23",
+      "topic": "tool result metadata nested under metadata.tool_metadata",
+      "frontend": { "file": "web/lib/tool-event.ts", "lines": "5-11,28-56", "symbol": "toolResultMetadata / toolResultScope / toolResultPayload" },
+      "backend": { "file": "deeptutor/runtime/agentic/tool_dispatch.py", "lines": "861-867", "symbol": "result_event_meta = merge(..., {\"tool_metadata\": dict(tool_extra_meta)})" },
+      "verdict": "match"
+    },
+    {
+      "id": "E24",
+      "topic": "sessions:changed client bus",
+      "frontend": { "file": "web/lib/session-events.ts", "lines": "1-10,20-22", "symbol": "notifySessionsChanged / subscribeSessionChanges" },
+      "backend": { "file": null, "lines": null, "symbol": "none (window EventTarget bus, client-internal by design)" },
+      "verdict": "na"
+    },
+    {
+      "id": "E25",
+      "topic": "co-writer:changed client bus",
+      "frontend": { "file": "web/lib/co-writer-events.ts", "lines": "1-8,17-21", "symbol": "notifyCoWriterChanged / subscribeCoWriterChanges" },
+      "backend": { "file": null, "lines": null, "symbol": "none (window EventTarget bus, client-internal by design)" },
+      "verdict": "na"
+    },
+    {
+      "id": "E26",
+      "topic": "reconnecting-websocket transport",
+      "frontend": { "file": "web/lib/reconnecting-websocket.ts", "lines": "21-26,152-156", "symbol": "handlers.onMessage passthrough (no payload parsing)" },
+      "backend": { "file": null, "lines": null, "symbol": "none (transport only; consumers mastery-ws.ts:107-122)" },
+      "verdict": "na"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-M1",
+      "entry": "E06",
+      "severity": "low",
+      "category": "type_missing",
+      "title": "Web MasteryEvent mirror omits backend path_id field",
+      "frontend": "web/lib/learning-api.ts:206-216",
+      "backend": "deeptutor/learning/models.py:335-345 (path_id at :337; arrives on the wire via model_dump mastery_path.py:845,897)",
+      "impact": "The comment at learning-api.ts:204 claims a mirror of models.py, but path_id is missing from the interface. Harmless today (TS structural typing drops extras; backend model has extra=\"ignore\"), but the mirror claim is inaccurate and a consumer reading event.path_id gets a type error despite the field existing at runtime.",
+      "suggestion": "add path_id: string to the web interface (doc-only change, no behavior)"
+    },
+    {
+      "id": "F-B1",
+      "entry": "E10",
+      "severity": "low",
+      "category": "field_drift",
+      "title": "book-ws-operation errorMessage tolerates message/detail fields the backend never sends",
+      "frontend": "web/lib/book-ws-operation.ts:34-39",
+      "backend": "deeptutor/api/routers/book.py:1780-1807 (wire error events carry content, optionally status/code/current_revision; the HTTP detail dict is flattened at :1790-1803, message/detail never appear as wire fields)",
+      "impact": "No functional bug today (content is always present), but the fallbacks suggest a passthrough contract that does not exist; a future reader may emit detail and silently rely on a path that nothing sends.",
+      "suggestion": "either drop the message/detail fallbacks or document them as client-side tolerance for non-DeepTutor sockets"
+    },
+    {
+      "id": "F-B2",
+      "entry": "E13",
+      "severity": "info",
+      "category": "asymmetry",
+      "title": "confirm_spine WS action has no web consumer",
+      "frontend": "web/lib/book-api.ts:183-203 (confirmSpine uses REST POST /books/confirm-spine)",
+      "backend": "deeptutor/api/routers/book.py:1692-1718 (WS branch emits confirm_spine_result)",
+      "impact": "Backend-only result type; nothing on the web parses confirm_spine_result. Not a bug — a parallel surface kept in sync manually.",
+      "suggestion": "leave as is, or note the dead WS action in the endpoint docstring"
+    },
+    {
+      "id": "F-B3",
+      "entry": "E16",
+      "severity": "info",
+      "category": "type_missing",
+      "title": "BookWsEvent leaves the serialized envelope untyped",
+      "frontend": "web/lib/book-ws-operation.ts:1 ({type:string,[k:string]:unknown}); seq handled by Number() cast at web/lib/use-book-stream.ts:92-96",
+      "backend": "deeptutor/api/routers/book.py:1467-1476 (_serialize_event always emits type/source/stage/content/metadata/seq/timestamp)",
+      "impact": "Deliberate looseness for a generic event channel, but the seq/timestamp/source contract is invisible to type checking; a rename on the backend would not be caught by the web build.",
+      "suggestion": "optional: add an optional-fields interface for the known envelope keys while keeping the index signature"
+    },
+    {
+      "id": "F-B4",
+      "entry": "E09",
+      "severity": "info",
+      "category": "typing_hygiene",
+      "title": "Client synthesizes {type:\"__reset\"} into the wire-typed event channel",
+      "frontend": "web/lib/use-book-stream.ts:88",
+      "backend": "no backend emitter (sentinel exists only client-side)",
+      "impact": "BookWsEvent claims to describe wire events, but one value flowing through the same callback is client-synthesized; consumers must know to special-case it.",
+      "suggestion": "optional: widen the callback type to BookWsEvent | {type:\"__reset\"}"
+    },
+    {
+      "id": "F-D1",
+      "entry": "E24-E26",
+      "severity": "info",
+      "category": "scope_note",
+      "title": "session-events / co-writer-events / reconnecting-websocket carry no wire contract",
+      "frontend": "web/lib/session-events.ts:10, web/lib/co-writer-events.ts:8, web/lib/reconnecting-websocket.ts:152-156",
+      "backend": "none by design (window EventTarget buses; transport-only class)",
+      "impact": "No front/back drift is possible on these three modules; recorded so the axis is explicitly covered.",
+      "suggestion": "none"
+    }
+  ]
+}
