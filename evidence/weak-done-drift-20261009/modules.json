@@ -1,0 +1,1490 @@
+[
+ {
+  "dotted": "agents.loop.context_budget",
+  "path": "deeptutor/agents/loop/context_budget.py",
+  "cards": [
+   "AGEN-1053"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/agents/chat/test_context_budget.py",
+    "tests",
+    [
+     "19:from deeptutor.agents.loop.context_budget import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/agents/chat/test_context_budget.py"
+  ]
+ },
+ {
+  "dotted": "api.contracts.turn_protocol",
+  "path": "deeptutor/api/contracts/turn_protocol.py",
+  "cards": [
+   "AGEN-1147"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/runtime/test_request_contracts_subagent.py",
+    "tests",
+    [
+     "95:from deeptutor.api.contracts.turn_protocol import StartTurnCommand"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/runtime/test_request_contracts_subagent.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.file_preview",
+  "path": "deeptutor/api/routers/file_preview.py",
+  "cards": [
+   "AGEN-764"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_file_preview.py",
+    "tests",
+    [
+     "13:from deeptutor.api.routers import file_preview, outputs"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_file_preview.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.mcp_settings",
+  "path": "deeptutor/api/routers/mcp_settings.py",
+  "cards": [
+   "AGEN-832"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_mcp_settings_auth.py",
+    "tests",
+    [
+     "15:from deeptutor.api.routers import mcp_settings"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_mcp_settings_auth.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.partner_groups",
+  "path": "deeptutor/api/routers/partner_groups.py",
+  "cards": [
+   "AGEN-763"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_partner_groups_router.py",
+    "tests",
+    [
+     "27:from deeptutor.api.routers import partner_groups as router_module"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_partner_groups_router.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.question_notebook",
+  "path": "deeptutor/api/routers/question_notebook.py",
+  "cards": [
+   "AGEN-838"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_notebook_router.py",
+    "tests",
+    [
+     "15:notebook_router = importlib.import_module(\"deeptutor.api.routers.question_notebook\").router",
+     "33:\"deeptutor.api.routers.question_notebook.get_sqlite_session_store\",",
+     "119:\"deeptutor.api.routers.question_notebook.get_attachment_store\","
+    ]
+   ],
+   [
+    "tests/api/test_practice.py",
+    "tests",
+    [
+     "14:from deeptutor.api.routers import practice, question_notebook"
+    ]
+   ],
+   [
+    "tests/api/test_question_bank_api.py",
+    "tests",
+    [
+     "16:notebook_router = importlib.import_module(\"deeptutor.api.routers.question_notebook\").router",
+     "27:\"deeptutor.api.routers.question_notebook.get_sqlite_session_store\",",
+     "83:get_args(importlib.import_module(\"deeptutor.api.routers.question_notebook\").AssessmentSource),"
+    ]
+   ],
+   [
+    "tests/api/test_notebook_api_contract.py",
+    "tests",
+    [
+     "20:notebook_router = pytest.importorskip(\"deeptutor.api.routers.question_notebook\").router",
+     "47:\"deeptutor.api.routers.question_notebook.get_sqlite_session_store\","
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_notebook_api_contract.py",
+   "tests/api/test_notebook_router.py",
+   "tests/api/test_practice.py",
+   "tests/api/test_question_bank_api.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.space_cli_apps",
+  "path": "deeptutor/api/routers/space_cli_apps.py",
+  "cards": [
+   "AGEN-833"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_space_cli_apps.py",
+    "tests",
+    [
+     "17:from deeptutor.api.routers import space_cli_apps"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_space_cli_apps.py"
+  ]
+ },
+ {
+  "dotted": "api.routers.space_mcp",
+  "path": "deeptutor/api/routers/space_mcp.py",
+  "cards": [
+   "AGEN-780"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_space_mcp.py",
+    "tests",
+    [
+     "15:from deeptutor.api.routers import space_mcp"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_space_mcp.py"
+  ]
+ },
+ {
+  "dotted": "api.run_server",
+  "path": "deeptutor/api/run_server.py",
+  "cards": [
+   "AGEN-1060"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/runtime/test_uvicorn_launch_flags.py",
+    "tests",
+    [
+     "30:(\"deeptutor/api/run_server.py\", \"uvicorn.run(\", _PYTHON_FLAGS),"
+    ]
+   ],
+   [
+    "tests/runtime/test_run_server_memory_mode.py",
+    "tests",
+    [
+     "7:from deeptutor.api import run_server"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/runtime/test_run_server_memory_mode.py",
+   "tests/runtime/test_uvicorn_launch_flags.py"
+  ]
+ },
+ {
+  "dotted": "book.agents.page_planner",
+  "path": "deeptutor/book/agents/page_planner.py",
+  "cards": [
+   "AGEN-966"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/runtime/test_api_import_memory_boundary.py",
+    "tests",
+    [
+     "35:\"deeptutor.book.agents.page_planner\","
+    ]
+   ],
+   [
+    "tests/book/test_block_type_controls.py",
+    "tests",
+    [
+     "10:from deeptutor.book.agents.page_planner import SectionArchitect"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/book/test_block_type_controls.py",
+   "tests/runtime/test_api_import_memory_boundary.py"
+  ]
+ },
+ {
+  "dotted": "capabilities.obsidian.vault",
+  "path": "deeptutor/capabilities/obsidian/vault.py",
+  "cards": [
+   "AGEN-807"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/capabilities/test_obsidian_capability.py",
+    "tests",
+    [
+     "14:from deeptutor.capabilities.obsidian import vault as V"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/capabilities/test_obsidian_capability.py"
+  ]
+ },
+ {
+  "dotted": "co_writer.edit_agent",
+  "path": "deeptutor/co_writer/edit_agent.py",
+  "cards": [
+   "AGEN-751"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/runtime/test_api_import_memory_boundary.py",
+    "tests",
+    [
+     "37:\"deeptutor.co_writer.edit_agent\","
+    ]
+   ],
+   [
+    "tests/api/test_co_writer.py",
+    "tests",
+    [
+     "24:from deeptutor.co_writer import docx_converter, edit_agent"
+    ]
+   ],
+   [
+    "tests/api/routers/test_co_writer_contract.py",
+    "tests",
+    [
+     "27:from deeptutor.co_writer import edit_agent"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/routers/test_co_writer_contract.py",
+   "tests/api/test_co_writer.py",
+   "tests/runtime/test_api_import_memory_boundary.py"
+  ]
+ },
+ {
+  "dotted": "learning.assessment",
+  "path": "deeptutor/learning/assessment.py",
+  "cards": [
+   "AGEN-1050"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_assessment.py",
+    "tests",
+    [
+     "15:from deeptutor.learning.assessment import (",
+     "345:monkeypatch.setattr(\"deeptutor.learning.assessment._get_learning_store\", lambda: learning_store)",
+     "402:monkeypatch.setattr(\"deeptutor.learning.assessment._get_learning_store\", lambda: initial_store)"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_assessment.py"
+  ]
+ },
+ {
+  "dotted": "learning.grading",
+  "path": "deeptutor/learning/grading.py",
+  "cards": [
+   "AGEN-1035"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_grading.py",
+    "tests",
+    [
+     "9:from deeptutor.learning.grading import classify_error, grade_answer"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_grading.py"
+  ]
+ },
+ {
+  "dotted": "learning.objective_relations",
+  "path": "deeptutor/learning/objective_relations.py",
+  "cards": [
+   "AGEN-1133"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_objective_relations.py",
+    "tests",
+    [
+     "17:from deeptutor.learning.objective_relations import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_objective_relations.py"
+  ]
+ },
+ {
+  "dotted": "learning.pending",
+  "path": "deeptutor/learning/pending.py",
+  "cards": [
+   "AGEN-793"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_mastery_choices.py",
+    "tests",
+    [
+     "349:from deeptutor.learning.pending import public_pending_question"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_mastery_choices.py"
+  ]
+ },
+ {
+  "dotted": "learning.topic_naming",
+  "path": "deeptutor/learning/topic_naming.py",
+  "cards": [
+   "AGEN-1135"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_topic_naming.py",
+    "tests",
+    [
+     "8:from deeptutor.learning.topic_naming import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_topic_naming.py"
+  ]
+ },
+ {
+  "dotted": "multi_user.book_access",
+  "path": "deeptutor/multi_user/book_access.py",
+  "cards": [
+   "AGEN-828"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/multi_user/test_book_permission.py",
+    "tests",
+    [
+     "5:from deeptutor.multi_user import book_access"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/multi_user/test_book_permission.py"
+  ]
+ },
+ {
+  "dotted": "partners.channels.lark_http",
+  "path": "deeptutor/partners/channels/lark_http.py",
+  "cards": [
+   "AGEN-736"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_lark_keep_alive.py",
+    "tests",
+    [
+     "8:from deeptutor.partners.channels import lark_http"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_lark_keep_alive.py"
+  ]
+ },
+ {
+  "dotted": "partners.channels.matrix",
+  "path": "deeptutor/partners/channels/matrix.py",
+  "cards": [
+   "AGEN-743"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [],
+  "status": "仍缺",
+  "test_files": []
+ },
+ {
+  "dotted": "partners.channels.msteams",
+  "path": "deeptutor/partners/channels/msteams.py",
+  "cards": [
+   "AGEN-741",
+   "AGEN-947"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_msteams_channel.py",
+    "tests",
+    [
+     "14:from deeptutor.partners.channels.msteams import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_msteams_channel.py"
+  ]
+ },
+ {
+  "dotted": "partners.channels.napcat",
+  "path": "deeptutor/partners/channels/napcat.py",
+  "cards": [
+   "AGEN-742",
+   "AGEN-947"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_napcat_channel.py",
+    "tests",
+    [
+     "13:from deeptutor.partners.channels.napcat import NapcatChannel, NapcatConfig"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_napcat_channel.py"
+  ]
+ },
+ {
+  "dotted": "partners.channels.wecom",
+  "path": "deeptutor/partners/channels/wecom.py",
+  "cards": [
+   "AGEN-1051"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_wecom_channel.py",
+    "tests",
+    [
+     "10:from deeptutor.partners.channels import wecom"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_wecom_channel.py"
+  ]
+ },
+ {
+  "dotted": "runtime.background_leader",
+  "path": "deeptutor/runtime/background_leader.py",
+  "cards": [
+   "AGEN-863"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/runtime/test_background_leader.py",
+    "tests",
+    [
+     "7:from deeptutor.runtime.background_leader import BackgroundLeaderSupervisor"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/runtime/test_background_leader.py"
+  ]
+ },
+ {
+  "dotted": "services.chat_hints",
+  "path": "deeptutor/services/chat_hints.py",
+  "cards": [
+   "AGEN-993"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_chat_hints.py",
+    "tests",
+    [
+     "8:from deeptutor.services import chat_hints"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_chat_hints.py"
+  ]
+ },
+ {
+  "dotted": "services.config.readiness",
+  "path": "deeptutor/services/config/readiness.py",
+  "cards": [
+   "AGEN-787"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/config/test_readiness.py",
+    "tests",
+    [
+     "9:from deeptutor.services.config.readiness import (",
+     "278:monkeypatch.setattr(\"deeptutor.services.config.readiness.build_settings_readiness\", build)",
+     "343:from deeptutor.services.config.readiness import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/config/test_readiness.py"
+  ]
+ },
+ {
+  "dotted": "services.doctor",
+  "path": "deeptutor/services/doctor.py",
+  "cards": [
+   "AGEN-914"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/cli/test_doctor_cli.py",
+    "tests",
+    [
+     "11:from deeptutor.services.doctor import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/cli/test_doctor_cli.py"
+  ]
+ },
+ {
+  "dotted": "services.embedding.adapters.dashscope_native",
+  "path": "deeptutor/services/embedding/adapters/dashscope_native.py",
+  "cards": [
+   "AGEN-913"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/embedding/test_dashscope_adapter.py",
+    "tests",
+    [
+     "12:from deeptutor.services.embedding.adapters.dashscope_native import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/embedding/test_dashscope_adapter.py"
+  ]
+ },
+ {
+  "dotted": "services.embedding.adapters.gemini",
+  "path": "deeptutor/services/embedding/adapters/gemini.py",
+  "cards": [
+   "AGEN-913"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/embedding/test_gemini_adapter.py",
+    "tests",
+    [
+     "15:from deeptutor.services.embedding.adapters.gemini import GeminiEmbeddingAdapter"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/embedding/test_gemini_adapter.py"
+  ]
+ },
+ {
+  "dotted": "services.generation_http",
+  "path": "deeptutor/services/generation_http.py",
+  "cards": [
+   "AGEN-1010"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_media_gen.py",
+    "tests",
+    [
+     "22:from deeptutor.services.generation_http import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_media_gen.py"
+  ]
+ },
+ {
+  "dotted": "services.llm.error_mapping",
+  "path": "deeptutor/services/llm/error_mapping.py",
+  "cards": [
+   "AGEN-1036"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/llm/test_error_mapping.py",
+    "tests",
+    [
+     "7:from deeptutor.services.llm.error_mapping import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/llm/test_error_mapping.py"
+  ]
+ },
+ {
+  "dotted": "services.llm.local_provider",
+  "path": "deeptutor/services/llm/local_provider.py",
+  "cards": [
+   "AGEN-847"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_github_copilot_models.py",
+    "tests",
+    [
+     "18:from deeptutor.services.llm import cloud_provider, local_provider"
+    ]
+   ],
+   [
+    "tests/services/llm/test_local_provider.py",
+    "tests",
+    [
+     "10:from deeptutor.services.llm import local_provider"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_github_copilot_models.py",
+   "tests/services/llm/test_local_provider.py"
+  ]
+ },
+ {
+  "dotted": "services.memory.consolidator.line_doc",
+  "path": "deeptutor/services/memory/consolidator/line_doc.py",
+  "cards": [
+   "AGEN-1141"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/memory/test_line_doc.py",
+    "tests",
+    [
+     "5:from deeptutor.services.memory.consolidator.line_doc import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/memory/test_line_doc.py"
+  ]
+ },
+ {
+  "dotted": "services.memory.consolidator.modes.audit",
+  "path": "deeptutor/services/memory/consolidator/modes/audit.py",
+  "cards": [
+   "AGEN-782"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/memory/test_modes.py",
+    "tests",
+    [
+     "189:\"deeptutor.services.memory.consolidator.modes.audit.snap.read_snapshot\",",
+     "208:with patch(\"deeptutor.services.memory.consolidator.modes.audit.call_llm\", side_effect=fake_llm):"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/memory/test_modes.py"
+  ]
+ },
+ {
+  "dotted": "services.office_preview",
+  "path": "deeptutor/services/office_preview.py",
+  "cards": [
+   "AGEN-790"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/api/test_file_preview.py",
+    "tests",
+    [
+     "16:from deeptutor.services import office_preview"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/api/test_file_preview.py"
+  ]
+ },
+ {
+  "dotted": "services.parsing.engines._install",
+  "path": "deeptutor/services/parsing/engines/_install.py",
+  "cards": [
+   "AGEN-915"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/parsing/test_engines.py",
+    "tests",
+    [
+     "945:from deeptutor.services.parsing.engines._install import (",
+     "987:from deeptutor.services.parsing.engines._install import (",
+     "1000:from deeptutor.services.parsing.engines._install import resolve_model_downloader"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/parsing/test_engines.py"
+  ]
+ },
+ {
+  "dotted": "services.partners.weixin_onboarding",
+  "path": "deeptutor/services/partners/weixin_onboarding.py",
+  "cards": [
+   "AGEN-808"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_weixin_onboarding.py",
+    "tests",
+    [
+     "25:from deeptutor.services.partners import weixin_onboarding"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_weixin_onboarding.py"
+  ]
+ },
+ {
+  "dotted": "services.rag.eval.dataset",
+  "path": "deeptutor/services/rag/eval/dataset.py",
+  "cards": [
+   "AGEN-912"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/rag/eval/test_eval_dataset.py（经包 __init__ 再导出）"
+  ]
+ },
+ {
+  "dotted": "services.rag.eval.matching",
+  "path": "deeptutor/services/rag/eval/matching.py",
+  "cards": [
+   "AGEN-912"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/rag/eval/test_eval_matching.py",
+    "tests",
+    [
+     "14:from deeptutor.services.rag.eval.matching import tokenize"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/rag/eval/test_eval_matching.py"
+  ]
+ },
+ {
+  "dotted": "services.rag.pipelines.lightrag.sidecar",
+  "path": "deeptutor/services/rag/pipelines/lightrag/sidecar.py",
+  "cards": [
+   "AGEN-811"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/rag/test_lightrag_ingress.py",
+    "tests",
+    [
+     "13:from deeptutor.services.rag.pipelines.lightrag import ingress, sidecar"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/rag/test_lightrag_ingress.py"
+  ]
+ },
+ {
+  "dotted": "services.rag.provider_binding",
+  "path": "deeptutor/services/rag/provider_binding.py",
+  "cards": [
+   "AGEN-824"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/cli/test_kb_eval_cli.py",
+    "tests",
+    [
+     "25:import deeptutor.services.rag.provider_binding as binding_module",
+     "171:import deeptutor.services.rag.provider_binding as binding_module"
+    ]
+   ],
+   [
+    "tests/book/test_source_partitioning.py",
+    "tests",
+    [
+     "123:\"deeptutor.services.rag.provider_binding.resolve_bound_provider\","
+    ]
+   ],
+   [
+    "tests/services/test_github_source_unchanged_sync.py",
+    "tests",
+    [
+     "57:\"deeptutor.services.rag.provider_binding.resolve_bound_provider\","
+    ]
+   ],
+   [
+    "tests/services/rag/test_lightrag_roles.py",
+    "tests",
+    [
+     "656:\"deeptutor.services.rag.provider_binding.resolve_bound_provider\", lambda *args: \"lightrag\""
+    ]
+   ],
+   [
+    "tests/services/rag/test_pageindex_tools.py",
+    "tests",
+    [
+     "149:\"deeptutor.services.rag.provider_binding.resolve_bound_provider\","
+    ]
+   ]
+  ],
+  "status": "仍缺",
+  "test_files": [
+   "tests/book/test_source_partitioning.py",
+   "tests/cli/test_kb_eval_cli.py",
+   "tests/services/rag/test_lightrag_roles.py",
+   "tests/services/rag/test_pageindex_tools.py",
+   "tests/services/test_github_source_unchanged_sync.py"
+  ]
+ },
+ {
+  "dotted": "services.reading_hints",
+  "path": "deeptutor/services/reading_hints.py",
+  "cards": [
+   "AGEN-745"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/reading/test_reading_hints.py",
+    "tests",
+    [
+     "8:from deeptutor.services import reading_hints"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/reading/test_reading_hints.py"
+  ]
+ },
+ {
+  "dotted": "services.search.consolidation",
+  "path": "deeptutor/services/search/consolidation.py",
+  "cards": [
+   "AGEN-1052"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/search/test_search_providers.py",
+    "tests",
+    [
+     "477:from deeptutor.services.search.consolidation import AnswerConsolidator"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/search/test_search_providers.py"
+  ]
+ },
+ {
+  "dotted": "services.search.source_filter",
+  "path": "deeptutor/services/search/source_filter.py",
+  "cards": [
+   "AGEN-974"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/search/test_web_search_runtime.py",
+    "tests",
+    [
+     "13:from deeptutor.services.search.source_filter import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/search/test_web_search_runtime.py"
+  ]
+ },
+ {
+  "dotted": "services.skill.taxonomy",
+  "path": "deeptutor/services/skill/taxonomy.py",
+  "cards": [
+   "AGEN-813"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/skill/test_skill_publish_flow.py",
+    "tests",
+    [
+     "9:from deeptutor.services.skill import taxonomy"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/skill/test_skill_publish_flow.py"
+  ]
+ },
+ {
+  "dotted": "services.subagent.claude_code",
+  "path": "deeptutor/services/subagent/claude_code.py",
+  "cards": [
+   "AGEN-1142"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_subagent_backends.py",
+    "tests",
+    [
+     "17:from deeptutor.services.subagent.claude_code import ClaudeCodeBackend"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_subagent_backends.py"
+  ]
+ },
+ {
+  "dotted": "services.subagent.deepseek_harness",
+  "path": "deeptutor/services/subagent/deepseek_harness.py",
+  "cards": [
+   "AGEN-1143"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_subagent_backends.py",
+    "tests",
+    [
+     "252:from deeptutor.services.subagent.deepseek_harness import _sdk_notification_events",
+     "301:from deeptutor.services.subagent.deepseek_harness import DeepSeekHarnessBackend"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_subagent_backends.py"
+  ]
+ },
+ {
+  "dotted": "services.subagent.opencode_server",
+  "path": "deeptutor/services/subagent/opencode_server.py",
+  "cards": [
+   "AGEN-845"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_subagent_backends.py",
+    "tests",
+    [
+     "1581:from deeptutor.services.subagent import opencode_server as srv",
+     "1605:from deeptutor.services.subagent import opencode_server as srv"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_subagent_backends.py"
+  ]
+ },
+ {
+  "dotted": "services.voice.adapters.openai_compat",
+  "path": "deeptutor/services/voice/adapters/openai_compat.py",
+  "cards": [
+   "AGEN-1056"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_voice.py",
+    "tests",
+    [
+     "29:from deeptutor.services.voice.adapters.openai_compat import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_voice.py"
+  ]
+ },
+ {
+  "dotted": "services.voice.adapters.volcengine",
+  "path": "deeptutor/services/voice/adapters/volcengine.py",
+  "cards": [
+   "AGEN-916"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_volcengine_voice.py",
+    "tests",
+    [
+     "16:from deeptutor.services.voice.adapters.volcengine import VolcengineSTTAdapter, VolcengineTTSAdapter"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_volcengine_voice.py"
+  ]
+ },
+ {
+  "dotted": "services.workspace.dependencies",
+  "path": "deeptutor/services/workspace/dependencies.py",
+  "cards": [
+   "AGEN-1144"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/workspace/test_data_migration.py",
+    "tests",
+    [
+     "202:from deeptutor.services.workspace.dependencies import dependency_closure",
+     "511:from deeptutor.services.workspace.dependencies import dependency_closure",
+     "531:from deeptutor.services.workspace.dependencies import dependency_closure"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/workspace/test_data_migration.py"
+  ]
+ },
+ {
+  "dotted": "services.workspace.kb_move",
+  "path": "deeptutor/services/workspace/kb_move.py",
+  "cards": [
+   "AGEN-976"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/multi_user/test_kb_move.py",
+    "tests",
+    [
+     "20:from deeptutor.services.workspace.kb_move import move_kb, preview_kb_move"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/multi_user/test_kb_move.py"
+  ]
+ },
+ {
+  "dotted": "services.workspace.session_transfer",
+  "path": "deeptutor/services/workspace/session_transfer.py",
+  "cards": [
+   "AGEN-831"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/workspace/test_data_migration.py",
+    "tests",
+    [
+     "243:from deeptutor.services.workspace import session_transfer"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/workspace/test_data_migration.py"
+  ]
+ },
+ {
+  "dotted": "tools.mastery_nav",
+  "path": "deeptutor/tools/mastery_nav.py",
+  "cards": [
+   "AGEN-973"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "deeptutor/learning/tests/test_mastery_navigation.py",
+    "tests",
+    [
+     "4:permanently-mounted tools (:mod:`deeptutor.tools.mastery_nav`) answer \"what am",
+     "28:from deeptutor.tools.mastery_nav import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "deeptutor/learning/tests/test_mastery_navigation.py"
+  ]
+ },
+ {
+  "dotted": "tools.media_gen_tool",
+  "path": "deeptutor/tools/media_gen_tool.py",
+  "cards": [
+   "AGEN-1086"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/test_media_gen.py",
+    "tests",
+    [
+     "37:from deeptutor.tools.media_gen_tool import ImagegenTool, VideogenTool",
+     "584:from deeptutor.tools.media_gen_tool import ImagegenTool",
+     "640:from deeptutor.tools.media_gen_tool import ImagegenTool"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/test_media_gen.py"
+  ]
+ },
+ {
+  "dotted": "tools.partner_memory",
+  "path": "deeptutor/tools/partner_memory.py",
+  "cards": [
+   "AGEN-1145"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/services/partners/test_partner_memory_tools.py",
+    "tests",
+    [
+     "19:from deeptutor.tools.partner_memory import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/services/partners/test_partner_memory_tools.py"
+  ]
+ },
+ {
+  "dotted": "tools.question_bank",
+  "path": "deeptutor/tools/question_bank.py",
+  "cards": [
+   "AGEN-972"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/tools/test_question_bank_tool.py",
+    "tests",
+    [
+     "18:from deeptutor.tools.question_bank import run_question_bank"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/tools/test_question_bank_tool.py"
+  ]
+ },
+ {
+  "dotted": "tools.reason",
+  "path": "deeptutor/tools/reason.py",
+  "cards": [
+   "AGEN-849"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/tools/test_knowledge_frontier_tool.py",
+    "tests",
+    [
+     "86:import deeptutor.tools.reason as reason_module"
+    ]
+   ],
+   [
+    "tests/core/test_builtin_tools.py",
+    "tests",
+    [
+     "600:_install_module(monkeypatch, \"deeptutor.tools.reason\", reason=fake_reason)"
+    ]
+   ]
+  ],
+  "status": "仍缺",
+  "test_files": [
+   "tests/core/test_builtin_tools.py",
+   "tests/tools/test_knowledge_frontier_tool.py"
+  ]
+ },
+ {
+  "dotted": "tools.vision.ggb_validator",
+  "path": "deeptutor/tools/vision/ggb_validator.py",
+  "cards": [
+   "AGEN-977"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/visualizers/test_ggb_validator.py",
+    "tests",
+    [
+     "5:from deeptutor.tools.vision.ggb_validator import ("
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/visualizers/test_ggb_validator.py"
+  ]
+ },
+ {
+  "dotted": "video_learning.invidious_account",
+  "path": "deeptutor/video_learning/invidious_account.py",
+  "cards": [
+   "AGEN-806"
+  ],
+  "exists": true,
+  "init_alt": null,
+  "drift": "",
+  "hits": [
+   [
+    "tests/video_learning/test_invidious_account.py",
+    "tests",
+    [
+     "17:from deeptutor.video_learning import invidious_account as account"
+    ]
+   ]
+  ],
+  "status": "已合入",
+  "test_files": [
+   "tests/video_learning/test_invidious_account.py"
+  ]
+ }
+]
