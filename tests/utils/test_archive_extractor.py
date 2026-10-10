@@ -17,6 +17,7 @@ from deeptutor.utils.archive_extractor import (
     ZipExtractionLimits,
     safe_extract_zip,
 )
+from deeptutor.utils.document_validator import DocumentValidator
 
 DOC_EXTS = {".txt", ".md", ".pdf", ".zip"}  # .zip is intentionally never extracted
 
@@ -175,3 +176,158 @@ def test_bad_zip_raises(tmp_path: Path) -> None:
     bogus.write_bytes(b"this is not a zip")
     with pytest.raises(zipfile.BadZipFile):
         safe_extract_zip(bogus, tmp_path / "out", allowed_extensions=DOC_EXTS)
+
+
+# ---------------------------------------------------------------------------
+# Edge-case and fault-tolerance behavior
+# ---------------------------------------------------------------------------
+
+
+class _PaddedStream:
+    """Read wrapper whose byte stream is longer than the entry declared."""
+
+    def __init__(self, inner, pad: bytes) -> None:
+        self._inner = inner
+        self._pad = pad
+
+    def read(self, n: int = -1) -> bytes:
+        data = self._inner.read(n)
+        if not data and self._pad:
+            pad, self._pad = self._pad, b""
+            return pad
+        return data
+
+    def __enter__(self):
+        self._inner.__enter__()
+        return self
+
+    def __exit__(self, *exc_info) -> bool:
+        return self._inner.__exit__(*exc_info)
+
+
+def test_empty_archive_yields_no_members(tmp_path: Path) -> None:
+    src = tmp_path / "empty.zip"
+    with zipfile.ZipFile(src, "w"):
+        pass
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert result.extracted == []
+    assert result.skipped == []
+    assert out.is_dir()
+
+
+def test_directory_only_archive_extracts_nothing(tmp_path: Path) -> None:
+    src = tmp_path / "dirs.zip"
+    with zipfile.ZipFile(src, "w") as zf:
+        zf.writestr(zipfile.ZipInfo("docs/"), b"")
+        zf.writestr(zipfile.ZipInfo("docs/nested/"), b"")
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert result.extracted == []
+    assert result.skipped == []
+    assert list(out.iterdir()) == []
+
+
+def test_truncated_archive_raises_bad_zip(tmp_path: Path) -> None:
+    valid = _make_zip(tmp_path / "full.zip", [("a.txt", b"payload")])
+    truncated = tmp_path / "truncated.zip"
+    data = valid.read_bytes()
+    truncated.write_bytes(data[: len(data) // 2])
+
+    with pytest.raises(zipfile.BadZipFile):
+        safe_extract_zip(truncated, tmp_path / "out", allowed_extensions=DOC_EXTS)
+
+
+def test_windows_style_member_names_flatten_into_target(tmp_path: Path) -> None:
+    src = _make_zip(
+        tmp_path / "separators.zip",
+        [("a\\b\\notes.txt", b"one"), ("C:\\temp\\report.txt", b"two")],
+    )
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert sorted(p.name for p in result.extracted) == ["notes.txt", "report.txt"]
+    for p in result.extracted:
+        assert out.resolve() in p.resolve().parents
+    assert (out / "notes.txt").read_bytes() == b"one"
+
+
+def test_member_with_control_character_name_is_skipped(tmp_path: Path) -> None:
+    src = _make_zip(tmp_path / "a.zip", [("\x01\x02\x03", b"junk"), ("ok.txt", b"keep")])
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert [p.name for p in result.extracted] == ["ok.txt"]
+    assert any(member == "\x01\x02\x03" for member, _ in result.skipped)
+    assert list(out.iterdir()) == [out / "ok.txt"]
+
+
+def test_nested_archive_with_uppercase_suffix_is_skipped(tmp_path: Path) -> None:
+    src = _make_zip(tmp_path / "a.zip", [("INNER.ZIP", b"PK\x03\x04"), ("ok.txt", b"x")])
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert [p.name for p in result.extracted] == ["ok.txt"]
+    assert any(
+        member == "INNER.ZIP" and reason == "nested archive" for member, reason in result.skipped
+    )
+
+
+def test_destination_outside_target_is_skipped(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The validator normally returns a flat basename; simulate a non-conforming
+    # return value to exercise the extractor's own containment check.
+    monkeypatch.setattr(
+        DocumentValidator,
+        "validate_upload_safety",
+        staticmethod(lambda basename, file_size, allowed_extensions=None: "../outside.txt"),
+    )
+    src = _make_zip(tmp_path / "a.zip", [("leak.txt", b"payload")])
+    out = tmp_path / "out"
+
+    result = safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+    assert result.extracted == []
+    assert any("escapes target directory" in reason for _, reason in result.skipped)
+    assert not (tmp_path / "outside.txt").exists()
+    assert list(out.iterdir()) == []
+
+
+def test_unwritable_destination_surfaces_as_oserror(tmp_path: Path) -> None:
+    src = _make_zip(tmp_path / "a.zip", [("occupied.txt", b"payload")])
+    out = tmp_path / "out"
+    (out / "occupied.txt").mkdir(parents=True)
+
+    with pytest.raises(OSError):
+        safe_extract_zip(src, out, allowed_extensions=DOC_EXTS)
+
+
+def test_member_exceeding_declared_size_is_removed_and_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    src = _make_zip(tmp_path / "a.zip", [("a.txt", b"A" * 100)])
+    real_open = zipfile.ZipFile.open
+
+    def padded_open(self, *args, **kwargs):
+        return _PaddedStream(real_open(self, *args, **kwargs), b"B" * 400)
+
+    monkeypatch.setattr(zipfile.ZipFile, "open", padded_open)
+    out = tmp_path / "out"
+
+    with pytest.raises(ArchiveTooLargeError):
+        safe_extract_zip(
+            src,
+            out,
+            allowed_extensions=DOC_EXTS,
+            limits=ZipExtractionLimits(max_entry_bytes=300),
+        )
+
+    assert list(out.glob("*.txt")) == []  # partial output is cleaned up
