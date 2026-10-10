@@ -1,4 +1,8 @@
-from deeptutor.services.provider_registry import find_by_name, find_gateway
+from deeptutor.services.provider_registry import (
+    effective_backend,
+    find_by_name,
+    find_gateway,
+)
 
 
 def test_nvidia_nim_gateway_detection_by_key_and_base() -> None:
@@ -135,6 +139,36 @@ def test_opper_provider_lookup_and_base_detection() -> None:
     # Detection keys on the API host, so a base URL that merely contains
     # "opper" (e.g. a self-hosted "copper" endpoint) is not claimed.
     assert find_gateway(api_base="https://llm.copper.example/v1") is None
+
+
+def test_y_api_provider_aliases_and_base_detection() -> None:
+    spec = find_by_name("y_api")
+
+    assert spec is not None
+    assert spec.display_name == "Y-API"
+    assert spec.env_key == "Y_API_KEY"
+    assert spec.backend == "openai_compat"
+    assert spec.mode == "gateway"
+    assert spec.default_api_base == "https://api.y-api.bestvirtualgoods.com/v1"
+    assert find_by_name("Y-API") == spec
+    assert find_by_name("y-api") == spec
+    assert find_by_name("yapi") == spec
+    assert find_gateway(provider_name="Y-API") == spec
+    # Detection keys on the host, so the root Anthropic Messages base
+    # (no /v1) and the default OpenAI-compatible base both claim it.
+    assert find_gateway(api_base="https://api.y-api.bestvirtualgoods.com/v1") == spec
+    assert find_gateway(api_base="https://api.y-api.bestvirtualgoods.com") == spec
+
+
+def test_y_api_anthropic_format_switches_base_and_backend() -> None:
+    spec = find_by_name("y_api")
+
+    assert spec is not None
+    assert spec.api_formats == ("auto", "openai_chat", "openai_responses", "anthropic")
+    assert spec.default_api_base_for("openai_chat") == "https://api.y-api.bestvirtualgoods.com/v1"
+    assert spec.default_api_base_for("anthropic") == "https://api.y-api.bestvirtualgoods.com"
+    assert effective_backend(spec, "auto") == "openai_compat"
+    assert effective_backend(spec, "anthropic") == "anthropic"
 
 
 def test_openai_codex_is_not_detected_from_api_base() -> None:
