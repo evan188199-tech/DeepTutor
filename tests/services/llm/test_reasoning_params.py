@@ -142,3 +142,48 @@ def test_qwen_thinking_models_keep_native_controls(binding, effort, enabled) -> 
     assert build_openai_compatible_reasoning_kwargs(
         spec=None, binding=binding, model="qwen3-235b-a22b", reasoning_effort=effort
     ) == {"extra_body": {"enable_thinking": enabled}}
+
+
+class _EnableThinkingSpec:
+    """A binding that declares the Qwen thinking control explicitly."""
+
+    name = "custom-qwen"
+    thinking_style = "enable_thinking"
+    reasoning_model_patterns = ()
+
+
+def test_qwen_instruct_guard_applies_to_spec_declared_thinking_style() -> None:
+    """#1796 is about what the model accepts, not how the style was inferred:
+    even a spec that names ``enable_thinking`` must stay silent for Instruct
+    variants instead of sending the equally unsupported parameter."""
+    assert (
+        build_openai_compatible_reasoning_kwargs(
+            spec=_EnableThinkingSpec(),
+            binding="custom",
+            model="Qwen3-Instruct",
+            reasoning_effort="high",
+        )
+        == {}
+    )
+
+
+@pytest.mark.parametrize(
+    "model",
+    ["Qwen3-Instruct", "Qwen/Qwen3-Instruct-2507", "QWEN3-INSTRUCT", "qwen3_vl_instruct"],
+)
+def test_qwen_instruct_name_parse_is_case_and_separator_tolerant(model) -> None:
+    assert (
+        build_openai_compatible_reasoning_kwargs(
+            spec=None, binding="custom", model=model, reasoning_effort="high"
+        )
+        == {}
+    )
+
+
+def test_qwen_instruct_detection_matches_whole_name_tokens_only() -> None:
+    """``instruct`` must appear as a delimited token of the model id: a name
+    that merely embeds it inside a larger segment keeps the native thinking
+    control rather than being silenced by a substring accident."""
+    assert build_openai_compatible_reasoning_kwargs(
+        spec=None, binding="custom", model="qwen3-instruct2507-preview", reasoning_effort=None
+    ) == {"extra_body": {"enable_thinking": True}}

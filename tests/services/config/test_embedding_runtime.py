@@ -684,3 +684,88 @@ def test_local_embedding_protocol_follows_endpoint_path(endpoint, expected):
     assert config.binding == expected
     assert config.effective_url == endpoint
     assert config.api_key == ""
+
+
+def test_public_lemonade_port_host_still_requires_api_key():
+    """A public host on the Lemonade port stays a remote endpoint: keyless
+    detection must not widen past non-public hosts."""
+    catalog = _build_catalog(
+        embedding_profile={
+            "id": "embedding-p",
+            "binding": "custom",
+            "base_url": "https://lemonade.example.com:13305/api/v1",
+            "api_key": "",
+            "models": [{"id": "embedding-m", "model": "Qwen3-Embedding-0.6B"}],
+        }
+    )
+    with pytest.raises(ValueError, match="Embedding API key not set"):
+        get_embedding_config(catalog=catalog)
+
+
+def test_explicit_remote_hint_wins_over_local_base_url_detection():
+    """Local keyless detection only applies while the binding hint allows it:
+    a named remote provider stays remote even when pointed at localhost."""
+    from deeptutor.services.config.provider_runtime import resolve_embedding_runtime_config
+
+    catalog = _build_catalog(
+        embedding_profile={
+            "id": "embedding-p",
+            "binding": "siliconflow",
+            "base_url": "http://localhost:1234/v1/embeddings",
+            "api_key": "",
+            "models": [{"id": "embedding-m", "model": "Qwen/Qwen3-Embedding-8B"}],
+        }
+    )
+    resolved = resolve_embedding_runtime_config(catalog=catalog)
+    assert resolved.binding == "siliconflow"
+    assert resolved.provider_mode == "standard"
+
+
+def test_remote_provider_with_empty_key_still_requires_credentials():
+    catalog = _build_catalog(
+        embedding_profile={
+            "id": "embedding-p",
+            "binding": "siliconflow",
+            "base_url": "http://localhost:1234/v1/embeddings",
+            "api_key": "",
+            "models": [{"id": "embedding-m", "model": "Qwen/Qwen3-Embedding-8B"}],
+        }
+    )
+    with pytest.raises(ValueError, match="Embedding API key not set"):
+        get_embedding_config(catalog=catalog)
+
+
+def test_qwen3_embedding_model_on_local_endpoint_is_not_hijacked_to_a_remote_vendor():
+    """Local endpoint detection must run before model-keyword matching, or a
+    local Qwen3-Embedding profile is mistaken for a remote vendor (#1568,
+    #1782)."""
+    catalog = _build_catalog(
+        embedding_profile={
+            "id": "embedding-p",
+            "binding": "openai",
+            "base_url": "http://localhost:1234/v1/embeddings",
+            "api_key": "",
+            "models": [{"id": "embedding-m", "model": "Qwen/Qwen3-Embedding-0.6B"}],
+        }
+    )
+    config = get_embedding_config(catalog=catalog)
+    assert config.binding == "vllm"
+    assert config.provider_mode == "local"
+    assert config.api_key == ""
+
+
+@pytest.mark.parametrize("endpoint", ["http://localhost:11434", "http://127.0.0.1:11434/"])
+def test_ollama_native_root_endpoint_selects_ollama(endpoint):
+    catalog = _build_catalog(
+        embedding_profile={
+            "id": "embedding-p",
+            "binding": "openai",
+            "base_url": endpoint,
+            "api_key": "",
+            "models": [{"id": "embedding-m", "model": "nomic-embed-text"}],
+        }
+    )
+    config = get_embedding_config(catalog=catalog)
+    assert config.binding == "ollama"
+    assert config.provider_mode == "local"
+    assert config.api_key == ""

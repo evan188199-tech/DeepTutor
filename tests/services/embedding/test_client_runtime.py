@@ -528,3 +528,95 @@ def test_embedding_spacing_shared_across_thread_event_loops(monkeypatch):
         futures = [executor.submit(asyncio.run, client.embed(["text"])) for client in clients]
         assert all(len(future.result(timeout=3)) == 1 for future in futures)
     assert starts[1] - starts[0] >= config.batch_delay
+
+
+@pytest.mark.asyncio
+async def test_zero_batch_delay_never_touches_spacing_lock(monkeypatch):
+    """batch_delay=0 means no throttling: the pacing helper must return
+    before even acquiring the cross-thread spacing lock (#1779)."""
+
+    class _ForbiddenLock:
+        def acquire(self, *args, **kwargs):
+            raise AssertionError("spacing lock must not be acquired when batch_delay=0")
+
+        def release(self):
+            raise AssertionError("spacing lock was never acquired")
+
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", _ForbiddenLock())
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    config = _build_config("openai")
+    config.batch_delay = 0
+    client = EmbeddingClient(config)
+
+    await asyncio.wait_for(client._wait_for_request_slot(), timeout=1)
+
+
+@pytest.mark.asyncio
+async def test_spacing_grants_immediate_slot_but_advances_shared_clock(monkeypatch):
+    """A caller arriving once the gap has already elapsed starts immediately,
+    yet still pushes the shared clock so the next caller is spaced from it —
+    start pacing is shared without serializing HTTP calls."""
+    from time import monotonic
+
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", threading.Lock())
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    config = _build_config("openai")
+    config.batch_delay = 0.05
+    client = EmbeddingClient(config)
+
+    granted: list[float] = []
+
+    async def take_slot() -> None:
+        started = monotonic()
+        await client._wait_for_request_slot()
+        granted.append(monotonic() - started)
+
+    await asyncio.wait_for(take_slot(), timeout=1)
+    await asyncio.wait_for(take_slot(), timeout=1)
+
+    # The shared clock starts stale: the first caller is granted without
+    # waiting, but the next start is paced a full delay behind it.
+    assert granted[0] < 0.04
+    assert granted[1] >= 0.045
+
+
+@pytest.mark.asyncio
+async def test_embed_batches_spaced_once_without_extra_post_batch_delay(monkeypatch):
+    """Consecutive batch starts keep the configured gap, and nothing sleeps
+    beyond that spacing — the removed post-batch delay must stay gone."""
+    from time import monotonic
+
+    starts = []
+
+    class _TimedAdapter(_FakeAdapter):
+        async def embed(self, request):
+            starts.append(monotonic())
+            return await super().embed(request)
+
+    real_sleep = asyncio.sleep
+    slept: list[float] = []
+
+    async def _spy_sleep(delay, *args, **kwargs):
+        slept.append(delay)
+        await real_sleep(delay, *args, **kwargs)
+
+    _FakeAdapter.instances = []
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class", lambda _b: _TimedAdapter
+    )
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", threading.Lock())
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    monkeypatch.setattr(asyncio, "sleep", _spy_sleep)
+    config = _build_config("openai")
+    config.batch_delay = 0.05
+    client = EmbeddingClient(config)
+
+    vectors = await asyncio.wait_for(client.embed(["a", "b", "c", "d", "e"]), timeout=5)
+
+    assert len(vectors) == 5
+    # batch_size=2 → three batches, each start paced one delay behind the
+    # previous one, with exactly the two spacing sleeps and no extra delay.
+    assert len(starts) == 3
+    gaps = [starts[i + 1] - starts[i] for i in range(len(starts) - 1)]
+    assert all(gap >= config.batch_delay for gap in gaps)
+    assert len(slept) == 2
