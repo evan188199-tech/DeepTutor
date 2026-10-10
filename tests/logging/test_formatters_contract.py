@@ -7,10 +7,10 @@ snapshot regression for ConsoleFormatter's human-readable line shape.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 import logging
 import sys
-from datetime import datetime, timezone
 
 import pytest
 
@@ -148,21 +148,15 @@ class TestMissingContextFields:
         assert "#" not in out
 
     def test_console_omits_only_the_missing_suffix_for_partial_context(self):
-        with_task = ConsoleFormatter().format(
-            _record("m", log_context={"task_id": "t-9"})
-        )
+        with_task = ConsoleFormatter().format(_record("m", log_context={"task_id": "t-9"}))
         assert " #t-9" in with_task
         assert "@" not in with_task
-        with_stage = ConsoleFormatter().format(
-            _record("m", log_context={"stage": "indexing"})
-        )
+        with_stage = ConsoleFormatter().format(_record("m", log_context={"stage": "indexing"}))
         assert " @indexing" in with_stage
         assert "#" not in with_stage
 
     def test_console_ignores_falsy_stage_and_task_values(self):
-        out = ConsoleFormatter().format(
-            _record("m", log_context={"stage": "", "task_id": 0})
-        )
+        out = ConsoleFormatter().format(_record("m", log_context={"stage": "", "task_id": 0}))
         assert "@" not in out
         assert "#" not in out
 
@@ -191,9 +185,7 @@ class TestContextFilter:
             "stage": "explicit",
         }
 
-    def test_none_valued_record_fields_do_not_shadow_bound_context(
-        self, filtered_logger
-    ):
+    def test_none_valued_record_fields_do_not_shadow_bound_context(self, filtered_logger):
         logger, capture = filtered_logger
         with bind_log_context(task_id="t-1"):
             logger.info("m", extra={"task_id": None, "capability": "rag"})
@@ -250,10 +242,7 @@ class TestConsoleSnapshot:
             log_context={"stage": "indexing", "task_id": "t-1"},
         )
         out = ConsoleFormatter().format(record)
-        assert (
-            out
-            == "INFO    deeptutor.test.formatters_contract @indexing #t-1 - chunked 7 pages"
-        )
+        assert out == "INFO    deeptutor.test.formatters_contract @indexing #t-1 - chunked 7 pages"
 
     def test_warning_line_at_exactly_seven_char_level_width(self):
         record = _record("disk nearly full", level=logging.WARNING)
