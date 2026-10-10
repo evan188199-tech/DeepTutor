@@ -19,11 +19,11 @@ manager about GraphRAG internals.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import logging
 from pathlib import Path
 
 from deeptutor.services.file_io import atomic_write_json
+from deeptutor.utils.time_utils import utc_now_iso_z
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ def write_meta(root_dir: Path) -> None:
         "signature": PROVIDER,
         "provider": PROVIDER,
         "layout": "flat",
-        "created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
+        "created_at": utc_now_iso_z(),
         **embedding_meta_fields(),
     }
     atomic_write_json(target / META_FILENAME, payload)

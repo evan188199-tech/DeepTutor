@@ -19,11 +19,12 @@ manager about LightRAG internals.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from deeptutor.utils.time_utils import utc_now_iso_z
 
 if TYPE_CHECKING:
     from deeptutor.services.embedding.config import EmbeddingConfig
@@ -292,7 +293,7 @@ def write_meta(
 
     target = Path(root_dir)
     previous = _read_meta(target) or {}
-    now = datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z"
+    now = utc_now_iso_z()
     if embedding_config is None:
         embedding_fields = embedding_meta_fields()
     else:

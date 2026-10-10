@@ -10,13 +10,14 @@ only the file contents differ (a doc-id map instead of a vector store).
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 import json
 import logging
 from pathlib import Path
 from typing import Any
 
 from deeptutor.services.file_io import atomic_write_json
+from deeptutor.utils.time_utils import utc_now_iso_z
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ def write_meta(storage_dir: Path, *, provider: str = CLOUD_PROVIDER) -> None:
         "signature": provider,
         "provider": provider,
         "layout": "flat",
-        "created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
+        "created_at": utc_now_iso_z(),
     }
     atomic_write_json(target / META_FILENAME, payload)
 

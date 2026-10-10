@@ -25,13 +25,14 @@ go to flat ``version-N`` directories:
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
 import hashlib
 import json
 import logging
 from pathlib import Path
 import re
 from typing import Any, Optional
+
+from deeptutor.utils.time_utils import utc_now_iso_z
 
 logger = logging.getLogger(__name__)
 
@@ -317,7 +318,7 @@ def write_version_meta(
         "signature": signature.hash(),
         **asdict(signature),
         "layout": "flat" if target.parent == kb_dir else "nested_legacy",
-        "created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
+        "created_at": utc_now_iso_z(),
     }
     from deeptutor.services.file_io import atomic_write_json
 
