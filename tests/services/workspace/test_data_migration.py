@@ -649,3 +649,84 @@ def test_structurally_invalid_journal_requires_manual_repair(account, payload):
     with pytest.raises(WorkspaceError, match="manual repair"):
         recover_operation(operation_id)
     assert journal.read_text() == content
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '{"id":"OTHER","status":"completed","created_at":"2026-01-01T00:00:00Z"}',
+        '{"id":"ID","status":"completed","created_at":1700000000}',
+    ],
+)
+def test_structurally_valid_journal_cannot_authorize_recovery(account, payload):
+    from deeptutor.services.workspace.data_migration import (
+        _journal_root,
+        assert_no_pending_recovery,
+        operations,
+        recover_operation,
+    )
+
+    operation_id = "b" * 32
+    root = _journal_root() / operation_id
+    root.mkdir()
+    journal = root / "operation.json"
+    content = payload.replace("ID", operation_id)
+    journal.write_text(content)
+
+    # A parseable journal without a valid identity or timestamp still cannot
+    # authorize recovery, so it stays listed as a blocker instead of a status.
+    listed = operations()[0]
+    assert listed["status"] == "unreadable"
+    assert str(journal) in listed["error"]
+    assert_no_pending_recovery()
+    with pytest.raises(WorkspaceError, match="manual repair"):
+        assert_no_pending_recovery(reject_unreadable=True)
+    with pytest.raises(WorkspaceError, match="manual repair"):
+        recover_operation(operation_id)
+    assert journal.read_text() == content
+
+
+def test_unreadable_journal_file_blocks_exports_and_preserves_recovery_evidence(account):
+    import os
+
+    from deeptutor.services.workspace.data_migration import (
+        _journal_root,
+        assert_no_pending_recovery,
+        export_data,
+        migrate_data,
+        operations,
+        recover_operation,
+    )
+
+    operation_id = "c" * 32
+    root = _journal_root() / operation_id
+    root.mkdir(parents=True)
+    journal = root / "operation.json"
+    journal.mkdir()
+    snapshot = root / "snapshot" / "book.db"
+    snapshot.parent.mkdir()
+    snapshot.write_bytes(b"preserve this recovery copy")
+    os.utime(journal, (1700000000, 1700000000))
+
+    # Settings → Data migration surfaces the unreadable file with its timestamp.
+    listed = {row["id"]: row for row in operations()}
+    assert listed[operation_id]["status"] == "unreadable"
+    assert str(journal) in listed[operation_id]["error"]
+    assert listed[operation_id]["created_at"] == "2023-11-14T22:13:20+00:00"
+    # Normal requests keep working while migration-class paths refuse.
+    assert_no_pending_recovery()
+    with pytest.raises(WorkspaceError, match=re.escape(str(journal))):
+        assert_no_pending_recovery(reject_unreadable=True)
+    with pytest.raises(WorkspaceError, match=re.escape(str(journal))):
+        export_data("", ["book"])
+    with pytest.raises(WorkspaceError, match=re.escape(str(journal))):
+        migrate_data("", account.create_workspace("Destination")["workspace_id"], ["book"])
+    # Recovery attempts never consume the journal or the retained snapshots.
+    for _ in range(2):
+        with pytest.raises(WorkspaceError, match="preserved for manual repair"):
+            recover_operation(operation_id)
+        assert journal.is_dir()
+        assert snapshot.read_bytes() == b"preserve this recovery copy"
+        with pytest.raises(WorkspaceError, match="manual repair"):
+            assert_no_pending_recovery(reject_unreadable=True)
+        assert_no_pending_recovery()
