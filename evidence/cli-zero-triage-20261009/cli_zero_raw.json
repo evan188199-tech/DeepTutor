@@ -1,0 +1,331 @@
+{
+  "base_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "module_count": 23,
+  "zero_test_count": 10,
+  "modules": [
+    {
+      "path": "deeptutor_cli/init_wizard.py",
+      "loc": 1054,
+      "test_refs": 6,
+      "test_files": [
+        "tests/cli/test_init_wizard_probe.py"
+      ],
+      "fanin_repo": [],
+      "fanin_repo_n": 0,
+      "fanin_cli_n": 0,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/common.py",
+      "loc": 912,
+      "test_refs": 2,
+      "test_files": [
+        "tests/cli/test_common.py",
+        "tests/cli/test_turn_renderer.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/book.py",
+        "deeptutor_cli/chat.py",
+        "deeptutor_cli/doctor.py",
+        "deeptutor_cli/main.py",
+        "deeptutor_cli/notebook.py",
+        "deeptutor_cli/provider_cmd.py",
+        "deeptutor_cli/session_cmd.py",
+        "deeptutor_cli/skill.py",
+        "deeptutor_cli/skill_prompts.py"
+      ],
+      "fanin_repo_n": 9,
+      "fanin_cli_n": 9,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/kb.py",
+      "loc": 652,
+      "test_refs": 1,
+      "test_files": [
+        "tests/cli/test_kb_cli.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/init_cmd.py",
+      "loc": 633,
+      "test_refs": 3,
+      "test_files": [
+        "tests/cli/test_agent_setup.py",
+        "tests/cli/test_init_wizard_probe.py",
+        "tests/runtime/test_runtime_home_reset.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py",
+        "deeptutor_cli/setup_config.py",
+        "scripts/start_tour.py"
+      ],
+      "fanin_repo_n": 3,
+      "fanin_cli_n": 2,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/skill.py",
+      "loc": 579,
+      "test_refs": 1,
+      "test_files": [
+        "tests/cli/test_skill_cli.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/chat.py",
+      "loc": 386,
+      "test_refs": 1,
+      "test_files": [
+        "tests/cli/test_chat_cli.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py",
+        "deeptutor_cli/session_cmd.py"
+      ],
+      "fanin_repo_n": 2,
+      "fanin_cli_n": 2,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/plugin.py",
+      "loc": 304,
+      "test_refs": 1,
+      "test_files": [
+        "tests/plugins/test_cli.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/setup_config.py",
+      "loc": 273,
+      "test_refs": 1,
+      "test_files": [
+        "tests/cli/test_agent_setup.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/config_cmd.py",
+        "deeptutor_cli/init_cmd.py"
+      ],
+      "fanin_repo_n": 2,
+      "fanin_cli_n": 2,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/main.py",
+      "loc": 228,
+      "test_refs": 12,
+      "test_files": [
+        "tests/cli/test_agent_setup.py",
+        "tests/cli/test_chat_cli.py",
+        "tests/cli/test_config_cli.py",
+        "tests/cli/test_doctor_cli.py",
+        "tests/cli/test_kb_eval_cli.py",
+        "tests/cli/test_notebook_cli.py",
+        "tests/cli/test_provider_cli.py",
+        "tests/cli/test_skill_cli.py",
+        "tests/cli/test_turn_renderer.py",
+        "tests/cli/test_workspace_cli.py",
+        "tests/runtime/test_macos_command_launcher.py"
+      ],
+      "fanin_repo": [
+        "deeptutor/__main__.py",
+        "deeptutor/runtime/launcher.py",
+        "deeptutor/runtime/update_worker.py",
+        "deeptutor_cli/__main__.py"
+      ],
+      "fanin_repo_n": 4,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/skill_prompts.py",
+      "loc": 208,
+      "test_refs": 1,
+      "test_files": [
+        "tests/services/skill/test_skill_publish_flow.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/skill.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/provider_cmd.py",
+      "loc": 173,
+      "test_refs": 2,
+      "test_files": [
+        "tests/cli/test_codebuddy_login.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/config_cmd.py",
+      "loc": 167,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/_tool_result.py",
+      "loc": 166,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/common.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/skill_login.py",
+      "loc": 134,
+      "test_refs": 1,
+      "test_files": [
+        "tests/services/skill/test_skill_login.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/skill.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/notebook.py",
+      "loc": 131,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/partner.py",
+      "loc": 103,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/session_cmd.py",
+      "loc": 101,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/memory.py",
+      "loc": 99,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/doctor.py",
+      "loc": 78,
+      "test_refs": 2,
+      "test_files": [
+        "tests/cli/test_doctor_cli.py"
+      ],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": false
+    },
+    {
+      "path": "deeptutor_cli/book.py",
+      "loc": 61,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/workspace_cmd.py",
+      "loc": 44,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [
+        "deeptutor_cli/main.py"
+      ],
+      "fanin_repo_n": 1,
+      "fanin_cli_n": 1,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/__init__.py",
+      "loc": 7,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [],
+      "fanin_repo_n": 0,
+      "fanin_cli_n": 0,
+      "zero_test": true
+    },
+    {
+      "path": "deeptutor_cli/__main__.py",
+      "loc": 5,
+      "test_refs": 0,
+      "test_files": [],
+      "fanin_repo": [],
+      "fanin_repo_n": 0,
+      "fanin_cli_n": 0,
+      "zero_test": true
+    }
+  ]
+}

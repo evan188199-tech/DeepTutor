@@ -1,0 +1,127 @@
+{
+  "base_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "base_ref": "origin/main (v1.6.14)",
+  "date": "2026-10-09",
+  "scope": "deeptutor_cli/**",
+  "totals": {
+    "modules": 23,
+    "loc": 6498,
+    "zero_direct_test_refs": 10,
+    "substantive_zero": 8,
+    "selected": 6
+  },
+  "criteria": {
+    "zero_test": "scan_cli_zero.py: 模块在 tests/ 与 web/tests 下零引用（import/from-import/patch 字符串）",
+    "command_coverage": "compute_cmd_coverage.py: 对 tests/ 全部 .invoke( 调用做括号配平，提取参数表内引号字面量；组命令=组名出现且命令名出现在其后同一表内；根命令=命令名出现在任一表内",
+    "fanin": "仓库内非测试源码（deeptutor/、deeptutor_cli/、scripts/）对该模块的 import 数（含 deeptutor_cli 包内相对导入 from .X import）",
+    "uncovered_surface": "命令模块=注册命令数-被测调用覆盖命令数；helper 模块=无任何直接测试引用的公共符号数",
+    "selection": "零直接引用 且 未覆盖面>0；剔除入口垫片 __init__/__main__",
+    "sort": "未覆盖面 desc → LOC desc → path asc"
+  },
+  "selected": [
+    {
+      "rank": 1,
+      "path": "deeptutor_cli/notebook.py",
+      "loc": 131,
+      "fanin_repo": 1,
+      "group": "notebook",
+      "uncovered_cmds": ["list", "create", "show", "remove-record"],
+      "covered_indirect": ["add-md", "replace-md"],
+      "responsibility": "笔记本 CRUD 命令组，经 DeepTutorApp 门面读写笔记本与记录",
+      "test_focus": "CliRunner+假 NotebookManager（沿用 tests/cli/test_notebook_cli.py 既有 fake 模式）：list/create 正常路径；show 的 NotebookCorruptedError→exit1、缺失→exit1、--format json；remove-record 的 corrupted 与 record 缺失分支",
+      "dedup": "未建卡（AGEN-927 为 services/notebook analysis_agent，非本模块）"
+    },
+    {
+      "rank": 2,
+      "path": "deeptutor_cli/partner.py",
+      "loc": 103,
+      "fanin_repo": 1,
+      "group": "partner",
+      "uncovered_cmds": ["list", "start", "stop", "create"],
+      "covered_indirect": [],
+      "responsibility": "IM 伙伴生命周期命令组（列表/启动/停止/创建），经 partners 服务管理器执行",
+      "test_focus": "monkeypatch deeptutor.services.partners.get_partner_manager：list 空表与非空表格渲染；start/stop 的 RuntimeError→exit1 与未运行分支；create 的 --soul 写入与 auto_start 失败路径",
+      "dedup": "未建卡（AGEN-855/826/763/1145 均为服务层或路由模块，非 CLI 命令组）"
+    },
+    {
+      "rank": 3,
+      "path": "deeptutor_cli/session_cmd.py",
+      "loc": 101,
+      "fanin_repo": 1,
+      "group": "session",
+      "uncovered_cmds": ["show", "open", "delete", "rename"],
+      "covered_indirect": ["list"],
+      "responsibility": "共享会话管理命令组（列表/查看/打开/软删除/重命名），经 DeepTutorApp 异步门面",
+      "test_focus": "monkeypatch DeepTutorApp 异步方法：show 缺失→exit1、--format json；delete/rename 失败分支；open 仅断言 ChatState 转发进入 _chat_repl（不进入交互）",
+      "dedup": "未建卡"
+    },
+    {
+      "rank": 4,
+      "path": "deeptutor_cli/_tool_result.py",
+      "loc": 166,
+      "fanin_repo": 1,
+      "group": null,
+      "uncovered_surface": "公共符号 3 个：ToolResultBuffer、ToolResultEntry、truncate_for_display",
+      "covered_indirect": "仅经 chat 链路间接触达（common.py 渲染路径），无直接单测",
+      "responsibility": "工具输出的截断预览与 /show 展开缓冲（纯逻辑，无 I/O）",
+      "test_focus": "纯函数单测（模块 docstring 自述可脱离 REPL 测试）：truncate_for_display 的 head_lines<=0、恰好等于、超长单行硬截断与 hidden 计数；ToolResultBuffer 环形容量 DEFAULT_RING_CAPACITY 与按 id 取回",
+      "dedup": "未建卡"
+    },
+    {
+      "rank": 5,
+      "path": "deeptutor_cli/book.py",
+      "loc": 61,
+      "fanin_repo": 1,
+      "group": "book",
+      "uncovered_cmds": ["list", "health", "refresh-fingerprints"],
+      "covered_indirect": [],
+      "responsibility": "交互式 Book 命令组（列表/健康检查/指纹刷新），经 BookEngine",
+      "test_focus": "monkeypatch deeptutor.book.get_book_engine：list 空库与非空含 stale 标注；health 的 JSON 输出结构；refresh-fingerprints 返回 None→exit1",
+      "dedup": "未建卡（AGEN-827/1263 为 services/book.py 与 web 阅读导航，非 CLI 组）"
+    },
+    {
+      "rank": 6,
+      "path": "deeptutor_cli/memory.py",
+      "loc": 99,
+      "fanin_repo": 1,
+      "group": "memory",
+      "uncovered_cmds": ["show", "clear"],
+      "covered_indirect": [],
+      "responsibility": "轻量记忆查看/清理命令组，经 services.memory 存储与 paths",
+      "test_focus": "monkeypatch get_memory_store/paths：show 的 L3/L2/单文档/未知名 exit1 分支与空文档提示；clear 的无 --force 确认 Abort、--force 删除 trace/L2/L3、未知目标 exit1",
+      "dedup": "未建卡"
+    }
+  ],
+  "excluded": [
+    {
+      "path": "deeptutor_cli/config_cmd.py",
+      "loc": 167,
+      "reason": "零直接引用，但全部 3 个命令已被间接覆盖：apply/providers（tests/cli/test_agent_setup.py）、show（tests/cli/test_config_cli.py），未覆盖命令数=0"
+    },
+    {
+      "path": "deeptutor_cli/workspace_cmd.py",
+      "loc": 44,
+      "reason": "show/set/reset 全部被 tests/cli/test_workspace_cli.py 间接覆盖，未覆盖命令数=0"
+    },
+    {
+      "path": "deeptutor_cli/__init__.py",
+      "loc": 7,
+      "reason": "入口垫片，无可测行为"
+    },
+    {
+      "path": "deeptutor_cli/__main__.py",
+      "loc": 5,
+      "reason": "入口垫片，无可测行为"
+    }
+  ],
+  "dedup": {
+    "method": "multica issue search 全状态按模块关键词逐一检索（notebook cli / partner / memory cli / book cli / tool_result / session_cmd / config_cmd / workspace_cmd / deeptutor_cli）+ backlog 全量清单核对",
+    "conclusion": "6 个入选模块均未建卡；guide-cli、scan-cli-surface、scan-cli-exit-codes 为清点/导读类，按卡面说明不构成补测去重；相近卡均为服务层/路由层模块（AGEN-927 services/notebook、AGEN-1145 tools/partner_memory、AGEN-826 multi_user/partner_access、AGEN-763 partner_groups 路由），与本清单目标模块不重叠",
+    "removed_by_dedup": 0
+  },
+  "complementarity": "CLI 轴 6 个入选目标全部为 typer 命令组或纯 helper，测试入口统一为 typer.testing.CliRunner + monkeypatch 门面/服务，与 weak242（Python 服务/子代理轴）和 web（vitest 前端轴）无目标文件重叠",
+  "reproduce": [
+    "python3 evidence/cli-zero-triage-20261009/scan_cli_zero.py . evidence/cli-zero-triage-20261009/cli_zero_raw.json",
+    "python3 evidence/cli-zero-triage-20261009/compute_cmd_coverage.py . evidence/cli-zero-triage-20261009/cmd_coverage_raw.json"
+  ]
+}
