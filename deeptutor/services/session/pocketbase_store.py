@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 import json
 import logging
@@ -95,9 +95,15 @@ def _to_float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         if isinstance(value, str):
             try:
-                return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+                parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
             except ValueError:
-                pass
+                return default
+            # Legacy rows may store naive ISO strings; PocketBase auto fields
+            # are always UTC, so read naive values as UTC instead of letting
+            # .timestamp() reinterpret them in the host's local timezone.
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=timezone.utc)
+            return parsed.timestamp()
         return default
 
 

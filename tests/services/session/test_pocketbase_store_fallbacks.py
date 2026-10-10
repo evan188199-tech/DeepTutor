@@ -22,9 +22,12 @@ wrapper that raises once on named ``<collection>.<op>`` calls.
 from __future__ import annotations
 
 from contextlib import contextmanager
+from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import re
+import time
 
 import pytest
 
@@ -474,6 +477,31 @@ def test_to_float_tolerates_missing_and_corrupt_values() -> None:
     iso = _to_float("2026-10-02T00:00:00Z")
     assert iso > 0
     assert _to_float("2026-10-02T00:00:00+00:00") == iso
+
+
+def test_to_float_reads_naive_iso_strings_as_utc() -> None:
+    """Naive ISO timestamps must map to the UTC epoch on any host timezone.
+
+    Legacy rows store naive ISO strings while PocketBase auto fields are
+    always UTC; interpreting them as host-local time shifts the epoch by the
+    local UTC offset.
+    """
+    original_tz = os.environ.get("TZ")
+    os.environ["TZ"] = "Asia/Shanghai"
+    time.tzset()
+    try:
+        expected = datetime(2026, 10, 2, 0, 0, tzinfo=timezone.utc).timestamp()
+        assert _to_float("2026-10-02T00:00:00") == expected
+        assert _to_float("2026-10-02T00:00:00.500000") == expected + 0.5
+        assert _to_float("2026-10-02T00:00:00Z") == expected
+        assert _to_float("2026-10-02T00:00:00+00:00") == expected
+        assert _to_float("2026-10-02T00:00:00+02:00") == expected - 2 * 3600
+    finally:
+        if original_tz is None:
+            os.environ.pop("TZ", None)
+        else:
+            os.environ["TZ"] = original_tz
+        time.tzset()
 
 
 # ----------------------------------------------------------------------
