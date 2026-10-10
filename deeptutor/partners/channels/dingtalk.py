@@ -129,6 +129,8 @@ class DingTalkChannel(BaseChannel):
     _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}
     _AUDIO_EXTS = {".amr", ".mp3", ".wav", ".ogg", ".m4a", ".aac"}
     _VIDEO_EXTS = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+    _HTTP_TIMEOUT_SECONDS = 30.0
+    _STREAM_CANCEL_WAIT_SECONDS = 2.0
 
     @classmethod
     def default_config(cls) -> dict[str, Any]:
@@ -148,6 +150,9 @@ class DingTalkChannel(BaseChannel):
 
         # Hold references to background tasks to prevent GC
         self._background_tasks: set[asyncio.Task] = set()
+        # Signals stop() to interrupt the unbounded SDK stream loop
+        self._stop_event = asyncio.Event()
+        self._stream_task: asyncio.Task | None = None
 
     async def start(self) -> None:
         """Start the DingTalk bot with Stream Mode."""
@@ -172,7 +177,7 @@ class DingTalkChannel(BaseChannel):
                 return
 
             self._running = True
-            self._http = httpx.AsyncClient()
+            self._http = httpx.AsyncClient(timeout=self._HTTP_TIMEOUT_SECONDS)
 
             logger.info(
                 "Initializing DingTalk Stream Client with Client ID: {}...",
@@ -187,11 +192,12 @@ class DingTalkChannel(BaseChannel):
 
             logger.info("DingTalk bot started with Stream Mode")
 
+            self._stop_event.clear()
             # Reconnect loop: restart stream if SDK exits or crashes
             while self._running:
                 try:
                     self.set_setup_state("running")
-                    await self._client.start()
+                    await self._stream_until_stopped()
                 except Exception as e:
                     logger.warning("DingTalk stream error: {}", e)
                     self.set_setup_state(
@@ -210,12 +216,77 @@ class DingTalkChannel(BaseChannel):
                 message=f"Channel startup failed ({type(e).__name__}).",
             )
 
+    async def _stream_until_stopped(self) -> None:
+        """Await the SDK stream loop, interruptible by ``stop()``.
+
+        ``DingTalkStreamClient.start()`` never returns on its own, so it runs
+        in a task raced against ``_stop_event``; a stop request tears the
+        client down instead of waiting forever.
+        """
+        client = self._client
+        if client is None:
+            return
+        stream_task = asyncio.create_task(client.start())
+        self._stream_task = stream_task
+        stop_waiter = asyncio.create_task(self._stop_event.wait())
+        try:
+            done, _ = await asyncio.wait(
+                (stream_task, stop_waiter), return_when=asyncio.FIRST_COMPLETED
+            )
+            if stream_task in done:
+                if stream_task.cancelled():
+                    # Torn down by stop(): not an SDK failure.
+                    return
+                # Surface SDK failures so the reconnect loop can retry.
+                exc = stream_task.exception()
+                if exc is not None:
+                    raise exc
+                return
+            # stop() was requested: close the SDK client and cancel its loop.
+            await self._teardown_stream_client()
+        finally:
+            stop_waiter.cancel()
+            if self._stream_task is stream_task:
+                if not stream_task.done():
+                    stream_task.cancel()
+                self._stream_task = None
+
+    async def _teardown_stream_client(self) -> None:
+        """Close the SDK stream client and cancel its loop (idempotent)."""
+        task = self._stream_task
+        client = self._client
+        self._stream_task = None
+        self._client = None
+        if client is not None:
+            websocket = getattr(client, "websocket", None)
+            if websocket is not None:
+                try:
+                    await websocket.close()
+                except Exception as e:
+                    logger.warning("Failed to close DingTalk stream websocket: {}", e)
+        if task is not None and not task.done():
+            # The SDK start() loop swallows a single CancelledError and
+            # retries, so cancel a second time if the first did not stick.
+            for _ in range(2):
+                task.cancel()
+                _done, pending = await asyncio.wait(
+                    {task}, timeout=self._STREAM_CANCEL_WAIT_SECONDS
+                )
+                if not pending:
+                    return
+            logger.warning("DingTalk stream client did not stop cleanly; abandoning it")
+
     async def stop(self) -> None:
         """Stop the DingTalk bot."""
         self._running = False
+        self._stop_event.set()
+        await self._teardown_stream_client()
         # Close the shared HTTP client
         if self._http:
-            await self._http.aclose()
+            try:
+                await self._http.aclose()
+            except Exception as e:
+                logger.warning("Failed to close DingTalk HTTP client: {}", e)
             self._http = None
         # Cancel outstanding background tasks
         for task in self._background_tasks:
@@ -496,13 +567,21 @@ class DingTalkChannel(BaseChannel):
         )
 
     async def send(self, msg: OutboundMessage) -> None:
-        """Send a message through DingTalk."""
+        """Send a message through DingTalk.
+
+        Raises on delivery failure so the channel manager's retry policy
+        applies; media failures degrade to a visible fallback message.
+        """
         token = await self._get_access_token()
         if not token:
-            return
+            raise RuntimeError(
+                f"DingTalk send failed: could not obtain access token for chat {msg.chat_id}"
+            )
 
         if msg.content and msg.content.strip():
-            await self._send_markdown_text(token, msg.chat_id, msg.content.strip())
+            ok = await self._send_markdown_text(token, msg.chat_id, msg.content.strip())
+            if not ok:
+                raise RuntimeError(f"DingTalk text send failed for chat {msg.chat_id}")
 
         for media_ref in msg.media or []:
             ok = await self._send_media_ref(token, msg.chat_id, media_ref)
@@ -511,11 +590,13 @@ class DingTalkChannel(BaseChannel):
             logger.error("DingTalk media send failed for {}", media_ref)
             # Send visible fallback so failures are observable by the user.
             filename = self._guess_filename(media_ref, self._guess_upload_type(media_ref))
-            await self._send_markdown_text(
+            fallback_ok = await self._send_markdown_text(
                 token,
                 msg.chat_id,
                 f"[Attachment send failed: {filename}]",
             )
+            if not fallback_ok:
+                raise RuntimeError(f"DingTalk media send failed for chat {msg.chat_id}")
 
     async def _on_message(
         self,
