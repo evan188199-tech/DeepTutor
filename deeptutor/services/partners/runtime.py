@@ -125,6 +125,9 @@ def _thread_delivery_meta(msg: InboundMessage) -> dict[str, Any]:
     for key in (
         "message_thread_id",
         "message_id",
+        # QQ replies route group/c2c by chat type; without it a reply whose
+        # route cache was lost (restart, proactive send) guesses the endpoint.
+        "chat_type",
         "_feishu_model_picker_message_id",
         "_feishu_model_picker_id",
     ):

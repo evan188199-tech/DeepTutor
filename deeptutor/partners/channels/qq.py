@@ -157,7 +157,17 @@ class QQChannel(BaseChannel):
         else:
             payload["content"] = msg.content
 
-        chat_type = self._chat_type_cache.get(msg.chat_id, "c2c")
+        # Route via the reply's own metadata first: the in-memory cache is
+        # lost on restart and never populated for proactive sends, and a
+        # silent "c2c" default sends group replies to the wrong endpoint.
+        chat_type = (msg.metadata or {}).get("chat_type") or self._chat_type_cache.get(msg.chat_id)
+        if chat_type not in ("group", "c2c"):
+            # No routing hint and no cached inbound: the target type is
+            # undeterminable, so refuse loudly instead of guessing wrong.
+            raise RuntimeError(
+                f"qq: unknown chat type for chat {msg.chat_id}; "
+                "no inbound message recorded this session"
+            )
         if chat_type == "group":
             await self._client.api.post_group_message(
                 group_openid=msg.chat_id,
@@ -197,7 +207,12 @@ class QQChannel(BaseChannel):
                 sender_id=user_id,
                 chat_id=chat_id,
                 content=content,
-                metadata={"message_id": data.id},
+                metadata={
+                    "message_id": data.id,
+                    # Echoed back on replies (see _thread_delivery_meta) so
+                    # outbound routing never depends on the volatile cache.
+                    "chat_type": "group" if is_group else "c2c",
+                },
             )
         except Exception:
             logger.exception("Error handling QQ message")
