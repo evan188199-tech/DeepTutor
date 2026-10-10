@@ -116,7 +116,8 @@ async def download_library_file(
 
     path = store.resolve_path(file_id)
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        logger.warning("Library file %s: entry exists but data blob is missing on disk", file_id)
+        raise HTTPException(status_code=404, detail="File not found")
 
     media_type = _mime_type(entry["filename"])
     return FileResponse(
@@ -142,7 +143,8 @@ async def download_library_file_head(
         raise HTTPException(status_code=404, detail="File not found")
     path = store.resolve_path(file_id)
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        logger.warning("Library file %s: entry exists but data blob is missing on disk", file_id)
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 @router.delete("/{file_id}", operation_id="library_delete")

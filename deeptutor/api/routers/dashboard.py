@@ -135,7 +135,7 @@ async def get_source_library(kind: str):
             from deeptutor.api.routers.co_writer import list_documents
 
             return [row.model_dump() for row in (await list_documents())["documents"]]
-        raise HTTPException(404, "Unknown source library")
+        raise HTTPException(status_code=404, detail=f"Unknown library kind: {kind}")
 
     if kind == "knowledge":
         from deeptutor.services.workspace.knowledge import knowledge_catalog
@@ -152,7 +152,7 @@ async def get_source_library(kind: str):
     if kind in {"books", "practice"}:
         return await get_learning_library(kind)
     if kind not in {"notebooks", "chats", "drafts"}:
-        raise HTTPException(404, "Unknown source library")
+        raise HTTPException(status_code=404, detail=f"Unknown library kind: {kind}")
     items, unavailable = await read_workspace_indexes(read)
     return {"items": items, "unavailable_workspaces": unavailable}
 
@@ -212,7 +212,7 @@ async def get_learning_library(kind: str):
         ]
 
     if kind not in {"books", "mastery", "reading", "materials", "practice", "watching"}:
-        raise HTTPException(status_code=404, detail="Unknown learning library")
+        raise HTTPException(status_code=404, detail=f"Unknown library kind: {kind}")
     rows, unavailable = await read_workspace_indexes(read)
     return {"items": rows, "unavailable_workspaces": unavailable, "can_create": can_create}
 

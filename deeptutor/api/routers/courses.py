@@ -169,7 +169,7 @@ async def attach_course_resource(
     except CourseNotFoundError as exc:
         raise HTTPException(status_code=404, detail="Course not found") from exc
     except UnknownResourceKindError as exc:
-        raise HTTPException(status_code=400, detail="Unknown resource kind") from exc
+        raise HTTPException(status_code=400, detail=f"Unknown resource kind: {exc}") from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"resource": resource.to_dict()}

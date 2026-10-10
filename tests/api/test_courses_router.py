@@ -131,7 +131,7 @@ def test_unknown_resource_kind_returns_400(course_service: CourseService) -> Non
         )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Unknown resource kind"
+    assert response.json()["detail"] == "Unknown resource kind: video_library"
 
 
 def test_missing_course_returns_404(course_service: CourseService) -> None:

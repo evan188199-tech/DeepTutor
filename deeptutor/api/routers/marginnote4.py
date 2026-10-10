@@ -74,14 +74,14 @@ def _auth_device(request: Request, authorization: str | None) -> tuple[str, Marg
     ``X-MN4-KB`` value.
     """
     if not authorization or not authorization.startswith("MarginNote "):
-        raise HTTPException(401, "Missing or malformed Authorization header.")
+        raise HTTPException(status_code=401, detail="Missing or malformed Authorization header")
     raw = authorization[len("MarginNote ") :]
     if ":" not in raw:
-        raise HTTPException(401, "Invalid Authorization format.")
+        raise HTTPException(status_code=401, detail="Invalid Authorization format")
     device_id, token = raw.split(":", 1)
     store = MarginNoteStore.open_existing(_device_db_path(_requested_kb(request)))
     if store is None or not store.verify_token(device_id, token):
-        raise HTTPException(403, "Invalid device credentials.")
+        raise HTTPException(status_code=403, detail="Invalid device credentials")
     store.touch_device(device_id)
     return device_id, store
 
@@ -159,9 +159,9 @@ async def pair_device(body: PairRequest, request: Request) -> PairResponse:
         # differ, pairing would hand out a token that 403s on every sync
         # forever, so refuse instead of issuing a dead credential.
         raise HTTPException(
-            501,
-            "MN4 device sync is not available for this account yet: pairing and "
-            "sync would resolve different workspaces.",
+            status_code=501,
+            detail="MN4 device sync is not available for this account yet: pairing and "
+            "sync would resolve different workspaces",
         )
     store = _store_for(request)
     device, token = store.pair_device(device_name=body.device_name, device_kind=body.device_kind)
@@ -196,7 +196,7 @@ async def revoke_device(device_id: str, request: Request) -> dict[str, str]:
     """Revoke a paired device."""
     store = _store_for(request)
     if not store.revoke_device(device_id):
-        raise HTTPException(404, f"Device {device_id} not found.")
+        raise HTTPException(status_code=404, detail=f"Device {device_id} not found")
     return {"status": "revoked", "device_id": device_id}
 
 
