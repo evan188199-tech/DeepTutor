@@ -10,6 +10,7 @@ from typing import Any
 
 from deeptutor.partners.bus.events import InboundMessage, OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.dedup import InboundDeduplicator
 
 #: Owning Partner of the channel currently being constructed. Channels that
 #: resolve paths in ``__init__`` need the id *then*, but ``ChannelManager``
@@ -70,6 +71,10 @@ class BaseChannel(ABC):
         # the backend terminal.
         self._setup_state: dict[str, str] = {}
         self._setup_revision = 0
+        # Short-window inbound dedup shared by push-based channels. Platforms
+        # redeliver events on retries/reconnects; the guard is keyed by
+        # platform message id and lives in volatile memory only.
+        self._inbound_dedup = InboundDeduplicator()
 
     def set_setup_state(
         self,
@@ -199,6 +204,15 @@ class BaseChannel(ABC):
         if "*" in allow_list:
             return True
         return str(sender_id) in allow_list
+
+    def _is_duplicate_inbound(self, message_id: str | None) -> bool:
+        """True when this platform message id was already processed recently.
+
+        Channels call this at the top of their inbound path, before any side
+        effect (reaction, attachment download, publish). Empty ids fail open
+        so first-delivery semantics are never blocked.
+        """
+        return self._inbound_dedup.is_duplicate(message_id)
 
     async def _handle_message(
         self,

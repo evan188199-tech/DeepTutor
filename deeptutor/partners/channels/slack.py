@@ -228,6 +228,16 @@ class SlackChannel(BaseChannel):
         if channel_type != "im" and not self._should_respond_in_channel(event_type, text, chat_id):
             return
 
+        # Slack retries events_api deliveries and can deliver the same
+        # physical message as both `message` and `app_mention`; both share
+        # the message's ts. Only reached by events that pass the policy
+        # checks above, so a policy-skipped delivery never consumes the id
+        # its sibling event still needs.
+        event_ts = event.get("ts") or event.get("event_ts")
+        if self._is_duplicate_inbound(f"{chat_id}:{event_ts}" if event_ts else None):
+            logger.debug("Ignoring duplicate Slack event ts={} channel={}", event_ts, chat_id)
+            return
+
         text = self._strip_bot_mention(text)
 
         thread_ts = event.get("thread_ts")

@@ -417,6 +417,12 @@ class DiscordChannel(BaseChannel):
         if not sender_id or not channel_id:
             return
 
+        # Gateway resume/reconnect can replay MESSAGE_CREATE events; the same
+        # message id twice is a redelivery, not a new message.
+        if self._is_duplicate_inbound(str(payload.get("id", ""))):
+            logger.debug("Ignoring duplicate Discord message {}", payload.get("id"))
+            return
+
         if not self.is_allowed(sender_id):
             return
 

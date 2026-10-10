@@ -334,6 +334,12 @@ class MSTeamsChannel(BaseChannel):
             logger.debug("Ignoring non-DM MSTeams conversation {}", conversation_type)
             return
 
+        # Bot Framework redelivers activities when the ack is slow or lost;
+        # the same activity id twice is a replay, not a new message.
+        if self._is_duplicate_inbound(activity_id):
+            logger.debug("Ignoring duplicate MSTeams activity {}", activity_id)
+            return
+
         text = self._sanitize_inbound_text(activity)
         if not text:
             text = self.config.mention_only_response.strip()

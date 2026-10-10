@@ -77,6 +77,9 @@ class NanobotDingTalkHandler(CallbackHandler):
             conversation_id = message.data.get("conversationId") or message.data.get(
                 "openConversationId"
             )
+            message_id = str(
+                message.data.get("messageId") or getattr(chatbot_msg, "message_id", "") or ""
+            )
 
             logger.info(
                 "Received DingTalk message from {} ({}): {}", sender_name, sender_id, content
@@ -91,6 +94,7 @@ class NanobotDingTalkHandler(CallbackHandler):
                     sender_name,
                     conversation_type,
                     conversation_id,
+                    message_id=message_id,
                 )
             )
             self.channel._background_tasks.add(task)
@@ -524,6 +528,7 @@ class DingTalkChannel(BaseChannel):
         sender_name: str,
         conversation_type: str | None = None,
         conversation_id: str | None = None,
+        message_id: str | None = None,
     ) -> None:
         """Handle incoming message (called by NanobotDingTalkHandler).
 
@@ -531,6 +536,12 @@ class DingTalkChannel(BaseChannel):
         permission checks before publishing to the bus.
         """
         try:
+            # DingTalk Stream redelivers events until they are acked and can
+            # replay around reconnects; the same message id twice is a
+            # redelivery, not a new message.
+            if self._is_duplicate_inbound(message_id):
+                logger.debug("Ignoring duplicate DingTalk message {}", message_id)
+                return
             logger.info("DingTalk inbound: {} from {}", content, sender_name)
             is_group = conversation_type == "2" and conversation_id
             chat_id = f"group:{conversation_id}" if is_group else sender_id
