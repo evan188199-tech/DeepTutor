@@ -433,6 +433,69 @@ it("applies MinerU credentials from within document-parsing page without leaving
   expect(settings.hasUnsavedChanges).toBe(false);
 });
 
+it("does not flag unsaved changes when saved MinerU URLs carry trailing slashes", async () => {
+  resources.mineru = {
+    settings: {
+      mode: "cloud",
+      api_base_url: "https://mineru.net/",
+      model_download_endpoint: "https://huggingface.co/",
+    },
+    api_token_set: false,
+  };
+  render(<App page="mineru" />);
+  await ready();
+  expect(await screen.findByPlaceholderText("https://mineru.net")).toHaveValue(
+    "https://mineru.net",
+  );
+  expect(settings.draftState).toBe("clean");
+  expect(settings.hasUnsavedChanges).toBe(false);
+  expect(writes("/api/settings/mineru")).toHaveLength(0);
+  fireEvent.change(screen.getByPlaceholderText("Paste API token"), {
+    target: { value: "trailing-slash-token" },
+  });
+  expect(settings.draftState).toBe("unsaved");
+  await act(() => settings.applyCatalog());
+  const body = JSON.parse(String(writes("/api/settings/mineru")[0][1].body));
+  expect(body.api_base_url).toBe("https://mineru.net");
+  expect(body.model_download_endpoint).toBe("https://huggingface.co");
+  expect(settings.draftState).toBe("clean");
+  expect(settings.hasUnsavedChanges).toBe(false);
+});
+
+it("trims pasted MinerU tokens so the applied write matches the real value", async () => {
+  resources.mineru = {
+    settings: { mode: "cloud", api_base_url: "https://mineru.net" },
+    api_token_set: false,
+  };
+  render(<App page="mineru" />);
+  await ready();
+  fireEvent.change(await screen.findByPlaceholderText("Paste API token"), {
+    target: { value: "  cloud-token-123  " },
+  });
+  expect(settings.draftState).toBe("unsaved");
+  await act(() => settings.applyCatalog());
+  expect(resources.mineru.api_token).toBe("cloud-token-123");
+  expect(settings.draftState).toBe("clean");
+  expect(settings.hasUnsavedChanges).toBe(false);
+});
+
+it("keeps the MinerU token field out of browser credential autofill and loads clean", async () => {
+  resources.mineru = {
+    settings: { mode: "cloud", api_base_url: "https://mineru.net" },
+    api_token_set: false,
+  };
+  render(<App page="mineru" />);
+  await ready();
+  const token = await screen.findByPlaceholderText("Paste API token");
+  expect(token).toHaveAttribute("autoComplete", "new-password");
+  expect(token).toHaveAttribute("data-1p-ignore", "true");
+  expect(token).toHaveAttribute("data-lpignore", "true");
+  expect(token).toHaveAttribute("type", "password");
+  expect(settings.draftState).toBe("clean");
+  expect(settings.hasUnsavedChanges).toBe(false);
+  expect(writes("/api/settings/mineru")).toHaveLength(0);
+});
+
 it("allows incomplete model drafts but blocks Apply before writing any live settings", async () => {
   render(<App />);
   await ready();
