@@ -131,7 +131,7 @@ class ZulipChannel(BaseChannel):
             )
             return
 
-        profile = self._call_with_retry(self._client.get_profile)
+        profile = await asyncio.to_thread(self._call_with_retry, self._client.get_profile)
         if not profile or profile.get("result") != "success":
             logger.error("Failed to get Zulip bot profile")
             self._running = False
@@ -168,8 +168,9 @@ class ZulipChannel(BaseChannel):
             self._stop_typing(chat_id)
 
         if self._queue_id and self._client:
+            client, queue_id = self._client, self._queue_id
             try:
-                self._client.deregister(self._queue_id)
+                await asyncio.to_thread(client.deregister, queue_id)
             except Exception:
                 pass
 
@@ -177,7 +178,7 @@ class ZulipChannel(BaseChannel):
         self._client = None
 
         if self._listener_thread and self._listener_thread.is_alive():
-            self._listener_thread.join(timeout=5)
+            await asyncio.to_thread(self._listener_thread.join, 5)
 
         self._listener_thread = None
 

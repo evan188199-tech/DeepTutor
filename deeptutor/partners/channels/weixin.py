@@ -1196,9 +1196,12 @@ class WeixinChannel(BaseChannel):
         if not p.is_file():
             raise FileNotFoundError(f"Media file not found: {media_path}")
 
-        raw_data = p.read_bytes()
-        raw_size = len(raw_data)
-        raw_md5 = hashlib.md5(raw_data, usedforsecurity=False).hexdigest()
+        def _read_and_digest() -> tuple[bytes, int, str]:
+            raw = p.read_bytes()
+            digest = hashlib.md5(raw, usedforsecurity=False).hexdigest()
+            return raw, len(raw), digest
+
+        raw_data, raw_size, raw_md5 = await asyncio.to_thread(_read_and_digest)
 
         # Determine upload media type from extension
         ext = p.suffix.lower()
@@ -1253,7 +1256,7 @@ class WeixinChannel(BaseChannel):
 
         # Step 2: AES-128-ECB encrypt and POST to CDN
         aes_key_b64 = base64.b64encode(aes_key_raw).decode()
-        encrypted_data = _encrypt_aes_ecb(raw_data, aes_key_b64)
+        encrypted_data = await asyncio.to_thread(_encrypt_aes_ecb, raw_data, aes_key_b64)
 
         if upload_full_url:
             cdn_upload_url = upload_full_url

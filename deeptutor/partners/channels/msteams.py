@@ -248,11 +248,16 @@ class MSTeamsChannel(BaseChannel):
         """Stop the channel."""
         self._running = False
         if self._server:
-            self._server.shutdown()
-            self._server.server_close()
+            server = self._server
+
+            def _shutdown_server() -> None:
+                server.shutdown()
+                server.server_close()
+
+            await asyncio.to_thread(_shutdown_server)
             self._server = None
         if self._server_thread and self._server_thread.is_alive():
-            self._server_thread.join(timeout=2)
+            await asyncio.to_thread(self._server_thread.join, 2)
         self._server_thread = None
         if self._http:
             await self._http.aclose()
