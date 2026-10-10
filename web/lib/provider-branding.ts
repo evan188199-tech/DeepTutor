@@ -61,6 +61,7 @@ export const PROVIDER_ICONS: Readonly<Record<string, ProviderIconSpec>> = {
   volcengine_coding_plan: { file: "volcengine-color.svg" },
   volcengine_speech: { file: "volcengine-color.svg" },
   xiaomi_mimo: { file: "xiaomimimo.svg", mono: true },
+  you: { file: "youcom.ico" },
   zhipu: { file: "zhipu-color.svg" },
 };
 

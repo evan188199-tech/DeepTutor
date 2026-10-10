@@ -29,6 +29,7 @@ const OPTIONS: Record<string, ProviderOption> = {
   jina: option("jina", "Jina", { requires_api_key: true }),
   searxng: option("searxng", "SearXNG", { requires_base_url: true }),
   duckduckgo: option("duckduckgo", "DuckDuckGo"),
+  you: option("you", "You.com"),
   perplexity: option("perplexity", "Perplexity", {
     requires_api_key: true,
     soft_fallback: false,
@@ -63,7 +64,7 @@ test("searxng shows only a required Base URL", () => {
 });
 
 test("zero-config providers show no connection fields", () => {
-  for (const provider of ["duckduckgo", "none"]) {
+  for (const provider of ["duckduckgo", "you", "none"]) {
     assert.deepEqual(
       searchProviderFields(provider, OPTIONS[provider]),
       { apiKey: false, baseUrl: false, baseUrlRequired: false },

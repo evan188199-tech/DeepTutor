@@ -497,3 +497,145 @@ def test_serply_rejects_an_unknown_mode() -> None:
 
     with pytest.raises(ValueError, match="mode"):
         SerplyProvider(api_key="k").search("q", mode="images")
+
+
+# --------------------------------------------------------------------------
+# You.com: one provider, two endpoints. Keyless it GETs the free
+# api.you.com agents endpoint (100/day); with a key it POSTs the keyed
+# Search API. Both reply with the same results.web[] rows.
+# --------------------------------------------------------------------------
+
+_YOUCOM_BODY: dict[str, Any] = {
+    "results": {
+        "web": [
+            {
+                "url": "https://arxiv.org/abs/1706.03762",
+                "title": "Attention Is All You Need",
+                "description": "The dominant sequence transduction models...",
+                "snippets": ["frag one", "frag two"],
+                "page_age": "2017-06-12T00:00:00",
+            },
+            # No description — the snippets carry the row instead.
+            {
+                "url": "https://example.org/transformers",
+                "title": "Transformers, explained",
+                "snippets": ["left frag", "right frag"],
+            },
+            "not-a-dict",
+        ]
+    },
+    "metadata": {"search_uuid": "uuid-1", "query": "attention"},
+}
+
+
+@pytest.fixture
+def youcom_calls(monkeypatch):
+    """Capture You.com requests and answer both endpoints with the same body."""
+    # Keyless tests construct the provider without a key, so the constructor's
+    # profile lookup must not see whatever catalog this machine happens to have.
+    monkeypatch.setattr(
+        "deeptutor.services.search.base.search_provider_credentials",
+        lambda name, **_: ("", ""),
+    )
+    captured: list[dict[str, Any]] = []
+
+    def _respond(url: str, **kwargs: Any) -> _FakeResponse:
+        captured.append({"url": url, **kwargs})
+        return _FakeResponse(_YOUCOM_BODY)
+
+    class _FakeRequests:
+        get = staticmethod(_respond)
+        post = staticmethod(_respond)
+
+    monkeypatch.setattr("deeptutor.services.search.providers.youcom.requests", _FakeRequests)
+    return captured
+
+
+def test_youcom_without_a_key_uses_the_free_get_endpoint(youcom_calls) -> None:
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    YouDotComProvider(api_key="", proxy=PROXY).search("attention & focus", max_results=3)
+
+    call = youcom_calls[-1]
+    assert call["url"] == "https://api.you.com/v1/agents/search"
+    assert call["params"] == {"query": "attention & focus", "count": 3}
+    assert "X-API-Key" not in call["headers"]
+    assert call["headers"]["User-Agent"] == "deeptutor youdotcom-integration/hkuds-deeptutor"
+    assert call["proxies"] == {"http": PROXY, "https": PROXY}
+
+
+def test_youcom_with_a_key_switches_to_the_keyed_search_api(youcom_calls) -> None:
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    YouDotComProvider(api_key="ydc-key", proxy=PROXY).search("attention", max_results=3)
+
+    call = youcom_calls[-1]
+    assert call["url"] == "https://ydc-index.io/v1/search"
+    assert call["json"] == {"query": "attention", "count": 3}
+    assert call["headers"]["X-API-Key"] == "ydc-key"
+    assert call["proxies"] == {"http": PROXY, "https": PROXY}
+
+
+def test_youcom_web_rows_map_onto_search_results(youcom_calls) -> None:
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    response = YouDotComProvider(api_key="k").search("attention is all you need")
+
+    assert response.provider == "you"
+    assert response.answer == ""
+    assert response.metadata["searchId"] == "uuid-1"
+    first, second = response.search_results
+    assert first.url == "https://arxiv.org/abs/1706.03762"
+    assert first.snippet == "The dominant sequence transduction models..."
+    assert first.source == "arxiv.org"
+    assert first.date == "2017-06-12T00:00:00"
+    assert second.snippet == "left frag right frag"  # snippets fill in for description
+    # The non-dict row is dropped, not exploded.
+    assert [c.id for c in response.citations] == [1, 2]
+    assert response.citations[0].reference == "[1]"
+
+
+def test_youcom_raises_on_http_errors_so_fallback_can_take_over(monkeypatch) -> None:
+    """Past the free quota the endpoint returns 429; raising lets the runtime
+    send the query to DuckDuckGo instead of returning an empty page."""
+    response = _FakeResponse({})
+    response.status_code = 429
+    response.text = "rate limit exceeded"
+
+    class _FakeRequests:
+        @staticmethod
+        def get(url: str, **kwargs: Any) -> _FakeResponse:
+            return response
+
+    monkeypatch.setattr("deeptutor.services.search.providers.youcom.requests", _FakeRequests)
+    monkeypatch.setattr(
+        "deeptutor.services.search.base.search_provider_credentials",
+        lambda name, **_: ("", ""),
+    )
+
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    with pytest.raises(Exception, match="429"):
+        YouDotComProvider(api_key="").search("q")
+
+
+def test_youcom_accepts_a_base_url_override(youcom_calls) -> None:
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    YouDotComProvider(api_key="k").search("q", base_url="https://gateway.example/search")
+    assert youcom_calls[-1]["url"] == "https://gateway.example/search"
+
+
+def test_youcom_metadata_comes_from_the_spec_table() -> None:
+    from deeptutor.services.config import SEARCH_PROVIDERS
+    from deeptutor.services.search.providers import list_providers
+    from deeptutor.services.search.providers.youcom import YouDotComProvider
+
+    spec = SEARCH_PROVIDERS["you"]
+    assert "you" in list_providers()
+    assert YouDotComProvider.display_name == spec.label
+    assert YouDotComProvider.requires_api_key is False
+    assert YouDotComProvider.supports_answer is False
+    # Keyless engine: a failed call (429 past the free quota) falls back to
+    # DuckDuckGo rather than failing the turn.
+    assert spec.soft_fallback is True

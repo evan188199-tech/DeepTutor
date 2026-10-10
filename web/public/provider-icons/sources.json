@@ -129,7 +129,12 @@
     },
     "opper-dark.png": {
       "url": "https://opper.ai/images/icon-light.png",
-      "sha256": "c2b8011772dd1ca9299200a30dc915c5a2d636a1b4ba4a3c4c54234be438f70b",
+      "sha256": "c2b8011772dd1ca929920a30dc915725a2d636a1b4be4a3c4c54234be438f70b",
+      "source": "Official website asset"
+    },
+    "youcom.ico": {
+      "url": "https://you.com/favicon.ico",
+      "sha256": "bc108afac8491e981082ecbb84c1edc8a743c9da5d011bf50ccac677007b892e",
       "source": "Official website asset"
     }
   },
