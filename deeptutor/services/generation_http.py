@@ -13,8 +13,11 @@ from __future__ import annotations
 
 import base64
 import binascii
+import logging
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 # Auth header styles understood by the generation adapters.
 AUTH_BEARER = "bearer"  # Authorization: Bearer <key>  (OpenAI, Volcengine, gateways)
@@ -74,13 +77,24 @@ def join_api_path(base_url: str, suffix: str) -> str:
 
 
 def raise_for_provider(resp: httpx.Response, action: str) -> None:
-    """Surface a provider error with a trimmed body for diagnostics."""
+    """Raise a stable, status-only error for a failed provider request.
+
+    The raised message is surfaced to callers that may expose it to the model
+    or end users, so it carries only the action and the HTTP status code. The
+    raw response body is provider-controlled content and is kept out of the
+    exception; it is logged server-side for diagnostics instead.
+    """
     if resp.status_code < 400:
         return
-    detail = (resp.text or "").strip()[:400]
-    raise GenerationProviderError(
-        f"{action} failed with HTTP {resp.status_code}" + (f": {detail}" if detail else ".")
-    )
+    body = (resp.text or "").strip()
+    if body:
+        logger.warning(
+            "Provider request failed (%s, HTTP %s); response body: %s",
+            action,
+            resp.status_code,
+            body[:400],
+        )
+    raise GenerationProviderError(f"{action} failed with HTTP {resp.status_code}.")
 
 
 __all__ = [
