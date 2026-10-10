@@ -1,0 +1,359 @@
+{
+  "invoke_calls_scanned": 66,
+  "modules": [
+    {
+      "module": "kb",
+      "groups": [
+        "kb"
+      ],
+      "commands": [
+        "list",
+        "info",
+        "set-default",
+        "create",
+        "connect-kiwix",
+        "add",
+        "delete",
+        "search",
+        "eval",
+        "add-github-source",
+        "remove-github-source",
+        "add-web-source",
+        "remove-web-source",
+        "list-sources",
+        "sync"
+      ],
+      "invoked": [
+        "eval"
+      ],
+      "uncovered_cmds": 14,
+      "uncovered": [
+        "add",
+        "add-github-source",
+        "add-web-source",
+        "connect-kiwix",
+        "create",
+        "delete",
+        "info",
+        "list",
+        "list-sources",
+        "remove-github-source",
+        "remove-web-source",
+        "search",
+        "set-default",
+        "sync"
+      ]
+    },
+    {
+      "module": "plugin",
+      "groups": [
+        "plugin"
+      ],
+      "commands": [
+        "list",
+        "info",
+        "state",
+        "search",
+        "show",
+        "enable",
+        "approve",
+        "install",
+        "rollback",
+        "uninstall",
+        "disable"
+      ],
+      "invoked": [
+        "info"
+      ],
+      "uncovered_cmds": 10,
+      "uncovered": [
+        "approve",
+        "disable",
+        "enable",
+        "install",
+        "list",
+        "rollback",
+        "search",
+        "show",
+        "state",
+        "uninstall"
+      ]
+    },
+    {
+      "module": "skill",
+      "groups": [
+        "skill",
+        "skills"
+      ],
+      "commands": [
+        "search",
+        "install",
+        "login",
+        "logout",
+        "publish",
+        "update",
+        "list",
+        "remove"
+      ],
+      "invoked": [
+        "search"
+      ],
+      "uncovered_cmds": 7,
+      "uncovered": [
+        "install",
+        "list",
+        "login",
+        "logout",
+        "publish",
+        "remove",
+        "update"
+      ]
+    },
+    {
+      "module": "notebook",
+      "groups": [
+        "notebook"
+      ],
+      "commands": [
+        "list",
+        "create",
+        "show",
+        "remove-record",
+        "add-md",
+        "replace-md"
+      ],
+      "invoked": [
+        "add-md",
+        "replace-md"
+      ],
+      "uncovered_cmds": 4,
+      "uncovered": [
+        "create",
+        "list",
+        "remove-record",
+        "show"
+      ]
+    },
+    {
+      "module": "partner",
+      "groups": [
+        "partner"
+      ],
+      "commands": [
+        "list",
+        "start",
+        "stop",
+        "create"
+      ],
+      "invoked": [],
+      "uncovered_cmds": 4,
+      "uncovered": [
+        "create",
+        "list",
+        "start",
+        "stop"
+      ]
+    },
+    {
+      "module": "session_cmd",
+      "groups": [
+        "session"
+      ],
+      "commands": [
+        "list",
+        "show",
+        "open",
+        "delete",
+        "rename"
+      ],
+      "invoked": [
+        "list"
+      ],
+      "uncovered_cmds": 4,
+      "uncovered": [
+        "delete",
+        "open",
+        "rename",
+        "show"
+      ]
+    },
+    {
+      "module": "book",
+      "groups": [
+        "book"
+      ],
+      "commands": [
+        "list",
+        "health",
+        "refresh-fingerprints"
+      ],
+      "invoked": [],
+      "uncovered_cmds": 3,
+      "uncovered": [
+        "health",
+        "list",
+        "refresh-fingerprints"
+      ]
+    },
+    {
+      "module": "memory",
+      "groups": [
+        "memory"
+      ],
+      "commands": [
+        "show",
+        "clear"
+      ],
+      "invoked": [],
+      "uncovered_cmds": 2,
+      "uncovered": [
+        "clear",
+        "show"
+      ]
+    },
+    {
+      "module": "config_cmd",
+      "groups": [
+        "config"
+      ],
+      "commands": [
+        "providers",
+        "apply",
+        "show"
+      ],
+      "invoked": [
+        "providers",
+        "apply",
+        "show"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "doctor",
+      "groups": [],
+      "commands": [
+        "doctor"
+      ],
+      "invoked": [
+        "doctor"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "init_cmd",
+      "groups": [],
+      "commands": [
+        "init"
+      ],
+      "invoked": [
+        "init"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "main",
+      "groups": [],
+      "commands": [
+        "run"
+      ],
+      "invoked": [
+        "run"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "provider_cmd",
+      "groups": [
+        "provider"
+      ],
+      "commands": [
+        "login"
+      ],
+      "invoked": [
+        "login"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "workspace_cmd",
+      "groups": [
+        "workspace"
+      ],
+      "commands": [
+        "show",
+        "set",
+        "reset"
+      ],
+      "invoked": [
+        "show",
+        "set",
+        "reset"
+      ],
+      "uncovered_cmds": 0,
+      "uncovered": []
+    },
+    {
+      "module": "_tool_result",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "chat",
+      "groups": [
+        "chat"
+      ],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "common",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "init_wizard",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "setup_config",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "skill_login",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    },
+    {
+      "module": "skill_prompts",
+      "groups": [],
+      "commands": [],
+      "invoked": [],
+      "uncovered_cmds": null,
+      "uncovered": []
+    }
+  ]
+}

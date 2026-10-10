@@ -1,0 +1,3031 @@
+{
+ "rows": [
+  {
+   "module": "utils.json_parser",
+   "path": "deeptutor/utils/json_parser.py",
+   "loc": 201,
+   "fanin": 15,
+   "bonus": 0,
+   "score": 154,
+   "risk": "高",
+   "focus": "「Robust JSON parsing utilities with」覆盖 parse_json_response/safe_json_loads 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.provider_binding",
+   "path": "deeptutor/services/rag/provider_binding.py",
+   "loc": 70,
+   "fanin": 13,
+   "bonus": 1,
+   "score": 146,
+   "risk": "高",
+   "focus": "「Resolve a knowledge base's bound RAG」覆盖 load_kb_config_entry/load_metadata_provider/resolve_bound_provider 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-824"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.llm.structured_retry",
+   "path": "deeptutor/services/llm/structured_retry.py",
+   "loc": 111,
+   "fanin": 11,
+   "bonus": 1,
+   "score": 127,
+   "risk": "高",
+   "focus": "「One retry for a structured call a reasoning」覆盖 json_payload_is_usable/payload_with_reasoning_retry/json_with_reasoning_retry 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.keypool",
+   "path": "deeptutor/services/keypool.py",
+   "loc": 81,
+   "fanin": 12,
+   "bonus": 0,
+   "score": 121,
+   "risk": "高",
+   "focus": "「Thread-safe round-robin API key rotation」覆盖 KeyPool/primary_api_key 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.generation_http",
+   "path": "deeptutor/services/generation_http.py",
+   "loc": 94,
+   "fanin": 11,
+   "bonus": 0,
+   "score": 111,
+   "risk": "高",
+   "focus": "「Shared HTTP plumbing for media-generation」覆盖 GenerationProviderError/decode_base64_media/build_auth_headers/join_api_path 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1010"
+   ],
+   "drift": false
+  },
+  {
+   "module": "multi_user.tool_access",
+   "path": "deeptutor/multi_user/tool_access.py",
+   "loc": 113,
+   "fanin": 9,
+   "bonus": 1,
+   "score": 107,
+   "risk": "高",
+   "focus": "「Per-user tool and exec access resolution」覆盖 allowed_optional_tools/allowed_mcp_tools/allowed_cli_apps/exec_override 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "learning.pending",
+   "path": "deeptutor/learning/pending.py",
+   "loc": 283,
+   "fanin": 8,
+   "bonus": 1,
+   "score": 100,
+   "risk": "高",
+   "focus": "「Public, stable views of pending mastery」覆盖 positional_label/option_label_intent/canonical_labels/parse_options 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-793"
+   ],
+   "drift": false
+  },
+  {
+   "module": "utils.secret_files",
+   "path": "deeptutor/utils/secret_files.py",
+   "loc": 48,
+   "fanin": 10,
+   "bonus": 0,
+   "score": 100,
+   "risk": "高",
+   "focus": "「Helpers for writing files that hold secrets.」覆盖 ensure_private_directory/ensure_private_file/write_secret_text 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.workspace.resources",
+   "path": "deeptutor/services/workspace/resources.py",
+   "loc": 223,
+   "fanin": 8,
+   "bonus": 1,
+   "score": 99,
+   "risk": "高",
+   "focus": "「Workspace resource selections. Missing/null」覆盖 WorkspaceResources/turn_resource_selection/current_resources/validate_resources 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "learning.assessment",
+   "path": "deeptutor/learning/assessment.py",
+   "loc": 557,
+   "fanin": 6,
+   "bonus": 1,
+   "score": 85,
+   "risk": "高",
+   "focus": "「Unified assessment adapter for the Question」覆盖 RecordAssessmentError/AssessmentOutcome/result_to_is_correct/is_correct_to_result 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1050"
+   ],
+   "drift": true
+  },
+  {
+   "module": "services.prompt.lookup",
+   "path": "deeptutor/services/prompt/lookup.py",
+   "loc": 25,
+   "fanin": 8,
+   "bonus": 0,
+   "score": 80,
+   "risk": "高",
+   "focus": "「Reading one string out of a loaded prompt」覆盖 prompt_text 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.types",
+   "path": "deeptutor/services/llm/types.py",
+   "loc": 86,
+   "fanin": 6,
+   "bonus": 1,
+   "score": 76,
+   "risk": "高",
+   "focus": "「Shared LLM response data models.」覆盖 finish_was_truncated/StreamOutcome/TutorResponse/TutorStreamChunk 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.mineru.formats",
+   "path": "deeptutor/services/parsing/engines/mineru/formats.py",
+   "loc": 46,
+   "fanin": 6,
+   "bonus": 1,
+   "score": 75,
+   "risk": "高",
+   "focus": "「Input formats supported by the current」覆盖 mineru_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.document_validator",
+   "path": "deeptutor/utils/document_validator.py",
+   "loc": 206,
+   "fanin": 7,
+   "bonus": 0,
+   "score": 74,
+   "risk": "高",
+   "focus": "「Document Validator - Validation utilities」覆盖 DocumentValidator 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "runtime.coordination.protocol",
+   "path": "deeptutor/runtime/coordination/protocol.py",
+   "loc": 74,
+   "fanin": 4,
+   "bonus": 2,
+   "score": 71,
+   "risk": "高",
+   "focus": "「Port used by the application layer for」覆盖 RuntimeCoordinator 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "multi_user.personal_models",
+   "path": "deeptutor/multi_user/personal_models.py",
+   "loc": 165,
+   "fanin": 5,
+   "bonus": 1,
+   "score": 68,
+   "risk": "高",
+   "focus": "「Owner-bound LLM profiles an ordinary user」覆盖 owner_catalog_service/personal_llm_rows/merge_personal_llm_profiles 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.kb_paths",
+   "path": "deeptutor/services/rag/kb_paths.py",
+   "loc": 50,
+   "fanin": 5,
+   "bonus": 1,
+   "score": 66,
+   "risk": "高",
+   "focus": "「Resolve the on-disk directory backing a」覆盖 resolve_kb_dir 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "book.agents.page_planner",
+   "path": "deeptutor/book/agents/page_planner.py",
+   "loc": 427,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 63,
+   "risk": "中",
+   "focus": "「Section Architect (formerly PagePlanner)」覆盖 SectionArchitect/PagePlanner 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-966"
+   ],
+   "drift": false
+  },
+  {
+   "module": "runtime.agentic.labels",
+   "path": "deeptutor/runtime/agentic/labels.py",
+   "loc": 173,
+   "fanin": 3,
+   "bonus": 2,
+   "score": 63,
+   "risk": "高",
+   "focus": "「Protocol-label parsing for streaming LLM」覆盖 strip_label_probe_prefix/classify_label/recover_finished_label/find_inline_labels 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.visual_assets",
+   "path": "deeptutor/services/rag/visual_assets.py",
+   "loc": 386,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 62,
+   "risk": "中",
+   "focus": "「Verified, parser-independent source images」覆盖 source_key_for/VisualAssetCandidate/collect_visual_assets/VisualAssetStore 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "runtime.agentic.tool_call_stream",
+   "path": "deeptutor/runtime/agentic/tool_call_stream.py",
+   "loc": 110,
+   "fanin": 3,
+   "bonus": 2,
+   "score": 62,
+   "risk": "高",
+   "focus": "「Accumulate OpenAI-compatible streaming」覆盖 ToolCallAccumulator 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.contracts.turn_protocol",
+   "path": "deeptutor/api/contracts/turn_protocol.py",
+   "loc": 309,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 61,
+   "risk": "中",
+   "focus": "「Canonical v2 wire models for the browser」覆盖 TurnStatus/TurnQueryState/TurnFailureCode/StreamEventType 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1147"
+   ],
+   "drift": false
+  },
+  {
+   "module": "runtime.memory_reclaim",
+   "path": "deeptutor/runtime/memory_reclaim.py",
+   "loc": 73,
+   "fanin": 3,
+   "bonus": 2,
+   "score": 61,
+   "risk": "高",
+   "focus": "「Best-effort memory reclamation after」覆盖 release_unused_memory/schedule_memory_reclaim 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.session.organization",
+   "path": "deeptutor/services/session/organization.py",
+   "loc": 59,
+   "fanin": 6,
+   "bonus": 0,
+   "score": 61,
+   "risk": "高",
+   "focus": "「Integrity helpers for session organization」覆盖 list_all_sessions_snapshot/validate_parent_assignment 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.session.workspace_preferences",
+   "path": "deeptutor/services/session/workspace_preferences.py",
+   "loc": 55,
+   "fanin": 6,
+   "bonus": 0,
+   "score": 61,
+   "risk": "高",
+   "focus": "「Canonical workspace ownership stored on」覆盖 upgrade_workspace_preferences 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "api.routers.co_writer",
+   "path": "deeptutor/api/routers/co_writer.py",
+   "loc": 874,
+   "fanin": 2,
+   "bonus": 2,
+   "score": 60,
+   "risk": "高",
+   "focus": "覆盖 get_edit_agent/LLMSelectionPayload/EditRequest/EditResponse 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.question_notebook",
+   "path": "deeptutor/api/routers/question_notebook.py",
+   "loc": 595,
+   "fanin": 2,
+   "bonus": 2,
+   "score": 60,
+   "risk": "高",
+   "focus": "「Question Notebook API — persists quiz」覆盖 AnswerImageItem/CategoryItem/NotebookEntryItem/NotebookEntryListResponse 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-838"
+   ],
+   "drift": false
+  },
+  {
+   "module": "agents.math_animator.request_config",
+   "path": "deeptutor/agents/math_animator/request_config.py",
+   "loc": 38,
+   "fanin": 6,
+   "bonus": 0,
+   "score": 60,
+   "risk": "高",
+   "focus": "「Validated request config for the math」覆盖 MathAnimatorRequestConfig/validate_math_animator_request_config 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.modes.merge",
+   "path": "deeptutor/services/memory/consolidator/modes/merge.py",
+   "loc": 227,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 59,
+   "risk": "中",
+   "focus": "「Merge mode — consolidate footnote」覆盖 MergeResult/run_merge 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "learning.objective_relations",
+   "path": "deeptutor/learning/objective_relations.py",
+   "loc": 181,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 58,
+   "risk": "中",
+   "focus": "「Validation and request-reference handling」覆盖 ObjectiveRelationError/RelationRefs/normalize_refs/source_ref_map 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1133"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.embedding.validation",
+   "path": "deeptutor/services/embedding/validation.py",
+   "loc": 128,
+   "fanin": 4,
+   "bonus": 1,
+   "score": 57,
+   "risk": "中",
+   "focus": "「Validation helpers for embedding vectors.」覆盖 validate_embedding_batch 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.provider_core.codebuddy_provider",
+   "path": "deeptutor/services/llm/provider_core/codebuddy_provider.py",
+   "loc": 839,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 55,
+   "risk": "中",
+   "focus": "「CodeBuddy Agent SDK provider.」覆盖 CodeBuddyProvider/fetch_codebuddy_models 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.memory.consolidator.line_doc",
+   "path": "deeptutor/services/memory/consolidator/line_doc.py",
+   "loc": 482,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 54,
+   "risk": "中",
+   "focus": "「Line-numbered view of a memory document +」覆盖 Line/LineView/ReplaceLineOp/DeleteLinesOp 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1141"
+   ],
+   "drift": false
+  },
+  {
+   "module": "runtime.isolated_worker",
+   "path": "deeptutor/runtime/isolated_worker.py",
+   "loc": 215,
+   "fanin": 2,
+   "bonus": 2,
+   "score": 54,
+   "risk": "高",
+   "focus": "「Run memory-heavy, importable functions in」覆盖 IsolatedWorkerError/IsolatedWorkerTimeout/IsolatedWorkerCrashed/run_in_isolated_process_sync 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.vision.ggb_validator",
+   "path": "deeptutor/tools/vision/ggb_validator.py",
+   "loc": 411,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 53,
+   "risk": "中",
+   "focus": "「GeoGebra command validator and fixer.」覆盖 ValidationResult/fix_brackets/fix_common_mistakes/validate_equation_format 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-977"
+   ],
+   "drift": false
+  },
+  {
+   "module": "tools.ask_user",
+   "path": "deeptutor/tools/ask_user.py",
+   "loc": 383,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 52,
+   "risk": "中",
+   "focus": "「Build the payload for the ``ask_user`` tool.」覆盖 AskUserOption/AskUserQuestion/AskUserPayload/build_ask_user_payload 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.mcp.network",
+   "path": "deeptutor/services/mcp/network.py",
+   "loc": 121,
+   "fanin": 5,
+   "bonus": 0,
+   "score": 52,
+   "risk": "高",
+   "focus": "「Network guards for remote MCP servers (SSRF」覆盖 validate_mcp_url/validate_mcp_url_async 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "runtime.providers.authorize",
+   "path": "deeptutor/runtime/providers/authorize.py",
+   "loc": 59,
+   "fanin": 2,
+   "bonus": 2,
+   "score": 51,
+   "risk": "高",
+   "focus": "「Per-kind authorisation for」覆盖 authorize_mcp_tools 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.partner_groups",
+   "path": "deeptutor/api/routers/partner_groups.py",
+   "loc": 534,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 50,
+   "risk": "高",
+   "focus": "「CRUD and live discussion API for」覆盖 CreatePartnerGroupRequest/UpdatePartnerGroupRequest/PartnerGroupMessageRequest/PartnerInvocationActionRequest 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-763"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines._install",
+   "path": "deeptutor/services/parsing/engines/_install.py",
+   "loc": 287,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 50,
+   "risk": "中",
+   "focus": "「One-click background jobs for optional」覆盖 installable_engines/model_downloadable_engines/resolve_model_downloader/BackgroundJobManager 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-915"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.llm.provider_core.codebuddy_http_provider",
+   "path": "deeptutor/services/llm/provider_core/codebuddy_http_provider.py",
+   "loc": 258,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 50,
+   "risk": "中",
+   "focus": "「CodeBuddy provider that talks to the cloud」覆盖 normalize_api_key/CodeBuddyHTTPProvider/codebuddy_http_available/sdk_installed 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.space_mcp",
+   "path": "deeptutor/api/routers/space_mcp.py",
+   "loc": 460,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 49,
+   "risk": "高",
+   "focus": "「Per-user MCP API」覆盖 ServerPayload/InstallPayload/list_servers/upsert_server 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-780"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.rag.eval.matching",
+   "path": "deeptutor/services/rag/eval/matching.py",
+   "loc": 218,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 49,
+   "risk": "中",
+   "focus": "「Gold-passage matching for retrieval」覆盖 normalize_text/tokenize/source_text/MatchPolicy 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-912"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.tika.formats",
+   "path": "deeptutor/services/parsing/engines/tika/formats.py",
+   "loc": 217,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 49,
+   "risk": "中",
+   "focus": "「Apache Tika 4 input-format routing hints.」覆盖 tika_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.error_mapping",
+   "path": "deeptutor/services/llm/error_mapping.py",
+   "loc": 175,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 48,
+   "risk": "中",
+   "focus": "「Error Mapping - Map provider-specific」覆盖 MappingRule/parse_retry_after_seconds/retry_after_seconds/map_error 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-1036"
+   ],
+   "drift": false
+  },
+  {
+   "module": "learning.event_hub",
+   "path": "deeptutor/learning/event_hub.py",
+   "loc": 140,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 47,
+   "risk": "中",
+   "focus": "「Low-latency wake-up channel for durable」覆盖 TopicSignal/TopicSubscription/MasteryTopicEventHub/publish_topic_signal 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.markitdown.formats",
+   "path": "deeptutor/services/parsing/engines/markitdown/formats.py",
+   "loc": 102,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 47,
+   "risk": "中",
+   "focus": "「MarkItDown version and built-in」覆盖 markitdown_supported_formats/installed_markitdown_version/markitdown_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.skills",
+   "path": "deeptutor/api/routers/skills.py",
+   "loc": 315,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 46,
+   "risk": "高",
+   "focus": "「Skills API Router」覆盖 get_skill_service/CreateSkillRequest/UpdateSkillRequest/InstallSkillRequest 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.workspace.navigation",
+   "path": "deeptutor/services/workspace/navigation.py",
+   "loc": 81,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 46,
+   "risk": "中",
+   "focus": "「Account navigation across content stores」覆盖 read_workspace_indexes/session_index 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "multi_user.skill_access",
+   "path": "deeptutor/multi_user/skill_access.py",
+   "loc": 74,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 46,
+   "risk": "中",
+   "focus": "「Skill visibility guards for non-admin users.」覆盖 assigned_skill_ids/assigned_skill_infos/assigned_skill_detail/assert_skill_allowed 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.mastery_nav",
+   "path": "deeptutor/tools/mastery_nav.py",
+   "loc": 500,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 45,
+   "risk": "中",
+   "focus": "「Navigating the learner's mastery topics」覆盖 MasteryTopicsTool/MasterySessionsTool/MasteryOpenSessionTool/MasteryNewSessionTool 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-973"
+   ],
+   "drift": false
+  },
+  {
+   "module": "api.routers.subagents",
+   "path": "deeptutor/api/routers/subagents.py",
+   "loc": 288,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 45,
+   "risk": "高",
+   "focus": "「Subagent connections API.」覆盖 ConnectSubagentRequest/SubagentSettingsPayload/SubagentMessageRequest/detect_subagents 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "multi_user.learner_profile",
+   "path": "deeptutor/multi_user/learner_profile.py",
+   "loc": 49,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 45,
+   "risk": "中",
+   "focus": "「Validated, account-scoped learner profile」覆盖 normalize_profile/prompt_block 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.modes",
+   "path": "deeptutor/services/rag/pipelines/modes.py",
+   "loc": 48,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 45,
+   "risk": "中",
+   "focus": "「Shared retrieval-mode resolution for」覆盖 resolve_kb_mode 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.utils.http_headers",
+   "path": "deeptutor/api/utils/http_headers.py",
+   "loc": 27,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 45,
+   "risk": "中",
+   "focus": "「Shared HTTP header builders.」覆盖 content_disposition 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "capabilities.audio_overview.request_config",
+   "path": "deeptutor/capabilities/audio_overview/request_config.py",
+   "loc": 18,
+   "fanin": 3,
+   "bonus": 1,
+   "score": 45,
+   "risk": "中",
+   "focus": "「Validated request config for the KB audio」覆盖 AudioOverviewRequestConfig 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.voice.adapters.openai_compat",
+   "path": "deeptutor/services/voice/adapters/openai_compat.py",
+   "loc": 477,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 44,
+   "risk": "中",
+   "focus": "「OpenAI-compatible HTTP adapters for TTS and」覆盖 OpenAICompatTTSAdapter/OpenRouterTTSAdapter/OpenAICompatSTTAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-1056"
+   ],
+   "drift": true
+  },
+  {
+   "module": "runtime.background_leader",
+   "path": "deeptutor/runtime/background_leader.py",
+   "loc": 227,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 44,
+   "risk": "高",
+   "focus": "「Lease-controlled singleton ownership of」覆盖 BackgroundLeaderSupervisor 契约与边界＋启动/装配失败路径",
+   "done": [
+    "AGEN-863"
+   ],
+   "drift": false
+  },
+  {
+   "module": "api.routers.space_cli_apps",
+   "path": "deeptutor/api/routers/space_cli_apps.py",
+   "loc": 222,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 44,
+   "risk": "高",
+   "focus": "「CLI apps API」覆盖 EnabledPayload/list_apps/set_enabled/get_catalog 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-833"
+   ],
+   "drift": false
+  },
+  {
+   "module": "events.event_bus",
+   "path": "deeptutor/events/event_bus.py",
+   "loc": 205,
+   "fanin": 4,
+   "bonus": 0,
+   "score": 44,
+   "risk": "中",
+   "focus": "「Event Bus」覆盖 EventType/Event/EventBus/get_event_bus 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.file_preview",
+   "path": "deeptutor/api/routers/file_preview.py",
+   "loc": 205,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 44,
+   "risk": "高",
+   "focus": "「Authenticated, same-origin Office document」覆盖 preview_office_source/preview_office_upload 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-764"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.runs",
+   "path": "deeptutor/services/memory/consolidator/runs.py",
+   "loc": 405,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 43,
+   "risk": "中",
+   "focus": "「Persistent, cancellable consolidator runs.」覆盖 RunEvent/UndoCheckpoint/Run/RunBusyError 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "runtime.agentic.tool_arg_guard",
+   "path": "deeptutor/runtime/agentic/tool_arg_guard.py",
+   "loc": 195,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 43,
+   "risk": "高",
+   "focus": "「Pre-dispatch validation of model-authored」覆盖 RequiredArg/required_args/unsatisfied_required_args/missing_required_args 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.file_library",
+   "path": "deeptutor/api/routers/file_library.py",
+   "loc": 169,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 43,
+   "risk": "高",
+   "focus": "「HTTP endpoints for the Persistent File」覆盖 list_library_files/add_library_file/search_library_files/get_library_file 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.personas",
+   "path": "deeptutor/api/routers/personas.py",
+   "loc": 154,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 43,
+   "risk": "高",
+   "focus": "「Personas API Router」覆盖 CreatePersonaRequest/UpdatePersonaRequest/list_personas/get_persona 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.utils.task_log_stream",
+   "path": "deeptutor/api/utils/task_log_stream.py",
+   "loc": 362,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 42,
+   "risk": "中",
+   "focus": "覆盖 KnowledgeTaskStreamManager/capture_task_logs/get_task_stream_manager 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "video_learning.invidious_account",
+   "path": "deeptutor/video_learning/invidious_account.py",
+   "loc": 360,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 42,
+   "risk": "中",
+   "focus": "「Secure per-owner Invidious account」覆盖 invidious_redirect_uri/begin_invidious_account_authorization/complete_invidious_account_authorization/invidious_account_status 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-806"
+   ],
+   "drift": false
+  },
+  {
+   "module": "api.routers.imports",
+   "path": "deeptutor/api/routers/imports.py",
+   "loc": 146,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 42,
+   "risk": "高",
+   "focus": "「Import chat histories from ChatGPT exports」覆盖 ImportedMessage/ImportedSession/ChatHistoryImportRequest/import_chat_history 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.visualizers",
+   "path": "deeptutor/api/routers/visualizers.py",
+   "loc": 144,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 42,
+   "risk": "高",
+   "focus": "「Per-user visualizer catalog, lifecycle and」覆盖 list_visualizers/install_bundled/enable_visualizer/disable_visualizer 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.mcp_settings",
+   "path": "deeptutor/api/routers/mcp_settings.py",
+   "loc": 133,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 42,
+   "risk": "高",
+   "focus": "「MCP Settings API Router」覆盖 MCPSettingsPayload/get_mcp_settings/update_mcp_settings/upsert_mcp_server 契约与边界＋失败/4xx 分支",
+   "done": [
+    "AGEN-832"
+   ],
+   "drift": false
+  },
+  {
+   "module": "reading._grounding",
+   "path": "deeptutor/reading/_grounding.py",
+   "loc": 115,
+   "fanin": 4,
+   "bonus": 0,
+   "score": 42,
+   "risk": "中",
+   "focus": "「Shared text-window helpers for」覆盖 normalized_with_map/selection_range/evidence_key/grounding_context 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.config.lightrag_roles",
+   "path": "deeptutor/services/config/lightrag_roles.py",
+   "loc": 111,
+   "fanin": 4,
+   "bonus": 0,
+   "score": 42,
+   "risk": "中",
+   "focus": "「Credential-free configuration contracts for」覆盖 LightRagModelSelection/LightRagRoleModel/LightRagVisionModel/LightRagRoleModels 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.subagent.deepseek_harness",
+   "path": "deeptutor/services/subagent/deepseek_harness.py",
+   "loc": 347,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 41,
+   "risk": "中",
+   "focus": "「DeepSeek Harness backend with SDK streaming」覆盖 DeepSeekHarnessBackend 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1143"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.antigravity",
+   "path": "deeptutor/services/subagent/antigravity.py",
+   "loc": 313,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 41,
+   "risk": "中",
+   "focus": "「Antigravity CLI backend — drive the local」覆盖 AntigravityBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "runtime.coordination.journal",
+   "path": "deeptutor/runtime/coordination/journal.py",
+   "loc": 97,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 41,
+   "risk": "高",
+   "focus": "「Canonical live-event publication, batching」覆盖 TurnEventJournal 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "runtime.capability_routing",
+   "path": "deeptutor/runtime/capability_routing.py",
+   "loc": 88,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 41,
+   "risk": "高",
+   "focus": "「Pre-execution capability routing for」覆盖 CapabilityRoute/route_explicit_quiz_request 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.attachments",
+   "path": "deeptutor/api/routers/attachments.py",
+   "loc": 79,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 41,
+   "risk": "高",
+   "focus": "「HTTP endpoint for chat attachment downloads」覆盖 get_attachment 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.vector_store",
+   "path": "deeptutor/services/rag/pipelines/llamaindex/vector_store.py",
+   "loc": 288,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 40,
+   "risk": "中",
+   "focus": "「Vector-store backend selection for the」覆盖 faiss_available/faiss_write_index/faiss_read_index/new_faiss_storage_context 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.block_policy",
+   "path": "deeptutor/services/rag/pipelines/lightrag/block_policy.py",
+   "loc": 266,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 40,
+   "risk": "中",
+   "focus": "「Versioned MinerU block policy for LightRAG」覆盖 BlockPolicyDecision/prepare_content_list/write_decision_ledger/write_attempt_ledger 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.routers.task_board",
+   "path": "deeptutor/api/routers/task_board.py",
+   "loc": 28,
+   "fanin": 1,
+   "bonus": 2,
+   "score": 40,
+   "risk": "高",
+   "focus": "「Authenticated task board endpoints using」覆盖 get_board/create_card/update_card 契约与边界＋失败/4xx 分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.rag.eval.dataset",
+   "path": "deeptutor/services/rag/eval/dataset.py",
+   "loc": 244,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 39,
+   "risk": "中",
+   "focus": "「QA-set schema for knowledge-base retrieval」覆盖 EvalDatasetError/EvalCase/EvalDataset/load_dataset 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-912"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.rag.linked_kb",
+   "path": "deeptutor/services/rag/linked_kb.py",
+   "loc": 237,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 39,
+   "risk": "中",
+   "focus": "「Probe an external folder before mounting it」覆盖 EmbeddingCompat/ProbeResult/provider_is_linkable/allowed_link_roots 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.modes.dedup",
+   "path": "deeptutor/services/memory/consolidator/modes/dedup.py",
+   "loc": 228,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 39,
+   "risk": "中",
+   "focus": "「Dedup mode — iterative line-level merge /」覆盖 DedupResult/run_dedup 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "partners.channels.weixin_qr",
+   "path": "deeptutor/partners/channels/weixin_qr.py",
+   "loc": 202,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 39,
+   "risk": "中",
+   "focus": "「The personal-WeChat QR login exchange, with」覆盖 QrCode/QrOutcome/qr_headers/normalize_host 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "multi_user.book_access",
+   "path": "deeptutor/multi_user/book_access.py",
+   "loc": 200,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 39,
+   "risk": "中",
+   "focus": "「One access resolver for personal and」覆盖 ResolvedBook/can_create_book/resolve_book/accessible_books 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-828"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.meta",
+   "path": "deeptutor/services/memory/consolidator/meta.py",
+   "loc": 194,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 38,
+   "risk": "中",
+   "focus": "「Per-doc consolidator metadata」覆盖 L2Meta/l2_meta_path/load_l2_meta/save_l2_meta 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.subagent.hermes_remote_client",
+   "path": "deeptutor/services/subagent/hermes_remote_client.py",
+   "loc": 180,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 38,
+   "risk": "中",
+   "focus": "「Small authenticated HTTP/SSE client for a」覆盖 HermesRemoteHTTPError/HermesRemoteProtocolError/HermesRemoteClient 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "learning.topic_naming",
+   "path": "deeptutor/learning/topic_naming.py",
+   "loc": 166,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 38,
+   "risk": "中",
+   "focus": "「Name a mastery goal from what the learner」覆盖 suggest_topic_name 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1135"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.workspace.session_move",
+   "path": "deeptutor/services/workspace/session_move.py",
+   "loc": 138,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Move conversations with the same verified」覆盖 move_chat/migrate_legacy_bindings 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.parsing.engines.docling.formats",
+   "path": "deeptutor/services/parsing/engines/docling/formats.py",
+   "loc": 137,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Docling version and input-format」覆盖 docling_supported_formats/installed_docling_version/docling_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "book.blocks.figure",
+   "path": "deeptutor/book/blocks/figure.py",
+   "loc": 135,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Figure block – static visual figure (svg /」覆盖 FigureGenerator 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "book.blocks.concept_graph",
+   "path": "deeptutor/book/blocks/concept_graph.py",
+   "loc": 132,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Concept-graph block — deterministically」覆盖 render_mermaid/ConceptGraphGenerator 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.chunker",
+   "path": "deeptutor/services/memory/consolidator/chunker.py",
+   "loc": 131,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Character-based chunking with boundary」覆盖 ChunkSpan/chunk_with_boundary 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "api.utils.tool_options",
+   "path": "deeptutor/api/utils/tool_options.py",
+   "loc": 122,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Configurable-tool surface shared by the」覆盖 build_tool_options 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "api.utils.task_id_manager",
+   "path": "deeptutor/api/utils/task_id_manager.py",
+   "loc": 120,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Task ID Manager - Assigns unique IDs to」覆盖 TaskIDManager 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.reason",
+   "path": "deeptutor/tools/reason.py",
+   "loc": 119,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「Reason tool — stateless LLM deep-reasoning」覆盖 reason 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-849"
+   ],
+   "drift": false
+  },
+  {
+   "module": "book.agents.ideation_agent",
+   "path": "deeptutor/book/agents/ideation_agent.py",
+   "loc": 111,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 37,
+   "risk": "中",
+   "focus": "「IdeationAgent」覆盖 IdeationAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "capabilities.reading.media_notes",
+   "path": "deeptutor/capabilities/reading/media_notes.py",
+   "loc": 92,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 36,
+   "risk": "中",
+   "focus": "「Render the embedded-image note that」覆盖 render_media_note 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "learning.grading",
+   "path": "deeptutor/learning/grading.py",
+   "loc": 64,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 36,
+   "risk": "中",
+   "focus": "「Deterministic answer grading + coarse error」覆盖 grade_answer/classify_error 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1035"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.pymupdf4llm.formats",
+   "path": "deeptutor/services/parsing/engines/pymupdf4llm/formats.py",
+   "loc": 60,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 36,
+   "risk": "中",
+   "focus": "「PyMuPDF4LLM version floor and」覆盖 installed_pymupdf4llm_version/pymupdf4llm_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.liteparse.formats",
+   "path": "deeptutor/services/parsing/engines/liteparse/formats.py",
+   "loc": 58,
+   "fanin": 2,
+   "bonus": 1,
+   "score": 36,
+   "risk": "中",
+   "focus": "「LiteParse version floor and official」覆盖 installed_liteparse_version/liteparse_version_is_current 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "co_writer.docx_converter",
+   "path": "deeptutor/co_writer/docx_converter.py",
+   "loc": 667,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 35,
+   "risk": "中",
+   "focus": "「Markdown <-> DOCX conversion for Co-Writer」覆盖 DocxConversionError/docx_to_markdown/markdown_to_docx 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.search.source_filter",
+   "path": "deeptutor/services/search/source_filter.py",
+   "loc": 582,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 35,
+   "risk": "中",
+   "focus": "「Reference safety filtering shared by every」覆盖 filter_web_search_response/resolve_moderation_api_key/resolve_web_risk_api_key/settings_from_config 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-974"
+   ],
+   "drift": false
+  },
+  {
+   "module": "tools.question_bank",
+   "path": "deeptutor/tools/question_bank.py",
+   "loc": 536,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 35,
+   "risk": "中",
+   "focus": "「Read, organise, and record the learner's」覆盖 QuestionBankOutcome/run_question_bank 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-972"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.opencode_family",
+   "path": "deeptutor/services/subagent/opencode_family.py",
+   "loc": 508,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 35,
+   "risk": "中",
+   "focus": "「opencode-family backends — opencode and its」覆盖 OpencodeFamilyBackend/OpencodeBackend/MimoBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.write_note",
+   "path": "deeptutor/tools/write_note.py",
+   "loc": 492,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 34,
+   "risk": "中",
+   "focus": "「Create or edit a single notebook record」覆盖 WriteOutcome/write_note 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.modes.audit",
+   "path": "deeptutor/services/memory/consolidator/modes/audit.py",
+   "loc": 484,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 34,
+   "risk": "中",
+   "focus": "「Audit mode — line-level edits checked」覆盖 AuditResult/run_audit 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-782"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.embedding.adapters.gemini",
+   "path": "deeptutor/services/embedding/adapters/gemini.py",
+   "loc": 462,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 34,
+   "risk": "中",
+   "focus": "「Gemini embeddings via the native batch API」覆盖 GeminiEmbeddingAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-913"
+   ],
+   "drift": false
+  },
+  {
+   "module": "reading.epub_bilingual",
+   "path": "deeptutor/reading/epub_bilingual.py",
+   "loc": 248,
+   "fanin": 3,
+   "bonus": 0,
+   "score": 34,
+   "risk": "中",
+   "focus": "「Explicit EPUB pairing metadata.」覆盖 recommend_epub_candidates/list_epub_pairings/create_epub_pairing/delete_epub_pairing 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.workspace.kb_move",
+   "path": "deeptutor/services/workspace/kb_move.py",
+   "loc": 446,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 33,
+   "risk": "中",
+   "focus": "「Move one owned knowledge base between」覆盖 preview_kb_move/move_kb 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-976"
+   ],
+   "drift": true
+  },
+  {
+   "module": "co_writer.edit_agent",
+   "path": "deeptutor/co_writer/edit_agent.py",
+   "loc": 409,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 33,
+   "risk": "中",
+   "focus": "「EditAgent - Co-writer editing agent.」覆盖 tool_calls_dir/ensure_dirs/load_history/save_history 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-751"
+   ],
+   "drift": false
+  },
+  {
+   "module": "runtime.update_worker",
+   "path": "deeptutor/runtime/update_worker.py",
+   "loc": 158,
+   "fanin": 0,
+   "bonus": 2,
+   "score": 33,
+   "risk": "高",
+   "focus": "「Detached executor for a launcher-managed」覆盖 build_update_command/build_restart_command/wait_for_process_exit/run_update_worker 契约与边界＋启动/装配失败路径",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.exercise_lookup",
+   "path": "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py",
+   "loc": 373,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 32,
+   "risk": "中",
+   "focus": "「Read-only, structural exercise lookup ahead」覆盖 requested_exercises/Exercise/collect_exercises/lookup_exercises 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.consolidation",
+   "path": "deeptutor/services/search/consolidation.py",
+   "loc": 372,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 32,
+   "risk": "中",
+   "focus": "「Answer Consolidation - Generate answers」覆盖 AnswerConsolidator 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1052"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.claude_code",
+   "path": "deeptutor/services/subagent/claude_code.py",
+   "loc": 364,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 32,
+   "risk": "中",
+   "focus": "「Claude Code backend — drive the local」覆盖 ClaudeCodeBackend 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1142"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.workspace.dependencies",
+   "path": "deeptutor/services/workspace/dependencies.py",
+   "loc": 349,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 31,
+   "risk": "中",
+   "focus": "「Feature-level dependency closure over」覆盖 dependency_closure 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1144"
+   ],
+   "drift": true
+  },
+  {
+   "module": "capabilities.obsidian.vault",
+   "path": "deeptutor/capabilities/obsidian/vault.py",
+   "loc": 324,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 31,
+   "risk": "中",
+   "focus": "「Pure filesystem operations over a connected」覆盖 VaultError/resolve_note/split_frontmatter/read_note 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-807"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.sidecar",
+   "path": "deeptutor/services/rag/pipelines/lightrag/sidecar.py",
+   "loc": 320,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 31,
+   "risk": "中",
+   "focus": "「Map frozen DeepTutor MinerU blocks to」覆盖 SidecarMappingError/build_ir 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-811"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.singleflight_cache",
+   "path": "deeptutor/services/singleflight_cache.py",
+   "loc": 78,
+   "fanin": 3,
+   "bonus": 0,
+   "score": 31,
+   "risk": "中",
+   "focus": "「Small in-process TTL cache with one async」覆盖 AsyncSingleFlightTTLCache 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "capabilities.setup.jobs",
+   "path": "deeptutor/capabilities/setup/jobs.py",
+   "loc": 280,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 30,
+   "risk": "中",
+   "focus": "「Long-running setup work: installing a」覆盖 JobOutcome/available_jobs/run_job 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.subagent.kimi",
+   "path": "deeptutor/services/subagent/kimi.py",
+   "loc": 268,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 30,
+   "risk": "中",
+   "focus": "「Kimi CLI backend — drive the local ``kimi``」覆盖 KimiBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.subagent.grok",
+   "path": "deeptutor/services/subagent/grok.py",
+   "loc": 252,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 30,
+   "risk": "中",
+   "focus": "「Drive xAI's Grok CLI using its native」覆盖 GrokBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.graphrag.completion_adapter",
+   "path": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py",
+   "loc": 251,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 30,
+   "risk": "中",
+   "focus": "「GraphRAG completion adapter with a strict」覆盖 clear_capability_cache/register_completion_adapter 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "knowledge.naming",
+   "path": "deeptutor/knowledge/naming.py",
+   "loc": 40,
+   "fanin": 3,
+   "bonus": 0,
+   "score": 30,
+   "risk": "中",
+   "focus": "「Knowledge-base name validation helpers.」覆盖 validate_knowledge_base_name 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "core.assessment",
+   "path": "deeptutor/core/assessment.py",
+   "loc": 15,
+   "fanin": 3,
+   "bonus": 0,
+   "score": 30,
+   "risk": "中",
+   "focus": "「Assessment values shared by producers」模块级冒烟：import 副作用与导出契约＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "capabilities.setup.apply",
+   "path": "deeptutor/capabilities/setup/apply.py",
+   "loc": 249,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Commit one configuration change, or refuse」覆盖 SideEffect/ApplyOutcome/apply_setting 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.embedding.adapters.dashscope_native",
+   "path": "deeptutor/services/embedding/adapters/dashscope_native.py",
+   "loc": 242,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Aliyun DashScope embedding adapter (text +」覆盖 DashScopeMultiModalEmbeddingAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-913"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.claude_models",
+   "path": "deeptutor/services/subagent/claude_models.py",
+   "loc": 238,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Sync Claude Code's model catalog by」覆盖 load_cached_claude_models/sync_claude_models 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.github_query",
+   "path": "deeptutor/tools/github_query.py",
+   "loc": 229,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Read-only GitHub queries via the ``gh`` CLI.」覆盖 GithubOutcome/run_github_query 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.list_notebook",
+   "path": "deeptutor/tools/list_notebook.py",
+   "loc": 211,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「List the user's notebooks or the records」覆盖 ListOutcome/list_notebooks_or_records 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.voice.adapters.volcengine",
+   "path": "deeptutor/services/voice/adapters/volcengine.py",
+   "loc": 207,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Doubao Speech HTTP v3, separate from」覆盖 VolcengineTTSAdapter/VolcengineSTTAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-916"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.opencode_server",
+   "path": "deeptutor/services/subagent/opencode_server.py",
+   "loc": 204,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 29,
+   "risk": "中",
+   "focus": "「Managed ``opencode serve`` instances — one」覆盖 ServerHandle/acquire_server/shutdown_servers 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-845"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.subagent.openclaw",
+   "path": "deeptutor/services/subagent/openclaw.py",
+   "loc": 197,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 28,
+   "risk": "中",
+   "focus": "「OpenClaw backend — run one persistent」覆盖 OpenClawBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "capabilities.reading.figure_view",
+   "path": "deeptutor/capabilities/reading/figure_view.py",
+   "loc": 180,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 28,
+   "risk": "中",
+   "focus": "「The ``view_figure`` tool: read one stored」覆盖 ViewFigureTool 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "video_learning.invidious_account_storage",
+   "path": "deeptutor/video_learning/invidious_account_storage.py",
+   "loc": 177,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 28,
+   "risk": "中",
+   "focus": "「Owner-private persistence for Invidious」覆盖 PendingFlow/asset_dir/account_path/pending_dir 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.docling.local_worker",
+   "path": "deeptutor/services/parsing/engines/docling/local_worker.py",
+   "loc": 163,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 28,
+   "risk": "中",
+   "focus": "「Run local Docling conversion outside the」覆盖 parse_local/main 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.cron_tool",
+   "path": "deeptutor/tools/cron_tool.py",
+   "loc": 142,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Implementation behind the built-in ``cron``」覆盖 CronActionOutcome/run_cron_action 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.workspace.session_transfer",
+   "path": "deeptutor/services/workspace/session_transfer.py",
+   "loc": 140,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Lossless SQLite conversation transfer; all」覆盖 transfer_sessions 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-831"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.cache_reuse",
+   "path": "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py",
+   "loc": 137,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Seed a rebuild with content-bound LightRAG」覆盖 inherit_index_cache 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.zotero_search",
+   "path": "deeptutor/tools/zotero_search.py",
+   "loc": 136,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Zotero Web API v3 lookup for a user's」覆盖 ZoteroSearchError/ZoteroSearchClient 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.image_caption_batch",
+   "path": "deeptutor/services/llm/image_caption_batch.py",
+   "loc": 135,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「ID-checked image-description batches with」覆盖 ImageCaptionBatcher 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.llamaindex.rerank",
+   "path": "deeptutor/services/rag/pipelines/llamaindex/rerank.py",
+   "loc": 130,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Optional cross-encoder reranking for the」覆盖 clear_reranker_cache/rerank_nodes 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.traffic_control",
+   "path": "deeptutor/services/llm/traffic_control.py",
+   "loc": 125,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Traffic control primitives for LLM」覆盖 TrafficController 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.subagent.partner_group",
+   "path": "deeptutor/services/subagent/partner_group.py",
+   "loc": 118,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Bridge chat consultation to the native」覆盖 PartnerGroupBackend 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.local_provider",
+   "path": "deeptutor/services/llm/local_provider.py",
+   "loc": 117,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Model discovery for local OpenAI-compatible」覆盖 fetch_models/complete/stream 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-847"
+   ],
+   "drift": false
+  },
+  {
+   "module": "book.overview_copy",
+   "path": "deeptutor/book/overview_copy.py",
+   "loc": 104,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Reader-facing copy for the engine-injected」覆盖 overview_copy/missing_languages 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.memory.consolidator.guards",
+   "path": "deeptutor/services/memory/consolidator/guards.py",
+   "loc": 104,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 27,
+   "risk": "中",
+   "focus": "「Op-emit guards: banned-phrase filter +」覆盖 ToolBudgets 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.loop.context_budget",
+   "path": "deeptutor/agents/loop/context_budget.py",
+   "loc": 346,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Per-turn accounting of what the chat loop」覆盖 LLMRequestSnapshot/ContextWindowInfo/resolve_window_info/detect_counter_name 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1053"
+   ],
+   "drift": true
+  },
+  {
+   "module": "api.run_server",
+   "path": "deeptutor/api/run_server.py",
+   "loc": 98,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Uvicorn Server Startup Script」覆盖 main 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1060"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.imagegen.adapters.openai_compat",
+   "path": "deeptutor/services/imagegen/adapters/openai_compat.py",
+   "loc": 98,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「OpenAI-compatible image-generation adapter.」覆盖 OpenAICompatImagegenAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.parsing.engines.mineru.checkpoints",
+   "path": "deeptutor/services/parsing/engines/mineru/checkpoints.py",
+   "loc": 98,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Workspace-scoped, integrity-checked」覆盖 checkpoint_root/job_directory/SliceCheckpoint 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.voice.adapters.minimax",
+   "path": "deeptutor/services/voice/adapters/minimax.py",
+   "loc": 91,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Native MiniMax synchronous speech synthesis」覆盖 MiniMaxTTSAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "video_learning.invidious_account_client",
+   "path": "deeptutor/video_learning/invidious_account_client.py",
+   "loc": 85,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「HTTP boundary for the Invidious account API.」覆盖 InvidiousTransportError/bearer_token/request_preferences/revoke_token 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.rag.smart_retriever",
+   "path": "deeptutor/services/rag/smart_retriever.py",
+   "loc": 81,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Higher-level multi-query retrieval helpers」覆盖 SmartRetriever 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "partners.channels.lark_http",
+   "path": "deeptutor/partners/channels/lark_http.py",
+   "loc": 79,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Keep-alive HTTP transport for the lark-oapi」覆盖 install_keep_alive 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-736"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.llm.request_cache",
+   "path": "deeptutor/services/llm/request_cache.py",
+   "loc": 73,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Content-free diagnostics for consecutive」覆盖 fingerprint_request/compare_requests 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.rag.pipelines.graphrag.pandas_compat",
+   "path": "deeptutor/services/rag/pipelines/graphrag/pandas_compat.py",
+   "loc": 68,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「Scoped compatibility for stale Pandas/Arrow」覆盖 prepare_pandas_arrow_extensions 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.voice.adapters.mimo",
+   "path": "deeptutor/services/voice/adapters/mimo.py",
+   "loc": 67,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 26,
+   "risk": "中",
+   "focus": "「MiMo preset speech through chat」覆盖 MiMoTTSAdapter 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "partners.channels.msteams",
+   "path": "deeptutor/partners/channels/msteams.py",
+   "loc": 847,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Microsoft Teams channel using a tiny」覆盖 MSTeamsConfig/ConversationRef/MSTeamsChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-741",
+    "AGEN-947"
+   ],
+   "drift": false
+  },
+  {
+   "module": "partners.channels.matrix",
+   "path": "deeptutor/partners/channels/matrix.py",
+   "loc": 842,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Matrix (Element) channel — inbound sync +」覆盖 MatrixConfig/MatrixChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-743"
+   ],
+   "drift": false
+  },
+  {
+   "module": "partners.channels.napcat",
+   "path": "deeptutor/partners/channels/napcat.py",
+   "loc": 594,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 25,
+   "risk": "中",
+   "focus": "「NapCat (OneBot v11) channel for personal QQ」覆盖 NapcatConfig/NapcatChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-742",
+    "AGEN-947"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.session.legacy_migration",
+   "path": "deeptutor/services/session/legacy_migration.py",
+   "loc": 291,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Idempotent migration of the removed v1 JSON」覆盖 LegacyMigrationError/LegacyMigrationReport/LegacyChatSessionMigrator/migrate_all_legacy_chat_scopes 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.bibtex_converter",
+   "path": "deeptutor/utils/bibtex_converter.py",
+   "loc": 287,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Convert BibTeX source into readable」覆盖 bibtex_to_markdown 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "textbook_struct.chapter_rebuild",
+   "path": "deeptutor/textbook_struct/chapter_rebuild.py",
+   "loc": 273,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Layered chapter rebuild from MinerU」覆盖 Chapter/block_text/merge_adjacent/layout_page_count 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.usage_estimation",
+   "path": "deeptutor/services/llm/usage_estimation.py",
+   "loc": 45,
+   "fanin": 1,
+   "bonus": 1,
+   "score": 25,
+   "risk": "中",
+   "focus": "「Coarse fallback accounting when a provider」覆盖 estimate_prompt_tokens 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "partners.channels.email",
+   "path": "deeptutor/partners/channels/email.py",
+   "loc": 470,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 24,
+   "risk": "中",
+   "focus": "「Email channel implementation using IMAP」覆盖 EmailConfig/EmailChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.vision_solver.vision_solver_agent",
+   "path": "deeptutor/agents/vision_solver/vision_solver_agent.py",
+   "loc": 205,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 24,
+   "risk": "中",
+   "focus": "「Vision Solver Agent — single-call image →」覆盖 VisionSolverAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "logging.stats.llm_stats",
+   "path": "deeptutor/logging/stats/llm_stats.py",
+   "loc": 200,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 24,
+   "risk": "中",
+   "focus": "「LLM Stats Tracker」覆盖 get_pricing/estimate_tokens/LLMCall/LLMStats 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.setup.data_volume",
+   "path": "deeptutor/services/setup/data_volume.py",
+   "loc": 197,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 23,
+   "risk": "中",
+   "focus": "「Probe whether the runtime data volume is」覆盖 DataVolumePermissionError/current_process_ids/parse_id/resolve_runtime_ids 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.knowledge_capture",
+   "path": "deeptutor/reading/knowledge_capture.py",
+   "loc": 177,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 23,
+   "risk": "中",
+   "focus": "「Turn reading annotations into durable」覆盖 OrganizedReadingNotes/organize_workspace_notes/send_workspace_to_notebook/mastery_source_records 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.session.event_preview",
+   "path": "deeptutor/services/session/event_preview.py",
+   "loc": 154,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 23,
+   "risk": "中",
+   "focus": "「Bounded event previews used by」覆盖 compact_trace_preview 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "partners.channels.wecom",
+   "path": "deeptutor/partners/channels/wecom.py",
+   "loc": 398,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 22,
+   "risk": "中",
+   "focus": "「WeCom (Enterprise WeChat) channel」覆盖 WecomConfig/WecomChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": [
+    "AGEN-1051"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.partners.runtime_status",
+   "path": "deeptutor/services/partners/runtime_status.py",
+   "loc": 132,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 22,
+   "risk": "中",
+   "focus": "「Shared, credential-free Partner runtime」覆盖 PartnerRuntimeStatusRepository/get_partner_runtime_status_repository 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.config_manager",
+   "path": "deeptutor/utils/config_manager.py",
+   "loc": 129,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 22,
+   "risk": "中",
+   "focus": "覆盖 ConfigManager 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "textbook_struct.page_headers",
+   "path": "deeptutor/textbook_struct/page_headers.py",
+   "loc": 100,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 22,
+   "risk": "中",
+   "focus": "「Header-driven chapter rebuild (v0.2) —」覆盖 normalize_header_chapter/page_facts/rebuild_from_headers 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "tools.partner_memory",
+   "path": "deeptutor/tools/partner_memory.py",
+   "loc": 315,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Partner-only memory + history tools.」覆盖 PartnerReadTool/PartnerMemorizeTool/PartnerSearchTool 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1145"
+   ],
+   "drift": false
+  },
+  {
+   "module": "tools.media_gen_tool",
+   "path": "deeptutor/tools/media_gen_tool.py",
+   "loc": 308,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Image- and video-generation chat tools.」覆盖 ImagegenTool/VideogenTool 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-1086"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.settings.starter_settings",
+   "path": "deeptutor/services/settings/starter_settings.py",
+   "loc": 82,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Starter-suggestion settings.」覆盖 get_starter_settings/save_starter_settings 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents._shared.json_output",
+   "path": "deeptutor/agents/_shared/json_output.py",
+   "loc": 76,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Parsing helpers shared by agents that」覆盖 extract_json_object 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.github_source.sync_service",
+   "path": "deeptutor/services/github_source/sync_service.py",
+   "loc": 72,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Background service that periodically syncs」覆盖 GitHubSourceSyncService/get_sync_service 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.web_source.navigation",
+   "path": "deeptutor/services/web_source/navigation.py",
+   "loc": 72,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Build navigation trees for web-source KBs.」覆盖 flat_to_tree/build_navigation_manifest 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "logging.formatters",
+   "path": "deeptutor/logging/formatters.py",
+   "loc": 54,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 21,
+   "risk": "中",
+   "focus": "「Formatters for DeepTutor's stdlib logging」覆盖 ContextFilter/JsonlFormatter/ConsoleFormatter 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.config.readiness",
+   "path": "deeptutor/services/config/readiness.py",
+   "loc": 1038,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 20,
+   "risk": "中",
+   "focus": "「Value-free capability readiness matrix for」覆盖 readiness_row/catalog_service_rows/document_parser_rows/knowledge_base_rows 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-787"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.reading_hints",
+   "path": "deeptutor/services/reading_hints.py",
+   "loc": 503,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 20,
+   "risk": "中",
+   "focus": "「Dynamic composer questions for Immersive」覆盖 AskHint/get_ask_hint 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-745"
+   ],
+   "drift": false
+  },
+  {
+   "module": "tools.file_tools",
+   "path": "deeptutor/tools/file_tools.py",
+   "loc": 291,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 20,
+   "risk": "中",
+   "focus": "「Workspace file tools for chat skill/script」覆盖 ReadFileTool/WriteFileTool/EditFileTool/ListDirTool 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.partners.workspace_binding",
+   "path": "deeptutor/services/partners/workspace_binding.py",
+   "loc": 48,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 20,
+   "risk": "中",
+   "focus": "「A Partner may use one of its owner's」覆盖 workspace_owner/validate_partner_workspace/partner_content_context 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.practice.answers",
+   "path": "deeptutor/services/practice/answers.py",
+   "loc": 44,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 20,
+   "risk": "中",
+   "focus": "「Conservative objective grading; prose and」覆盖 check_answer 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.text_display",
+   "path": "deeptutor/utils/text_display.py",
+   "loc": 31,
+   "fanin": 2,
+   "bonus": 0,
+   "score": 20,
+   "risk": "中",
+   "focus": "「Helpers for learner-facing text that models」覆盖 decode_escaped_unicode_for_display 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "services.search.providers.serper",
+   "path": "deeptutor/services/search/providers/serper.py",
+   "loc": 215,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 19,
+   "risk": "中",
+   "focus": "「Serper Google SERP Provider」覆盖 SerperAPIError/SerperProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "partners.channels.whatsapp",
+   "path": "deeptutor/partners/channels/whatsapp.py",
+   "loc": 210,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 19,
+   "risk": "中",
+   "focus": "「WhatsApp channel implementation using」覆盖 WhatsAppConfig/WhatsAppChannel 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.serply",
+   "path": "deeptutor/services/search/providers/serply.py",
+   "loc": 174,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 18,
+   "risk": "中",
+   "focus": "「Serply search provider.」覆盖 SerplyProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.aliyun_iqs",
+   "path": "deeptutor/services/search/providers/aliyun_iqs.py",
+   "loc": 163,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 18,
+   "risk": "中",
+   "focus": "「Aliyun IQS (信息查询服务) search provider.」覆盖 AliyunIQSProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.tavily",
+   "path": "deeptutor/services/search/providers/tavily.py",
+   "loc": 162,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 18,
+   "risk": "中",
+   "focus": "「Tavily Search Provider」覆盖 TavilyProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.perplexity",
+   "path": "deeptutor/services/search/providers/perplexity.py",
+   "loc": 157,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 18,
+   "risk": "中",
+   "focus": "「Perplexity AI Search Provider」覆盖 PerplexityProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.qianfan",
+   "path": "deeptutor/services/search/providers/qianfan.py",
+   "loc": 149,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 17,
+   "risk": "中",
+   "focus": "「Baidu Qianfan (百度千帆) AI search provider.」覆盖 QianfanProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.bocha",
+   "path": "deeptutor/services/search/providers/bocha.py",
+   "loc": 132,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 17,
+   "risk": "中",
+   "focus": "「Bocha (博查) search provider.」覆盖 BochaProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.partners.weixin_onboarding",
+   "path": "deeptutor/services/partners/weixin_onboarding.py",
+   "loc": 324,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 16,
+   "risk": "中",
+   "focus": "「Run the personal-WeChat QR login from the」覆盖 render_qr_svg/start_login/poll_login/current_scan_payload 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-808"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.chat_hints",
+   "path": "deeptutor/services/chat_hints.py",
+   "loc": 309,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 16,
+   "risk": "中",
+   "focus": "「General ask-hints — the line the home」覆盖 AskHint/get_ask_hint 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-993"
+   ],
+   "drift": false
+  },
+  {
+   "module": "services.rag.pipelines.lightrag.parser",
+   "path": "deeptutor/services/rag/pipelines/lightrag/parser.py",
+   "loc": 99,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 16,
+   "risk": "中",
+   "focus": "「LightRAG parser that consumes frozen」覆盖 DeepTutorParser 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.search.providers.brave",
+   "path": "deeptutor/services/search/providers/brave.py",
+   "loc": 77,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 16,
+   "risk": "中",
+   "focus": "「Brave search provider.」覆盖 BraveProvider 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.loop.dsml_tool_calls",
+   "path": "deeptutor/agents/loop/dsml_tool_calls.py",
+   "loc": 292,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 15,
+   "risk": "低",
+   "focus": "「Fallback parser for DeepSeek's text-format」覆盖 DSMLStreamFilter/has_dsml_tool_calls/extract_dsml_tool_calls 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.research.utils.token_tracker",
+   "path": "deeptutor/agents/research/utils/token_tracker.py",
+   "loc": 281,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 15,
+   "risk": "低",
+   "focus": "「Token Tracker - LLM Token usage and cost」覆盖 get_tiktoken_encoding/count_tokens_with_tiktoken/count_tokens_with_litellm/get_model_pricing 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "app.facade",
+   "path": "deeptutor/app/facade.py",
+   "loc": 281,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 15,
+   "risk": "低",
+   "focus": "「Stable application-layer facade for」覆盖 CapabilityAvailability/DeepTutorApp/dumps_json 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.math_animator.agents.code_generator_agent",
+   "path": "deeptutor/agents/math_animator/agents/code_generator_agent.py",
+   "loc": 261,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 15,
+   "risk": "低",
+   "focus": "「Code generation and repair stages for math」覆盖 GeneratedCodeOutputError/CodeGeneratorAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.llm.telemetry",
+   "path": "deeptutor/services/llm/telemetry.py",
+   "loc": 46,
+   "fanin": 0,
+   "bonus": 1,
+   "score": 15,
+   "risk": "中",
+   "focus": "「LLM Telemetry」覆盖 track_llm_call 契约与边界＋超时/限流/畸形响应分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.codebuddy_auth",
+   "path": "deeptutor/services/codebuddy_auth.py",
+   "loc": 239,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 14,
+   "risk": "低",
+   "focus": "「Process-local coordinator for CodeBuddy SDK」覆盖 CodeBuddyAuthService/get_codebuddy_auth_service 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.settings.registry_edit",
+   "path": "deeptutor/services/settings/registry_edit.py",
+   "loc": 224,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 14,
+   "risk": "低",
+   "focus": "「Scoped provider/model edits over the」覆盖 merge_registry_edit 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.practice.importing",
+   "path": "deeptutor/services/practice/importing.py",
+   "loc": 212,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 14,
+   "risk": "低",
+   "focus": "「Bounded, non-executing parsers for the」覆盖 parse_rows/normalize_question/preview 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.archive_extractor",
+   "path": "deeptutor/utils/archive_extractor.py",
+   "loc": 200,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 14,
+   "risk": "低",
+   "focus": "「Safe extraction of user-uploaded ZIP」覆盖 ArchiveTooLargeError/ZipExtractionLimits/ZipExtractionResult/safe_extract_zip 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.cron.executor",
+   "path": "deeptutor/services/cron/executor.py",
+   "loc": 198,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Run a due cron job for its owner (chat」覆盖 execute_job 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.office_preview",
+   "path": "deeptutor/services/office_preview.py",
+   "loc": 198,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Bounded, cached Office-to-PDF rendering for」覆盖 OfficePreviewError/OfficePreviewUnavailable/OfficePreviewTimeout/OfficePreviewInvalid 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-790"
+   ],
+   "drift": false
+  },
+  {
+   "module": "agents.loop.ask_user_drafts",
+   "path": "deeptutor/agents/loop/ask_user_drafts.py",
+   "loc": 193,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Publish an ``ask_user`` card while the」覆盖 AskUserDraftEmitter 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.videogen.adapters.async_task",
+   "path": "deeptutor/services/videogen/adapters/async_task.py",
+   "loc": 182,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Async task-based video-generation adapter.」覆盖 AsyncTaskVideogenAdapter 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.math_animator.retry_manager",
+   "path": "deeptutor/agents/math_animator/retry_manager.py",
+   "loc": 160,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Retry loop for render-fix-regenerate」覆盖 CodeRetryManager 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.session.attachment_parsing",
+   "path": "deeptutor/services/session/attachment_parsing.py",
+   "loc": 158,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 13,
+   "risk": "低",
+   "focus": "「Configured parser integration for chat PDF」覆盖 parse_chat_pdf_attachments 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.config.settings_presets",
+   "path": "deeptutor/services/config/settings_presets.py",
+   "loc": 135,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 12,
+   "risk": "低",
+   "focus": "「Value-free named Settings presets.」覆盖 SettingsPreset/list_settings_presets/get_settings_preset 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.partners.channel_state_migration",
+   "path": "deeptutor/services/partners/channel_state_migration.py",
+   "loc": 127,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 12,
+   "risk": "低",
+   "focus": "「One-shot rehoming of channel state that」覆盖 rehome_shared_channel_state 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.notebook.summarize_agent",
+   "path": "deeptutor/agents/notebook/summarize_agent.py",
+   "loc": 120,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 12,
+   "risk": "低",
+   "focus": "「Notebook summarization agent.」覆盖 NotebookSummarizeAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.question.agents.followup_agent",
+   "path": "deeptutor/agents/question/agents/followup_agent.py",
+   "loc": 118,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 12,
+   "risk": "低",
+   "focus": "「Single-call follow-up agent for quiz」覆盖 FollowupAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.visualize.agents.code_generator_agent",
+   "path": "deeptutor/agents/visualize/agents/code_generator_agent.py",
+   "loc": 117,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 12,
+   "risk": "低",
+   "focus": "「Code generation stage: produce SVG or」覆盖 CodeGeneratorAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "agents.math_animator.agents.concept_analysis_agent",
+   "path": "deeptutor/agents/math_animator/agents/concept_analysis_agent.py",
+   "loc": 97,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Concept analysis stage for math animator.」覆盖 ConceptAnalysisAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.research.utils.json_utils",
+   "path": "deeptutor/agents/research/utils/json_utils.py",
+   "loc": 94,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「JSON Utils - JSON parsing and validation」覆盖 extract_json_from_text/ensure_json_dict/ensure_json_list/ensure_keys 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "logging.configure",
+   "path": "deeptutor/logging/configure.py",
+   "loc": 81,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「DeepTutor logging bootstrap.」覆盖 configure_logging 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": true
+  },
+  {
+   "module": "agents.math_animator.agents.summary_agent",
+   "path": "deeptutor/agents/math_animator/agents/summary_agent.py",
+   "loc": 78,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Summary stage for math animator.」覆盖 SummaryAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.sandbox.quota",
+   "path": "deeptutor/services/sandbox/quota.py",
+   "loc": 78,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Per-user execution quotas.」覆盖 QuotaExceeded/UserExecQuota 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.question.request_config",
+   "path": "deeptutor/agents/question/request_config.py",
+   "loc": 77,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Runtime config builder for」覆盖 build_question_runtime_config 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "agents.math_animator.agents.concept_design_agent",
+   "path": "deeptutor/agents/math_animator/agents/concept_design_agent.py",
+   "loc": 76,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Concept design stage for math animator.」覆盖 ConceptDesignAgent 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.settings.provider_edit",
+   "path": "deeptutor/services/settings/provider_edit.py",
+   "loc": 60,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Apply one provider editor without migrating」覆盖 merge_provider_edit 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.codex_auth.client_version",
+   "path": "deeptutor/services/codex_auth/client_version.py",
+   "loc": 55,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 11,
+   "risk": "低",
+   "focus": "「Read only the official CLI package」覆盖 latest_client_version 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.doctor",
+   "path": "deeptutor/services/doctor.py",
+   "loc": 571,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 10,
+   "risk": "中",
+   "focus": "「Local and opt-in online diagnostics for the」覆盖 DoctorCheck/DoctorReport/run_diagnostics/run_runtime_diagnostics 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-914"
+   ],
+   "drift": false
+  },
+  {
+   "module": "agents.math_animator.duration_utils",
+   "path": "deeptutor/agents/math_animator/duration_utils.py",
+   "loc": 36,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 10,
+   "risk": "低",
+   "focus": "「Duration helpers for math animator prompts.」覆盖 parse_target_duration_seconds 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "logging.loguru_bridge",
+   "path": "deeptutor/logging/loguru_bridge.py",
+   "loc": 28,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 10,
+   "risk": "低",
+   "focus": "「Bridge optional loguru records into stdlib」覆盖 install_loguru_bridge 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.session.turns.resource_reuse",
+   "path": "deeptutor/services/session/turns/resource_reuse.py",
+   "loc": 18,
+   "fanin": 1,
+   "bonus": 0,
+   "score": 10,
+   "risk": "低",
+   "focus": "「Durable resource preferences are a subset」覆盖 apply_resource_reuse 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "services.skill.taxonomy",
+   "path": "deeptutor/services/skill/taxonomy.py",
+   "loc": 314,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 6,
+   "risk": "中",
+   "focus": "「Skill classification taxonomy」覆盖 Option/DomainNode/is_valid_track/track_label 契约与边界＋异常/降级分支",
+   "done": [
+    "AGEN-813"
+   ],
+   "drift": false
+  },
+  {
+   "module": "agents.question.coordinator",
+   "path": "deeptutor/agents/question/coordinator.py",
+   "loc": 242,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 4,
+   "risk": "低",
+   "focus": "「Compatibility adapter for legacy」覆盖 AgentCoordinator 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.refresh",
+   "path": "deeptutor/reading/refresh.py",
+   "loc": 185,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 3,
+   "risk": "低",
+   "focus": "「Batch re-extraction for already-ingested」覆盖 pdf_materials/refresh_materials 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.translation",
+   "path": "deeptutor/reading/translation.py",
+   "loc": 133,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 2,
+   "risk": "低",
+   "focus": "「Source-grounded translation help for」覆盖 TranslationExtension 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.vocabulary",
+   "path": "deeptutor/reading/vocabulary.py",
+   "loc": 131,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 2,
+   "risk": "低",
+   "focus": "「Source-grounded vocabulary help for」覆盖 VocabularyExtension 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.study_guidance",
+   "path": "deeptutor/reading/study_guidance.py",
+   "loc": 103,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 2,
+   "risk": "低",
+   "focus": "「Source-grounded study guidance for」覆盖 StudyGuidanceExtension 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "utils.network.circuit_breaker",
+   "path": "deeptutor/utils/network/circuit_breaker.py",
+   "loc": 88,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 1,
+   "risk": "低",
+   "focus": "「Circuit Breaker - Simple circuit breaker」覆盖 CircuitBreaker/alert_callback/is_call_allowed/record_call_success 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "core.errors",
+   "path": "deeptutor/core/errors.py",
+   "loc": 57,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 1,
+   "risk": "低",
+   "focus": "「Base exception classes for consistent error」覆盖 DeepTutorError/ConfigurationError/ValidationError/ServiceError 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  },
+  {
+   "module": "reading.read_aloud",
+   "path": "deeptutor/reading/read_aloud.py",
+   "loc": 33,
+   "fanin": 0,
+   "bonus": 0,
+   "score": 0,
+   "risk": "低",
+   "focus": "「Built-in browser speech extension for」覆盖 ReadAloudExtension 契约与边界＋异常/降级分支",
+   "done": null,
+   "drift": false
+  }
+ ],
+ "n_weak": 242
+}

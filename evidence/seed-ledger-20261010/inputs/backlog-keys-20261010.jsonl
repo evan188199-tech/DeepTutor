@@ -1,0 +1,1370 @@
+{"identifier": "AGEN-1373", "title": "test: deeptutor_cli/memory.py 命令组补测（show/clear）", "status": "todo"}
+{"identifier": "AGEN-1372", "title": "test: deeptutor_cli/book.py 命令组补测（list/health/refresh-fingerprints）", "status": "todo"}
+{"identifier": "AGEN-1371", "title": "test: deeptutor_cli/_tool_result.py 截断与缓冲纯逻辑补测", "status": "todo"}
+{"identifier": "AGEN-1370", "title": "test: deeptutor_cli/session_cmd.py 命令组补测（show/open/delete/rename）", "status": "todo"}
+{"identifier": "AGEN-1369", "title": "test: deeptutor_cli/partner.py 命令组补测（list/start/stop/create）", "status": "todo"}
+{"identifier": "AGEN-1368", "title": "test: deeptutor_cli/notebook.py 命令组补测（list/create/show/remove-record）", "status": "todo"}
+{"identifier": "AGEN-1365", "title": "verify: 跨扫描报告种子台账与剩余可领取清单", "status": "todo"}
+{"identifier": "AGEN-1366", "title": "fix: co_writer SSE 错误 detail 透传与硬编码中文 detail 收敛", "status": "in_review"}
+{"identifier": "AGEN-1364", "title": "fix: sessions.py 错误信封补结构化 code（27 处纯文本 detail）", "status": "in_review"}
+{"identifier": "AGEN-1361", "title": "fix: dashboard/courses/file_library/marginnote4 同语义错误话术收敛", "status": "in_review"}
+{"identifier": "AGEN-1359", "title": "fix: 登录失败两套文案统一并补结构化 code（auth.py:828 vs :846）", "status": "in_review"}
+{"identifier": "AGEN-1353", "title": "test: 零覆盖小模块批次5（capabilities_settings + web_search）", "status": "in_review"}
+{"identifier": "AGEN-1357", "title": "refactor: 剥时区再补 Z 字面量的五处易碎写法统一 helper", "status": "in_review"}
+{"identifier": "AGEN-1352", "title": "test: logging/stats llm_stats 聚合与并发补测", "status": "in_review"}
+{"identifier": "AGEN-1355", "title": "fix: 文件夹链接 mtime 存 naive 本地时间，跨时区/换机全量误判重索引", "status": "in_review"}
+{"identifier": "AGEN-1351", "title": "test: utils/archive_extractor 边界与容错补测", "status": "in_review"}
+{"identifier": "AGEN-1350", "title": "test: whatsapp 渠道解析与流键控契约补测", "status": "in_review"}
+{"identifier": "AGEN-1356", "title": "fix: pocketbase_store _to_float 兜底把 naive 时间戳按宿主本地解读为 epoch", "status": "in_review"}
+{"identifier": "AGEN-1349", "title": "test: tools/list_notebook 过滤与降级补测", "status": "in_review"}
+{"identifier": "AGEN-1348", "title": "test: tools/github_query 查询与限流分支补测", "status": "in_review"}
+{"identifier": "AGEN-1346", "title": "test: capabilities/setup apply 幂等与续跑补测", "status": "in_review"}
+{"identifier": "AGEN-1345", "title": "test: graphrag completion_adapter 契约补测", "status": "in_review"}
+{"identifier": "AGEN-1344", "title": "test: math_animator code_generator_agent 降级分支补测", "status": "in_review"}
+{"identifier": "AGEN-1342", "title": "test: app/facade 门面初始化与分发补测", "status": "in_review"}
+{"identifier": "AGEN-1343", "title": "test: research token_tracker 用量聚合补强", "status": "in_review"}
+{"identifier": "AGEN-1341", "title": "test: session legacy_migration 幂等与容错补测", "status": "in_review"}
+{"identifier": "AGEN-1340", "title": "test: tools/file_tools 路径与失败分支补测", "status": "in_review"}
+{"identifier": "AGEN-1339", "title": "test: opencode_family 家族共享行为补测", "status": "in_review"}
+{"identifier": "AGEN-1333", "title": "test: PyMuPDF4LLM 版本判定补测（parsing/engines/pymupdf4llm/formats）", "status": "in_review"}
+{"identifier": "AGEN-1332", "title": "test: 边界感知分块补测（consolidator/chunker）", "status": "in_review"}
+{"identifier": "AGEN-1331", "title": "test: 教材静态图块补测（book/blocks/figure）", "status": "in_review"}
+{"identifier": "AGEN-1330", "title": "test: Docling 版本与格式路由补测（parsing/engines/docling/formats）", "status": "in_review"}
+{"identifier": "AGEN-1327", "title": "test: 记忆去重合并模式补测（consolidator/modes/dedup）", "status": "in_review"}
+{"identifier": "AGEN-1329", "title": "test: 远程 Hermes 客户端补测（subagent/hermes_remote_client）", "status": "in_review"}
+{"identifier": "AGEN-1326", "title": "test: 运行时事件日志补测（runtime/coordination/journal）", "status": "in_review"}
+{"identifier": "AGEN-1325", "title": "test: 聊天附件下载端点补测（api/routers/attachments）", "status": "in_review"}
+{"identifier": "AGEN-1324", "title": "test: Antigravity CLI 后端补测（subagent/antigravity）", "status": "in_review"}
+{"identifier": "AGEN-1323", "title": "test: 可视化器 API 路由补测（api/routers/visualizers）", "status": "in_review"}
+{"identifier": "AGEN-1322", "title": "test: 文件库 API 路由补测（api/routers/file_library）", "status": "in_review"}
+{"identifier": "AGEN-1319", "title": "test: Skills API 路由补测（api/routers/skills）", "status": "in_review"}
+{"identifier": "AGEN-1321", "title": "test: KB 音频概览请求配置补测（audio_overview/request_config）", "status": "in_review"}
+{"identifier": "AGEN-1320", "title": "test: 共享 HTTP 头构造补测（api/utils/http_headers）", "status": "in_review"}
+{"identifier": "AGEN-1318", "title": "test: MinerU 版本与格式路由补测（parsing/engines/mineru/formats）", "status": "in_review"}
+{"identifier": "AGEN-1313", "title": "test: 微信二维码通道解析补测（channels/weixin_qr）", "status": "in_review"}
+{"identifier": "AGEN-1311", "title": "test: 教材构思代理补测（book/agents/ideation_agent）", "status": "in_review"}
+{"identifier": "AGEN-1310", "title": "test: 阅读媒体注释补测（capabilities/reading/media_notes）", "status": "in_review"}
+{"identifier": "AGEN-1309", "title": "test: 概念图块补测（book/blocks/concept_graph）", "status": "in_review"}
+{"identifier": "AGEN-1308", "title": "test: MCP 工具授权解析补测（providers/authorize）", "status": "in_review"}
+{"identifier": "AGEN-1307", "title": "test: LightRAG 块策略补测（lightrag/block_policy）", "status": "in_review"}
+{"identifier": "AGEN-1306", "title": "test: LlamaIndex 向量库选择补测（faiss 路径）", "status": "in_review"}
+{"identifier": "AGEN-1303", "title": "test: 记忆合并元数据补测（consolidator meta）", "status": "in_review"}
+{"identifier": "AGEN-1304", "title": "test: 数学动画请求配置补测（math_animator/request_config）", "status": "in_review"}
+{"identifier": "AGEN-1302", "title": "test: 记忆合并模式补测（consolidator modes/merge）", "status": "in_review"}
+{"identifier": "AGEN-1301", "title": "test: 会话导入路由补测（api/routers/imports）", "status": "in_review"}
+{"identifier": "AGEN-1300", "title": "test: subagents 路由补测（api/routers/subagents）", "status": "in_review"}
+{"identifier": "AGEN-1299", "title": "test: 能力路由补测（runtime/capability_routing）", "status": "in_review"}
+{"identifier": "AGEN-1298", "title": "test: LightRAG 角色配置补测（config/lightrag_roles）", "status": "in_review"}
+{"identifier": "AGEN-1295", "title": "test: web VisualizeConfigPanel 配置面板补测", "status": "in_review"}
+{"identifier": "AGEN-1296", "title": "test: web 预览组件补测（previewers 未覆盖组件）", "status": "in_review"}
+{"identifier": "AGEN-1297", "title": "test: reading 引用锚定补测（reading/_grounding）", "status": "in_review"}
+{"identifier": "AGEN-1291", "title": "test: web markdown-renderer-types 类型守卫补测", "status": "in_review"}
+{"identifier": "AGEN-1293", "title": "test: web FileDropZone 拖拽上传补测", "status": "in_review"}
+{"identifier": "AGEN-1288", "title": "test: web useConsultationReference hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1290", "title": "test: web use-ime-composing 输入法组合态补测", "status": "in_review"}
+{"identifier": "AGEN-1289", "title": "test: web markdown-anchors 锚点生成补测", "status": "in_review"}
+{"identifier": "AGEN-1287", "title": "test: utils/document_validator 校验器补测", "status": "in_review"}
+{"identifier": "AGEN-1285", "title": "test: runtime/coordination 协议契约补测", "status": "in_review"}
+{"identifier": "AGEN-1286", "title": "test: multi_user/learner_profile 补测", "status": "in_review"}
+{"identifier": "AGEN-1283", "title": "test: utils/secret_files 私密文件助手补测", "status": "in_review"}
+{"identifier": "AGEN-1282", "title": "test: embedding/validation 向量校验补测", "status": "in_review"}
+{"identifier": "AGEN-1284", "title": "test: prompt/lookup 检索助手补测", "status": "in_review"}
+{"identifier": "AGEN-1281", "title": "test: multi_user/personal_models 补测", "status": "in_review"}
+{"identifier": "AGEN-1278", "title": "test: workspace/resources 选择契约补测", "status": "in_review"}
+{"identifier": "AGEN-1280", "title": "test: session/organization 完整性助手补测", "status": "in_review"}
+{"identifier": "AGEN-1275", "title": "review: 历史分支 evidence 报告卫生抽查", "status": "in_review"}
+{"identifier": "AGEN-1277", "title": "fix(voice/search): 供应商响应体不再拼进用户可见异常（Top15 #6 子集）", "status": "in_review"}
+{"identifier": "AGEN-1276", "title": "test: utils/json_parser 契约与边界补测（fanin 15）", "status": "in_review"}
+{"identifier": "AGEN-1279", "title": "fix(web): client.ts 单点收敛后端 detail 透出（Top15 #3）", "status": "in_review"}
+{"identifier": "AGEN-1263", "title": "test: EPUB 翻页与阅读导航补测（epub-page-turn/book-reader-navigation）", "status": "in_review"}
+{"identifier": "AGEN-1264", "title": "test: 附件上限与文档附件补测（attachment-limits/doc-attachments）", "status": "in_review"}
+{"identifier": "AGEN-1261", "title": "test: 弹层与量测交互原语 hooks 补测（useModalDialog/usePickerOpen 等）", "status": "in_review"}
+{"identifier": "AGEN-1262", "title": "test: 空闲恢复与会话启动意图补测（chat-idle-recovery/chat-launch-intent）", "status": "in_review"}
+{"identifier": "AGEN-1260", "title": "test: 话题来源库 hook 补测（useTopicSourceLibrary）", "status": "in_review"}
+{"identifier": "AGEN-1258", "title": "test: 设置同步与设备判定 hooks 补测（useSetupSync/useDevice）", "status": "in_review"}
+{"identifier": "AGEN-1259", "title": "test: 模型选项与嵌入模型 hooks 补测（useLLMOptions/useEmbeddingModels）", "status": "in_review"}
+{"identifier": "AGEN-1256", "title": "test: Mastery Path 活动与会话 hooks 补测（useMasteryPathActivity/useMasteryStudySession）", "status": "in_review"}
+{"identifier": "AGEN-1257", "title": "test: 知识历史与进度 hooks 补测（useKnowledgeHistory/useKnowledgeProgress）", "status": "in_review"}
+{"identifier": "AGEN-1255", "title": "test: 聊天自动滚动与流式平滑文本补测（useChatAutoScroll/useSmoothStreamText）", "status": "in_review"}
+{"identifier": "AGEN-1252", "title": "test: 隔离进程与内存回收补测（isolated_worker/memory_reclaim）", "status": "in_review"}
+{"identifier": "AGEN-1253", "title": "test: RAG 模式与 KB 路径解析补测（pipelines.modes/kb_paths）", "status": "in_review"}
+{"identifier": "AGEN-1240", "title": "test: web 草稿/预设/浮动菜单 lib 补测（workspace-drafts/settings-presets/floating-menu）", "status": "in_review"}
+{"identifier": "AGEN-1235", "title": "test: 阅读工作区 hook/context 补测（useLearningMode/workspace-menu/reading-actions）", "status": "in_review"}
+{"identifier": "AGEN-1248", "title": "test: 用量统计设置区组件补测（UsageSettingsSection/UsageActivity）", "status": "in_review"}
+{"identifier": "AGEN-1241", "title": "test: web 杂项 hook/类型补测（use-auto-sized-textarea/notebook-selection-types）", "status": "in_review"}
+{"identifier": "AGEN-1251", "title": "test: agentic 流式原语补测（labels/tool_call_stream/tool_arg_guard）", "status": "in_review"}
+{"identifier": "AGEN-1250", "title": "test: 多用户工具/技能访问守卫补测（tool_access/skill_access）", "status": "in_review"}
+{"identifier": "AGEN-1249", "title": "test: LLM 结构化重试与响应模型补测（structured_retry/llm.types）", "status": "in_review"}
+{"identifier": "AGEN-1247", "title": "按难度分配模型建议：三工作区 agent/小队模型与调用范围清单", "status": "in_review"}
+{"identifier": "AGEN-1244", "title": "核对 88 张「上游已合并/被取代」卡：产出确认可关与误判清单", "status": "in_review"}
+{"identifier": "AGEN-1245", "title": "看门狗强停后自动退回待办 + 说明（含超时放宽评估）", "status": "in_review"}
+{"identifier": "AGEN-1243", "title": "合并 222 张纯测试卡：按模块打包候选包并标出重复/低价值", "status": "in_review"}
+{"identifier": "AGEN-1242", "title": "储备池待审核上限：in_review>100 时 idle-runner 停补候选卡", "status": "in_review"}
+{"identifier": "AGEN-1230", "title": "fix(upstream): 掌握度复习策略模板后端（#1908）", "status": "in_review"}
+{"identifier": "AGEN-1232", "title": "fix(upstream): Usage statistics 面板恒报错的错误链诊断与修复（#1907）", "status": "in_review"}
+{"identifier": "AGEN-1234", "title": "test: web 会话交接 API 与 UUID 工具补测（session-handoff-api/random-uuid）", "status": "in_review"}
+{"identifier": "AGEN-1233", "title": "test: web 工具事件与设置映射补测（tool-event/tools-settings）", "status": "in_review"}
+{"identifier": "AGEN-1231", "title": "test: web 书籍引用与错误类型补测（book-references/book-errors）", "status": "in_review"}
+{"identifier": "AGEN-1228", "title": "fix(upstream): 压缩前预算按请求投影去重 inline 图计数（#1909）", "status": "in_review"}
+{"identifier": "AGEN-1236", "title": "test: 侧栏/折叠 hook 补测（useSidebarResize/use-linger-expand/useCollapsiblePanel）", "status": "in_review"}
+{"identifier": "AGEN-1238", "title": "test: 研究大纲续写与 markdown 渲染核补测（useResearchOutlineContinuation/markdown-renderer-core）", "status": "in_review"}
+{"identifier": "AGEN-1237", "title": "test: 卡片提交与初始化同步 hook 补测（use-card-submission/useSetupSync）", "status": "in_review"}
+{"identifier": "AGEN-1227", "title": "test: useVoiceRecorder/useVoiceMathSpeak hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1226", "title": "test: visualizers API 与 VisualizationViewer 补测", "status": "in_review"}
+{"identifier": "AGEN-1224", "title": "test: web 时间工具库补测（relative-time/datetime/reading-media-time）", "status": "in_review"}
+{"identifier": "AGEN-1223", "title": "test: useNotebookSelection/useKnowledgeHistory hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1222", "title": "fix: office 预览渲染/缓存失败留痕（4 处）", "status": "in_review"}
+{"identifier": "AGEN-1217", "title": "test: useRuntimeStatus 与 useSplitPane hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1219", "title": "test: I18nProvider 行为单测（切换/回退/插值）", "status": "in_review"}
+{"identifier": "AGEN-1220", "title": "fix: partner 会话记录读写吞错批次留痕（5 处）", "status": "in_review"}
+{"identifier": "AGEN-1221", "title": "test: chat 预览 useTextSource/useBinarySource hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1215", "title": "test: useMemoryRun hook 状态机单测", "status": "in_review"}
+{"identifier": "AGEN-1214", "title": "fix: config/启动面吞错批次留痕（4 处）", "status": "in_review"}
+{"identifier": "AGEN-1216", "title": "test: useMcpServers hook 单测", "status": "in_review"}
+{"identifier": "AGEN-1171", "title": "CPA 升级兼容跟踪｜每次升级后跑自检", "status": "todo"}
+{"identifier": "AGEN-1218", "title": "fix: persona 目录链路吞错批次留痕（6 处）", "status": "in_review"}
+{"identifier": "AGEN-1213", "title": "fix: reading 解析/清理吞错批次留痕（5 处）", "status": "in_review"}
+{"identifier": "AGEN-1212", "title": "test: guardian 域 API+设置区+关系编辑器结构性补测", "status": "in_review"}
+{"identifier": "AGEN-1210", "title": "fix: memory snapshot 读取/清理吞错批次留痕（6 处）", "status": "in_review"}
+{"identifier": "AGEN-1211", "title": "test: KbDocumentList 文档列表渲染分支补测", "status": "in_review"}
+{"identifier": "AGEN-1198", "title": "test: web useGroupSession 群会话 hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1164", "title": "mention 因调用权限被拒时无可见回执｜XZH-507 派工静默丢失", "status": "todo"}
+{"identifier": "AGEN-1208", "title": "fix: PDF 配图提取单页失败不再静默跳过（document_images）", "status": "in_review"}
+{"identifier": "AGEN-1163", "title": "失败通知与回报评论互相唤醒无熔断｜TRAV-219 一天 316 次运行", "status": "todo"}
+{"identifier": "AGEN-1199", "title": "test: web 空间导入向导补测（ImportWizard/EduHubImportModal）", "status": "in_review"}
+{"identifier": "AGEN-1162", "title": "GLM 额度守护暂停时 CPA 回 401｜agent 误判为密钥失效", "status": "todo"}
+{"identifier": "AGEN-1185", "title": "fix(upstream): Mastery Path 语义化作答评估（#1901）", "status": "in_review"}
+{"identifier": "AGEN-1197", "title": "test: web MyAgents 区块与选择器补测", "status": "in_review"}
+{"identifier": "AGEN-1206", "title": "GLM独立审核｜AGEN-1183 MinerU修复 @28a18ca6e", "status": "in_review"}
+{"identifier": "AGEN-1196", "title": "test: web 能力/工具设置区块补测（Capabilities/Tools）", "status": "in_review"}
+{"identifier": "AGEN-1195", "title": "test: web SidebarNav 与会话活动面板补测", "status": "in_review"}
+{"identifier": "AGEN-1194", "title": "test: web 阅读库组件补测（MaterialLibrary/ReadingLibrary）", "status": "in_review"}
+{"identifier": "AGEN-1192", "title": "test: web ConnectionsEditor 连接编辑器补测", "status": "in_review"}
+{"identifier": "AGEN-1150", "title": "AI Projects 技术秘书 v2：开放现有角色权限并完成统一配置验收", "status": "todo"}
+{"identifier": "AGEN-1193", "title": "test: web McpCatalogBrowser 目录浏览补测", "status": "in_review"}
+{"identifier": "AGEN-1191", "title": "test: web QuizConfigPanel 配置面板补测", "status": "in_review"}
+{"identifier": "AGEN-1190", "title": "test: web Skills/CliApps 区块渲染分支补测", "status": "in_review"}
+{"identifier": "AGEN-1188", "title": "test: web memory 区组件渲染分支补测（MemorySection/MemoryWorkbench）", "status": "in_review"}
+{"identifier": "AGEN-1189", "title": "test: web memory 图谱与运行面板补测（MemoryGraph/MemoryRunPanel）", "status": "in_review"}
+{"identifier": "AGEN-1180", "title": "test: subagent harness 批量补测（kimi/grok/antigravity/claude_models）", "status": "in_review"}
+{"identifier": "AGEN-1183", "title": "fix(upstream): MinerU 长任务空闲超时语义与 Windows 进程树清理（#1903）", "status": "in_review"}
+{"identifier": "AGEN-1184", "title": "fix(upstream): Mastery Path 课前准备与证据选择编排（#1902）", "status": "in_review"}
+{"identifier": "AGEN-1179", "title": "test: learning/navigation 导航状态补测", "status": "in_review"}
+{"identifier": "AGEN-1178", "title": "test: bibtex_converter 纯逻辑补测", "status": "in_review"}
+{"identifier": "AGEN-1177", "title": "test: serper 搜索 provider 行为契约补测", "status": "in_review"}
+{"identifier": "AGEN-1173", "title": "test: web youtube-iframe-api 播放器封装补测", "status": "in_review"}
+{"identifier": "AGEN-1170", "title": "test: web session-unread 未读计算补测", "status": "in_review"}
+{"identifier": "AGEN-1169", "title": "test: web research-types 类型守卫补测", "status": "in_review"}
+{"identifier": "AGEN-1166", "title": "test: web latex-commands 命令表补测", "status": "in_review"}
+{"identifier": "AGEN-1157", "title": "test: web QuizFollowupContext 追问状态机补测", "status": "in_review"}
+{"identifier": "AGEN-1165", "title": "test: web code-languages 语言映射补测", "status": "in_review"}
+{"identifier": "AGEN-1131", "title": "test: 通道双重启动防护契约表驱动补测（channel-contracts P1-4）", "status": "todo"}
+{"identifier": "AGEN-1174", "title": "test: web chat-import claude-code 导入路径补测", "status": "in_review"}
+{"identifier": "AGEN-1175", "title": "test: web multi-user api 客户端补测", "status": "in_review"}
+{"identifier": "AGEN-1176", "title": "test: web shared/ui 高频原语渲染行为补测", "status": "in_review"}
+{"identifier": "AGEN-1156", "title": "test: web useDragSort 拖拽排序 hook 补测", "status": "in_review"}
+{"identifier": "AGEN-1151", "title": "test: capabilities/mastery/choices 选择题四边界形状单测", "status": "in_review"}
+{"identifier": "AGEN-1159", "title": "秘书汇报服务端隔离｜独立审核", "status": "in_review"}
+{"identifier": "AGEN-1140", "title": "test: learning/topic_materials 材料暴露链单测", "status": "in_review"}
+{"identifier": "AGEN-1141", "title": "test: consolidator/line_doc 行级视图与编辑操作单测", "status": "in_review"}
+{"identifier": "AGEN-1142", "title": "test: subagent/claude_code stream-json 事件流解析单测", "status": "in_review"}
+{"identifier": "AGEN-1144", "title": "test: workspace/dependencies 依赖解析失败报告单测", "status": "in_review"}
+{"identifier": "AGEN-1143", "title": "test: subagent/deepseek_harness 双通道降级单测", "status": "in_review"}
+{"identifier": "AGEN-1148", "title": "test: web_source 调度器持久化/取消/恢复单测（上游 #902 测试欠账）", "status": "in_review"}
+{"identifier": "AGEN-1145", "title": "test: tools/partner_memory 分裂记忆边界单测", "status": "in_review"}
+{"identifier": "AGEN-1147", "title": "test: api/contracts/turn_protocol v2 wire 模型契约单测", "status": "in_review"}
+{"identifier": "AGEN-81", "title": "阶段1｜AI Projects 看板分类与可回退收口 dry-run", "status": "in_review"}
+{"identifier": "AGEN-357", "title": "储备池优化接线与部署：上游认领核对、审核卡自动重跑、在途 PR≤2", "status": "in_review"}
+{"identifier": "AGEN-1149", "title": "program GLM 审核配置落地与接力验收", "status": "in_review"}
+{"identifier": "AGEN-1139", "title": "test: learning/topic_generation 混合来源路由生成单测", "status": "in_review"}
+{"identifier": "AGEN-1138", "title": "test: tools/mastery_tool 兼容导出层契约单测", "status": "in_review"}
+{"identifier": "AGEN-1137", "title": "test: tools/question/exam_mimic 薄入口兼容性单测", "status": "in_review"}
+{"identifier": "AGEN-1134", "title": "feat(upstream): LTI 1.3 minimal launch skeleton (#567)", "status": "in_review"}
+{"identifier": "AGEN-1136", "title": "fix(upstream): responsive layout fixes for mobile viewports (#366)", "status": "in_review"}
+{"identifier": "AGEN-1135", "title": "test: learning/topic_naming 目标命名派生单测", "status": "in_review"}
+{"identifier": "AGEN-1133", "title": "test: learning/objective_relations 关系建模与失败路径单测", "status": "in_review"}
+{"identifier": "AGEN-1129", "title": "test: cancel 正面范本行为钉测（cancel-hygiene §6 选 3）", "status": "in_review"}
+{"identifier": "AGEN-1130", "title": "test: sandbox runner SIGTERM 收尾路径补测（signal #15）", "status": "in_review"}
+{"identifier": "AGEN-1120", "title": "refactor: 服务层 fastapi.HTTPException 换领域异常（import-cost C1）", "status": "in_review"}
+{"identifier": "AGEN-1123", "title": "fix: 非幂等工具超时后不再盲目重放（cancel-hygiene M3）", "status": "in_review"}
+{"identifier": "AGEN-1121", "title": "refactor: 迁出产品树内嵌测试模块（import-cost C3）", "status": "in_review"}
+{"identifier": "AGEN-1118", "title": "fix: API 启动路径 aiohttp/jinja2 顶层 import 下沉（import-cost B1/B2）", "status": "in_review"}
+{"identifier": "AGEN-1122", "title": "fix: dev.mjs 信号转发后包装进程按子进程状态退出（signal #14）", "status": "in_review"}
+{"identifier": "AGEN-1117", "title": "test: CLI/API 启动 import 预算防回归守门", "status": "in_review"}
+{"identifier": "AGEN-1119", "title": "fix: provider 空闲超时后显式关闭 SDK stream（cancel-hygiene H8）", "status": "in_review"}
+{"identifier": "AGEN-1116", "title": "fix: mcp manager _disconnect 取消安全收尾（cancel-hygiene H5）", "status": "in_review"}
+{"identifier": "AGEN-1115", "title": "fix: traffic_control 令牌等待被取消时归还并发槽（cancel-hygiene H1）", "status": "in_review"}
+{"identifier": "AGEN-1079", "title": "fix: update worker 中断后 stale running 状态死锁", "status": "in_review"}
+{"identifier": "AGEN-1078", "title": "fix: subagent 清理链无界等待与 atexit 回收不完整", "status": "in_review"}
+{"identifier": "AGEN-1080", "title": "fix(web): 阅读组件悬挂 timer 跨卸载触发", "status": "in_review"}
+{"identifier": "AGEN-1086", "title": "test: media_gen_tool 生成工具补测", "status": "in_review"}
+{"identifier": "AGEN-1081", "title": "fix(web): PartnerChat 重连重试 timer 未随 effect 清理", "status": "in_review"}
+{"identifier": "AGEN-1360", "title": "scan: src 侧固定延迟/忙等清点与分级", "status": "done"}
+{"identifier": "AGEN-1076", "title": "fix: JSON 围栏惰性扫描在无闭合输入上回扫", "status": "in_review"}
+{"identifier": "AGEN-1363", "title": "verify: myfork 远端分支合入状态台账", "status": "done"}
+{"identifier": "AGEN-1074", "title": "fix: DSML 工具调用流式缓冲无上限 O(n²) 重扫", "status": "in_review"}
+{"identifier": "AGEN-1362", "title": "scan: 孤儿测试三态清点（有效/漂移/建议处置）", "status": "done"}
+{"identifier": "AGEN-1084", "title": "test: skill service frontmatter 解析契约补测", "status": "in_review"}
+{"identifier": "AGEN-1358", "title": "docs: codex_auth 凭据生命周期导读", "status": "done"}
+{"identifier": "AGEN-1083", "title": "test: book/blocks _language 语言判定补测", "status": "in_review"}
+{"identifier": "AGEN-1354", "title": "docs: web_source 同步子系统导读", "status": "done"}
+{"identifier": "AGEN-1077", "title": "test: codebuddy_models 模型清单解析补测", "status": "in_review"}
+{"identifier": "AGEN-1347", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610092343）", "status": "done"}
+{"identifier": "AGEN-1071", "title": "fix: KB 路径 NFC/NFD 混写致 404 与双份条目", "status": "in_review"}
+{"identifier": "AGEN-1338", "title": "scan: deeptutor_cli 零测试模块 triage", "status": "done"}
+{"identifier": "AGEN-1075", "title": "test: agents/_shared workspace_prompt 组装契约补测", "status": "in_review"}
+{"identifier": "AGEN-1337", "title": "scan: deeptutor 内联 TODO/FIXME 清点与补测种子映射", "status": "done"}
+{"identifier": "AGEN-1072", "title": "fix: PageIndex manifest 键跨 NFC/NFD 形式静默失配", "status": "in_review"}
+{"identifier": "AGEN-1334", "title": "docs: Usage Statistics 数据链路导读", "status": "done"}
+{"identifier": "AGEN-1073", "title": "test: consolidator modes _shims 兼容层契约补测", "status": "in_review"}
+{"identifier": "AGEN-1336", "title": "docs: 出题→题库链路导读", "status": "done"}
+{"identifier": "AGEN-1070", "title": "test: cli_apps build_snapshot 构建契约补测", "status": "in_review"}
+{"identifier": "AGEN-1335", "title": "docs: 本地 MinerU 索引生命周期导读", "status": "done"}
+{"identifier": "AGEN-1069", "title": "test: partners model_runtime 选择解析补测", "status": "in_review"}
+{"identifier": "AGEN-1328", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610092306）", "status": "done"}
+{"identifier": "AGEN-1068", "title": "test: turns context assembler 组装契约补测", "status": "in_review"}
+{"identifier": "AGEN-1316", "title": "verify: weak242 已建卡 60 模块覆盖漂移复核", "status": "done"}
+{"identifier": "AGEN-1317", "title": "verify: web Top60 建卡目标文件漂移复核", "status": "done"}
+{"identifier": "AGEN-1067", "title": "test: visualize review agent 信封契约补测", "status": "in_review"}
+{"identifier": "AGEN-1312", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610092221）", "status": "done"}
+{"identifier": "AGEN-1064", "title": "test: parsing engines formats 格式分派补测", "status": "in_review"}
+{"identifier": "AGEN-1315", "title": "scan: weak242 顺位（top100 之外）下一批拆卡种子", "status": "done"}
+{"identifier": "AGEN-1065", "title": "test: reading 工具基类契约补测", "status": "in_review"}
+{"identifier": "AGEN-1314", "title": "scan: weak-top100 ⚠ 模块漂移复核（7 个）", "status": "done"}
+{"identifier": "AGEN-1060", "title": "test: run_server 启动装配冒烟补测", "status": "in_review"}
+{"identifier": "AGEN-1305", "title": "test: CodeBuddy HTTP provider 离线契约补测", "status": "done"}
+{"identifier": "AGEN-1062", "title": "test: knowledge progress events 事件契约补测", "status": "in_review"}
+{"identifier": "AGEN-1292", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610092128）", "status": "done"}
+{"identifier": "AGEN-1058", "title": "test: book blocks RAG helpers 契约补测", "status": "in_review"}
+{"identifier": "AGEN-1294", "title": "test: web partners schema-form 补测", "status": "done"}
+{"identifier": "AGEN-1056", "title": "test: voice openai_compat 适配器契约补测", "status": "in_review"}
+{"identifier": "AGEN-1273", "title": "scan: web 内存缓存层清点扫描（client-cache 及使用点）", "status": "done"}
+{"identifier": "AGEN-1061", "title": "test: runtime worker tasks 任务注册补测", "status": "in_review"}
+{"identifier": "AGEN-1274", "title": "review: 上游 issue 池与储备池一致性复核", "status": "done"}
+{"identifier": "AGEN-1059", "title": "test: book estimate 估算逻辑补测", "status": "in_review"}
+{"identifier": "AGEN-1272", "title": "scan: 运行时数据目录布局契约清点（以代码写入点为源）", "status": "done"}
+{"identifier": "AGEN-1057", "title": "test: partners transcription 转写适配补测", "status": "in_review"}
+{"identifier": "AGEN-1271", "title": "scan: 定时任务注册点清点扫描（services/cron）", "status": "done"}
+{"identifier": "AGEN-1051", "title": "test: wecom 渠道收发契约补测", "status": "in_review"}
+{"identifier": "AGEN-1270", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610092011）", "status": "done"}
+{"identifier": "AGEN-1052", "title": "test: search consolidation 合并与降级契约补测", "status": "in_review"}
+{"identifier": "AGEN-1269", "title": "scan: WS 消息契约前后端对照扫描（web/lib 事件流）", "status": "done"}
+{"identifier": "AGEN-1054", "title": "test: memory snapshot diff 差分契约补测", "status": "in_review"}
+{"identifier": "AGEN-1268", "title": "scan: web 依赖清点与冗余扫描（web/package.json）", "status": "done"}
+{"identifier": "AGEN-1055", "title": "test: MCP session state 状态机补测", "status": "in_review"}
+{"identifier": "AGEN-1267", "title": "guide: 文件 IO 与路径服务导读（file_io/path_service）", "status": "done"}
+{"identifier": "AGEN-1265", "title": "guide: provider 注册表导读（services/provider_registry）", "status": "done"}
+{"identifier": "AGEN-1053", "title": "test: agent loop context budget 预算逻辑补测", "status": "in_review"}
+{"identifier": "AGEN-1266", "title": "guide: 建议服务导读（services/suggestions）", "status": "done"}
+{"identifier": "AGEN-1050", "title": "test: learning assessment 判定与反馈契约补测", "status": "in_review"}
+{"identifier": "AGEN-1254", "title": "scan: web 本地存储清点与 schema 漂移扫描（localStorage/sessionStorage）", "status": "done"}
+{"identifier": "AGEN-1239", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610091358）", "status": "done"}
+{"identifier": "AGEN-1042", "title": "test: api 事件广播单元测试", "status": "in_review"}
+{"identifier": "AGEN-1225", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610091319）", "status": "done"}
+{"identifier": "AGEN-1041", "title": "test: services/settings 读写往返单元测试", "status": "in_review"}
+{"identifier": "AGEN-1209", "title": "scan: coverage-gaps 扫描器纳入 intree 测试并重算 zero/weak 清单", "status": "done"}
+{"identifier": "AGEN-1040", "title": "test: services/persona 存取单元测试", "status": "in_review"}
+{"identifier": "AGEN-1201", "title": "scan: 内容寻址去重机会清点（#1138 只读对照）", "status": "done"}
+{"identifier": "AGEN-1037", "title": "test: model_selection 选择与回退单元测试", "status": "in_review"}
+{"identifier": "AGEN-1200", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610090819）", "status": "done"}
+{"identifier": "AGEN-1039", "title": "test: utils 横切工具单元测试补齐", "status": "in_review"}
+{"identifier": "AGEN-1203", "title": "guide: research primitives 与 MCP 私有源边界导读（#1629 新面）", "status": "done"}
+{"identifier": "AGEN-1038", "title": "test: rag 顶层检索降级链单元测试", "status": "in_review"}
+{"identifier": "AGEN-1202", "title": "scan: visual_practice 评估边界清单（#1901 前置对照）", "status": "done"}
+{"identifier": "AGEN-1036", "title": "test: services/llm 错误映射单元测试补齐", "status": "in_review"}
+{"identifier": "AGEN-1205", "title": "verify: #1902 证据复用现状与差距复核", "status": "done"}
+{"identifier": "AGEN-1204", "title": "verify: #1903 看门狗/进程树断言对最新 main 复核", "status": "done"}
+{"identifier": "AGEN-1035", "title": "test: learning/grading 判分单元测试补齐", "status": "in_review"}
+{"identifier": "AGEN-1186", "title": "scan: web weak 清单 basis 复核与精修", "status": "done"}
+{"identifier": "AGEN-1019", "title": "test: web/hooks 核心 hooks 单元测试补齐", "status": "in_review"}
+{"identifier": "AGEN-1187", "title": "guide: 本地数据库配置问答（回应上游 #401）", "status": "done"}
+{"identifier": "AGEN-1181", "title": "scan: web 零测试模块 triage 为前端补测种子", "status": "done"}
+{"identifier": "AGEN-1182", "title": "scan: deeptutor/learning intree 测试收集面核查", "status": "done"}
+{"identifier": "AGEN-1017", "title": "test: videogen 适配器契约与任务状态流转测试", "status": "in_review"}
+{"identifier": "AGEN-1172", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610090327）", "status": "done"}
+{"identifier": "AGEN-1018", "title": "test: 内置技能注册表与 builtin 目录一致性测试", "status": "in_review"}
+{"identifier": "AGEN-1154", "title": "scan: weak_single_test top100 triage 为补测种子", "status": "done"}
+{"identifier": "AGEN-1016", "title": "test: suggestions 服务清洗与降级路径测试", "status": "in_review"}
+{"identifier": "AGEN-1155", "title": "scan: LLM provider 失败路径一致性清点", "status": "done"}
+{"identifier": "AGEN-1015", "title": "test: persona 预设加载与回退链测试", "status": "in_review"}
+{"identifier": "AGEN-1153", "title": "guide: tex 工具族导读（tex_chunker/tex_downloader）", "status": "done"}
+{"identifier": "AGEN-1014", "title": "test: path_service 路径解析与沙箱根边界测试", "status": "in_review"}
+{"identifier": "AGEN-1152", "title": "guide: visualizers 服务面导读（registry/store/protocol/tool）", "status": "done"}
+{"identifier": "AGEN-1013", "title": "test: model_selection 回退顺序与任务绑定测试", "status": "in_review"}
+{"identifier": "AGEN-1012", "title": "test: login_rate_limit 窗口计数与锁定语义测试", "status": "in_review"}
+{"identifier": "AGEN-988", "title": "fix(upstream): mineru/local.py 语法错误致解析设置页不可用（#1793）", "status": "done"}
+{"identifier": "AGEN-1146", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610072359）", "status": "done"}
+{"identifier": "AGEN-1010", "title": "test: generation_http 超时/重试/错误映射契约测试", "status": "in_review"}
+{"identifier": "AGEN-1132", "title": "guide: 会话持久化双后端导读（sqlite_store/pocketbase_store/回收站）", "status": "done"}
+{"identifier": "AGEN-1009", "title": "test: codex_auth 令牌生命周期契约测试", "status": "in_review"}
+{"identifier": "AGEN-1128", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610072317）", "status": "done"}
+{"identifier": "AGEN-1127", "title": "scan: 后端列表路由分页/限量一致性清点", "status": "done"}
+{"identifier": "AGEN-996", "title": "test: response_languages 语言协商回归补测", "status": "in_review"}
+{"identifier": "AGEN-1126", "title": "docs: 架构总览导读（子系统地图与 guide 索引）", "status": "done"}
+{"identifier": "AGEN-991", "title": "test: multi_user/session_handoff 会话交接状态机补测", "status": "in_review"}
+{"identifier": "AGEN-1125", "title": "scan: 后端路由守卫矩阵清点（鉴权依赖 × 面归类）", "status": "done"}
+{"identifier": "AGEN-1124", "title": "guide: 实时推送面导读（progress_broadcaster/stream_bus/unified_ws）", "status": "done"}
+{"identifier": "AGEN-989", "title": "feat(upstream): Watching 全屏学习布局与状态保持骨架（#1246 切片一）", "status": "in_review"}
+{"identifier": "AGEN-1111", "title": "复核已消费导读卡（mastery/reading）结论漂移", "status": "done"}
+{"identifier": "AGEN-993", "title": "test: services/chat_hints 提示生成补测", "status": "in_review"}
+{"identifier": "AGEN-1112", "title": "上游近期合并模块回归抽测", "status": "done"}
+{"identifier": "AGEN-994", "title": "test: multi_user/guardians 监护人授权边界补测", "status": "in_review"}
+{"identifier": "AGEN-1107", "title": "对照 web API 客户端与后端路由漂移", "status": "done"}
+{"identifier": "AGEN-1110", "title": "抽样复核补测卡的零/弱覆盖声明", "status": "done"}
+{"identifier": "AGEN-995", "title": "test: ContextReferenceTree/ContextBudgetChip 前端补测", "status": "in_review"}
+{"identifier": "AGEN-1114", "title": "fix(upstream): GraphRAG embedding 端点拼接与维度/头透传对齐（#745 切片）", "status": "done"}
+{"identifier": "AGEN-1109", "title": "复核 DT-22 报告 18 条 HIGH 吞错现状", "status": "done"}
+{"identifier": "AGEN-987", "title": "fix(upstream): 中断关停孤儿后端可被非交互重启接管（#1795）", "status": "in_review"}
+{"identifier": "AGEN-1113", "title": "fix(upstream): chapter map 标题不再被截断（#473）", "status": "done"}
+{"identifier": "AGEN-1108", "title": "复核 20261007 两份导读类报告结论", "status": "done"}
+{"identifier": "AGEN-976", "title": "test: workspace kb_move 移动一致性补测", "status": "in_review"}
+{"identifier": "AGEN-1106", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610072113）", "status": "done"}
+{"identifier": "AGEN-977", "title": "test: tools/vision ggb_validator 补测", "status": "in_review"}
+{"identifier": "AGEN-1105", "title": "清点 pytest marker 注册与使用一致性", "status": "done"}
+{"identifier": "AGEN-974", "title": "test: search source_filter 域过滤补测", "status": "in_review"}
+{"identifier": "AGEN-1104", "title": "清点源码 license/SPDX 头一致性", "status": "done"}
+{"identifier": "AGEN-968", "title": "fix(rag): Python 3.14 下 BM25 缺失静默降级 vector-only 无告警（上游 #1792）", "status": "in_review"}
+{"identifier": "AGEN-1103", "title": "清点 Python 日志使用一致性", "status": "done"}
+{"identifier": "AGEN-972", "title": "test: tools/question_bank 补测", "status": "in_review"}
+{"identifier": "AGEN-1099", "title": "清点未被引用的静态资产（截图/图片/字体）", "status": "done"}
+{"identifier": "AGEN-973", "title": "test: tools/mastery_nav 导航决策补测", "status": "in_review"}
+{"identifier": "AGEN-1101", "title": "静态对照提示词模板占位符与调用点", "status": "done"}
+{"identifier": "AGEN-969", "title": "test: runtime 层 turn_engine 与 coordination types 补测", "status": "in_review"}
+{"identifier": "AGEN-1102", "title": "清点 PocketBase 集合/字段字符串引用一致性", "status": "done"}
+{"identifier": "AGEN-970", "title": "test: config origins 与 image_description 配置补测", "status": "in_review"}
+{"identifier": "AGEN-1100", "title": "清点 GitHub Actions 配置一致性", "status": "done"}
+{"identifier": "AGEN-971", "title": "test: embedding request_options 补测", "status": "in_review"}
+{"identifier": "AGEN-1096", "title": "导读：会话 turns 子系统调用链", "status": "done"}
+{"identifier": "AGEN-966", "title": "test: book/agents 编排层补测（spine_agent 零覆盖 + page_planner 弱覆盖）", "status": "in_review"}
+{"identifier": "AGEN-1098", "title": "导读：上游贡献流程核对清单", "status": "done"}
+{"identifier": "AGEN-967", "title": "test: parsing engines 版本协商与格式注册补测", "status": "in_review"}
+{"identifier": "AGEN-1097", "title": "导读：web Activity/状态展示面", "status": "done"}
+{"identifier": "AGEN-960", "title": "fix: web 5 处 403 被渲染为空态（web-route-guards F4 修复）", "status": "in_review"}
+{"identifier": "AGEN-1094", "title": "补深 tools/write_note.py 边界与失败路径（弱测试）", "status": "done"}
+{"identifier": "AGEN-1095", "title": "打包补测 6 个零覆盖微模块（batch4）", "status": "done"}
+{"identifier": "AGEN-952", "title": "fix: 单飞锁内执行网络请求（codex_auth/app_update/sandbox，lock M6）", "status": "in_review"}
+{"identifier": "AGEN-1093", "title": "补深 api/utils/task_log_stream.py 错误路径（弱测试）", "status": "done"}
+{"identifier": "AGEN-961", "title": "test: learning/question_card 补测", "status": "in_review"}
+{"identifier": "AGEN-1092", "title": "补测 api/utils/progress_broadcaster.py（零覆盖）", "status": "done"}
+{"identifier": "AGEN-956", "title": "fix: mcp/manager SHARED_OWNER 锁跨全量连接生命周期（lock M5）", "status": "in_review"}
+{"identifier": "AGEN-1088", "title": "guide: audio_overview 能力导读", "status": "done"}
+{"identifier": "AGEN-959", "title": "test: visualizers/loop_capability 补测", "status": "in_review"}
+{"identifier": "AGEN-1085", "title": "test: audio_overview 能力管线补测", "status": "done"}
+{"identifier": "AGEN-958", "title": "test: runtime/capability_catalog 补测（zero-coverage，fanin 4）", "status": "in_review"}
+{"identifier": "AGEN-1087", "title": "guide: CI workflows 与门禁链导读", "status": "done"}
+{"identifier": "AGEN-957", "title": "test: agents/research mode_strategy 补测", "status": "in_review"}
+{"identifier": "AGEN-1089", "title": "scan: web 前端测试空白清点", "status": "done"}
+{"identifier": "AGEN-954", "title": "test: discord 渠道消息解析与 send_delta 流键控契约", "status": "in_review"}
+{"identifier": "AGEN-1091", "title": "verify: 六份 20261007 扫描报告漂移复核", "status": "done"}
+{"identifier": "AGEN-951", "title": "test: 原子写/持久化契约跨模块回归（fsync/rename/tmp）", "status": "in_review"}
+{"identifier": "AGEN-1090", "title": "scan: Docker/compose 部署面漂移清点", "status": "done"}
+{"identifier": "AGEN-953", "title": "test: web 403 空态伪装剩余处回归（MemoryHub/StarterSuggestions）", "status": "in_review"}
+{"identifier": "AGEN-1082", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610071847）", "status": "done"}
+{"identifier": "AGEN-950", "title": "fix: session/sqlite_store 全局单锁串行化所有会话读写（lock M1）", "status": "in_review"}
+{"identifier": "AGEN-985", "title": "verify: 储备池台账一致性复核（纯本地）", "status": "done"}
+{"identifier": "AGEN-948", "title": "fix: reading/store 目录交换缺目录 fsync（atomic-write M7）", "status": "in_review"}
+{"identifier": "AGEN-986", "title": "verify: 扫描证据 SHA256 完整性抽样复核", "status": "done"}
+{"identifier": "AGEN-949", "title": "test: settings docstring 与 Field 默认值一致性防回归", "status": "in_review"}
+{"identifier": "AGEN-1066", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610071816）", "status": "done"}
+{"identifier": "AGEN-947", "title": "test: napcat/msteams 渠道测试断言强度增强", "status": "in_review"}
+{"identifier": "AGEN-376", "title": "fix(upstream): EPUB 排版工具栏与阅读主题（#1447 未认领切片）", "status": "done"}
+{"identifier": "AGEN-102", "title": "fix(upstream): chat history lost inside session, only latest few remain (#1410)", "status": "done"}
+{"identifier": "AGEN-1048", "title": "verify: guide-scope claims 强度标注抽样复核", "status": "done"}
+{"identifier": "AGEN-945", "title": "fix: runtime/worker_process 写入无 fsync 且失败路径无清理（atomic-write M3）", "status": "in_review"}
+{"identifier": "AGEN-1049", "title": "verify: consumed 台账一致性校验", "status": "done"}
+{"identifier": "AGEN-946", "title": "fix: memory/snapshot store 落盘无 fsync（atomic-write M4）", "status": "in_review"}
+{"identifier": "AGEN-1047", "title": "review: guide-scope 合并与划界建议复核", "status": "done"}
+{"identifier": "AGEN-931", "title": "fix: codebuddy_auth 取消/登出吞错收敛（DT-22 MEDIUM）", "status": "in_review"}
+{"identifier": "AGEN-1046", "title": "scan: imagegen/videogen 接口面扫描", "status": "done"}
+{"identifier": "AGEN-938", "title": "test: logging.process_stream 补测（零测试）", "status": "in_review"}
+{"identifier": "AGEN-1045", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610071520）", "status": "done"}
+{"identifier": "AGEN-930", "title": "fix: memory consolidator 清理/等待路径吞错收敛", "status": "in_review"}
+{"identifier": "AGEN-1044", "title": "scan: scripts 目录用途清单扫描", "status": "done"}
+{"identifier": "AGEN-929", "title": "fix: 渠道 typing/登出路径吞错收敛批次（DT-22 MEDIUM 三处）", "status": "in_review"}
+{"identifier": "AGEN-1043", "title": "scan: docs-for-user 文档漂移扫描", "status": "done"}
+{"identifier": "AGEN-928", "title": "fix: v1.6.13 新增吞错 LOW ×7 补日志批次（drift §8.3）", "status": "in_review"}
+{"identifier": "AGEN-1034", "title": "guide: services/partners 与 partner_groups 服务层导读", "status": "done"}
+{"identifier": "AGEN-936", "title": "test: session ask_user_trace 补测（零测试）", "status": "in_review"}
+{"identifier": "AGEN-1033", "title": "guide: tools/prompting 模板面导读", "status": "done"}
+{"identifier": "AGEN-935", "title": "test: runtime/agentic think_stream 补测（零测试）", "status": "in_review"}
+{"identifier": "AGEN-1031", "title": "guide: services/llm 非 provider_core 客户端面导读", "status": "done"}
+{"identifier": "AGEN-850", "title": "fix: Invidious PR #6008 夜间修复与 CI 验证", "status": "in_review"}
+{"identifier": "AGEN-1025", "title": "guide: deeptutor/core 协议层导读", "status": "done"}
+{"identifier": "AGEN-937", "title": "AI Projects 技术汇报｜evan", "status": "in_review"}
+{"identifier": "AGEN-1032", "title": "guide: runtime 子包（agentic/coordination/registry/providers/bootstrap）导读", "status": "done"}
+{"identifier": "AGEN-933", "title": "test: hermes_remote_events 补测（零测试）", "status": "in_review"}
+{"identifier": "AGEN-1026", "title": "guide: 本地打包与启动面导读", "status": "done"}
+{"identifier": "AGEN-927", "title": "test: notebook analysis_agent 补测（380 LOC 零测试）", "status": "in_review"}
+{"identifier": "AGEN-1027", "title": "verify: DeepTutor 陈旧 worktree 台账与清理候选", "status": "done"}
+{"identifier": "AGEN-926", "title": "fix: codebuddy_provider 关闭/中断路径吞错收敛（drift §7 未覆盖三处）", "status": "in_review"}
+{"identifier": "AGEN-1028", "title": "verify: THIRD_PARTY_NOTICES 与实际依赖许可核对", "status": "done"}
+{"identifier": "AGEN-924", "title": "fix: document_loader._describe_group 吞错修复（v1.6.13 新增 HIGH）", "status": "in_review"}
+{"identifier": "AGEN-1029", "title": "guide: deeptutor/learning 域全景导读", "status": "done"}
+{"identifier": "AGEN-932", "title": "test: IMA pipeline transport 层补测（零测试）", "status": "in_review"}
+{"identifier": "AGEN-1030", "title": "guide: capabilities 8 个零认领实例目录速览", "status": "done"}
+{"identifier": "AGEN-922", "title": "fix: file_library._delete_file 删除失败吞错修复（DT-22 HIGH 残留）", "status": "in_review"}
+{"identifier": "AGEN-1024", "title": "scan: asyncio 取消路径卫生扫描", "status": "done"}
+{"identifier": "AGEN-910", "title": "fix(web): 网络失败/限流话术收敛为单一 locale key", "status": "in_review"}
+{"identifier": "AGEN-772", "title": "review(AI): 审核 AGEN-767 rework: 按审核意见修改 AGEN-741 test: msteams 通道弱断言增强（消息语义与错误路径）", "status": "todo"}
+{"identifier": "AGEN-1022", "title": "scan: 异常链完整性（cause 丢失）扫描", "status": "done"}
+{"identifier": "AGEN-909", "title": "fix: broad-except 可收窄批处理（上游 PR 未覆盖条目收窄+留痕）", "status": "in_review"}
+{"identifier": "AGEN-1023", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610071116）", "status": "done"}
+{"identifier": "AGEN-908", "title": "fix: agent_config 错误负载改配 4xx 与结构化信封", "status": "in_review"}
+{"identifier": "AGEN-1021", "title": "scan: 版本号一致性漂移扫描", "status": "done"}
+{"identifier": "AGEN-916", "title": "test: voice volcengine 适配器请求构造与失败分支补测", "status": "in_review"}
+{"identifier": "AGEN-1020", "title": "scan: 仓库跟踪产物卫生（缓存/构建产物入库）", "status": "done"}
+{"identifier": "AGEN-1008", "title": "guide: 视觉工具面导读（vision 块解析/坐标变换/校验）", "status": "done"}
+{"identifier": "AGEN-905", "title": "fix(web): tool-availability 等 9 文件硬编码文案迁入 locale", "status": "in_review"}
+{"identifier": "AGEN-1007", "title": "verify: guide-* 候选卡覆盖面边界互查", "status": "done"}
+{"identifier": "AGEN-914", "title": "test: services/doctor 诊断项通过/失败/降级分支补测", "status": "in_review"}
+{"identifier": "AGEN-1006", "title": "verify: consumed 台账与上游 PR 状态一致性复核", "status": "done"}
+{"identifier": "AGEN-915", "title": "test: parsing/engines/_install 安装/检测/回退分支补测", "status": "in_review"}
+{"identifier": "AGEN-1005", "title": "scan: 测试真实网络触达风险清点", "status": "done"}
+{"identifier": "AGEN-907", "title": "fix: reading_extensions 403/错误 detail 中性化（4+ 处直透收敛）", "status": "in_review"}
+{"identifier": "AGEN-1003", "title": "scan: Docker/compose 配置与代码默认值一致性清点", "status": "done"}
+{"identifier": "AGEN-912", "title": "test: rag/eval dataset+matching 弱测试断言强化", "status": "in_review"}
+{"identifier": "AGEN-1004", "title": "scan: 启动 import 开销与延迟加载机会清点", "status": "done"}
+{"identifier": "AGEN-913", "title": "test: embedding 适配器 gemini/dashscope_native 失败分支补测", "status": "in_review"}
+{"identifier": "AGEN-1002", "title": "scan: Unicode 归一化一致性清点", "status": "done"}
+{"identifier": "AGEN-904", "title": "fix(web): 补齐 fr 466 个缺失 locale key 与 pl/uk common.json", "status": "in_review"}
+{"identifier": "AGEN-998", "title": "scan: async 路径阻塞调用全仓清点", "status": "done"}
+{"identifier": "AGEN-903", "title": "fix: co_writer.py blanket-500 统一异常处理收敛（约 14 处）", "status": "in_review"}
+{"identifier": "AGEN-999", "title": "scan: 缓存键与失效策略一致性清点", "status": "done"}
+{"identifier": "AGEN-906", "title": "test: 剩余小零测试模块打包补测（column_blacklist/_versions/response_languages）", "status": "in_review"}
+{"identifier": "AGEN-1001", "title": "scan: 正则复杂度与回溯风险性能清点", "status": "done"}
+{"identifier": "AGEN-902", "title": "fix: knowledge.py blanket-500 统一异常处理收敛（约 36 处）", "status": "in_review"}
+{"identifier": "AGEN-1000", "title": "scan: OpenAPI schema 质量清点（响应模型/4xx/分页）", "status": "done"}
+{"identifier": "AGEN-984", "title": "guide: web 前端状态层导读", "status": "done"}
+{"identifier": "AGEN-983", "title": "guide: ask_user 全链路导读（发起→停车→恢复→续答）", "status": "done"}
+{"identifier": "AGEN-997", "title": "review: #397 下一代 Memory 架构 RFC 对照现行实现评审", "status": "done"}
+{"identifier": "AGEN-888", "title": "test: mypy 宽松面收窄试点（1 个模块去 ignore_errors）", "status": "in_review"}
+{"identifier": "AGEN-982", "title": "scan: coverage-gaps 报告 20261007 版重跑与 diff", "status": "done"}
+{"identifier": "AGEN-887", "title": "test+fix: rag-pipelines/{provider}/config 前端调用收敛为字面量联合（F1）", "status": "in_review"}
+{"identifier": "AGEN-981", "title": "scan: docstring/注解/实际返回三方漂移抽样", "status": "done"}
+{"identifier": "AGEN-884", "title": "test: 子进程 HIGH 缺口超时路径补测（选 2 处，fake 子进程）", "status": "in_review"}
+{"identifier": "AGEN-980", "title": "scan: 信号处理与退出路径审计", "status": "done"}
+{"identifier": "AGEN-885", "title": "test: 403 空态伪装回归补测（5 处选 3）", "status": "in_review"}
+{"identifier": "AGEN-992", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610070402）", "status": "done"}
+{"identifier": "AGEN-883", "title": "test: parent_message_id 成链默认语义两端差异回归（D3）", "status": "in_review"}
+{"identifier": "AGEN-978", "title": "scan: 前端定时器与监听器泄漏静态清点", "status": "done"}
+{"identifier": "AGEN-882", "title": "test: 会话 status/capability 落列与派生读不一致回归（D2）", "status": "in_review"}
+{"identifier": "AGEN-990", "title": "feat(upstream): Watching 最近学习记录列表接口（#1158 切片一）", "status": "done"}
+{"identifier": "AGEN-880", "title": "fix(web): detail.code 结构化错误共享解析层", "status": "in_review"}
+{"identifier": "AGEN-979", "title": "scan: Python JSON 序列化边界静态清点", "status": "done"}
+{"identifier": "AGEN-881", "title": "test: 导入图守卫测试（7 个 SCC 回归）+ 拆 S3 循环", "status": "in_review"}
+{"identifier": "AGEN-975", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610070330）", "status": "done"}
+{"identifier": "AGEN-872", "title": "test: 测试面 asyncio.sleep 固定延迟竞速收尾清扫", "status": "in_review"}
+{"identifier": "AGEN-964", "title": "scan: 全仓资源泄漏静态清点（未关闭 session/句柄/子进程）", "status": "done"}
+{"identifier": "AGEN-870", "title": "test: RAG/搜索线真实时钟上界断言放宽或行为化", "status": "in_review"}
+{"identifier": "AGEN-965", "title": "guide: video_learning 子包与 Invidious/YouTube 接入导读", "status": "done"}
+{"identifier": "AGEN-871", "title": "test: mcp/skill/cli_apps/suggestions 时钟风险点收敛", "status": "in_review"}
+{"identifier": "AGEN-962", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610070228）", "status": "done"}
+{"identifier": "AGEN-869", "title": "test: cron_repository 锁等待去真实时间下限", "status": "in_review"}
+{"identifier": "AGEN-942", "title": "scan: 临时文件卫生清点（mkdtemp/NamedTemporaryFile/残留清理）", "status": "done"}
+{"identifier": "AGEN-866", "title": "test: journal_recovery 固定窗口改确定性 flush 语义", "status": "in_review"}
+{"identifier": "AGEN-943", "title": "scan: web 端日期时间处理清点（TS 侧 naive Date/时区）", "status": "done"}
+{"identifier": "AGEN-868", "title": "fix: tex_downloader 失败路径临时目录残留回收", "status": "in_review"}
+{"identifier": "AGEN-934", "title": "up-612: 会话持久化 SQLite→PG 可行性评估（上游 #612，只读）", "status": "done"}
+{"identifier": "AGEN-865", "title": "test: turn_runtime_subscribe 订阅竞速改有界轮询", "status": "in_review"}
+{"identifier": "AGEN-941", "title": "guide: 出站目标校验层导读（partners.network/mcp.network/linked_kb）", "status": "done"}
+{"identifier": "AGEN-864", "title": "fix: 错误信封推广至 space_mcp/space_cli_apps/notebook/settings/video_learning", "status": "in_review"}
+{"identifier": "AGEN-944", "title": "review: 复核 broad-except 扫描（AGEN-370）对最新 main 的漂移与 PR 重叠", "status": "done"}
+{"identifier": "AGEN-863", "title": "test: background_leader 租约竞速稳定化（时钟注入/收敛断言）", "status": "in_review"}
+{"identifier": "AGEN-940", "title": "guide: 定时任务子系统导读（services/cron）", "status": "done"}
+{"identifier": "AGEN-939", "title": "guide: 沙箱子系统导读（runner/backends/artifacts）", "status": "done"}
+{"identifier": "AGEN-867", "title": "fix: mineru 本地解析 attempt 目录失败路径回收", "status": "in_review"}
+{"identifier": "AGEN-861", "title": "test: zulip 渠道测试固定延迟改有界轮询", "status": "in_review"}
+{"identifier": "AGEN-420", "title": "test: settings 路由读取失败回退分支补测", "status": "done"}
+{"identifier": "AGEN-925", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610061221）", "status": "done"}
+{"identifier": "AGEN-862", "title": "fix: book.py 4xx 结构化错误信封建模与契约文档化", "status": "in_review"}
+{"identifier": "AGEN-923", "title": "scan: web 前端死代码清点（未用导出/未挂载组件/孤儿 locale key）", "status": "done"}
+{"identifier": "AGEN-860", "title": "fix: OpenAPI 契约 app→schema 漂移门禁（后端测试 + CI 步骤）", "status": "in_review"}
+{"identifier": "AGEN-921", "title": "scan: SQLite 查询计划与索引缺口清点（EXPLAIN QUERY PLAN）", "status": "done"}
+{"identifier": "AGEN-855", "title": "test: partners 网络层补测（partners/network）", "status": "in_review"}
+{"identifier": "AGEN-920", "title": "scan: web 错误呈现面清点（ErrorBoundary/静默失败/恢复动作）", "status": "done"}
+{"identifier": "AGEN-853", "title": "test: 学习浮层补测（book/learning_overlay）", "status": "in_review"}
+{"identifier": "AGEN-918", "title": "docs: rag/eval 评估子系统导读（口径/数据流/指标）", "status": "done"}
+{"identifier": "AGEN-851", "title": "test: 数学动画视觉复核补测（math_animator/visual_review）", "status": "in_review"}
+{"identifier": "AGEN-917", "title": "docs: search providers 子系统导读（接口约定与新增供应商步骤）", "status": "done"}
+{"identifier": "AGEN-852", "title": "test: i18n 元数据/状态文案补测（metadata_i18n + status_i18n）", "status": "in_review"}
+{"identifier": "AGEN-911", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610060810）", "status": "done"}
+{"identifier": "AGEN-849", "title": "test: 推理类工具补测（tools/reason + brainstorm + solve_tool）", "status": "in_review"}
+{"identifier": "AGEN-899", "title": "verify: guide-* 候选卡行号锚点对最新 main 抽检", "status": "done"}
+{"identifier": "AGEN-848", "title": "test: docling 本地 worker 补测（parsing/engines/docling/local_worker）", "status": "in_review"}
+{"identifier": "AGEN-900", "title": "verify: web-api-usage 报告 R1-R4 复核清单人工过目", "status": "done"}
+{"identifier": "AGEN-847", "title": "test: LLM cloud/local provider 补测（cloud_provider + local_provider）", "status": "in_review"}
+{"identifier": "AGEN-898", "title": "verify: 三份 20261006 报告对最新 main 的结论漂移复核", "status": "done"}
+{"identifier": "AGEN-846", "title": "test: agents/_shared 运行时补测（tool_runtime + capability_result）", "status": "in_review"}
+{"identifier": "AGEN-896", "title": "scan: 重试/退避/超时参数一致性清点", "status": "done"}
+{"identifier": "AGEN-844", "title": "test: 视觉块解析器补测（tools/vision/block_parser）", "status": "in_review"}
+{"identifier": "AGEN-897", "title": "scan: deeptutor_cli 退出码与 stderr 约定清点", "status": "done"}
+{"identifier": "AGEN-845", "title": "test: opencode 子代理服务补测（subagent/opencode_server）", "status": "in_review"}
+{"identifier": "AGEN-901", "title": "verify: fix-* 候选卡对最新 main 的失效抽检（防重复修复）", "status": "done"}
+{"identifier": "AGEN-843", "title": "test: LlamaIndex 检索器补测（rag/pipelines/llamaindex/retrievers）", "status": "in_review"}
+{"identifier": "AGEN-894", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610060723）", "status": "done"}
+{"identifier": "AGEN-842", "title": "test: 图片描述缓存补测（llm/image_caption_cache）", "status": "in_review"}
+{"identifier": "AGEN-895", "title": "scan: conftest/fixture 重复与作用域清点", "status": "done"}
+{"identifier": "AGEN-839", "title": "test: book/blocks 小模块族补测（_llm_writer + 动效/交互块）", "status": "in_review"}
+{"identifier": "AGEN-893", "title": "scan: 测试隔离审计（tmp/env/全局态残留清点）", "status": "done"}
+{"identifier": "AGEN-840", "title": "test: multi_user 审计日志补测（audit）", "status": "in_review"}
+{"identifier": "AGEN-892", "title": "guide: web 守卫分层模型导读（五层与 learner 面）", "status": "done"}
+{"identifier": "AGEN-841", "title": "test: 会话用量恢复补测（session/usage_recovery）", "status": "in_review"}
+{"identifier": "AGEN-890", "title": "guide: practice 练习域导读（调度/导入/统计）", "status": "done"}
+{"identifier": "AGEN-838", "title": "test: question_notebook 路由 CRUD/4xx 契约补测", "status": "in_review"}
+{"identifier": "AGEN-891", "title": "guide: MarginNote 桥接契约导读（服务端桥 + add-on 期望）", "status": "done"}
+{"identifier": "AGEN-833", "title": "test: api/routers/space_cli_apps.py 路由契约补测", "status": "in_review"}
+{"identifier": "AGEN-889", "title": "guide: background_leader 租约与选主机制导读", "status": "done"}
+{"identifier": "AGEN-832", "title": "test: api/routers/mcp_settings.py 路由契约补测", "status": "in_review"}
+{"identifier": "AGEN-878", "title": "docs: 工作区迁移子系统导读", "status": "done"}
+{"identifier": "AGEN-830", "title": "test: services/session/turns/title_service.py 会话标题服务补测", "status": "in_review"}
+{"identifier": "AGEN-879", "title": "docs: settings docstring 默认值修正与 MINERU/TIKA 键文档化", "status": "done"}
+{"identifier": "AGEN-831", "title": "test: services/workspace/session_transfer.py 会话导入导出补测", "status": "in_review"}
+{"identifier": "AGEN-877", "title": "docs: web/contracts 契约生成与门禁链路导读", "status": "done"}
+{"identifier": "AGEN-829", "title": "test: services/llm/usage_ledger.py 用量台账补测", "status": "in_review"}
+{"identifier": "AGEN-876", "title": "docs: textbook_struct 子系统导读", "status": "done"}
+{"identifier": "AGEN-828", "title": "test: multi_user/book_access.py 访问控制补测", "status": "in_review"}
+{"identifier": "AGEN-875", "title": "chore: 重生成前端契约消除 D1-D4 并复核 D2 约束", "status": "done"}
+{"identifier": "AGEN-826", "title": "test: multi_user/partner_access.py 服务级访问控制补测（fanin 8）", "status": "in_review"}
+{"identifier": "AGEN-874", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610060616）", "status": "done"}
+{"identifier": "AGEN-827", "title": "fix: book.py 12 处 blanket-500 不再透传 str(exc)（错误消息报告 Top15 #2 子集）", "status": "in_review"}
+{"identifier": "AGEN-873", "title": "fix: coverage-gaps 扫描器去 PYTHONHASHSEED 非确定性并重生成证据", "status": "done"}
+{"identifier": "AGEN-825", "title": "fix: 提案校验失败不再回显 pydantic ValidationError 全文（错误消息报告 Top15 #8）", "status": "in_review"}
+{"identifier": "AGEN-857", "title": "scan: 前端 API 调用面 vs 生成契约漂移清点", "status": "done"}
+{"identifier": "AGEN-824", "title": "test: services/rag/provider_binding.py 零测试热点补测（fanin 13）", "status": "in_review"}
+{"identifier": "AGEN-859", "title": "docs: 任务板功能导读（task_board 后端 + web 看板）", "status": "done"}
+{"identifier": "AGEN-858", "title": "docs: 数学动画子系统导读（math_animator 管线与视觉复核）", "status": "done"}
+{"identifier": "AGEN-821", "title": "fix: 收敛三处渠道 send 契约违规（matrix 不查 RoomSendError、zulip 吞 API 错、discord 流键控错）", "status": "in_review"}
+{"identifier": "AGEN-854", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610060450）", "status": "done"}
+{"identifier": "AGEN-823", "title": "fix: LLM 错误映射不再把供应商 SDK 原文带进用户可见消息（错误消息报告 Top15 #9）", "status": "in_review"}
+{"identifier": "AGEN-856", "title": "scan: mypy 渐进收养宽松面全量清点", "status": "done"}
+{"identifier": "AGEN-820", "title": "fix: weixin 通道未启动时 stop() 不再覆写 account.json（channel-contracts 报告）", "status": "in_review"}
+{"identifier": "AGEN-837", "title": "scan: 前端生成契约与后端路由漂移清点（api.ts vs routers）", "status": "done"}
+{"identifier": "AGEN-809", "title": "test: 四个搜索 provider 请求/解析契约批量补测", "status": "in_review"}
+{"identifier": "AGEN-836", "title": "scan: 时序/时区/顺序敏感测试全量清点（flaky 风险清单）", "status": "done"}
+{"identifier": "AGEN-805", "title": "test: explore_context explorer 探索聚合与降级补测", "status": "in_review"}
+{"identifier": "AGEN-834", "title": "docs: 记忆子系统代码导读（snapshot/consolidator/工作台）", "status": "done"}
+{"identifier": "AGEN-815", "title": "fix: 收紧 CodeBuddy 全局 env-key 锁临界区，不再串行整个流式 turn（lock 报告 HIGH-A）", "status": "in_review"}
+{"identifier": "AGEN-835", "title": "docs: 运行时启动器生命周期导读（launcher/update_worker/更新交接）", "status": "done"}
+{"identifier": "AGEN-816", "title": "fix: opencode/mimocode server 池改 per-key 锁，spawn 不再阻塞其它组合快路径（lock 报告 M4）", "status": "in_review"}
+{"identifier": "AGEN-822", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610060036）", "status": "done"}
+{"identifier": "AGEN-808", "title": "test: weixin_onboarding 会话状态机与回调解析补测", "status": "in_review"}
+{"identifier": "AGEN-819", "title": "verify: 八份 20261004/05 扫描报告相对最新 main 的结论复核", "status": "done"}
+{"identifier": "AGEN-806", "title": "test: invidious_account 绑定存储与容错补测", "status": "in_review"}
+{"identifier": "AGEN-818", "title": "scan: 子进程调用超时/回收缺口全量清点", "status": "done"}
+{"identifier": "AGEN-814", "title": "fix: 补齐 PocketBase 引导 schema 缺失的 sessions.deleted_at（回收站全链路依赖）", "status": "in_review"}
+{"identifier": "AGEN-817", "title": "guide: rag/pipelines 五条管线结构导读与差异地图", "status": "done"}
+{"identifier": "AGEN-807", "title": "test: obsidian vault 路径归一与笔记读写补测", "status": "in_review"}
+{"identifier": "AGEN-811", "title": "test: lightrag sidecar 生命周期与消息编解码补测（fake 子进程）", "status": "in_review"}
+{"identifier": "AGEN-800", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610052122）", "status": "done"}
+{"identifier": "AGEN-810", "title": "test: github_copilot_provider 契约补测（头组装/目录/流式）", "status": "in_review"}
+{"identifier": "AGEN-797", "title": "scan: capability prompts en/zh 对齐清点", "status": "done"}
+{"identifier": "AGEN-802", "title": "fix(storage): attachment/file_library 写入补 fsync 并改唯一 tmp 名", "status": "in_review"}
+{"identifier": "AGEN-796", "title": "guide: capabilities 框架（registry/protocol/binding/loop）代码导读", "status": "done"}
+{"identifier": "AGEN-803", "title": "fix(progress): 广播锁内快照连接、锁外发送，慢客户端不再阻塞", "status": "in_review"}
+{"identifier": "AGEN-778", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610052042）", "status": "done"}
+{"identifier": "AGEN-773", "title": "scan: 测试断言强度全量清点（扩展 coverage 报告 §4 抽样）", "status": "done"}
+{"identifier": "AGEN-804", "title": "fix(partners): 渠道 onboarding 锁只护注册表，网络外呼移出锁外", "status": "in_review"}
+{"identifier": "AGEN-770", "title": "review(AI): 审核 AGEN-747 fix(upstream): 同会话多次不合格解释被计为多次 SRS lapse (#1781)", "status": "done"}
+{"identifier": "AGEN-813", "title": "test: skill taxonomy 分类表加载与匹配排序表驱动补测", "status": "in_review"}
+{"identifier": "AGEN-768", "title": "review(AI): 审核 AGEN-729 fix(reserve): markitdown 格式支持探测吞错，上传放行集合失真（DT-22）", "status": "done"}
+{"identifier": "AGEN-812", "title": "test: knowledge_frontier 工具聚合与容错补测", "status": "in_review"}
+{"identifier": "AGEN-765", "title": "review(AI): 审核 AGEN-727 fix(reserve): reading duplicate_check 异常静默跳过，重复资料放行（DT-22）", "status": "done"}
+{"identifier": "AGEN-801", "title": "fix(storage): atomic rename 后补父目录 fsync（系统性耐久缺口）", "status": "in_review"}
+{"identifier": "AGEN-762", "title": "review(AI): 审核 AGEN-728 fix(reserve): 内建工具技能文件读取失败被吞，返回残缺结果（DT-22）", "status": "done"}
+{"identifier": "AGEN-794", "title": "test: ask_questions capability loop 契约补测", "status": "in_review"}
+{"identifier": "AGEN-761", "title": "review(AI): 审核 AGEN-749 test: courses_state 状态流转补测", "status": "done"}
+{"identifier": "AGEN-799", "title": "fix(memory): snapshot _iso 字符串分支归一化 aware-UTC", "status": "in_review"}
+{"identifier": "AGEN-760", "title": "review(AI): 审核 AGEN-744 test: rag/embedding_binding 绑定与版本失败分支补测", "status": "done"}
+{"identifier": "AGEN-795", "title": "fix(knowledge): KB 进度时间戳统一 aware-UTC 并修解析混用", "status": "in_review"}
+{"identifier": "AGEN-759", "title": "review(AI): 审核 AGEN-745 test: reading_hints 提示组装与降级补测", "status": "done"}
+{"identifier": "AGEN-798", "title": "fix(knowledge): _entry_updated_after 解析容错与 last_updated 改 ISO", "status": "in_review"}
+{"identifier": "AGEN-754", "title": "review(AI): 审核 AGEN-741 test: msteams 通道弱断言增强（消息语义与错误路径）", "status": "done"}
+{"identifier": "AGEN-793", "title": "test: learning pending/identity 补测", "status": "in_review"}
+{"identifier": "AGEN-750", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610051654）", "status": "done"}
+{"identifier": "AGEN-791", "title": "test: textbook_struct 章节重建与列黑名单补测", "status": "in_review"}
+{"identifier": "AGEN-753", "title": "review(AI): 审核 AGEN-720 fix(reserve): docx 转换样式/删除线/表格读取静默失败，导出丢格式（DT-22）", "status": "done"}
+{"identifier": "AGEN-788", "title": "test: 零测试小路由批量契约补测（第二批 5 个）", "status": "in_review"}
+{"identifier": "AGEN-720", "title": "fix(reserve): docx 转换样式/删除线/表格读取静默失败，导出丢格式（DT-22）", "status": "done"}
+{"identifier": "AGEN-789", "title": "test: practice 调度/导入/统计服务层补测", "status": "in_review"}
+{"identifier": "AGEN-752", "title": "review(AI): 审核 AGEN-742 test: napcat 通道弱断言增强（帧语义与错误路径）", "status": "done"}
+{"identifier": "AGEN-792", "title": "fix(partners): mochat 通道时间戳剥时区导致宿主本地误读", "status": "in_review"}
+{"identifier": "AGEN-740", "title": "review(AI): 审核 AGEN-718 fix(reserve): resolve_kb_mode 读取 kb_config 失败静默回退，RAG 模式失真（DT-22）", "status": "done"}
+{"identifier": "AGEN-790", "title": "test: office_preview 探测与失败分支补测", "status": "in_review"}
+{"identifier": "AGEN-739", "title": "review(AI): 审核 AGEN-735 test: dingtalk 通道消息解析与签名校验补测", "status": "done"}
+{"identifier": "AGEN-786", "title": "fix(practice): neutral import/attachment error details without paths or raw upstream text", "status": "in_review"}
+{"identifier": "AGEN-738", "title": "review(AI): 审核 AGEN-736 test: qq 与 lark_http 通道解析契约补测", "status": "done"}
+{"identifier": "AGEN-785", "title": "fix(chat): map stream error events to neutral messages with error codes", "status": "in_review"}
+{"identifier": "AGEN-737", "title": "review(AI): 审核 AGEN-717 fix(reserve): 会话 SQLite 启动迁移失败被吞，schema 漂移无日志（DT-22）", "status": "done"}
+{"identifier": "AGEN-787", "title": "test: config readiness 检查分支补测", "status": "in_review"}
+{"identifier": "AGEN-723", "title": "scan: partners 通道类契约一致性清点", "status": "done"}
+{"identifier": "AGEN-782", "title": "test: memory consolidator 三 mode 行为表驱动补测", "status": "in_review"}
+{"identifier": "AGEN-734", "title": "review(AI): 审核 AGEN-716 fix(reserve): LightRAG worker 循环 BaseException 被静默吞掉，索引失败不可见（DT-22）", "status": "done"}
+{"identifier": "AGEN-784", "title": "fix(partners): neutral partner turn-failure message without exception class names", "status": "in_review"}
+{"identifier": "AGEN-733", "title": "review(AI): 审核 AGEN-715 fix(upstream): EmbeddingClient 进程级全局锁在 batch_delay=0 时仍串行化所有 embedding 请求 (#1779)", "status": "done"}
+{"identifier": "AGEN-780", "title": "test: space_mcp 路由契约补测（MCP 转发失败分支）", "status": "in_review"}
+{"identifier": "AGEN-732", "title": "review(AI): 审核 AGEN-702 test: admin users 批量导入/删除校验边界补测", "status": "done"}
+{"identifier": "AGEN-783", "title": "fix(knowledge): keep stack traces out of knowledge-base health responses", "status": "in_review"}
+{"identifier": "AGEN-719", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610051147）", "status": "done"}
+{"identifier": "AGEN-781", "title": "fix(notebook): replace 12 blanket 500 str(e) details with neutral messages", "status": "in_review"}
+{"identifier": "AGEN-731", "title": "review(AI): 审核 AGEN-713 fix: 记忆 trace 清理失败不再静默", "status": "done"}
+{"identifier": "AGEN-779", "title": "fix(errors): stop embedding provider response bodies in user-facing error messages", "status": "in_review"}
+{"identifier": "AGEN-730", "title": "review(AI): 审核 AGEN-711 fix: agent token 记账失败不再静默", "status": "done"}
+{"identifier": "AGEN-714", "title": "scan: 环境变量与配置键漂移清点", "status": "done"}
+{"identifier": "AGEN-775", "title": "test: reading_extensions 路由契约与失败可见性补测", "status": "in_review"}
+{"identifier": "AGEN-710", "title": "scan: web 无障碍基础静态清点", "status": "done"}
+{"identifier": "AGEN-769", "title": "fix(upstream): let legacy Mastery Path maps with >7 objectives per module stay editable (#1784)", "status": "in_review"}
+{"identifier": "AGEN-726", "title": "review(AI): 审核 AGEN-699 test: api/routers 零测试路由补测（按报告选 2 个）", "status": "done"}
+{"identifier": "AGEN-771", "title": "test: video_learning 路由契约补测（建议学习体验项目执行）", "status": "in_review"}
+{"identifier": "AGEN-712", "title": "scan: 会话存储 schema 漂移清点", "status": "done"}
+{"identifier": "AGEN-774", "title": "fix(errors): turn format_exception_message into a whitelisted, truncating formatter", "status": "in_review"}
+{"identifier": "AGEN-725", "title": "review(AI): 审核 AGEN-707 fix: 上传处理 mtime 记录失败不再静默", "status": "done"}
+{"identifier": "AGEN-748", "title": "feat(upstream): 学习日志只读总览面板 (#1407)", "status": "in_review"}
+{"identifier": "AGEN-707", "title": "fix: 上传处理 mtime 记录失败不再静默", "status": "done"}
+{"identifier": "AGEN-766", "title": "test: 零测试小路由批量契约补测（5 个）", "status": "in_review"}
+{"identifier": "AGEN-722", "title": "review(AI): 审核 AGEN-709 fix: KB embedding 标志对账不再静默", "status": "done"}
+{"identifier": "AGEN-764", "title": "test: file_preview 路由契约补测", "status": "in_review"}
+{"identifier": "AGEN-708", "title": "scan: web 路由守卫与角色可见性清点", "status": "done"}
+{"identifier": "AGEN-758", "title": "test: mastery_path 路由非流分支契约补测", "status": "in_review"}
+{"identifier": "AGEN-721", "title": "review(AI): 审核 AGEN-701 test: ChatMessageList 渲染分支冒烟补测", "status": "done"}
+{"identifier": "AGEN-763", "title": "test: partner_groups 路由契约补测", "status": "in_review"}
+{"identifier": "AGEN-706", "title": "guide: 日志与进度观测面导读", "status": "done"}
+{"identifier": "AGEN-767", "title": "rework: 按审核意见修改 AGEN-741 test: msteams 通道弱断言增强（消息语义与错误路径）", "status": "in_review"}
+{"identifier": "AGEN-704", "title": "review(AI): 审核 AGEN-697 test: memory/modes 模式逻辑补测", "status": "done"}
+{"identifier": "AGEN-703", "title": "review(AI): 审核 AGEN-698 test: tools 域零测试模块补测（按报告选 2 个）", "status": "done"}
+{"identifier": "AGEN-747", "title": "fix(upstream): 同会话多次不合格解释被计为多次 SRS lapse (#1781)", "status": "in_review"}
+{"identifier": "AGEN-705", "title": "guide: voice 语音域代码导读", "status": "done"}
+{"identifier": "AGEN-757", "title": "test: question_extractor 抽取边界补测", "status": "in_review"}
+{"identifier": "AGEN-700", "title": "review(AI): 审核 AGEN-696 test: services/pocketbase_client 客户端契约单测", "status": "done"}
+{"identifier": "AGEN-694", "title": "review(AI): 审核 AGEN-690 test: mochat 通道消息解析与生命周期补测", "status": "done"}
+{"identifier": "AGEN-729", "title": "fix(reserve): markitdown 格式支持探测吞错，上传放行集合失真（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-695", "title": "review(AI): 审核 AGEN-691 test: voice/speech_text 纯函数与边界补测", "status": "done"}
+{"identifier": "AGEN-693", "title": "review(AI): 审核 AGEN-692 test: multi_user model_access 访问判定单测", "status": "done"}
+{"identifier": "AGEN-756", "title": "test: book/blocks/section 章节块结构化补测", "status": "in_review"}
+{"identifier": "AGEN-689", "title": "review(AI): 审核 AGEN-687 test: turns/request_preparer start_turn 契约补测", "status": "done"}
+{"identifier": "AGEN-746", "title": "test: vision coord_transform 纯函数表驱动补测", "status": "in_review"}
+{"identifier": "AGEN-688", "title": "review(AI): 审核 AGEN-686 test: turns/executor _run_turn 主干与错误路径补测", "status": "done"}
+{"identifier": "AGEN-755", "title": "test: turns/learning_adapter 适配契约补测", "status": "in_review"}
+{"identifier": "AGEN-685", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610051036）", "status": "done"}
+{"identifier": "AGEN-728", "title": "fix(reserve): 内建工具技能文件读取失败被吞，返回残缺结果（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-684", "title": "verify: 已消费分支聚焦测试健康度复核（≤5 分支）", "status": "done"}
+{"identifier": "AGEN-727", "title": "fix(reserve): reading duplicate_check 异常静默跳过，重复资料放行（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-683", "title": "verify: 储备池 up-* 卡对上游状态的新鲜度复核", "status": "done"}
+{"identifier": "AGEN-749", "title": "test: courses_state 状态流转补测", "status": "in_review"}
+{"identifier": "AGEN-679", "title": "review(AI): 审核 AGEN-671 test: singleflight_cache 并发语义单测", "status": "done"}
+{"identifier": "AGEN-751", "title": "test: co_writer/edit_agent 编辑代理行为契约补测", "status": "in_review"}
+{"identifier": "AGEN-682", "title": "review(AI): 审核 AGEN-675 test: keypool 轮转/冷却/耗尽单测（假密钥）", "status": "done"}
+{"identifier": "AGEN-745", "title": "test: reading_hints 提示组装与降级补测", "status": "in_review"}
+{"identifier": "AGEN-681", "title": "scan: 全仓库 naive/aware datetime 混用清点", "status": "done"}
+{"identifier": "AGEN-744", "title": "test: rag/embedding_binding 绑定与版本失败分支补测", "status": "in_review"}
+{"identifier": "AGEN-674", "title": "review(AI): 审核 AGEN-668 test: LLM reasoning 参数映射与覆盖优先级单测（#641 只读前置）", "status": "done"}
+{"identifier": "AGEN-680", "title": "scan: LightRAG 参数配置面三分类清点（#640 只读对照）", "status": "done"}
+{"identifier": "AGEN-743", "title": "test: matrix 通道解析与会话映射补测", "status": "in_review"}
+{"identifier": "AGEN-677", "title": "guide: IMA 知识库管线导读与空返回断点清单（#1500 只读对照）", "status": "done"}
+{"identifier": "AGEN-724", "title": "fix(reserve): 阅读引用来源解析失败被静默丢弃，可核对性受损（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-673", "title": "review(AI): 审核 AGEN-669 test: app_update 版本比较与发布源解析单测（#725 只读前置）", "status": "done"}
+{"identifier": "AGEN-741", "title": "test: msteams 通道弱断言增强（消息语义与错误路径）", "status": "in_review"}
+{"identifier": "AGEN-676", "title": "guide: 自更新链路导读（app_update→update_worker→launcher 交接）", "status": "done"}
+{"identifier": "AGEN-742", "title": "test: napcat 通道弱断言增强（帧语义与错误路径）", "status": "in_review"}
+{"identifier": "AGEN-678", "title": "guide: MCP 集成导读（发现/鉴权边界/工具衔接）", "status": "done"}
+{"identifier": "AGEN-672", "title": "review(AI): 审核 AGEN-670 test: cron 调度解析/触发计算/任务拾取纯逻辑单测", "status": "done"}
+{"identifier": "AGEN-718", "title": "fix(reserve): resolve_kb_mode 读取 kb_config 失败静默回退，RAG 模式失真（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-666", "title": "verify: DT-22 扫描报告对最新 main 的漂移复核", "status": "done"}
+{"identifier": "AGEN-736", "title": "test: qq 与 lark_http 通道解析契约补测", "status": "in_review"}
+{"identifier": "AGEN-665", "title": "scan: 锁内 I/O 与全局锁串行化模式清点（#1779 同类）", "status": "done"}
+{"identifier": "AGEN-667", "title": "verify: 储备分支对最新 main 可合入性复核", "status": "done"}
+{"identifier": "AGEN-735", "title": "test: dingtalk 通道消息解析与签名校验补测", "status": "in_review"}
+{"identifier": "AGEN-664", "title": "scan: web TS 类型债务热点清点", "status": "done"}
+{"identifier": "AGEN-717", "title": "fix(reserve): 会话 SQLite 启动迁移失败被吞，schema 漂移无日志（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-662", "title": "scan: 零测试/弱测试模块清点与补测优先级", "status": "done"}
+{"identifier": "AGEN-716", "title": "fix(reserve): LightRAG worker 循环 BaseException 被静默吞掉，索引失败不可见（DT-22）", "status": "in_review"}
+{"identifier": "AGEN-661", "title": "scan: Python 循环导入与函数内 lazy import 热点清点", "status": "done"}
+{"identifier": "AGEN-663", "title": "scan: deeptutor_cli 命令面一致性清点", "status": "done"}
+{"identifier": "AGEN-715", "title": "fix(upstream): EmbeddingClient 进程级全局锁在 batch_delay=0 时仍串行化所有 embedding 请求 (#1779)", "status": "in_review"}
+{"identifier": "AGEN-658", "title": "review(AI): 审核 AGEN-655 rework: 按审核意见修改 AGEN-643 test: 附件存储写入/清理/读回契约补测", "status": "done"}
+{"identifier": "AGEN-711", "title": "fix: agent token 记账失败不再静默", "status": "in_review"}
+{"identifier": "AGEN-644", "title": "review(AI): 审核 AGEN-638 test: LightRAG 索引缓存继承版本解析补测", "status": "done"}
+{"identifier": "AGEN-713", "title": "fix: 记忆 trace 清理失败不再静默", "status": "in_review"}
+{"identifier": "AGEN-647", "title": "review(AI): 审核 AGEN-639 test: config_manager 原子写与损坏兜底补测", "status": "done"}
+{"identifier": "AGEN-709", "title": "fix: KB embedding 标志对账不再静默", "status": "in_review"}
+{"identifier": "AGEN-652", "title": "docs: 引用链路（citation_manager→渲染）导读", "status": "done"}
+{"identifier": "AGEN-649", "title": "review(AI): 审核 AGEN-643 test: 附件存储写入/清理/读回契约补测", "status": "done"}
+{"identifier": "AGEN-701", "title": "test: ChatMessageList 渲染分支冒烟补测", "status": "in_review"}
+{"identifier": "AGEN-650", "title": "docs: 测试体系组织与运行方式导读", "status": "done"}
+{"identifier": "AGEN-651", "title": "docs: 插件系统加载与生命周期导读", "status": "done"}
+{"identifier": "AGEN-699", "title": "test: api/routers 零测试路由补测（按报告选 2 个）", "status": "in_review"}
+{"identifier": "AGEN-646", "title": "docs: web/ 前端架构代码导读", "status": "done"}
+{"identifier": "AGEN-702", "title": "test: admin users 批量导入/删除校验边界补测", "status": "in_review"}
+{"identifier": "AGEN-642", "title": "review(AI): 审核 AGEN-636 test: LLM 输出 JSON 提取器边界用例补测", "status": "done"}
+{"identifier": "AGEN-698", "title": "test: tools 域零测试模块补测（按报告选 2 个）", "status": "in_review"}
+{"identifier": "AGEN-350", "title": "verify(upstream): 验证 ask_user 卡片锁死主对话修复链是否闭环 (#1359)", "status": "done"}
+{"identifier": "AGEN-777", "title": "review(AI): 审核 AGEN-758 test: mastery_path 路由非流分支契约补测", "status": "todo"}
+{"identifier": "AGEN-697", "title": "test: memory/modes 模式逻辑补测", "status": "in_review"}
+{"identifier": "AGEN-351", "title": "verify(upstream): 验证学习者课程 403 修复 PR #1231 是否闭环 (#1228)", "status": "done"}
+{"identifier": "AGEN-776", "title": "review(AI): 审核 AGEN-757 test: question_extractor 抽取边界补测", "status": "todo"}
+{"identifier": "AGEN-640", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610050155）", "status": "done"}
+{"identifier": "AGEN-696", "title": "test: services/pocketbase_client 客户端契约单测", "status": "in_review"}
+{"identifier": "AGEN-641", "title": "review(AI): 审核 AGEN-634 test: 会话 sqlite_store 初始化与迁移兜底路径补测", "status": "done"}
+{"identifier": "AGEN-633", "title": "review(AI): 审核 AGEN-631 rework: 按审核意见修改 AGEN-621 fix: 伙伴条目解析失败不再静默丢内容", "status": "done"}
+{"identifier": "AGEN-692", "title": "test: multi_user model_access 访问判定单测", "status": "in_review"}
+{"identifier": "AGEN-630", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610050118）", "status": "done"}
+{"identifier": "AGEN-690", "title": "test: mochat 通道消息解析与生命周期补测", "status": "in_review"}
+{"identifier": "AGEN-632", "title": "review(AI): 审核 AGEN-629 rework: 按审核意见修改 AGEN-605 test: 会话 turn 取消路径回归", "status": "done"}
+{"identifier": "AGEN-691", "title": "test: voice/speech_text 纯函数与边界补测", "status": "in_review"}
+{"identifier": "AGEN-618", "title": "scan: WebSocket 端点错误/teardown 路径清点", "status": "done"}
+{"identifier": "AGEN-686", "title": "test: turns/executor _run_turn 主干与错误路径补测", "status": "in_review"}
+{"identifier": "AGEN-611", "title": "docs: partners 通道层代码导读", "status": "done"}
+{"identifier": "AGEN-687", "title": "test: turns/request_preparer start_turn 契约补测", "status": "in_review"}
+{"identifier": "AGEN-619", "title": "scan: 原子写 tmp 清理与 fsync 一致性清单", "status": "done"}
+{"identifier": "AGEN-671", "title": "test: singleflight_cache 并发语义单测", "status": "in_review"}
+{"identifier": "AGEN-628", "title": "review(AI): 审核 AGEN-626 rework: 按审核意见修改 AGEN-607 test: LightRAG worker 结果异常可见性回归", "status": "done"}
+{"identifier": "AGEN-675", "title": "test: keypool 轮转/冷却/耗尽单测（假密钥）", "status": "in_review"}
+{"identifier": "AGEN-627", "title": "review(AI): 审核 AGEN-621 fix: 伙伴条目解析失败不再静默丢内容", "status": "done"}
+{"identifier": "AGEN-670", "title": "test: cron 调度解析/触发计算/任务拾取纯逻辑单测", "status": "in_review"}
+{"identifier": "AGEN-625", "title": "review(AI): 审核 AGEN-605 test: 会话 turn 取消路径回归", "status": "done"}
+{"identifier": "AGEN-669", "title": "test: app_update 版本比较与发布源解析单测（#725 只读前置）", "status": "in_review"}
+{"identifier": "AGEN-624", "title": "review(AI): 审核 AGEN-620 rework: 按审核意见修改 AGEN-593 test: MinerU 本地引擎探测回归", "status": "done"}
+{"identifier": "AGEN-668", "title": "test: LLM reasoning 参数映射与覆盖优先级单测（#641 只读前置）", "status": "in_review"}
+{"identifier": "AGEN-623", "title": "review(AI): 审核 AGEN-617 rework: 按审核意见修改 AGEN-610 fix: persona 加载降级不再静默", "status": "done"}
+{"identifier": "AGEN-657", "title": "review(AI): 审核 AGEN-635 test: ProgressTracker 通知降级与进度落盘补测", "status": "in_review"}
+{"identifier": "AGEN-622", "title": "review(AI): 审核 AGEN-607 test: LightRAG worker 结果异常可见性回归", "status": "done"}
+{"identifier": "AGEN-609", "title": "docs: LLM provider_core 生命周期导读", "status": "done"}
+{"identifier": "AGEN-653", "title": "review(AI): 审核 AGEN-645 test: email 通道拉取与停止吞错路径补测", "status": "in_review"}
+{"identifier": "AGEN-608", "title": "docs: subagent 服务层代码导读", "status": "done"}
+{"identifier": "AGEN-654", "title": "review(AI): 审核 AGEN-637 test: 阅读引用解析降级语义补测", "status": "in_review"}
+{"identifier": "AGEN-616", "title": "review(AI): 审核 AGEN-593 test: MinerU 本地引擎探测回归", "status": "done"}
+{"identifier": "AGEN-655", "title": "rework: 按审核意见修改 AGEN-643 test: 附件存储写入/清理/读回契约补测", "status": "in_review"}
+{"identifier": "AGEN-614", "title": "review(AI): 审核 AGEN-594 test: memory consolidator 等待者清理回归", "status": "done"}
+{"identifier": "AGEN-645", "title": "test: email 通道拉取与停止吞错路径补测", "status": "in_review"}
+{"identifier": "AGEN-615", "title": "review(AI): 审核 AGEN-610 fix: persona 加载降级不再静默", "status": "done"}
+{"identifier": "AGEN-643", "title": "test: 附件存储写入/清理/读回契约补测", "status": "in_review"}
+{"identifier": "AGEN-594", "title": "test: memory consolidator 等待者清理回归", "status": "done"}
+{"identifier": "AGEN-613", "title": "review(AI): 审核 AGEN-596 test: markitdown 支持格式探测回归", "status": "done"}
+{"identifier": "AGEN-596", "title": "test: markitdown 支持格式探测回归", "status": "done"}
+{"identifier": "AGEN-639", "title": "test: config_manager 原子写与损坏兜底补测", "status": "in_review"}
+{"identifier": "AGEN-612", "title": "review(AI): 审核 AGEN-606 fix: 出题 WS 错误事件与日志投递不再被吞", "status": "done"}
+{"identifier": "AGEN-606", "title": "fix: 出题 WS 错误事件与日志投递不再被吞", "status": "done"}
+{"identifier": "AGEN-637", "title": "test: 阅读引用解析降级语义补测", "status": "in_review"}
+{"identifier": "AGEN-604", "title": "review(AI): 审核 AGEN-602 rework: 按审核意见修改 AGEN-592 test: napcat 帧解析与自识别回归", "status": "done"}
+{"identifier": "AGEN-638", "title": "test: LightRAG 索引缓存继承版本解析补测", "status": "in_review"}
+{"identifier": "AGEN-602", "title": "rework: 按审核意见修改 AGEN-592 test: napcat 帧解析与自识别回归", "status": "done"}
+{"identifier": "AGEN-635", "title": "test: ProgressTracker 通知降级与进度落盘补测", "status": "in_review"}
+{"identifier": "AGEN-603", "title": "review(AI): 审核 AGEN-600 rework: 按审核意见修改 AGEN-591 test: setup 差距检测与引导标记行为回归", "status": "done"}
+{"identifier": "AGEN-634", "title": "test: 会话 sqlite_store 初始化与迁移兜底路径补测", "status": "in_review"}
+{"identifier": "AGEN-601", "title": "review(AI): 审核 AGEN-557 fix(upstream): 图源教学与视觉练习垂直切片 (#1611)", "status": "done"}
+{"identifier": "AGEN-636", "title": "test: LLM 输出 JSON 提取器边界用例补测", "status": "in_review"}
+{"identifier": "AGEN-598", "title": "review(AI): 审核 AGEN-595 fix: 引用计数器恢复静默失败不再让编号错乱", "status": "done"}
+{"identifier": "AGEN-631", "title": "rework: 按审核意见修改 AGEN-621 fix: 伙伴条目解析失败不再静默丢内容", "status": "in_review"}
+{"identifier": "AGEN-599", "title": "review(AI): 审核 AGEN-592 test: napcat 帧解析与自识别回归", "status": "done"}
+{"identifier": "AGEN-629", "title": "rework: 按审核意见修改 AGEN-605 test: 会话 turn 取消路径回归", "status": "in_review"}
+{"identifier": "AGEN-595", "title": "fix: 引用计数器恢复静默失败不再让编号错乱", "status": "done"}
+{"identifier": "AGEN-626", "title": "rework: 按审核意见修改 AGEN-607 test: LightRAG worker 结果异常可见性回归", "status": "in_review"}
+{"identifier": "AGEN-589", "title": "chore: 前端 hooks 依赖与陈旧闭包扫描", "status": "done"}
+{"identifier": "AGEN-605", "title": "test: 会话 turn 取消路径回归", "status": "in_review"}
+{"identifier": "AGEN-597", "title": "review(AI): 审核 AGEN-591 test: setup 差距检测与引导标记行为回归", "status": "done"}
+{"identifier": "AGEN-621", "title": "fix: 伙伴条目解析失败不再静默丢内容", "status": "in_review"}
+{"identifier": "AGEN-590", "title": "chore: 启动/关闭顺序与单例初始化扫描", "status": "done"}
+{"identifier": "AGEN-620", "title": "rework: 按审核意见修改 AGEN-593 test: MinerU 本地引擎探测回归", "status": "in_review"}
+{"identifier": "AGEN-588", "title": "review(AI): 审核 AGEN-586 rework: 按审核意见修改 AGEN-571 fix(upstream): EPUB 响应式书页排版 (#1236)", "status": "done"}
+{"identifier": "AGEN-587", "title": "review(AI): 审核 AGEN-582 rework: 按审核意见修改 AGEN-565 test: 多用户权限矩阵边界补测", "status": "done"}
+{"identifier": "AGEN-607", "title": "test: LightRAG worker 结果异常可见性回归", "status": "in_review"}
+{"identifier": "AGEN-584", "title": "review(AI): 审核 AGEN-558 fix(upstream): 书籍/笔记章节逐章生成与断点续作 (#655)", "status": "done"}
+{"identifier": "AGEN-617", "title": "rework: 按审核意见修改 AGEN-610 fix: persona 加载降级不再静默", "status": "in_review"}
+{"identifier": "AGEN-585", "title": "review(AI): 审核 AGEN-567 test: 网页源同步补测", "status": "done"}
+{"identifier": "AGEN-610", "title": "fix: persona 加载降级不再静默", "status": "in_review"}
+{"identifier": "AGEN-583", "title": "review(AI): 审核 AGEN-573 fix(upstream): 科研原语切片：arXiv 检索导入工具 (#1629)", "status": "done"}
+{"identifier": "AGEN-566", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610042036）", "status": "done"}
+{"identifier": "AGEN-581", "title": "review(AI): 审核 AGEN-571 fix(upstream): EPUB 响应式书页排版 (#1236)", "status": "done"}
+{"identifier": "AGEN-580", "title": "review(AI): 审核 AGEN-550 test: services/base_sync 共享同步基类补测", "status": "done"}
+{"identifier": "AGEN-593", "title": "test: MinerU 本地引擎探测回归", "status": "in_review"}
+{"identifier": "AGEN-568", "title": "guide: 测验域导读（出题→判分→追问→进度）", "status": "done"}
+{"identifier": "AGEN-572", "title": "guide: 笔记本域导读（章节生成→知识卡片→导出）", "status": "done"}
+{"identifier": "AGEN-600", "title": "rework: 按审核意见修改 AGEN-591 test: setup 差距检测与引导标记行为回归", "status": "in_review"}
+{"identifier": "AGEN-579", "title": "review(AI): 审核 AGEN-565 test: 多用户权限矩阵边界补测", "status": "done"}
+{"identifier": "AGEN-574", "title": "guide: 认证与会话导读（登录→token→多用户切换）", "status": "done"}
+{"identifier": "AGEN-557", "title": "fix(upstream): 图源教学与视觉练习垂直切片 (#1611)", "status": "in_review"}
+{"identifier": "AGEN-576", "title": "chore: origin/main TODO/FIXME 全量扫描与储备卡线索", "status": "done"}
+{"identifier": "AGEN-592", "title": "test: napcat 帧解析与自识别回归", "status": "in_review"}
+{"identifier": "AGEN-578", "title": "chore: HTTP 客户端资源与超时扫描", "status": "done"}
+{"identifier": "AGEN-577", "title": "review(AI): 审核 AGEN-570 rework: 按审核意见修改 AGEN-556 test: 会话导出导入补测", "status": "done"}
+{"identifier": "AGEN-591", "title": "test: setup 差距检测与引导标记行为回归", "status": "in_review"}
+{"identifier": "AGEN-575", "title": "review(AI): 审核 AGEN-569 rework: 按审核意见修改 AGEN-554 test: LLM 流式输出解析补测", "status": "done"}
+{"identifier": "AGEN-586", "title": "rework: 按审核意见修改 AGEN-571 fix(upstream): EPUB 响应式书页排版 (#1236)", "status": "in_review"}
+{"identifier": "AGEN-552", "title": "chore: 持久化层现状扫描与 pg 方案评估 (#612)", "status": "done"}
+{"identifier": "AGEN-582", "title": "rework: 按审核意见修改 AGEN-565 test: 多用户权限矩阵边界补测", "status": "in_review"}
+{"identifier": "AGEN-553", "title": "chore: LTI 1.3 接入可行性复核备忘 (#567)", "status": "done"}
+{"identifier": "AGEN-563", "title": "review(AI): 审核 AGEN-554 test: LLM 流式输出解析补测", "status": "done"}
+{"identifier": "AGEN-558", "title": "fix(upstream): 书籍/笔记章节逐章生成与断点续作 (#655)", "status": "in_review"}
+{"identifier": "AGEN-564", "title": "review(AI): 审核 AGEN-549 test: event_bus 订阅隔离与错误传播补测", "status": "done"}
+{"identifier": "AGEN-567", "title": "test: 网页源同步补测", "status": "in_review"}
+{"identifier": "AGEN-562", "title": "review(AI): 审核 AGEN-556 test: 会话导出导入补测", "status": "done"}
+{"identifier": "AGEN-363", "title": "fix(ci): PR #1692 四个 Python 版本测试全红，查明原因并修复", "status": "done"}
+{"identifier": "AGEN-573", "title": "fix(upstream): 科研原语切片：arXiv 检索导入工具 (#1629)", "status": "in_review"}
+{"identifier": "AGEN-561", "title": "review(AI): 审核 AGEN-555 test: 提示词模板渲染补测", "status": "done"}
+{"identifier": "AGEN-571", "title": "fix(upstream): EPUB 响应式书页排版 (#1236)", "status": "in_review"}
+{"identifier": "AGEN-548", "title": "scan: 死代码与未使用导出扫描", "status": "done"}
+{"identifier": "AGEN-560", "title": "review(AI): 审核 AGEN-559 fix(upstream): 多语言集成切片：德语 UI 与提示语 locale (#684)", "status": "done"}
+{"identifier": "AGEN-559", "title": "fix(upstream): 多语言集成切片：德语 UI 与提示语 locale (#684)", "status": "done"}
+{"identifier": "AGEN-550", "title": "test: services/base_sync 共享同步基类补测", "status": "in_review"}
+{"identifier": "AGEN-565", "title": "test: 多用户权限矩阵边界补测", "status": "in_review"}
+{"identifier": "AGEN-551", "title": "guide: 学习日志域导读与 #1407 面板需求拆解", "status": "done"}
+{"identifier": "AGEN-570", "title": "rework: 按审核意见修改 AGEN-556 test: 会话导出导入补测", "status": "in_review"}
+{"identifier": "AGEN-547", "title": "scan: Windows 兼容风险扫描（路径/编码/进程）", "status": "done"}
+{"identifier": "AGEN-545", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610041525）", "status": "done"}
+{"identifier": "AGEN-569", "title": "rework: 按审核意见修改 AGEN-554 test: LLM 流式输出解析补测", "status": "in_review"}
+{"identifier": "AGEN-540", "title": "scan: web 性能预算现状扫描", "status": "done"}
+{"identifier": "AGEN-549", "title": "test: event_bus 订阅隔离与错误传播补测", "status": "in_review"}
+{"identifier": "AGEN-538", "title": "scan: 超大文件与长函数热点扫描", "status": "done"}
+{"identifier": "AGEN-543", "title": "guide: multi_user 账号与授权模块导读", "status": "done"}
+{"identifier": "AGEN-554", "title": "test: LLM 流式输出解析补测", "status": "in_review"}
+{"identifier": "AGEN-519", "title": "scan: 用户可见错误消息一致性扫描", "status": "done"}
+{"identifier": "AGEN-660", "title": "chore(upstream): cut local main to v1.6.13 integration", "status": "todo"}
+{"identifier": "AGEN-542", "title": "guide: agents 能力编排代码导读", "status": "done"}
+{"identifier": "AGEN-656", "title": "DeepTutor 批量开 PR 事故清理方案（待 evan 审批）", "status": "todo"}
+{"identifier": "AGEN-556", "title": "test: 会话导出导入补测", "status": "in_review"}
+{"identifier": "AGEN-541", "title": "guide: book 模块代码导读（教材管线全景）", "status": "done"}
+{"identifier": "AGEN-537", "title": "scan: 依赖声明与实际 import 漂移扫描", "status": "done"}
+{"identifier": "AGEN-544", "title": "review(AI): 审核 AGEN-539 fix: 上传半成品文件清理失败可见（_save_uploaded_files）", "status": "done"}
+{"identifier": "AGEN-555", "title": "test: 提示词模板渲染补测", "status": "in_review"}
+{"identifier": "AGEN-520", "title": "scan: web console 残留与调试输出分型扫描", "status": "done"}
+{"identifier": "AGEN-539", "title": "fix: 上传半成品文件清理失败可见（_save_uploaded_files）", "status": "in_review"}
+{"identifier": "AGEN-536", "title": "review(AI): 审核 AGEN-532 rework: 按审核意见修改 AGEN-495 test: KB 上传类型白名单与损坏输入边界补测", "status": "done"}
+{"identifier": "AGEN-534", "title": "review(AI): 审核 AGEN-530 rework: 按审核意见修改 AGEN-496 fix: launcher 前端构建标记/锁损坏不再静默重建", "status": "done"}
+{"identifier": "AGEN-532", "title": "rework: 按审核意见修改 AGEN-495 test: KB 上传类型白名单与损坏输入边界补测", "status": "in_review"}
+{"identifier": "AGEN-535", "title": "核实 5 个上游 PR 已合并并收口（AGEN-49/52/53/56/72）", "status": "done"}
+{"identifier": "AGEN-530", "title": "rework: 按审核意见修改 AGEN-496 fix: launcher 前端构建标记/锁损坏不再静默重建", "status": "in_review"}
+{"identifier": "AGEN-533", "title": "给待审卡补中文短标题与一行证据（AGEN-531 第②节）", "status": "in_review"}
+{"identifier": "AGEN-72", "title": "fix(session): ground rendered LaTeX selections", "status": "done"}
+{"identifier": "AGEN-526", "title": "rework: 按审核意见修改 AGEN-503 fix: OAuth 登出撤销失败不再静默（codex/codebuddy）", "status": "in_review"}
+{"identifier": "AGEN-56", "title": "feat(reading): add server-owned quiz star rewards", "status": "done"}
+{"identifier": "AGEN-527", "title": "rework: 按审核意见修改 AGEN-498 fix: KB get_info 统计失败不再静默归零", "status": "in_review"}
+{"identifier": "AGEN-53", "title": "feat(learner): expose assigned interactive books", "status": "done"}
+{"identifier": "AGEN-523", "title": "rework: 按审核意见修改 AGEN-504 test: mastery_hints 提示组装补测", "status": "in_review"}
+{"identifier": "AGEN-52", "title": "fix(learner): expose assigned reading library", "status": "done"}
+{"identifier": "AGEN-521", "title": "rework: 按审核意见修改 AGEN-494 fix: launcher 进程终止与端口清理失败可见化", "status": "in_review"}
+{"identifier": "AGEN-49", "title": "[需本地改造] Watching 私有标记与受控字幕捕获", "status": "done"}
+{"identifier": "AGEN-487", "title": "AI Projects 看板分诊续作：上游跟踪卡改 backlog、去重与 in_review 收口建议", "status": "done"}
+{"identifier": "AGEN-503", "title": "fix: OAuth 登出撤销失败不再静默（codex/codebuddy）", "status": "in_review"}
+{"identifier": "AGEN-6", "title": "recovered: workspace-scoped KB creation and single-KB move (#1595 / DT-12)", "status": "done"}
+{"identifier": "AGEN-34", "title": "DeepTutor PR 1628 settings screenshots", "status": "done"}
+{"identifier": "AGEN-511", "title": "test: paper_search_tool 解析与错误路径补测", "status": "in_review"}
+{"identifier": "AGEN-33", "title": "fix(workspace): preserve shared subagent access", "status": "done"}
+{"identifier": "AGEN-512", "title": "test: vision image_utils 纯函数补测", "status": "in_review"}
+{"identifier": "AGEN-32", "title": "feat(web-source): add bilingual source pairing (#902)", "status": "done"}
+{"identifier": "AGEN-484", "title": "fix(upstream): 双语 EPUB 共享进度与对齐选区展示（#860 剩余切片）", "status": "in_review"}
+{"identifier": "AGEN-25", "title": "docs(workflow): 整理本地 DeepTutor 运维账本", "status": "done"}
+{"identifier": "AGEN-504", "title": "test: mastery_hints 提示组装补测", "status": "in_review"}
+{"identifier": "AGEN-24", "title": "fix(web-source): 审查爬虫同目录范围逻辑", "status": "done"}
+{"identifier": "AGEN-531", "title": "AI Projects 待处理索引｜分区与原答复核对", "status": "todo"}
+{"identifier": "AGEN-490", "title": "fix(upstream): 词典类学习资源 provider 契约与生命周期（#961 切片一）", "status": "in_review"}
+{"identifier": "AGEN-63", "title": "审计七天跨工作区 token 浪费与 Kimi 额度异常", "status": "done"}
+{"identifier": "AGEN-483", "title": "test: API 鉴权依赖矩阵补测", "status": "in_review"}
+{"identifier": "AGEN-59", "title": "核对 Kimi ¥99 套餐 5h 窗口快速耗尽与用量明细", "status": "done"}
+{"identifier": "AGEN-493", "title": "fix: 伙伴通道 stop/logout 吞错收口为幂等带日志关闭", "status": "in_review"}
+{"identifier": "AGEN-488", "title": "每日 issue 体检：issue_lint（C4/D12/D13/D11）自动比对并写汇总卡", "status": "done"}
+{"identifier": "AGEN-529", "title": "review(AI): 审核 AGEN-527 rework: 按审核意见修改 AGEN-498 fix: KB get_info 统计失败不再静默归零", "status": "done"}
+{"identifier": "AGEN-494", "title": "fix: launcher 进程终止与端口清理失败可见化", "status": "in_review"}
+{"identifier": "AGEN-528", "title": "review(AI): 审核 AGEN-526 rework: 按审核意见修改 AGEN-503 fix: OAuth 登出撤销失败不再静默（codex/codebuddy）", "status": "done"}
+{"identifier": "AGEN-524", "title": "review(AI): 审核 AGEN-521 rework: 按审核意见修改 AGEN-494 fix: launcher 进程终止与端口清理失败可见化", "status": "done"}
+{"identifier": "AGEN-495", "title": "test: KB 上传类型白名单与损坏输入边界补测", "status": "in_review"}
+{"identifier": "AGEN-525", "title": "review(AI): 审核 AGEN-523 rework: 按审核意见修改 AGEN-504 test: mastery_hints 提示组装补测", "status": "done"}
+{"identifier": "AGEN-496", "title": "fix: launcher 前端构建标记/锁损坏不再静默重建", "status": "in_review"}
+{"identifier": "AGEN-522", "title": "review(AI): 审核 AGEN-503 fix: OAuth 登出撤销失败不再静默（codex/codebuddy）", "status": "done"}
+{"identifier": "AGEN-498", "title": "fix: KB get_info 统计失败不再静默归零", "status": "in_review"}
+{"identifier": "AGEN-517", "title": "guide: tools 工具面全景导读", "status": "done"}
+{"identifier": "AGEN-518", "title": "guide: 事件与进度链路代码导读", "status": "done"}
+{"identifier": "AGEN-516", "title": "guide: parsing 解析引擎代码导读", "status": "done"}
+{"identifier": "AGEN-480", "title": "test: plugins entry-point 加载器契约补测", "status": "in_review"}
+{"identifier": "AGEN-515", "title": "review(AI): 审核 AGEN-511 test: paper_search_tool 解析与错误路径补测", "status": "done"}
+{"identifier": "AGEN-513", "title": "guide: i18n 体系代码导读", "status": "done"}
+{"identifier": "AGEN-486", "title": "处理 evan 6 条无人接手的回复（AGEN-93/144/145/129/47/86）", "status": "in_review"}
+{"identifier": "AGEN-514", "title": "review(AI): 审核 AGEN-512 test: vision image_utils 纯函数补测", "status": "done"}
+{"identifier": "AGEN-479", "title": "fix(upstream): 双语阅读移动端导航收敛与词典底部卡片（#916 剩余切片）", "status": "in_review"}
+{"identifier": "AGEN-492", "title": "fix(upstream): Projects 数据模型与 CRUD API（#403 切片一）", "status": "done"}
+{"identifier": "AGEN-415", "title": "GLM 近 7 天成效报告（按代理）", "status": "in_review"}
+{"identifier": "AGEN-510", "title": "review(AI): 审核 AGEN-494 fix: launcher 进程终止与端口清理失败可见化", "status": "done"}
+{"identifier": "AGEN-475", "title": "rework: 按审核意见修改 AGEN-441 test: 学习记录 API 账号隔离与边界补测", "status": "in_review"}
+{"identifier": "AGEN-509", "title": "review(AI): 审核 AGEN-483 test: API 鉴权依赖矩阵补测", "status": "done"}
+{"identifier": "AGEN-471", "title": "rework: 按审核意见修改 AGEN-444 test: StandaloneComposer 主输入组件冒烟补测", "status": "in_review"}
+{"identifier": "AGEN-508", "title": "review(AI): 审核 AGEN-504 test: mastery_hints 提示组装补测", "status": "done"}
+{"identifier": "AGEN-467", "title": "fix(upstream): 章节级角色/实体关系图谱（#932）", "status": "in_review"}
+{"identifier": "AGEN-507", "title": "review(AI): 审核 AGEN-484 fix(upstream): 双语 EPUB 共享进度与对齐选区展示（#860 剩余切片）", "status": "done"}
+{"identifier": "AGEN-506", "title": "review(AI): 审核 AGEN-490 fix(upstream): 词典类学习资源 provider 契约与生命周期（#961 切片一）", "status": "done"}
+{"identifier": "AGEN-465", "title": "rework: 按审核意见修改 AGEN-439 test: tex_downloader/tex_chunker 工具链补测", "status": "in_review"}
+{"identifier": "AGEN-505", "title": "review(AI): 审核 AGEN-493 fix: 伙伴通道 stop/logout 吞错收口为幂等带日志关闭", "status": "done"}
+{"identifier": "AGEN-443", "title": "test: VisualizationViewer 渲染分支前端补测", "status": "in_review"}
+{"identifier": "AGEN-502", "title": "review(AI): 审核 AGEN-498 fix: KB get_info 统计失败不再静默归零", "status": "done"}
+{"identifier": "AGEN-444", "title": "test: StandaloneComposer 主输入组件冒烟补测", "status": "in_review"}
+{"identifier": "AGEN-501", "title": "review(AI): 审核 AGEN-496 fix: launcher 前端构建标记/锁损坏不再静默重建", "status": "done"}
+{"identifier": "AGEN-459", "title": "rework: 按审核意见修改 AGEN-433 test: 出题路由 Tee 输出转发失败回归补测", "status": "in_review"}
+{"identifier": "AGEN-500", "title": "review(AI): 审核 AGEN-495 test: KB 上传类型白名单与损坏输入边界补测", "status": "done"}
+{"identifier": "AGEN-489", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610041033）", "status": "done"}
+{"identifier": "AGEN-457", "title": "rework: 按审核意见修改 AGEN-432 test: file_library 文件删除与库同步失败路径补测", "status": "in_review"}
+{"identifier": "AGEN-485", "title": "scan: 文档与代码漂移扫描", "status": "done"}
+{"identifier": "AGEN-499", "title": "review(AI): 审核 AGEN-482 test: rag service 检索静默降级路径补测", "status": "done"}
+{"identifier": "AGEN-482", "title": "test: rag service 检索静默降级路径补测", "status": "done"}
+{"identifier": "AGEN-497", "title": "review(AI): 审核 AGEN-480 test: plugins entry-point 加载器契约补测", "status": "done"}
+{"identifier": "AGEN-478", "title": "guide: 可视化/Mermaid 渲染链路导读", "status": "done"}
+{"identifier": "AGEN-481", "title": "review(AI): 审核 AGEN-479 fix(upstream): 双语阅读移动端导航收敛与词典底部卡片（#916 剩余切片）", "status": "done"}
+{"identifier": "AGEN-455", "title": "rework: 按审核意见修改 AGEN-270 fix: 发送后草稿清空保存失败不再复活旧草稿（ChatComposer）", "status": "in_review"}
+{"identifier": "AGEN-1", "title": "Connect a runtime to start with Mika", "status": "done"}
+{"identifier": "AGEN-152", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03（链式第 6 轮）", "status": "done"}
+{"identifier": "AGEN-441", "title": "test: 学习记录 API 账号隔离与边界补测", "status": "in_review"}
+{"identifier": "AGEN-128", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03（链式第 5 轮）", "status": "done"}
+{"identifier": "AGEN-85", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03（链式第 4 轮）", "status": "done"}
+{"identifier": "AGEN-78", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03（链式第 3 轮 · scan_no_target）", "status": "done"}
+{"identifier": "AGEN-439", "title": "test: tex_downloader/tex_chunker 工具链补测", "status": "in_review"}
+{"identifier": "AGEN-76", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03（链式第 2 轮）", "status": "done"}
+{"identifier": "AGEN-75", "title": "DeepTutor 额度调度 - 北京批次 2026-10-03", "status": "done"}
+{"identifier": "AGEN-58", "title": "DeepTutor 用户授权立即真实执行轮", "status": "done"}
+{"identifier": "AGEN-438", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610040532）", "status": "in_review"}
+{"identifier": "AGEN-57", "title": "DeepTutor 固定窗口补充轮 - 北京批次 2026-09-30", "status": "done"}
+{"identifier": "AGEN-433", "title": "test: 出题路由 Tee 输出转发失败回归补测", "status": "in_review"}
+{"identifier": "AGEN-37", "title": "DeepTutor 额度调度 - 北京批次 2026-09-30", "status": "done"}
+{"identifier": "AGEN-460", "title": "scan: en/zh i18n 缺键与硬编码文案扫描", "status": "done"}
+{"identifier": "AGEN-477", "title": "guide: deeptutor_cli 命令面导读", "status": "done"}
+{"identifier": "AGEN-432", "title": "test: file_library 文件删除与库同步失败路径补测", "status": "in_review"}
+{"identifier": "AGEN-468", "title": "guide: api/routers 路由全景导读（挂载/鉴权/WebSocket）", "status": "done"}
+{"identifier": "AGEN-476", "title": "review(AI): 审核 AGEN-475 rework: 按审核意见修改 AGEN-441 test: 学习记录 API 账号隔离与边界补测", "status": "done"}
+{"identifier": "AGEN-474", "title": "review(AI): 审核 AGEN-471 rework: 按审核意见修改 AGEN-444 test: StandaloneComposer 主输入组件冒烟补测", "status": "done"}
+{"identifier": "AGEN-377", "title": "fix(upstream): 周期性 LLM 健康检查可禁用与可配置 (#451)", "status": "in_review"}
+{"identifier": "AGEN-473", "title": "review(AI): 审核 AGEN-467 fix(upstream): 章节级角色/实体关系图谱（#932）", "status": "done"}
+{"identifier": "AGEN-470", "title": "review(AI): 审核 AGEN-441 test: 学习记录 API 账号隔离与边界补测", "status": "done"}
+{"identifier": "AGEN-419", "title": "test: memory snapshot adapters 时间解析失败路径补测", "status": "in_review"}
+{"identifier": "AGEN-469", "title": "review(AI): 审核 AGEN-465 rework: 按审核意见修改 AGEN-439 test: tex_downloader/tex_chunker 工具链补测", "status": "done"}
+{"identifier": "AGEN-451", "title": "scan: 前后端 API 路由契约对照扫描", "status": "done"}
+{"identifier": "AGEN-414", "title": "rework: 按审核意见修改 AGEN-156 fix: test_runtime_context 时区断言跨时区稳定（3 例既有失败）", "status": "in_review"}
+{"identifier": "AGEN-466", "title": "review(AI): 审核 AGEN-443 test: VisualizationViewer 渲染分支前端补测", "status": "done"}
+{"identifier": "AGEN-464", "title": "review(AI): 审核 AGEN-444 test: StandaloneComposer 主输入组件冒烟补测", "status": "done"}
+{"identifier": "AGEN-408", "title": "rework: 按审核意见修改 AGEN-163 fix: 记忆整合遇到损坏 L2 文件不再静默跳过（确认是否会覆写丢数据）", "status": "in_review"}
+{"identifier": "AGEN-448", "title": "docs: 出题链路代码导读（ideation→generation）", "status": "done"}
+{"identifier": "AGEN-449", "title": "docs: 本地存储层代码导读（file_library 与上传落盘）", "status": "done"}
+{"identifier": "AGEN-463", "title": "review(AI): 审核 AGEN-459 rework: 按审核意见修改 AGEN-433 test: 出题路由 Tee 输出转发失败回归补测", "status": "done"}
+{"identifier": "AGEN-462", "title": "review(AI): 审核 AGEN-455 rework: 按审核意见修改 AGEN-270 fix: 发送后草稿清空保存失败不再复活旧草稿（ChatComposer）", "status": "done"}
+{"identifier": "AGEN-405", "title": "rework: 按审核意见修改 AGEN-274 fix: 工具定义加载失败不再从选项中无声消失（build_tool_options）", "status": "in_review"}
+{"identifier": "AGEN-445", "title": "docs: Skills/MCP 工具层代码导读", "status": "done"}
+{"identifier": "AGEN-447", "title": "docs: runtime 更新链路代码导读（launcher handoff / update_worker）", "status": "done"}
+{"identifier": "AGEN-390", "title": "rework: 按审核意见修改 AGEN-286 test: Telegram 通道消息解析与发送补测", "status": "in_review"}
+{"identifier": "AGEN-461", "title": "review(AI): 审核 AGEN-457 rework: 按审核意见修改 AGEN-432 test: file_library 文件删除与库同步失败路径补测", "status": "done"}
+{"identifier": "AGEN-458", "title": "review(AI): 审核 AGEN-442 test: MarginNote4 服务端桥路由契约补测", "status": "done"}
+{"identifier": "AGEN-442", "title": "test: MarginNote4 服务端桥路由契约补测", "status": "done"}
+{"identifier": "AGEN-367", "title": "pr-ready: 准备提交 AGEN-266 feat(chat): 按审核意见返工分叉消息导航常显（#1410 相关）", "status": "in_review"}
+{"identifier": "AGEN-454", "title": "review(AI): 审核 AGEN-439 test: tex_downloader/tex_chunker 工具链补测", "status": "done"}
+{"identifier": "AGEN-366", "title": "pr-ready: 准备提交 AGEN-269 fix(partners): notebook 索引原子写入，损坏时按磁盘文件重建而非覆写", "status": "in_review"}
+{"identifier": "AGEN-456", "title": "review(AI): 审核 AGEN-440 test: 会话历史搜索匹配回归补测（#1678 场景）", "status": "done"}
+{"identifier": "AGEN-440", "title": "test: 会话历史搜索匹配回归补测（#1678 场景）", "status": "done"}
+{"identifier": "AGEN-452", "title": "scan: 日志与异常消息敏感信息泄漏扫描", "status": "done"}
+{"identifier": "AGEN-453", "title": "scan: Python fire-and-forget 异步任务扫描", "status": "done"}
+{"identifier": "AGEN-352", "title": "verify(upstream): 验证聊天 PDF 附件工具报错修复链是否闭环 (#1223)", "status": "done"}
+{"identifier": "AGEN-450", "title": "review(AI): 审核 AGEN-433 test: 出题路由 Tee 输出转发失败回归补测", "status": "done"}
+{"identifier": "AGEN-446", "title": "review(AI): 审核 AGEN-432 test: file_library 文件删除与库同步失败路径补测", "status": "done"}
+{"identifier": "AGEN-359", "title": "pr-ready: 准备提交 AGEN-262 fix(partners/feishu): 卡片正文丢失、视频下载类型非法、@ 占位符透传（让 AGEN-145 的 4 个红测试转绿）", "status": "in_review"}
+{"identifier": "AGEN-437", "title": "review(AI): 审核 AGEN-270 fix: 发送后草稿清空保存失败不再复活旧草稿（ChatComposer）", "status": "done"}
+{"identifier": "AGEN-368", "title": "test: epub_bilingual 双语管线单元测试补齐", "status": "in_review"}
+{"identifier": "AGEN-429", "title": "review: 复核开放 PR #1670（MinerU 本地失败原因透传）", "status": "done"}
+{"identifier": "AGEN-436", "title": "review(AI): 审核 AGEN-263 fix(knowledge): 删除默认 KB 后默认值失效、重名注册覆盖元数据（让 AGEN-144 的 2 个红测试转绿）", "status": "done"}
+{"identifier": "AGEN-301", "title": "batch1-prep: 知识库吞错合集 PR 分支（AGEN-268 + AGEN-253）", "status": "in_review"}
+{"identifier": "AGEN-435", "title": "review(AI): 审核 AGEN-408 rework: 按审核意见修改 AGEN-163 fix: 记忆整合遇到损坏 L2 文件不再静默跳过（确认是否会覆写丢数据）", "status": "done"}
+{"identifier": "AGEN-427", "title": "review: 复核已合并 PR #1466（#1454 codex 凭据失效快速失败）", "status": "done"}
+{"identifier": "AGEN-428", "title": "review: 复核开放 PR #1243（#1242 MN4 原生 add-on 捆绑）", "status": "done"}
+{"identifier": "AGEN-434", "title": "review(AI): 审核 AGEN-412 test: co_writer docx_converter 吞错分支补测", "status": "done"}
+{"identifier": "AGEN-355", "title": "test: question WebSocket 与 stdout tee 错误路径测试", "status": "in_review"}
+{"identifier": "AGEN-412", "title": "test: co_writer docx_converter 吞错分支补测", "status": "done"}
+{"identifier": "AGEN-354", "title": "test: KB 进度 WebSocket 错误路径回归测试", "status": "in_review"}
+{"identifier": "AGEN-431", "title": "review(AI): 审核 AGEN-419 test: memory snapshot adapters 时间解析失败路径补测", "status": "done"}
+{"identifier": "AGEN-430", "title": "review(AI): 审核 AGEN-377 fix(upstream): 周期性 LLM 健康检查可禁用与可配置 (#451)", "status": "done"}
+{"identifier": "AGEN-349", "title": "fix(chat): let a pending ask_user card submit after its turn completes（#1278 回归，Claude 已诊断）", "status": "in_review"}
+{"identifier": "AGEN-413", "title": "review(AI): 审核 AGEN-153 fix: 课程删除失败不再无反馈跳转（courses 页 deleteCourse）", "status": "done"}
+{"identifier": "AGEN-348", "title": "fix(chat): 修正草稿合并逻辑，恢复失败后新输入不再丢（AGEN-303 第 1 批分支提交前必修）", "status": "in_review"}
+{"identifier": "AGEN-417", "title": "review(AI): 审核 AGEN-414 rework: 按审核意见修改 AGEN-156 fix: test_runtime_context 时区断言跨时区稳定（3 例既有失败）", "status": "done"}
+{"identifier": "AGEN-416", "title": "review(AI): 审核 AGEN-154 fix: UI 设置文件损坏时不再静默重置为默认（load_ui_settings）", "status": "done"}
+{"identifier": "AGEN-347", "title": "gate(AGY): 第 1 批提交前复核 AGEN-306 测验追问会话写回失败可见（1 个提交）", "status": "in_review"}
+{"identifier": "AGEN-425", "title": "docs: Co-Writer 笔记模块代码导读", "status": "done"}
+{"identifier": "AGEN-346", "title": "gate(AGY): 第 1 批提交前复核 AGEN-304 RAG/向量化吞错日志合集（3 个提交）", "status": "in_review"}
+{"identifier": "AGEN-424", "title": "docs: 嵌入与索引进度链路代码导读", "status": "done"}
+{"identifier": "AGEN-345", "title": "gate(AGY): 第 1 批提交前复核 AGEN-302 启动/升级吞错合集（3 个提交）", "status": "in_review"}
+{"identifier": "AGEN-423", "title": "docs: 聊天/Agent 运行时模块代码导读", "status": "done"}
+{"identifier": "AGEN-344", "title": "gate(AGY): 第 1 批提交前复核 AGEN-301 知识库吞错合集（4 个提交）", "status": "in_review"}
+{"identifier": "AGEN-426", "title": "review: 复核已合并 PR #1513（#1500 空检索结果上报）", "status": "done"}
+{"identifier": "AGEN-342", "title": "修 CI：workout-cool PR #244 lint 失败（分支落后 main，需同步后重跑 lint）", "status": "in_review"}
+{"identifier": "AGEN-421", "title": "scan: TS 空 catch 与 no-op .catch 分型清单", "status": "done"}
+{"identifier": "AGEN-343", "title": "修复：AddonLib index.d.ts 无法通过 TypeScript 声明检查（marginnoteapp/AddonLib#2）", "status": "in_review"}
+{"identifier": "AGEN-395", "title": "Multica v0.6.1｜升级兼容适配与隔离验收", "status": "done"}
+{"identifier": "AGEN-307", "title": "batch1-prep: Word 表格解析失败保留占位行 PR 分支（AGEN-212）", "status": "in_review"}
+{"identifier": "AGEN-378", "title": "fix(upstream): 知识库支持 EPUB 文档摄入 (#429)", "status": "done"}
+{"identifier": "AGEN-305", "title": "batch1-prep: 无效索引错误分类 PR 分支（AGEN-264，上游 #440）", "status": "in_review"}
+{"identifier": "AGEN-410", "title": "卡面刷新｜9 张路线图卡一屏简报置顶 + 历史记录（等升级回归 PASS 后放行）", "status": "done"}
+{"identifier": "AGEN-306", "title": "batch1-prep: 测验追问会话写回失败可见 PR 分支（AGEN-250）", "status": "in_review"}
+{"identifier": "AGEN-422", "title": "孤儿测试进程清理｜launchd 每 30 分钟（orphan_procs --kill）", "status": "done"}
+{"identifier": "AGEN-303", "title": "batch1-prep: 聊天草稿恢复失败保护 PR 分支（AGEN-209）", "status": "in_review"}
+{"identifier": "AGEN-409", "title": "升级回归｜智能体与小队治理 R1–R8（升级完成后执行，只读 + Pilot 探针）", "status": "done"}
+{"identifier": "AGEN-302", "title": "batch1-prep: 启动/升级吞错合集 PR 分支（AGEN-258 + AGEN-221 + AGEN-215）", "status": "in_review"}
+{"identifier": "AGEN-418", "title": "fix(CI): DeepTutor 共同失败（5 PR） 2148d3d6", "status": "done"}
+{"identifier": "AGEN-304", "title": "batch1-prep: RAG/向量化吞错日志合集 PR 分支（AGEN-261 + AGEN-237 + AGEN-207）", "status": "in_review"}
+{"identifier": "AGEN-392", "title": "fix(CI): DeepTutor 共同失败（7 PR） cab4a4a8", "status": "done"}
+{"identifier": "AGEN-411", "title": "review(AI): 审核 AGEN-155 fix: KB 进度广播失败不再完全静默（progress_tracker._notify）", "status": "done"}
+{"identifier": "AGEN-288", "title": "test: ChatStateAdapter 流式状态适配补测", "status": "in_review"}
+{"identifier": "AGEN-407", "title": "review(AI): 审核 AGEN-405 rework: 按审核意见修改 AGEN-274 fix: 工具定义加载失败不再从选项中无声消失（build_tool_options）", "status": "done"}
+{"identifier": "AGEN-289", "title": "test: co_writer 路由契约补测", "status": "in_review"}
+{"identifier": "AGEN-406", "title": "review(AI): 审核 AGEN-156 fix: test_runtime_context 时区断言跨时区稳定（3 例既有失败）", "status": "done"}
+{"identifier": "AGEN-287", "title": "test: runtime launcher 生命周期边界补测", "status": "in_review"}
+{"identifier": "AGEN-404", "title": "review(AI): 审核 AGEN-272 fix: 伙伴配置页资产/工具选项加载失败给出可见错误态", "status": "done"}
+{"identifier": "AGEN-403", "title": "review(AI): 审核 AGEN-163 fix: 记忆整合遇到损坏 L2 文件不再静默跳过（确认是否会覆写丢数据）", "status": "done"}
+{"identifier": "AGEN-283", "title": "fix: GraphRAG 持久化 provider 解析宽 except 收窄并告警", "status": "in_review"}
+{"identifier": "AGEN-394", "title": "review(AI): 审核 AGEN-390 rework: 按审核意见修改 AGEN-286 test: Telegram 通道消息解析与发送补测", "status": "done"}
+{"identifier": "AGEN-286", "title": "test: Telegram 通道消息解析与发送补测", "status": "in_review"}
+{"identifier": "AGEN-393", "title": "review(AI): 审核 AGEN-274 fix: 工具定义加载失败不再从选项中无声消失（build_tool_options）", "status": "done"}
+{"identifier": "AGEN-284", "title": "test: 出题 pipeline 产物契约补测（question/pipeline.py）", "status": "in_review"}
+{"identifier": "AGEN-391", "title": "review(AI): 审核 AGEN-273 fix: 数据迁移 operations 轮询连续失败可见（不再静默吞）", "status": "done"}
+{"identifier": "AGEN-285", "title": "test: QuizViewer 组件冒烟与判分交互补测", "status": "in_review"}
+{"identifier": "AGEN-389", "title": "review(AI): 审核 AGEN-280 refactor: quiz_judge WS teardown 收敛为幂等清理并留痕", "status": "done"}
+{"identifier": "AGEN-281", "title": "fix: atomic_write fsync 失败可见化，持久化语义不再静默弱化", "status": "in_review"}
+{"identifier": "AGEN-353", "title": "verify(upstream): 验证首句卡循环修复 PR #1436 是否闭环 (#1421)", "status": "done"}
+{"identifier": "AGEN-280", "title": "refactor: quiz_judge WS teardown 收敛为幂等清理并留痕", "status": "in_review"}
+{"identifier": "AGEN-388", "title": "review(AI): 审核 AGEN-285 test: QuizViewer 组件冒烟与判分交互补测", "status": "done"}
+{"identifier": "AGEN-273", "title": "fix: 数据迁移 operations 轮询连续失败可见（不再静默吞）", "status": "in_review"}
+{"identifier": "AGEN-387", "title": "review(AI): 审核 AGEN-284 test: 出题 pipeline 产物契约补测（question/pipeline.py）", "status": "done"}
+{"identifier": "AGEN-274", "title": "fix: 工具定义加载失败不再从选项中无声消失（build_tool_options）", "status": "in_review"}
+{"identifier": "AGEN-386", "title": "review(AI): 审核 AGEN-286 test: Telegram 通道消息解析与发送补测", "status": "done"}
+{"identifier": "AGEN-163", "title": "fix: 记忆整合遇到损坏 L2 文件不再静默跳过（确认是否会覆写丢数据）", "status": "in_review"}
+{"identifier": "AGEN-360", "title": "verify(settings): 复现上游 #1630，决定本账号 PR #1634 补修复还是把 Fixes 改为 Refs", "status": "done"}
+{"identifier": "AGEN-272", "title": "fix: 伙伴配置页资产/工具选项加载失败给出可见错误态", "status": "in_review"}
+{"identifier": "AGEN-385", "title": "review(AI): 审核 AGEN-283 fix: GraphRAG 持久化 provider 解析宽 except 收窄并告警", "status": "done"}
+{"identifier": "AGEN-156", "title": "fix: test_runtime_context 时区断言跨时区稳定（3 例既有失败）", "status": "in_review"}
+{"identifier": "AGEN-383", "title": "review(AI): 审核 AGEN-282 fix: 伙伴出站消息派发超时语义核实并可见化", "status": "done"}
+{"identifier": "AGEN-155", "title": "fix: KB 进度广播失败不再完全静默（progress_tracker._notify）", "status": "in_review"}
+{"identifier": "AGEN-282", "title": "fix: 伙伴出站消息派发超时语义核实并可见化", "status": "done"}
+{"identifier": "AGEN-382", "title": "review(upstream): 复核 age-aware 阅读按钮草稿 PR #1420 (#1419)", "status": "done"}
+{"identifier": "AGEN-153", "title": "fix: 课程删除失败不再无反馈跳转（courses 页 deleteCourse）", "status": "in_review"}
+{"identifier": "AGEN-381", "title": "review(AI): 审核 AGEN-368 test: epub_bilingual 双语管线单元测试补齐", "status": "done"}
+{"identifier": "AGEN-154", "title": "fix: UI 设置文件损坏时不再静默重置为默认（load_ui_settings）", "status": "in_review"}
+{"identifier": "AGEN-375", "title": "guide: 快速上手与部署导读（本地/compose）", "status": "done"}
+{"identifier": "AGEN-268", "title": "pr-later: 合集 知识库吞错（AGEN-136 修正 + AGEN-135 + AGEN-134）", "status": "in_review"}
+{"identifier": "AGEN-379", "title": "fix(upstream): 设置 value-free profile 导出（#1209 切片）", "status": "done"}
+{"identifier": "AGEN-264", "title": "pr-ready: 准备提交 AGEN-133 fix(rag): 按审核意见打磨 #440 误分类修复", "status": "in_review"}
+{"identifier": "AGEN-374", "title": "review(AI): 审核 AGEN-287 test: runtime launcher 生命周期边界补测", "status": "done"}
+{"identifier": "AGEN-370", "title": "scan: 118 处宽泛 except 分型扫描清单", "status": "done"}
+{"identifier": "AGEN-263", "title": "fix(knowledge): 删除默认 KB 后默认值失效、重名注册覆盖元数据（让 AGEN-144 的 2 个红测试转绿）", "status": "in_review"}
+{"identifier": "AGEN-373", "title": "review(AI): 审核 AGEN-289 test: co_writer 路由契约补测", "status": "done"}
+{"identifier": "AGEN-269", "title": "fix(partners): notebook 索引原子写入，损坏时按磁盘文件重建而非覆写", "status": "in_review"}
+{"identifier": "AGEN-371", "title": "guide: partners 模块导读（通道/总线/配置）", "status": "done"}
+{"identifier": "AGEN-270", "title": "fix: 发送后草稿清空保存失败不再复活旧草稿（ChatComposer）", "status": "in_review"}
+{"identifier": "AGEN-380", "title": "review(upstream): 复核 Windows 路径分隔符契约测试修复 PR #1698 (#1696)", "status": "done"}
+{"identifier": "AGEN-266", "title": "feat(chat): 按审核意见返工分叉消息导航常显（#1410 相关）", "status": "in_review"}
+{"identifier": "AGEN-372", "title": "review(AI): 审核 AGEN-355 test: question WebSocket 与 stdout tee 错误路径测试", "status": "done"}
+{"identifier": "AGEN-262", "title": "fix(partners/feishu): 卡片正文丢失、视频下载类型非法、@ 占位符透传（让 AGEN-145 的 4 个红测试转绿）", "status": "in_review"}
+{"identifier": "AGEN-369", "title": "test: web 数学公式渲染与选区映射测试", "status": "done"}
+{"identifier": "AGEN-114", "title": "test: Question Notebook API 契约补测", "status": "done"}
+{"identifier": "AGEN-119", "title": "fix: notebook 索引重建不再静默丢弃损坏条目", "status": "done"}
+{"identifier": "AGEN-118", "title": "fix: PathService 重置失败不再静默写错 home（init_cmd 与 launcher 两处）", "status": "done"}
+{"identifier": "AGEN-120", "title": "fix: 追问会话 ID 写回笔记失败不再静默丢失关联", "status": "done"}
+{"identifier": "AGEN-125", "title": "test: citation_manager payload 容错补测", "status": "done"}
+{"identifier": "AGEN-122", "title": "test: KB 上传/删除路由守卫契约补测", "status": "done"}
+{"identifier": "AGEN-126", "title": "test: 前端 KB client 请求契约补测", "status": "done"}
+{"identifier": "AGEN-124", "title": "test: quiz_judge 判分单元补测", "status": "done"}
+{"identifier": "AGEN-123", "title": "test: ChatWorkspace 冒烟与流式状态补测", "status": "done"}
+{"identifier": "AGEN-127", "title": "test: book engine 阶段流转补测", "status": "done"}
+{"identifier": "AGEN-143", "title": "test: deep_research 四阶段编排契约补测", "status": "done"}
+{"identifier": "AGEN-141", "title": "fix: 图片描述批量进度失败不再静默（_describe_one）", "status": "done"}
+{"identifier": "AGEN-148", "title": "test: 前端设置 store 持久化与归一化补测", "status": "done"}
+{"identifier": "AGEN-142", "title": "fix: 出题 WebSocket 错误事件发送失败不再被吞（websocket_mimic_generate）", "status": "done"}
+{"identifier": "AGEN-147", "title": "test: 沉浸阅读进度 API 契约补测", "status": "done"}
+{"identifier": "AGEN-150", "title": "test: 会话存储降级分支补测（pocketbase_store）", "status": "done"}
+{"identifier": "AGEN-160", "title": "fix: Codex 登出时令牌吊销失败不再静默", "status": "done"}
+{"identifier": "AGEN-240", "title": "pr-ready: 准备提交 AGEN-223 rework: 按审核意见修改 AGEN-151 test: Markdown 展示转义安全补测", "status": "in_review"}
+{"identifier": "AGEN-138", "title": "fix: 更新交接的失败标记不再被吞（_handoff_pending_update）", "status": "done"}
+{"identifier": "AGEN-137", "title": "fix: 文件夹同步状态写入失败不再静默（update_folder_sync_state）", "status": "done"}
+{"identifier": "AGEN-159", "title": "fix: LightRAG meta.json 损坏时不再静默改用路径哈希工作区名", "status": "done"}
+{"identifier": "AGEN-161", "title": "fix: 记忆快照跳过损坏文件时记日志并计数（snapshot/adapters.py）", "status": "done"}
+{"identifier": "AGEN-139", "title": "fix: update_worker 状态加载失败不再静默继续", "status": "done"}
+{"identifier": "AGEN-164", "title": "fix: CodeBuddy 工具调用中断失败不再静默（后台生成可能继续消耗）", "status": "done"}
+{"identifier": "AGEN-140", "title": "fix: embedding 批次进度回调失败不再静默", "status": "done"}
+{"identifier": "AGEN-146", "title": "test: 前端 memory-graph 纯函数补测", "status": "done"}
+{"identifier": "AGEN-158", "title": "fix: 迁移依赖闭包跳过损坏文件时给出可见告警（workspace/dependencies.py）", "status": "done"}
+{"identifier": "AGEN-165", "title": "test: 记忆 API 路由契约补测（api/routers/memory.py，覆盖 31.9%）", "status": "done"}
+{"identifier": "AGEN-166", "title": "test: 书籍 spine_synthesizer 补测（book/agents，覆盖 14.0%）", "status": "done"}
+{"identifier": "AGEN-206", "title": "rework: 按审核意见修改 AGEN-157 fix: 沙箱 runner 资源限额设置失败不再静默（_apply rlimit）", "status": "done"}
+{"identifier": "AGEN-267", "title": "test(mastery): 为上游 PR #1692 准备 follow-up 提交（修 CI + 禁止引用选项字母）", "status": "done"}
+{"identifier": "AGEN-223", "title": "rework: 按审核意见修改 AGEN-151 test: Markdown 展示转义安全补测", "status": "in_review"}
+{"identifier": "AGEN-358", "title": "review(AI): 审核 AGEN-288 test: ChatStateAdapter 流式状态适配补测", "status": "done"}
+{"identifier": "AGEN-362", "title": "review(AI): 审核 AGEN-348 fix(chat): 修正草稿合并逻辑，恢复失败后新输入不再丢（AGEN-303 第 1 批分支提交前必修）", "status": "done"}
+{"identifier": "AGEN-364", "title": "review(AI): 审核 AGEN-349 fix(chat): let a pending ask_user card submit after its turn completes（#1278 回归，Claude 已诊断）", "status": "done"}
+{"identifier": "AGEN-361", "title": "test: read_aloud 模块单元测试补齐", "status": "done"}
+{"identifier": "AGEN-365", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610040028）", "status": "done"}
+{"identifier": "AGEN-214", "title": "pr-ready: 准备提交 AGEN-199 rework: 按审核意见修改 AGEN-117 fix: workspace 迁移不再跳过损坏日志，pending 恢复检查生效", "status": "in_review"}
+{"identifier": "AGEN-277", "title": "review(AI): 审核 AGEN-269 fix(partners): notebook 索引原子写入，损坏时按磁盘文件重建而非覆写", "status": "done"}
+{"identifier": "AGEN-276", "title": "review(AI): 审核 AGEN-266 feat(chat): 按审核意见返工分叉消息导航常显（#1410 相关）", "status": "done"}
+{"identifier": "AGEN-212", "title": "pr-ready: 准备提交 AGEN-200 rework: 按审核意见修改 AGEN-162 fix: docx 表格行解析失败不再静默丢行（co_writer/docx_converter.py）", "status": "in_review"}
+{"identifier": "AGEN-275", "title": "review(AI): 审核 AGEN-262 fix(partners/feishu): 卡片正文丢失、视频下载类型非法、@ 占位符透传（让 AGEN-145 的 4 个红测试转绿）", "status": "done"}
+{"identifier": "AGEN-209", "title": "pr-ready: 准备提交 AGEN-198 rework: 按审核意见修改 AGEN-121 fix: 聊天草稿恢复失败不再被空内容覆盖", "status": "in_review"}
+{"identifier": "AGEN-291", "title": "chore: web void fire-and-forget 分型扫描清单", "status": "done"}
+{"identifier": "AGEN-279", "title": "pr-ready: 准备提交 AGEN-267 test(mastery): 为上游 PR #1692 准备 follow-up 提交（修 CI + 禁止引用选项字母）", "status": "done"}
+{"identifier": "AGEN-229", "title": "pr-ready: 准备提交 AGEN-148 test: 前端设置 store 持久化与归一化补测", "status": "done"}
+{"identifier": "AGEN-239", "title": "pr-ready: 准备提交 AGEN-123 test: ChatWorkspace 冒烟与流式状态补测", "status": "done"}
+{"identifier": "AGEN-245", "title": "pr-ready: 准备提交 AGEN-126 test: 前端 KB client 请求契约补测", "status": "done"}
+{"identifier": "AGEN-255", "title": "pr-ready: 准备提交 AGEN-146 test: 前端 memory-graph 纯函数补测", "status": "done"}
+{"identifier": "AGEN-202", "title": "pr-ready: 准备提交 AGEN-165 test: 记忆 API 路由契约补测（api/routers/memory.py，覆盖 31.9%）", "status": "done"}
+{"identifier": "AGEN-236", "title": "pr-ready: 准备提交 AGEN-143 test: deep_research 四阶段编排契约补测", "status": "done"}
+{"identifier": "AGEN-200", "title": "rework: 按审核意见修改 AGEN-162 fix: docx 表格行解析失败不再静默丢行（co_writer/docx_converter.py）", "status": "in_review"}
+{"identifier": "AGEN-235", "title": "pr-ready: 准备提交 AGEN-127 test: book engine 阶段流转补测", "status": "done"}
+{"identifier": "AGEN-244", "title": "pr-ready: 准备提交 AGEN-122 test: KB 上传/删除路由守卫契约补测", "status": "done"}
+{"identifier": "AGEN-198", "title": "rework: 按审核意见修改 AGEN-121 fix: 聊天草稿恢复失败不再被空内容覆盖", "status": "in_review"}
+{"identifier": "AGEN-247", "title": "pr-ready: 准备提交 AGEN-125 test: citation_manager payload 容错补测", "status": "done"}
+{"identifier": "AGEN-248", "title": "pr-ready: 准备提交 AGEN-124 test: quiz_judge 判分单元补测", "status": "done"}
+{"identifier": "AGEN-199", "title": "rework: 按审核意见修改 AGEN-117 fix: workspace 迁移不再跳过损坏日志，pending 恢复检查生效", "status": "in_review"}
+{"identifier": "AGEN-251", "title": "pr-ready: 准备提交 AGEN-147 test: 沉浸阅读进度 API 契约补测", "status": "done"}
+{"identifier": "AGEN-252", "title": "pr-ready: 准备提交 AGEN-150 test: 会话存储降级分支补测（pocketbase_store）", "status": "done"}
+{"identifier": "AGEN-254", "title": "pr-ready: 准备提交 AGEN-166 test: 书籍 spine_synthesizer 补测（book/agents，覆盖 14.0%）", "status": "done"}
+{"identifier": "AGEN-260", "title": "pr-ready: 准备提交 AGEN-114 test: Question Notebook API 契约补测", "status": "done"}
+{"identifier": "AGEN-215", "title": "pr-ready: 准备提交 AGEN-139 fix: update_worker 状态加载失败不再静默继续", "status": "done"}
+{"identifier": "AGEN-220", "title": "pr-ready: 准备提交 AGEN-160 fix: Codex 登出时令牌吊销失败不再静默", "status": "done"}
+{"identifier": "AGEN-221", "title": "pr-ready: 准备提交 AGEN-138 fix: 更新交接的失败标记不再被吞（_handoff_pending_update）", "status": "done"}
+{"identifier": "AGEN-157", "title": "fix: 沙箱 runner 资源限额设置失败不再静默（_apply rlimit）", "status": "in_review"}
+{"identifier": "AGEN-224", "title": "pr-ready: 准备提交 AGEN-206 rework: 按审核意见修改 AGEN-157 fix: 沙箱 runner 资源限额设置失败不再静默（_apply rlimit）", "status": "done"}
+{"identifier": "AGEN-230", "title": "pr-ready: 准备提交 AGEN-142 fix: 出题 WebSocket 错误事件发送失败不再被吞（websocket_mimic_generate）", "status": "done"}
+{"identifier": "AGEN-258", "title": "pr-ready: 准备提交 AGEN-118 fix: PathService 重置失败不再静默写错 home（init_cmd 与 launcher 两处）", "status": "done"}
+{"identifier": "AGEN-259", "title": "pr-ready: 准备提交 AGEN-164 fix: CodeBuddy 工具调用中断失败不再静默（后台生成可能继续消耗）", "status": "done"}
+{"identifier": "AGEN-250", "title": "pr-ready: 准备提交 AGEN-120 fix: 追问会话 ID 写回笔记失败不再静默丢失关联", "status": "done"}
+{"identifier": "AGEN-207", "title": "pr-ready: 准备提交 AGEN-159 fix: LightRAG meta.json 损坏时不再静默改用路径哈希工作区名", "status": "done"}
+{"identifier": "AGEN-210", "title": "pr-ready: 准备提交 AGEN-161 fix: 记忆快照跳过损坏文件时记日志并计数（snapshot/adapters.py）", "status": "done"}
+{"identifier": "AGEN-253", "title": "pr-ready: 准备提交 AGEN-137 fix: 文件夹同步状态写入失败不再静默（update_folder_sync_state）", "status": "done"}
+{"identifier": "AGEN-256", "title": "pr-ready: 准备提交 AGEN-158 fix: 迁移依赖闭包跳过损坏文件时给出可见告警（workspace/dependencies.py）", "status": "done"}
+{"identifier": "AGEN-257", "title": "pr-ready: 准备提交 AGEN-119 fix: notebook 索引重建不再静默丢弃损坏条目", "status": "done"}
+{"identifier": "AGEN-237", "title": "pr-ready: 准备提交 AGEN-141 fix: 图片描述批量进度失败不再静默（_describe_one）", "status": "done"}
+{"identifier": "AGEN-162", "title": "fix: docx 表格行解析失败不再静默丢行（co_writer/docx_converter.py）", "status": "in_review"}
+{"identifier": "AGEN-261", "title": "pr-ready: 准备提交 AGEN-140 fix: embedding 批次进度回调失败不再静默", "status": "done"}
+{"identifier": "AGEN-298", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610032312）", "status": "done"}
+{"identifier": "AGEN-294", "title": "review(upstream): 复核长会话只渲染前 ~7 轮修复 PR #1619 (#1614)", "status": "done"}
+{"identifier": "AGEN-290", "title": "docs: Deep Research 模块代码导读", "status": "done"}
+{"identifier": "AGEN-292", "title": "review(upstream): 复核 LaTeX 复杂渲染下 Tutor 选区失效修复 PR #1682 (#1676)", "status": "done"}
+{"identifier": "AGEN-293", "title": "review(upstream): 复核伙伴/CLI 子代理配置保存修复 PR #1634 (#1630)", "status": "done"}
+{"identifier": "AGEN-265", "title": "fix(rag): 按审核意见返工 #1610 图表上限——接通配置并让截断可见", "status": "done"}
+{"identifier": "AGEN-151", "title": "test: Markdown 展示转义安全补测", "status": "in_review"}
+{"identifier": "AGEN-271", "title": "review(AI): 审核 AGEN-267 test(mastery): 为上游 PR #1692 准备 follow-up 提交（修 CI + 禁止引用选项字母）", "status": "done"}
+{"identifier": "AGEN-249", "title": "review(AI): 审核 AGEN-114 test: Question Notebook API 契约补测", "status": "done"}
+{"identifier": "AGEN-243", "title": "review(AI): 审核 AGEN-118 fix: PathService 重置失败不再静默写错 home（init_cmd 与 launcher 两处）", "status": "done"}
+{"identifier": "AGEN-136", "title": "fix: update_kb_status 静默失败不再让 KB 状态失真", "status": "in_review"}
+{"identifier": "AGEN-246", "title": "review(AI): 审核 AGEN-119 fix: notebook 索引重建不再静默丢弃损坏条目", "status": "done"}
+{"identifier": "AGEN-135", "title": "fix: KB 进度 WebSocket 的 5 处静默吞错改为可见降级", "status": "in_review"}
+{"identifier": "AGEN-242", "title": "review(AI): 审核 AGEN-120 fix: 追问会话 ID 写回笔记失败不再静默丢失关联", "status": "done"}
+{"identifier": "AGEN-241", "title": "review(AI): 审核 AGEN-125 test: citation_manager payload 容错补测", "status": "done"}
+{"identifier": "AGEN-238", "title": "review(AI): 审核 AGEN-122 test: KB 上传/删除路由守卫契约补测", "status": "done"}
+{"identifier": "AGEN-234", "title": "review(AI): 审核 AGEN-126 test: 前端 KB client 请求契约补测", "status": "done"}
+{"identifier": "AGEN-233", "title": "review(AI): 审核 AGEN-124 test: quiz_judge 判分单元补测", "status": "done"}
+{"identifier": "AGEN-232", "title": "review(AI): 审核 AGEN-123 test: ChatWorkspace 冒烟与流式状态补测", "status": "done"}
+{"identifier": "AGEN-231", "title": "review(AI): 审核 AGEN-127 test: book engine 阶段流转补测", "status": "done"}
+{"identifier": "AGEN-228", "title": "review(AI): 审核 AGEN-143 test: deep_research 四阶段编排契约补测", "status": "done"}
+{"identifier": "AGEN-145", "title": "test: 飞书通道消息解析与回复路由补测", "status": "in_review"}
+{"identifier": "AGEN-227", "title": "review(AI): 审核 AGEN-141 fix: 图片描述批量进度失败不再静默（_describe_one）", "status": "done"}
+{"identifier": "AGEN-133", "title": "fix(upstream): invalid_embedding_index 搜索失败给出可操作错误与重建指引（#440）", "status": "in_review"}
+{"identifier": "AGEN-226", "title": "review(AI): 审核 AGEN-223 rework: 按审核意见修改 AGEN-151 test: Markdown 展示转义安全补测", "status": "done"}
+{"identifier": "AGEN-144", "title": "test: KB manager 增删查边界补测", "status": "in_review"}
+{"identifier": "AGEN-225", "title": "review(AI): 审核 AGEN-148 test: 前端设置 store 持久化与归一化补测", "status": "done"}
+{"identifier": "AGEN-222", "title": "review(AI): 审核 AGEN-142 fix: 出题 WebSocket 错误事件发送失败不再被吞（websocket_mimic_generate）", "status": "done"}
+{"identifier": "AGEN-219", "title": "review(AI): 审核 AGEN-147 test: 沉浸阅读进度 API 契约补测", "status": "done"}
+{"identifier": "AGEN-218", "title": "review(AI): 审核 AGEN-150 test: 会话存储降级分支补测（pocketbase_store）", "status": "done"}
+{"identifier": "AGEN-131", "title": "fix(upstream): 教材图表 grounding 突破 64 张上限，截断可配置可观测（#1610）", "status": "in_review"}
+{"identifier": "AGEN-217", "title": "review(AI): 审核 AGEN-151 test: Markdown 展示转义安全补测", "status": "done"}
+{"identifier": "AGEN-129", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610031439）", "status": "in_review"}
+{"identifier": "AGEN-216", "title": "review(AI): 审核 AGEN-160 fix: Codex 登出时令牌吊销失败不再静默", "status": "done"}
+{"identifier": "AGEN-213", "title": "review(AI): 审核 AGEN-138 fix: 更新交接的失败标记不再被吞（_handoff_pending_update）", "status": "done"}
+{"identifier": "AGEN-211", "title": "review(AI): 审核 AGEN-206 rework: 按审核意见修改 AGEN-157 fix: 沙箱 runner 资源限额设置失败不再静默（_apply rlimit）", "status": "done"}
+{"identifier": "AGEN-208", "title": "review(AI): 审核 AGEN-137 fix: 文件夹同步状态写入失败不再静默（update_folder_sync_state）", "status": "done"}
+{"identifier": "AGEN-205", "title": "review(AI): 审核 AGEN-199 rework: 按审核意见修改 AGEN-117 fix: workspace 迁移不再跳过损坏日志，pending 恢复检查生效", "status": "done"}
+{"identifier": "AGEN-204", "title": "review(AI): 审核 AGEN-200 rework: 按审核意见修改 AGEN-162 fix: docx 表格行解析失败不再静默丢行（co_writer/docx_converter.py）", "status": "done"}
+{"identifier": "AGEN-203", "title": "review(AI): 审核 AGEN-198 rework: 按审核意见修改 AGEN-121 fix: 聊天草稿恢复失败不再被空内容覆盖", "status": "done"}
+{"identifier": "AGEN-201", "title": "review(AI): 审核 AGEN-159 fix: LightRAG meta.json 损坏时不再静默改用路径哈希工作区名", "status": "done"}
+{"identifier": "AGEN-197", "title": "review(AI): 审核 AGEN-161 fix: 记忆快照跳过损坏文件时记日志并计数（snapshot/adapters.py）", "status": "done"}
+{"identifier": "AGEN-121", "title": "fix: 聊天草稿恢复失败不再被空内容覆盖", "status": "in_review"}
+{"identifier": "AGEN-196", "title": "review(AI): 审核 AGEN-157 fix: 沙箱 runner 资源限额设置失败不再静默（_apply rlimit）", "status": "done"}
+{"identifier": "AGEN-117", "title": "fix: workspace 迁移不再跳过损坏日志，pending 恢复检查生效", "status": "in_review"}
+{"identifier": "AGEN-195", "title": "review(AI): 审核 AGEN-165 test: 记忆 API 路由契约补测（api/routers/memory.py，覆盖 31.9%）", "status": "done"}
+{"identifier": "AGEN-187", "title": "review(AI): 审核 AGEN-139 fix: update_worker 状态加载失败不再静默继续", "status": "done"}
+{"identifier": "AGEN-194", "title": "review(AI): 审核 AGEN-166 test: 书籍 spine_synthesizer 补测（book/agents，覆盖 14.0%）", "status": "done"}
+{"identifier": "AGEN-191", "title": "review(Claude): 审核 AGEN-121 fix: 聊天草稿恢复失败不再被空内容覆盖", "status": "done"}
+{"identifier": "AGEN-1367", "title": "fix: book WS 错误事件 content 透传异常原文中性化（book.py:1806）", "status": "in_progress"}
+{"identifier": "AGEN-192", "title": "review(Claude): 审核 AGEN-117 fix: workspace 迁移不再跳过损坏日志，pending 恢复检查生效", "status": "done"}
+{"identifier": "AGEN-1229", "title": "test: web 空间/选择器纯逻辑补测（space-items/picker-origin/kb-name）", "status": "in_progress"}
+{"identifier": "AGEN-193", "title": "review(Claude): 审核 AGEN-116 fix: partners workspace 索引损坏时不再整体覆写清空 notebooks", "status": "done"}
+{"identifier": "AGEN-186", "title": "review(AI): 审核 AGEN-146 test: 前端 memory-graph 纯函数补测", "status": "done"}
+{"identifier": "AGEN-1207", "title": "fix: 出题路由 stdout tee 写入/flush 失败不再静默（DT-22 HIGH 残留）", "status": "in_progress"}
+{"identifier": "AGEN-116", "title": "fix: partners workspace 索引损坏时不再整体覆写清空 notebooks", "status": "done"}
+{"identifier": "AGEN-185", "title": "review(AI): 审核 AGEN-158 fix: 迁移依赖闭包跳过损坏文件时给出可见告警（workspace/dependencies.py）", "status": "done"}
+{"identifier": "AGEN-1168", "title": "test: web personas-api 客户端补测", "status": "in_progress"}
+{"identifier": "AGEN-188", "title": "review(Claude): 审核 AGEN-136 fix: update_kb_status 静默失败不再让 KB 状态失真", "status": "done"}
+{"identifier": "AGEN-1167", "title": "test: web quiz-judge 前端判分逻辑补测", "status": "in_progress"}
+{"identifier": "AGEN-189", "title": "review(Claude): 审核 AGEN-135 fix: KB 进度 WebSocket 的 5 处静默吞错改为可见降级", "status": "done"}
+{"identifier": "AGEN-190", "title": "review(Claude): 审核 AGEN-134 fix: KB 重建索引的失败告警不再被自身吞掉", "status": "done"}
+{"identifier": "AGEN-134", "title": "fix: KB 重建索引的失败告警不再被自身吞掉", "status": "done"}
+{"identifier": "AGEN-132", "title": "fix(upstream): 聊天内出题与错题未写入题库（#575）", "status": "done"}
+{"identifier": "AGEN-101", "title": "fix(upstream): Mastery quiz answers are all A (#1691)", "status": "done"}
+{"identifier": "AGEN-1246", "title": "长期阻塞卡分诊：秘书汇报追加效果跟踪（记录+跟踪卡）", "status": "backlog"}
+{"identifier": "AGEN-183", "title": "review(Claude): 审核 AGEN-102 fix(upstream): chat history lost inside session, only latest few remain (#1410)", "status": "done"}
+{"identifier": "AGEN-659", "title": "issue-lint：automation_member_ids 按工作区配置，补 Travel cli@codex 与 srxly888 共用入口时间窗", "status": "backlog"}
+{"identifier": "AGEN-184", "title": "review(Claude): 审核 AGEN-101 fix(upstream): Mastery quiz answers are all A (#1691)", "status": "done"}
+{"identifier": "AGEN-341", "title": "跟踪 plane-pilot-infra#1：安全治理：开启组织级 2FA 前先核实所有成员已开 2FA", "status": "backlog"}
+{"identifier": "AGEN-171", "title": "review(Claude): 审核 AGEN-133 fix(upstream): invalid_embedding_index 搜索失败给出可操作错误与重建指引（#440）", "status": "done"}
+{"identifier": "AGEN-648", "title": "秘书汇报整改｜整洁入口与权限跟进", "status": "in_progress"}
+{"identifier": "AGEN-340", "title": "跟踪 invidious-companion#377：为 Companion 的字幕响应加有界内存缓存", "status": "backlog"}
+{"identifier": "AGEN-172", "title": "review(Claude): 审核 AGEN-132 fix(upstream): 聊天内出题与错题未写入题库（#575）", "status": "done"}
+{"identifier": "AGEN-1063", "title": "test: llm image_description 描述服务补测", "status": "in_progress"}
+{"identifier": "AGEN-339", "title": "跟踪 invidious#5992：逐词渲染定时字幕并预取字幕轨道", "status": "backlog"}
+{"identifier": "AGEN-173", "title": "review(Claude): 审核 AGEN-131 fix(upstream): 教材图表 grounding 突破 64 张上限，截断可配置可观测（#1610）", "status": "done"}
+{"identifier": "AGEN-338", "title": "跟踪 DeepTutor#860：阅读：完整的双语 EPUB 学习体验（剩余部分）", "status": "backlog"}
+{"identifier": "AGEN-170", "title": "review(AI): 审核 AGEN-162 fix: docx 表格行解析失败不再静默丢行（co_writer/docx_converter.py）", "status": "done"}
+{"identifier": "AGEN-337", "title": "跟踪 DeepTutor#1238：观看：给沉浸式观看独立的工作区（/watching 路由）", "status": "backlog"}
+{"identifier": "AGEN-169", "title": "review(AI): 审核 AGEN-164 fix: CodeBuddy 工具调用中断失败不再静默（后台生成可能继续消耗）", "status": "done"}
+{"identifier": "AGEN-336", "title": "跟踪 DeepTutor#1246：观看：全屏学习布局 + 按原始时间轴的双行字幕", "status": "backlog"}
+{"identifier": "AGEN-100", "title": "test: EPUB 目录锚点与分页回归夹具", "status": "done"}
+{"identifier": "AGEN-335", "title": "跟踪 invidious#6007：字幕：首选英语字幕匹配不到 “English (auto-generated)”", "status": "backlog"}
+{"identifier": "AGEN-168", "title": "review(AI): 审核 AGEN-140 fix: embedding 批次进度回调失败不再静默", "status": "done"}
+{"identifier": "AGEN-1011", "title": "test: github_source 源同步解析与限流退避契约测试", "status": "in_progress"}
+{"identifier": "AGEN-334", "title": "跟踪 DeepTutor#902：知识库：网页来源同步后续（双语来源配对等）", "status": "backlog"}
+{"identifier": "AGEN-89", "title": "test: 测试覆盖空白清单（后端 + 前端）", "status": "done"}
+{"identifier": "AGEN-333", "title": "跟踪 DeepTutor#932：阅读：章节内人物/实体关系图", "status": "backlog"}
+{"identifier": "AGEN-99", "title": "test: ask_user 提交与重连场景补测", "status": "done"}
+{"identifier": "AGEN-332", "title": "跟踪 DeepTutor#961：插件：可插拔的学习资源提供方及生命周期控制", "status": "backlog"}
+{"identifier": "AGEN-103", "title": "feat(upstream): resend button for failed chat requests (#1390)", "status": "done"}
+{"identifier": "AGEN-331", "title": "跟踪 DeepTutor#995：阅读：以安全扩展方式提供引导式学习", "status": "backlog"}
+{"identifier": "AGEN-105", "title": "feat(upstream): surface note edit entry in Notebook UI (#1336)", "status": "done"}
+{"identifier": "AGEN-330", "title": "跟踪 DeepTutor#997：视频学习：YouTube 沉浸式观看（总需求）", "status": "backlog"}
+{"identifier": "AGEN-106", "title": "feat(upstream): record Partner wrong questions into the Question Notebook (#1244)", "status": "done"}
+{"identifier": "AGEN-329", "title": "跟踪 DeepTutor#1158：视频学习：最近视频摘要", "status": "backlog"}
+{"identifier": "AGEN-107", "title": "fix(upstream): watching notes keep capture timestamps and drafts across async saves (#1256)", "status": "done"}
+{"identifier": "AGEN-963", "title": "fix: base_sync staleness naive 时间戳按 UTC 误读（datetime L1#5）", "status": "in_progress"}
+{"identifier": "AGEN-328", "title": "跟踪 DeepTutor#1215：CI：恢复 dev 分支的路由性能预算", "status": "backlog"}
+{"identifier": "AGEN-109", "title": "feat(upstream): persist mastery prerequisites and topic-source links, first slice (#1476)", "status": "done"}
+{"identifier": "AGEN-327", "title": "跟踪 DeepTutor#1236：阅读：EPUB 响应式双页书本排版（翻页/全屏）", "status": "backlog"}
+{"identifier": "AGEN-110", "title": "feat(upstream): auto-discover stable Codex client version for model catalog (#1296)", "status": "done"}
+{"identifier": "AGEN-326", "title": "跟踪 DeepTutor#1262：README：刷新 v1.6.4/v1.6.5 界面截图和演示", "status": "backlog"}
+{"identifier": "AGEN-111", "title": "feat(upstream): batch import and deletion for admin users (#1329)", "status": "done"}
+{"identifier": "AGEN-325", "title": "跟踪 DeepTutor#1292：知识库：KB 前沿发现工具", "status": "backlog"}
+{"identifier": "AGEN-112", "title": "feat(upstream): expose folder linking and sync controls in Knowledge Center UI (#1326)", "status": "done"}
+{"identifier": "AGEN-324", "title": "跟踪 DeepTutor#1294：可视化：Mermaid 思维导图可视化", "status": "backlog"}
+{"identifier": "AGEN-113", "title": "feat(upstream): import ChatGPT conversation exports (#1405)", "status": "done"}
+{"identifier": "AGEN-323", "title": "跟踪 DeepTutor#1307：插件：托管的第三方插件平台", "status": "backlog"}
+{"identifier": "AGEN-322", "title": "跟踪 DeepTutor#1419：阅读：按年龄段调整三个操作按钮的样式", "status": "backlog"}
+{"identifier": "AGEN-87", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张", "status": "done"}
+{"identifier": "AGEN-955", "title": "test: session/sqlite_store 并发交错行为回归", "status": "in_progress"}
+{"identifier": "AGEN-321", "title": "跟踪 DeepTutor#1424：Web：standalone 运行时打包缺少静态资源", "status": "backlog"}
+{"identifier": "AGEN-90", "title": "chore: TODO/FIXME 与吞错扫描清单", "status": "done"}
+{"identifier": "AGEN-320", "title": "跟踪 DeepTutor#1644：视频学习：带时间戳的观看标记（重点/疑问/待复习）", "status": "backlog"}
+{"identifier": "AGEN-96", "title": "docs: Knowledge Base 摄取与检索模块代码导读", "status": "done"}
+{"identifier": "AGEN-919", "title": "scan: 全量测试面运行时长清点与 CI 预算基线", "status": "in_progress"}
+{"identifier": "AGEN-319", "title": "跟踪 DeepTutor#1650：学习者：支持被分配的互动绘本", "status": "backlog"}
+{"identifier": "AGEN-97", "title": "docs: 会话历史与内存模块代码导读", "status": "done"}
+{"identifier": "AGEN-318", "title": "跟踪 DeepTutor#1654：阅读：按学习材料范围的自然朗读音频", "status": "backlog"}
+{"identifier": "AGEN-104", "title": "chore(reserve): 把覆盖空白与 TODO 扫描清单转成候选卡", "status": "done"}
+{"identifier": "AGEN-384", "title": "test: 聊天重连阶梯与提交门控时序补测", "status": "cancelled"}
+{"identifier": "AGEN-317", "title": "跟踪 DeepTutor#1656：阅读：由服务端管理的测验星星奖励", "status": "backlog"}
+{"identifier": "AGEN-98", "title": "docs: Learner 与账号权限模块代码导读", "status": "done"}
+{"identifier": "AGEN-66", "title": "测试环境验收：上游 v1.6.12 的 Watching 与会话交接（Tailscale IP）", "status": "in_review"}
+{"identifier": "AGEN-316", "title": "跟踪 multica#8850：新增支持调度的插件 Action API", "status": "backlog"}
+{"identifier": "AGEN-115", "title": "chore: settings 草稿与 apply 链路只读扫描", "status": "done"}
+{"identifier": "AGEN-7", "title": "platform: track Multica scheduler API dependencies (DT-2/DT-3)", "status": "cancelled"}
+{"identifier": "AGEN-315", "title": "跟踪 multica#8911：Codex 429 重试需要退避和熔断，避免 Guardian 子代理放大请求", "status": "backlog"}
+{"identifier": "AGEN-130", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610031450）", "status": "done"}
+{"identifier": "AGEN-93", "title": "fix(upstream): math formulas containing newlines sometimes fail to render (#1623)", "status": "cancelled"}
+{"identifier": "AGEN-314", "title": "跟踪 multica#8966：普通 review / done 评论不应隐式唤醒 Agent", "status": "backlog"}
+{"identifier": "AGEN-149", "title": "chore(reserve): 补充 DeepTour GLM 候选卡 20 张（202610031510）", "status": "done"}
+{"identifier": "AGEN-79", "title": "DeepTutor 每日产出合同优化：每天一个可验收交付", "status": "cancelled"}
+{"identifier": "AGEN-313", "title": "整理：12 个 DeepTutor issue 的 PR 已合并但 issue 仍 open（建议核对后关闭）", "status": "backlog"}
+{"identifier": "AGEN-278", "title": "DeepTutor 额度调度 - 北京批次 2026-10-04（链式第 7 轮）", "status": "cancelled"}
+{"identifier": "AGEN-88", "title": "fix(upstream): Mastery quiz answers trigger context-free KB retrieval with option letters (#1624)", "status": "done"}
+{"identifier": "AGEN-546", "title": "guide: 配置体系代码导读（settings 全链路）", "status": "in_progress"}
+{"identifier": "AGEN-312", "title": "跟踪：workout-cool 16 个 bug issue 和 17 个修复 PR（Vercel 检查需维护者授权）", "status": "backlog"}
+{"identifier": "AGEN-300", "title": "verify(upstream): 验证 LlamaIndex 超时泄漏进度修复 PR #1480 是否闭环 (#1478)", "status": "cancelled"}
+{"identifier": "AGEN-91", "title": "fix(upstream): EPUB reader loses TOC heading anchors and mislabels reading positions (#1673)", "status": "done"}
+{"identifier": "AGEN-311", "title": "DeepTutor CI 共享问题：CodeBuddy 凭据测试夹具过期（修复 PR #1699 已开）", "status": "backlog"}
+{"identifier": "AGEN-299", "title": "verify(upstream): 验证空知识库首次上传修复 PR #1488 是否闭环 (#1481)", "status": "cancelled"}
+{"identifier": "AGEN-92", "title": "fix(upstream): fresh .md uploads open as a single page in Immersive Reading (#1641)", "status": "done"}
+{"identifier": "AGEN-472", "title": "Multica #9047 上游跟踪 · GLM Flash", "status": "backlog"}
+{"identifier": "AGEN-297", "title": "review(upstream): 复核 dev 路由预算恢复 PR #1216 (#1215)", "status": "cancelled"}
+{"identifier": "AGEN-95", "title": "docs: Immersive Watching / video-learning 模块代码导读", "status": "done"}
+{"identifier": "AGEN-48", "title": "[需本地改造] Tailscale 到 Quick Tunnel 会话交接", "status": "in_review"}
+{"identifier": "AGEN-296", "title": "review(upstream): 比较复核学习者策略落地双 PR #1225/#1652 (#1222)", "status": "cancelled"}
+{"identifier": "AGEN-108", "title": "fix(upstream): align active transcript with video captions, centered on mobile (#1254)", "status": "done"}
+{"identifier": "AGEN-82", "title": "阶段2｜program 规则统一与角色合并 A/B 合同", "status": "backlog"}
+{"identifier": "AGEN-402", "title": "P4｜Wakeup v2 小范围试点与可回退切换", "status": "backlog"}
+{"identifier": "AGEN-295", "title": "review(upstream): 复核自定义工作区子 Agent 失效修复 PR #1625 (#1613)", "status": "cancelled"}
+{"identifier": "AGEN-94", "title": "fix(upstream): ask_user submit gives up during WebSocket reconnect (#1648)", "status": "done"}
+{"identifier": "AGEN-29", "title": "backlog(video-learning): 定义 Bilibili 摄取契约", "status": "in_review"}
+{"identifier": "AGEN-401", "title": "P3｜Wakeup v2 影子验证：接续清单、条件与防重复", "status": "backlog"}
+{"identifier": "AGEN-310", "title": "pr-later: 合集 后端补测（10 个）", "status": "cancelled"}
+{"identifier": "AGEN-71", "title": "AI Projects 工作区 in_review 卡收口建议清单（只建议，不改状态）", "status": "done"}
+{"identifier": "AGEN-400", "title": "P2｜PR 合并与任务收口：状态规则和重复项核验", "status": "backlog"}
+{"identifier": "AGEN-309", "title": "pr-later: 合集 日志修复·运行时与集成（7 个）", "status": "cancelled"}
+{"identifier": "AGEN-69", "title": "idle-runner 候选补丁：池内 agent 解析跳过非当前用户拥有的 agent（避免 403，为 Travel 接入准备，不部署）", "status": "done"}
+{"identifier": "AGEN-399", "title": "P2｜个人模型使用复盘：运行归因、有效产出与额度", "status": "backlog"}
+{"identifier": "AGEN-308", "title": "pr-later: 合集 日志修复·存储与知识库（8 个）", "status": "cancelled"}
+{"identifier": "AGEN-68", "title": "idle-runner 熔断看门狗脚本（候选：检测 circuit_reason/binding_changed，默认 dry-run，不安装）", "status": "done"}
+{"identifier": "AGEN-36", "title": "chore(upstream): replay governance and test infrastructure", "status": "in_review"}
+{"identifier": "AGEN-398", "title": "P1｜审核工作台：侧边预览、搜索与待审分类", "status": "backlog"}
+{"identifier": "AGEN-182", "title": "review(Claude): 审核 AGEN-103 feat(upstream): resend button for failed chat requests (#1390)", "status": "cancelled"}
+{"identifier": "AGEN-67", "title": "GLM 夜间用量报告脚本 glm_night_report.py（只读 idle-runner 账本 + 额度面板 + 运行结果）", "status": "done"}
+{"identifier": "AGEN-397", "title": "P1｜交付物标准化：一屏简报、真实附件与版本阅读", "status": "backlog"}
+{"identifier": "AGEN-181", "title": "review(Claude): 审核 AGEN-105 feat(upstream): surface note edit entry in Notebook UI (#1336)", "status": "cancelled"}
+{"identifier": "AGEN-35", "title": "chore(upstream): inventory local integration delta", "status": "in_review"}
+{"identifier": "AGEN-11", "title": "issue6139", "status": "done"}
+{"identifier": "AGEN-396", "title": "Multica 升级后工作流｜交付阅读、模型复盘与自动接续路线图", "status": "backlog"}
+{"identifier": "AGEN-180", "title": "review(Claude): 审核 AGEN-106 feat(upstream): record Partner wrong questions into the Question Notebook (#1244)", "status": "cancelled"}
+{"identifier": "AGEN-84", "title": "阶段3｜六个有界能力样本合同与独立评分（门控前不运行）", "status": "in_progress"}
+{"identifier": "AGEN-13", "title": "描述一下感谢原因pr7620", "status": "done"}
+{"identifier": "AGEN-179", "title": "review(Claude): 审核 AGEN-107 fix(upstream): watching notes keep capture timestamps and drafts across async saves (#1256)", "status": "cancelled"}
+{"identifier": "AGEN-70", "title": "上游 PR #8968 / #8969 / #8970 评审状态复核与本地跟进清单（只读）", "status": "done"}
+{"identifier": "AGEN-28", "title": "ops(invidious): 验证未缓存视频 cookie 注入", "status": "in_review"}
+{"identifier": "AGEN-356", "title": "[待命] #1384 Watching 并入 Reading：只移植 #1378 剩余步骤（等 #1666/#1668/#1683/#1685/#1686 合并后再派）", "status": "backlog"}
+{"identifier": "AGEN-178", "title": "review(Claude): 审核 AGEN-109 feat(upstream): persist mastery prerequisites and topic-source links, first slice (#1476)", "status": "cancelled"}
+{"identifier": "AGEN-4", "title": "闲时调度防重复验证：AGEN-4", "status": "done"}
+{"identifier": "AGEN-177", "title": "review(Claude): 审核 AGEN-110 feat(upstream): auto-discover stable Codex client version for model catalog (#1296)", "status": "cancelled"}
+{"identifier": "AGEN-86", "title": "⚙️ GLM 储备池开关与待审核简报（deeptour）", "status": "backlog"}
+{"identifier": "AGEN-3", "title": "闲时调度自然触发验证：无固定时间", "status": "done"}
+{"identifier": "AGEN-176", "title": "review(Claude): 审核 AGEN-111 feat(upstream): batch import and deletion for admin users (#1329)", "status": "cancelled"}
+{"identifier": "AGEN-83", "title": "阶段3｜共享账号准入候选集成验收（复用既有补丁）", "status": "backlog"}
+{"identifier": "AGEN-80", "title": "小队与模型额度优化｜阶段0基线与分阶段实施路线图", "status": "in_progress"}
+{"identifier": "AGEN-2", "title": "闲时调度端到端验证：GLM 5.3", "status": "done"}
+{"identifier": "AGEN-175", "title": "review(Claude): 审核 AGEN-112 feat(upstream): expose folder linking and sync controls in Knowledge Center UI (#1326)", "status": "cancelled"}
+{"identifier": "AGEN-77", "title": "DeepTutor 自动运行审计 - 2026-10-02", "status": "done"}
+{"identifier": "AGEN-174", "title": "review(Claude): 审核 AGEN-113 feat(upstream): import ChatGPT conversation exports (#1405)", "status": "cancelled"}
+{"identifier": "AGEN-64", "title": "阻断 Agent→Leader 无效沟通与重复唤醒", "status": "todo"}
+{"identifier": "AGEN-38", "title": "watch(upstream): PR #1430 robots crawl policy 复审 — 已被 dev 取代，建议关闭", "status": "done"}
+{"identifier": "AGEN-167", "title": "已取消：DeepTutor 额度调度重复任务 - 北京批次 2026-10-04", "status": "cancelled"}
+{"identifier": "AGEN-74", "title": "每日监控 GLM 在 Multica 的使用情况与成效", "status": "backlog"}
+{"identifier": "AGEN-43", "title": "audit(local): v1.6.12 功能分项对齐", "status": "done"}
+{"identifier": "AGEN-73", "title": "已取消：整改任务应归属各自工作区看板", "status": "cancelled"}
+{"identifier": "AGEN-65", "title": "GLM 5h 额度夜间用满：就绪队列 + 窗口对齐 + 价值排序", "status": "backlog"}
+{"identifier": "AGEN-62", "title": "Claude 各入口固定 macmini-ts 出口：Desktop、CLI、网页与 CPA 验收", "status": "in_progress"}
+{"identifier": "AGEN-61", "title": "验收评论默认静默：不再自动唤醒上一位 Agent", "status": "todo"}
+{"identifier": "AGEN-46", "title": "[已实现] YouTube/Invidious Watching 核心摄取与播放", "status": "done"}
+{"identifier": "AGEN-60", "title": "Kimi 共享账号额度门禁：识别 5h 403 并阻止无效重试", "status": "todo"}
+{"identifier": "AGEN-51", "title": "chore(upstream): reduce DeepTutor fork maintenance", "status": "in_progress"}
+{"identifier": "AGEN-50", "title": "[暂缓] 外部渲染器与手机遥控", "status": "backlog"}
+{"identifier": "AGEN-45", "title": "[已实现] MarginNote 4 只读桥与设备同步", "status": "done"}
+{"identifier": "AGEN-22", "title": "DeepTutor 额度调度 - 北京批次 2026-09-28（晚间窗口）", "status": "cancelled"}
+{"identifier": "AGEN-44", "title": "[已实现] Partner Feishu/Lark + WeCom QR onboarding", "status": "done"}
+{"identifier": "AGEN-20", "title": "DeepTutor 额度调度 - 北京批次 2026-09-28", "status": "cancelled"}
+{"identifier": "AGEN-55", "title": "chore(upstream): track learner PR follow-up", "status": "todo"}
+{"identifier": "AGEN-31", "title": "index: DeepTutor 本地待办迁移 2026-09-28", "status": "done"}
+{"identifier": "AGEN-27", "title": "chore(upstream): integrate upstream v1.6.13", "status": "in_progress"}
+{"identifier": "AGEN-19", "title": "DeepTutor 额度调度 - 北京批次 2026-09-28", "status": "cancelled"}
+{"identifier": "AGEN-491", "title": "fix(upstream): 插件清单 schema 校验与注册表门控（#1307 切片一）", "status": "blocked"}
+{"identifier": "AGEN-54", "title": "test(learner): lock first-party surface coverage", "status": "todo"}
+{"identifier": "AGEN-47", "title": "[需本地改造] 注册开关 AUTH_ALLOW_REGISTRATION", "status": "backlog"}
+{"identifier": "AGEN-30", "title": "watch(upstream): 跟踪双语来源配对依赖", "status": "done"}
+{"identifier": "AGEN-14", "title": "DeepTutor 额度调度 - 北京批次 2026-09-28", "status": "cancelled"}
+{"identifier": "AGEN-1158", "title": "秘书汇报服务端隔离｜实现", "status": "blocked"}
+{"identifier": "AGEN-42", "title": "feat(video-learning): add optional sandboxed Bilibili audio transcript plugin", "status": "backlog"}
+{"identifier": "AGEN-26", "title": "chore(workspace): 隔离本地运行产物", "status": "done"}
+{"identifier": "AGEN-10", "title": "无合规目标巡检 - 北京批次 2026-09-27", "status": "cancelled"}
+{"identifier": "AGEN-1161", "title": "旧日报更新器｜独立审核", "status": "blocked"}
+{"identifier": "AGEN-41", "title": "feat(video-learning): render Bilibili official iframe player", "status": "backlog"}
+{"identifier": "AGEN-9", "title": "DeepTutor 上游 #1600: research ask_user resolve_pause 导入断链修复 - 2026-09-26", "status": "cancelled"}
+{"identifier": "AGEN-8", "title": "migration index: deeptour to DeepTutor development (2026-09-26)", "status": "done"}
+{"identifier": "AGEN-1160", "title": "旧日报更新器｜分区与原答复修复", "status": "blocked"}
+{"identifier": "AGEN-40", "title": "feat(video-learning): resolve public Bilibili pages without download", "status": "backlog"}
+{"identifier": "AGEN-18", "title": "已取消：DeepTutor 额度调度重复任务 - 北京批次 2026-09-28", "status": "cancelled"}
+{"identifier": "AGEN-5", "title": "track(upstream): failed chat submission retry (#1594 / DT-10)", "status": "done"}
+{"identifier": "AGEN-886", "title": "test+fix: 删除 resource_library=true 死参数并补请求契约回归", "status": "blocked"}
+{"identifier": "AGEN-39", "title": "feat(video-learning): parse Bilibili URLs into page-scoped ids", "status": "backlog"}
+{"identifier": "AGEN-23", "title": "DeepTutor 额度调度 - 北京批次 2026-09-29", "status": "done"}
+{"identifier": "AGEN-21", "title": "跟进 multica#8911 Codex 429 重试退避与熔断", "status": "todo"}
+{"identifier": "AGEN-12", "title": "已取消：DeepTutor 上游重复巡检 - 北京批次 2026-09-27", "status": "cancelled"}
