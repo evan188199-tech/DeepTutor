@@ -1,0 +1,179 @@
+{
+  "scan": "scan-secret-defaults",
+  "revision": "origin/main @ 6cf793bd868ba5ecbe64722936d4be8fab5a01df (release: v1.6.14)",
+  "scope": "read-only static scan, repo + shipped default configs; non-test source triaged, test fixtures referenced not re-reported",
+  "dedup": {
+    "scan-log-exception-bodies": "exception-body leakage in log/error messages — referenced, not re-counted (see I7)",
+    "fix-provider-body-leak": "provider response bodies kept out of user-facing errors (myfork fix/provider-body-leak @ a8618a063) — referenced, not re-counted",
+    "test-secret-files": "tests/utils/test_secret_files_helpers.py + secret_files helper unit coverage — referenced, not re-counted"
+  },
+  "counts": { "high": 1, "medium": 3, "low": 4, "info": 7 },
+  "findings": [
+    {
+      "id": "H1",
+      "axis": "B",
+      "severity": "high",
+      "rule": "compose-ports-published-on-all-interfaces",
+      "locations": [
+        "docker-compose.yml:55",
+        "docker-compose.yml:85",
+        "docker-compose.yml:86",
+        "docker-compose.ghcr.yml:65",
+        "docker-compose.ghcr.yml:66"
+      ],
+      "neutral_note": "Shipped compose files publish backend, frontend and PocketBase ports on all host interfaces (no loopback prefix on the mapping). .env.example describes the host-side bindings as loopback, and the codex-oauth overlay (compose.codex-oauth.yaml:8-9) does use 127.0.0.1 prefixes, but the base compose files do not enforce a loopback binding. Combined with auth disabled by default (L2) this yields default network-reachable unauthenticated API access, including settings surfaces where provider API keys are entered. Remediation direction: bind host-side mappings to loopback by default and require an explicit opt-in for wider binding."
+    },
+    {
+      "id": "M1",
+      "axis": "B",
+      "severity": "medium",
+      "rule": "cors-permissive-when-auth-off",
+      "locations": ["deeptutor/api/main.py:95"],
+      "neutral_note": "CORS allow_origin_regex is set to match any http(s) origin whenever auth is disabled (the default). Amplifies H1: any origin can call the unauthenticated default deployment. Explicit-origins mode exists when auth is enabled."
+    },
+    {
+      "id": "M2",
+      "axis": "B",
+      "severity": "medium",
+      "rule": "fastapi-docs-endpoints-ungated",
+      "locations": ["deeptutor/api/main.py:404"],
+      "neutral_note": "FastAPI app is constructed without disabling docs/redoc/openapi.json, and router-level auth dependencies do not cover these built-in routes, so the full API schema remains reachable even in deployments with AUTH_ENABLED=true. Metadata disclosure of the complete route surface."
+    },
+    {
+      "id": "M3",
+      "axis": "C",
+      "severity": "medium",
+      "rule": "secret-bearing-state-file-default-mode",
+      "locations": ["deeptutor/services/partners/web_continuity.py:94"],
+      "neutral_note": "Partner web-continuity state, which contains a session_key credential, is persisted via plain Path.write_text on a temp file then renamed: the resulting file inherits the process umask (typically group/world-readable) rather than an explicit owner-only mode. Every other secret store in the repo routes through 0600/0700 helpers (see I4). Remediation direction: use deeptutor.utils.secret_files.write_secret_text or an exclusive-create 0600 temp."
+    },
+    {
+      "id": "L1",
+      "axis": "B",
+      "severity": "low",
+      "rule": "cookie-secure-default-false",
+      "locations": [
+        "deeptutor/services/config/runtime_settings.py:87",
+        "deeptutor/api/routers/auth.py:36"
+      ],
+      "neutral_note": "cookie_secure defaults to false, so the auth session cookie is issued without the Secure attribute unless the operator opts in; SameSite falls back to lax on plain HTTP. Acceptable for loopback use, weaker for LAN/remote deployments that stay on HTTP."
+    },
+    {
+      "id": "L2",
+      "axis": "B",
+      "severity": "low",
+      "rule": "auth-disabled-by-default",
+      "locations": [
+        "deeptutor/services/config/runtime_settings.py:83",
+        "deeptutor/services/auth.py:4"
+      ],
+      "neutral_note": "Authentication is disabled by default (documented localhost-first design; require_auth is a no-op in that mode). Deliberate and documented, but it is the multiplier that turns H1/M1 into default unauthenticated network exposure rather than a loopback-only posture."
+    },
+    {
+      "id": "L3",
+      "axis": "B",
+      "severity": "low",
+      "rule": "tls-verify-bypass-sites",
+      "locations": [
+        "deeptutor/services/llm/openai_http_client.py:102",
+        "deeptutor/services/llm/openai_http_client.py:153",
+        "deeptutor/services/config/context_window_detection.py:138"
+      ],
+      "neutral_note": "Outbound TLS verification can be disabled for provider traffic (opt-in system setting, default off, refused when ENVIRONMENT=prod, warned once). Guardrails exist; residual risk is that non-production opt-in still sends provider credentials over unverified TLS."
+    },
+    {
+      "id": "L4",
+      "axis": "C",
+      "severity": "low",
+      "rule": "stop-token-file-default-mode",
+      "locations": ["deeptutor/runtime/launcher.py:1315"],
+      "neutral_note": "The detached-launcher stop handshake token is written to launcher.stop via plain write_text (umask-derived mode), while the adjacent state file that also carries the token uses atomic_write_json (owner-only temp). Local-only impact surface."
+    },
+    {
+      "id": "I1",
+      "axis": "A",
+      "severity": "info",
+      "rule": "keyless-sentinel-default",
+      "locations": [
+        "deeptutor/api/routers/system.py:482",
+        "deeptutor/services/config/provider_runtime.py:924",
+        "deeptutor/services/config/provider_runtime.py:1245",
+        "deeptutor/services/config/provider_runtime.py:1299",
+        "deeptutor/services/config/provider_runtime.py:1340",
+        "deeptutor/services/config/provider_runtime.py:1381",
+        "deeptutor/services/rag/pipelines/pageindex/client.py:80",
+        "deeptutor/services/embedding/adapters/openai_compatible.py:48",
+        "deeptutor/services/embedding/adapters/openai_sdk.py:48",
+        "deeptutor/services/config/settings_spec.py:542",
+        "deeptutor/runtime/agentic/client.py:168"
+      ],
+      "neutral_note": "The literal 'sk-no-key-required' is used as a sentinel for keyless local endpoints at 11 sites. Intentional placeholder, treated as a non-secret by doctor.py:108/327; not a credential."
+    },
+    {
+      "id": "I2",
+      "axis": "A",
+      "severity": "info",
+      "rule": "default-bootstrap-admin-username",
+      "locations": ["deeptutor/services/config/runtime_settings.py:84"],
+      "neutral_note": "Shipped default auth settings seed username 'admin' with an empty password hash, which the bootstrap logic explicitly treats as non-authenticating (deeptutor/multi_user/identity.py:138-157). No default password exists."
+    },
+    {
+      "id": "I3",
+      "axis": "A",
+      "severity": "info",
+      "rule": "no-hardcoded-key-literals",
+      "locations": [],
+      "neutral_note": "Zero provider-shaped key literals (sk-/ghp_/AKIA/AIza/xox patterns) and zero secret-valued os.getenv defaults found in non-test source. Test fixtures use obvious dummy values (tests/services/config/test_model_catalog_secrets.py, tests/core/test_agentic_client_provider_kwargs.py, tests/services/mcp/test_call_failures.py). Locale/banner/label false positives from the generic pass were triaged out."
+    },
+    {
+      "id": "I4",
+      "axis": "C",
+      "severity": "info",
+      "rule": "secret-store-inventory",
+      "locations": [
+        "deeptutor/utils/secret_files.py:9",
+        "deeptutor/services/mcp/secrets.py:54",
+        "deeptutor/services/mcp/secrets.py:178",
+        "deeptutor/multi_user/identity.py:103",
+        "deeptutor/services/skill/credentials.py:27",
+        "deeptutor/services/codex_auth/service.py:1201",
+        "deeptutor/video_learning/invidious_account_storage.py:22",
+        "deeptutor/services/config/model_catalog.py:292",
+        "deeptutor/services/partners/manager.py:612"
+      ],
+      "neutral_note": "On-disk secret stores and their write paths inventoried: auth secret and skill-hub tokens via write_secret_text (0600/0700); MCP per-owner secrets under data/system/<owner>/private with explicit owner-only modes; auth users.json, device credentials and grants via atomic writes whose temp files are created owner-only; Codex credentials relocated by rename into the owner-private tree; Invidious tokens under the owner-private tree (0700 dirs); model catalog with plaintext provider keys at data/user/settings/model_catalog (owner-only via exclusive temp create; outside the sandbox-runner mounts per docker-compose.yml:163-167); partner channel secrets in data/partners/<id>/config.yaml (plaintext at rest, masked in read APIs by manager.py:150). Only M3 and L4 deviate from the owner-only pattern."
+    },
+    {
+      "id": "I5",
+      "axis": "B",
+      "severity": "info",
+      "rule": "sandbox-subprocess-default-on",
+      "locations": ["deeptutor/services/config/runtime_settings.py:37"],
+      "neutral_note": "Host-side restricted-subprocess exec is enabled by default (documented: office-skill document generation works out of the box; stronger runner/bwrap backends take precedence). Documented tradeoff, listed for inventory completeness."
+    },
+    {
+      "id": "I6",
+      "axis": "D",
+      "severity": "info",
+      "rule": "redaction-helpers-present",
+      "locations": [
+        "deeptutor/services/doctor.py:325",
+        "deeptutor/services/llm/provider_factory.py:22",
+        "deeptutor/services/embedding/adapters/gemini.py:121",
+        "deeptutor/services/partners/manager.py:128",
+        "deeptutor/services/config/settings_profile.py:155",
+        "deeptutor/services/mcp/manager.py:605",
+        "deeptutor/services/codex_auth/service.py:865"
+      ],
+      "neutral_note": "Active redaction/masking helpers observed at these sites (error-body scrubbing, secret fingerprints, masked channel configs, redacted URLs). Positive hygiene inventory."
+    },
+    {
+      "id": "I7",
+      "axis": "D",
+      "severity": "info",
+      "rule": "no-key-value-logging-confirmed",
+      "locations": [],
+      "neutral_note": "All 44 AST log-call candidates triaged: every hit logs absence messages, token counts, variable/path names, or pre-redacted values; no call site prints a credential value. Dedup-marked (referenced, not counted): deeptutor/services/pocketbase_client.py:160 and deeptutor/partners/channels/dingtalk.py:249 log exception bodies (scan-log-exception-bodies class; the dingtalk site also misuses {}-style placeholders with stdlib logging); provider response bodies in user-facing errors are covered by fix-provider-body-leak (myfork a8618a063)."
+    }
+  ]
+}

@@ -1,0 +1,3096 @@
+[
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "deeptutor/runtime/banner.py:51",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "deeptutor/runtime/banner.py:175",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "deeptutor/runtime/banner.py:296",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "deeptutor/runtime/banner.py:404",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/components/settings/ProvidersWorkspace.tsx:314",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/components/mcp/KeyValueEditor.tsx:14",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:182",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:196",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:371",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:1909",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:1912",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:3846",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:4523",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:5035",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:5043",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:5354",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/pl/app.json:5355",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:182",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:1910",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:1913",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:4527",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:5338",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/zh/app.json:5339",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:169",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:183",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:348",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:355",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:1872",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:1875",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:3754",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:4538",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:5053",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:5061",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:5354",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/uk/app.json:5355",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:182",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:196",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:364",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:371",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:1910",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:1913",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:3847",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:4524",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:5036",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:5044",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:5338",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/de/app.json:5339",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:472",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:479",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:2419",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:2422",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:4824",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:4965",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:5228",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:5299",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:5322",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:5781",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/fr/app.json:5782",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:182",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:196",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:364",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:371",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:1910",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:1913",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:3850",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:4527",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:5040",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:5048",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:5338",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "A2-hardcoded-key-literal",
+    "axis": "A",
+    "location": "web/locales/en/app.json:5339",
+    "severity": "medium",
+    "note": "secret-named field with literal value"
+  },
+  {
+    "rule": "B3-compose-port-no-loopback",
+    "axis": "B",
+    "location": "docker-compose.yml:55",
+    "severity": "medium",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B4-fastapi-default-docs",
+    "axis": "B",
+    "location": "deeptutor/api/main.py:404",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B6-tls-verify-false-site",
+    "axis": "B",
+    "location": "deeptutor/services/llm/openai_http_client.py:102",
+    "severity": "low",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B6-tls-verify-false-site",
+    "axis": "B",
+    "location": "deeptutor/services/llm/openai_http_client.py:153",
+    "severity": "low",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B7-sandbox-subprocess-default-on",
+    "axis": "B",
+    "location": "deeptutor/services/config/runtime_settings.py:37",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B1-auth-disabled-default",
+    "axis": "B",
+    "location": "deeptutor/services/config/runtime_settings.py:83",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B5-cookie-secure-default-false",
+    "axis": "B",
+    "location": "deeptutor/services/config/runtime_settings.py:87",
+    "severity": "low",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B1-auth-disabled-default",
+    "axis": "B",
+    "location": "deeptutor/services/partners/web_continuity.py:77",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B1-auth-disabled-default",
+    "axis": "B",
+    "location": "deeptutor/services/partners/web_continuity.py:83",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B1-auth-disabled-default",
+    "axis": "B",
+    "location": "deeptutor/api/routers/_partners_channel_schema.py:172",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "B1-auth-disabled-default",
+    "axis": "B",
+    "location": "deeptutor/partners/channels/base.py:256",
+    "severity": "info",
+    "note": "pattern match (see report for context)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "scripts/docker_compose.py:70",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "scripts/export_discord_history.py:573",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "scripts/export_discord_history.py:574",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "scripts/prepare_web_package.py:28",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "scripts/prepare_web_package.py:50",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor_cli/kb.py:114",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/reading/store.py:61",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/reading/store.py:313",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/reading/store.py:511",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/reading/store.py:656",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/reading/epub_bilingual.py:24",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/tools/file_tools.py:126",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/tools/file_tools.py:181",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/tools/exec_tool.py:259",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/tools/exec_tool.py:263",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/storage.py:28",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/storage.py:54",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/storage.py:56",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/storage.py:232",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/edit_agent.py:13",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/edit_agent.py:65",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/co_writer/edit_agent.py:91",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/guardians.py:12",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/guardians.py:78",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/paths.py:137",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/paths.py:234",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/grants.py:15",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/grants.py:278",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/grants.py:312",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/device_credentials.py:14",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/device_credentials.py:133",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/session_handoff.py:192",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/session_handoff.py:224",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/session_handoff.py:225",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/identity.py:15",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/identity.py:16",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/identity.py:103",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/identity.py:131",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/multi_user/identity.py:505",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/plugins/registry.py:37",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/plugins/registry.py:219",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/plugins/registry.py:263",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/plugins/registry.py:274",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/plugins/distribution.py:109",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/learning/storage.py:45",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/learning/storage.py:2059",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/learning/migration.py:28",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/learning/migration.py:289",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/visualizers/store.py:72",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/worker_tasks.py:42",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:181",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:184",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:769",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:797",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:933",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/runtime/launcher.py:1315",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/utils/secret_files.py:17",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/utils/secret_files.py:24",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/utils/secret_files.py:28",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/progress_tracker.py:13",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/progress_tracker.py:170",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/initializer.py:22",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/initializer.py:121",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/initializer.py:151",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/indexing_run.py:28",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/indexing_run.py:431",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/indexing_run.py:444",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:37",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:126",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:452",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:470",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:1852",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2025",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2089",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2235",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2278",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2292",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2313",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2373",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2388",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/manager.py:2408",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/add_documents.py:19",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/knowledge/add_documents.py:108",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/learning_overlay.py:15",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/learning_overlay.py:33",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:32",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:54",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:56",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:154",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:177",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:197",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:221",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:238",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:281",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/book/storage.py:315",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/suggestions.py:57",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/suggestions.py:206",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/path_service.py:31",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/path_service.py:352",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/github_copilot_storage.py:18",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/github_copilot_storage.py:43",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/github_copilot_storage.py:77",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/courses.py:29",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/courses.py:320",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/file_io.py:72",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/file_io.py:85",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/file_io.py:95",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/file_io.py:117",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/app_update.py:25",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/app_update.py:597",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/video_learning/invidious_account_storage.py:38",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/video_learning/invidious_account_storage.py:49",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/video_learning/service.py:24",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/video_learning/service.py:188",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/video_learning/service.py:371",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/settings/starter_settings.py:17",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/settings/starter_settings.py:72",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/settings/interface_settings.py:256",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/llm/image_caption_cache.py:19",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/llm/image_caption_cache.py:92",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/llm/image_caption_cache.py:151",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/learning_journal/store.py:14",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/learning_journal/store.py:321",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:19",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:111",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:121",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:192",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:254",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:390",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:396",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/store.py:419",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:309",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:574",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:618",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:696",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:829",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/service.py:932",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/credentials.py:22",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/credentials.py:81",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/skill/credentials.py:94",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:10",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:521",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:536",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:551",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:581",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:606",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:621",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:632",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:647",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:655",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:671",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:677",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:689",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:812",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/runtime_settings.py:816",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/knowledge_base_config.py:109",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/knowledge_base_config.py:112",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/model_catalog.py:309",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/config/settings_draft.py:100",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partner_groups/store.py:83",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partner_groups/store.py:209",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partner_groups/store.py:320",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partner_groups/store.py:379",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/session_move.py:60",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/session_move.py:83",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/session_move.py:137",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:20",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:322",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:403",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:412",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:413",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:421",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:425",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/kb_move.py:430",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:23",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:530",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:538",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:552",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:592",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:611",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:614",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:616",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:636",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:652",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:667",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:688",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:699",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:709",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:716",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:799",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:820",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:944",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/data_migration.py:1082",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/snapshot.py:15",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/workspace/snapshot.py:144",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:59",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:85",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:96",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:100",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:135",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:136",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:193",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:238",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:239",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:250",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:273",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:297",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/codex_auth/storage.py:327",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/setup/data_volume.py:162",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/setup/init.py:241",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/cli_apps/paths.py:99",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/cli_apps/installer.py:281",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/cli_apps/state.py:200",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/config.py:147",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/session_state.py:51",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/user_config.py:75",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/user_config.py:219",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/user_config.py:223",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/secrets.py:55",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/secrets.py:174",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/secrets.py:178",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/oauth.py:98",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/oauth.py:123",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/mcp/oauth.py:127",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/visual_coverage.py:10",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/visual_coverage.py:101",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/index_versioning.py:322",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/index_versioning.py:326",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/index_versioning.py:383",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/index_versioning.py:386",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/storage/file_library.py:181",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/storage/attachment_store.py:183",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/search/__init__.py:70",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/sessions.py:88",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/links.py:31",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/links.py:110",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/web_continuity.py:94",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/drafts.py:105",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/workspace.py:115",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/workspace.py:323",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/workspace.py:397",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/workspace.py:429",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/manager.py:657",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/partners/manager.py:1570",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/web_source/crawler.py:651",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/persona/service.py:231",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/persona/service.py:260",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/persona/service.py:299",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/persona/service.py:333",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/notebook/service.py:22",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/notebook/service.py:108",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/notebook/service.py:130",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/notebook/service.py:181",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/notebook/service.py:231",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/cache.py:29",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/cache.py:90",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/subagent/sessions.py:52",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/subagent/config.py:205",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/subagent/claude_models.py:97",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/session/legacy_migration.py:22",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/session/legacy_migration.py:220",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/pymupdf4llm/engine.py:122",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/markitdown/engine.py:85",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/docling/remote.py:68",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/docling/local_worker.py:131",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/tika/remote.py:66",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/mineru/cloud.py:241",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/mineru/cloud.py:244",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/mineru/local.py:19",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/mineru/local.py:209",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/mineru/local.py:374",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/parsing/engines/liteparse/engine.py:134",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py:469",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py:480",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/ingress.py:15",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/ingress.py:286",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/block_policy.py:20",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/block_policy.py:201",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/block_policy.py:237",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py:11",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/cache_reuse.py:132",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/storage.py:32",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/lightrag/storage.py:323",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/graphrag/ingestion.py:128",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/graphrag/storage.py:26",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/graphrag/storage.py:113",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/pageindex/storage.py:19",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/pageindex/storage.py:62",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/rag/pipelines/pageindex/storage.py:79",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/cli_apps/vendor/build_snapshot.py:64",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/snapshot/store.py:69",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/runs.py:35",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/meta.py:74",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/meta.py:112",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/meta.py:164",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/meta.py:169",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/modes/_runtime.py:21",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/services/memory/consolidator/modes/_shims.py:126",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/routers/reading.py:1066",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/routers/visualizers.py:103",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/routers/settings.py:2396",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/routers/knowledge.py:72",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/routers/knowledge.py:3941",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/api/contracts/export.py:90",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/partners/channels/mochat.py:1009",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/partners/channels/weixin.py:245",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/agents/research/data_structures.py:546",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/agents/math_animator/renderer.py:64",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/agents/math_animator/renderer.py:110",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/agents/research/utils/token_tracker.py:270",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/agents/research/utils/citation_manager.py:215",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/capabilities/audio_overview/pipeline.py:131",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/capabilities/audio_overview/pipeline.py:455",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/capabilities/obsidian/vault.py:281",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/capabilities/obsidian/vault.py:292",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/capabilities/obsidian/vault.py:306",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "C1-persist-site",
+    "axis": "C",
+    "location": "deeptutor/tools/question/question_extractor.py:308",
+    "severity": "info",
+    "note": "file-write call site (inventory; triage for secret-bearing payloads)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "scripts/export_discord_history.py:607",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor_cli/skill.py:354",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor_cli/skill.py:417",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/tools/tex_chunker.py:64",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/tools/tex_chunker.py:115",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/tools/tex_chunker.py:331",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/tools/tex_chunker.py:340",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/multi_user/identity.py:132",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/multi_user/identity.py:134",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/multi_user/identity.py:156",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/multi_user/identity.py:506",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/multi_user/identity.py:512",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/pocketbase_client.py:93",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/pocketbase_client.py:99",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/pocketbase_client.py:160",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/llm/config.py:80",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/codex_auth/service.py:871",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/codex_auth/service.py:1234",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/codex_auth/service.py:1242",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/codex_auth/service.py:1258",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/codex_auth/service.py:1260",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/mcp/secrets.py:116",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/mcp/secrets.py:164",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/mcp/manager.py:605",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/mcp/oauth.py:175",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/services/llm/provider_core/openai_codex_provider.py:97",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/logging/stats/llm_stats.py:180",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/api/routers/auth.py:171",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/api/routers/auth.py:910",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/api/routers/auth.py:1444",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/zulip.py:104",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/dingtalk.py:164",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/dingtalk.py:237",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/dingtalk.py:249",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/telegram.py:335",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/discord.py:74",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/mattermost.py:118",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/mochat.py:322",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/mochat.py:377",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/qq.py:96",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/feishu.py:491",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/msteams.py:156",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/slack.py:73",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  },
+  {
+    "rule": "D1-log-secret-candidate",
+    "axis": "D",
+    "location": "deeptutor/partners/channels/wecom.py:78",
+    "severity": "info",
+    "note": "logging call mentions secret-named identifier (triage)"
+  }
+]
