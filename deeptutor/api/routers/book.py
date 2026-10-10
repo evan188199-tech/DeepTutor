@@ -1803,8 +1803,19 @@ async def book_websocket(ws: WebSocket) -> None:
                     )
                 await send(payload)
             except Exception as exc:
+                # ``str(exc)`` can embed provider response bodies or backend
+                # internals; the client gets a neutral message keyed by a
+                # stable code, and the original text stays in server logs.
                 logger.error(f"book ws action {msg_type} failed: {exc}", exc_info=True)
-                await send({"type": "error", "content": str(exc)})
+                await send(
+                    {
+                        "type": "error",
+                        "content": (
+                            "Book action failed. Please try again. (error code: book_action_failed)"
+                        ),
+                        "code": "book_action_failed",
+                    }
+                )
             finally:
                 if activity is not None:
                     activity.close()

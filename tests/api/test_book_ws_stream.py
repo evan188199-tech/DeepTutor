@@ -205,6 +205,35 @@ def test_unknown_message_types_are_reported_not_ignored(client: TestClient) -> N
         assert "nonsense" in frame["content"]
 
 
+def test_unexpected_action_failure_is_neutral_and_carries_a_code(
+    client: TestClient, monkeypatch, caplog
+) -> None:
+    """The catch-all handler must not relay raw exception text to the client.
+
+    The exception string can embed provider response bodies or backend
+    internals; the wire contract keeps a neutral message plus a stable
+    ``code``, and the original text stays in server logs.
+    """
+
+    class _FailingEngine(_StubEngine):
+        async def compile_page(self, *, book_id, page_id, force=False):
+            raise RuntimeError("internal failure detail pg_1")
+
+    monkeypatch.setattr(book_router, "get_book_engine", lambda: _FailingEngine())
+
+    with client.websocket_connect("/ws/books") as ws:
+        ws.send_json({"type": "compile_page", "book_id": BOOK_ID, "page_id": "pg_1"})
+        frame = _drain_until(ws, lambda f: f.get("type") == "error")
+
+    assert frame["code"] == "book_action_failed"
+    assert "internal failure detail" not in frame["content"]
+    assert frame["content"].strip()
+
+    logged = [r for r in caplog.records if "book ws action" in r.getMessage()]
+    assert logged, "the raw failure must still reach server logs"
+    assert "internal failure detail pg_1" in logged[0].getMessage()
+
+
 def test_subscribing_to_a_book_this_user_cannot_see_is_refused(
     monkeypatch,
 ) -> None:
