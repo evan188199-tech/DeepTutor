@@ -11,7 +11,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 
@@ -110,8 +110,7 @@ class WhatsAppChannel(BaseChannel):
         (the bridge may have reconnected by the next attempt).
         """
         if not self._ws or not self._connected:
-            logger.warning("WhatsApp bridge not connected")
-            return
+            raise ChannelNotRunningError("WhatsApp bridge not connected")
 
         payload = {"type": "send", "to": msg.chat_id, "text": msg.content}
         await self._ws.send(json.dumps(payload, ensure_ascii=False))

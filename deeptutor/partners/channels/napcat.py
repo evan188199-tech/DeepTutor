@@ -26,7 +26,7 @@ from websockets.asyncio.client import connect as ws_connect
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import safe_filename
 from deeptutor.partners.network import validate_url_target
@@ -446,7 +446,7 @@ class NapcatChannel(BaseChannel):
         if self._ws is None:
             # Raise so the channel manager's retry policy applies (send
             # contract: raise on delivery failure).
-            raise RuntimeError("napcat: not connected")
+            raise ChannelNotRunningError("napcat: not connected")
 
         kind, _, target = msg.chat_id.partition(":")
         if kind not in ("private", "group") or not target:

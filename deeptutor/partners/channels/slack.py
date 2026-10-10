@@ -14,7 +14,7 @@ from slackify_markdown import slackify_markdown
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import Base, DeliveryOverrides
 from deeptutor.partners.helpers import convert_markdown_table_to_labeled_rows
 
@@ -145,8 +145,7 @@ class SlackChannel(BaseChannel):
         policy applies; per-file upload failures stay best-effort.
         """
         if not self._web_client:
-            logger.warning("Slack client not running")
-            return
+            raise ChannelNotRunningError("Slack client not running")
         slack_meta = msg.metadata.get("slack", {}) if msg.metadata else {}
         thread_ts = slack_meta.get("thread_ts")
         channel_type = slack_meta.get("channel_type")

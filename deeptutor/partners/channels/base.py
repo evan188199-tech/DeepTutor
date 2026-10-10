@@ -35,6 +35,16 @@ def _logger():
     return _log
 
 
+class ChannelNotRunningError(RuntimeError):
+    """``send`` was called while the channel is not running.
+
+    Raised when delivery cannot even be attempted because ``start()`` has not
+    completed (or ``stop()`` has since run) — typically the channel's platform
+    client is not constructed yet. Subclasses :class:`RuntimeError` so callers
+    written against the earlier ``RuntimeError`` contract keep working.
+    """
+
+
 class BaseChannel(ABC):
     """
     Abstract base class for chat channel implementations.
@@ -160,7 +170,14 @@ class BaseChannel(ABC):
             msg: The message to send.
 
         Implementations should raise on delivery failure so the channel
-        manager can apply the retry policy in one place.
+        manager can apply the retry policy in one place. This explicitly
+        includes the *not running* case: when the channel cannot attempt
+        delivery because ``start()`` has not completed (or ``stop()`` has
+        since run), ``send`` must raise :class:`ChannelNotRunningError`
+        rather than silently dropping or enqueueing the message — a silent
+        return hides the loss from the manager's retry policy and from the
+        user. Stateless channels whose transport needs no started client
+        (e.g. SMTP email) never enter a not-running state and are exempt.
         """
         pass
 

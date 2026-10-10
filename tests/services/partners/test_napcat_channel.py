@@ -10,6 +10,7 @@ import pytest
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.base import ChannelNotRunningError
 from deeptutor.partners.channels.napcat import NapcatChannel, NapcatConfig
 
 
@@ -497,7 +498,7 @@ class TestSend:
         ch = _make_channel()
         ch._ws = None
         msg = OutboundMessage(channel="napcat", chat_id="private:42", content="hi")
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ChannelNotRunningError):
             await ch.send(msg)
 
     @pytest.mark.asyncio

@@ -12,6 +12,7 @@ from deeptutor.api.routers._partners_channel_schema import all_channel_schemas
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels import weixin as weixin_mod
+from deeptutor.partners.channels.base import ChannelNotRunningError
 from deeptutor.partners.channels.registry import discover_all, discover_channel_names
 from deeptutor.partners.channels.weixin import (
     CONTEXT_TOKEN_MAX_AGE_S,
@@ -327,7 +328,7 @@ class TestOutbound:
     @pytest.mark.asyncio
     async def test_send_requires_authenticated_client(self, state_dir):
         ch = _make_channel(state_dir=str(state_dir))
-        with pytest.raises(RuntimeError, match="not initialized or not authenticated"):
+        with pytest.raises(ChannelNotRunningError, match="not initialized or not authenticated"):
             await ch.send(OutboundMessage(channel="weixin", chat_id="wx-user-1", content="hi"))
 
     @pytest.mark.asyncio

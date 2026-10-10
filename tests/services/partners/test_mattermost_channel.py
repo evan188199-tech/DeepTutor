@@ -10,6 +10,7 @@ import pytest
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels import mattermost as mm_module
+from deeptutor.partners.channels.base import ChannelNotRunningError
 from deeptutor.partners.channels.mattermost import MattermostChannel, MattermostConfig
 
 
@@ -315,11 +316,13 @@ class TestSend:
         with pytest.raises(RuntimeError):
             await ch.send(OutboundMessage(channel="mattermost", chat_id="c", content="hi"))
 
-    async def test_no_client_is_noop(self):
+    async def test_send_without_started_client_raises_not_running(self):
         ch = _make_channel()
         ch._http = None
-        # Should not raise even though the client isn't running.
-        await ch.send(OutboundMessage(channel="mattermost", chat_id="c", content="hi"))
+        # Send contract: a channel that never started raises instead of
+        # silently dropping, so the manager's retry policy applies.
+        with pytest.raises(ChannelNotRunningError):
+            await ch.send(OutboundMessage(channel="mattermost", chat_id="c", content="hi"))
 
 
 @pytest.mark.asyncio

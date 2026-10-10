@@ -30,7 +30,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.channels.weixin_qr import ILINK_APP_ID
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import safe_filename, split_message
@@ -942,7 +942,7 @@ class WeixinChannel(BaseChannel):
 
     async def send(self, msg: OutboundMessage) -> None:
         if not self._client or not self._token:
-            raise RuntimeError("WeChat client not initialized or not authenticated")
+            raise ChannelNotRunningError("WeChat client not initialized or not authenticated")
         self._assert_session_active()
 
         is_progress = bool((msg.metadata or {}).get("_progress", False))

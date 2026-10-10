@@ -22,7 +22,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_markdown_table_row
 
@@ -2115,8 +2115,7 @@ class FeishuChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Feishu, including media (images/files) if present."""
         if not self._client:
-            logger.warning("Feishu client not initialized")
-            return
+            raise ChannelNotRunningError("Feishu client not initialized")
 
         try:
             receive_id_type = "chat_id" if self._is_group_chat(msg.chat_id) else "open_id"

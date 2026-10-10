@@ -37,7 +37,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 MSTEAMS_AVAILABLE = (
@@ -264,7 +264,7 @@ class MSTeamsChannel(BaseChannel):
         Raises on delivery failure so the channel manager's retry policy applies.
         """
         if not self._http:
-            raise RuntimeError("MSTeams HTTP client not initialized")
+            raise ChannelNotRunningError("MSTeams HTTP client not initialized")
 
         ref = self._conversation_refs.get(str(msg.chat_id))
         if not ref:
@@ -530,7 +530,7 @@ class MSTeamsChannel(BaseChannel):
             return self._botframework_openid_config
 
         if not self._http:
-            raise RuntimeError("MSTeams HTTP client not initialized")
+            raise ChannelNotRunningError("MSTeams HTTP client not initialized")
 
         resp = await self._http.get(self._botframework_openid_config_url)
         resp.raise_for_status()
@@ -546,7 +546,7 @@ class MSTeamsChannel(BaseChannel):
             return self._botframework_jwks
 
         if not self._http:
-            raise RuntimeError("MSTeams HTTP client not initialized")
+            raise ChannelNotRunningError("MSTeams HTTP client not initialized")
 
         openid_config = await self._get_botframework_openid_config()
         jwks_uri = str(openid_config.get("jwks_uri") or "").strip()
@@ -829,7 +829,7 @@ class MSTeamsChannel(BaseChannel):
             return self._token
 
         if not self._http:
-            raise RuntimeError("MSTeams HTTP client not initialized")
+            raise ChannelNotRunningError("MSTeams HTTP client not initialized")
 
         tenant = (self.config.tenant_id or "").strip() or "botframework.com"
         token_url = f"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"

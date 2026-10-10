@@ -15,7 +15,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 try:
@@ -497,6 +497,8 @@ class DingTalkChannel(BaseChannel):
 
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through DingTalk."""
+        if not self._http:
+            raise ChannelNotRunningError("DingTalk HTTP client not initialized")
         token = await self._get_access_token()
         if not token:
             return

@@ -11,6 +11,7 @@ import pytest
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels import msteams as msteams_mod
+from deeptutor.partners.channels.base import ChannelNotRunningError
 from deeptutor.partners.channels.msteams import (
     MSTEAMS_REF_FILENAME,
     MSTEAMS_REF_META_FILENAME,
@@ -384,7 +385,7 @@ class TestSend:
     async def test_send_without_http_client_raises(self, state_dir):
         ch = _make_channel()
         msg = OutboundMessage(channel="msteams", chat_id="a:conv-1", content="hi")
-        with pytest.raises(RuntimeError, match="not initialized"):
+        with pytest.raises(ChannelNotRunningError, match="not initialized"):
             await ch.send(msg)
 
     @pytest.mark.asyncio

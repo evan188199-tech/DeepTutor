@@ -46,7 +46,7 @@ else:
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import safe_filename
 
@@ -458,7 +458,7 @@ class MatrixChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send outbound content; clear typing for non-progress messages."""
         if not self.client:
-            return
+            raise ChannelNotRunningError("Matrix client not initialized")
         text = msg.content or ""
         candidates = self._collect_outbound_media_candidates(msg.media)
         relates_to = self._build_thread_relates_to(msg.metadata)

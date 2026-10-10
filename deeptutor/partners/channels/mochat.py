@@ -15,7 +15,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import Base, DeliveryOverrides
 
 try:
@@ -373,6 +373,8 @@ class MochatChannel(BaseChannel):
 
     async def send(self, msg: OutboundMessage) -> None:
         """Send outbound message to session or panel."""
+        if not self._http:
+            raise ChannelNotRunningError("Mochat HTTP client not initialized")
         if not self.config.claw_token:
             logger.warning("Mochat claw_token missing, skip send")
             return

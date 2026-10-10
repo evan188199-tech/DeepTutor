@@ -18,7 +18,7 @@ from telegram.request import HTTPXRequest
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import Base, DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import (
     is_markdown_table_separator_row,
@@ -455,8 +455,7 @@ class TelegramChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Telegram."""
         if not self._app:
-            logger.warning("Telegram bot not running")
-            return
+            raise ChannelNotRunningError("Telegram bot not running")
 
         # Only stop typing indicator for final responses
         if not msg.metadata.get("_progress", False):

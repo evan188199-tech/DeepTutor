@@ -18,7 +18,7 @@ import requests
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import split_message
 
@@ -183,8 +183,7 @@ class ZulipChannel(BaseChannel):
 
     async def send(self, msg: OutboundMessage) -> None:
         if not self._client:
-            logger.warning("Zulip client not running")
-            return
+            raise ChannelNotRunningError("Zulip client not running")
 
         metadata = self._metadata_for_send(msg)
 

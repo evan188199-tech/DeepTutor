@@ -9,7 +9,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 try:
@@ -141,8 +141,7 @@ class QQChannel(BaseChannel):
         Raises on delivery failure so the channel manager's retry applies.
         """
         if not self._client:
-            logger.warning("QQ client not initialized")
-            return
+            raise ChannelNotRunningError("QQ client not initialized")
 
         msg_id = msg.metadata.get("message_id")
         self._msg_seq += 1

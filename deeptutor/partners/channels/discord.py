@@ -14,7 +14,7 @@ import websockets
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_message
 
@@ -122,8 +122,7 @@ class DiscordChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Discord REST API, including file attachments."""
         if not self._http:
-            logger.warning("Discord HTTP client not initialized")
-            return
+            raise ChannelNotRunningError("Discord HTTP client not initialized")
 
         url = f"{DISCORD_API_BASE}/channels/{msg.chat_id}/messages"
         headers = {"Authorization": f"Bot {self.config.token}"}

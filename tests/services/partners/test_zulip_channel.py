@@ -12,6 +12,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.base import ChannelNotRunningError
 from deeptutor.partners.channels.zulip import ZulipChannel, ZulipConfig
 
 
@@ -740,7 +741,7 @@ class TestSend:
         assert "pm:42" in ch._typing_tasks
 
     @pytest.mark.asyncio
-    async def test_send_no_client_returns_early(self):
+    async def test_send_no_client_raises_not_running(self):
         ch = _make_channel()
         ch._client = None
 
@@ -752,7 +753,8 @@ class TestSend:
             content="Hello",
             metadata={},
         )
-        await ch.send(msg)
+        with pytest.raises(ChannelNotRunningError):
+            await ch.send(msg)
 
 
 class TestUploadAndSend:

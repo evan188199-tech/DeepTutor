@@ -28,7 +28,7 @@ import websockets
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, ChannelNotRunningError
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import split_message
 
@@ -376,8 +376,7 @@ class MattermostChannel(BaseChannel):
         applies; per-file upload failures stay best-effort.
         """
         if not self._http:
-            logger.warning("Mattermost HTTP client not running")
-            return
+            raise ChannelNotRunningError("Mattermost HTTP client not running")
 
         meta = msg.metadata.get("mattermost", {}) if msg.metadata else {}
         root_id = meta.get("root_id") or ""
