@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime
+import json
 
 import pytest
 
@@ -41,9 +41,7 @@ def test_empty_and_unremarkable_rows_yield_nothing_but_flag_omissions(
         ("junk", False),
     ],
 )
-def test_card_metadata_matrix_decides_whether_a_plain_row_survives(
-    metadata, expected_kept
-) -> None:
+def test_card_metadata_matrix_decides_whether_a_plain_row_survives(metadata, expected_kept) -> None:
     events = [{"type": "content", "content": "x", "metadata": metadata}]
 
     preview, truncated = compact_trace_preview(events)
@@ -53,9 +51,7 @@ def test_card_metadata_matrix_decides_whether_a_plain_row_survives(
 
 
 def test_critical_rows_over_the_event_cap_keep_only_the_most_recent() -> None:
-    events = [
-        {"type": "result", "metadata": {"summary": index}} for index in range(5)
-    ]
+    events = [{"type": "result", "metadata": {"summary": index}} for index in range(5)]
     events.append({"type": "done", "metadata": {"status": "completed"}})
 
     preview, truncated = compact_trace_preview(events, max_events=2)
