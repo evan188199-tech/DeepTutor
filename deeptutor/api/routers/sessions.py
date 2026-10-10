@@ -32,6 +32,16 @@ router = APIRouter()
 _LEGACY_TIMED_MEDIA_ID = re.compile(r"^[0-9a-f]{16,64}$")
 
 
+def _session_error(status_code: int, code: str, message: str) -> HTTPException:
+    """Refuse a request with the structured ``{"code", "message"}`` envelope.
+
+    Same shape as ``book.py`` / ``space_mcp.py``: the message text is the
+    historical free-text detail (string matching keeps working), and ``code``
+    gives the frontend a machine-readable key instead.
+    """
+    return HTTPException(status_code=status_code, detail={"code": code, "message": message})
+
+
 def _turn_application_service():
     from deeptutor.app.container import get_application_container
 
@@ -234,7 +244,7 @@ async def search_sessions(
 ):
     """Search titles and persisted user/assistant messages for a literal term."""
     if not q.strip():
-        raise HTTPException(status_code=400, detail="Search query cannot be empty")
+        raise _session_error(400, "session.search_query_empty", "Search query cannot be empty")
     if all_workspaces:
         from deeptutor.services.workspace.navigation import session_index
 
@@ -389,16 +399,17 @@ async def migrate_watching_session(session_id: str):
         store = get_session_store()
         session = await store.get_session_with_messages(session_id)
         if session is None:
-            raise HTTPException(status_code=404, detail="Session not found")
+            raise _session_error(404, "session.not_found", "Session not found")
         preferences = session.get("preferences") or {}
         if any(
             preferences.get(key) == "immersive_watching"
             for key in ("capability", "workspace_mode", "session_kind")
         ):
             if not await _normalize_legacy_watching_session(store, session, persist=True):
-                raise HTTPException(
-                    status_code=409,
-                    detail="The legacy video could not be opened in Reading. The original conversation is preserved.",
+                raise _session_error(
+                    409,
+                    "session.legacy_watching_migration_failed",
+                    "The legacy video could not be opened in Reading. The original conversation is preserved.",
                 )
         return await get_session(session_id)
 
@@ -410,7 +421,7 @@ async def get_session(session_id: str):
     store = get_session_store()
     session = await store.get_session_with_messages(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     _attach_orphaned_failed_turns(
         session.get("messages", []), await store.list_orphaned_failed_turns(session_id)
     )
@@ -429,7 +440,7 @@ async def get_message_events(
     store = get_session_store()
     trace = await store.get_message_trace(session_id, message_id, after_seq, limit)
     if trace is None:
-        raise HTTPException(status_code=404, detail="Message not found")
+        raise _session_error(404, "session.message_not_found", "Message not found")
     return trace
 
 
@@ -446,7 +457,7 @@ async def rename_session(session_id: str, payload: SessionRenameRequest):
     store = get_session_store()
     updated = await store.update_session_title(session_id, payload.title)
     if not updated:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     # The reader keeps its own list of a collection's conversations; the
     # sidebar is where they are renamed, so the list has to hear about it.
     try:
@@ -462,13 +473,13 @@ async def update_session_reply_language(session_id: str, payload: SessionReplyLa
     """Fix this conversation's reply language, or return to the account default."""
     store = get_session_store()
     if await store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     updated = await store.update_session_preferences(
         session_id, {"reply_language_override": payload.language}
     )
     session = await store.get_session(session_id)
     if not updated or session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     return {"session": session}
 
 
@@ -479,7 +490,7 @@ async def update_session_organization(
     store = get_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
 
     updates: dict[str, Any] = {}
     fields = payload.model_fields_set
@@ -494,13 +505,17 @@ async def update_session_organization(
                 if workspace_id == service.general_binding().workspace_id:
                     workspace_id = ""
             except WorkspaceError as exc:
-                raise HTTPException(status_code=400, detail=str(exc)) from exc
+                raise _session_error(400, "session.workspace_invalid", str(exc)) from exc
         if await store.get_active_turn(session_id) is not None:
-            raise HTTPException(
-                status_code=409, detail="Wait for the active turn before moving this conversation."
+            raise _session_error(
+                409,
+                "session.move_wait_active_turn",
+                "Wait for the active turn before moving this conversation.",
             )
         if (session.get("preferences") or {}).get("parent_session_id"):
-            raise HTTPException(status_code=400, detail="Move the parent conversation instead.")
+            raise _session_error(
+                400, "session.move_parent_instead", "Move the parent conversation instead."
+            )
         from deeptutor.services.workspace.context import get_workspace_scope
 
         current_scope = get_workspace_scope()
@@ -509,9 +524,10 @@ async def update_session_organization(
             # validate their foreign keys against the source and apply them in
             # the destination. Reject the whole request before copying data.
             if fields - {"workspace_id"}:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Move the conversation separately from other organization changes.",
+                raise _session_error(
+                    400,
+                    "session.move_exclusive",
+                    "Move the conversation separately from other organization changes.",
                 )
             from deeptutor.api.routers.workspace import _data_operation
             from deeptutor.services.workspace.session_move import move_chat
@@ -526,7 +542,7 @@ async def update_session_organization(
             try:
                 moved = await _data_operation(move_chat, session_id, workspace_id)
             except WorkspaceError as exc:
-                raise HTTPException(status_code=409, detail=str(exc)) from exc
+                raise _session_error(409, "session.move_failed", str(exc)) from exc
             return {"session": moved}
         updates["workspace_id"] = workspace_id or None
     if "course_id" in fields:
@@ -537,12 +553,12 @@ async def update_session_organization(
             try:
                 get_course_service().get(course_id)
             except CourseNotFoundError as exc:
-                raise HTTPException(status_code=404, detail="Course not found") from exc
+                raise _session_error(404, "session.course_not_found", "Course not found") from exc
         updates["course_id"] = course_id
     if "parent_session_id" in fields:
         parent_id = str(payload.parent_session_id or "").strip()
         if parent_id == session_id:
-            raise HTTPException(status_code=400, detail="A session cannot be its own parent")
+            raise _session_error(400, "session.self_parent", "A session cannot be its own parent")
         if parent_id:
             try:
                 await validate_parent_assignment(
@@ -551,9 +567,11 @@ async def update_session_organization(
                     parent_session_id=parent_id,
                 )
             except LookupError as exc:
-                raise HTTPException(status_code=404, detail="Parent session not found") from exc
+                raise _session_error(
+                    404, "session.parent_not_found", "Parent session not found"
+                ) from exc
             except ValueError as exc:
-                raise HTTPException(status_code=400, detail=str(exc)) from exc
+                raise _session_error(400, "session.parent_assignment_invalid", str(exc)) from exc
         updates["parent_session_id"] = parent_id
     if "session_kind" in fields:
         updates["session_kind"] = payload.session_kind or "chat"
@@ -582,7 +600,7 @@ async def update_session_organization(
 async def delete_session(session_id: str):
     store = get_session_store()
     if await store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
 
     # Tutor threads belong to their parent conversation. Snapshot before any
     # deletion changes pagination, and walk descendants without revisiting cycles.
@@ -605,13 +623,14 @@ async def delete_session(session_id: str):
         for target in ordered:
             for turn in await list_active_turns(target):
                 if not await turns.cancel_turn_and_wait(turn["id"]):
-                    raise HTTPException(
-                        status_code=409,
-                        detail="Active conversation turn could not be stopped before deletion",
+                    raise _session_error(
+                        409,
+                        "session.active_turn_cancel_failed",
+                        "Active conversation turn could not be stopped before deletion",
                     )
     for target in reversed(ordered):
         if not await store.delete_session(target):
-            raise HTTPException(status_code=409, detail="Unable to delete conversation")
+            raise _session_error(409, "session.delete_failed", "Unable to delete conversation")
         await _cleanup_deleted_session(target)
     return {"deleted": True, "session_id": session_id}
 
@@ -636,7 +655,7 @@ async def restore_session(session_id: str):
     store = get_session_store()
     restored = await store.restore_session(session_id)
     if not restored:
-        raise HTTPException(status_code=404, detail="Session not found in recycle bin")
+        raise _session_error(404, "session.not_in_recycle_bin", "Session not found in recycle bin")
     refreshed = await store.get_session(session_id)
     return {"restored": True, "session": refreshed}
 
@@ -646,7 +665,7 @@ async def purge_session(session_id: str):
     store = get_session_store()
     purged = await store.hard_delete_session(session_id)
     if not purged:
-        raise HTTPException(status_code=404, detail="Session not found in recycle bin")
+        raise _session_error(404, "session.not_in_recycle_bin", "Session not found in recycle bin")
     await _cleanup_deleted_session(session_id)
     from deeptutor.services.task_board import get_task_board_store
     from deeptutor.services.workspace.context import current_workspace_id
@@ -664,12 +683,12 @@ async def update_branch_selection(session_id: str, payload: BranchSelectionReque
     store = get_sqlite_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     updated = await store.update_session_preferences(
         session_id, {"selected_branches": dict(payload.selected_branches)}
     )
     if not updated:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     return {"selected_branches": payload.selected_branches}
 
 
@@ -678,12 +697,13 @@ async def delete_turn_by_message(session_id: str, message_id: int):
     store = get_sqlite_session_store()
     result = await store.delete_turn_by_message(session_id, message_id)
     if result["was_active"]:
-        raise HTTPException(
-            status_code=409,
-            detail="Cannot delete a message while its turn is running or waiting for input",
+        raise _session_error(
+            409,
+            "session.message_turn_active",
+            "Cannot delete a message while its turn is running or waiting for input",
         )
     if not result["deleted"]:
-        raise HTTPException(status_code=404, detail="Message not found")
+        raise _session_error(404, "session.message_not_found", "Message not found")
     attachment_store = get_attachment_store()
     for aid in result["attachment_ids"]:
         try:
@@ -696,11 +716,11 @@ async def delete_turn_by_message(session_id: str, message_id: int):
 @router.post("/{session_id}/quiz-results")
 async def record_quiz_results(session_id: str, payload: QuizResultsRequest):
     if not payload.answers:
-        raise HTTPException(status_code=400, detail="Quiz results are required")
+        raise _session_error(400, "session.quiz_results_required", "Quiz results are required")
     store = get_sqlite_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise _session_error(404, "session.not_found", "Session not found")
     content = _format_quiz_results_message(payload.answers)
     await store.add_message(
         session_id=session_id,
