@@ -9,7 +9,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 try:
@@ -138,7 +138,8 @@ class QQChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through QQ.
 
-        Raises on delivery failure so the channel manager's retry applies.
+        Raises on delivery failure (including the send timeout) so the
+        channel manager's retry applies.
         """
         if not self._client:
             logger.warning("QQ client not initialized")
@@ -159,14 +160,24 @@ class QQChannel(BaseChannel):
 
         chat_type = self._chat_type_cache.get(msg.chat_id, "c2c")
         if chat_type == "group":
-            await self._client.api.post_group_message(
-                group_openid=msg.chat_id,
-                **payload,
+            await bounded_send_call(
+                self._client.api.post_group_message(
+                    group_openid=msg.chat_id,
+                    **payload,
+                ),
+                timeout=self.config.send_timeout_seconds,
+                channel="QQ",
+                call="post_group_message",
             )
         else:
-            await self._client.api.post_c2c_message(
-                openid=msg.chat_id,
-                **payload,
+            await bounded_send_call(
+                self._client.api.post_c2c_message(
+                    openid=msg.chat_id,
+                    **payload,
+                ),
+                timeout=self.config.send_timeout_seconds,
+                channel="QQ",
+                call="post_c2c_message",
             )
 
     async def _on_message(self, data: "C2CMessage | GroupMessage", is_group: bool = False) -> None:

@@ -14,7 +14,7 @@ from slackify_markdown import slackify_markdown
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import Base, DeliveryOverrides
 from deeptutor.partners.helpers import convert_markdown_table_to_labeled_rows
 
@@ -141,8 +141,9 @@ class SlackChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Slack.
 
-        Raises on text-delivery failure so the channel manager's retry
-        policy applies; per-file upload failures stay best-effort.
+        Raises on text-delivery failure (including the send timeout) so the
+        channel manager's retry policy applies; per-file upload failures stay
+        best-effort.
         """
         if not self._web_client:
             logger.warning("Slack client not running")
@@ -152,22 +153,33 @@ class SlackChannel(BaseChannel):
         channel_type = slack_meta.get("channel_type")
         # Slack DMs don't use threads; channel/group replies may keep thread_ts.
         thread_ts_param = thread_ts if thread_ts and channel_type != "im" else None
+        timeout = self.config.send_timeout_seconds
 
         # Slack rejects empty text payloads. Keep media-only messages media-only,
         # but send a single blank message when the bot has no text or files to send.
         if msg.content or not (msg.media or []):
-            await self._web_client.chat_postMessage(
-                channel=msg.chat_id,
-                text=self._to_mrkdwn(msg.content) if msg.content else " ",
-                thread_ts=thread_ts_param,
+            await bounded_send_call(
+                self._web_client.chat_postMessage(
+                    channel=msg.chat_id,
+                    text=self._to_mrkdwn(msg.content) if msg.content else " ",
+                    thread_ts=thread_ts_param,
+                ),
+                timeout=timeout,
+                channel="Slack",
+                call="chat_postMessage",
             )
 
         for media_path in msg.media or []:
             try:
-                await self._web_client.files_upload_v2(
-                    channel=msg.chat_id,
-                    file=media_path,
-                    thread_ts=thread_ts_param,
+                await bounded_send_call(
+                    self._web_client.files_upload_v2(
+                        channel=msg.chat_id,
+                        file=media_path,
+                        thread_ts=thread_ts_param,
+                    ),
+                    timeout=timeout,
+                    channel="Slack",
+                    call="files_upload_v2",
                 )
             except Exception as e:
                 logger.error("Failed to upload file {}: {}", media_path, e)

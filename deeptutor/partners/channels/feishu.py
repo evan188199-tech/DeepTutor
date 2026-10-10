@@ -22,7 +22,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_markdown_table_row
 
@@ -477,6 +477,22 @@ class FeishuChannel(BaseChannel):
         method = getattr(builder, method_name, None)
         return method(handler) if callable(method) else builder
 
+    async def _sync_api_call(self, fn: Any, /, *args: Any) -> Any:
+        """Run one sync lark API call in the executor, bounded by the send timeout.
+
+        On expiry the await is released with ``asyncio.TimeoutError`` so the
+        delivery call raises per the base ``send`` contract (the executor
+        thread may finish later; its result is discarded). Callers wrapping
+        best-effort calls catch the timeout themselves.
+        """
+        loop = asyncio.get_running_loop()
+        return await bounded_send_call(
+            loop.run_in_executor(None, fn, *args),
+            timeout=self.config.send_timeout_seconds,
+            channel="Feishu",
+            call=getattr(fn, "__name__", "api call"),
+        )
+
     async def start(self) -> None:
         """Start the Feishu bot with WebSocket long connection."""
         if not FEISHU_AVAILABLE:
@@ -772,8 +788,11 @@ class FeishuChannel(BaseChannel):
         return False
 
     async def _delete_reaction(self, message_id: str, reaction_id: str) -> bool:
-        loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(None, self._remove_reaction_sync, message_id, reaction_id)
+        try:
+            return await self._sync_api_call(self._remove_reaction_sync, message_id, reaction_id)
+        except asyncio.TimeoutError:
+            logger.warning("Feishu reaction delete timed out for message {}", message_id)
+            return False
 
     def _clear_reaction_receipt(self, message_id: str, receipt: tuple[str, float]) -> None:
         if self._working_reactions.get(message_id) != receipt:
@@ -1345,8 +1364,7 @@ class FeishuChannel(BaseChannel):
         """Show the reader that the turn is alive before any answer text exists."""
         if not bool(getattr(self.config, "thinking_notice", True)) or not self._client:
             return
-        loop = asyncio.get_running_loop()
-        message_id = await loop.run_in_executor(None, self._post_notice_sync, chat_id, content)
+        message_id = await self._sync_api_call(self._post_notice_sync, chat_id, content)
         if message_id:
             self._remember_thinking_notice(chat_id, message_id)
 
@@ -1355,8 +1373,10 @@ class FeishuChannel(BaseChannel):
         message_id = self._thinking_notices.pop(chat_id, None)
         if not message_id or not self._client:
             return
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._delete_message_sync, message_id)
+        try:
+            await self._sync_api_call(self._delete_message_sync, message_id)
+        except asyncio.TimeoutError:
+            logger.warning("Feishu thinking notice retraction timed out for {}", chat_id)
 
     def _send_message_sync(
         self,
@@ -1627,7 +1647,6 @@ class FeishuChannel(BaseChannel):
             return
         meta = metadata or {}
         stream_key = self._stream_key(chat_id, meta)
-        loop = asyncio.get_running_loop()
         rid_type = "chat_id" if self._is_group_chat(chat_id) else "open_id"
         inbound_message_id = str(meta.get("message_id") or "").strip() or None
 
@@ -1638,8 +1657,7 @@ class FeishuChannel(BaseChannel):
             reply_to_message_id = buf.reply_to_message_id or inbound_message_id
             if buf.card_id:
                 buf.sequence += 1
-                ok = await loop.run_in_executor(
-                    None,
+                ok = await self._sync_api_call(
                     self._stream_update_text_sync,
                     buf.card_id,
                     buf.text,
@@ -1647,8 +1665,7 @@ class FeishuChannel(BaseChannel):
                 )
                 if ok:
                     buf.sequence += 1
-                    closed = await loop.run_in_executor(
-                        None,
+                    closed = await self._sync_api_call(
                         self._close_streaming_mode_sync,
                         buf.card_id,
                         buf.sequence,
@@ -1685,8 +1702,7 @@ class FeishuChannel(BaseChannel):
                     {"config": {"wide_screen_mode": True}, "elements": chunk},
                     ensure_ascii=False,
                 )
-                sent = await loop.run_in_executor(
-                    None,
+                sent = await self._sync_api_call(
                     self._send_message_sync,
                     rid_type,
                     chat_id,
@@ -1720,8 +1736,7 @@ class FeishuChannel(BaseChannel):
                 return
             if buf.create_failures and (now - buf.last_edit) < self._STREAM_CREATE_RETRY_INTERVAL:
                 return
-            card_id = await loop.run_in_executor(
-                None,
+            card_id = await self._sync_api_call(
                 self._create_streaming_card_sync,
                 rid_type,
                 chat_id,
@@ -1758,8 +1773,8 @@ class FeishuChannel(BaseChannel):
                     )
         elif (now - buf.last_edit) >= self._STREAM_EDIT_INTERVAL:
             buf.sequence += 1
-            await loop.run_in_executor(
-                None, self._stream_update_text_sync, buf.card_id, buf.text, buf.sequence
+            await self._sync_api_call(
+                self._stream_update_text_sync, buf.card_id, buf.text, buf.sequence
             )
             buf.updates += 1
             buf.last_edit = now
@@ -2113,14 +2128,17 @@ class FeishuChannel(BaseChannel):
         return card_response(pending_card)
 
     async def send(self, msg: OutboundMessage) -> None:
-        """Send a message through Feishu, including media (images/files) if present."""
+        """Send a message through Feishu, including media (images/files) if present.
+
+        Delivery calls are bounded by ``send_timeout_seconds``; a timeout
+        raises so the channel manager's retry policy applies.
+        """
         if not self._client:
             logger.warning("Feishu client not initialized")
             return
 
         try:
             receive_id_type = "chat_id" if self._is_group_chat(msg.chat_id) else "open_id"
-            loop = asyncio.get_running_loop()
             metadata = msg.metadata or {}
             origin_message_id = str(metadata.get("message_id") or "").strip() or None
             reply_to_message_id = str(msg.reply_to or origin_message_id or "").strip() or None
@@ -2168,12 +2186,15 @@ class FeishuChannel(BaseChannel):
                             card = self._model_picker_card(
                                 picker_id, picker, provider_index, page, status=content
                             )
-                patched = await loop.run_in_executor(
-                    None, self._patch_model_card_sync, picker_message_id, card
-                )
+                try:
+                    patched = await self._sync_api_call(
+                        self._patch_model_card_sync, picker_message_id, card
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning("Feishu model card patch timed out for {}", picker_message_id)
+                    patched = False
                 if not patched:
-                    await loop.run_in_executor(
-                        None,
+                    await self._sync_api_call(
                         self._send_message_sync,
                         "open_id",
                         msg.chat_id,
@@ -2229,15 +2250,20 @@ class FeishuChannel(BaseChannel):
                 with self._model_picker_lock:
                     self._model_pickers[picker_id] = picker
                     self._prune_model_pickers()
-                sent = await loop.run_in_executor(
-                    None,
-                    self._send_message_sync,
-                    "open_id",
-                    msg.chat_id,
-                    "interactive",
-                    json.dumps(self._provider_picker_card(picker_id, picker), ensure_ascii=False),
-                    reply_to_message_id,
-                )
+                try:
+                    sent = await self._sync_api_call(
+                        self._send_message_sync,
+                        "open_id",
+                        msg.chat_id,
+                        "interactive",
+                        json.dumps(
+                            self._provider_picker_card(picker_id, picker), ensure_ascii=False
+                        ),
+                        reply_to_message_id,
+                    )
+                except asyncio.TimeoutError:
+                    logger.warning("Feishu model picker send timed out for {}", msg.chat_id)
+                    sent = False
                 if sent:
                     if origin_message_id:
                         await self._finish_reaction(origin_message_id)
@@ -2251,8 +2277,7 @@ class FeishuChannel(BaseChannel):
             async def send_payload(msg_type: str, content: str) -> None:
                 nonlocal delivered, sent_any
                 sent_any = True
-                sent = await loop.run_in_executor(
-                    None,
+                sent = await self._sync_api_call(
                     self._send_message_sync,
                     receive_id_type,
                     msg.chat_id,
@@ -2269,7 +2294,11 @@ class FeishuChannel(BaseChannel):
                     continue
                 ext = os.path.splitext(file_path)[1].lower()
                 if ext in self._IMAGE_EXTS:
-                    key = await loop.run_in_executor(None, self._upload_image_sync, file_path)
+                    try:
+                        key = await self._sync_api_call(self._upload_image_sync, file_path)
+                    except asyncio.TimeoutError:
+                        logger.warning("Feishu image upload timed out for {}", file_path)
+                        key = None
                     if key:
                         await send_payload(
                             "image",
@@ -2278,7 +2307,11 @@ class FeishuChannel(BaseChannel):
                     else:
                         delivered = False
                 else:
-                    key = await loop.run_in_executor(None, self._upload_file_sync, file_path)
+                    try:
+                        key = await self._sync_api_call(self._upload_file_sync, file_path)
+                    except asyncio.TimeoutError:
+                        logger.warning("Feishu file upload timed out for {}", file_path)
+                        key = None
                     if key:
                         # Use msg_type "media" for audio/video so users can play inline;
                         # "file" for everything else (documents, archives, etc.)
@@ -2319,6 +2352,10 @@ class FeishuChannel(BaseChannel):
             if sent_any and delivered and origin_message_id and not metadata.get("_progress"):
                 await self._finish_reaction(origin_message_id)
 
+        except asyncio.TimeoutError:
+            # Delivery timed out: raise per the base send contract so the
+            # channel manager applies its retry policy.
+            raise
         except Exception as e:
             logger.error("Error sending Feishu message: {}", e)
 

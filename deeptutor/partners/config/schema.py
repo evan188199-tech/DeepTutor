@@ -12,6 +12,13 @@ class Base(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
+#: Shared default bound (seconds) for one channel send-path network call.
+#: A hung platform API would otherwise hold the channel manager's serial
+#: outbound lane forever. Channels inherit this via ``send_timeout_seconds``
+#: and each channel config can override it.
+SEND_TIMEOUT_SECONDS: float = 30.0
+
+
 class DeliveryOverrides(Base):
     """Per-channel delivery switches."""
 
@@ -22,6 +29,15 @@ class DeliveryOverrides(Base):
     send_tool_hints: bool = Field(
         default=True,
         description="Deliver one-line tool-call hints to this channel.",
+    )
+    send_timeout_seconds: float = Field(
+        default=SEND_TIMEOUT_SECONDS,
+        gt=0,
+        description=(
+            "Bound (seconds) on a single send/send_delta network call. "
+            "On expiry the call is cancelled and raises so the channel "
+            "manager's retry policy applies."
+        ),
     )
 
 

@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import asyncio
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
-from typing import Any
+from typing import Any, Awaitable, TypeVar
 
 from deeptutor.partners.bus.events import InboundMessage, OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+
+T = TypeVar("T")
 
 #: Owning Partner of the channel currently being constructed. Channels that
 #: resolve paths in ``__init__`` need the id *then*, but ``ChannelManager``
@@ -33,6 +36,24 @@ def _logger():
     from loguru import logger as _log
 
     return _log
+
+
+async def bounded_send_call(
+    awaitable: Awaitable[T], *, timeout: float, channel: str, call: str
+) -> T:
+    """Bound one channel send-path network call by ``timeout`` seconds.
+
+    A hung platform API would otherwise hold the channel manager's serial
+    outbound lane indefinitely. On expiry the underlying call is cancelled and
+    ``asyncio.TimeoutError`` propagates, so ``send_with_retry`` applies the
+    shared retry policy from the ``send`` contract in this module. Effective
+    timeouts come from each channel's ``send_timeout_seconds`` config field
+    (default ``config.schema.SEND_TIMEOUT_SECONDS``).
+    """
+    try:
+        return await asyncio.wait_for(awaitable, timeout=timeout)
+    except asyncio.TimeoutError:
+        raise asyncio.TimeoutError(f"{channel} {call} timed out after {timeout:g}s") from None
 
 
 class BaseChannel(ABC):

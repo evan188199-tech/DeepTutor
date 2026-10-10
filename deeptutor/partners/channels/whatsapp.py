@@ -11,7 +11,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 
@@ -106,15 +106,21 @@ class WhatsAppChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through WhatsApp.
 
-        Raises on delivery failure so the channel manager's retry applies
-        (the bridge may have reconnected by the next attempt).
+        Raises on delivery failure (including the send timeout) so the
+        channel manager's retry applies (the bridge may have reconnected by
+        the next attempt).
         """
         if not self._ws or not self._connected:
             logger.warning("WhatsApp bridge not connected")
             return
 
         payload = {"type": "send", "to": msg.chat_id, "text": msg.content}
-        await self._ws.send(json.dumps(payload, ensure_ascii=False))
+        await bounded_send_call(
+            self._ws.send(json.dumps(payload, ensure_ascii=False)),
+            timeout=self.config.send_timeout_seconds,
+            channel="WhatsApp",
+            call="bridge send",
+        )
 
     async def _handle_bridge_message(self, raw: str) -> None:
         """Handle a message from the bridge."""

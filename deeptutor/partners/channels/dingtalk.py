@@ -15,7 +15,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 try:
@@ -238,13 +238,21 @@ class DingTalkChannel(BaseChannel):
             return None
 
         try:
-            resp = await self._http.post(url, json=data)
+            resp = await bounded_send_call(
+                self._http.post(url, json=data),
+                timeout=self.config.send_timeout_seconds,
+                channel="DingTalk",
+                call="accessToken refresh",
+            )
             resp.raise_for_status()
             res_data = resp.json()
             self._access_token = res_data.get("accessToken")
             # Expire 60s early to be safe
             self._token_expiry = time.time() + int(res_data.get("expireIn", 7200)) - 60
             return self._access_token
+        except asyncio.TimeoutError:
+            # A hung token endpoint must not stall the send path silently.
+            raise
         except Exception as e:
             logger.error("Failed to get DingTalk access token: {}", e)
             return None
@@ -280,7 +288,12 @@ class DingTalkChannel(BaseChannel):
             if not self._http:
                 return None, None, None
             try:
-                resp = await self._http.get(media_ref, follow_redirects=True)
+                resp = await bounded_send_call(
+                    self._http.get(media_ref, follow_redirects=True),
+                    timeout=self.config.send_timeout_seconds,
+                    channel="DingTalk",
+                    call="media download",
+                )
                 if resp.status_code >= 400:
                     logger.warning(
                         "DingTalk media download failed status={} ref={}",
@@ -326,7 +339,12 @@ class DingTalkChannel(BaseChannel):
         files = {"media": (filename, data, mime)}
 
         try:
-            resp = await self._http.post(url, files=files)
+            resp = await bounded_send_call(
+                self._http.post(url, files=files),
+                timeout=self.config.send_timeout_seconds,
+                channel="DingTalk",
+                call="media upload",
+            )
             text = resp.text
             result = (
                 resp.json()
@@ -397,7 +415,12 @@ class DingTalkChannel(BaseChannel):
             }
 
         try:
-            resp = await self._http.post(url, json=payload, headers=headers)
+            resp = await bounded_send_call(
+                self._http.post(url, json=payload, headers=headers),
+                timeout=self.config.send_timeout_seconds,
+                channel="DingTalk",
+                call=f"send {msg_key}",
+            )
             body = resp.text
             if resp.status_code != 200:
                 logger.error(
@@ -422,6 +445,9 @@ class DingTalkChannel(BaseChannel):
                 return False
             logger.debug("DingTalk message sent to {} with msgKey={}", chat_id, msg_key)
             return True
+        except asyncio.TimeoutError:
+            # Delivery outcome unknown: raise so the manager retry applies.
+            raise
         except Exception as e:
             logger.error("Error sending DingTalk message msgKey={} err={}", msg_key, e)
             return False

@@ -11,7 +11,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
-from deeptutor.partners.channels.base import BaseChannel
+from deeptutor.partners.channels.base import BaseChannel, bounded_send_call
 from deeptutor.partners.config.schema import DeliveryOverrides
 
 WECOM_AVAILABLE = importlib.util.find_spec("wecom_aibot_sdk") is not None
@@ -365,7 +365,8 @@ class WecomChannel(BaseChannel):
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through WeCom.
 
-        Raises on delivery failure so the channel manager's retry applies.
+        Raises on delivery failure (including the send timeout) so the
+        channel manager's retry applies.
         """
         if not self._client:
             logger.warning("WeCom client not initialized")
@@ -388,11 +389,16 @@ class WecomChannel(BaseChannel):
         stream_id = self._generate_req_id("stream")
 
         # Send as streaming message with finish=True
-        await self._client.reply_stream(
-            frame,
-            stream_id,
-            content,
-            finish=True,
+        await bounded_send_call(
+            self._client.reply_stream(
+                frame,
+                stream_id,
+                content,
+                finish=True,
+            ),
+            timeout=self.config.send_timeout_seconds,
+            channel="WeCom",
+            call="reply_stream",
         )
 
         logger.debug("WeCom message sent to {}", msg.chat_id)
