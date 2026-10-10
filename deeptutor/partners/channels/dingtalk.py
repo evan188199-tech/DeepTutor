@@ -217,9 +217,12 @@ class DingTalkChannel(BaseChannel):
         if self._http:
             await self._http.aclose()
             self._http = None
-        # Cancel outstanding background tasks
-        for task in self._background_tasks:
+        # Cancel outstanding background tasks and await their cancellation
+        tasks = list(self._background_tasks)
+        for task in tasks:
             task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
         self._background_tasks.clear()
 
     async def _get_access_token(self) -> str | None:

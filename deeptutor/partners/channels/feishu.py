@@ -659,6 +659,10 @@ class FeishuChannel(BaseChannel):
         self._ws_thread = None
         self._ws_client = None
         self._confirmed_streams.clear()
+        # Interrupted streams leave half-written cards and "thinking" notices
+        # pointing at dead chats; a restarted channel must not resume them.
+        self._stream_bufs.clear()
+        self._thinking_notices.clear()
         cleanup_tasks = [
             *self._reaction_cleanup_tasks.values(),
             *self._reaction_expiry_tasks.values(),
@@ -672,6 +676,13 @@ class FeishuChannel(BaseChannel):
         self._working_reactions.clear()
         with self._model_picker_lock:
             self._model_pickers.clear()
+        # The sync lark client holds no connections of its own; the keep-alive
+        # transport installed at start does. Drop the client and close the
+        # pooled sessions so a stopped channel leaves no warm connections.
+        self._client = None
+        from deeptutor.partners.channels.lark_http import close_keep_alive
+
+        close_keep_alive()
         logger.info("Feishu bot stopped")
 
     def _is_bot_mentioned(self, message: Any) -> bool:

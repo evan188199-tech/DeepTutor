@@ -424,20 +424,35 @@ class TelegramChannel(BaseChannel):
         """Stop the Telegram bot."""
         self._running = False
 
-        # Cancel all typing indicators
+        # Cancel typing indicators and media-group flush tasks, then wait for
+        # the cancellations so no task outlives stop().
+        cancelled: list[asyncio.Task] = []
         for chat_id in list(self._typing_tasks):
-            self._stop_typing(chat_id)
-
+            task = self._typing_tasks.pop(chat_id, None)
+            if task is not None and not task.done():
+                task.cancel()
+                cancelled.append(task)
         for task in self._media_group_tasks.values():
-            task.cancel()
+            if not task.done():
+                task.cancel()
+                cancelled.append(task)
+        if cancelled:
+            await asyncio.gather(*cancelled, return_exceptions=True)
         self._media_group_tasks.clear()
         self._media_group_buffers.clear()
 
         if self._app:
             logger.info("Stopping Telegram bot...")
-            await self._app.updater.stop()
-            await self._app.stop()
-            await self._app.shutdown()
+            # Dismantle step by step: one step failing must not skip the rest.
+            for step_name, step in (
+                ("updater.stop", self._app.updater.stop),
+                ("app.stop", self._app.stop),
+                ("app.shutdown", self._app.shutdown),
+            ):
+                try:
+                    await step()
+                except Exception as e:
+                    logger.warning("Telegram stop step {} failed: {}", step_name, e)
             self._app = None
 
     @staticmethod

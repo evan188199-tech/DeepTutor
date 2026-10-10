@@ -106,12 +106,18 @@ class DiscordChannel(BaseChannel):
     async def stop(self) -> None:
         """Stop the Discord channel."""
         self._running = False
+        cancelled: list[asyncio.Task] = []
         if self._heartbeat_task:
             self._heartbeat_task.cancel()
+            cancelled.append(self._heartbeat_task)
             self._heartbeat_task = None
         for task in self._typing_tasks.values():
-            task.cancel()
+            if not task.done():
+                task.cancel()
+                cancelled.append(task)
         self._typing_tasks.clear()
+        if cancelled:
+            await asyncio.gather(*cancelled, return_exceptions=True)
         if self._ws:
             await self._ws.close()
             self._ws = None

@@ -164,8 +164,14 @@ class ZulipChannel(BaseChannel):
     async def stop(self) -> None:
         self._running = False
 
+        cancelled: list[asyncio.Task] = []
         for chat_id in list(self._typing_tasks):
-            self._stop_typing(chat_id)
+            task = self._typing_tasks.pop(chat_id, None)
+            if task is not None and not task.done():
+                task.cancel()
+                cancelled.append(task)
+        if cancelled:
+            await asyncio.gather(*cancelled, return_exceptions=True)
 
         if self._queue_id and self._client:
             try:

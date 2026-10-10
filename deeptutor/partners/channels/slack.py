@@ -137,6 +137,18 @@ class SlackChannel(BaseChannel):
             except Exception as e:
                 logger.warning("Slack socket close failed: {}", e)
             self._socket_client = None
+        # The socket-mode client closes its own session; the web client keeps
+        # a separate aiohttp session that must be closed too. Its own try so
+        # a socket close failure above cannot skip this step.
+        if self._web_client:
+            session = getattr(self._web_client, "session", None)
+            close = getattr(session, "close", None)
+            if callable(close):
+                try:
+                    await close()
+                except Exception as e:
+                    logger.warning("Slack web client session close failed: {}", e)
+            self._web_client = None
 
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Slack.

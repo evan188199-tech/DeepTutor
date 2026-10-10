@@ -347,8 +347,10 @@ class MochatChannel(BaseChannel):
     async def stop(self) -> None:
         """Stop all workers and clean up resources."""
         self._running = False
+        cancelled: list[asyncio.Task] = []
         if self._refresh_task:
             self._refresh_task.cancel()
+            cancelled.append(self._refresh_task)
             self._refresh_task = None
 
         await self._stop_fallback_workers()
@@ -363,7 +365,12 @@ class MochatChannel(BaseChannel):
 
         if self._cursor_save_task:
             self._cursor_save_task.cancel()
+            cancelled.append(self._cursor_save_task)
             self._cursor_save_task = None
+        # Await the cancellations before the final cursor save so a save task
+        # still racing its cancellation cannot overwrite it.
+        if cancelled:
+            await asyncio.gather(*cancelled, return_exceptions=True)
         await self._save_session_cursors()
 
         if self._http:

@@ -34,6 +34,9 @@ import requests
 _SESSIONS = threading.local()
 _INSTALLED = False
 _LOCK = threading.Lock()
+# Every session handed out by _session(), any thread. Kept so teardown can
+# close pooled connections; threading.local alone is not enumerable.
+_OPEN_SESSIONS: list[requests.Session] = []
 
 
 def _session() -> requests.Session:
@@ -42,6 +45,8 @@ def _session() -> requests.Session:
     if session is None:
         session = requests.Session()
         _SESSIONS.session = session
+        with _LOCK:
+            _OPEN_SESSIONS.append(session)
     return session
 
 
@@ -76,4 +81,22 @@ def install_keep_alive() -> bool:
         return True
 
 
-__all__ = ["install_keep_alive"]
+__all__ = ["close_keep_alive", "install_keep_alive"]
+
+
+def close_keep_alive() -> None:
+    """Close the pooled keep-alive sessions opened by :func:`install_keep_alive`.
+
+    The transport is process-global, so this closes every pool any Feishu
+    channel may have used — a stopped channel must not leave warm connections
+    behind. Best effort: a later call transparently reopens fresh connections,
+    which keeps a channel that starts again (or one running elsewhere) safe.
+    """
+    with _LOCK:
+        sessions = list(_OPEN_SESSIONS)
+        _OPEN_SESSIONS.clear()
+    for session in sessions:
+        try:
+            session.close()
+        except Exception:  # teardown is best effort
+            pass
