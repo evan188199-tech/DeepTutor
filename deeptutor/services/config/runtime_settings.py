@@ -66,6 +66,14 @@ DEFAULT_SYSTEM_SETTINGS: dict[str, Any] = {
     # earlier images ride along on every later turn — a re-sent payload, so
     # it is a policy like the caps above, not an LLM budget.
     "chat_prior_image_reinject_max": 4,
+    # Embedding 429 backoff (OpenAI-compatible adapter). The 60s floor keeps a
+    # missing Retry-After conservative; the cooldown wait outlives the 60s
+    # KeyPool cooldown it waits for; the jitter spreads concurrent workers
+    # that hit the same 429 so they no longer sleep and retry in lockstep.
+    # Defaults reproduce the previous fixed 60s/65s cadence (plus jitter).
+    "embedding_429_backoff_floor_seconds": 60,
+    "embedding_429_backoff_jitter_seconds": 5,
+    "embedding_key_cooldown_wait_seconds": 65,
 }
 
 # Clamp bounds for the chat attachment knobs. The MB ceilings are deliberately
@@ -77,6 +85,13 @@ CHAT_ATTACHMENT_CHARS_RANGE = (10_000, 5_000_000)
 # Zero is a real choice here — it turns prior-image re-injection off for a
 # deployment whose model or bandwidth cannot afford it.
 CHAT_PRIOR_IMAGE_REINJECT_RANGE = (0, 20)
+# Embedding 429 backoff clamps. The floors keep the waits real (a stray 0 must
+# not turn backoff into a hot spin) while the ceilings stop a fat-fingered
+# config from parking embedding for hours. Jitter 0 keeps the old lockstep
+# behaviour available on purpose for single-worker deployments.
+EMBEDDING_429_BACKOFF_FLOOR_RANGE = (1, 3600)
+EMBEDDING_429_BACKOFF_JITTER_RANGE = (0, 300)
+EMBEDDING_KEY_COOLDOWN_WAIT_RANGE = (1, 3600)
 
 DEFAULT_AUTH_SETTINGS: dict[str, Any] = {
     "version": 1,
@@ -878,6 +893,12 @@ class RuntimeSettingsService:
             payload["chat_attachment_max_chars_total"] = value
         if value := self._process_env_value("CHAT_PRIOR_IMAGE_REINJECT_MAX"):
             payload["chat_prior_image_reinject_max"] = value
+        if value := self._process_env_value("DEEPTUTOR_EMBEDDING_429_BACKOFF_FLOOR_SECONDS"):
+            payload["embedding_429_backoff_floor_seconds"] = value
+        if value := self._process_env_value("DEEPTUTOR_EMBEDDING_429_BACKOFF_JITTER_SECONDS"):
+            payload["embedding_429_backoff_jitter_seconds"] = value
+        if value := self._process_env_value("DEEPTUTOR_EMBEDDING_KEY_COOLDOWN_WAIT_SECONDS"):
+            payload["embedding_key_cooldown_wait_seconds"] = value
         return self._normalize_system(payload)
 
     def _apply_auth_process_overrides(self, settings: dict[str, Any]) -> dict[str, Any]:
@@ -1306,6 +1327,21 @@ class RuntimeSettingsService:
                 DEFAULT_SYSTEM_SETTINGS["chat_attachment_max_chars_total"],
                 *CHAT_ATTACHMENT_CHARS_RANGE,
             ),
+            "embedding_429_backoff_floor_seconds": _coerce_clamped_int(
+                settings.get("embedding_429_backoff_floor_seconds"),
+                DEFAULT_SYSTEM_SETTINGS["embedding_429_backoff_floor_seconds"],
+                *EMBEDDING_429_BACKOFF_FLOOR_RANGE,
+            ),
+            "embedding_429_backoff_jitter_seconds": _coerce_clamped_int(
+                settings.get("embedding_429_backoff_jitter_seconds"),
+                DEFAULT_SYSTEM_SETTINGS["embedding_429_backoff_jitter_seconds"],
+                *EMBEDDING_429_BACKOFF_JITTER_RANGE,
+            ),
+            "embedding_key_cooldown_wait_seconds": _coerce_clamped_int(
+                settings.get("embedding_key_cooldown_wait_seconds"),
+                DEFAULT_SYSTEM_SETTINGS["embedding_key_cooldown_wait_seconds"],
+                *EMBEDDING_KEY_COOLDOWN_WAIT_RANGE,
+            ),
         }
 
     def _normalize_auth(self, settings: dict[str, Any]) -> dict[str, Any]:
@@ -1448,6 +1484,50 @@ def get_prior_image_reinject_limit() -> int:
     )
 
 
+@dataclass(frozen=True)
+class EmbeddingRateLimitBackoff:
+    """Effective embedding 429 wait policy, in seconds.
+
+    ``floor`` is the wait applied when the provider sends no usable
+    Retry-After (or a smaller one); ``key_cooldown_wait`` outlives the 60s
+    KeyPool cooldown the adapter waits for when every pooled key is cooling;
+    ``jitter`` is the uniform spread added on top of both waits so concurrent
+    workers that hit the same 429 no longer retry in lockstep.
+    """
+
+    floor: int
+    jitter: int
+    key_cooldown_wait: int
+
+
+def get_embedding_rate_limit_backoff() -> EmbeddingRateLimitBackoff:
+    """Resolve the embedding 429 backoff policy from system.json (+ env).
+
+    Read at call time by the OpenAI-compatible embedding adapter's 429 branch,
+    so a deployment can retune the retry cadence without a restart. Resolved
+    with the seeded default rather than by subscript, for the same upgraded-
+    install reason as ``get_prior_image_reinject_limit``.
+    """
+    system = load_system_settings()
+    return EmbeddingRateLimitBackoff(
+        floor=_coerce_clamped_int(
+            system.get("embedding_429_backoff_floor_seconds"),
+            DEFAULT_SYSTEM_SETTINGS["embedding_429_backoff_floor_seconds"],
+            *EMBEDDING_429_BACKOFF_FLOOR_RANGE,
+        ),
+        jitter=_coerce_clamped_int(
+            system.get("embedding_429_backoff_jitter_seconds"),
+            DEFAULT_SYSTEM_SETTINGS["embedding_429_backoff_jitter_seconds"],
+            *EMBEDDING_429_BACKOFF_JITTER_RANGE,
+        ),
+        key_cooldown_wait=_coerce_clamped_int(
+            system.get("embedding_key_cooldown_wait_seconds"),
+            DEFAULT_SYSTEM_SETTINGS["embedding_key_cooldown_wait_seconds"],
+            *EMBEDDING_KEY_COOLDOWN_WAIT_RANGE,
+        ),
+    )
+
+
 def get_ws_max_size() -> int:
     """Frame ceiling for the current settings — wire into every uvicorn launch."""
     return compute_ws_max_size(get_chat_attachment_limits().max_total_bytes)
@@ -1528,16 +1608,21 @@ __all__ = [
     "DOCUMENT_PARSING_ENGINE_TIKA",
     "DOCLING_MODE_LOCAL",
     "DOCLING_MODE_REMOTE",
+    "EMBEDDING_429_BACKOFF_FLOOR_RANGE",
+    "EMBEDDING_429_BACKOFF_JITTER_RANGE",
+    "EMBEDDING_KEY_COOLDOWN_WAIT_RANGE",
     "LITEPARSE_IMAGE_MODES",
     "MINERU_MODE_CLOUD",
     "MINERU_MODE_LOCAL",
     "SETTINGS_DERIVED_ENV_KEYS",
     "ChatAttachmentLimits",
+    "EmbeddingRateLimitBackoff",
     "RuntimeSettingsService",
     "compute_ws_max_size",
     "ensure_runtime_settings_files",
     "export_runtime_settings_to_env",
     "get_chat_attachment_limits",
+    "get_embedding_rate_limit_backoff",
     "get_runtime_settings_service",
     "get_ws_max_size",
     "load_auth_settings",

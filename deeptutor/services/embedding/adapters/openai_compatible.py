@@ -2,10 +2,12 @@
 
 import json
 import logging
+import random
 from typing import Any, Dict
 
 import httpx
 
+from deeptutor.services.config import get_embedding_rate_limit_backoff
 from deeptutor.services.embedding.request_options import should_send_embedding_dimensions
 from deeptutor.services.llm.error_mapping import parse_retry_after_seconds
 from deeptutor.services.llm.openai_http_client import disable_ssl_verify_enabled
@@ -245,20 +247,31 @@ class OpenAICompatibleEmbeddingAdapter(BaseEmbeddingAdapter):
                             self._key_pool.mark_429(api_key)
                         # 滑动窗口 429 是瞬态的：长跑（全库 reindex 数小时）里
                         # 单次 429 不该报废整跑。最多 8 轮，每轮等窗口滑过
-                        # （Retry-After 优先，无头保守 60s）。月度额度耗尽的
-                        # 429 会连挂 8 轮后仍然 raise，不会无限空转。
+                        # （Retry-After 优先，无头走可配置下限，默认 60s）。
+                        # 月度额度耗尽的 429 会连挂 8 轮后仍然 raise，不会
+                        # 无限空转。
                         if rate_limit_retries < 8:
                             rate_limit_retries += 1
                             retry_after = parse_retry_after_seconds(
                                 response.headers.get("Retry-After")
                             )
-                            await asyncio.sleep(max(retry_after or 0.0, 60))
+                            # 下限与冷却等待均来自运行时设置（默认 60s/65s，
+                            # 与旧固定值一致），并叠加 0..jitter 随机抖动：
+                            # 多 worker 同刻吃 429 时不再同频睡眠、同频重试。
+                            backoff = get_embedding_rate_limit_backoff()
+                            await asyncio.sleep(
+                                max(retry_after or 0.0, backoff.floor)
+                                + random.uniform(0.0, backoff.jitter)
+                            )
                             try:
                                 api_key = self._auth_api_key()
                             except RuntimeError:
                                 # 池内 key 全在冷却（KeyPool 冷却 60s）。
                                 # 等冷却期过后再取一次；仍取不到才认输。
-                                await asyncio.sleep(65)
+                                # 冷却等待同样走配置并带抖动。
+                                await asyncio.sleep(
+                                    backoff.key_cooldown_wait + random.uniform(0.0, backoff.jitter)
+                                )
                                 api_key = self._auth_api_key()
                             self._set_auth_header(headers, api_key)
                             continue

@@ -10,6 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
+from deeptutor.services.config import get_embedding_rate_limit_backoff
 from deeptutor.services.embedding.adapters.base import EmbeddingProviderError, EmbeddingRequest
 from deeptutor.services.embedding.adapters.openai_compatible import (
     OpenAICompatibleEmbeddingAdapter,
@@ -103,7 +104,13 @@ async def test_malformed_retry_after_uses_existing_minimum_wait(
 
     await _make_adapter().embed(EmbeddingRequest(texts=["hello"], model="test-model"))
 
-    assert sleeps == [60]
+    # The floor itself comes from runtime settings now (default 60) and a
+    # uniform jitter is added on top, so the wait is a bounded range rather
+    # than the previously fixed 60s.
+    policy = get_embedding_rate_limit_backoff()
+    assert policy.floor == 60
+    assert len(sleeps) == 1
+    assert policy.floor <= sleeps[0] <= policy.floor + policy.jitter
 
 
 @pytest.mark.asyncio

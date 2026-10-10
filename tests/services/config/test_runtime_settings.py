@@ -35,6 +35,9 @@ RUNTIME_ENV_KEYS = (
     "POCKETBASE_EXTERNAL_URL",
     "POCKETBASE_ADMIN_EMAIL",
     "POCKETBASE_ADMIN_PASSWORD",
+    "DEEPTUTOR_EMBEDDING_429_BACKOFF_FLOOR_SECONDS",
+    "DEEPTUTOR_EMBEDDING_429_BACKOFF_JITTER_SECONDS",
+    "DEEPTUTOR_EMBEDDING_KEY_COOLDOWN_WAIT_SECONDS",
 )
 
 
@@ -712,3 +715,51 @@ def test_compute_ws_max_size_floor_and_inflation() -> None:
     derived = compute_ws_max_size(total)
     assert derived > (total * 4) // 3
     assert derived == (total * 4) // 3 + 8 * 1024 * 1024
+
+
+def test_embedding_429_backoff_defaults_and_clamps(tmp_path: Path) -> None:
+    from deeptutor.services.config.runtime_settings import (
+        EMBEDDING_429_BACKOFF_FLOOR_RANGE,
+        EMBEDDING_429_BACKOFF_JITTER_RANGE,
+        EMBEDDING_KEY_COOLDOWN_WAIT_RANGE,
+    )
+
+    service = RuntimeSettingsService(tmp_path / "settings")
+
+    # Defaults reproduce the previously fixed 60s/65s waits, plus jitter.
+    defaults = service.load_system(include_process_overrides=False)
+    assert defaults["embedding_429_backoff_floor_seconds"] == 60
+    assert defaults["embedding_429_backoff_jitter_seconds"] == 5
+    assert defaults["embedding_key_cooldown_wait_seconds"] == 65
+
+    # Stored values are clamped into the configured ranges.
+    saved = service.save_system(
+        {
+            "embedding_429_backoff_floor_seconds": 99_999,
+            "embedding_429_backoff_jitter_seconds": -1,
+            "embedding_key_cooldown_wait_seconds": 0,
+        }
+    )
+    assert saved["embedding_429_backoff_floor_seconds"] == EMBEDDING_429_BACKOFF_FLOOR_RANGE[1]
+    assert saved["embedding_429_backoff_jitter_seconds"] == EMBEDDING_429_BACKOFF_JITTER_RANGE[0]
+    assert saved["embedding_key_cooldown_wait_seconds"] == EMBEDDING_KEY_COOLDOWN_WAIT_RANGE[0]
+
+
+def test_embedding_429_backoff_env_overrides(tmp_path: Path) -> None:
+    service = RuntimeSettingsService(
+        tmp_path / "settings",
+        process_env={
+            "DEEPTUTOR_EMBEDDING_429_BACKOFF_FLOOR_SECONDS": "30",
+            "DEEPTUTOR_EMBEDDING_429_BACKOFF_JITTER_SECONDS": "2",
+            "DEEPTUTOR_EMBEDDING_KEY_COOLDOWN_WAIT_SECONDS": "35",
+        },
+    )
+    service.save_system({})
+
+    effective = service.load_system()
+    assert effective["embedding_429_backoff_floor_seconds"] == 30
+    assert effective["embedding_429_backoff_jitter_seconds"] == 2
+    assert effective["embedding_key_cooldown_wait_seconds"] == 35
+    # The file keeps the stored (default) values — env is a process override.
+    stored = _read_json(service.path_for("system"))
+    assert stored["embedding_429_backoff_floor_seconds"] == 60
