@@ -40,6 +40,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.memory import (
     L3_SLOTS,
     SURFACES,
@@ -61,9 +62,9 @@ Layer = Literal["L2", "L3"]
 
 def _validate_doc_key(layer: Layer, key: str) -> None:
     if layer == "L2" and key not in SURFACES:
-        raise HTTPException(status_code=404, detail=f"unknown surface {key!r}")
+        raise not_found("Surface", key)
     if layer == "L3" and key not in L3_SLOTS:
-        raise HTTPException(status_code=404, detail=f"unknown L3 slot {key!r}")
+        raise not_found("L3 slot", key)
 
 
 def _validate_layer(layer: str) -> Layer:
@@ -74,7 +75,7 @@ def _validate_layer(layer: str) -> Layer:
 
 def _validate_surface(surface: str) -> Surface:
     if surface not in SURFACES:
-        raise HTTPException(status_code=404, detail=f"unknown surface {surface!r}")
+        raise not_found("Surface", surface)
     return surface  # type: ignore[return-value]
 
 
@@ -118,7 +119,7 @@ async def resolve_entry(entry_id: str):
         for entry in doc.all_entries():
             if entry.id == entry_id:
                 return {"layer": "L2", "key": surface, "entry_id": entry_id}
-    raise HTTPException(status_code=404, detail="entry not found in any L2 doc")
+    raise not_found("L2 entry")
 
 
 @router.get("/backup")
@@ -162,7 +163,7 @@ async def delete_entry(layer: str, key: str, entry_id: str):
     _validate_doc_key(lyr, key)
     ok = await get_memory_store().delete_entry(lyr, key, entry_id)
     if not ok:
-        raise HTTPException(status_code=404, detail="entry not found")
+        raise not_found("Entry")
     return {"layer": lyr, "key": key, "deleted": entry_id}
 
 
@@ -356,7 +357,7 @@ async def get_run(run_id: str):
 
     run = get_run_manager().get(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="unknown run_id")
+        raise not_found("Run")
     return run.to_dict()
 
 
@@ -381,7 +382,7 @@ async def undo_run_edit(run_id: str):
     try:
         event = await manager.undo_last(run_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail="unknown run_id")
+        raise not_found("Run")
     except RunBusyError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     if event is None:
@@ -419,7 +420,7 @@ async def stream_run_events(run_id: str, since: int = 0):
     manager = get_run_manager()
     run = manager.get(run_id)
     if run is None:
-        raise HTTPException(status_code=404, detail="unknown run_id")
+        raise not_found("Run")
 
     async def producer():
         cursor = max(0, since)
@@ -714,7 +715,7 @@ async def clear_trace_day(surface: str, day: str):
         raise HTTPException(status_code=400, detail="day must be YYYY-MM-DD")
     path = paths.trace_file(surf, parsed)
     if not path.exists():
-        raise HTTPException(status_code=404, detail="no trace for that day")
+        raise not_found("Trace for that day")
     try:
         path.unlink()
     except OSError as exc:

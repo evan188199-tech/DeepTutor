@@ -323,7 +323,7 @@ def test_delete_entry_then_read_consistent(client: TestClient, mem_root: Path) -
 
     again = client.delete(f"/api/memory/doc/L2/chat/entry/{ENTRY_ID}")
     assert again.status_code == 404
-    assert again.json()["detail"] == "entry not found"
+    assert again.json()["detail"] == "Entry not found"
 
 
 def test_apply_ops_adds_entry_to_doc(client: TestClient) -> None:
@@ -500,7 +500,7 @@ def test_trace_day_invalid_and_missing(client: TestClient) -> None:
 
     missing = client.delete("/api/memory/trace/chat/day/2026-10-02")
     assert missing.status_code == 404
-    assert missing.json()["detail"] == "no trace for that day"
+    assert missing.json()["detail"] == "Trace for that day not found"
 
 
 def test_snapshot_unknown_surface_returns_404(client: TestClient, snapshot_adapters) -> None:

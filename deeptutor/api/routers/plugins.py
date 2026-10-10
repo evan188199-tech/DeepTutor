@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import AUTH_COOKIE_NAME, require_admin, require_auth
 from deeptutor.plugins.catalog import load_catalog
 from deeptutor.plugins.distribution import CatalogInstallManager, PluginDistributionError
@@ -177,7 +178,7 @@ def list_extensions() -> dict[str, Any]:
 def redirect_plugin_frontend_page(request: Request) -> RedirectResponse:
     matched = getattr(request.state, "plugin_page", None)
     if matched is None:
-        raise HTTPException(status_code=404, detail="Plugin page not found")
+        raise not_found("Plugin page")
     return RedirectResponse(url=f"{request.url.path}/", status_code=307)
 
 
@@ -188,10 +189,10 @@ def redirect_plugin_frontend_page(request: Request) -> RedirectResponse:
 def get_plugin_frontend_page(request: Request) -> FileResponse:
     matched = getattr(request.state, "plugin_page", None)
     if matched is None:
-        raise HTTPException(status_code=404, detail="Plugin page not found")
+        raise not_found("Plugin page")
     _, extension, _, package_path = matched
     if not extension.manifest:
-        raise HTTPException(status_code=404, detail="Plugin page not found")
+        raise not_found("Plugin page")
     try:
         page = load_frontend_page_manifest(package_path / extension.manifest)
         path = resolve_frontend_page_asset(page, package_path, page.entry)
@@ -202,7 +203,7 @@ def get_plugin_frontend_page(request: Request) -> FileResponse:
             extension.id,
             exc_info=exc,
         )
-        raise HTTPException(status_code=404, detail="Plugin page not found") from exc
+        raise not_found("Plugin page") from exc
     return _frontend_file_response(path)
 
 
@@ -213,10 +214,10 @@ def get_plugin_frontend_page(request: Request) -> FileResponse:
 def get_plugin_frontend_asset(request: Request) -> FileResponse:
     matched = getattr(request.state, "plugin_page", None)
     if matched is None:
-        raise HTTPException(status_code=404, detail="Plugin page not found")
+        raise not_found("Plugin page")
     _, extension, _, package_path = matched
     if not extension.manifest:
-        raise HTTPException(status_code=404, detail="Plugin page not found")
+        raise not_found("Plugin page")
     requested = request.path_params["asset_path"]
     try:
         page = load_frontend_page_manifest(package_path / extension.manifest)
@@ -228,14 +229,14 @@ def get_plugin_frontend_asset(request: Request) -> FileResponse:
             extension.id,
             exc_info=exc,
         )
-        raise HTTPException(status_code=404, detail="Plugin page not found") from exc
+        raise not_found("Plugin page") from exc
     return _frontend_file_response(path, asset=True)
 
 
 async def dispatch_plugin_route(request: Request) -> Response:
     matched = getattr(request.state, "plugin_route", None)
     if matched is None:
-        raise HTTPException(status_code=404, detail="Plugin route not found")
+        raise not_found("Plugin route")
     record, extension, installation = matched
     if request.method not in extension.methods:
         raise HTTPException(

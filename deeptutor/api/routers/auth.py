@@ -36,6 +36,7 @@ from deeptutor.services.config import load_auth_settings
 _SECURE = bool(load_auth_settings()["cookie_secure"])
 _SAMESITE = "none" if _SECURE else "lax"
 
+from deeptutor.api.errors import not_found
 from deeptutor.multi_user.audit import log_admin_action, log_usage
 from deeptutor.multi_user.context import (
     reset_current_user,
@@ -1282,7 +1283,7 @@ async def update_profile(
     """
     current = _require_profile_identity(payload)
     if not set_avatar(current.username, body.avatar):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     # The marker no longer references an uploaded image, so drop the file.
     from deeptutor.multi_user.identity import delete_avatar_file
 
@@ -1315,7 +1316,7 @@ async def upload_avatar(
         )
     info = get_user_info(current.username)
     if info is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
 
     data = await file.read(_AVATAR_MAX_BYTES + 1)
     if len(data) > _AVATAR_MAX_BYTES:
@@ -1344,7 +1345,7 @@ async def upload_avatar(
 
     save_avatar_file(current.user_id, data, ext)
     if not set_avatar(current.username, marker):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     logger.info(f"User '{current.username}' uploaded a new avatar ({ext}, {len(data)} bytes)")
     return {"ok": True, "avatar": marker}
 
@@ -1371,13 +1372,13 @@ async def get_avatar_image(
     """Serve a stored avatar image. Any authenticated user may view avatars
     (they appear in the admin table and next to the viewer's own profile)."""
     if not _USER_ID_RE.match(user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found")
+        raise not_found("Avatar")
 
     from deeptutor.multi_user.identity import get_avatar_file
 
     target = get_avatar_file(user_id)
     if target is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found")
+        raise not_found("Avatar")
 
     media_type = _AVATAR_MEDIA_TYPES.get(target.suffix.lstrip("."), "application/octet-stream")
     headers = {
@@ -1421,7 +1422,7 @@ async def issue_device(
 
     _require_builtin_device_auth()
     if get_user_by_id(body.user_id) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     try:
         device, pairing_code, pin = issue_device_credential(
             user_id=body.user_id,
@@ -1463,10 +1464,7 @@ async def revoke_device(
         revoked_by=str(current.user_id if current else ""),
     )
     if device is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Device credential not found",
-        )
+        raise not_found("Device credential")
     log_admin_action(
         "device_credential_revoke",
         target_user_id=device["user_id"],
@@ -1490,7 +1488,7 @@ def _require_local_learner(current: TokenPayload) -> tuple[str, dict]:
         )
     account = get_user_by_id(current.user_id)
     if account is None or account[0] != current.username:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     if str(account[1].get("preset") or "standard") != "learner":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Learner profile required"
@@ -1542,7 +1540,7 @@ async def get_learner_profile(username: str, _: TokenPayload = Depends(require_a
         or str(user.get("role") or "user") == "admin"
         or str(user.get("preset") or "standard") != "learner"
     ):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     return {"learner_profile": user.get("learner_profile")}
 
 
@@ -1561,7 +1559,7 @@ async def put_learner_profile(
         or str(user.get("role") or "user") == "admin"
         or str(user.get("preset") or "standard") != "learner"
     ):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
     try:
         profile = normalize_profile(body.model_dump(exclude_none=True))
     except ValueError as exc:
@@ -1886,7 +1884,7 @@ async def update_user_role(
 
     updated = set_role(username, body.role)
     if not updated:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise not_found("User")
 
     logger.info(
         f"Admin '{current.username if current else 'local'}' set '{username}' role to {body.role!r}"

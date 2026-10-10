@@ -8,6 +8,7 @@ import json
 from fastapi import APIRouter, HTTPException, Query, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.partner_groups import (
     discussion_mode_registry,
     get_partner_group_manager,
@@ -73,7 +74,7 @@ class RoundSummaryRequest(BaseModel):
 def _group_or_404(group_id: str):
     group = get_partner_group_manager().get_group(group_id)
     if group is None:
-        raise HTTPException(status_code=404, detail="Partner Group not found")
+        raise not_found("Partner Group")
     return group
 
 
@@ -156,7 +157,7 @@ async def delete_partner_group_session(group_id: str, session_key: str):
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from None
     if not deleted:
-        raise HTTPException(status_code=404, detail="Partner Group session not found")
+        raise not_found("Partner Group session")
     return {"deleted": True, "session_key": session_key}
 
 
@@ -184,7 +185,7 @@ async def pin_partner_group_whiteboard(group_id: str, payload: WhiteboardPinRequ
 async def unpin_partner_group_whiteboard(group_id: str, event_id: str):
     _group_or_404(group_id)
     if not get_partner_group_manager().unpin_whiteboard(group_id, event_id):
-        raise HTTPException(status_code=404, detail="Whiteboard pin not found")
+        raise not_found("Whiteboard pin")
     return {"deleted": True, "event_id": event_id}
 
 

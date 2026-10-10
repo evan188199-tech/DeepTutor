@@ -22,6 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_admin
 from deeptutor.knowledge.kb_types import SUBAGENT_KB_TYPE
 from deeptutor.multi_user.knowledge_access import account_kb_manager
@@ -158,7 +159,7 @@ async def delete_connection(name: str):
     manager = account_kb_manager()
     meta = manager.get_metadata(name)
     if not isinstance(meta, dict) or meta.get("type") != SUBAGENT_KB_TYPE:
-        raise HTTPException(status_code=404, detail=f"No connected subagent named {name!r}.")
+        raise not_found("Connected subagent", name)
     try:
         manager.delete_knowledge_base(name, confirm=True)
     except Exception as exc:  # pragma: no cover - defensive
@@ -192,7 +193,7 @@ async def message_connection(name: str, payload: SubagentMessageRequest):
     manager = account_kb_manager()
     meta = manager.get_metadata(name)
     if not isinstance(meta, dict) or meta.get("type") != SUBAGENT_KB_TYPE:
-        raise HTTPException(status_code=404, detail=f"No connected subagent named {name!r}.")
+        raise not_found("Connected subagent", name)
 
     from deeptutor.services.subagent import get_backend
     from deeptutor.services.subagent.sessions import get_session, remember_session, session_key

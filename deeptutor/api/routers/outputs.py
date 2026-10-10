@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_auth
 from deeptutor.multi_user.context import get_current_user_or_none
 from deeptutor.multi_user.partner_access import visible_partners
@@ -28,14 +29,14 @@ def _request_path_service() -> PathService:
     """
     user = get_current_user_or_none()
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Output not found")
+        raise not_found("Output")
     return get_current_path_service()
 
 
 def _resolve_output(path_service: PathService, relative_path: str) -> Path:
     output_path = path_service.resolve_public_output_path(relative_path)
     if output_path is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Output not found")
+        raise not_found("Output")
     return output_path
 
 

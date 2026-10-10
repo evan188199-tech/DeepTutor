@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_auth
 from deeptutor.multi_user.partner_access import visible_partners
 from deeptutor.multi_user.paths import user_context
@@ -338,9 +339,7 @@ async def read_workspace_item(
     except WorkspaceError as exc:
         resolved = _resolve_partner_item(workspace_id, workspace_item_id)
         if resolved is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
-            ) from exc
+            raise not_found("File") from exc
         path, item = resolved
     return FileResponse(
         path,

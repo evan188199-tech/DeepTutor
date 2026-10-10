@@ -11,6 +11,7 @@ from fastapi.responses import PlainTextResponse, StreamingResponse
 from pydantic import BaseModel
 
 from deeptutor.agents.notebook import NotebookSummarizeAgent
+from deeptutor.api.errors import not_found
 from deeptutor.services.llm import clean_thinking_tags
 from deeptutor.services.notebook import notebook_manager
 from deeptutor.services.notebook.service import NotebookCorruptedError
@@ -262,7 +263,7 @@ async def get_notebook(notebook_id: str):
     try:
         notebook = notebook_manager.get_notebook(notebook_id)
         if not notebook:
-            raise HTTPException(status_code=404, detail="Notebook not found")
+            raise not_found("Notebook")
         return notebook
     except HTTPException:
         raise
@@ -293,7 +294,7 @@ async def update_notebook(notebook_id: str, request: UpdateNotebookRequest):
             icon=request.icon,
         )
         if not notebook:
-            raise HTTPException(status_code=404, detail="Notebook not found")
+            raise not_found("Notebook")
         return {"success": True, "notebook": notebook}
     except HTTPException:
         raise
@@ -317,7 +318,7 @@ async def delete_notebook(notebook_id: str):
     try:
         success = notebook_manager.delete_notebook(notebook_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Notebook not found")
+            raise not_found("Notebook")
         return {"success": True, "message": "Notebook deleted successfully"}
     except HTTPException:
         raise
@@ -387,7 +388,7 @@ async def remove_record(notebook_id: str, record_id: str):
     try:
         success = notebook_manager.remove_record(notebook_id, record_id)
         if not success:
-            raise HTTPException(status_code=404, detail="Record not found")
+            raise not_found("Record")
         return {"success": True, "message": "Record removed successfully"}
     except HTTPException:
         raise
@@ -415,7 +416,7 @@ async def update_record(notebook_id: str, record_id: str, request: UpdateRecordR
             **changes,
         )
         if not updated:
-            raise HTTPException(status_code=404, detail="Record not found")
+            raise not_found("Record")
         return {"success": True, "record": updated}
     except HTTPException:
         raise
@@ -431,7 +432,7 @@ async def copy_record(notebook_id: str, record_id: str, request: MoveRecordReque
     try:
         copied = notebook_manager.copy_record(notebook_id, record_id, request.target_notebook_id)
         if not copied:
-            raise HTTPException(status_code=404, detail="Record or target notebook not found")
+            raise not_found("Record or target notebook")
         return {"success": True, "record": copied}
     except HTTPException:
         raise
@@ -447,7 +448,7 @@ async def move_record(notebook_id: str, record_id: str, request: MoveRecordReque
     try:
         moved = notebook_manager.move_record(notebook_id, record_id, request.target_notebook_id)
         if not moved:
-            raise HTTPException(status_code=404, detail="Record or target notebook not found")
+            raise not_found("Record or target notebook")
         return {"success": True, "record": moved}
     except HTTPException:
         raise
@@ -463,7 +464,7 @@ async def export_notebook(notebook_id: str):
     try:
         markdown = notebook_manager.export_markdown(notebook_id)
         if markdown is None:
-            raise HTTPException(status_code=404, detail="Notebook not found")
+            raise not_found("Notebook")
         return PlainTextResponse(
             markdown,
             media_type="text/markdown; charset=utf-8",

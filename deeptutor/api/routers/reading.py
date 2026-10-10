@@ -31,6 +31,7 @@ from fastapi.params import File
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field, model_validator
 
+from deeptutor.api.errors import not_found
 from deeptutor.learning.storage import LearningStore
 from deeptutor.multi_user.learning_access import (
     assert_learning_material,
@@ -1168,7 +1169,7 @@ async def remove_epub_pairing(pairing_id: str) -> dict[str, Any]:
     except Exception as exc:
         raise _http_error(exc) from exc
     if not removed:
-        raise HTTPException(status_code=404, detail="EPUB pairing not found")
+        raise not_found("EPUB pairing")
     return {"status": "ok", "pairing_id": pairing_id}
 
 
@@ -1194,7 +1195,7 @@ async def delete_material(material_id: str) -> dict[str, Any]:
     except Exception as exc:
         raise _http_error(exc) from exc
     if not removed:
-        raise HTTPException(status_code=404, detail=f"material {material_id!r} not found")
+        raise not_found("Material", material_id)
     return {
         "status": "ok",
         "deleted": True,
@@ -1313,10 +1314,7 @@ def _material_file_response(material_id: str, *, browser_ready: bool) -> FileRes
     except Exception as exc:
         raise _http_error(exc) from exc
     if path is None or not path.is_file():
-        raise HTTPException(
-            status_code=404,
-            detail=f"{manifest.filename} has no stored original to render.",
-        )
+        raise not_found("Stored original", manifest.filename)
     return FileResponse(
         path,
         media_type=manifest.mime or "application/octet-stream",
@@ -1337,7 +1335,7 @@ async def get_snapshot_asset(material_id: str, asset_name: str) -> FileResponse:
     except Exception as exc:
         raise _http_error(exc) from exc
     if path is None:
-        raise HTTPException(status_code=404, detail="Snapshot image not found.")
+        raise not_found("Snapshot image")
     data = path.read_bytes()
     mime = snapshot_asset_mime(data)
     if mime is None:
@@ -1377,7 +1375,7 @@ async def get_material_media(material_id: str, name: str) -> FileResponse:
     except Exception as exc:
         raise _http_error(exc) from exc
     if path is None:
-        raise HTTPException(status_code=404, detail="No such image in this material.")
+        raise not_found("Image in this material")
     return FileResponse(
         path,
         media_type=mime or "image/png",
@@ -1477,7 +1475,7 @@ async def delete_bookmark(material_id: str, bookmark_id: str) -> dict[str, bool]
     except Exception as exc:
         raise _http_error(exc) from exc
     if not removed:
-        raise HTTPException(status_code=404, detail="Bookmark not found")
+        raise not_found("Bookmark")
     return {"ok": True}
 
 
@@ -1502,7 +1500,7 @@ async def delete_annotation(material_id: str, annotation_id: str) -> dict[str, A
     except Exception as exc:
         raise _http_error(exc) from exc
     if not removed:
-        raise HTTPException(status_code=404, detail="annotation not found")
+        raise not_found("Annotation")
     return {"status": "ok", "annotation_id": annotation_id}
 
 

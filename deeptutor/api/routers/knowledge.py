@@ -231,6 +231,7 @@ class SupportedFileTypesInfo(BaseModel):
     allow_any_extension: bool = False
 
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.config.lightrag_roles import (
     LightRagIndexingSelection,
     LightRagRoleModels,
@@ -903,14 +904,14 @@ def _resolve_registered_kb_name(manager: KnowledgeBaseManager, kb_name: str | No
             return default_kb
         raise HTTPException(status_code=404, detail="No default knowledge base is configured")
 
-    raise HTTPException(status_code=404, detail=f"Knowledge base '{requested}' not found")
+    raise not_found("Knowledge base", requested)
 
 
 def _load_kb_entry_or_404(manager: KnowledgeBaseManager, kb_name: str) -> dict:
     manager.config = manager._load_config()
     kb_entry = manager.config.get("knowledge_bases", {}).get(kb_name)
     if kb_entry is None:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     return kb_entry
 
 
@@ -2168,7 +2169,7 @@ async def set_default_kb(kb_name: str):
 
         # Verify KB exists
         if kb_name not in manager.list_knowledge_bases():
-            raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+            raise not_found("Knowledge base", kb_name)
 
         manager.set_default(kb_name)
         return {"status": "success", "default_kb": kb_name}
@@ -2661,7 +2662,7 @@ async def search_kiwix_articles(
 
     entry = resolve_kb_metadata(kb_ref)
     if not entry or entry.get("type") != "kiwix":
-        raise HTTPException(status_code=404, detail="Kiwix knowledge base not found.")
+        raise not_found("Kiwix knowledge base")
     result = await rag_search(q, kb_ref, top_k=10)
     if result.get("error_type"):
         raise HTTPException(status_code=502, detail=result.get("answer") or "Kiwix search failed.")
@@ -3019,7 +3020,7 @@ async def get_knowledge_base_details(kb_name: str):
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -3061,7 +3062,7 @@ def _resolve_kb_raw_file_or_404(kb_name: str, filename: str) -> Path:
     raw_dir = _resolve_kb_raw_dir(kb_name)
     assert raw_dir is not None  # allow_unsupported=False guarantees a path
     if not raw_dir.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
 
     raw_resolved = raw_dir.resolve()
     target = (raw_dir / filename).resolve()
@@ -3071,7 +3072,7 @@ def _resolve_kb_raw_file_or_404(kb_name: str, filename: str) -> Path:
         raise HTTPException(status_code=403, detail="Access denied")
 
     if not target.exists() or not target.is_file():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
 
     return target
 
@@ -3156,7 +3157,7 @@ async def move_kb_file(kb_name: str, payload: MoveFilePayload):
         raise HTTPException(status_code=400, detail="Source path is required")
     src = _safe_join_raw(raw_dir, source_rel)
     if not src.exists():
-        raise HTTPException(status_code=404, detail="Source not found")
+        raise not_found("Source")
 
     dest_folder = _sanitize_rel_subdir(payload.dest_folder)
     dest_dir = _safe_join_raw(raw_dir, dest_folder) if dest_folder else raw_dir.resolve()
@@ -3197,7 +3198,7 @@ async def serve_kb_raw_file_text_preview(kb_name: str, filename: str):
     except DocumentExtractionError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except OSError as exc:
-        raise HTTPException(status_code=404, detail="File not found") from exc
+        raise not_found("File") from exc
 
     return PlainTextResponse(text, media_type="text/plain; charset=utf-8")
 
@@ -3226,7 +3227,7 @@ async def serve_kb_visual_asset(kb_name: str, asset_id: str):
     assert raw_dir is not None
     loaded = VisualAssetStore(raw_dir.parent).read(asset_id)
     if loaded is None:
-        raise HTTPException(status_code=404, detail="Visual asset not found")
+        raise not_found("Visual asset")
     record, data = loaded
     from deeptutor.services.rag.source_visuals import source_state
 
@@ -3338,7 +3339,7 @@ def _delete_kb(kb_name: str) -> dict[str, str]:
         # ``_writable_kb`` into a 500 whose detail read "404: ... not found".
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     if not success:
@@ -3497,7 +3498,7 @@ async def upload_files(
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         # Unexpected failure (Server error)
         formatted_error = format_exception_message(e)
@@ -4750,7 +4751,7 @@ async def get_linked_folders(kb_name: str):
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4763,13 +4764,13 @@ async def unlink_folder(kb_name: str, folder_id: str):
         _assert_not_connected_kb(resolved_name, _load_kb_entry_or_404(manager, resolved_name))
         success = manager.unlink_folder(resolved_name, folder_id)
         if not success:
-            raise HTTPException(status_code=404, detail=f"Folder '{folder_id}' not found")
+            raise not_found("Folder", folder_id)
         logger.info(f"Unlinked folder '{folder_id}' from KB '{kb_name}'")
         return {"message": "Folder unlinked successfully", "folder_id": folder_id}
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4798,7 +4799,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
         folder_info = next((f for f in folders if f["id"] == folder_id), None)
 
         if not folder_info:
-            raise HTTPException(status_code=404, detail=f"Linked folder '{folder_id}' not found")
+            raise not_found("Linked folder", folder_id)
 
         folder_path = folder_info["path"]
 
@@ -4866,7 +4867,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise not_found("Knowledge base", kb_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4987,7 +4988,7 @@ async def remove_github_source(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not manager.remove_github_source(resolved_name, source_id):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise not_found("Source", source_id)
         return {"message": "Removed", "source_id": source_id}
 
 
@@ -5044,7 +5045,7 @@ async def remove_web_source(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not manager.remove_web_source(resolved_name, source_id):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise not_found("Source", source_id)
         await get_web_source_sync_scheduler().request_cancel(
             get_current_user().id, resolved_name, source_id
         )
@@ -5082,7 +5083,7 @@ async def get_web_source_pairings(kb_name: str, source_id: str):
             None,
         )
         if source is None:
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise not_found("Source", source_id)
         scheduler = get_web_source_sync_scheduler()
         repo_pairings = scheduler.repo.list_pairings(
             get_current_user().id, resolved_name, source_id
@@ -5127,7 +5128,7 @@ async def cancel_web_source_sync(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not any(item.get("id") == source_id for item in manager.get_web_sources(resolved_name)):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise not_found("Source", source_id)
         cancelled = await get_web_source_sync_scheduler().request_cancel(
             get_current_user().id, resolved_name, source_id
         )
@@ -5151,7 +5152,7 @@ async def retry_web_source_sync(kb_name: str, source_id: str):
             None,
         )
         if source is None:
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise not_found("Source", source_id)
         if not source.get("enabled", True) or not source.get("auto_sync_enabled", True):
             raise HTTPException(
                 status_code=409,
@@ -5161,7 +5162,7 @@ async def retry_web_source_sync(kb_name: str, source_id: str):
             get_current_user().id, resolved_name, source_id
         )
         if not retried:
-            raise HTTPException(status_code=404, detail="Synchronization job not found")
+            raise not_found("Synchronization job")
         return {"message": "Retry scheduled", "source_id": source_id}
 
 

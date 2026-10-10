@@ -7,6 +7,7 @@ import asyncio
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.task_board import (
     CreateCard,
     LinkStatus,
@@ -75,7 +76,7 @@ def update_card(card_id: str, payload: UpdateCard) -> TaskBoard:
     except WorkspaceError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Task card not found.") from exc
+        raise not_found("Task card") from exc
 
 
 @router.put("/colors", response_model=TaskBoard)
@@ -91,7 +92,7 @@ async def require_session(session_id: str, workspace_id: str) -> str:
             if scope.archived:
                 raise WorkspaceError("Restore this workspace before changing its conversations.")
             if await get_session_store().get_session(session_id) is None:
-                raise HTTPException(status_code=404, detail="Conversation not found.")
+                raise not_found("Conversation")
             return scope.workspace_id
     except WorkspaceError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -103,7 +104,7 @@ async def link_tasks(session_id: str, payload: LinkTasks) -> TaskBoard:
     try:
         return await asyncio.to_thread(get_task_board_store().link_tasks, session_id, payload)
     except KeyError as exc:
-        raise HTTPException(status_code=404, detail="Task not found or archived.") from exc
+        raise not_found("Task") from exc
 
 
 @router.patch("/sessions/{session_id}/status", response_model=TaskBoard)

@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from fastapi.responses import Response
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.utils.http_headers import content_disposition
 from deeptutor.multi_user.paths import get_current_path_service
 from deeptutor.services.office_preview import (
@@ -76,7 +77,7 @@ def _source_path(source: str, request: Request) -> tuple[Path, str, Path]:
             target, filename = _resolve_authorized_file(canonical_path, query)
             return target, filename, _cache_dir()
     except WorkspaceError as exc:
-        raise HTTPException(status_code=404, detail="Preview source not found") from exc
+        raise not_found("Preview source") from exc
 
 
 def _resolve_authorized_file(path: str, query: dict[str, list[str]]) -> tuple[Path, str]:
@@ -90,7 +91,7 @@ def _resolve_authorized_file(path: str, query: dict[str, list[str]]) -> tuple[Pa
             session_id=match.group(1), attachment_id=match.group(2), filename=match.group(3)
         )
         if target is None:
-            raise HTTPException(status_code=404, detail="Preview source not found")
+            raise not_found("Preview source")
         return target, match.group(3)
 
     if path.startswith("/files/outputs/"):
@@ -106,7 +107,7 @@ def _resolve_authorized_file(path: str, query: dict[str, list[str]]) -> tuple[Pa
         except HTTPException:
             target = _resolve_partner_output(relative)
             if target is None:
-                raise HTTPException(status_code=404, detail="Preview source not found")
+                raise not_found("Preview source")
         return target, target.name
 
     if match := re.fullmatch(r"/files/workspace-items/([^/]+)/([^/]+)", path):
@@ -118,7 +119,7 @@ def _resolve_authorized_file(path: str, query: dict[str, list[str]]) -> tuple[Pa
         except WorkspaceError:
             resolved = _resolve_partner_item(*match.groups())
             if resolved is None:
-                raise HTTPException(status_code=404, detail="Preview source not found")
+                raise not_found("Preview source")
             target, item = resolved
         return target, item.filename
 
@@ -146,7 +147,7 @@ def _read_bounded(path: Path) -> bytes:
         with path.open("rb") as source:
             return source.read(MAX_OFFICE_BYTES + 1)
     except OSError as exc:
-        raise HTTPException(status_code=404, detail="Preview source not found") from exc
+        raise not_found("Preview source") from exc
 
 
 def _assert_surface(surface: str) -> None:

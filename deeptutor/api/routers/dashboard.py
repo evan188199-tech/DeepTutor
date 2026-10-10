@@ -12,6 +12,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.session import get_session_store
 
 router = APIRouter()
@@ -212,7 +213,7 @@ async def get_learning_library(kind: str):
         ]
 
     if kind not in {"books", "mastery", "reading", "materials", "practice", "watching"}:
-        raise HTTPException(status_code=404, detail="Unknown learning library")
+        raise not_found("Learning library")
     rows, unavailable = await read_workspace_indexes(read)
     return {"items": rows, "unavailable_workspaces": unavailable, "can_create": can_create}
 
@@ -222,7 +223,7 @@ async def get_activity_entry(entry_id: str):
     store = get_session_store()
     session = await store.get_session_with_messages(entry_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Entry not found")
+        raise not_found("Entry")
 
     capability = str(session.get("capability") or "chat")
     return {

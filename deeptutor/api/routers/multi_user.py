@@ -13,6 +13,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, StrictBool, field_validator
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_admin, require_auth
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 from deeptutor.multi_user.audit import log_admin_action, log_guardian_action
@@ -292,7 +293,7 @@ def _validate_reading_policy(grant: dict[str, Any]) -> None:
 def _require_assignable_user(user_id: str) -> tuple[str, dict[str, Any]]:
     user_record = get_user_by_id(user_id)
     if user_record is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise not_found("User")
     username, record = user_record
     if str(record.get("role") or "user") == "admin":
         raise HTTPException(
@@ -432,7 +433,7 @@ async def revoke_guardian_relationship(
     revoked_by = str(getattr(current, "user_id", "") or "")
     relationship = revoke_guardian(relationship_id, revoked_by=revoked_by)
     if relationship is None:
-        raise HTTPException(status_code=404, detail="Guardian relationship not found")
+        raise not_found("Guardian relationship")
     log_admin_action(
         "guardian_revoke",
         target_user_id=relationship["learner_user_id"],
@@ -474,7 +475,7 @@ async def revoke_my_guardianship(
         or relationship["guardian_user_id"] != guardian_user_id
         or relationship["revoked_at"] is not None
     ):
-        raise HTTPException(status_code=404, detail="Active guardian relationship not found")
+        raise not_found("Active guardian relationship")
     revoked = revoke_guardian(relationship_id, revoked_by=guardian_user_id, reason="self_revoked")
     assert revoked is not None
     log_guardian_action(
@@ -598,7 +599,7 @@ async def assign_guardian_materials(
         ),
     )
     if not set_book_permission(learner_username, permission):
-        raise HTTPException(status_code=404, detail="User not found")
+        raise not_found("User")
     result = public_permission_dict(permission)
     _log_supervisor_action(
         "guardian_material_assign",
@@ -756,7 +757,7 @@ async def reset_learner_credentials(
         revoked_by=actor_user_id,
     )
     if set_password(learner_username, hash_password(payload.new_password)) is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise not_found("User")
     _log_supervisor_action(
         "guardian_credential_reset",
         actor_user_id=actor_user_id,
@@ -852,7 +853,7 @@ async def put_user_book_permission(
         books=tuple(payload.books.items()),
     )
     if not set_book_permission(username, permission):
-        raise HTTPException(status_code=404, detail="User not found")
+        raise not_found("User")
     result = public_permission_dict(permission)
     log_admin_action(
         "book_permission_set",

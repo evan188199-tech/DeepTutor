@@ -16,6 +16,8 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from deeptutor.api.errors import not_found
+
 # ``docx_converter`` imports python-docx lazily, so this stays import-cheap.
 from deeptutor.co_writer.docx_converter import (
     DocxConversionError,
@@ -619,7 +621,7 @@ async def get_operation(operation_id: str):
         for op in history:
             if op.get("id") == operation_id:
                 return op
-        raise HTTPException(status_code=404, detail="Operation not found")
+        raise not_found("Operation")
     except HTTPException:
         raise
     except Exception as e:
@@ -636,7 +638,7 @@ async def get_tool_call(operation_id: str):
         for filepath in tool_calls_dir().glob(f"{operation_id}_*.json"):
             with open(filepath, encoding="utf-8") as f:
                 return json.load(f)
-        raise HTTPException(status_code=404, detail="Tool call not found")
+        raise not_found("Tool call")
     except HTTPException:
         raise
     except Exception as e:
@@ -654,7 +656,7 @@ _DOC_ID_RE = re.compile(r"^[0-9a-f]{8,32}$")
 
 def _validate_doc_id(doc_id: str) -> str:
     if not _DOC_ID_RE.fullmatch(doc_id):
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise not_found("Document")
     return doc_id
 
 
@@ -830,7 +832,7 @@ async def get_document(doc_id: str) -> DocumentResponse:
         storage = get_co_writer_storage()
         document = storage.load_document(_validate_doc_id(doc_id))
         if document is None:
-            raise HTTPException(status_code=404, detail="Document not found")
+            raise not_found("Document")
         return DocumentResponse.from_model(document)
     except HTTPException:
         raise
@@ -848,7 +850,7 @@ async def update_document(doc_id: str, request: UpdateDocumentRequest) -> Docume
             _validate_doc_id(doc_id), title=request.title, content=request.content
         )
         if document is None:
-            raise HTTPException(status_code=404, detail="Document not found")
+            raise not_found("Document")
         return DocumentResponse.from_model(document)
     except HTTPException:
         raise
@@ -864,7 +866,7 @@ async def delete_document(doc_id: str) -> dict[str, bool]:
         storage = get_co_writer_storage()
         _validate_doc_id(doc_id)
         if not storage.doc_exists(doc_id):
-            raise HTTPException(status_code=404, detail="Document not found")
+            raise not_found("Document")
         success = storage.delete_document(doc_id)
         return {"deleted": success}
     except HTTPException:

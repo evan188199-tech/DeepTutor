@@ -22,6 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSock
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_admin
 from deeptutor.app.container import get_application_container
 from deeptutor.multi_user.context import get_current_user
@@ -836,7 +837,7 @@ async def get_partner_draft(draft_id: str):
     except ValueError:
         draft = None
     if draft is None:
-        raise HTTPException(status_code=404, detail="Partner draft not found")
+        raise not_found("Partner draft")
     return draft.to_dict()
 
 
@@ -861,7 +862,7 @@ async def _confirm_partner_draft(
     except ValueError:
         draft = None
     if draft is None:
-        raise HTTPException(status_code=404, detail="Partner draft not found")
+        raise not_found("Partner draft")
 
     if draft.status == "created" and draft.created_partner_id:
         cfg = get_partner_manager().load_config(draft.created_partner_id)
@@ -1303,7 +1304,7 @@ async def delete_partner_asset(partner_id: str, asset_type: str, name: str):
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from None
     if not removed:
-        raise HTTPException(status_code=404, detail="Asset not found")
+        raise not_found("Asset")
     return {"partner_id": partner_id, "removed": True, "assets": list_assets(partner_id)}
 
 
@@ -1342,7 +1343,7 @@ async def delete_partner_link(partner_id: str, key: str):
     from deeptutor.services.partners.links import remove_link
 
     if not remove_link(partner_id, get_current_user().id, key):
-        raise HTTPException(status_code=404, detail="No such linked account")
+        raise not_found("Linked account")
     return {"partner_id": partner_id, "removed": True, "key": key}
 
 
@@ -1422,7 +1423,7 @@ async def archive_partner_session(partner_id: str, payload: SessionKeyBody):
     try:
         with mgr.web_session_idle_lock(partner_id, payload.session_key):
             if not mgr.archive_session(partner_id, payload.session_key):
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise not_found("Session")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,
@@ -1451,7 +1452,7 @@ async def resume_partner_session(partner_id: str, payload: SessionKeyBody):
         with mgr.web_session_idle_lock(partner_id, session_key):
             summary = mgr.resume_session(partner_id, session_key)
             if summary is None:
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise not_found("Session")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,
@@ -1477,7 +1478,7 @@ async def delete_partner_session(partner_id: str, payload: SessionKeyBody):
         with mgr.web_session_idle_lock(partner_id, payload.session_key):
             removed = mgr.delete_session(partner_id, payload.session_key)
             if not removed:
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise not_found("Session")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,

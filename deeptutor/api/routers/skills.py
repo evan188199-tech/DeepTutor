@@ -13,6 +13,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.multi_user.context import get_current_user
 from deeptutor.multi_user.skill_access import (
     assigned_skill_detail,
@@ -106,7 +107,7 @@ async def rename_tag(tag: str, payload: RenameTagRequest) -> dict[str, str]:
     try:
         new_tag = service.rename_tag(tag, payload.rename_to)
     except TagNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Tag not found: {tag}")
+        raise not_found("Tag", tag)
     except TagExistsError as exc:
         raise HTTPException(status_code=409, detail=f"Tag already exists: {exc}")
     except InvalidTagError as exc:
@@ -120,7 +121,7 @@ async def delete_tag(tag: str) -> dict[str, str]:
     try:
         service.delete_tag(tag)
     except TagNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Tag not found: {tag}")
+        raise not_found("Tag", tag)
     except InvalidTagError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     return {"status": "deleted", "name": tag}
@@ -212,12 +213,12 @@ async def get_skill(name: str) -> dict[str, object]:
     user = get_current_user()
     if user.is_admin:
         # Admin scope already checked above; nothing else to look at.
-        raise HTTPException(status_code=404, detail=f"Skill not found: {name}")
+        raise not_found("Skill", name)
     if name not in assigned_skill_ids(user.id):
         raise HTTPException(status_code=403, detail="Skill is not assigned to you")
     detail = assigned_skill_detail(name)
     if detail is None:
-        raise HTTPException(status_code=404, detail=f"Skill not found: {name}")
+        raise not_found("Skill", name)
     return detail
 
 
@@ -290,7 +291,7 @@ async def update_skill(name: str, payload: UpdateSkillRequest) -> dict[str, obje
         )
         return info.to_dict()
     except SkillNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Skill not found: {name}")
+        raise not_found("Skill", name)
     except SkillReadOnlyError as exc:
         raise HTTPException(status_code=403, detail=str(exc))
     except SkillExistsError as exc:
@@ -308,7 +309,7 @@ async def delete_skill(name: str) -> dict[str, str]:
         service.delete(name)
         return {"status": "deleted", "name": name}
     except SkillNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Skill not found: {name}")
+        raise not_found("Skill", name)
     except SkillReadOnlyError as exc:
         raise HTTPException(status_code=403, detail=str(exc))
     except InvalidSkillNameError as exc:

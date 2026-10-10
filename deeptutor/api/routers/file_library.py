@@ -24,11 +24,11 @@ from fastapi import (
     Depends,
     File,
     Form,
-    HTTPException,
     Query,
 )
 from fastapi.responses import FileResponse
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.routers.auth import require_auth
 from deeptutor.services.auth import TokenPayload
 from deeptutor.services.storage import file_library as _fl
@@ -99,7 +99,7 @@ async def get_library_file(
     """Get a single library entry by id (includes soft-deleted)."""
     entry = await _get_store().get_file(file_id)
     if entry is None:
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
     return entry
 
 
@@ -112,11 +112,11 @@ async def download_library_file(
     store = _get_store()
     entry = await store.get_file(file_id)
     if entry is None or entry.get("is_deleted"):
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
 
     path = store.resolve_path(file_id)
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        raise not_found("File on disk")
 
     media_type = _mime_type(entry["filename"])
     return FileResponse(
@@ -139,10 +139,10 @@ async def download_library_file_head(
     store = _get_store()
     entry = await store.get_file(file_id)
     if entry is None or entry.get("is_deleted"):
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
     path = store.resolve_path(file_id)
     if path is None or not path.is_file():
-        raise HTTPException(status_code=404, detail="File not found on disk")
+        raise not_found("File on disk")
 
 
 @router.delete("/{file_id}", operation_id="library_delete")
@@ -153,7 +153,7 @@ async def delete_library_file(
     """Soft-delete a library file (sets is_deleted=1)."""
     deleted = await _get_store().delete_file(file_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
     return {"id": file_id, "deleted": True}
 
 
@@ -165,5 +165,5 @@ async def restore_library_file(
     """Restore a soft-deleted library file."""
     restored = await _get_store().restore_file(file_id)
     if not restored:
-        raise HTTPException(status_code=404, detail="File not found")
+        raise not_found("File")
     return {"id": file_id, "restored": True}

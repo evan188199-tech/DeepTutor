@@ -12,6 +12,7 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from deeptutor.api.errors import not_found
 from deeptutor.learning.storage import LearningStore
 from deeptutor.multi_user.learning_access import (
     allowed_reading_extensions,
@@ -164,9 +165,7 @@ async def read_material_aloud(material_id: str, payload: ReadAloudAudioPayload) 
 
     extension = get_reading_extension_registry().get("read_aloud")
     if extension is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Reading extension not found."
-        )
+        raise not_found("Reading extension")
 
     try:
         text = ReadingStore().unit_text(material_id, payload.locator)
@@ -211,10 +210,10 @@ async def run_extension_action(
     registry = get_reading_extension_registry()
     extension = registry.get(extension_id)
     if extension is None:
-        raise HTTPException(status_code=404, detail="Reading extension not found.")
+        raise not_found("Reading extension")
     declared_action = next((row for row in extension.manifest.actions if row.id == action), None)
     if declared_action is None:
-        raise HTTPException(status_code=404, detail="Reading extension action not found.")
+        raise not_found("Reading extension action")
     store = ReadingStore()
     try:
         unit_text = store.unit_text(material_id, payload.locator)
@@ -405,7 +404,7 @@ async def submit_quiz_answers(material_id: str, payload: QuizAnswersPayload) -> 
     material_title = _material_title(material_id)
     if session_id:
         if await store.get_session(session_id) is None:
-            raise HTTPException(status_code=404, detail="Reading session not found.")
+            raise not_found("Reading session")
     origin_type = "conversation" if session_id else "document_analysis"
     origin_ref = session_id or f"reading:{material_id}"
     turn_id = payload.turn_id.strip() or f"reading:{material_id}:loc:{payload.locator}"

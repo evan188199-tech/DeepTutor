@@ -23,6 +23,7 @@ import mimetypes
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
+from deeptutor.api.errors import not_found
 from deeptutor.api.utils.http_headers import content_disposition
 from deeptutor.services.storage import (
     LocalDiskAttachmentStore,
@@ -63,7 +64,7 @@ async def get_attachment(
         filename=filename,
     )
     if target is None:
-        raise HTTPException(status_code=404, detail="Attachment not found")
+        raise not_found("Attachment")
 
     media_type, _ = mimetypes.guess_type(target.name)
     if not media_type:

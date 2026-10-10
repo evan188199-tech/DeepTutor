@@ -12,6 +12,7 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field, field_validator
 
+from deeptutor.api.errors import not_found
 from deeptutor.learning.storage import LearningStore
 from deeptutor.reading.catalog_store import ReadingCatalogStore
 from deeptutor.response_languages import validate_reply_language_override
@@ -389,7 +390,7 @@ async def migrate_watching_session(session_id: str):
         store = get_session_store()
         session = await store.get_session_with_messages(session_id)
         if session is None:
-            raise HTTPException(status_code=404, detail="Session not found")
+            raise not_found("Session")
         preferences = session.get("preferences") or {}
         if any(
             preferences.get(key) == "immersive_watching"
@@ -410,7 +411,7 @@ async def get_session(session_id: str):
     store = get_session_store()
     session = await store.get_session_with_messages(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     _attach_orphaned_failed_turns(
         session.get("messages", []), await store.list_orphaned_failed_turns(session_id)
     )
@@ -429,7 +430,7 @@ async def get_message_events(
     store = get_session_store()
     trace = await store.get_message_trace(session_id, message_id, after_seq, limit)
     if trace is None:
-        raise HTTPException(status_code=404, detail="Message not found")
+        raise not_found("Message")
     return trace
 
 
@@ -446,7 +447,7 @@ async def rename_session(session_id: str, payload: SessionRenameRequest):
     store = get_session_store()
     updated = await store.update_session_title(session_id, payload.title)
     if not updated:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     # The reader keeps its own list of a collection's conversations; the
     # sidebar is where they are renamed, so the list has to hear about it.
     try:
@@ -462,13 +463,13 @@ async def update_session_reply_language(session_id: str, payload: SessionReplyLa
     """Fix this conversation's reply language, or return to the account default."""
     store = get_session_store()
     if await store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     updated = await store.update_session_preferences(
         session_id, {"reply_language_override": payload.language}
     )
     session = await store.get_session(session_id)
     if not updated or session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     return {"session": session}
 
 
@@ -479,7 +480,7 @@ async def update_session_organization(
     store = get_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
 
     updates: dict[str, Any] = {}
     fields = payload.model_fields_set
@@ -537,7 +538,7 @@ async def update_session_organization(
             try:
                 get_course_service().get(course_id)
             except CourseNotFoundError as exc:
-                raise HTTPException(status_code=404, detail="Course not found") from exc
+                raise not_found("Course") from exc
         updates["course_id"] = course_id
     if "parent_session_id" in fields:
         parent_id = str(payload.parent_session_id or "").strip()
@@ -551,7 +552,7 @@ async def update_session_organization(
                     parent_session_id=parent_id,
                 )
             except LookupError as exc:
-                raise HTTPException(status_code=404, detail="Parent session not found") from exc
+                raise not_found("Parent session") from exc
             except ValueError as exc:
                 raise HTTPException(status_code=400, detail=str(exc)) from exc
         updates["parent_session_id"] = parent_id
@@ -582,7 +583,7 @@ async def update_session_organization(
 async def delete_session(session_id: str):
     store = get_session_store()
     if await store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
 
     # Tutor threads belong to their parent conversation. Snapshot before any
     # deletion changes pagination, and walk descendants without revisiting cycles.
@@ -636,7 +637,7 @@ async def restore_session(session_id: str):
     store = get_session_store()
     restored = await store.restore_session(session_id)
     if not restored:
-        raise HTTPException(status_code=404, detail="Session not found in recycle bin")
+        raise not_found("Session in recycle bin")
     refreshed = await store.get_session(session_id)
     return {"restored": True, "session": refreshed}
 
@@ -646,7 +647,7 @@ async def purge_session(session_id: str):
     store = get_session_store()
     purged = await store.hard_delete_session(session_id)
     if not purged:
-        raise HTTPException(status_code=404, detail="Session not found in recycle bin")
+        raise not_found("Session in recycle bin")
     await _cleanup_deleted_session(session_id)
     from deeptutor.services.task_board import get_task_board_store
     from deeptutor.services.workspace.context import current_workspace_id
@@ -664,12 +665,12 @@ async def update_branch_selection(session_id: str, payload: BranchSelectionReque
     store = get_sqlite_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     updated = await store.update_session_preferences(
         session_id, {"selected_branches": dict(payload.selected_branches)}
     )
     if not updated:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     return {"selected_branches": payload.selected_branches}
 
 
@@ -683,7 +684,7 @@ async def delete_turn_by_message(session_id: str, message_id: int):
             detail="Cannot delete a message while its turn is running or waiting for input",
         )
     if not result["deleted"]:
-        raise HTTPException(status_code=404, detail="Message not found")
+        raise not_found("Message")
     attachment_store = get_attachment_store()
     for aid in result["attachment_ids"]:
         try:
@@ -700,7 +701,7 @@ async def record_quiz_results(session_id: str, payload: QuizResultsRequest):
     store = get_sqlite_session_store()
     session = await store.get_session(session_id)
     if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise not_found("Session")
     content = _format_quiz_results_message(payload.answers)
     await store.add_message(
         session_id=session_id,

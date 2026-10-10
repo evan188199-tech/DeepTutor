@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from deeptutor.api.errors import not_found
 from deeptutor.services.courses import (
     COURSE_COLORS,
     CourseNameConflictError,
@@ -112,7 +113,7 @@ async def update_course(course_id: str, payload: UpdateCourseRequest) -> dict[st
         if status is not None:
             course = service.set_status(course_id, status)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except CourseNameConflictError as exc:
@@ -138,7 +139,7 @@ async def set_course_syllabus(
             units.append(unit)
         course = service.set_syllabus(course_id, units)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
     return {"course": course.to_dict()}
 
 
@@ -153,9 +154,9 @@ async def update_syllabus_unit(
     try:
         unit = get_course_service().set_unit_covered(course_id, unit_id, payload.covered)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
     except SyllabusUnitNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Syllabus unit not found") from exc
+        raise not_found("Syllabus unit") from exc
     return {"unit": unit.to_dict()}
 
 
@@ -167,7 +168,7 @@ async def attach_course_resource(
     try:
         resource = get_course_service().attach_resource(course_id, **payload.model_dump())
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
     except UnknownResourceKindError as exc:
         raise HTTPException(status_code=400, detail="Unknown resource kind") from exc
     except ValueError as exc:
@@ -180,9 +181,9 @@ async def detach_course_resource(course_id: str, resource_id: str) -> dict[str, 
     try:
         get_course_service().detach_resource(course_id, resource_id)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
     except CourseResourceNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course resource not found") from exc
+        raise not_found("Course resource") from exc
     return {"deleted": True}
 
 
@@ -191,7 +192,7 @@ async def get_course_state(course_id: str) -> dict[str, object]:
     try:
         return await build_course_state(course_id)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
 
 
 @router.delete("/{course_id}")
@@ -200,7 +201,7 @@ async def delete_course(course_id: str) -> dict[str, object]:
     try:
         service.get(course_id)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise not_found("Course") from exc
 
     # Course deletion is non-destructive: conversations become unclassified.
     store = get_session_store()
