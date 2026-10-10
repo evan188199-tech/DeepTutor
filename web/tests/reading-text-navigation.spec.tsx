@@ -54,3 +54,41 @@ describe("Markdown section navigation (#1641)", () => {
     expect(screen.getByRole("button", { name: "Next Section" })).toBeEnabled();
   });
 });
+
+describe("Markdown pagination visible in narrow panels (#1641)", () => {
+  beforeEach(() => {
+    vi.mocked(getMaterialMedia).mockResolvedValue([]);
+  });
+
+  it("keeps the section buttons outside the scrolling display-controls strip", async () => {
+    vi.mocked(getUnitText).mockImplementation(async (_id, locator) => ({
+      locator, unit: "section", text: `Section ${locator} body.`,
+    }));
+    render(<TextUnitView materialId="narrow-markdown" unit="section" unitCount={3}
+      annotations={[]} jump={null} onSelection={vi.fn()} />);
+
+    await screen.findByText("Section 1 body.");
+    const next = screen.getByRole("button", { name: "Next Section" });
+    const previous = screen.getByRole("button", { name: "Previous Section" });
+
+    // button -> tooltip wrapper span -> the pagination group.
+    const group = next.parentElement!.parentElement as HTMLElement;
+    expect(group).toContainElement(previous);
+    expect(group.className).toContain("shrink-0");
+
+    const row = group.parentElement as HTMLElement;
+    // The row itself never scrolls: the whole toolbar sliding out of view is
+    // how the way to turn a page used to disappear in a narrow panel.
+    expect(row.className).toContain("shrink-0");
+    expect(row.className).not.toContain("overflow-x-auto");
+
+    // Display controls scroll in their own lane, shrinking before the
+    // pagination group ever has to.
+    const scroller = row.firstElementChild as HTMLElement;
+    expect(group).not.toContainElement(scroller);
+    expect(scroller).toBe(group.previousElementSibling);
+    expect(scroller.className).toContain("min-w-0");
+    expect(scroller.className).toContain("flex-1");
+    expect(scroller.className).toContain("overflow-x-auto");
+  });
+});
