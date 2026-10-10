@@ -29,6 +29,7 @@ from deeptutor.co_writer.storage import (
 )
 from deeptutor.runtime.stream_bus import StreamBus
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
+from deeptutor.services.i18n import t
 from deeptutor.services.model_selection.runtime import (
     activate_llm_selection,
     reset_llm_selection,
@@ -299,21 +300,17 @@ def _prepare_react_edit_request(
     tools = _normalize_react_edit_tools(request.tools)
     instruction = request.instruction.strip()
     if request.mode == "none" and not instruction:
-        detail = (
-            "请输入编辑要求，或选择 shorten / expand / rewrite 模式。"
-            if language.startswith("zh")
-            else "Provide an edit instruction, or choose shorten / expand / rewrite mode."
+        raise HTTPException(
+            status_code=400,
+            detail=t("co_writer.edit_instruction_required", language=language),
         )
-        raise HTTPException(status_code=400, detail=detail)
 
     selected_text = request.selected_text.strip("\n")
     if not selected_text.strip():
-        detail = (
-            "请先选中一段文本。"
-            if language.startswith("zh")
-            else "Please select a text passage first."
+        raise HTTPException(
+            status_code=400,
+            detail=t("co_writer.selection_required", language=language),
         )
-        raise HTTPException(status_code=400, detail=detail)
 
     return selected_text, instruction, tools
 
@@ -497,9 +494,15 @@ async def _stream_react_edit(
                 stream=bus,
             )
         except HTTPException as exc:
-            error_holder["detail"] = str(exc.detail)
-        except Exception as exc:
-            error_holder["detail"] = str(exc)
+            # The SSE error event is user-facing i18n copy only; a rejected
+            # detail can embed provider/internal text, so it stays in the log.
+            logger.warning("Co-Writer stream edit rejected: %s", exc.detail)
+            error_holder["code"] = "co_writer_bad_request"
+            error_holder["detail"] = t("co_writer.edit_failed", language=language)
+        except Exception:
+            logger.exception("Co-Writer stream edit failed")
+            error_holder["code"] = "co_writer_internal_error"
+            error_holder["detail"] = t("co_writer.edit_failed", language=language)
         finally:
             await bus.close()
 

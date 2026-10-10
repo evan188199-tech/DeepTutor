@@ -45,6 +45,11 @@ _MESSAGES: dict[str, dict[str, str]] = {
             "The CLI app {app!r} is not installed on this deployment any more."
         ),
         "cli_apps.still_running": "{app} is still running ({seconds}s)",
+        "co_writer.edit_failed": "The AI edit failed before completion. Please retry.",
+        "co_writer.edit_instruction_required": (
+            "Provide an edit instruction, or choose shorten / expand / rewrite mode."
+        ),
+        "co_writer.selection_required": "Please select a text passage first.",
         "mcp.configure_command_or_url": "Server {name!r}: configure either a command (stdio) or a url.",
         "mcp.configure_before_testing": "Configure either a command (stdio) or a url before testing.",
         "mcp.server_error": "Server {name!r}: {error}",
@@ -91,6 +96,9 @@ _MESSAGES: dict[str, dict[str, str]] = {
         "cli_apps.not_in_catalog": "目录中没有名为 {id!r} 的 CLI 应用。",
         "cli_apps.not_installed": "CLI 应用 {app!r} 已不在本部署中。",
         "cli_apps.still_running": "{app} 仍在运行（已 {seconds} 秒）",
+        "co_writer.edit_failed": "AI 编辑未能完成，请重试。",
+        "co_writer.edit_instruction_required": "请输入编辑要求，或选择 shorten / expand / rewrite 模式。",
+        "co_writer.selection_required": "请先选中一段文本。",
         "mcp.configure_command_or_url": "服务器 {name!r}：请配置 command（stdio）或 url。",
         "mcp.configure_before_testing": "测试前请先配置 command（stdio）或 url。",
         "mcp.server_error": "服务器 {name!r}：{error}",
