@@ -5521,5 +5521,10 @@
   "No durable indexing run recorded yet.": "Nie zapisano jeszcze trwałego zadania indeksowania.",
   "Approve this MCP origin for private-network connections": "Zatwierdź ten origin MCP dla połączeń w sieci prywatnej",
   "Use an administrator-approved private MCP origin": "Użyj prywatnego originu MCP zatwierdzonego przez administratora",
-  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "Tylko ten schemat, host i port mogą korzystać z prywatnych adresów Docker lub LAN. Adresy metadanych pozostają zablokowane."
+  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "Tylko ten schemat, host i port mogą korzystać z prywatnych adresów Docker lub LAN. Adresy metadanych pozostają zablokowane.",
+  "Open conversation": "Otwórz rozmowę",
+  "Change video": "Zmień film",
+  "Attach a video": "Wybierz film",
+  "Resuming from your saved progress.": "Wznawiamy od zapisanego postępu.",
+  "No video is attached to this conversation yet.": "Ta rozmowa nie ma jeszcze powiązanego filmu."
 }

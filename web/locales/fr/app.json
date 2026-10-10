@@ -5885,5 +5885,10 @@
   "settings.providerServices.customDescription": "L’URL doit implémenter l’API choisie. Ajoutez ensuite les identifiants et les autres types de services avec leurs adaptateurs.",
   "settings.providerServices.addHint": "Les étiquettes indiquent les intégrations, pas les autorisations du compte. Une connexion peut servir plusieurs types de modèles ; les comptes et produits peuvent rester séparés.",
   "settings.providerServices.catalogListed": "Liste des modèles obtenue. Testez un modèle pour vérifier l’accès à l’inférence.",
-  "settings.providerServices.partial": "Seule une partie de la liste a été obtenue. Les types manquants restent inconnus et peuvent être ajoutés manuellement."
+  "settings.providerServices.partial": "Seule une partie de la liste a été obtenue. Les types manquants restent inconnus et peuvent être ajoutés manuellement.",
+  "Open conversation": "Ouvrir la conversation",
+  "Change video": "Changer de vidéo",
+  "Attach a video": "Choisir une vidéo",
+  "Resuming from your saved progress.": "Reprise à votre position enregistrée.",
+  "No video is attached to this conversation yet.": "Aucune vidéo n'est encore associée à cette conversation."
 }

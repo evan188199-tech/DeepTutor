@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import re
 from typing import Any
 from urllib.parse import urljoin, urlparse
@@ -33,6 +34,7 @@ from deeptutor.video_learning import (
     update_mark,
 )
 from deeptutor.video_learning import notes as video_notes
+from deeptutor.video_learning.service import MATERIAL_ID_RE
 
 router = APIRouter()
 settings_router = APIRouter()
@@ -50,6 +52,15 @@ class ResolveRequest(BaseModel):
 class ProgressRequest(BaseModel):
     time_seconds: float = Field(ge=0, le=24 * 60 * 60)
     duration_seconds: float = Field(default=0, ge=0, le=24 * 60 * 60)
+
+
+class WatchingStartRequest(BaseModel):
+    material_id: str = Field(min_length=1, max_length=64)
+    title: str = Field(default="", max_length=100)
+
+
+class WatchingBindingRequest(BaseModel):
+    material_id: str = Field(default="", max_length=64)
 
 
 class CreateVideoNoteRequest(BaseModel):
@@ -255,6 +266,129 @@ async def save_video_progress(material_id: str, payload: ProgressRequest) -> dic
         return {"time_seconds": position, "duration_seconds": duration}
     except Exception as exc:
         raise _http_error(exc) from exc
+
+
+def _validated_watching_material_id(value: str) -> str:
+    candidate = value.strip().lower()
+    if not MATERIAL_ID_RE.fullmatch(candidate):
+        raise HTTPException(status_code=422, detail="Invalid timed media material id.")
+    return candidate
+
+
+def _watching_binding_material_id(preferences: Any) -> str:
+    if not isinstance(preferences, dict):
+        return ""
+    candidate = str(preferences.get("watching_material_id") or "").strip().lower()
+    return candidate if MATERIAL_ID_RE.fullmatch(candidate) else ""
+
+
+async def _watching_material(material_id: str) -> dict[str, Any]:
+    try:
+        return await material_with_playback(material_id)
+    except TimedMediaNotFound as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+async def _persist_watching_binding(session_store: Any, session_id: str, material_id: str) -> None:
+    updates = {
+        "watching_material_id": material_id,
+        "watching_bound_at": datetime.now(timezone.utc).isoformat() if material_id else "",
+    }
+    if not await session_store.update_session_preferences(session_id, updates):
+        raise HTTPException(status_code=404, detail="Session not found")
+
+
+@router.post("/watching", status_code=201)
+async def start_watching_session(payload: WatchingStartRequest) -> dict[str, Any]:
+    """Create a Watching conversation bound to one video.
+
+    The material is validated against the caller's own store before any
+    session is persisted, mirroring the Reading session-creation contract.
+    """
+    from deeptutor.services.session import get_session_store
+
+    material_id = _validated_watching_material_id(payload.material_id)
+    material = await _watching_material(material_id)
+    metadata = material.get("metadata") if isinstance(material.get("metadata"), dict) else {}
+    title = payload.title.strip() or str(metadata.get("title") or "New conversation")
+    session_store = get_session_store()
+    session = await session_store.create_session(title=title[:100])
+    await _persist_watching_binding(session_store, str(session["id"]), material_id)
+    return {
+        "session_id": session["id"],
+        "material_id": material_id,
+        "material": material,
+        "legacy_watching": False,
+    }
+
+
+@router.get("/watching/{session_id}")
+async def get_watching_binding(session_id: str) -> dict[str, Any]:
+    """Restore the video bound to this conversation, with saved progress.
+
+    The binding is per session on purpose: restoring must never fall back to
+    a browser-global recent video that belongs to a different conversation.
+    """
+    from deeptutor.services.session import get_session_store
+
+    session = await get_session_store().get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    preferences = session.get("preferences")
+    preferences = preferences if isinstance(preferences, dict) else {}
+    material_id = _watching_binding_material_id(preferences)
+    payload: dict[str, Any] = {
+        "session_id": session["id"],
+        "material_id": material_id,
+        "material": None,
+        "legacy_watching": not material_id
+        and any(
+            preferences.get(key) == "immersive_watching"
+            for key in ("capability", "workspace_mode", "session_kind")
+        ),
+    }
+    if not material_id:
+        return payload
+    try:
+        payload["material"] = await material_with_playback(material_id)
+    except TimedMediaNotFound:
+        return payload
+    except Exception as exc:
+        raise _http_error(exc) from exc
+    return payload
+
+
+@router.put("/watching/{session_id}")
+async def bind_watching_material(
+    session_id: str, payload: WatchingBindingRequest
+) -> dict[str, Any]:
+    """Bind, rebind, or clear the video restored for this conversation."""
+    from deeptutor.services.session import get_session_store
+
+    session_store = get_session_store()
+    session = await session_store.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    material_id = payload.material_id.strip().lower()
+    if not material_id:
+        await _persist_watching_binding(session_store, session_id, "")
+        return {
+            "session_id": session_id,
+            "material_id": "",
+            "material": None,
+            "legacy_watching": False,
+        }
+    material_id = _validated_watching_material_id(payload.material_id)
+    material = await _watching_material(material_id)
+    await _persist_watching_binding(session_store, session_id, material_id)
+    return {
+        "session_id": session_id,
+        "material_id": material_id,
+        "material": material,
+        "legacy_watching": False,
+    }
 
 
 @router.get("/materials/{material_id}/notes")

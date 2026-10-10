@@ -5521,5 +5521,10 @@
   "No durable indexing run recorded yet.": "Збереженого запису про запуск індексації поки немає.",
   "Approve this MCP origin for private-network connections": "Схвалити це джерело MCP для з'єднань із приватною мережею",
   "Use an administrator-approved private MCP origin": "Використовувати приватне джерело MCP, схвалене адміністратором",
-  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "Лише ця схема, хост і порт можуть використовувати приватні адреси Docker або локальної мережі. Адреси метаданих залишаються заблокованими."
+  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "Лише ця схема, хост і порт можуть використовувати приватні адреси Docker або локальної мережі. Адреси метаданих залишаються заблокованими.",
+  "Open conversation": "Відкрити розмову",
+  "Change video": "Змінити відео",
+  "Attach a video": "Вибрати відео",
+  "Resuming from your saved progress.": "Продовжуємо із збереженої позиції.",
+  "No video is attached to this conversation yet.": "Ця розмова ще не має прив'язаного відео."
 }

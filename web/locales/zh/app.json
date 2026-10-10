@@ -5505,5 +5505,10 @@
   "No durable indexing run recorded yet.": "尚未记录持久索引任务。",
   "Approve this MCP origin for private-network connections": "批准此 MCP 来源使用私有网络连接",
   "Use an administrator-approved private MCP origin": "使用管理员批准的私有 MCP 来源",
-  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "仅此协议、主机和端口可使用私有 Docker 或局域网地址。元数据地址仍被阻止。"
+  "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.": "仅此协议、主机和端口可使用私有 Docker 或局域网地址。元数据地址仍被阻止。",
+  "Open conversation": "打开对话",
+  "Change video": "更换视频",
+  "Attach a video": "选择视频",
+  "Resuming from your saved progress.": "将从上次保存的进度继续播放。",
+  "No video is attached to this conversation yet.": "这个会话还没有绑定视频。"
 }
