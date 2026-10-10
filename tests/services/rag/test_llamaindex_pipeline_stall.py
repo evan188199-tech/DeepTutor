@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import asyncio
 from contextvars import ContextVar
+import json
 import threading
 import time
 from types import SimpleNamespace
@@ -451,3 +452,137 @@ async def test_concurrent_indexing_runs_keep_their_own_progress(
     assert await asyncio.gather(run("a"), run("b")) == ["a", "b"]
     assert events["a"] == [(batch, 4) for batch in range(1, 5)]
     assert events["b"] == [(batch, 4) for batch in range(1, 5)]
+
+
+def _figure_candidate(
+    tmp_path, name: str = "figure.png", color: tuple[int, int, int] = (17, 99, 211)
+) -> tuple[Any, Any]:
+    """Minimal parsed document with one figure, mirroring the visual-assets fixture."""
+    from PIL import Image
+
+    from deeptutor.services.parsing.types import ParsedDocument
+    from deeptutor.services.rag.visual_assets import collect_visual_assets
+
+    kb_dir = tmp_path / "kb"
+    raw = kb_dir / "raw"
+    raw.mkdir(parents=True, exist_ok=True)
+    source = raw / "lesson.pdf"
+    source.write_bytes(b"source document with a figure")
+    images = tmp_path / "parse-cache" / f"assets-{name}"
+    images.mkdir(parents=True, exist_ok=True)
+    image = images / name
+    Image.new("RGB", (3, 2), color=color).save(image)
+    parsed = ParsedDocument(
+        markdown="The learning curve is shown below.\n\n![Learning curve](images/figure.png)",
+        blocks=[
+            {
+                "type": "image",
+                "img_path": str(image),
+                "page_idx": 2,
+                "bbox": [10, 20, 100, 200],
+                "image_caption": ["Learning curve"],
+            }
+        ],
+        asset_dir=images,
+        source_hash="source-hash",
+        parser_signature="mineru-signature",
+        engine="mineru",
+    )
+    return collect_visual_assets(parsed, source, kb_dir)[0], image
+
+
+def _load_documents_with_figure(candidate: Any):
+    async def load(file_paths, visual_candidates=None, **kwargs):
+        del file_paths, kwargs
+        visual_candidates.append(candidate)
+        return [SimpleNamespace(text="figure document")]
+
+    return load
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("operation", ["initialize", "add_new", "add_existing"])
+async def test_figures_are_published_before_index_write_and_stay_referencable(
+    tmp_path, monkeypatch: pytest.MonkeyPatch, operation: str
+) -> None:
+    """#1802: a successful run publishes pixels first, so indexed figures resolve."""
+    pipeline_module, storage_module, _ = _llamaindex_modules()
+    pipeline = _make_pipeline(tmp_path, monkeypatch)
+    candidate, image = _figure_candidate(tmp_path)
+    kb_dir = tmp_path / "kb"
+    events: list[str] = []
+    real_publish = pipeline_module.VisualAssetStore.publish
+
+    def ordered_publish(store, candidates, **kwargs):
+        events.append("publish")
+        return real_publish(store, candidates, **kwargs)
+
+    monkeypatch.setattr(pipeline_module.VisualAssetStore, "publish", ordered_publish)
+    monkeypatch.setattr(storage_module, "create_index", lambda *a, **k: events.append("create"))
+    monkeypatch.setattr(storage_module, "insert_documents", lambda *a, **k: events.append("insert"))
+    monkeypatch.setattr(storage_module, "verify_persisted_index", lambda _path: None)
+    if operation == "add_existing":
+        existing = kb_dir / "llamaindex_storage"
+        existing.mkdir(parents=True)
+        monkeypatch.setattr(
+            storage_module,
+            "resolve_add_storage_plan",
+            lambda *_: storage_module.AddStoragePlan(existing, existing),
+        )
+    monkeypatch.setattr(
+        pipeline,
+        "document_loader",
+        SimpleNamespace(load=_load_documents_with_figure(candidate)),
+    )
+
+    if operation == "initialize":
+        assert await pipeline.initialize("kb", ["lesson.pdf"]) is True
+    else:
+        assert await pipeline.add_documents("kb", ["lesson.pdf"]) is True
+
+    index_writes = [event for event in events if event in ("create", "insert")]
+    assert events[0] == "publish"
+    assert len(index_writes) == 1
+    record, pixels = pipeline_module.VisualAssetStore(kb_dir).read(candidate.record["asset_id"])
+    assert pixels == image.read_bytes()
+    assert record["caption"] == "Learning curve"
+
+
+@pytest.mark.asyncio
+async def test_add_documents_succeeds_when_manifest_exceeds_legacy_cap(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#1802: a figure-heavy KB keeps indexing and retains every prior reference."""
+    pipeline_module, storage_module, _ = _llamaindex_modules()
+    pipeline = _make_pipeline(tmp_path, monkeypatch)
+    published, _published_pixels = _figure_candidate(tmp_path, name="figure-a.png")
+    incoming, _incoming_pixels = _figure_candidate(
+        tmp_path, name="figure-b.png", color=(211, 99, 17)
+    )
+    kb_dir = tmp_path / "kb"
+    store = pipeline_module.VisualAssetStore(kb_dir)
+    store.publish([published])
+    # Model a legacy figure-heavy manifest without 15,000 image copies.
+    records = {
+        f"{index:064x}": {**published.record, "asset_id": f"{index:064x}", "context": "x" * 1000}
+        for index in range(11000)
+    }
+    records[published.record["asset_id"]] = published.record
+    store.manifest_path.write_text(json.dumps({"version": 1, "assets": records}), encoding="utf-8")
+    assert store.manifest_path.stat().st_size > 16 * 1024 * 1024
+
+    created: list[str] = []
+    monkeypatch.setattr(storage_module, "create_index", lambda *a, **k: created.append("create"))
+    monkeypatch.setattr(storage_module, "verify_persisted_index", lambda _path: None)
+    monkeypatch.setattr(
+        pipeline,
+        "document_loader",
+        SimpleNamespace(load=_load_documents_with_figure(incoming)),
+    )
+
+    assert await pipeline.add_documents("kb", ["lesson.pdf"]) is True
+
+    assert len(created) == 1
+    assert len(store.records()) == len(records) + 1
+    assert store.read(published.record["asset_id"]) is not None
+    assert store.read(incoming.record["asset_id"]) is not None
