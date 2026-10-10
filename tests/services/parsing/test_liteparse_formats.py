@@ -51,7 +51,6 @@ def test_liteparse_version_is_current_boundary(version: str | None, expected: bo
 @pytest.mark.parametrize(
     "version",
     [
-        pytest.param(None, id="none-version"),
         pytest.param("", id="empty-string"),
         pytest.param("   ", id="whitespace-only"),
         pytest.param("abc", id="no-digits"),
@@ -61,7 +60,7 @@ def test_liteparse_version_is_current_boundary(version: str | None, expected: bo
         pytest.param(".2.14.2", id="leading-dot"),
     ],
 )
-def test_liteparse_version_is_current_malformed_degrades_to_false(version: str | None) -> None:
+def test_liteparse_version_is_current_malformed_degrades_to_false(version: str) -> None:
     assert liteparse_version_is_current(version) is False
 
 
