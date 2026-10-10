@@ -55,13 +55,9 @@ _PINNED_VOCABULARIES: dict[str, frozenset[str]] = {
             "import",
         }
     ),
-    "QUESTION_ORIGIN_TYPES": frozenset(
-        {"conversation", "external_import", "document_analysis"}
-    ),
+    "QUESTION_ORIGIN_TYPES": frozenset({"conversation", "external_import", "document_analysis"}),
     "ASSESSMENT_TYPES": frozenset({"quiz", "focus_check", "qualitative", "review"}),
-    "ASSESSMENT_RESULTS": frozenset(
-        {"correct", "incorrect", "partial", "ungraded", "voided"}
-    ),
+    "ASSESSMENT_RESULTS": frozenset({"correct", "incorrect", "partial", "ungraded", "voided"}),
 }
 
 
