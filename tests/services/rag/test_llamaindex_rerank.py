@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+import math
 from pathlib import Path
+from typing import Any
 
-from llama_index.core.schema import NodeWithScore, TextNode
+from llama_index.core.schema import MetadataMode, NodeWithScore, TextNode
 import pytest
 
 from deeptutor.services.rag.pipelines.llamaindex import rerank as rerank_module
@@ -165,3 +168,257 @@ def test_retrieve_nodes_expands_candidates_only_when_reranker_is_configured(
         }
     ]
     assert [result.node_id for result in reranked] == ["first", "second"]
+
+
+class _StaticModel:
+    def __init__(self, scores: list[Any]) -> None:
+        self._scores = scores
+
+    def predict(
+        self,
+        pairs: list[tuple[str, str]],
+        *,
+        activation_fct: object,
+    ) -> list[Any]:
+        return list(self._scores)
+
+
+def test_rerank_builds_query_content_pairs_and_requests_raw_logits() -> None:
+    observed_modes: list[MetadataMode] = []
+
+    class _ProbeNode(TextNode):
+        def get_content(self, metadata_mode: MetadataMode = MetadataMode.NONE) -> str:
+            observed_modes.append(metadata_mode)
+            return f"content for {self.node_id}"
+
+    class _RecordingModel:
+        def __init__(self) -> None:
+            self.seen_pairs: list[list[tuple[str, str]]] = []
+            self.seen_activations: list[object] = []
+
+        def predict(
+            self,
+            pairs: list[tuple[str, str]],
+            *,
+            activation_fct: object,
+        ) -> list[float]:
+            self.seen_pairs.append(pairs)
+            self.seen_activations.append(activation_fct)
+            return [1.0, -1.0]
+
+    model = _RecordingModel()
+    candidates = [
+        NodeWithScore(node=_ProbeNode(id_="probe-a"), score=0.0),
+        NodeWithScore(node=_ProbeNode(id_="probe-b"), score=0.0),
+    ]
+
+    ranked = rerank_module.rerank_nodes(
+        "probe query",
+        candidates,
+        top_k=2,
+        model_name="fake-reranker",
+        loader=lambda _model: model,
+    )
+
+    assert model.seen_pairs == [
+        [
+            ("probe query", "content for probe-a"),
+            ("probe query", "content for probe-b"),
+        ]
+    ]
+    assert len(model.seen_activations) == 1
+    assert model.seen_activations[0](3.5) == 3.5
+    assert observed_modes == [MetadataMode.LLM, MetadataMode.LLM]
+    assert [result.node_id for result in ranked] == ["probe-a", "probe-b"]
+
+
+def test_rerank_breaks_tied_scores_by_first_stage_order() -> None:
+    candidates = [_result("node-0", "text"), _result("node-1", "text"), _result("node-2", "text")]
+
+    ranked = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=3,
+        model_name="fake-reranker",
+        loader=lambda _model: _StaticModel([0.4, 0.9, 0.4]),
+    )
+
+    assert [result.node_id for result in ranked] == ["node-1", "node-0", "node-2"]
+
+
+def test_rerank_drops_non_finite_scores_from_ranking() -> None:
+    scores = [float("nan"), 0.2, float("inf"), 0.8, float("-inf")]
+    candidates = [_result(f"node-{index}", "text") for index in range(5)]
+
+    ranked = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=5,
+        model_name="fake-reranker",
+        loader=lambda _model: _StaticModel(scores),
+    )
+
+    assert [result.node_id for result in ranked] == ["node-3", "node-1"]
+    assert ranked[0].score is not None
+    assert ranked[0].score == pytest.approx(1.0 / (1.0 + math.exp(-0.8)))
+    assert ranked[1].score is not None
+    assert ranked[1].score == pytest.approx(1.0 / (1.0 + math.exp(-0.2)))
+
+
+def test_rerank_converts_scores_that_implement_float() -> None:
+    candidates = [_result("low", "text"), _result("high", "text")]
+
+    ranked = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=2,
+        model_name="fake-reranker",
+        loader=lambda _model: _StaticModel([Decimal("0.25"), Decimal("0.75")]),
+    )
+
+    assert [result.node_id for result in ranked] == ["high", "low"]
+    assert ranked[0].score is not None
+    assert ranked[0].score == pytest.approx(1.0 / (1.0 + math.exp(-0.75)))
+
+
+@pytest.mark.parametrize(
+    ("query", "model_name"),
+    [("", "fake-reranker"), ("probe", "")],
+)
+def test_rerank_skips_scoring_without_query_or_model(query: str, model_name: str) -> None:
+    candidates = [_result("first", "first"), _result("second", "second")]
+    loader_calls: list[str] = []
+
+    def _recording_loader(model: str):
+        loader_calls.append(model)
+        return _StaticModel([9.0, 9.0])
+
+    ranked = rerank_module.rerank_nodes(
+        query,
+        candidates,
+        top_k=5,
+        model_name=model_name,
+        loader=_recording_loader,
+    )
+
+    assert [result.node_id for result in ranked] == ["first", "second"]
+    assert loader_calls == []
+
+
+def test_rerank_empty_candidates_returns_empty_list() -> None:
+    ranked = rerank_module.rerank_nodes(
+        "probe",
+        [],
+        top_k=3,
+        model_name="fake-reranker",
+        loader=lambda _model: _StaticModel([0.5]),
+    )
+
+    assert ranked == []
+
+
+def test_rerank_applies_top_k_with_minimum_of_one() -> None:
+    candidates = [_result("node-0", "text"), _result("node-1", "text"), _result("node-2", "text")]
+
+    def _loader(_model: str):
+        return _StaticModel([0.1, 0.9, 0.5])
+
+    best = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=0,
+        model_name="fake-reranker",
+        loader=_loader,
+    )
+    assert [result.node_id for result in best] == ["node-1"]
+
+    everything = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=99,
+        model_name="fake-reranker",
+        loader=_loader,
+    )
+    assert [result.node_id for result in everything] == ["node-1", "node-2", "node-0"]
+
+
+def test_rerank_timeout_degrades_to_first_stage_order(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    class _TimeoutModel:
+        def predict(
+            self,
+            pairs: list[tuple[str, str]],
+            *,
+            activation_fct: object,
+        ) -> list[float]:
+            raise TimeoutError("cross-encoder timed out")
+
+    candidates = [_result("first", "first"), _result("second", "second"), _result("third", "third")]
+
+    with caplog.at_level("WARNING"):
+        ranked = rerank_module.rerank_nodes(
+            "probe",
+            candidates,
+            top_k=2,
+            model_name="fake-reranker",
+            loader=lambda _model: _TimeoutModel(),
+        )
+
+    assert [result.node_id for result in ranked] == ["first", "second"]
+    assert "failed while scoring 3 candidates" in caplog.text
+
+
+def test_rerank_malformed_scores_degrade_to_first_stage_order(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    scores: list[Any] = [None, "not-a-number", 0.7]
+    candidates = [_result("first", "first"), _result("second", "second"), _result("third", "third")]
+
+    with caplog.at_level("WARNING"):
+        ranked = rerank_module.rerank_nodes(
+            "probe",
+            candidates,
+            top_k=2,
+            model_name="fake-reranker",
+            loader=lambda _model: _StaticModel(scores),
+        )
+
+    assert [result.node_id for result in ranked] == ["first", "second"]
+    assert "failed while scoring 3 candidates" in caplog.text
+
+
+def test_reranker_cache_reuses_models_and_evicts_least_recent() -> None:
+    loader_calls: list[str] = []
+
+    def _loader(model_name: str):
+        loader_calls.append(model_name)
+        return _StaticModel([0.0])
+
+    candidates = [_result("node", "text")]
+    for _ in range(2):
+        rerank_module.rerank_nodes(
+            "probe", candidates, top_k=1, model_name="model-a", loader=_loader
+        )
+    rerank_module.rerank_nodes("probe", candidates, top_k=1, model_name="model-b", loader=_loader)
+    rerank_module.rerank_nodes("probe", candidates, top_k=1, model_name="model-c", loader=_loader)
+    rerank_module.rerank_nodes("probe", candidates, top_k=1, model_name="model-a", loader=_loader)
+
+    assert loader_calls == ["model-a", "model-b", "model-c", "model-a"]
+
+
+def test_rerank_clamps_extreme_logits_to_unit_interval() -> None:
+    candidates = [_result("node-0", "text"), _result("node-1", "text"), _result("node-2", "text")]
+
+    ranked = rerank_module.rerank_nodes(
+        "probe",
+        candidates,
+        top_k=3,
+        model_name="fake-reranker",
+        loader=lambda _model: _StaticModel([2000.0, 0.0, -2000.0]),
+    )
+
+    assert [result.node_id for result in ranked] == ["node-0", "node-1", "node-2"]
+    assert ranked[0].score == pytest.approx(1.0)
+    assert ranked[1].score == pytest.approx(0.5)
+    assert ranked[2].score == pytest.approx(0.0)
