@@ -486,13 +486,14 @@ class TestOutboundRouting:
         _, body = channel._post_json.await_args.args
         assert body["content"] == "look\nhttp://x/a.png"
 
-    def test_send_failure_does_not_raise(self, partners_root) -> None:
+    def test_send_failure_raises_for_manager_retry(self, partners_root) -> None:
         channel = _make_channel(partners_root)
         channel._post_json = AsyncMock(side_effect=RuntimeError("Mochat HTTP 500"))
 
-        asyncio.run(
-            channel.send(OutboundMessage(channel="mochat", chat_id="session_a", content="hi"))
-        )
+        with pytest.raises(RuntimeError, match="Mochat HTTP 500"):
+            asyncio.run(
+                channel.send(OutboundMessage(channel="mochat", chat_id="session_a", content="hi"))
+            )
         assert channel._post_json.await_count == 1
 
 
