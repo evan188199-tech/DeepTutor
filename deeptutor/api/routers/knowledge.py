@@ -70,6 +70,7 @@ from deeptutor.multi_user.knowledge_access import (
 )
 from deeptutor.services.config import PROJECT_ROOT, load_config_with_main
 from deeptutor.services.file_io import atomic_write_json
+from deeptutor.services.i18n import t
 from deeptutor.services.rag.factory import (
     DEFAULT_PROVIDER,
     GRAPHRAG_PROVIDER,
@@ -337,9 +338,10 @@ def _save_zip_archive(
                 if written > max_size:
                     raise HTTPException(
                         status_code=400,
-                        detail=(
-                            f"Archive '{sanitized_filename}' exceeds maximum size limit of "
-                            f"{format_bytes_human_readable(max_size)}"
+                        detail=t(
+                            "knowledge.archive_too_large",
+                            name=sanitized_filename,
+                            limit=format_bytes_human_readable(max_size),
                         ),
                     )
                 tmp.write(chunk)
@@ -351,18 +353,18 @@ def _save_zip_archive(
         except ArchiveTooLargeError as exc:
             raise HTTPException(
                 status_code=400,
-                detail=f"Rejected archive '{sanitized_filename}': {exc}",
+                detail=t("knowledge.archive_rejected", name=sanitized_filename, reason=exc),
             ) from exc
         except zipfile.BadZipFile as exc:
             raise HTTPException(
                 status_code=400,
-                detail=f"'{sanitized_filename}' is not a valid zip archive.",
+                detail=t("knowledge.not_a_zip", name=sanitized_filename),
             ) from exc
 
         if not result.extracted:
             raise HTTPException(
                 status_code=400,
-                detail=f"Archive '{sanitized_filename}' contained no supported files.",
+                detail=t("knowledge.archive_empty", name=sanitized_filename),
             )
         return result.extracted
     finally:
@@ -396,7 +398,7 @@ def _sanitize_rel_subdir(rel_path: str | None) -> str:
         if seg in ("", "."):
             continue
         if seg == "..":
-            raise HTTPException(status_code=400, detail="Invalid folder path")
+            raise HTTPException(status_code=400, detail=t("knowledge.invalid_folder_path"))
         safe = _sanitize_path_segment(seg)
         if safe:
             parts.append(safe)
@@ -409,7 +411,7 @@ def _safe_join_raw(raw_dir: Path, rel_path: str) -> Path:
     try:
         target.relative_to(raw_dir.resolve())
     except ValueError as exc:
-        raise HTTPException(status_code=403, detail="Access denied") from exc
+        raise HTTPException(status_code=403, detail=t("api.access_denied")) from exc
     return target
 
 
@@ -499,9 +501,10 @@ def _save_uploaded_files(
                             size_str = format_bytes_human_readable(max_size)
                             raise HTTPException(
                                 status_code=400,
-                                detail=(
-                                    f"File '{sanitized_filename}' exceeds maximum size "
-                                    f"limit of {size_str}"
+                                detail=t(
+                                    "knowledge.file_too_large",
+                                    name=sanitized_filename,
+                                    limit=size_str,
                                 ),
                             )
                         buffer.write(chunk)
@@ -530,7 +533,11 @@ def _save_uploaded_files(
                     except OSError:
                         pass
 
-                error_message = f"Validation failed for file '{original_filename}': {format_exception_message(e)}"
+                error_message = t(
+                    "knowledge.validation_failed",
+                    name=original_filename,
+                    error=format_exception_message(e),
+                )
                 logger.error(error_message, exc_info=True)
                 raise HTTPException(status_code=400, detail=error_message) from e
     except Exception:
@@ -606,8 +613,10 @@ def _validate_upload_batch(
                 allowed_extensions=allowed_extensions,
             )
         except Exception as e:
-            error_message = (
-                f"Validation failed for file '{original_filename}': {format_exception_message(e)}"
+            error_message = t(
+                "knowledge.validation_failed",
+                name=original_filename,
+                error=format_exception_message(e),
             )
             raise HTTPException(status_code=400, detail=error_message) from e
 
@@ -622,10 +631,7 @@ def _validate_upload_batch(
         if duplicate_key in seen_names:
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    f"Duplicate filename after sanitization: '{duplicate_key}'. "
-                    "Rename one of the files and try again."
-                ),
+                detail=t("knowledge.duplicate_filename", name=duplicate_key),
             )
 
         seen_names.add(duplicate_key)
@@ -759,11 +765,7 @@ def _assert_provider_ready(provider: str) -> None:
         if not is_pageindex_configured():
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "PageIndex API key is not configured. Add it under "
-                    "Knowledge → RAG pipeline settings before creating a PageIndex "
-                    "knowledge base."
-                ),
+                detail=t("knowledge.pageindex_key_missing"),
             )
 
     if provider == PAGEINDEX_OSS_PROVIDER:
@@ -781,7 +783,7 @@ def _assert_provider_ready(provider: str) -> None:
                 for check in failed_checks
             )
             raise HTTPException(
-                status_code=409, detail=f"PageIndex OSS preflight failed: {details}"
+                status_code=409, detail=t("knowledge.pageindex_preflight_failed", details=details)
             )
 
     if provider == GRAPHRAG_PROVIDER:
@@ -790,11 +792,7 @@ def _assert_provider_ready(provider: str) -> None:
         if not is_graphrag_available():
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "GraphRAG is not installed. Run "
-                    "`pip install 'deeptutor[graphrag]'` on the server before "
-                    "creating a GraphRAG knowledge base."
-                ),
+                detail=t("knowledge.graphrag_not_installed"),
             )
 
         from deeptutor.services.rag.preflight import engine_preflight
@@ -812,7 +810,7 @@ def _assert_provider_ready(provider: str) -> None:
             )
             raise HTTPException(
                 status_code=409,
-                detail=f"GraphRAG preflight failed: {failure_details}",
+                detail=t("knowledge.graphrag_preflight_failed", details=failure_details),
             )
 
     if provider == LIGHTRAG_PROVIDER:
@@ -821,11 +819,7 @@ def _assert_provider_ready(provider: str) -> None:
         if not is_lightrag_available():
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    "LightRAG is not installed. Run "
-                    "`pip install 'deeptutor[rag-lightrag]'` on the server before "
-                    "creating a LightRAG knowledge base."
-                ),
+                detail=t("knowledge.lightrag_not_installed"),
             )
 
 
@@ -838,7 +832,7 @@ def _resolve_embedding_form(value, provider: str, entry: dict | None = None):
         if value:
             raise HTTPException(
                 status_code=400,
-                detail="This knowledge engine does not use a local embedding model.",
+                detail=t("knowledge.no_local_embedding"),
             )
         return None, None
     try:
@@ -883,9 +877,10 @@ def _enforce_provider_formats(provider: str, files: list[UploadFile]) -> None:
         supported = ", ".join(sorted(extensions))
         raise HTTPException(
             status_code=400,
-            detail=(
-                f"PageIndex knowledge bases accept: {supported}. "
-                f"Unsupported: {', '.join(unsupported[:5])}."
+            detail=t(
+                "knowledge.pageindex_unsupported_formats",
+                supported=supported,
+                unsupported=", ".join(unsupported[:5]),
             ),
         )
 
@@ -901,16 +896,16 @@ def _resolve_registered_kb_name(manager: KnowledgeBaseManager, kb_name: str | No
         default_kb = manager.get_default()
         if default_kb and default_kb in kb_names:
             return default_kb
-        raise HTTPException(status_code=404, detail="No default knowledge base is configured")
+        raise HTTPException(status_code=404, detail=t("knowledge.no_default_kb"))
 
-    raise HTTPException(status_code=404, detail=f"Knowledge base '{requested}' not found")
+    raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=requested))
 
 
 def _load_kb_entry_or_404(manager: KnowledgeBaseManager, kb_name: str) -> dict:
     manager.config = manager._load_config()
     kb_entry = manager.config.get("knowledge_bases", {}).get(kb_name)
     if kb_entry is None:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     return kb_entry
 
 
@@ -923,10 +918,7 @@ def _assert_not_connected_kb(kb_name: str, kb_entry: dict) -> None:
     if is_connected_kb(kb_entry):
         raise HTTPException(
             status_code=409,
-            detail=(
-                f"Knowledge base '{kb_name}' is connected to an external resource and is "
-                "read-only. Local file operations and re-indexing are not available for it."
-            ),
+            detail=t("knowledge.kb_read_only", name=kb_name),
         )
 
 
@@ -935,10 +927,7 @@ def _assert_kb_writable_or_409(kb_name: str, kb_entry: dict) -> None:
     if bool(kb_entry.get("needs_reindex", False)):
         raise HTTPException(
             status_code=409,
-            detail=(
-                f"Knowledge base '{kb_name}' uses legacy index format and needs reindex "
-                "before accepting incremental uploads."
-            ),
+            detail=t("knowledge.kb_legacy_reindex", name=kb_name),
         )
 
 
@@ -1033,6 +1022,7 @@ async def run_initialization_task(
 
             initializer.progress_tracker.update(
                 ProgressStage.COMPLETED,
+                message=t("knowledge.init_complete"),
                 message_key="Knowledge base initialization complete!",
                 current=1,
                 total=1,
@@ -1047,7 +1037,7 @@ async def run_initialization_task(
                 status="ready",
                 progress={
                     "stage": "completed",
-                    "message": "Knowledge base initialization complete!",
+                    "message": t("knowledge.init_complete"),
                     "percent": 100,
                     "current": 1,
                     "total": 1,
@@ -1097,7 +1087,7 @@ async def run_initialization_task(
                 status="error",
                 progress={
                     "stage": "error",
-                    "message": f"Initialization failed: {error_msg}",
+                    "message": t("knowledge.init_failed", error=error_msg),
                     "percent": 0,
                     "error": error_msg,
                     **failure_metadata,
@@ -1109,6 +1099,7 @@ async def run_initialization_task(
             if initializer.progress_tracker:
                 initializer.progress_tracker.update(
                     ProgressStage.ERROR,
+                    message=t("knowledge.init_failed", error=error_msg),
                     message_key="Initialization failed: {{error}}",
                     message_params={"error": error_msg},
                     error=error_msg,
@@ -1453,13 +1444,18 @@ async def set_rag_provider_mode(provider: str, payload: ProviderModeUpdate):
     entry = next((p for p in RAGService.list_providers() if p["id"] == provider), None)
     modes = (entry or {}).get("modes") or []
     if entry is None or not modes:
-        raise HTTPException(status_code=404, detail=f"No retrieval modes for engine '{provider}'.")
+        raise HTTPException(status_code=404, detail=t("knowledge.no_retrieval_modes", engine=provider))
 
     mode = (payload.mode or "").strip().lower()
     if mode not in modes:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid mode '{payload.mode}' for {provider}. Choose one of: {', '.join(modes)}.",
+            detail=t(
+                "knowledge.invalid_mode",
+                mode=payload.mode,
+                engine=provider,
+                modes=", ".join(modes),
+            )
         )
 
     get_kb_config_service().set_provider_mode(provider, mode)
@@ -1690,7 +1686,7 @@ def _validate_lightrag_llm_selection(profile_id: str, model_id: str) -> None:
     if bool(profile_id) != bool(model_id):
         raise HTTPException(
             status_code=422,
-            detail="LightRAG model selection requires both profile_id and model_id.",
+            detail=t("knowledge.lightrag_model_pair_required"),
         )
     if not profile_id:
         return
@@ -1743,18 +1739,18 @@ async def update_lightrag_pipeline_config(payload: LightRagConfigUpdate):
         updates = payload.model_dump(exclude_none=True)
         candidate = {**current, **updates}
         if "role_models" in payload.model_fields_set and payload.role_models is None:
-            raise HTTPException(status_code=422, detail="Role models cannot be cleared.")
+            raise HTTPException(status_code=422, detail=t("knowledge.role_models_cannot_clear"))
         if (
             current.get("version") == 2
             and {"llm_profile_id", "llm_model_id"} & payload.model_fields_set
         ):
-            raise HTTPException(status_code=422, detail="Use role_models for this configuration.")
+            raise HTTPException(status_code=422, detail=t("knowledge.use_role_models"))
         if candidate.get("role_models") is not None:
             from deeptutor.services.rag.pipelines.lightrag.roles import validate_models
 
             if {"llm_profile_id", "llm_model_id"} & payload.model_fields_set:
                 raise HTTPException(
-                    status_code=422, detail="Use role_models for this configuration."
+                    status_code=422, detail=t("knowledge.use_role_models")
                 )
             validate_models(LightRagRoleModels.model_validate(candidate["role_models"]))
         else:
@@ -1972,7 +1968,7 @@ async def test_graphrag_model_compatibility(payload: GraphRagModelCompatibilityR
         logger.exception("Unexpected error testing GraphRAG model compatibility")
         raise HTTPException(
             status_code=500,
-            detail="GraphRAG compatibility could not be tested because of an internal error.",
+            detail=t("knowledge.graphrag_compat_failed"),
         ) from e
 
 
@@ -1994,7 +1990,11 @@ async def set_rag_active_model(payload: ActiveModelUpdate):
     if payload.kind not in _ENGINE_MODEL_KINDS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported model kind '{payload.kind}'. Choose one of: {', '.join(_ENGINE_MODEL_KINDS)}.",
+            detail=t(
+                "knowledge.unsupported_model_kind",
+                kind=payload.kind,
+                kinds=", ".join(_ENGINE_MODEL_KINDS),
+            )
         )
     try:
         from deeptutor.services.config import get_model_catalog_service
@@ -2003,14 +2003,14 @@ async def set_rag_active_model(payload: ActiveModelUpdate):
         catalog = service.load()
         svc = (catalog.get("services") or {}).get(payload.kind)
         if not svc:
-            raise HTTPException(status_code=404, detail=f"No '{payload.kind}' models configured.")
+            raise HTTPException(status_code=404, detail=t("knowledge.no_models_configured", kind=payload.kind))
         profile = next(
             (p for p in svc.get("profiles", []) if p.get("id") == payload.profile_id), None
         )
         if profile is None:
-            raise HTTPException(status_code=400, detail="Unknown profile for this kind.")
+            raise HTTPException(status_code=400, detail=t("knowledge.unknown_profile"))
         if not any(m.get("id") == payload.model_id for m in profile.get("models", [])):
-            raise HTTPException(status_code=400, detail="Unknown model for this profile.")
+            raise HTTPException(status_code=400, detail=t("knowledge.unknown_model"))
         svc["active_profile_id"] = payload.profile_id
         svc["active_model_id"] = payload.model_id
         service.apply(catalog)
@@ -2090,7 +2090,7 @@ async def update_kb_config(kb_name: str, config: dict):
         ):
             raise HTTPException(
                 status_code=409,
-                detail="Change a knowledge base's embedding model through re-indexing.",
+                detail=t("knowledge.change_embedding_via_reindex"),
             )
         if "rag_provider" in config:
             requested_provider = _validate_registered_provider(config.get("rag_provider"))
@@ -2104,19 +2104,20 @@ async def update_kb_config(kb_name: str, config: dict):
                 if kb_dir.exists() and has_ready_provider_index(kb_dir, current_provider):
                     raise HTTPException(
                         status_code=409,
-                        detail=(
-                            f"Knowledge base '{kb_name}' already has a ready "
-                            f"{current_provider} index. Provider changes require "
-                            "an explicit re-index/migration instead of a silent config edit."
+                        detail=t(
+                            "knowledge.provider_index_locked",
+                            name=kb_name,
+                            provider=current_provider,
                         ),
                     )
                 config["needs_reindex"] = True
                 config.setdefault("status", "needs_reindex")
                 config["progress"] = {
                     "stage": "needs_reindex",
-                    "message": (
-                        f"Provider changed from {current_provider} to {requested_provider}; "
-                        "re-index this knowledge base before use."
+                    "message": t(
+                        "knowledge.provider_changed_message",
+                        old=current_provider,
+                        new=requested_provider,
                     ),
                     "percent": 0,
                     "timestamp": datetime.now().isoformat(),
@@ -2142,7 +2143,7 @@ async def sync_configs_from_metadata():
 
         service = get_kb_config_service()
         service.sync_all_from_metadata(_current_kb_base_dir())
-        return {"status": "success", "message": "Configurations synced from metadata files"}
+        return {"status": "success", "message": t("knowledge.configs_synced")}
     except Exception as e:
         logger.error(f"Error syncing configs: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -2168,7 +2169,7 @@ async def set_default_kb(kb_name: str):
 
         # Verify KB exists
         if kb_name not in manager.list_knowledge_bases():
-            raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
 
         manager.set_default(kb_name)
         return {"status": "success", "default_kb": kb_name}
@@ -2195,7 +2196,7 @@ async def connect_obsidian_vault(payload: ConnectObsidianRequest):
     name = (payload.name or "").strip()
     vault_path = (payload.vault_path or "").strip()
     if not name or not vault_path:
-        raise HTTPException(status_code=400, detail="Both name and vault_path are required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.obsidian_fields_required"))
     try:
         folder = assert_path_allowed(vault_path)
         manager = get_kb_manager()
@@ -2227,7 +2228,7 @@ async def connect_marginnote4(payload: ConnectMarginNote4Request):
     """
     name = (payload.name or "").strip()
     if not name:
-        raise HTTPException(status_code=400, detail="name is required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.name_required"))
     try:
         manager = get_kb_manager()
         entry = manager.register_marginnote4_kb(
@@ -2267,7 +2268,7 @@ async def probe_linked_folder_route(payload: ProbeFolderRequest):
     """
     folder_path = (payload.folder_path or "").strip()
     if not folder_path:
-        raise HTTPException(status_code=400, detail="folder_path is required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.folder_path_required"))
     try:
         folder = assert_path_allowed(folder_path)
     except ValueError as e:
@@ -2288,7 +2289,7 @@ async def connect_linked_folder_route(payload: ConnectFolderRequest):
     name = (payload.name or "").strip()
     folder_path = (payload.folder_path or "").strip()
     if not name or not folder_path:
-        raise HTTPException(status_code=400, detail="Both name and folder_path are required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.folder_fields_required"))
     try:
         folder = assert_path_allowed(folder_path)
     except ValueError as e:
@@ -2296,7 +2297,7 @@ async def connect_linked_folder_route(payload: ConnectFolderRequest):
 
     result = probe_linked_folder(str(folder), payload.rag_provider)
     if not result.ok:
-        raise HTTPException(status_code=400, detail=result.error or "Folder is not linkable.")
+        raise HTTPException(status_code=400, detail=result.error or t("knowledge.folder_not_linkable"))
 
     stats = {
         "embedding_model": result.embedding.index_model,
@@ -2364,7 +2365,7 @@ async def probe_lightrag_server_route(payload: ProbeLightRagServerRequest):
 
     server_url = (payload.server_url or "").strip()
     if not server_url:
-        raise HTTPException(status_code=400, detail="server_url is required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.server_url_required"))
     api_key = payload.api_key or ""
     if payload.use_saved_api_key and not api_key:
         from deeptutor.services.config import load_lightrag_server_settings
@@ -2391,7 +2392,7 @@ async def connect_lightrag_server_route(payload: ConnectLightRagServerRequest):
     name = (payload.name or "").strip()
     server_url = (payload.server_url or "").strip()
     if not name or not server_url:
-        raise HTTPException(status_code=400, detail="Both name and server_url are required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.lightrag_server_fields_required"))
 
     api_key = payload.api_key or ""
     if not api_key:
@@ -2405,7 +2406,7 @@ async def connect_lightrag_server_route(payload: ConnectLightRagServerRequest):
     result = await probe_server(server_url, api_key)
     if not result.ok:
         raise HTTPException(
-            status_code=400, detail=result.error or "Could not connect to the LightRAG server."
+            status_code=400, detail=result.error or t("knowledge.lightrag_server_unreachable")
         )
 
     search_mode = (payload.search_mode or "").strip().lower()
@@ -2446,7 +2447,7 @@ async def probe_weknora_route(payload: ProbeWeKnoraRequest):
     if not server_url or not knowledge_base_id:
         raise HTTPException(
             status_code=400,
-            detail="Both server_url and knowledge_base_id are required.",
+            detail=t("knowledge.weknora_fields_required"),
         )
     result = await probe_weknora(
         server_url,
@@ -2467,7 +2468,7 @@ async def connect_weknora_route(payload: ConnectWeKnoraRequest):
     if not name or not server_url or not knowledge_base_id:
         raise HTTPException(
             status_code=400,
-            detail="name, server_url, and knowledge_base_id are required.",
+            detail=t("knowledge.weknora_all_fields_required"),
         )
 
     result = await probe_weknora(
@@ -2478,7 +2479,7 @@ async def connect_weknora_route(payload: ConnectWeKnoraRequest):
     if not result.ok:
         raise HTTPException(
             status_code=400,
-            detail=result.error or "Could not connect to the WeKnora knowledge base.",
+            detail=result.error or t("knowledge.weknora_unreachable"),
         )
 
     try:
@@ -2547,7 +2548,7 @@ async def list_ima_route(payload: ListImaRequest):
     """List IMA knowledge bases without storing or echoing credentials."""
     credentials = _resolve_ima_credentials(payload.client_id, payload.api_key)
     if not credentials.complete:
-        raise HTTPException(status_code=400, detail="Client ID and API key are required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.ima_credentials_required"))
 
     client = ImaClient(
         ImaConfig(
@@ -2563,13 +2564,13 @@ async def list_ima_route(payload: ListImaRequest):
             limit=payload.limit,
         )
     except ImaAuthError:
-        raise HTTPException(status_code=401, detail="IMA rejected the supplied credentials.")
+        raise HTTPException(status_code=401, detail=t("knowledge.ima_rejected"))
     except ImaRateLimitError:
-        raise HTTPException(status_code=429, detail="IMA rate limit reached. Try again shortly.")
+        raise HTTPException(status_code=429, detail=t("knowledge.ima_rate_limited"))
     except ImaAPIError:
-        raise HTTPException(status_code=502, detail="IMA returned an invalid response.")
+        raise HTTPException(status_code=502, detail=t("knowledge.ima_invalid_response"))
     except Exception:
-        raise HTTPException(status_code=502, detail="Could not reach Tencent IMA.")
+        raise HTTPException(status_code=502, detail=t("knowledge.ima_unreachable"))
 
 
 class ProbeImaRequest(BaseModel):
@@ -2661,10 +2662,10 @@ async def search_kiwix_articles(
 
     entry = resolve_kb_metadata(kb_ref)
     if not entry or entry.get("type") != "kiwix":
-        raise HTTPException(status_code=404, detail="Kiwix knowledge base not found.")
+        raise HTTPException(status_code=404, detail=t("knowledge.kiwix_kb_not_found"))
     result = await rag_search(q, kb_ref, top_k=10)
     if result.get("error_type"):
-        raise HTTPException(status_code=502, detail=result.get("answer") or "Kiwix search failed.")
+        raise HTTPException(status_code=502, detail=result.get("answer") or t("knowledge.kiwix_search_failed"))
     return {
         "articles": [
             {
@@ -2712,7 +2713,7 @@ async def connect_ima_route(payload: ConnectImaRequest):
 
     name = (payload.name or "").strip()
     if not name:
-        raise HTTPException(status_code=400, detail="Knowledge base name is required.")
+        raise HTTPException(status_code=400, detail=t("knowledge.kb_name_required"))
 
     overrides = ImaCredentials(
         client_id=payload.client_id.strip(),
@@ -2727,7 +2728,7 @@ async def connect_ima_route(payload: ConnectImaRequest):
     if not result.ok:
         raise HTTPException(
             status_code=400,
-            detail=result.error or "Could not connect to the IMA knowledge base.",
+            detail=result.error or t("knowledge.ima_connect_probe_failed"),
         )
 
     try:
@@ -2747,7 +2748,7 @@ async def connect_ima_route(payload: ConnectImaRequest):
         # Never echo or log an upstream message from this credential-bearing
         # flow. The exception class is enough for server-side diagnosis.
         logger.error("Error connecting IMA knowledge base (%s)", type(exc).__name__)
-        raise HTTPException(status_code=500, detail="Could not connect the IMA knowledge base.")
+        raise HTTPException(status_code=500, detail=t("knowledge.ima_connect_failed"))
 
     return {
         "status": "connected",
@@ -2861,7 +2862,7 @@ def _list_knowledge_bases():
                         logger.debug(f"KB '{name}' directory exists, creating error fallback info")
                         fallback_progress = {
                             "stage": "error",
-                            "message": "Failed to load knowledge base info.",
+                            "message": t("knowledge.load_kb_info_failed"),
                             "error": error_msg,
                         }
                         result.append(
@@ -2886,7 +2887,7 @@ def _list_knowledge_bases():
                     logger.error(f"Fallback also failed for KB '{name}': {fallback_err}")
 
         if errors and not result:
-            error_detail = f"Failed to load knowledge bases. Errors: {'; '.join(errors)}"
+            error_detail = t("knowledge.load_all_failed", errors="; ".join(errors))
             logger.error(error_detail)
             raise HTTPException(status_code=500, detail=error_detail)
 
@@ -2963,7 +2964,7 @@ def _list_knowledge_bases():
                             status="error",
                             progress={
                                 "stage": "error",
-                                "message": "Failed to load assigned knowledge base info.",
+                                "message": t("knowledge.load_assigned_failed"),
                                 "error": error_msg,
                             },
                             source="admin",
@@ -2978,7 +2979,7 @@ def _list_knowledge_bases():
     except Exception as e:
         error_msg = f"Error listing knowledge bases: {e}"
         logger.error(f"{error_msg}\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to list knowledge bases: {e!s}")
+        raise HTTPException(status_code=500, detail=t("knowledge.list_failed", error=str(e)))
 
 
 @router.get(
@@ -3019,7 +3020,7 @@ async def get_knowledge_base_details(kb_name: str):
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -3046,10 +3047,7 @@ def _resolve_kb_raw_dir(kb_name: str, *, allow_unsupported: bool = False) -> Pat
             return None
         raise HTTPException(
             status_code=409,
-            detail=(
-                f"Knowledge base '{resolved_name}' is connected to an external resource "
-                "and has no local files."
-            ),
+            detail=t("knowledge.kb_no_local_files", name=resolved_name),
         )
 
     kb_path = manager.get_knowledge_base_path(resolved_name)
@@ -3061,17 +3059,17 @@ def _resolve_kb_raw_file_or_404(kb_name: str, filename: str) -> Path:
     raw_dir = _resolve_kb_raw_dir(kb_name)
     assert raw_dir is not None  # allow_unsupported=False guarantees a path
     if not raw_dir.exists():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail=t("api.file_not_found"))
 
     raw_resolved = raw_dir.resolve()
     target = (raw_dir / filename).resolve()
     try:
         target.relative_to(raw_resolved)
     except ValueError:
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail=t("api.access_denied"))
 
     if not target.exists() or not target.is_file():
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail=t("api.file_not_found"))
 
     return target
 
@@ -3134,7 +3132,7 @@ async def create_kb_folder(kb_name: str, payload: CreateFolderPayload):
     raw_dir = manager.get_knowledge_base_path(kb_name) / "raw"
     subdir = _sanitize_rel_subdir(payload.path)
     if not subdir:
-        raise HTTPException(status_code=400, detail="Folder name is required")
+        raise HTTPException(status_code=400, detail=t("knowledge.folder_name_required"))
     target = _safe_join_raw(raw_dir, subdir)
     target.mkdir(parents=True, exist_ok=True)
     return {"status": "ok", "path": subdir}
@@ -3153,10 +3151,10 @@ async def move_kb_file(kb_name: str, payload: MoveFilePayload):
 
     source_rel = _sanitize_rel_subdir(payload.source)
     if not source_rel:
-        raise HTTPException(status_code=400, detail="Source path is required")
+        raise HTTPException(status_code=400, detail=t("knowledge.source_path_required"))
     src = _safe_join_raw(raw_dir, source_rel)
     if not src.exists():
-        raise HTTPException(status_code=404, detail="Source not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.source_not_found"))
 
     dest_folder = _sanitize_rel_subdir(payload.dest_folder)
     dest_dir = _safe_join_raw(raw_dir, dest_folder) if dest_folder else raw_dir.resolve()
@@ -3165,11 +3163,11 @@ async def move_kb_file(kb_name: str, payload: MoveFilePayload):
     if dest.resolve() == src.resolve():
         return {"status": "ok", "path": source_rel}
     if src.is_dir() and dest_dir.resolve().is_relative_to(src.resolve()):
-        raise HTTPException(status_code=400, detail="Cannot move a folder into itself")
+        raise HTTPException(status_code=400, detail=t("knowledge.folder_into_itself"))
     if dest.exists():
         raise HTTPException(
             status_code=409,
-            detail=f"'{src.name}' already exists in the target folder",
+            detail=t("knowledge.name_exists_in_folder", name=src.name),
         )
 
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -3197,7 +3195,7 @@ async def serve_kb_raw_file_text_preview(kb_name: str, filename: str):
     except DocumentExtractionError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except OSError as exc:
-        raise HTTPException(status_code=404, detail="File not found") from exc
+        raise HTTPException(status_code=404, detail=t("api.file_not_found")) from exc
 
     return PlainTextResponse(text, media_type="text/plain; charset=utf-8")
 
@@ -3226,14 +3224,14 @@ async def serve_kb_visual_asset(kb_name: str, asset_id: str):
     assert raw_dir is not None
     loaded = VisualAssetStore(raw_dir.parent).read(asset_id)
     if loaded is None:
-        raise HTTPException(status_code=404, detail="Visual asset not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.visual_asset_not_found"))
     record, data = loaded
     from deeptutor.services.rag.source_visuals import source_state
 
     if source_state(raw_dir.parent, record) in {"changed", "missing"}:
         raise HTTPException(
             status_code=409,
-            detail="The referenced source changed or is missing. Select its current version explicitly.",
+            detail=t("knowledge.visual_source_changed"),
         )
     return Response(
         content=data,
@@ -3260,7 +3258,7 @@ async def kb_visual_coverage(
     except (OSError, ValueError) as exc:
         raise HTTPException(
             status_code=409,
-            detail="Visual coverage is unreadable; original evidence files have been preserved.",
+            detail=t("knowledge.visual_coverage_unreadable"),
         ) from exc
 
 
@@ -3338,13 +3336,13 @@ def _delete_kb(kb_name: str) -> dict[str, str]:
         # ``_writable_kb`` into a 500 whose detail read "404: ... not found".
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     if not success:
-        raise HTTPException(status_code=400, detail="Failed to delete knowledge base")
+        raise HTTPException(status_code=400, detail=t("knowledge.delete_failed"))
     logger.info(f"KB '{kb_name}' deleted")
-    return {"message": f"Knowledge base '{kb_name}' deleted successfully"}
+    return {"message": t("knowledge.kb_deleted", name=kb_name)}
 
 
 class DeleteKnowledgeBaseRequest(BaseModel):
@@ -3426,9 +3424,10 @@ async def upload_files(
         if requested_provider and requested_provider != kb_provider:
             raise HTTPException(
                 status_code=400,
-                detail=(
-                    f"Requested provider '{requested_provider}' does not match KB provider '{kb_provider}'. "
-                    "A knowledge base is locked to the engine it was created with."
+                detail=t(
+                    "knowledge.provider_mismatch",
+                    requested=requested_provider,
+                    current=kb_provider,
                 ),
             )
         from contextlib import nullcontext
@@ -3440,7 +3439,7 @@ async def upload_files(
         if binding_state in {"missing", "changed", "unconfigured"}:
             raise HTTPException(
                 status_code=409,
-                detail="The bound embedding model is unavailable or changed. Check the model settings or select a model to re-index this knowledge base.",
+                detail=t("knowledge.bound_embedding_unavailable"),
             )
         with embedding_config_scope(bound_config) if bound_config else nullcontext():
             _assert_provider_ready(kb_provider)
@@ -3474,7 +3473,7 @@ async def upload_files(
             manager,
             kb_name,
             task_id,
-            f"Processing {len(uploaded_files)} uploaded file(s)...",
+            t("knowledge.processing_uploaded", count=len(uploaded_files)),
         )
 
         background_tasks.add_task(
@@ -3490,14 +3489,14 @@ async def upload_files(
         )
 
         return {
-            "message": f"Uploaded {len(uploaded_files)} files. Processing in background.",
+            "message": t("knowledge.uploaded_processing", count=len(uploaded_files)),
             "files": uploaded_files,
             "task_id": task_id,
         }
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         # Unexpected failure (Server error)
         formatted_error = format_exception_message(e)
@@ -3604,7 +3603,7 @@ async def _create_knowledge_base_owned(
         manager = get_kb_manager()
         kb_base_dir = _current_kb_base_dir()
         if name in manager.list_knowledge_bases():
-            raise HTTPException(status_code=400, detail=f"Knowledge base '{name}' already exists")
+            raise HTTPException(status_code=400, detail=t("knowledge.kb_already_exists", name=name))
 
         rag_provider = _validate_registered_provider(rag_provider)
         embedding_selection, embedding_config = _resolve_embedding_form(
@@ -3614,7 +3613,7 @@ async def _create_knowledge_base_owned(
         if indexing_llm:
             raise HTTPException(
                 status_code=400,
-                detail="Configure LightRAG models in Settings; per-knowledge-base overrides are no longer supported.",
+                detail=t("knowledge.lightrag_overrides_removed"),
             )
         if rag_provider == LIGHTRAG_PROVIDER:
             from deeptutor.services.embedding.config import embedding_config_scope
@@ -3629,7 +3628,7 @@ async def _create_knowledge_base_owned(
         }:
             raise HTTPException(
                 status_code=400,
-                detail="PageIndex OSS mode must be 'flash', 'standard', or omitted.",
+                detail=t("knowledge.pageindex_oss_mode"),
             )
         from contextlib import nullcontext
 
@@ -3649,9 +3648,11 @@ async def _create_knowledge_base_owned(
             if search_mode not in supported_modes:
                 raise HTTPException(
                     status_code=400,
-                    detail=(
-                        f"Invalid search mode '{search_mode}' for {rag_provider}. "
-                        f"Choose one of: {', '.join(supported_modes)}."
+                    detail=t(
+                        "knowledge.invalid_search_mode",
+                        mode=search_mode,
+                        engine=rag_provider,
+                        modes=", ".join(supported_modes),
                     ),
                 )
         _enforce_provider_formats(rag_provider, files)
@@ -3673,7 +3674,7 @@ async def _create_knowledge_base_owned(
             status="initializing",
             progress={
                 "stage": "initializing",
-                "message": "Initializing knowledge base...",
+                "message": t("knowledge.initializing"),
                 "percent": 0,
                 "current": 0,
                 "total": len(files),
@@ -3731,7 +3732,7 @@ async def _create_knowledge_base_owned(
         if not files:
             progress_tracker.update(
                 ProgressStage.COMPLETED,
-                "Knowledge base created (no documents yet).",
+                t("knowledge.kb_created_empty"),
                 current=0,
                 total=0,
             )
@@ -3740,7 +3741,7 @@ async def _create_knowledge_base_owned(
                 status="ready",
                 progress={
                     "stage": "completed",
-                    "message": "Knowledge base created (no documents yet).",
+                    "message": t("knowledge.kb_created_empty"),
                     "percent": 100,
                     "current": 0,
                     "total": 0,
@@ -3751,7 +3752,7 @@ async def _create_knowledge_base_owned(
             )
             logger.info(f"KB '{name}' created (no documents yet)")
             return {
-                "message": f"Knowledge base '{name}' created (no documents yet).",
+                "message": t("knowledge.kb_created_named", name=name),
                 "name": name,
                 "files": [],
                 "task_id": None,
@@ -3763,6 +3764,7 @@ async def _create_knowledge_base_owned(
 
         progress_tracker.update(
             ProgressStage.PROCESSING_DOCUMENTS,
+            message=t("knowledge.saved_files_preparing", count=len(uploaded_files)),
             message_key="Saved {{count}} files, preparing to process...",
             message_params={"count": len(uploaded_files)},
             current=0,
@@ -3781,7 +3783,7 @@ async def _create_knowledge_base_owned(
         logger.info(f"KB '{name}' created, processing {len(uploaded_files)} files in background")
 
         return {
-            "message": f"Knowledge base '{name}' created. Processing {len(uploaded_files)} files in background.",
+            "message": t("knowledge.kb_created_processing", name=name, count=len(uploaded_files)),
             "name": name,
             "files": uploaded_files,
             "task_id": task_id,
@@ -4086,7 +4088,7 @@ async def get_reindex_config(kb_name: str, embedding_model: str = "") -> dict[st
     entry = _load_kb_entry_or_404(manager, kb_name)
     _assert_not_connected_kb(kb_name, entry)
     if _validate_registered_provider(entry.get("rag_provider")) != LIGHTRAG_PROVIDER:
-        raise HTTPException(status_code=400, detail="Rebuild configuration is only for LightRAG.")
+        raise HTTPException(status_code=400, detail=t("knowledge.rebuild_lightrag_only"))
     from deeptutor.services.embedding.config import embedding_config_scope
     from deeptutor.services.rag.pipelines.lightrag.indexing_policy import public_rebuild_config
 
@@ -4120,7 +4122,7 @@ async def reindex_knowledge_base(
         if previous_run:
             if previous_run["state"] == "running":
                 raise HTTPException(
-                    status_code=409, detail="An indexing worker still owns this knowledge base."
+                    status_code=409, detail=t("knowledge.index_worker_owns")
                 )
             force_reindex = force_reindex or previous_run["state"] in {
                 "partial",
@@ -4146,13 +4148,13 @@ async def reindex_knowledge_base(
         if indexing_llm:
             raise HTTPException(
                 status_code=400,
-                detail="Configure LightRAG models in Settings; per-knowledge-base overrides are no longer supported.",
+                detail=t("knowledge.lightrag_overrides_removed"),
             )
         if kb_provider == LIGHTRAG_PROVIDER:
             if not config_fingerprint:
                 raise HTTPException(
                     status_code=409,
-                    detail="Review the current rebuild configuration and confirm before rebuilding.",
+                    detail=t("knowledge.rebuild_confirm_review"),
                 )
             with embedding_config_scope(embedding_config):
                 indexing_snapshot = _freeze_default_indexing_llm()
@@ -4168,7 +4170,7 @@ async def reindex_knowledge_base(
             ):
                 raise HTTPException(
                     status_code=409,
-                    detail="Rebuild configuration changed. Review the updated configuration and confirm again.",
+                    detail=t("knowledge.rebuild_config_changed"),
                 )
         kb_dir = kb_base_dir / kb_name
         if indexing_snapshot is not None:
@@ -4192,7 +4194,7 @@ async def reindex_knowledge_base(
             kb_entry["status"] = "ready"
             manager._save_config()
             return {
-                "message": "Embedding model updated for the empty knowledge base.",
+                "message": t("knowledge.embedding_updated_empty"),
                 "task_id": None,
                 "noop": True,
             }
@@ -4213,10 +4215,7 @@ async def reindex_knowledge_base(
             if signature is None:
                 raise HTTPException(
                     status_code=409,
-                    detail=(
-                        "No embedding model is configured. Set up the embedding "
-                        "profile in Settings before re-indexing."
-                    ),
+                    detail=t("knowledge.no_embedding_configured"),
                 )
 
             signature_hash = signature.hash()
@@ -4229,10 +4228,7 @@ async def reindex_knowledge_base(
                 and not force_reindex
             ):
                 return {
-                    "message": (
-                        f"Knowledge base '{kb_name}' already has an index for the "
-                        "active embedding configuration; no reindex needed."
-                    ),
+                    "message": t("knowledge.index_already_ready", name=kb_name),
                     "task_id": None,
                     "signature": signature_hash,
                     "noop": True,
@@ -4242,7 +4238,7 @@ async def reindex_knowledge_base(
         get_task_stream_manager().ensure_task(task_id)
 
         _mark_kb_queued_for_processing(
-            manager, kb_name, task_id, "Queueing re-index...", status="initializing"
+            manager, kb_name, task_id, t("knowledge.queueing_reindex"), status="initializing"
         )
 
         background_tasks.add_task(
@@ -4262,7 +4258,7 @@ async def reindex_knowledge_base(
         )
 
         return {
-            "message": f"Re-indexing '{kb_name}' in the background.",
+            "message": t("knowledge.reindexing", name=kb_name),
             "task_id": task_id,
             "signature": signature_hash,
             "noop": False,
@@ -4284,7 +4280,7 @@ async def update_pending_indexing_policy(
     _load_kb_entry_or_404(manager, kb_name)
     raise HTTPException(
         status_code=409,
-        detail="Empty LightRAG knowledge bases follow defaults. Configure models in Settings.",
+        detail=t("knowledge.empty_kb_defaults"),
     )
 
 
@@ -4303,15 +4299,12 @@ async def retry_knowledge_base(
         if status != "error" and progress_stage != "error":
             raise HTTPException(
                 status_code=409,
-                detail=(
-                    f"Knowledge base '{resolved_name}' is not in an error state. "
-                    "Use re-index when you want to rebuild a healthy knowledge base."
-                ),
+                detail=t("knowledge.kb_not_error_state", name=resolved_name),
             )
         if normalize_provider_name(kb_entry.get("rag_provider")) == LIGHTRAG_PROVIDER:
             raise HTTPException(
                 status_code=409,
-                detail="Review current defaults in Index versions and confirm the LightRAG rebuild.",
+                detail=t("knowledge.rebuild_confirm_defaults"),
             )
         return await reindex_knowledge_base(
             kb_name, background_tasks, indexing_llm="", config_fingerprint="", embedding_model=""
@@ -4338,10 +4331,10 @@ async def cancel_indexing_run(kb_name: str, task_id: str):
 
     _, name, base_dir = _writable_kb(kb_name)
     if not request_cancel(base_dir / name, task_id):
-        raise HTTPException(status_code=409, detail="This indexing run is no longer active.")
+        raise HTTPException(status_code=409, detail=t("knowledge.index_run_inactive"))
     return {
         "cancel_requested": True,
-        "message": "Cancellation takes effect at the next safe boundary; completed parser outputs remain reusable.",
+        "message": t("knowledge.cancel_boundary"),
     }
 
 
@@ -4372,7 +4365,7 @@ async def get_indexing_readiness(kb_name: str):
                 resource.base_dir / resource.name / "raw", recursive=True
             )
         ),
-        "note": "Readiness checks configuration and local prerequisites; runtime downloads, resource limits and provider responses can still fail.",
+        "note": t("knowledge.readiness_note"),
     }
 
 
@@ -4385,7 +4378,7 @@ async def get_progress(kb_name: str):
         progress = progress_tracker.get_progress()
 
         if progress is None:
-            return {"status": "not_started", "message": "Initialization not started"}
+            return {"status": "not_started", "message": t("knowledge.progress_not_started")}
 
         return progress
     except HTTPException:
@@ -4401,7 +4394,7 @@ async def clear_progress(kb_name: str):
         _, resolved_name, base_dir = _writable_kb(kb_name)
         progress_tracker = ProgressTracker(resolved_name, base_dir)
         progress_tracker.clear()
-        return {"status": "success", "message": f"Progress cleared for {kb_name}"}
+        return {"status": "success", "message": t("knowledge.progress_cleared", name=kb_name)}
     except HTTPException:
         raise
     except Exception as e:
@@ -4481,10 +4474,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                 # evicted) and it cannot ever produce another event. Convert
                 # that orphan into a durable, retryable terminal state so both
                 # SSE and WebSocket consumers settle immediately.
-                error_message = (
-                    "Knowledge-base processing was interrupted by a server restart. "
-                    "Retry the operation to continue."
-                )
+                error_message = t("knowledge.task_interrupted")
                 if progress_task_id == expected_task_id and stage not in {
                     "completed",
                     "error",
@@ -4523,9 +4513,9 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
             if task_status in {"completed", "error", "cancelled"}:
                 is_completed = task_status == "completed"
                 message = (
-                    "Knowledge-base processing completed."
+                    t("knowledge.task_completed")
                     if is_completed
-                    else str(task_metadata.get("error") or "Knowledge-base processing failed.")
+                    else str(task_metadata.get("error") or t("knowledge.task_failed"))
                 )
                 terminal_progress = {
                     "kb_name": kb_name,
@@ -4570,7 +4560,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                         "type": "progress",
                         "data": {
                             "stage": "completed",
-                            "message": "Knowledge base is ready.",
+                            "message": t("knowledge.kb_ready"),
                             "percent": 100,
                             "current": 1,
                             "total": 1,
@@ -4584,7 +4574,7 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                         "data": initial_progress
                         or {
                             "stage": "error",
-                            "message": "Knowledge base needs reindex or initialization.",
+                            "message": t("knowledge.kb_needs_reindex"),
                         },
                     }
                 )
@@ -4750,7 +4740,7 @@ async def get_linked_folders(kb_name: str):
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4763,13 +4753,13 @@ async def unlink_folder(kb_name: str, folder_id: str):
         _assert_not_connected_kb(resolved_name, _load_kb_entry_or_404(manager, resolved_name))
         success = manager.unlink_folder(resolved_name, folder_id)
         if not success:
-            raise HTTPException(status_code=404, detail=f"Folder '{folder_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.folder_not_found", id=folder_id))
         logger.info(f"Unlinked folder '{folder_id}' from KB '{kb_name}'")
-        return {"message": "Folder unlinked successfully", "folder_id": folder_id}
+        return {"message": t("knowledge.folder_unlinked"), "folder_id": folder_id}
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4798,7 +4788,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
         folder_info = next((f for f in folders if f["id"] == folder_id), None)
 
         if not folder_info:
-            raise HTTPException(status_code=404, detail=f"Linked folder '{folder_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.linked_folder_not_found", id=folder_id))
 
         folder_path = folder_info["path"]
 
@@ -4812,7 +4802,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
             # truthful for empty and already-current folders as well.
             manager.update_folder_sync_state(kb_name, folder_id, [])
             return SyncFolderResponse(
-                message="No new or modified files to sync",
+                message=t("knowledge.no_files_to_sync"),
                 folder_path=folder_path,
                 files=[],
                 new_files=0,
@@ -4835,7 +4825,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
             manager,
             kb_name,
             task_id,
-            f"Syncing {len(files_to_process)} file(s) from linked folder...",
+            t("knowledge.syncing_folder", count=len(files_to_process)),
         )
 
         # Add background task to process files
@@ -4855,7 +4845,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
         )
 
         return SyncFolderResponse(
-            message=f"Syncing {len(files_to_process)} files from linked folder",
+            message=t("knowledge.syncing_folder_message", count=len(files_to_process)),
             folder_path=folder_path,
             files=files_to_process,
             new_files=changes["new_count"],
@@ -4866,7 +4856,7 @@ async def sync_folder(kb_name: str, folder_id: str, background_tasks: Background
     except HTTPException:
         raise
     except ValueError:
-        raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+        raise HTTPException(status_code=404, detail=t("knowledge.kb_not_found", name=kb_name))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4958,11 +4948,11 @@ def _knowledge_source_errors(kb_name: str, *, validation_status: int = 404):
             404 if validation_status == 404 or "not found" in detail.lower() else validation_status
         )
         if validation_status == 404:
-            detail = f"KB '{kb_name}' not found"
+            detail = t("knowledge.kb_alias_not_found", name=kb_name)
         raise HTTPException(status_code=status_code, detail=detail) from exc
     except Exception as exc:
         logger.exception("Knowledge source operation failed for %s", kb_name)
-        raise HTTPException(status_code=500, detail="Knowledge source operation failed") from exc
+        raise HTTPException(status_code=500, detail=t("knowledge.source_operation_failed")) from exc
 
 
 @router.post("/knowledge-bases/{kb_name}/github-source", response_model=GitHubSourceInfo)
@@ -4987,8 +4977,8 @@ async def remove_github_source(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not manager.remove_github_source(resolved_name, source_id):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
-        return {"message": "Removed", "source_id": source_id}
+            raise HTTPException(status_code=404, detail=t("knowledge.source_not_found_by_id", id=source_id))
+        return {"message": t("knowledge.source_removed"), "source_id": source_id}
 
 
 @router.post("/knowledge-bases/{kb_name}/sync-github")
@@ -4997,7 +4987,7 @@ async def sync_github_sources(kb_name: str):
         manager, resolved_name, kb_base_dir = _writable_kb(kb_name)
         sources = manager.get_github_sources(resolved_name)
         if not sources:
-            return {"message": "No GitHub sources", "results": []}
+            return {"message": t("knowledge.no_github_sources"), "results": []}
         from deeptutor.services.github_source.sync import sync_source
 
         results = []
@@ -5017,7 +5007,7 @@ async def sync_github_sources(kb_name: str):
                     "error": r.error or None,
                 }
             )
-        return {"message": f"Synced {len(results)} source(s)", "results": results}
+        return {"message": t("knowledge.synced_sources", count=len(results)), "results": results}
 
 
 @router.post("/knowledge-bases/{kb_name}/web-source", response_model=WebSourceInfo)
@@ -5044,14 +5034,14 @@ async def remove_web_source(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not manager.remove_web_source(resolved_name, source_id):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.source_not_found_by_id", id=source_id))
         await get_web_source_sync_scheduler().request_cancel(
             get_current_user().id, resolved_name, source_id
         )
         get_web_source_sync_scheduler().repo.delete(
             (get_current_user().id, resolved_name, source_id)
         )
-        return {"message": "Removed", "source_id": source_id}
+        return {"message": t("knowledge.source_removed"), "source_id": source_id}
 
 
 @router.get(
@@ -5082,7 +5072,7 @@ async def get_web_source_pairings(kb_name: str, source_id: str):
             None,
         )
         if source is None:
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.source_not_found_by_id", id=source_id))
         scheduler = get_web_source_sync_scheduler()
         repo_pairings = scheduler.repo.list_pairings(
             get_current_user().id, resolved_name, source_id
@@ -5127,13 +5117,13 @@ async def cancel_web_source_sync(kb_name: str, source_id: str):
     with _knowledge_source_errors(kb_name):
         manager, resolved_name, _ = _writable_kb(kb_name)
         if not any(item.get("id") == source_id for item in manager.get_web_sources(resolved_name)):
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.source_not_found_by_id", id=source_id))
         cancelled = await get_web_source_sync_scheduler().request_cancel(
             get_current_user().id, resolved_name, source_id
         )
         if not cancelled:
-            raise HTTPException(status_code=409, detail="Synchronization job cannot be cancelled")
-        return {"message": "Cancellation requested", "source_id": source_id}
+            raise HTTPException(status_code=409, detail=t("knowledge.sync_not_cancellable"))
+        return {"message": t("knowledge.cancel_requested"), "source_id": source_id}
 
 
 @router.post(
@@ -5151,18 +5141,18 @@ async def retry_web_source_sync(kb_name: str, source_id: str):
             None,
         )
         if source is None:
-            raise HTTPException(status_code=404, detail=f"Source '{source_id}' not found")
+            raise HTTPException(status_code=404, detail=t("knowledge.source_not_found_by_id", id=source_id))
         if not source.get("enabled", True) or not source.get("auto_sync_enabled", True):
             raise HTTPException(
                 status_code=409,
-                detail="Enable the source and automatic synchronization before retrying",
+                detail=t("knowledge.sync_enable_before_retry"),
             )
         retried = await get_web_source_sync_scheduler().retry(
             get_current_user().id, resolved_name, source_id
         )
         if not retried:
-            raise HTTPException(status_code=404, detail="Synchronization job not found")
-        return {"message": "Retry scheduled", "source_id": source_id}
+            raise HTTPException(status_code=404, detail=t("knowledge.sync_job_not_found"))
+        return {"message": t("knowledge.retry_scheduled"), "source_id": source_id}
 
 
 @router.post("/knowledge-bases/{kb_name}/sync-web")
@@ -5172,12 +5162,12 @@ async def sync_web_sources(kb_name: str):
         manager, resolved_name, kb_base_dir = _writable_kb(kb_name)
         sources = manager.get_web_sources(resolved_name)
         if not sources:
-            return {"message": "No web sources", "results": []}
+            return {"message": t("knowledge.no_web_sources"), "results": []}
         from deeptutor.services.web_source.sync import sync_source
 
         enabled = [s for s in sources if s.get("enabled", True)]
         if not enabled:
-            return {"message": "No enabled web sources", "results": []}
+            return {"message": t("knowledge.no_enabled_web_sources"), "results": []}
 
         results = []
         for source in enabled:
@@ -5212,7 +5202,7 @@ async def sync_web_sources(kb_name: str):
             )
 
         return {
-            "message": f"Synced {len(results)} source(s)",
+            "message": t("knowledge.synced_sources", count=len(results)),
             "ok": all(result["ok"] for result in results),
             "results": results,
         }

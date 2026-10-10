@@ -28,6 +28,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from deeptutor.services.config import load_auth_settings
+from deeptutor.services.i18n import t
 
 # SameSite=None lets the cookie work when the browser accesses the frontend via
 # 127.0.0.1 and the backend via localhost (different origins on the same machine).
@@ -173,7 +174,7 @@ def _require_private_frontend(request: Request) -> None:
     )
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
-        detail="Sign-in is only available from a private DeepTutor origin",
+        detail=t("auth.signin_private_origin"),
     )
 
 
@@ -453,7 +454,7 @@ async def require_auth(
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated",
+            detail=t("api.not_authenticated"),
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -461,7 +462,7 @@ async def require_auth(
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail=t("auth.invalid_or_expired_token"),
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -479,7 +480,7 @@ def _install_request_workspace(request) -> None:
     header = headers.get("x-deeptutor-workspace")
     query = params.get("dt_workspace")
     if header is not None and query is not None and header != query:
-        raise HTTPException(status_code=400, detail="Conflicting workspace scopes.")
+        raise HTTPException(status_code=400, detail=t("auth.conflicting_workspace_scopes"))
     try:
         path = getattr(getattr(request, "url", None), "path", "")
         from deeptutor.services.workspace.knowledge import library_request
@@ -595,7 +596,7 @@ async def require_admin(
     if payload is None or payload.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required",
+            detail=t("auth.admin_required"),
         )
     return payload
 
@@ -828,7 +829,7 @@ async def auth_status(
 async def login(body: LoginRequest, request: Request, response: Response) -> dict:
     """Validate credentials and set a JWT cookie."""
     if not AUTH_ENABLED:
-        return {"ok": True, "message": "Auth is disabled — no login required."}
+        return {"ok": True, "message": t("auth.login_disabled")}
 
     _require_private_frontend(request)
     _no_store(response)
@@ -840,7 +841,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
         if not pb_result:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
+                detail=t("auth.incorrect_email_or_password"),
             )
         payload, pb_token = pb_result
         response.set_cookie(value=pb_token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
@@ -858,7 +859,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
     if not result:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail=t("auth.incorrect_username_or_password"),
         )
 
     token = create_token(result.username, result.role, result.user_id)
@@ -878,12 +879,12 @@ def _require_builtin_device_auth() -> None:
     if not AUTH_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Device credentials require built-in authentication.",
+            detail=t("auth.device_requires_builtin"),
         )
     if POCKETBASE_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Device credentials are not supported in PocketBase mode.",
+            detail=t("auth.device_pb_unsupported"),
         )
 
 
@@ -896,7 +897,7 @@ async def device_login(body: DeviceLoginRequest, response: Response) -> dict:
     if payload is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect device credentials",
+            detail=t("auth.incorrect_device_credentials"),
         )
 
     token = create_token(
@@ -933,7 +934,7 @@ async def create_session_handoff(
     if not AUTH_ENABLED or payload is None or not PRIVATE_LOGIN_HOSTS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Session handoff requires authentication and configured private login hosts.",
+            detail=t("auth.handoff_requires_private"),
         )
     _require_private_frontend(request)
 
@@ -973,12 +974,12 @@ async def create_session_handoff(
     except HandoffRateLimited:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many handoff requests. Try again later.",
+            detail=t("auth.too_many_handoff"),
         )
     except HandoffError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Enter a valid HTTPS public origin",
+            detail=t("auth.valid_https_origin_required"),
         )
 
     logger.info(
@@ -1008,7 +1009,7 @@ async def exchange_session_handoff(
     if not host:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Pairing request has no valid frontend host",
+            detail=t("auth.pairing_no_frontend_host"),
         )
     try:
         ticket = get_session_handoff_store().exchange(
@@ -1018,12 +1019,12 @@ async def exchange_session_handoff(
     except HandoffRateLimited:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many handoff requests. Try again later.",
+            detail=t("auth.too_many_handoff"),
         )
     except HandoffError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Pairing code is invalid, expired, or already used",
+            detail=t("auth.pairing_code_invalid"),
         )
     logger.info("Exchanged session handoff code for host=%s", host)
     return {"ok": True, "ticket": ticket}
@@ -1042,7 +1043,7 @@ async def complete_session_handoff(
     if not host:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Handoff request has no valid frontend host",
+            detail=t("auth.handoff_no_frontend_host"),
         )
     try:
         ticket = get_session_handoff_store().consume_ticket(
@@ -1077,12 +1078,12 @@ async def complete_session_handoff(
     except HandoffRateLimited:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Too many handoff requests. Try again later.",
+            detail=t("auth.too_many_handoff"),
         )
     except HandoffError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Handoff ticket is invalid, expired, or already used",
+            detail=t("auth.handoff_ticket_invalid"),
         )
 
     response.set_cookie(value=token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
@@ -1100,12 +1101,12 @@ async def device_heartbeat(
     if not AUTH_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Device credentials require built-in authentication.",
+            detail=t("auth.device_requires_builtin"),
         )
     if payload is None or not payload.device_credential_id or not payload.device_session_nonce:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This session does not use a device credential.",
+            detail=t("auth.session_not_device"),
         )
     try:
         device = heartbeat_device_credential(
@@ -1117,7 +1118,7 @@ async def device_heartbeat(
         response.delete_cookie(**_cookie_attrs())
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Device session is no longer active",
+            detail=t("auth.device_session_inactive"),
         ) from None
     return {"ok": not device.pop("limit_reached"), **device}
 
@@ -1147,7 +1148,7 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
     if not AUTH_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Auth is disabled — registration is not available.",
+            detail=t("auth.registration_disabled"),
         )
 
     _require_private_frontend(request)
@@ -1159,13 +1160,13 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
         if not is_first_user():
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Self-registration is closed. Ask an administrator to create your account.",
+                detail=t("auth.self_registration_closed"),
             )
         result = register_pb(username=body.username, email=body.username, password=body.password)
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Registration failed — username or email may already be taken.",
+                detail=t("auth.registration_failed"),
             )
         logger.info(f"First user registered via PocketBase: '{body.username}'")
         return {
@@ -1181,14 +1182,14 @@ async def register(body: RegisterRequest, request: Request, response: Response) 
     if not is_first_user():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Self-registration is closed. Ask an administrator to create your account.",
+            detail=t("auth.self_registration_closed"),
         )
 
     existing = {u["username"] for u in list_users()}
     if body.username in existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Username already taken",
+            detail=t("auth.username_taken"),
         )
 
     add_user(body.username, body.password)
@@ -1246,7 +1247,7 @@ def _require_profile_identity(payload: TokenPayload | None) -> TokenPayload:
     if not AUTH_ENABLED or payload is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Auth is disabled — profiles are not available.",
+            detail=t("auth.profiles_disabled"),
         )
     return payload
 
@@ -1282,7 +1283,7 @@ async def update_profile(
     """
     current = _require_profile_identity(payload)
     if not set_avatar(current.username, body.avatar):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     # The marker no longer references an uploaded image, so drop the file.
     from deeptutor.multi_user.identity import delete_avatar_file
 
@@ -1306,28 +1307,28 @@ async def upload_avatar(
     if POCKETBASE_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Avatar upload is not available in PocketBase mode.",
+            detail=t("auth.avatar_pb_unsupported"),
         )
     if not current.user_id or not _USER_ID_RE.match(current.user_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot store an avatar for this account.",
+            detail=t("auth.avatar_store_failed"),
         )
     info = get_user_info(current.username)
     if info is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
 
     data = await file.read(_AVATAR_MAX_BYTES + 1)
     if len(data) > _AVATAR_MAX_BYTES:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail="Avatar image is too large (max 1 MB).",
+            detail=t("auth.avatar_too_large"),
         )
     ext = _sniff_image(data)
     if ext is None:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Avatar must be a PNG, JPEG or WebP image.",
+            detail=t("auth.avatar_invalid_type"),
         )
 
     from deeptutor.multi_user.identity import save_avatar_file
@@ -1344,7 +1345,7 @@ async def upload_avatar(
 
     save_avatar_file(current.user_id, data, ext)
     if not set_avatar(current.username, marker):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     logger.info(f"User '{current.username}' uploaded a new avatar ({ext}, {len(data)} bytes)")
     return {"ok": True, "avatar": marker}
 
@@ -1371,13 +1372,13 @@ async def get_avatar_image(
     """Serve a stored avatar image. Any authenticated user may view avatars
     (they appear in the admin table and next to the viewer's own profile)."""
     if not _USER_ID_RE.match(user_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.avatar_not_found"))
 
     from deeptutor.multi_user.identity import get_avatar_file
 
     target = get_avatar_file(user_id)
     if target is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.avatar_not_found"))
 
     media_type = _AVATAR_MEDIA_TYPES.get(target.suffix.lstrip("."), "application/octet-stream")
     headers = {
@@ -1421,7 +1422,7 @@ async def issue_device(
 
     _require_builtin_device_auth()
     if get_user_by_id(body.user_id) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     try:
         device, pairing_code, pin = issue_device_credential(
             user_id=body.user_id,
@@ -1465,7 +1466,7 @@ async def revoke_device(
     if device is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Device credential not found",
+            detail=t("auth.device_credential_not_found"),
         )
     log_admin_action(
         "device_credential_revoke",
@@ -1486,14 +1487,14 @@ def _require_local_learner(current: TokenPayload) -> tuple[str, dict]:
 
     if current.role == "admin":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Learner profile required"
+            status_code=status.HTTP_403_FORBIDDEN, detail=t("auth.learner_profile_required")
         )
     account = get_user_by_id(current.user_id)
     if account is None or account[0] != current.username:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     if str(account[1].get("preset") or "standard") != "learner":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Learner profile required"
+            status_code=status.HTTP_403_FORBIDDEN, detail=t("auth.learner_profile_required")
         )
     return account
 
@@ -1542,7 +1543,7 @@ async def get_learner_profile(username: str, _: TokenPayload = Depends(require_a
         or str(user.get("role") or "user") == "admin"
         or str(user.get("preset") or "standard") != "learner"
     ):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     return {"learner_profile": user.get("learner_profile")}
 
 
@@ -1561,7 +1562,7 @@ async def put_learner_profile(
         or str(user.get("role") or "user") == "admin"
         or str(user.get("preset") or "standard") != "learner"
     ):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
     try:
         profile = normalize_profile(body.model_dump(exclude_none=True))
     except ValueError as exc:
@@ -1597,13 +1598,13 @@ def _create_admin_user(
         if body.preset != "standard":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Only the standard preset is available in PocketBase mode.",
+                detail=t("auth.standard_preset_only"),
             )
         result = register_pb(username=body.username, email=body.username, password=body.password)
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Failed to create user — username may already be taken.",
+                detail=t("auth.create_user_failed"),
             )
         logger.info("Admin '%s' created PocketBase user '%s'", actor, body.username)
         return {
@@ -1616,7 +1617,7 @@ def _create_admin_user(
         }
 
     if any(item.get("username") == body.username for item in list_users()):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already taken")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=t("auth.username_taken"))
 
     add_user(body.username, body.password, preset=body.preset)
     created = next(
@@ -1631,7 +1632,7 @@ def _create_admin_user(
         delete_user(body.username)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Only non-admin users can be provisioned by this endpoint.",
+            detail=t("auth.non_admin_provisioning_only"),
         )
 
     if preset == "learner":
@@ -1655,7 +1656,7 @@ def _create_admin_user(
                 )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="The learner preset could not be initialized.",
+                detail=t("auth.learner_preset_failed"),
             ) from exc
 
     logger.info(
@@ -1684,7 +1685,7 @@ async def admin_create_user(
     if not AUTH_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Auth is disabled — user creation is not available.",
+            detail=t("auth.user_creation_disabled"),
         )
     return _create_admin_user(body, current)
 
@@ -1702,7 +1703,7 @@ async def admin_import_users(
     if not AUTH_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Auth is disabled — user import is not available.",
+            detail=t("auth.user_import_disabled"),
         )
 
     content = await file.read(_USER_IMPORT_MAX_BYTES + 1)
@@ -1710,14 +1711,14 @@ async def admin_import_users(
     if len(content) > _USER_IMPORT_MAX_BYTES:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail="User import file exceeds 2 MB.",
+            detail=t("auth.import_too_large"),
         )
     try:
         text = content.decode("utf-8-sig")
     except UnicodeDecodeError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User import must be a UTF-8 CSV file.",
+            detail=t("auth.import_utf8_csv"),
         ) from exc
 
     reader = csv.DictReader(io.StringIO(text, newline=""))
@@ -1726,7 +1727,7 @@ async def admin_import_users(
     if fieldnames != expected:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="CSV header must be exactly: username,password,preset",
+            detail=t("auth.import_header"),
         )
     # DictReader keeps the original header spelling as dictionary keys.
     reader.fieldnames = expected
@@ -1737,12 +1738,12 @@ async def admin_import_users(
     if not rows:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="User import file contains no user rows.",
+            detail=t("auth.import_no_rows"),
         )
     if len(rows) > _USER_IMPORT_MAX_ROWS:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"User import cannot exceed {_USER_IMPORT_MAX_ROWS} rows.",
+            detail=t("auth.import_too_many_rows", max_rows=_USER_IMPORT_MAX_ROWS),
         )
     for row_number, row in enumerate(rows, start=2):
         username = str(row.get("username") or "").strip()
@@ -1812,14 +1813,14 @@ async def admin_import_users(
 
 def _delete_admin_user(username: str, current: TokenPayload | None) -> tuple[int, str]:
     if current and username == current.username:
-        return 400, "You cannot delete your own account"
+        return 400, t("auth.cannot_delete_self")
 
     # Capture the id before the record disappears so the avatar file can go too.
     info = get_user_info(username)
 
     removed = delete_user(username)
     if not removed:
-        return 404, "User not found"
+        return 404, t("auth.user_not_found")
 
     user_id = str(info.get("id") or "") if info else ""
     if user_id and _USER_ID_RE.match(user_id):
@@ -1881,12 +1882,12 @@ async def update_user_role(
     if current and username == current.username:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You cannot change your own role",
+            detail=t("auth.cannot_change_own_role"),
         )
 
     updated = set_role(username, body.role)
     if not updated:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("auth.user_not_found"))
 
     logger.info(
         f"Admin '{current.username if current else 'local'}' set '{username}' role to {body.role!r}"

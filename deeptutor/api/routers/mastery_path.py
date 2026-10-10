@@ -36,6 +36,7 @@ from deeptutor.learning.objective_relations import (
 from deeptutor.learning.service import LearningService
 from deeptutor.learning.storage import LearningStore
 from deeptutor.learning.topic_generation import MAX_MODULE_LIMIT
+from deeptutor.services.i18n import t
 from deeptutor.services.settings.interface_settings import get_response_language
 from deeptutor.utils.json_parser import parse_json_response
 
@@ -64,7 +65,7 @@ def _turn_application_service():
 def _validate_book_id(book_id: str) -> None:
     """Reject empty or path-traversal-bearing book ids (shared by all endpoints)."""
     if not book_id or ".." in book_id or "/" in book_id or "\\" in book_id or ":" in book_id:
-        raise HTTPException(status_code=400, detail="Invalid book_id")
+        raise HTTPException(status_code=400, detail=t("mastery.invalid_book_id"))
 
 
 def _parse_modules(body_modules: list[dict]) -> list[LearningModule]:
@@ -77,7 +78,7 @@ def _parse_modules(body_modules: list[dict]) -> list[LearningModule]:
         except PydanticValidationError as exc:
             raise HTTPException(
                 status_code=422,
-                detail=f"Invalid knowledge_point data in modules[{i}]: {exc.errors()}",
+                detail=t("mastery.invalid_kp_data", index=i, errors=exc.errors()),
             ) from exc
         # Remove knowledge_points from m to avoid duplicate argument to LearningModule.
         m_clean = {k: v for k, v in m.items() if k != "knowledge_points"}
@@ -86,7 +87,7 @@ def _parse_modules(body_modules: list[dict]) -> list[LearningModule]:
         except PydanticValidationError as exc:
             raise HTTPException(
                 status_code=422,
-                detail=f"Invalid module data in modules[{i}]: {exc.errors()}",
+                detail=t("mastery.invalid_module_data", index=i, errors=exc.errors()),
             ) from exc
     return modules
 
@@ -94,13 +95,13 @@ def _parse_modules(body_modules: list[dict]) -> list[LearningModule]:
 def _validate_runnable_modules(modules: list[LearningModule], *, status_code: int = 400) -> None:
     if not modules:
         raise HTTPException(
-            status_code=status_code, detail="At least one learning module is required"
+            status_code=status_code, detail=t("mastery.module_required")
         )
     for mod in modules:
         if not mod.knowledge_points:
             raise HTTPException(
                 status_code=status_code,
-                detail=f"Module {mod.id!r} must contain at least one knowledge point",
+                detail=t("mastery.module_needs_kp", id=mod.id),
             )
 
 
@@ -125,7 +126,7 @@ async def _cancel_active_learning_turn(book_id: str) -> None:
         else:
             raise HTTPException(
                 status_code=409,
-                detail="Active learning turn could not be stopped before changing this path",
+                detail=t("mastery.active_turn_not_stopped"),
             )
         return
 
@@ -142,7 +143,7 @@ async def _cancel_active_learning_turn(book_id: str) -> None:
                 if not await turns.cancel_turn_and_wait(turn["id"]):
                     raise HTTPException(
                         status_code=409,
-                        detail="Active learning turn could not be stopped before changing this path",
+                        detail=t("mastery.active_turn_not_stopped"),
                     )
 
 
@@ -165,10 +166,7 @@ async def _exclusive_path_mutation(book_id: str):
     except PathLeaseConflictError as exc:
         raise HTTPException(
             status_code=409,
-            detail=(
-                "Mastery path changed activity while the operation was starting; "
-                f"active session: {exc.lease.session_id}"
-            ),
+            detail=t("mastery.path_activity_changed", session=exc.lease.session_id),
         ) from exc
     try:
         yield
@@ -435,10 +433,10 @@ def _topic_payload_from_snapshot(
 def _topic_payload(store: LearningStore, path_id: str) -> dict:
     progress = store.load(path_id)
     if progress is None:
-        raise HTTPException(status_code=404, detail="Mastery topic not found")
+        raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
     topic = store.get_topic(path_id, progress=progress)
     if topic is None:  # pragma: no cover - a loaded path always synthesizes metadata
-        raise HTTPException(status_code=404, detail="Mastery topic not found")
+        raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
     active_interaction = (
         store.get_active_interaction(path_id) if progress.pending_question is not None else None
     )
@@ -610,7 +608,7 @@ async def get_review_settings(path_id: str):
     _validate_book_id(path_id)
     progress = await asyncio.to_thread(LearningStore().load, path_id)
     if progress is None:
-        raise HTTPException(status_code=404, detail="Mastery topic not found")
+        raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
     return {"desired_retention": progress.desired_retention, "scope": "path"}
 
 
@@ -618,7 +616,7 @@ async def get_review_settings(path_id: str):
 async def update_review_settings(path_id: str, body: ReviewSettingsRequest):
     _validate_book_id(path_id)
     if not await asyncio.to_thread(LearningStore().exists, path_id):
-        raise HTTPException(status_code=404, detail="Mastery topic not found")
+        raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
     async with _exclusive_path_mutation(path_id):
         store = LearningStore()
 
@@ -640,7 +638,7 @@ async def update_review_settings(path_id: str, body: ReviewSettingsRequest):
         try:
             await asyncio.to_thread(store.mutate, path_id, update)
         except KeyError as exc:
-            raise HTTPException(status_code=404, detail="Mastery topic not found") from exc
+            raise HTTPException(status_code=404, detail=t("mastery.topic_not_found")) from exc
     return await asyncio.to_thread(_topic_payload, LearningStore(), path_id)
 
 
@@ -656,7 +654,7 @@ async def edit_topic_map(path_id: str, body: EditTopicMapRequest):
         store = LearningStore()
         progress = await asyncio.to_thread(store.load, path_id)
         if progress is None:
-            raise HTTPException(status_code=404, detail="Mastery topic not found")
+            raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
         existing_module_ids = {module.id for module in progress.modules}
         existing_objective_ids = {
             point.id for module in progress.modules for point in module.knowledge_points
@@ -722,7 +720,7 @@ async def list_topic_sessions(path_id: str):
     _validate_book_id(path_id)
     learning_store = LearningStore()
     if not await asyncio.to_thread(learning_store.exists, path_id):
-        raise HTTPException(status_code=404, detail="Mastery topic not found")
+        raise HTTPException(status_code=404, detail=t("mastery.topic_not_found"))
     # The same walk chat's navigation tools use (``learning.navigation``), so
     # the atlas screen and a hand-off card can never disagree about which
     # conversations a topic has.
@@ -754,7 +752,7 @@ async def set_session_mode(path_id: str, session_id: str, body: SetSessionModeRe
     if requested not in MODES:
         raise HTTPException(
             status_code=422,
-            detail=f"mode must be one of: {', '.join(MODES)}",
+            detail=t("mastery.invalid_mode", modes=", ".join(MODES)),
         )
 
     store = LearningStore()
@@ -770,7 +768,7 @@ async def set_session_mode(path_id: str, session_id: str, body: SetSessionModeRe
 
     session_store = get_session_store()
     if await session_store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(status_code=404, detail=t("mastery.session_not_found"))
     await session_store.update_session_preferences(session_id, {"mastery_session_mode": requested})
     return {"session_id": session_id, "mode": normalize_mode(requested)}
 
@@ -915,7 +913,7 @@ async def get_progress(book_id: str):
     service = get_learning_service()
     progress = await asyncio.to_thread(service.store.load, book_id)
     if progress is None:
-        raise HTTPException(status_code=404, detail="Mastery progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_not_found"))
     payload = progress.model_dump(mode="json")
     if progress.pending_question is not None:
         from deeptutor.learning.pending import public_pending_question
@@ -1010,12 +1008,12 @@ async def get_objective_report(book_id: str, kp_id: str):
         store.load_with_learning_evidence, book_id, kp_id, limit=20
     )
     if progress is None:
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     moment = time.time()
     progress = _read_projection(progress, now=moment)
     report = learning_policy.objective_report(progress, kp_id, now=moment)
     if report is None:
-        raise HTTPException(status_code=404, detail="Objective not found")
+        raise HTTPException(status_code=404, detail=t("mastery.objective_not_found"))
 
     from deeptutor.learning.pending import public_pending_question
 
@@ -1038,7 +1036,7 @@ async def get_progress_events(book_id: str, after_revision: int = 0):
     store = LearningStore()
     progress = await asyncio.to_thread(store.load, book_id)
     if progress is None:
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     events = await asyncio.to_thread(
         store.list_events,
         book_id,
@@ -1056,7 +1054,7 @@ async def get_progress_sessions(book_id: str):
     _validate_book_id(book_id)
     store = LearningStore()
     if not await asyncio.to_thread(store.exists, book_id):
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     session_ids = await asyncio.to_thread(store.list_session_ids, book_id)
     return {"book_id": book_id, "session_ids": session_ids}
 
@@ -1121,7 +1119,7 @@ async def rename_progress(book_id: str, body: RenamePathRequest):
     _validate_book_id(book_id)
     store = LearningStore()
     if not await asyncio.to_thread(store.exists, book_id):
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     async with _exclusive_path_mutation(book_id):
         progress = await asyncio.to_thread(LearningService(store).rename_path, book_id, body.name)
     return {
@@ -1136,7 +1134,7 @@ async def delete_progress(book_id: str):
     _validate_book_id(book_id)
     store = LearningStore()
     if not await asyncio.to_thread(store.exists, book_id):
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     async with _exclusive_path_mutation(book_id):
         await asyncio.to_thread(store.delete, book_id)
     return {"status": "ok"}
@@ -1152,7 +1150,7 @@ async def skip_pending_question(book_id: str):
     _validate_book_id(book_id)
     store = LearningStore()
     if not await asyncio.to_thread(store.exists, book_id):
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     async with _exclusive_path_mutation(book_id):
         progress, skipped = await asyncio.to_thread(
             LearningService(store).abandon_active_question, book_id
@@ -1165,7 +1163,7 @@ async def redo_progress(book_id: str):
     _validate_book_id(book_id)
     store = LearningStore()
     if not await asyncio.to_thread(store.exists, book_id):
-        raise HTTPException(status_code=404, detail="Progress not found")
+        raise HTTPException(status_code=404, detail=t("mastery.progress_generic_not_found"))
     async with _exclusive_path_mutation(book_id):
         progress = await asyncio.to_thread(LearningService(store).reset_path, book_id)
     return {"status": "ok", "path_revision": progress.version}
@@ -1192,7 +1190,7 @@ class GenerateFromReadingRequest(BaseModel):
 async def generate_from_notebook(book_id: str, body: GenerateFromNotebookRequest):
     _validate_book_id(book_id)
     if not body.records:
-        raise HTTPException(status_code=400, detail="No records provided")
+        raise HTTPException(status_code=400, detail=t("mastery.no_records"))
 
     records_data = [
         {
@@ -1212,12 +1210,12 @@ async def generate_from_notebook(book_id: str, body: GenerateFromNotebookRequest
     # repair parser instead of bare json.loads so the common case isn't a 502.
     data = parse_json_response(response, fallback=None)
     if not isinstance(data, dict):
-        raise HTTPException(status_code=502, detail="LLM returned invalid JSON")
+        raise HTTPException(status_code=502, detail=t("mastery.llm_invalid_json"))
 
     modules_raw = data.get("modules", [])
     if not isinstance(modules_raw, list):
         raise HTTPException(
-            status_code=502, detail="LLM returned invalid structure: modules is not a list"
+            status_code=502, detail=t("mastery.llm_invalid_structure")
         )
     _ALLOWED_KP_TYPES = {"memory", "concept", "procedure", "design"}
     modules = []
