@@ -1,5 +1,6 @@
 """Durable outcomes, interruption, cancellation and publication (#1612)."""
 
+import errno
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,12 +16,102 @@ from deeptutor.knowledge.indexing_run import (
     request_cancel,
     visible_run,
 )
+from deeptutor.services import file_io
+from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.rag.index_versioning import (
     EmbeddingSignature,
     list_kb_versions,
     resolve_storage_dir_for_rebuild,
     write_version_meta,
 )
+
+
+def _shrink_read_retry_window(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(file_io, "_READ_RETRY_DEADLINE_SECONDS", 0.05)
+    monkeypatch.setattr(file_io, "_READ_RETRY_INITIAL_DELAY_SECONDS", 0.005)
+    monkeypatch.setattr(file_io, "_READ_RETRY_MAX_DELAY_SECONDS", 0.01)
+
+
+def _locked_read_text(
+    monkeypatch: pytest.MonkeyPatch,
+    name: str,
+    failures: int,
+    error: OSError | None = None,
+) -> dict[str, int]:
+    """Make ``Path.read_text`` fail *failures* times for *name* only."""
+    real_read_text = Path.read_text
+    attempts = {"count": 0}
+
+    def flaky_read_text(path, *args, **kwargs):
+        if Path(path).name == name:
+            attempts["count"] += 1
+            if attempts["count"] <= failures:
+                raise error or PermissionError(errno.EACCES, "Permission denied")
+        return real_read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", flaky_read_text)
+    return attempts
+
+
+def _write_running_journal(kb_dir: Path, task_id: str = "task-1") -> None:
+    atomic_write_json(
+        kb_dir / ".indexing-run.json",
+        {"schema": 1, "task_id": task_id, "state": "running", "documents": {}},
+    )
+
+
+def test_transient_journal_lock_self_heals_and_reads_current_state(tmp_path, monkeypatch):
+    _shrink_read_retry_window(monkeypatch)
+    _write_running_journal(tmp_path)
+    atomic_write_json(tmp_path / ".indexing-cancel.json", {"task_id": "task-1"})
+    attempts = _locked_read_text(monkeypatch, ".indexing-run.json", failures=2)
+
+    value = load_run(tmp_path)
+
+    assert value["task_id"] == "task-1"
+    assert value["cancel_requested"] is True
+    assert attempts["count"] == 3
+
+
+def test_persistent_journal_lock_reports_unreadable_after_bounded_retry(tmp_path, monkeypatch):
+    _shrink_read_retry_window(monkeypatch)
+    _write_running_journal(tmp_path)
+    original = (tmp_path / ".indexing-run.json").read_bytes()
+    attempts = _locked_read_text(monkeypatch, ".indexing-run.json", failures=1000)
+
+    with pytest.raises(OSError, match="Indexing journal is unreadable"):
+        load_run(tmp_path)
+
+    assert 2 <= attempts["count"] <= 30
+    assert (tmp_path / ".indexing-run.json").read_bytes() == original
+
+
+def test_locked_cancel_file_is_not_read_as_absent_cancellation(tmp_path, monkeypatch):
+    _shrink_read_retry_window(monkeypatch)
+    _write_running_journal(tmp_path)
+    _locked_read_text(monkeypatch, ".indexing-cancel.json", failures=1000)
+
+    with pytest.raises(OSError, match="cancellation state is unreadable"):
+        load_run(tmp_path)
+
+
+def test_non_transient_journal_read_error_fails_without_retry(tmp_path, monkeypatch):
+    _write_running_journal(tmp_path)
+    attempts = _locked_read_text(
+        monkeypatch,
+        ".indexing-run.json",
+        failures=1,
+        error=OSError(errno.EIO, "I/O error"),
+    )
+
+    with pytest.raises(OSError, match="Indexing journal is unreadable"):
+        load_run(tmp_path)
+
+    assert attempts["count"] == 1
+
+
+def test_missing_journal_keeps_missing_semantics(tmp_path):
+    assert load_run(tmp_path) is None
 
 
 def test_retry_retains_source_identity_and_verified_parse_receipt(tmp_path):
