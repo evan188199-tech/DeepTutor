@@ -49,6 +49,12 @@ def _classify_failure(message: str) -> str:
     # and blaming the model for what was a bug in how we replayed its history.
     if "invalid_request_error" in lower or "must be passed back" in lower:
         return "provider_error"
+    # Before the JSON heuristics: the math animator's truncation message says
+    # the "code JSON never completed", but re-running the block would re-send
+    # the same capped request and burn another full generation — the fix is a
+    # settings change the message already spells out (#1914).
+    if "output cap" in lower or "finish_reason=length" in lower:
+        return "truncated_output"
     if "json" in lower or "object found" in lower or "parse" in lower:
         return "json_parse"
     if "empty" in lower or "did not return" in lower or "returned no" in lower:

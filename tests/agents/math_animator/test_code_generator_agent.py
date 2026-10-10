@@ -90,7 +90,9 @@ async def test_truncated_generation_grows_the_budget_and_asks_for_less_reasoning
 
     The reporter's run spent 21 minutes on 9 identical attempts: every one was
     cut off at ``max_tokens`` with the whole budget inside ``<think>``, and every
-    retry sent the same prompt with the same budget (#1547).
+    retry sent the same prompt with the same budget (#1547). One escalated
+    re-ask, then stop: a model that burned a raised budget on chain-of-thought
+    burns the next one the same way (#1914).
     """
 
     async def fake_sleep(_delay: float) -> None:
@@ -122,21 +124,70 @@ async def test_truncated_generation_grows_the_budget_and_asks_for_less_reasoning
             design=SceneDesign(),
         )
 
-    # Each truncated attempt buys a larger budget, capped at twice the
-    # configured one so the request stays inside the model's own output limit.
-    assert [call["max_tokens"] for call in calls] == [8000, 12000, 16000]
+    # The truncated attempt buys exactly one larger-budget, lower-reasoning
+    # re-ask; a second truncation stops the loop instead of re-sending the
+    # same capped request (#1914).
+    assert [call["max_tokens"] for call in calls] == [8000, 12000]
     assert [call["reasoning_effort"] for call in calls] == [
         None,
-        RETRY_REASONING_EFFORT,
         RETRY_REASONING_EFFORT,
     ]
     assert "token limit" in str(calls[1]["user_prompt"])
     assert "token limit" not in str(calls[0]["user_prompt"])
-    # The failure names the cause instead of "no usable code after 3 attempts".
+    # The failure names the cause and the actual attempt count.
     message = str(raised.value)
-    assert "cut off at the 16000-token output cap" in message
+    assert "after 2 attempts" in message
+    assert "cut off at the 12000-token output cap" in message
     assert "chain-of-thought" in message
     assert "reasoning_tokens=7800" in message
+    assert "raise the math animator's max tokens" in message
+
+
+@pytest.mark.asyncio
+async def test_persistent_truncation_never_reaches_the_attempt_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A truncation-heavy model must not walk the full retry ladder (#1914).
+
+    The shipped default allows 8 structured retries; a reasoning model that
+    spends every budget on chain-of-thought truncates on each of them, which
+    turned one failing chapter into nine wasted generations. Two calls — the
+    original and a single escalated re-ask — are all this failure may cost.
+    """
+
+    async def fake_sleep(_delay: float) -> None:
+        return None
+
+    monkeypatch.setattr(
+        "deeptutor.agents.math_animator.agents.code_generator_agent.asyncio.sleep",
+        fake_sleep,
+    )
+    agent = _agent(monkeypatch, [])
+    monkeypatch.setattr(agent, "get_max_retries", lambda: 8)
+    monkeypatch.setattr(agent, "get_max_tokens", lambda: 8000)
+    calls: list[dict[str, object]] = []
+
+    async def truncated_stream(**kwargs) -> AsyncIterator[str]:
+        calls.append(kwargs)
+        outcome = kwargs["outcome"]
+        outcome.finish_reason = "length"
+        outcome.usage = {"completion_tokens": 8000, "reasoning_tokens": 8000}
+        yield "<think>Planning every scene in full before writing any code…</think>"
+
+    monkeypatch.setattr(agent, "stream_llm", truncated_stream)
+
+    with pytest.raises(GeneratedCodeOutputError) as raised:
+        await agent.generate(
+            user_input="Animate a proof",
+            output_mode="video",
+            analysis=ConceptAnalysis(),
+            design=SceneDesign(),
+        )
+
+    assert len(calls) == 2
+    message = str(raised.value)
+    assert "after 2 attempts" in message
+    assert "pick a model that reasons less" in message
 
 
 @pytest.mark.asyncio

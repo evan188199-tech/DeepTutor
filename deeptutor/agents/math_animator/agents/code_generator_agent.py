@@ -23,6 +23,12 @@ from ..utils import (
 #: a truncated generation stopped, short enough to stay readable (#1545).
 _RAW_EXCERPT_CHARS = 200
 
+#: One budget-escalated re-ask is all a truncation gets. A reasoning model that
+#: burned a raised budget on chain-of-thought burns the next one the same way,
+#: so a second truncation means the settings — not the attempt — must change
+#: (#1914).
+_MAX_TRUNCATION_RETRIES = 1
+
 
 class GeneratedCodeOutputError(ValueError):
     """The model exhausted its retries without returning runnable code."""
@@ -163,9 +169,11 @@ class CodeGeneratorAgent(BaseAgent):
         A retry is not a repeat.  The provider reports whether it stopped at the
         output cap, and a reasoning model that spent the whole budget on
         chain-of-thought fails that way every time on the same request (#1547),
-        so a truncated attempt is retried with a larger budget and lower
-        reasoning effort. Whichever way the attempt failed, the
-        reason reaches both the log and the raised error (#1545).
+        so a truncated attempt is retried exactly once with a larger budget and
+        lower reasoning effort — a second truncation stops the loop, because no
+        attempt count fixes a budget the model out-reasons (#1914). Whichever
+        way the attempt failed, the reason reaches both the log and the raised
+        error (#1545).
         """
 
         max_retries = max(0, int(self.get_max_retries()))
@@ -213,6 +221,8 @@ class CodeGeneratorAgent(BaseAgent):
                 )
                 if outcome.truncated:
                     truncations += 1
+                    if truncations > _MAX_TRUNCATION_RETRIES:
+                        break
                 self.logger.warning(
                     "Math animator %s attempt %d/%d produced no usable code: %s",
                     stage,
@@ -232,7 +242,7 @@ class CodeGeneratorAgent(BaseAgent):
                 await asyncio.sleep(min(0.25 * (2**structured_attempt), 2.0))
 
         raise GeneratedCodeOutputError(
-            f"Math animator {stage} returned no usable code after {attempts} attempts. "
+            f"Math animator {stage} returned no usable code after {structured_attempt + 1} attempts. "
             f"Last attempt: {last_failure}"
         ) from last_error
 
