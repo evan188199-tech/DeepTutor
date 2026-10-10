@@ -23,6 +23,24 @@ describe("Inspectable source visual coverage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     await waitFor(() => expect(vi.mocked(apiFetch).mock.calls.at(-1)?.[0]).toContain("offset=20"));
   });
+  it("fetches coverage only while the inspector is expanded", async () => {
+    vi.mocked(apiFetch).mockImplementation(async () => new Response(JSON.stringify(report)));
+    const view = render(<KbVisualCoverage kbName="kb" sourcePath="book.pdf" revision={0} />);
+    const summary = screen.getByText("Source visual coverage");
+    expect(summary.closest("details")).not.toHaveAttribute("open");
+    expect(vi.mocked(apiFetch)).not.toHaveBeenCalled();
+    fireEvent.click(summary);
+    await screen.findByText("Retained source figures", { exact: false });
+    expect(summary.closest("details")).toHaveAttribute("open");
+    expect(vi.mocked(apiFetch)).toHaveBeenCalledTimes(1);
+    fireEvent.click(summary);
+    expect(summary.closest("details")).not.toHaveAttribute("open");
+    await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalledTimes(1));
+    fireEvent.click(summary);
+    await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalledTimes(2));
+    await screen.findByText("Retained source figures", { exact: false });
+    view.unmount();
+  });
   it("displays unreadable or missing source states rather than permanent loading", async () => {
     vi.mocked(apiFetch).mockResolvedValueOnce(new Response("{}", { status: 409 })).mockResolvedValueOnce(new Response(JSON.stringify({ documents: [], assets: [], total_assets: 0 })));
     const view = render(<KbVisualCoverage kbName="kb" sourcePath="book.pdf" revision={0} />);
