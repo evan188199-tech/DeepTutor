@@ -107,7 +107,9 @@ test("apiFetch does NOT redirect on 401 when skipAuthRedirect is set", async () 
   const { apiFetch } = await loadApiModule();
   const win = installWindow("/login");
   const restore = stubFetch(
-    jsonResponse(401, { detail: "Incorrect username or password" }),
+    jsonResponse(401, {
+      detail: { code: "invalid_credentials", message: "Incorrect email or password" },
+    }),
   );
   try {
     const res = await apiFetch("http://localhost:8001/api/auth/login", {
@@ -116,8 +118,11 @@ test("apiFetch does NOT redirect on 401 when skipAuthRedirect is set", async () 
     });
     assert.equal(res.status, 401);
     assert.equal(win.redirectedTo(), null);
-    const data = (await res.json()) as { detail?: string };
-    assert.equal(data.detail, "Incorrect username or password");
+    const data = (await res.json()) as { detail?: unknown };
+    assert.deepEqual(data.detail, {
+      code: "invalid_credentials",
+      message: "Incorrect email or password",
+    });
   } finally {
     restore();
     clearWindow();
@@ -135,5 +140,23 @@ test("apiFetch passes successful responses through without redirecting", async (
   } finally {
     restore();
     clearWindow();
+  }
+});
+
+test("login surfaces the structured 401 envelope's message inline", async () => {
+  // The backend returns detail as {"code", "message"}; the inline form error
+  // must show the message, not the generic "Request failed" fallback.
+  const { login } = await import("../lib/auth");
+  const restore = stubFetch(
+    jsonResponse(401, {
+      detail: { code: "invalid_credentials", message: "Incorrect email or password" },
+    }),
+  );
+  try {
+    const result = await login("whoever", "wrong-password");
+    assert.equal(result.ok, false);
+    assert.equal(result.error, "Incorrect email or password");
+  } finally {
+    restore();
   }
 });

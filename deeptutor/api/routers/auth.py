@@ -824,6 +824,18 @@ async def auth_status(
     )
 
 
+def _invalid_credentials_http() -> HTTPException:
+    """Single bad-credentials envelope for every login backend.
+
+    Clients (and translations) key off ``code`` instead of matching the message
+    string — same shape as the structured detail in ``routers/book.py``.
+    """
+    return HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail={"code": "invalid_credentials", "message": "Incorrect email or password"},
+    )
+
+
 @router.post("/login")
 async def login(body: LoginRequest, request: Request, response: Response) -> dict:
     """Validate credentials and set a JWT cookie."""
@@ -838,10 +850,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
         # existing LoginRequest schema; users can pass their email as "username".
         pb_result = authenticate_pb(body.username, body.password)
         if not pb_result:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
-            )
+            raise _invalid_credentials_http()
         payload, pb_token = pb_result
         response.set_cookie(value=pb_token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
         logger.info(f"User '{payload.username}' logged in via PocketBase (role={payload.role!r})")
@@ -856,10 +865,7 @@ async def login(body: LoginRequest, request: Request, response: Response) -> dic
     # Standard JWT + bcrypt mode
     result = authenticate(body.username, body.password)
     if not result:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
+        raise _invalid_credentials_http()
 
     token = create_token(result.username, result.role, result.user_id)
     response.set_cookie(value=token, max_age=_COOKIE_MAX_AGE, **_cookie_attrs())
