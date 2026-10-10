@@ -4,6 +4,7 @@ import asyncio
 import base64
 from collections import OrderedDict
 from dataclasses import dataclass, field
+from functools import partial
 from http import HTTPStatus
 import importlib.util
 import inspect
@@ -1367,8 +1368,15 @@ class FeishuChannel(BaseChannel):
         reply_to_message_id: str | None = None,
         *,
         reply_in_thread: bool | None = None,
+        raise_on_failure: bool = False,
     ) -> bool:
-        """Send a message as a real Feishu reply when its source is known."""
+        """Send a message as a real Feishu reply when its source is known.
+
+        Returns ``False`` on failure by default so callers can degrade (reply
+        fallback, streaming-card fallback). ``raise_on_failure`` propagates
+        the failure instead, for the top-level delivery contract: ``send()``
+        must raise so the channel manager's retry applies.
+        """
         from lark_oapi.api.im.v1 import (
             CreateMessageRequest,
             CreateMessageRequestBody,
@@ -1430,6 +1438,7 @@ class FeishuChannel(BaseChannel):
                 .build()
             )
             response = self._client.im.v1.message.create(request)
+            failure: str | None = None
             if not response.success():
                 logger.error(
                     "Failed to send Feishu {} message: code={}, msg={}, log_id={}",
@@ -1438,12 +1447,22 @@ class FeishuChannel(BaseChannel):
                     response.msg,
                     response.get_log_id(),
                 )
-                return False
-            logger.debug("Feishu {} message sent to {}", msg_type, receive_id)
-            return True
+                failure = (
+                    f"Feishu {msg_type} message send failed: "
+                    f"code={response.code}, msg={response.msg}"
+                )
+            else:
+                logger.debug("Feishu {} message sent to {}", msg_type, receive_id)
+                return True
         except Exception as e:
             logger.error("Error sending Feishu {} message: {}", msg_type, e)
+            if raise_on_failure:
+                raise
             return False
+
+        if raise_on_failure:
+            raise RuntimeError(failure or "Feishu message send failed")
+        return False
 
     # ── CardKit streaming (send_delta) ───────────────────────────────
 
@@ -2247,25 +2266,32 @@ class FeishuChannel(BaseChannel):
 
             delivered = True
             sent_any = False
+            failures: list[str] = []
 
             async def send_payload(msg_type: str, content: str) -> None:
                 nonlocal delivered, sent_any
                 sent_any = True
                 sent = await loop.run_in_executor(
                     None,
-                    self._send_message_sync,
-                    receive_id_type,
-                    msg.chat_id,
-                    msg_type,
-                    content,
-                    reply_to_message_id,
+                    partial(
+                        self._send_message_sync,
+                        receive_id_type,
+                        msg.chat_id,
+                        msg_type,
+                        content,
+                        reply_to_message_id,
+                        raise_on_failure=True,
+                    ),
                 )
                 delivered = delivered and sent
+                if not sent:
+                    failures.append(f"{msg_type} message send failed")
 
             for file_path in msg.media:
                 if not os.path.isfile(file_path):
                     logger.warning("Media file not found: {}", file_path)
                     delivered = False
+                    failures.append(f"media file not found: {file_path}")
                     continue
                 ext = os.path.splitext(file_path)[1].lower()
                 if ext in self._IMAGE_EXTS:
@@ -2277,6 +2303,7 @@ class FeishuChannel(BaseChannel):
                         )
                     else:
                         delivered = False
+                        failures.append(f"image upload failed: {file_path}")
                 else:
                     key = await loop.run_in_executor(None, self._upload_file_sync, file_path)
                     if key:
@@ -2292,6 +2319,7 @@ class FeishuChannel(BaseChannel):
                         )
                     else:
                         delivered = False
+                        failures.append(f"file upload failed: {file_path}")
 
             if msg.content and msg.content.strip():
                 fmt = self._detect_msg_format(msg.content)
@@ -2321,6 +2349,13 @@ class FeishuChannel(BaseChannel):
 
         except Exception as e:
             logger.error("Error sending Feishu message: {}", e)
+            raise
+
+        # Delivery contract: report failures instead of swallowing them, so
+        # the channel manager's send_with_retry backoff actually applies.
+        if not delivered:
+            logger.error("Feishu delivery failed for {}: {}", msg.chat_id, "; ".join(failures))
+            raise RuntimeError(f"Feishu send failed for {msg.chat_id}: {'; '.join(failures)}")
 
     def _on_message_sync(self, data: Any) -> None:
         """

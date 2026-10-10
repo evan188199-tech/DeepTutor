@@ -179,7 +179,8 @@ async def test_only_successful_final_send_clears_working_reaction() -> None:
         content="Answer",
         metadata={"message_id": "om_user"},
     )
-    await channel.send(final)
+    with pytest.raises(RuntimeError, match="Feishu send failed"):
+        await channel.send(final)
     assert "om_user" in channel._working_reactions
 
     channel._send_message_sync.return_value = True
