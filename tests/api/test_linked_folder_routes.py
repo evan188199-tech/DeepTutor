@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+from deeptutor.knowledge.manager import format_mtime_utc
 
 try:
     from fastapi import FastAPI
@@ -269,7 +270,7 @@ def test_completed_folder_task_records_source_paths(
 
     assert manager.update_calls == [("kb", "folder-1", [str(source_path)])]
     assert manager.mtime_calls == [
-        {str(source_path): datetime.fromtimestamp(source_path.stat().st_mtime).isoformat()}
+        {str(source_path): format_mtime_utc(source_path.stat().st_mtime)}
     ]
 
 
@@ -308,7 +309,7 @@ def test_empty_completed_folder_task_advances_sync_state(
 
     assert manager.update_calls == [("kb", "folder-1", [str(source_path)])]
     assert manager.mtime_calls == [
-        {str(source_path): datetime.fromtimestamp(source_path.stat().st_mtime).isoformat()}
+        {str(source_path): format_mtime_utc(source_path.stat().st_mtime)}
     ]
 
 

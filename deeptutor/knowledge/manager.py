@@ -7,7 +7,7 @@ Manages multiple knowledge bases and provides utilities for accessing them.
 
 from contextlib import contextmanager
 from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import logging
@@ -57,6 +57,38 @@ from deeptutor.services.rag.index_probe import (
 from deeptutor.services.web_source.crawler import MAX_CRAWL_DEPTH, MAX_CRAWL_PAGES
 
 logger = logging.getLogger(__name__)
+
+
+def format_mtime_utc(st_mtime: float) -> str:
+    """Render a stat mtime as an aware-UTC ISO string for metadata storage.
+
+    Naive local renderings are ambiguous once the host timezone changes, which
+    made every synced file look modified after a machine/DST switch.
+    """
+    return datetime.fromtimestamp(st_mtime, tz=timezone.utc).isoformat()
+
+
+def parse_stored_mtime(value: Any) -> datetime | None:
+    """Parse a stored linked-folder mtime into an aware datetime.
+
+    New entries are aware-UTC ISO strings. Older metadata stored naive local
+    ISO strings, interpreted here in the local zone (matching how they were
+    written); numeric values are taken as epoch seconds. Returns ``None`` when
+    the value is unusable so callers treat the file as modified instead of
+    trusting broken state.
+    """
+    try:
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return datetime.fromtimestamp(float(value), tz=timezone.utc)
+        parsed = datetime.fromisoformat(str(value))
+    except (OSError, OverflowError, TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        try:
+            return parsed.astimezone()
+        except (OSError, OverflowError, ValueError):
+            return None
+    return parsed
 
 
 def _assert_move_id_available(base_dir: Path, name: str) -> None:
@@ -2145,16 +2177,12 @@ class KnowledgeBaseManager:
 
         for file_path in FileTypeRouter.collect_supported_files(folder_path, recursive=True):
             file_str = str(file_path)
-            file_mtime = datetime.fromtimestamp(file_path.stat().st_mtime)
+            file_mtime = datetime.fromtimestamp(file_path.stat().st_mtime, tz=timezone.utc)
 
             if file_str in synced_files:
                 # Check if modified since last sync
-                prev_mtime_str = synced_files[file_str]
-                try:
-                    prev_mtime = datetime.fromisoformat(prev_mtime_str)
-                    if file_mtime > prev_mtime:
-                        modified_files.append(file_str)
-                except Exception:
+                prev_mtime = parse_stored_mtime(synced_files[file_str])
+                if prev_mtime is None or file_mtime > prev_mtime:
                     modified_files.append(file_str)
             else:
                 # New file (not in synced files)
@@ -2219,8 +2247,7 @@ class KnowledgeBaseManager:
                         else:
                             p = Path(file_path)
                             if p.exists():
-                                mtime = datetime.fromtimestamp(p.stat().st_mtime)
-                                file_states[file_path] = mtime.isoformat()
+                                file_states[file_path] = format_mtime_utc(p.stat().st_mtime)
                     except Exception as exc:
                         # Recording failed: leave the file un-recorded so the
                         # next scan re-syncs it instead of trusting a missing

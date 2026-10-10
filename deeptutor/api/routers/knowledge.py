@@ -48,7 +48,7 @@ from deeptutor.knowledge.add_documents import (
 )
 from deeptutor.knowledge.initializer import KnowledgeBaseInitializer
 from deeptutor.knowledge.kb_types import is_connected_kb, supports_local_raw_files
-from deeptutor.knowledge.manager import KnowledgeBaseManager
+from deeptutor.knowledge.manager import KnowledgeBaseManager, format_mtime_utc
 from deeptutor.knowledge.naming import validate_knowledge_base_name
 from deeptutor.knowledge.progress_tracker import ProgressStage, ProgressTracker
 from deeptutor.logging import PROCESS_LOG_PRIVATE_ATTR
@@ -1194,9 +1194,9 @@ async def run_upload_processing_task(
             if folder_id:
                 for source_path in uploaded_file_paths:
                     try:
-                        source_mtimes[source_path] = datetime.fromtimestamp(
+                        source_mtimes[source_path] = format_mtime_utc(
                             Path(source_path).stat().st_mtime
-                        ).isoformat()
+                        )
                     except OSError:
                         pass
             _task_log(task_id, f"Processing {len(uploaded_file_paths)} file(s) for KB '{kb_name}'")

@@ -9,13 +9,39 @@ The atomicity contract of the shared writer lives in
 
 from __future__ import annotations
 
+from contextlib import contextmanager
+from datetime import datetime, timezone
 import json
 import logging
+import os
 from pathlib import Path
+import time
+
+import pytest
 
 from deeptutor.api.routers.knowledge import LinkedFolderInfo
 from deeptutor.knowledge import manager as manager_module
 from deeptutor.knowledge.manager import KnowledgeBaseManager
+
+requires_tzset = pytest.mark.skipif(
+    not hasattr(time, "tzset"), reason="time.tzset() is required for TZ switching"
+)
+
+
+@contextmanager
+def _local_timezone(name: str):
+    """Run the block under a different local timezone (POSIX only)."""
+    previous = os.environ.get("TZ")
+    try:
+        os.environ["TZ"] = name
+        time.tzset()
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop("TZ", None)
+        else:
+            os.environ["TZ"] = previous
+        time.tzset()
 
 
 def _manager_with_linked_folder(tmp_path: Path) -> tuple[KnowledgeBaseManager, Path, str, Path]:
@@ -70,6 +96,104 @@ def test_sync_snapshot_preserves_change_made_during_indexing(tmp_path: Path) -> 
     manager, _metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
     staged_mtime = "2026-09-01T10:00:00"
     manager.update_folder_sync_state("kb", folder_id, [str(doc)], {str(doc): staged_mtime})
+
+    changes = manager.detect_folder_changes("kb", folder_id)
+    assert changes["modified_files"] == [str(doc)]
+
+
+def _stored_sync_state(metadata_file: Path, doc: Path, value) -> None:
+    metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+    metadata["linked_folders"][0]["synced_files"] = {str(doc): value}
+    metadata_file.write_text(json.dumps(metadata), encoding="utf-8")
+
+
+def test_update_folder_sync_state_stores_aware_utc_mtime(tmp_path: Path) -> None:
+    """Stored mtimes must be timezone-aware so they survive a TZ change."""
+    manager, metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+    st_mtime = doc.stat().st_mtime
+
+    manager.update_folder_sync_state("kb", folder_id, [str(doc)])
+
+    on_disk = json.loads(metadata_file.read_text(encoding="utf-8"))
+    stored = on_disk["linked_folders"][0]["synced_files"][str(doc)]
+    parsed = datetime.fromisoformat(stored)
+    assert parsed.tzinfo is not None
+    assert parsed == datetime.fromtimestamp(st_mtime, tz=timezone.utc)
+
+
+@requires_tzset
+def test_detect_folder_changes_stable_when_local_timezone_moves_ahead(
+    tmp_path: Path,
+) -> None:
+    """A TZ move must not make every synced file look modified.
+
+    Sync state recorded as naive local wall time under ``America/New_York``
+    reads back as wall time 14 hours earlier under ``Asia/Tokyo``; the naive
+    comparison then flags every unchanged file as modified and re-indexes the
+    whole folder on every scan after a machine/TZ change.
+    """
+    manager, _metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+
+    with _local_timezone("America/New_York"):
+        manager.update_folder_sync_state("kb", folder_id, [str(doc)])
+
+    with _local_timezone("Asia/Tokyo"):
+        changes = manager.detect_folder_changes("kb", folder_id)
+
+    assert changes["new_files"] == []
+    assert changes["modified_files"] == []
+    assert changes["has_changes"] is False
+
+
+@requires_tzset
+def test_detect_folder_changes_detects_real_edit_across_timezone_change(
+    tmp_path: Path,
+) -> None:
+    manager, _metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+
+    with _local_timezone("America/New_York"):
+        manager.update_folder_sync_state("kb", folder_id, [str(doc)])
+
+    stat_result = doc.stat()
+    os.utime(
+        doc,
+        ns=(stat_result.st_atime_ns, stat_result.st_mtime_ns + 2_000_000_000),
+    )
+
+    with _local_timezone("Asia/Tokyo"):
+        changes = manager.detect_folder_changes("kb", folder_id)
+
+    assert changes["modified_files"] == [str(doc)]
+
+
+def test_detect_folder_changes_accepts_legacy_naive_local_values(
+    tmp_path: Path,
+) -> None:
+    """Values written by older builds (naive local ISO) still parse locally."""
+    manager, metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+    legacy = datetime.fromtimestamp(doc.stat().st_mtime).isoformat()
+
+    _stored_sync_state(metadata_file, doc, legacy)
+
+    changes = manager.detect_folder_changes("kb", folder_id)
+    assert changes["has_changes"] is False
+
+
+def test_detect_folder_changes_accepts_epoch_number_values(tmp_path: Path) -> None:
+    manager, metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+
+    _stored_sync_state(metadata_file, doc, doc.stat().st_mtime)
+
+    changes = manager.detect_folder_changes("kb", folder_id)
+    assert changes["has_changes"] is False
+
+
+def test_detect_folder_changes_treats_unparseable_stored_mtime_as_modified(
+    tmp_path: Path,
+) -> None:
+    manager, metadata_file, folder_id, doc = _manager_with_linked_folder(tmp_path)
+
+    _stored_sync_state(metadata_file, doc, "not-a-timestamp")
 
     changes = manager.detect_folder_changes("kb", folder_id)
     assert changes["modified_files"] == [str(doc)]
