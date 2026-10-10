@@ -73,21 +73,42 @@ GRADES = [
     ),
     # --- multi choice: separated keys ---
     pytest.param({"kind": "multi_choice", "correct": "A,C"}, "A,C", True, id="multi-comma-match"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "C, A", True, id="multi-order-insensitive"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "A；C", True, id="multi-fullwidth-semicolon"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "A C", True, id="multi-space-separated"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "a,c", True, id="multi-lowercase-keys"),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "C, A", True, id="multi-order-insensitive"
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "A；C", True, id="multi-fullwidth-semicolon"
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "A C", True, id="multi-space-separated"
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "a,c", True, id="multi-lowercase-keys"
+    ),
     # --- multi choice: concatenated letters ---
     pytest.param({"kind": "multi_choice", "correct": "A,C"}, "AC", True, id="multi-concatenated"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "ca", True, id="multi-concatenated-lower"),
     pytest.param(
-        {"kind": "multiple_select", "correct": "B,D"}, "BD", True, id="multi-select-alias-concatenated"
+        {"kind": "multi_choice", "correct": "A,C"}, "ca", True, id="multi-concatenated-lower"
     ),
-    pytest.param({"kind": "multi_choice", "correct": "AC"}, "A,C", True, id="multi-legacy-concat-correct"),
+    pytest.param(
+        {"kind": "multiple_select", "correct": "B,D"},
+        "BD",
+        True,
+        id="multi-select-alias-concatenated",
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "AC"}, "A,C", True, id="multi-legacy-concat-correct"
+    ),
     # --- multi choice: partial / extra / invalid selections ---
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "A", False, id="multi-partial-is-wrong"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "A,B,C", False, id="multi-extra-is-wrong"),
-    pytest.param({"kind": "multi_choice", "correct": "A,C"}, "XYZ", False, id="multi-unknown-letters-wrong"),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "A", False, id="multi-partial-is-wrong"
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "A,B,C", False, id="multi-extra-is-wrong"
+    ),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "A,C"}, "XYZ", False, id="multi-unknown-letters-wrong"
+    ),
     pytest.param({"kind": "multi_choice", "correct": "A,C"}, "", False, id="multi-empty-is-wrong"),
     # --- options supplied via options_json only ---
     pytest.param(
@@ -128,7 +149,9 @@ NONE_CASES = [
     pytest.param({"kind": "free_response"}, "A", id="none-kind-free-response"),
     pytest.param({"correct": "Z"}, "A", id="none-correct-key-outside-options"),
     pytest.param({"correct": "42"}, "42", id="none-correct-not-an-option-key"),
-    pytest.param({"kind": "multi_choice", "correct": "AZ"}, "A", id="none-multi-correct-partially-invalid"),
+    pytest.param(
+        {"kind": "multi_choice", "correct": "AZ"}, "A", id="none-multi-correct-partially-invalid"
+    ),
 ]
 
 
