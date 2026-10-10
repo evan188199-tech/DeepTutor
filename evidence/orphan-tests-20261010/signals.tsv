@@ -1,0 +1,179 @@
+file	line	kind	target_or_condition	reason_or_scope	status_at_head	orphan_relevant
+tests/api/routers/test_reading_progress.py	25	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_capabilities_router.py	20	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_courses_router.py	10	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_courses_router.py	12	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_courses_router.py	13	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_knowledge_router.py	37	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_knowledge_upload_guards.py	26	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_knowledge_upload_guards.py	40	skipif	router is None	deeptutor.api.routers.knowledge could not be imported	env-conditional	no
+tests/api/test_knowledge_zip_upload.py	17	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_linked_folder_routes.py	17	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_main_notebook_router.py	15	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_main_notebook_router.py	17	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_main_notebook_router.py	18	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_memory_resolver.py	14	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_memory_resolver.py	16	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_memory_resolver.py	17	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_memory_router_contract.py	28	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_memory_router_contract.py	30	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_memory_router_contract.py	31	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_notebook_api_contract.py	16	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_notebook_api_contract.py	18	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_notebook_api_contract.py	19	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_notebook_api_contract.py	20	importorskip	deeptutor.api.routers.question_notebook	local	dormant-target-present	no
+tests/api/test_notebook_router.py	11	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_notebook_router.py	13	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_notebook_router.py	14	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_partner_groups_router.py	19	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_partners_router.py	20	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_plugins_router.py	29	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_question_bank_api.py	12	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_question_bank_api.py	14	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_question_bank_api.py	15	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_question_router.py	13	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_question_router.py	14	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_question_router.py	15	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_reading_quiz_answers.py	18	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_reading_quiz_answers.py	20	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_reading_quiz_answers.py	21	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_selective_access_log.py	19	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_skills_hub_router.py	22	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_subagents_router.py	23	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/api/test_visualizers_router.py	10	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_web_source_schedule_api.py	7	importorskip	fastapi	external	ACTIVE-target-missing	no
+tests/api/test_web_source_schedule_api.py	8	importorskip	fastapi.testclient	external	ACTIVE-target-missing	no
+tests/api/test_workspace_router.py	18	skipif	FastAPI is None or TestClient is None	fastapi not installed	env-conditional	no
+tests/book/test_cross_module_call_contracts.py	76	importorskip	deeptutor.agents.math_animator.pipeline	local	dormant-target-present	no
+tests/book/test_cross_module_call_contracts.py	85	importorskip	deeptutor.agents.math_animator.pipeline	local	dormant-target-present	no
+tests/cli/test_chat_terminal.py	14	importorskip	pty	external	ACTIVE-target-missing	no
+tests/cli/test_chat_terminal.py	15	importorskip	termios	external	ACTIVE-target-missing	no
+tests/cli/test_chat_terminal.py	18	skipif	not hasattr(termios	IUTF8	env-conditional	no
+tests/integration/test_prompt_cache.py	30	skipif	"os.getenv(""DEEPTUTOR_CACHE_E2E"") != ""1"""	explicit real API opt-in required	env-conditional	no
+tests/logging/test_configure.py	95	skipif	"os.name == ""nt"""	POSIX mode bits are not authoritative	env-conditional	no
+tests/logging/test_loguru_bridge.py	10	importorskip	loguru	external	ACTIVE-target-missing	no
+tests/multi_user/test_login_username_contract.py	94	importorskip	bcrypt	external	ACTIVE-target-missing	no
+tests/reading/test_capability.py	33	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/reading/test_engine.py	41	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/reading/test_engine.py	321	importorskip	pptx	external	ACTIVE-target-missing	no
+tests/reading/test_extension_router.py	265	importorskip	uvloop	external	ACTIVE-target-missing	no
+tests/reading/test_reading_page_render.py	30	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/reading/test_reading_pdf_media.py	39	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/reading/test_reading_pdf_media.py	80	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/reading/test_router.py	24	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/runtime/test_isolated_worker.py	62	importorskip	psutil	external	ACTIVE-target-missing	no
+tests/runtime/test_launcher.py	471	skipif	"os.name == ""nt"""	POSIX orphan lifecycle integration	env-conditional	no
+tests/services/codex_auth/test_credential_location.py	99	skipif	"os.name == ""nt"""	POSIX permission bits are not authoritative on Windows	env-conditional	no
+tests/services/codex_auth/test_storage.py	306	skipif	"os.name == ""nt"""	POSIX permission bits are not authoritative on Windows	env-conditional	no
+tests/services/cron/test_cron_service.py	71	importorskip	croniter	external	ACTIVE-target-missing	no
+tests/services/cron/test_cron_service.py	77	importorskip	croniter	external	ACTIVE-target-missing	no
+tests/services/cron/test_cron_service.py	92	importorskip	croniter	external	ACTIVE-target-missing	no
+tests/services/llm/test_anthropic_provider_fixes.py	17	importorskip	anthropic	external	ACTIVE-target-missing	no
+tests/services/llm/test_image_caption_cache.py	263	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/mcp/test_secrets.py	45	skipif	"sys.platform == ""win32"""	POSIX file modes	env-conditional	no
+tests/services/parsing/test_engines.py	709	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/services/parsing/test_engines.py	710	importorskip	pymupdf4llm	external	ACTIVE-target-missing	no
+tests/services/parsing/test_engines.py	744	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/services/parsing/test_engines.py	745	importorskip	pymupdf4llm	external	ACTIVE-target-missing	no
+tests/services/parsing/test_mineru_normalization.py	9	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/services/partners/test_channel_onboarding.py	424	importorskip	qrcode	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_model_picker.py	183	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_model_picker.py	337	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_model_picker.py	378	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_model_picker.py	429	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	47	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	62	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	72	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	82	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	92	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	102	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	114	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	127	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_reply_delivery.py	146	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_stream_resilience.py	68	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_stream_resilience.py	84	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_stream_resilience.py	94	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_stream_resilience.py	107	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_thinking_notice.py	59	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_thinking_notice.py	78	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_thinking_notice.py	94	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_thinking_notice.py	105	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_thinking_notice.py	141	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_ws_card_callback.py	36	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_ws_card_callback.py	63	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_feishu_ws_card_callback.py	80	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_lark_keep_alive.py	15	importorskip	lark_oapi.core.http.transport	external	ACTIVE-target-missing	no
+tests/services/partners/test_lark_keep_alive.py	24	importorskip	lark_oapi.core.http.transport	external	ACTIVE-target-missing	no
+tests/services/partners/test_lark_keep_alive.py	41	importorskip	lark_oapi	external	ACTIVE-target-missing	no
+tests/services/partners/test_telegram_markdown_html.py	7	importorskip	telegram	external	ACTIVE-target-missing	no
+tests/services/partners/test_telegram_message_parsing.py	34	importorskip	telegram	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	118	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	140	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	141	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	182	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	183	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	219	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	220	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	256	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	257	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	294	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	295	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	336	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	337	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	371	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	372	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	409	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	410	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	454	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	455	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	490	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	539	importorskip	litellm	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_completion_adapter.py	540	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pandas_compat.py	16	importorskip	pandas	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pandas_compat.py	17	importorskip	pyarrow	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pandas_compat.py	57	importorskip	pyarrow	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pipeline.py	784	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pipeline.py	801	importorskip	graphrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pipeline.py	1070	importorskip	pandas	external	ACTIVE-target-missing	no
+tests/services/rag/test_graphrag_pipeline.py	1071	importorskip	pyarrow	external	ACTIVE-target-missing	no
+tests/services/rag/test_lightrag_embedding_compatibility.py	225	skipif	"importlib.util.find_spec(""lightrag"") is None"	optional LightRAG SDK	env-conditional	no
+tests/services/rag/test_lightrag_ingress.py	16	skipif	"importlib.util.find_spec(""lightrag"") is None"	requires the optional rag-lightrag extra	env-conditional	no
+tests/services/rag/test_lightrag_native_smoke.py	14	importorskip	lightrag.utils	external	ACTIVE-target-missing	no
+tests/services/rag/test_lightrag_pipeline.py	39	skipif	"importlib.util.find_spec(""lightrag"") is None"	requires the optional rag-lightrag extra	env-conditional	no
+tests/services/rag/test_lightrag_roles.py	197	importorskip	lightrag	external	ACTIVE-target-missing	no
+tests/services/rag/test_lightrag_roles.py	1159	importorskip	lightrag.utils	external	ACTIVE-target-missing	no
+tests/services/rag/test_lightrag_settings_wiring.py	13	skipif	"importlib.util.find_spec(""lightrag"") is None"	requires the optional rag-lightrag extra	env-conditional	no
+tests/services/rag/test_llamaindex_document_loader.py	75	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	109	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	141	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	181	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	206	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	262	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	299	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	339	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	371	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	395	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	455	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	482	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	539	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	598	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	627	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_document_loader.py	658	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_faiss_vector_store.py	24	importorskip	faiss	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_faiss_vector_store.py	25	importorskip	llama_index.vector_stores.faiss	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_image_description.py	125	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_image_description.py	148	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_image_description.py	172	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_llamaindex_image_description.py	196	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/rag/test_visual_assets.py	292	importorskip	fitz	external	ACTIVE-target-missing	no
+tests/services/rag/test_visual_assets.py	293	importorskip	pymupdf4llm	external	ACTIVE-target-missing	no
+tests/services/rag/test_visual_assets.py	347	importorskip	llama_index.core	external	ACTIVE-target-missing	no
+tests/services/sandbox/test_sandbox.py	291	skipif	"sys.platform == ""win32"""	POSIX process groups	env-conditional	no
+tests/services/session/test_turn_repository.py	56	skipif	"os.name == ""nt"""	POSIX mode bits are not authoritative	env-conditional	no
+tests/services/skill/test_skill_hub.py	504	skipif	"os.name == ""nt"""	POSIX cp in fetch command	env-conditional	no
+tests/services/test_path_service.py	214	skipif	"os.name == ""nt"""	POSIX mode bits are not authoritative	env-conditional	no
+tests/utils/test_document_extractor.py	466	importorskip	fitz	external	ACTIVE-target-missing	no
+tests/utils/test_document_images.py	155	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/utils/test_document_images.py	176	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/utils/test_document_images.py	198	importorskip	pymupdf	external	ACTIVE-target-missing	no
+tests/utils/test_secret_files.py	16	skipif	"os.name != ""posix"""	POSIX permission bits are not modelled on Windows	env-conditional	no
