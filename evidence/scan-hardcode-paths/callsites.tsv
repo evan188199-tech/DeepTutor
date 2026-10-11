@@ -1,0 +1,97 @@
+file:line	pattern	code	judgment	basis
+deeptutor/agents/research/request_config.py:179	\./data	"./data/user/workspace/chat/deep_research",	迁移候选:P1	回退字面量 ./data/user/workspace/chat/deep_research;config/loader.py:74 已注入 path_service 绝对路径,回退应改为 PathService.get_research_dir() 而非 cwd 相对
+deeptutor/agents/research/request_config.py:183	\./data	"./data/user/workspace/chat/deep_research/reports",	迁移候选:P1	回退字面量 ./data/user/workspace/chat/deep_research/reports,同上应改 get_research_reports_dir()
+deeptutor/api/routers/reading.py:1062	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	tmp_dir = Path(tempfile.mkdtemp(prefix="dt-reading-"))	可选:P3	上传暂存于系统临时目录,reading.py:1113 finally 清理;可选迁 runtime state dir
+deeptutor/capabilities/subagent/tools.py:242	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	staging = tempfile.mkdtemp(prefix="dt-subagent-img-")	可选:P3	系统临时目录暂存转发图片,tools.py:181-184 finally 清理;如需审计可迁 runtime state dir
+deeptutor/knowledge/add_documents.py:39	\./data	DEFAULT_BASE_DIR = "./data/knowledge_bases"	迁移候选:P0	DEFAULT_BASE_DIR 重复同一字面量,应随 manager 默认一并收敛
+deeptutor/knowledge/initializer.py:337	\./data	base_dir: str = "./data/knowledge_bases",	迁移候选:P1	同上,第二个入口的默认值
+deeptutor/knowledge/initializer.py:41	\./data	base_dir: str = "./data/knowledge_bases",	迁移候选:P1	initializer 默认 base_dir 同字面量,应派生自 PathService
+deeptutor/knowledge/manager.py:1105	expanduser	return resolve_db_path(kb_name, metadata=entry).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:1272	expanduser	folder = Path(external).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:1506	expanduser	kb_dir = Path(external).expanduser() if external else self.base_dir / kb_name	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:1976	expanduser	folder = Path(folder_path).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:2104	expanduser	folder = Path(folder_path).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:2140	expanduser	folder_path = Path(folder_info["path"]).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:328	\./data	def __init__(self, base_dir="./data/knowledge_bases"):	迁移候选:P0	KnowledgeBaseManager 默认 ./data/knowledge_bases 相对 cwd;应改 PathService.get_knowledge_bases_root();book/kb_health.py:41 裸构造回退会在 cwd!=runtime home 时落错位置
+deeptutor/knowledge/manager.py:873	expanduser	vault = Path(vault_path).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:918	expanduser	folder = Path(external_path).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manager.py:967	expanduser	folder = Path(cwd).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/knowledge/manifest.py:187	expanduser	return Path(str(external)).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/dingtalk.py:303	expanduser	local_path = Path(os.path.expanduser(media_ref))	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/matrix.py:230	expanduser	Path(workspace).expanduser().resolve(strict=False) if workspace is not None else None	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/matrix.py:315	expanduser	path = Path(raw.strip()).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/matrix.py:405	expanduser	resolved = path.expanduser().resolve(strict=False)	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/napcat.py:489	expanduser	path = Path(os.path.expanduser(ref)).resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/partners/channels/weixin.py:182	expanduser	d = Path(self.config.state_dir).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/plugins/distribution.py:84	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	folder = Path(tempfile.mkdtemp(prefix="deeptutor-plugin-", dir=destination_dir))	豁免:已归口	mkdtemp(dir=destination_dir),scoped
+deeptutor/plugins/lifecycle.py:380	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	keep = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "SSL_CERT_FILE", "SSL_CERT_DIR")	豁免:env 白名单	子进程 env 保留键列表,非路径写死
+deeptutor/plugins/lifecycle.py:79	expanduser	artifact = Path(artifact).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/plugins/runtime.py:400	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	keep = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "SSL_CERT_FILE", "SSL_CERT_DIR")	豁免:env 白名单	同 lifecycle.py:380
+deeptutor/reading/ingestion.py:983	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	tmp_dir = Path(tempfile.mkdtemp(prefix="dt-reading-audio-"))	豁免:瞬态	ffmpeg 分段暂存,函数内 try/finally 清理
+deeptutor/runtime/home.py:15	expanduser	resolved = Path(home).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/runtime/home.py:43	expanduser	return Path(raw).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/runtime/launcher.py:65	Path\(\"data\"\)	WEB_CACHE_DIR = Path("data") / "user" / "runtime" / "web"	豁免:已归口	常量仅为相对片段,launcher.py:745 以 runtime_home 为根拼接,重定向语义正确
+deeptutor/runtime/launcher.py:78	Path\(\"data\"\)	DETACHED_RUNTIME_DIR = Path("data") / "user" / "runtime"	豁免:已归口	常量仅为相对片段,launcher.py:164 以 runtime_home 为根拼接,重定向语义正确
+deeptutor/services/cli_apps/installer.py:243	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	keep = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "SSL_CERT_FILE", "SSL_CERT_DIR")	豁免:env 白名单	子进程 env 保留键列表
+deeptutor/services/cli_apps/runner.py:117	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	"HOME": "/tmp",  # noqa: S108  # nosec B108 - tmpfs inside the sandbox, not a host path	豁免:沙箱内部	沙箱内 HOME=/tmp tmpfs,注释已声明非宿主路径
+deeptutor/services/codebuddy_credentials.py:191	Path\.home\(\)	return Path.home() / ".codebuddy" / "local_storage"	豁免:外部工具	CodeBuddy CLI 自身缓存 ~/.codebuddy/local_storage,外部工具约定
+deeptutor/services/codebuddy_credentials.py:86	Path\.home\(\)	home = Path.home()	豁免:外部工具	CodeBuddy CLI 官方凭据位置(LOCALAPPDATA/Library Application Support/XDG data),OS home 约定,非 DeepTutor 运行时数据
+deeptutor/services/cron/repository.py:38	expanduser	self.path = Path(path).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/cron/repository.py:39	expanduser	self.legacy_path = Path(legacy_path).expanduser().resolve() if legacy_path else None	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/parsing/engines/docling/engine.py:46	Path\.home\(\)	base = Path(cache).expanduser() if cache else Path.home() / ".cache" / "docling"	豁免:外部缓存	docling 官方缓存约定 ~/.cache/docling,DOCLING_CACHE_DIR 可覆盖;模型缓存非运行时数据
+deeptutor/services/parsing/engines/docling/engine.py:53	expanduser	if artifacts and _dir_nonempty(Path(artifacts).expanduser()):	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/parsing/engines/docling/engine.py:61	Path\.home\(\)	Path(hf_home).expanduser() if hf_home else Path.home() / ".cache" / "huggingface"	豁免:外部缓存	HF 官方缓存约定 ~/.cache/huggingface,HF_HOME 可覆盖
+deeptutor/services/parsing/engines/mineru/backend.py:146	expanduser	candidate = Path(configured).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/parsing/engines/mineru/backend.py:167	expanduser	candidate = Path(command).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/parsing/engines/mineru/local.py:205	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	attempt = Path(tempfile.mkdtemp(prefix=".mineru-attempt-", dir=base_dir))	豁免:已归口	mkdtemp(dir=base_dir),scoped
+deeptutor/services/parsing/engines/mineru/models.py:51	expanduser	sibling = Path(configured).expanduser().parent / DOWNLOADER_NAME	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/parsing/engines/mineru/readiness.py:36	Path\.home\(\)	base = Path(hf_home).expanduser() if hf_home else Path.home() / ".cache" / "huggingface"	豁免:外部缓存	HF 官方缓存约定,HF_HOME 可覆盖
+deeptutor/services/parsing/engines/mineru/readiness.py:42	Path\.home\(\)	return Path(ms).expanduser() if ms else Path.home() / ".cache" / "modelscope" / "hub"	豁免:外部缓存	ModelScope 官方缓存约定,MS env 可覆盖
+deeptutor/services/rag/eval/dataset.py:206	expanduser	target = Path(path).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/rag/kb_paths.py:33	expanduser	return Path(external).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/rag/linked_kb.py:100	expanduser	folder = Path(folder_path).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/rag/linked_kb.py:128	expanduser	folder = Path(folder_path).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/rag/linked_kb.py:86	expanduser	roots.append(Path(chunk).expanduser().resolve())	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/sandbox/artifacts.py:131	expanduser	root = Path(workdir).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/sandbox/artifacts.py:81	expanduser	root = Path(workdir).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/sandbox/backends.py:183	Path\.home\(\)	home = Path.home().resolve()	豁免:沙箱内部	bwrap 挂载检测中排除宿主 home,不产生读写
+deeptutor/services/sandbox/backends.py:208	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	"/tmp",  # nosec B108 — path inside the bwrap mount namespace, not the host	豁免:沙箱内部	bwrap mount namespace 内 /tmp tmpfs,注释已声明非宿主路径
+deeptutor/services/sandbox/backends.py:291	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	_SAFE_ENV_KEYS = ("PATH", "PATHEXT", "HOME", "LANG", "LC_ALL", "TMPDIR", "SYSTEMROOT")	豁免:env 白名单	_SAFE_ENV_KEYS 透传键列表
+deeptutor/services/setup/init.py:47	\./data	"allowed_roots": ["./data/user"],	迁移候选:P2	DEFAULT_MAIN_SETTINGS 中 allowed_roots=[./data/user] cwd 相对;workspace/service.py 的 allowed_roots 实际走 env+PathService,此键疑似遗留,应删除或改为绝对派生
+deeptutor/services/skill/hub.py:379	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	tmp = Path(tempfile.mkdtemp(prefix="deeptutor-skill-"))	豁免:瞬态	skill 安装暂存,FetchedSkill.cleanup_dir 析构清理(hub.py:139)
+deeptutor/services/skill/hub.py:621	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	tmp = Path(tempfile.mkdtemp(prefix="deeptutor-skill-"))	豁免:瞬态	command hub fetch 暂存,同 cleanup_dir 机制
+deeptutor/services/skill/hub.py:841	expanduser	root = Path(directory).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/skill/hub.py:935	expanduser	return _read_frontmatter(Path(directory).expanduser().resolve() / "SKILL.md")	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/skill/hub.py:950	expanduser	root = Path(directory).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/skill/hub.py:994	expanduser	root = Path(directory).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/storage/attachment_store.py:301	expanduser	return Path(override).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/subagent/claude_models.py:159	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	workdir = tempfile.mkdtemp(prefix="dt-claude-model-")	可选:P3	PTY 探测 workdir 于系统临时目录,claude_models.py:229 _cleanup_dir 清理;可选迁 runtime state dir
+deeptutor/services/subagent/deepseek_harness.py:255	Path\.home\(\)	return str(Path(configured).expanduser() if configured else Path.home() / ".dsh")	豁免:外部工具	deepseek_harness SDK home,DSH_HOME 可覆盖,外部约定
+deeptutor/services/subagent/models.py:140	Path\.home\(\)	return Path(raw).expanduser() if raw else Path.home() / ".codex"	豁免:外部工具	Codex CLI home,CODEX_HOME 可覆盖,外部约定
+deeptutor/services/web_source/repository.py:116	expanduser	self.path = Path(path).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/catalog.py:136	expanduser	root = Path(row["path"]).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/catalog.py:310	expanduser	root = Path(path).expanduser().resolve() if path else self._managed_root() / workspace_id	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/catalog.py:467	expanduser	migrate_locations(self, [(row, Path(destination).expanduser().resolve())])	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/catalog.py:475	expanduser	target = Path(destination).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/catalog.py:62	expanduser	return Path(configured).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/execution.py:111	expanduser	env["DEEPTUTOR_WORKSPACE_ROOT"] = str(Path(workspace_root).expanduser().resolve())	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/execution.py:14	expanduser	root = Path(workspace_root).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/execution.py:33	expanduser	relative = candidate.relative_to(Path(workspace_root).expanduser().resolve())	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/execution.py:55	expanduser	turn_root = Path(turn_output_dir).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/execution.py:79	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	"TMPDIR": str(locations["tmp"]),	豁免:已归口	TMPDIR 指向 workspace locations,scoped
+deeptutor/services/workspace/migration.py:46	expanduser	destination = destination.expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:104	expanduser	Path(value).expanduser().resolve() for value in raw.split(os.pathsep) if value.strip()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:160	expanduser	root = Path(raw_path).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:181	expanduser	root = Path(str(row.get("path") or "")).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:237	expanduser	else self._binding(Path(path).expanduser().resolve(), is_default=False)	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:256	expanduser	else self._binding(Path(path).expanduser().resolve(), is_default=False)	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/services/workspace/service.py:99	expanduser	return Path(raw).expanduser().resolve() if raw else None	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/tools/exec_tool.py:249	expanduser	source_root = Path(source_root_raw).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/tools/file_tools.py:16	expanduser	raw = Path(str(path or ".")).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/tools/file_tools.py:17	expanduser	root = Path(workspace).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/tools/file_tools.py:18	expanduser	allowed = Path(allowed_dir).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor/tools/tex_downloader.py:87	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	temp_dir = tempfile.mkdtemp(dir=self.workspace_dir)	豁免:已归口	mkdtemp(dir=self.workspace_dir),落在调用方工作区内
+deeptutor/visualizers/store.py:158	gettempdir|\"/tmp\"|TMPDIR|mkdtemp	staging = Path(tempfile.mkdtemp(prefix=f".{manifest.id}-", dir=self.root))	豁免:已归口	mkdtemp(dir=self.root),store 根内原子替换
+deeptutor_cli/kb.py:111	expanduser	target = Path(save).expanduser()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor_cli/kb.py:42	expanduser	path = Path(doc).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
+deeptutor_cli/kb.py:47	expanduser	base = Path(docs_dir).expanduser().resolve()	豁免:输入归一化	expanduser 用于解析用户/配置提供的路径值,属正确行为;默认根均来自 PathService/SYSTEM_ROOT
