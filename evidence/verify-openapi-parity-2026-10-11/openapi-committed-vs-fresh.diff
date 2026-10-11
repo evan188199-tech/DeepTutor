@@ -1,0 +1,102 @@
+--- /Users/Shared/DeepTutor/.wt-agen1795-openapi-parity/web/contracts/schema/openapi.json	2026-10-11 14:02:18
++++ /tmp/multica-task-58470594/opencode/fresh-schema/openapi.json	2026-10-11 14:04:38
+@@ -784,7 +784,7 @@
+       "Body_admin_import_users_api_auth_users_import_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }
+@@ -805,7 +805,7 @@
+           "files": {
+             "default": [],
+             "items": {
+-              "format": "binary",
++              "contentMediaType": "application/octet-stream",
+               "type": "string"
+             },
+             "title": "Files",
+@@ -863,7 +863,7 @@
+       "Body_import_docx_api_documents_import_docx_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }
+@@ -883,7 +883,7 @@
+             "type": "string"
+           },
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           },
+@@ -906,7 +906,7 @@
+       "Body_import_visualizer_api_visualizers_import_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }
+@@ -920,8 +920,8 @@
+       "Body_library_add": {
+         "properties": {
+           "file": {
++            "contentMediaType": "application/octet-stream",
+             "description": "Raw file bytes",
+-            "format": "binary",
+             "title": "File",
+             "type": "string"
+           },
+@@ -946,7 +946,7 @@
+       "Body_preview_office_upload_api_file_preview_pdf_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }
+@@ -981,7 +981,7 @@
+       "Body_speech_to_text_api_voice_stt_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           },
+@@ -1006,7 +1006,7 @@
+       "Body_upload_avatar_api_auth_profile_avatar_put": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }
+@@ -1025,7 +1025,7 @@
+           },
+           "files": {
+             "items": {
+-              "format": "binary",
++              "contentMediaType": "application/octet-stream",
+               "type": "string"
+             },
+             "title": "Files",
+@@ -1064,7 +1064,7 @@
+       "Body_upload_material_api_reading_materials_post": {
+         "properties": {
+           "file": {
+-            "format": "binary",
++            "contentMediaType": "application/octet-stream",
+             "title": "File",
+             "type": "string"
+           }

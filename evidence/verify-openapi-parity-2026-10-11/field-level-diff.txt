@@ -1,0 +1,40 @@
+# openapi.json drift: committed (HEAD 6cf793bd8) vs fresh backend export
+# committed paths=674 ops, fresh paths=674 ops
+
+## 1. Endpoint-level diff (paths x methods)
+
+- Added in backend (missing from committed schema): 0
+- Removed from backend (present only in committed schema): 0
+- Changed on existing endpoints: 0
+
+## 2. Field-level diff (components.schemas)
+
+- Unchanged schemas: 342
+- Added schemas (0):
+- Removed schemas (0):
+- Changed schemas (11): field-level detail below
+  - `Body_admin_import_users_api_auth_users_import_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_create_knowledge_base_api_knowledge_bases_post`:
+    - ~ `files`: {"array": {"type": "string", "format": "binary"}} -> {"array": {"type": "string", "contentMediaType": "application/octet-stream"}}
+  - `Body_import_docx_api_documents_import_docx_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_import_preview_api_question_notebook_practice_import_preview_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_import_visualizer_api_visualizers_import_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_library_add`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_preview_office_upload_api_file_preview_pdf_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_speech_to_text_api_voice_stt_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_upload_avatar_api_auth_profile_avatar_put`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+  - `Body_upload_files_api_knowledge_bases__kb_name__upload_post`:
+    - ~ `files`: {"array": {"type": "string", "format": "binary"}} -> {"array": {"type": "string", "contentMediaType": "application/octet-stream"}}
+  - `Body_upload_material_api_reading_materials_post`:
+    - ~ `file`: {"type": "string", "format": "binary"} -> {"type": "string", "contentMediaType": "application/octet-stream"}
+
+## 3. Top-level metadata drift
+

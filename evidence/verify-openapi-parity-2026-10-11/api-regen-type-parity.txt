@@ -1,0 +1,45 @@
+# api.ts regeneration parity proof (2026-10-11)
+# base: origin/main 6cf793bd8 (v1.6.14), worktree .wt-agen1795-openapi-parity
+
+## Environment
+- venv: /Users/Shared/DeepTutor/.venv -> fastapi 0.141.1, pydantic 2.13.4, starlette 0.52.1, python-multipart 0.0.32
+- repo dep floor: requirements/server.txt + pyproject.toml -> fastapi>=0.100.0 (unpinned)
+- node v22.22.2, web/node_modules symlinked from main checkout (repo-sanctioned pattern)
+
+## Layer 1: backend -> web/contracts/schema/ (python scripts/export_frontend_contracts.py)
+$ export_frontend_contracts.py --check   (in worktree)
+Frontend contract drift: openapi.json   -> exit 1
+- turn-protocol.json: committed == fresh render (byte-identical, diff -q empty)
+- openapi.json: committed != fresh render (102-line unified diff, 24 changed lines, see openapi-committed-vs-fresh.diff)
+
+## Layer 2: schema -> web/contracts/generated/ (node web/scripts/generate-contracts.mjs)
+$ generate-contracts.mjs --check   (against committed schema)
+(no output)   -> exit 0  => generated/api.ts and generated/turn-protocol.ts are IN SYNC with committed schema
+
+## Replication of generate pipeline (same openapi-typescript flags + prettier), outputs to temp:
+$ gen(committed schema) -> api-from-committed.ts (1212961 chars)
+$ gen(fresh schema)     -> api-from-fresh.ts     (1212617 chars)
+
+$ diff api-from-committed.ts web/contracts/generated/api.ts
+(empty) -> byte-identical; replication verified
+
+## Impact of regenerating api.ts from the fresh (backend) schema:
+$ diff web/contracts/generated/api.ts api-from-fresh.ts
+58 diff lines total; every changed line is a JSDoc comment block ("Format: binary" removed, block collapsed to /** File */)
+$ grep -vE comment/blank lines of both files | diff -
+(empty) -> TYPE-LEVEL IDENTICAL: zero TypeScript type changes
+
+## FastAPI rendering boundary (source-verified via raw.githubusercontent.com tag greps)
+- fastapi <= 0.129.x datastructures.py: no __get_pydantic_json_schema__ override; openapi emitted {"$schema" string + "format": "binary"}
+- fastapi 0.130.0 datastructures.py: UploadFile.__get_pydantic_json_schema__ -> {"type": "string", "contentMediaType": "application/octet-stream"}
+- venv has 0.141.1 -> fresh render uses contentMediaType; committed artifact uses binary (generated under fastapi < 0.130.0)
+
+## Historical flip-flop evidence (schema regenerated under mixed local dep versions)
+- da856ad67 release: v1.6.9: openapi.json diff shows -contentMediaType +binary
+- 7885daa98 2026-10-08 feat(plugins) #1307: same flip (-contentMediaType +binary)
+- main HEAD 6cf793bd8: binary=11 occurrences, contentMediaType=0
+
+## CI guard audit
+- web side: npm run check -> check:fast -> contracts:check (generate-contracts.mjs --check) GATES schema->generated
+- backend side: tests/api/test_frontend_contract_export.py only asserts determinism into tmp_path; NO workflow invokes scripts/export_frontend_contracts.py --check
+- web/contracts/README.md claims CI runs the export --check; no .github/workflows/*.yml matches 'export_frontend'

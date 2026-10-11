@@ -1,0 +1,4 @@
+b3c95a9bddbdcc5cb4faf084baedd6f1ffbc60dd71fb96748be5d6d5da0ef3b5  report.md
+2c2814dc83b1bfd4a6b1d1a9a030792e345c6db1d2adf2ba5f6a990ea55087b8  field-level-diff.txt
+469652faf86a04202d8325f2598c1727eb7953417b6e05d5886e22e168d6103d  openapi-committed-vs-fresh.diff
+6067d83c6b75cd400e5cacc6f37ccf219dc52d99516ca8927f9edaf12f641f93  api-regen-type-parity.txt
