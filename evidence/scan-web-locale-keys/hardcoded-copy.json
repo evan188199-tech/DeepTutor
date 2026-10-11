@@ -1,0 +1,273 @@
+{
+  "definition": "repo heuristic (web/scripts/i18n_audit.mjs): jsxText + title/placeholder/alt/aria-label attrs + alert()/confirm() literals with letters/CJK",
+  "findings": [
+    {
+      "kind": "attr:placeholder",
+      "text": "you@example.com",
+      "line": 105,
+      "file": "app/(auth)/login/page.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "you@example.com",
+      "line": 99,
+      "file": "app/(auth)/register/page.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "px",
+      "line": 110,
+      "file": "app/(utility)/avatar-preview/page.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "English",
+      "line": 346,
+      "file": "app/(workspace)/partners/new/page.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "中文",
+      "line": 347,
+      "file": "app/(workspace)/partners/new/page.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "s ·",
+      "line": 68,
+      "file": "components/knowledge/KbIndexingRun.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "s ·",
+      "line": 68,
+      "file": "components/knowledge/KbIndexingRun.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "my-server",
+      "line": 196,
+      "file": "components/mcp/McpServerForm.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "npx",
+      "line": 234,
+      "file": "components/mcp/McpServerForm.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "/path/to/workdir",
+      "line": 259,
+      "file": "components/mcp/McpServerForm.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "https://example.com/mcp",
+      "line": 285,
+      "file": "components/mcp/McpServerForm.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "L3",
+      "line": 551,
+      "file": "components/memory/MemoryGraph.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "·&nbsp;",
+      "line": 775,
+      "file": "components/memory/MemoryRunPanel.tsx",
+      "benign": false
+    },
+    {
+      "kind": "jsxText",
+      "text": "English",
+      "line": 357,
+      "file": "components/partners/PartnerConfigure.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "中文",
+      "line": 358,
+      "file": "components/partners/PartnerConfigure.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "SOUL.md",
+      "line": 40,
+      "file": "components/partners/SoulEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "sk-...",
+      "line": 463,
+      "file": "components/settings/ConnectionsEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "sk-...",
+      "line": 629,
+      "file": "components/settings/ConnectionsEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "gpt-4o",
+      "line": 899,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "alloy",
+      "line": 1082,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "1024x1024",
+      "line": 1149,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "720p",
+      "line": 1258,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "sk-...",
+      "line": 1714,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "{\"APP-Code\":\"your-app-code\"}",
+      "line": 1868,
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "benign": true
+    },
+    {
+      "kind": "attr:placeholder",
+      "text": "volc.bigasr.auc_turbo",
+      "line": 123,
+      "file": "components/settings/VoiceModelFields.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "&Sigma;",
+      "line": 1275,
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "&middot;",
+      "line": 1760,
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "Redis",
+      "line": 86,
+      "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "MB",
+      "line": 261,
+      "file": "features/settings/sections/DataMigrationSettingsSection.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "MB",
+      "line": 319,
+      "file": "features/settings/sections/DataMigrationSettingsSection.tsx",
+      "benign": true
+    },
+    {
+      "kind": "jsxText",
+      "text": "tokens",
+      "line": 212,
+      "file": "features/settings/sections/UsageSettingsSection.tsx",
+      "benign": true
+    }
+  ],
+  "files": [
+    "app/(auth)/login/page.tsx",
+    "app/(auth)/register/page.tsx",
+    "app/(utility)/avatar-preview/page.tsx",
+    "app/(workspace)/partners/new/page.tsx",
+    "components/knowledge/KbIndexingRun.tsx",
+    "components/mcp/McpServerForm.tsx",
+    "components/memory/MemoryGraph.tsx",
+    "components/memory/MemoryRunPanel.tsx",
+    "components/partners/PartnerConfigure.tsx",
+    "components/partners/SoulEditor.tsx",
+    "components/settings/ConnectionsEditor.tsx",
+    "components/settings/ServiceConfigEditor.tsx",
+    "components/settings/VoiceModelFields.tsx",
+    "features/co-writer/components/CoWriterWorkspace.tsx",
+    "features/runtime-status/TurnCoordinationSettings.tsx",
+    "features/settings/sections/DataMigrationSettingsSection.tsx",
+    "features/settings/sections/UsageSettingsSection.tsx"
+  ],
+  "dedup_fix_web_hardcoded_i18n": {
+    "branch": "myfork/fix/web-hardcoded-i18n-20261006 (59d77fa9f, NOT merged into origin/main)",
+    "files_fixed_by_branch": [
+      "components/agents/ConnectedAgents.tsx",
+      "components/settings/SettingsNav.tsx",
+      "components/settings/SubagentSettingsEditor.tsx",
+      "components/space/EduHubImportModal.tsx",
+      "components/space/SpaceDashboard.tsx",
+      "features/settings/sections/ToolsSettingsSection.tsx",
+      "hooks/useTopicSourceLibrary.ts",
+      "lib/quiz-types.ts",
+      "lib/research-types.ts",
+      "lib/tool-availability.ts",
+      "locales/de/app.json",
+      "locales/en/app.json",
+      "locales/fr/app.json",
+      "locales/pl/app.json",
+      "locales/uk/app.json",
+      "locales/zh/app.json",
+      "tests/space-dashboard-capability-gate.test.ts",
+      "tests/subagent-grok-settings.spec.tsx",
+      "tests/tool-availability.test.ts"
+    ],
+    "overlap_with_main_findings": [],
+    "note": "the 10 source files fixed by the branch still carry the pre-fix zh/en ternary copy on origin/main; audit heuristic does not flag them; treated as covered, not re-reported"
+  },
+  "dynamic_t_verification": {
+    "dynamic_call_sites": 278,
+    "dynamic_sites_files": 118,
+    "inline_map_nonkey_literals": 0,
+    "note": "sampled dynamic t() sites resolve through same-file/imported literal maps whose values are valid catalog keys (e.g. accountRoleLabelKey -> Admin/Teacher/Student/User); 0 non-key literals found"
+  }
+}

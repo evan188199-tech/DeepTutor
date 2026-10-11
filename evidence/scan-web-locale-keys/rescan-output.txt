@@ -1,0 +1,56 @@
+[i18n:audit] Missing locales directory
+[i18n:audit] OK (no obvious UI literals found)
+
+[i18n:parity] Missing locales roots: /Users/Shared/dt-agen1583-locale-wt/locales/en or /Users/Shared/dt-agen1583-locale-wt/locales/zh
+
+[scan] wrote /tmp/scan-web-locale-keys-out/scan-result.json
+{
+  "scannedDirs": [
+    "app",
+    "components",
+    "features",
+    "hooks",
+    "lib",
+    "shared"
+  ],
+  "usedKeyCount": 4014,
+  "usedOccurrences": 5879,
+  "dynamicCallSites": 278,
+  "missingUsedByLocale": {
+    "en": 0,
+    "zh": 0,
+    "fr": 59,
+    "de": 0,
+    "uk": 0,
+    "pl": 0
+  },
+  "catalogGapsVsEn": {
+    "zh": 0,
+    "fr": 529,
+    "de": 0,
+    "uk": 0,
+    "pl": 0
+  },
+  "catalogSizes": {
+    "en": 5507,
+    "zh": 5507,
+    "fr": 5887,
+    "de": 5507,
+    "uk": 5523,
+    "pl": 5523
+  },
+  "orphanCandidates": 1479,
+  "orphanConfirmed": 750,
+  "orphanGuardedByRawHit": 729,
+  "extraVsEn": {
+    "zh": 0,
+    "fr": 909,
+    "de": 0,
+    "uk": 16,
+    "pl": 16
+  },
+  "commonJsonWired": false,
+  "hardcodedFindings": 31,
+  "hardcodedSuspect": 1
+}
+[dynamic-literals] 0 non-key literal candidates across 0 files

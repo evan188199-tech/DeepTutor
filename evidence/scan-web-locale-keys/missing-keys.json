@@ -1,0 +1,1188 @@
+{
+  "definition": "t() literal keys used in web/{app,components,features,hooks,lib,shared} but absent from locales/<l>/app.json (plural _suffix forms honored)",
+  "per_locale_counts": {
+    "en": 0,
+    "zh": 0,
+    "fr": 59,
+    "de": 0,
+    "uk": 0,
+    "pl": 0
+  },
+  "locales": {
+    "en": [],
+    "zh": [],
+    "fr": [
+      {
+        "key": "Add a note for this segment",
+        "occurrences": [
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 877
+          }
+        ]
+      },
+      {
+        "key": "Add segment note",
+        "occurrences": [
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 744
+          },
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 749
+          }
+        ]
+      },
+      {
+        "key": "Approve this MCP origin for private-network connections",
+        "occurrences": [
+          {
+            "file": "components/mcp/McpServerForm.tsx",
+            "line": 292
+          }
+        ]
+      },
+      {
+        "key": "Assisted practice is recorded separately from independent mastery.",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 121
+          }
+        ]
+      },
+      {
+        "key": "Assisted",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 137
+          }
+        ]
+      },
+      {
+        "key": "Cancel indexing",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 74
+          }
+        ]
+      },
+      {
+        "key": "Cancellation pending at a safe boundary",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 74
+          }
+        ]
+      },
+      {
+        "key": "Confirmed learning records",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 54
+          },
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 55
+          }
+        ]
+      },
+      {
+        "key": "Could not read indexing state. Refresh and retry.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 65
+          }
+        ]
+      },
+      {
+        "key": "Could not read the learning journal. Its original data is preserved. Try refreshing.",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 34
+          }
+        ]
+      },
+      {
+        "key": "Could not read visual coverage. Open the original document to inspect the source.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 39
+          }
+        ]
+      },
+      {
+        "key": "Current mission",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 37
+          },
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 38
+          }
+        ]
+      },
+      {
+        "key": "Current model input has no verified source pixels. Retrieve the image again with a vision-capable model before grading.",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 212
+          }
+        ]
+      },
+      {
+        "key": "Current phase",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 67
+          },
+          {
+            "file": "components/knowledge/KbTaskLogs.tsx",
+            "line": 59
+          }
+        ]
+      },
+      {
+        "key": "Delete note",
+        "occurrences": [
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 853
+          },
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 857
+          }
+        ]
+      },
+      {
+        "key": "Enter a valid HTTP or HTTPS provider address.",
+        "occurrences": [
+          {
+            "file": "components/settings/AddProviderPanel.tsx",
+            "line": 193
+          }
+        ]
+      },
+      {
+        "key": "Explained",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 118
+          }
+        ]
+      },
+      {
+        "key": "Extracted figures do not prove complete visual coverage. Inspect the original page when labels, vectors or tables are missing.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 38
+          }
+        ]
+      },
+      {
+        "key": "General workspace",
+        "occurrences": [
+          {
+            "file": "app/(workspace)/kanban/page.tsx",
+            "line": 302
+          },
+          {
+            "file": "app/(workspace)/kanban/page.tsx",
+            "line": 329
+          }
+        ]
+      },
+      {
+        "key": "Guided visual practice — this does not demonstrate independent mastery.",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 209
+          }
+        ]
+      },
+      {
+        "key": "Independent visual evidence is still required for this objective.",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 120
+          }
+        ]
+      },
+      {
+        "key": "Independent visual evidence",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 119
+          }
+        ]
+      },
+      {
+        "key": "Indexing recovery details",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 63
+          }
+        ]
+      },
+      {
+        "key": "Last-session handoff",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 46
+          },
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 47
+          }
+        ]
+      },
+      {
+        "key": "Learning journal",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 32
+          }
+        ]
+      },
+      {
+        "key": "Level",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 42
+          }
+        ]
+      },
+      {
+        "key": "New note",
+        "occurrences": [
+          {
+            "file": "components/reading/workspace/MediaReadingStage.tsx",
+            "line": 781
+          }
+        ]
+      },
+      {
+        "key": "Next focus",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 50
+          }
+        ]
+      },
+      {
+        "key": "No confirmed learning records yet.",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 60
+          }
+        ]
+      },
+      {
+        "key": "No durable indexing run recorded yet.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 75
+          }
+        ]
+      },
+      {
+        "key": "No session handoff yet.",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 52
+          }
+        ]
+      },
+      {
+        "key": "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.",
+        "occurrences": [
+          {
+            "file": "components/mcp/McpServerForm.tsx",
+            "line": 293
+          }
+        ]
+      },
+      {
+        "key": "Open original document",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 43
+          }
+        ]
+      },
+      {
+        "key": "Original source evidence",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 215
+          }
+        ]
+      },
+      {
+        "key": "PDF pages and higher-detail regions are available through source inspection in chat.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 44
+          }
+        ]
+      },
+      {
+        "key": "Parse cache reused",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 72
+          }
+        ]
+      },
+      {
+        "key": "Phase completion does not mean the whole index is ready.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 69
+          }
+        ]
+      },
+      {
+        "key": "Phase progress is indeterminate.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 69
+          }
+        ]
+      },
+      {
+        "key": "Please review assessment {{questionId}} against its original source evidence. If it is unsupported, invalidate it and recompute learning state. Do not grant mastery merely because I challenged it.",
+        "occurrences": [
+          {
+            "file": "components/space/learning/MasteryStudy.tsx",
+            "line": 814
+          },
+          {
+            "file": "features/chat/components/ChatWorkspace.tsx",
+            "line": 2588
+          }
+        ]
+      },
+      {
+        "key": "Retained source figures",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 42
+          }
+        ]
+      },
+      {
+        "key": "Retry reuses validated parser outputs. Interrupted embedding stages restart.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 71
+          }
+        ]
+      },
+      {
+        "key": "Review or challenge this assessment",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 292
+          }
+        ]
+      },
+      {
+        "key": "Run state",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 67
+          }
+        ]
+      },
+      {
+        "key": "Runtime",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 68
+          }
+        ]
+      },
+      {
+        "key": "Selected model unavailable",
+        "occurrences": [
+          {
+            "file": "features/settings/sections/ImageDescriptionModelSetting.tsx",
+            "line": 62
+          }
+        ]
+      },
+      {
+        "key": "Since activity",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 68
+          }
+        ]
+      },
+      {
+        "key": "Since measurable progress",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 68
+          }
+        ]
+      },
+      {
+        "key": "Source document is unavailable. Refresh the file list.",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 41
+          }
+        ]
+      },
+      {
+        "key": "Source figure",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 50
+          }
+        ]
+      },
+      {
+        "key": "Source visual coverage",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbVisualCoverage.tsx",
+            "line": 36
+          }
+        ]
+      },
+      {
+        "key": "The reference key is uncertain. This practice will remain ungraded.",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 211
+          }
+        ]
+      },
+      {
+        "key": "The source image is unavailable. Open the source or ask your tutor to inspect its current version.",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 210
+          }
+        ]
+      },
+      {
+        "key": "Ungraded — mastery unchanged",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 278
+          }
+        ]
+      },
+      {
+        "key": "Use an administrator-approved private MCP origin",
+        "occurrences": [
+          {
+            "file": "components/mcp/McpServerForm.tsx",
+            "line": 292
+          }
+        ]
+      },
+      {
+        "key": "Verified index version",
+        "occurrences": [
+          {
+            "file": "components/knowledge/KbIndexingRun.tsx",
+            "line": 70
+          }
+        ]
+      },
+      {
+        "key": "Visual practice with the original source.",
+        "occurrences": [
+          {
+            "file": "components/chat/home/MasteryQuestionCard.tsx",
+            "line": 209
+          }
+        ]
+      },
+      {
+        "key": "Visual practice",
+        "occurrences": [
+          {
+            "file": "components/space/learning/ObjectiveDetail.tsx",
+            "line": 137
+          }
+        ]
+      },
+      {
+        "key": "Your tutor has no mission for you yet. Ask it to set one in conversation.",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 44
+          }
+        ]
+      },
+      {
+        "key": "Your tutor's mission, handoff and confirmed learning records.",
+        "occurrences": [
+          {
+            "file": "components/space/LearningJournalPanel.tsx",
+            "line": 32
+          }
+        ]
+      }
+    ],
+    "de": [],
+    "uk": [],
+    "pl": []
+  },
+  "catalog_gaps_vs_en": {
+    "zh": [],
+    "fr": [
+      "A conversation you have already had shows the tutor where you actually stand.",
+      "A full re-index publishes a new version and then makes this model the pinned identity for future incremental uploads.",
+      "API protocol",
+      "Add a note for this segment",
+      "Add a provider once and reuse its credentials across model services.",
+      "Add segment note",
+      "Add selected ({{count}})",
+      "Add your first provider to get started.",
+      "Added {{count}} models.",
+      "After creation, changing EXTRACT or enabling, disabling, or replacing VLM requires a full rebuild.",
+      "After publication, enabling, disabling or replacing VLM requires a full rebuild. A VLM pinned now can process later image uploads.",
+      "Again",
+      "Age",
+      "Agent conversations",
+      "All requests",
+      "Already added",
+      "Answer preferences",
+      "Answers name the place in the text they came from",
+      "Apply a behavior persona for this turn.",
+      "Approve this MCP origin for private-network connections",
+      "Approved materials saved.",
+      "Approximate graph search for large knowledge bases. Faster at scale with a small recall trade-off.",
+      "Ask about any moment while the video plays",
+      "Ask me a few things first, then propose an outline",
+      "Assessment Type",
+      "Assisted",
+      "Assisted practice is recorded separately from independent mastery.",
+      "Authorization was cancelled. You can connect again whenever you are ready.",
+      "Auto (recommended)",
+      "Auto inherits the selected model's saved reasoning effort.",
+      "Available",
+      "Behavior presets you can apply per chat turn.",
+      "Brainstorm tool",
+      "Bring in PDFs, EPUBs, web pages, video or audio and read them here. Select any passage to ask about it.",
+      "Bring questions from every learning activity together, import your own, and build lasting recall through daily practice.",
+      "Built-in plain text extraction for PDF/Office/text files. No optional parser package, no model download, no layout structure.",
+      "Cache hits are weighted by reported input tokens. TTFT includes reasoning; TPS uses output tokens over generation time. Missing measurements appear as —.",
+      "Cancel indexing",
+      "Cancellation pending at a safe boundary",
+      "Capability playbooks the model reads on demand.",
+      "Change pending indexing model",
+      "Changes take effect after Apply changes.",
+      "Chat Completions",
+      "Chat Completions for most endpoints; Responses for OpenAI reasoning models, with fallback.",
+      "Chat with imported Claude Code and Codex agents.",
+      "Choose a model and publish a new LightRAG index version. The current published version remains available until the rebuild succeeds.",
+      "Choose a model use below",
+      "Choose a provider, select a model, and test it here.",
+      "Choose a vision model",
+      "Choose a workspace",
+      "Choose how code snippets look across the app. Changes apply immediately to saved and streamed responses.",
+      "Choose indexing models",
+      "Choose models for re-indexing",
+      "Choose the models used for conversations, background tasks, and knowledge search.",
+      "Clear MCP selection",
+      "Clear knowledge selection",
+      "Clear persona",
+      "Clear skill selection",
+      "Co-Writer drafts",
+      "Collaborating agent",
+      "Composer hint",
+      "Concept Check",
+      "Concurrency and timeout values must stay within the displayed limits.",
+      "Configure Redis before enabling multiple workers.",
+      "Configure provider",
+      "Confirmed learning records",
+      "Connect a provider, choose models, and test them in one place.",
+      "Connect a service, choose your models, then check that everything is ready.",
+      "Connected. Available models are ready to choose below.",
+      "Context window",
+      "Conversation activity",
+      "Conversation titles",
+      "Conversation workspace",
+      "Conversations bound here share the files in this workspace.",
+      "Conversations without a workspace share the files in this folder.",
+      "Could not be loaded just now.",
+      "Could not reach the provider. Check the address and network.",
+      "Could not read indexing state. Refresh and retry.",
+      "Could not read the learning journal. Its original data is preserved. Try refreshing.",
+      "Could not read visual coverage. Open the original document to inspect the source.",
+      "Current mission",
+      "Current model input has no verified source pixels. Retrieve the image again with a vision-capable model before grading.",
+      "Current phase",
+      "Curriculum",
+      "Customize the visual theme and code blocks. Changes apply immediately and are stored in your account.",
+      "Daily conversation activity",
+      "Daily turns",
+      "Default configuration changed. Review the updated configuration and confirm again.",
+      "Defaults to the current LightRAG query model. Once published, incremental indexing keeps this selection.",
+      "Delete note",
+      "Design your outline",
+      "Detected means model metadata confirms support. Provider support is a registry hint; test a specific model to verify your account access.",
+      "Development reload and multiple workers cannot run together.",
+      "Docling isn't installed (pip install deeptutor[parse-docling]).",
+      "Docling remote mode has no server URL configured.",
+      "Documents, web pages, video and audio in one library",
+      "Draft an outline from the materials I chose",
+      "Duration (seconds)",
+      "Each knowledge point tracks its own mastery",
+      "Edit the chapter spine before a word is written",
+      "Editing",
+      "Effective reasoning",
+      "Engine model settings are used by default. The resolved models are pinned when this index is created.",
+      "English; vocal directions go in the spoken text.",
+      "Enter a valid HTTP or HTTPS provider address.",
+      "Exact nearest-neighbor search. Best for small and medium knowledge bases.",
+      "Explain vocabulary",
+      "Explained",
+      "Explains a word or phrase you selected while reading.",
+      "Explanation style",
+      "Extracted figures do not prove complete visual coverage. Inspect the original page when labels, vectors or tables are missing.",
+      "Failed rebuild candidate",
+      "Fast, lightweight PDF parser with spatial text extraction. Markdown output, optional image extraction. No model downloads. Developed by LlamaIndex.",
+      "Fetching models…",
+      "Finalizing index publication",
+      "Focus Check",
+      "Fri",
+      "General workspace",
+      "Generation is paused. Continue generating, then try again.",
+      "GeoGebra",
+      "GeoGebra tool",
+      "Getting started",
+      "Go back over what I found hardest",
+      "Go back over what you know",
+      "Good",
+      "Grade level",
+      "Guided visual practice — this does not demonstrate independent mastery.",
+      "Highest-fidelity multimodal parsing (layout, tables, formulas). Local CLI downloads models, or use the hosted cloud API. Supports PDF, common images, DOCX, PPTX, and XLSX.",
+      "Highlights, notes and word explanations stay beside the text",
+      "I could not recall it",
+      "I knew it confidently",
+      "I needed a hint",
+      "I recalled it myself",
+      "I want to talk about how far I need to get",
+      "Idle",
+      "Image Gen",
+      "Image analysis is disabled. Enable a VLM through a full rebuild.",
+      "Image generation",
+      "Image generation tool",
+      "Image input",
+      "Import your own questions from spreadsheets",
+      "In-memory turn coordination",
+      "Includes estimated token usage.",
+      "Incomplete request",
+      "Incremental indexing continues with this pinned model.",
+      "Independent visual evidence",
+      "Independent visual evidence is still required for this objective.",
+      "Indexing model",
+      "Indexing model provenance",
+      "Indexing models (optional override)",
+      "Indexing recovery details",
+      "Interactive HTML",
+      "Invidious",
+      "Invidious account connected. Your subscriptions and playlists are ready.",
+      "Invidious authorization was cancelled or expired. Please connect again.",
+      "Invidious could not load videos. Please retry or check the instance.",
+      "Invidious is not configured.",
+      "Invidious rejected the token. Reconnect to issue a new one.",
+      "JSON output",
+      "Jump straight to a line of the transcript",
+      "Keep related conversations and their files together. A conversation bound to a workspace can read every file in its folder.",
+      "LLM request",
+      "Language follows the text and selected voice.",
+      "Language follows the text and selected voice. Custom speech: voice IDs are accepted.",
+      "Last-session handoff",
+      "Learn from YouTube with timestamp-grounded tutoring",
+      "Learn through a living mastery map",
+      "Learning journal",
+      "Learning restrictions saved.",
+      "Lease TTL must be between 5 and 300 seconds.",
+      "Leave on default unless this model needs a fixed level.",
+      "Legacy metadata",
+      "Legacy model settings are shown below. Saving fixes the LightRAG base selection independently of chat.",
+      "Legacy unpinned indexing model",
+      "Let's review what I have already learned.",
+      "Let's review what is due today: {{items}}.",
+      "Level",
+      "LightRAG base model",
+      "LightRAG query model",
+      "LightRAG recommends disabling reasoning for EXTRACT and KEYWORD and enabling it for QUERY when supported.",
+      "Lightweight, no model downloads or CUDA — runs on low-end / GPU-less machines. PDF/e-book → Markdown and can extract images. PDF and e-book formats only.",
+      "Lightweight, no model downloads — broad format support, Markdown output. Works out of the box.",
+      "Listen",
+      "Loading videos…",
+      "Local vector engine — works out of the box. Each knowledge base uses its selected embedding model; install the optional BM25 package to enable hybrid retrieval.",
+      "Look up word",
+      "Make DeepTutor feel at home. Preferences here are saved automatically.",
+      "Manage materials",
+      "Manage provider connections and their models. Existing configurations are available here.",
+      "Manage restrictions",
+      "Manage shared credentials",
+      "Manage speech, image, and video models using saved providers.",
+      "Manim animation",
+      "Manim storyboard",
+      "Mastery goal names",
+      "Maximum",
+      "Mistakes return when they are due for review",
+      "Mix as many sources as useful — your library, and the work you have already done here. Your goal is always included; the rest grounds the outline in your own material.",
+      "Model assignment",
+      "Model default",
+      "Model default / unspecified",
+      "Model not recorded",
+      "Model source",
+      "Model usage and activity across your saved DeepTutor conversations.",
+      "Model uses",
+      "Mon",
+      "Multimodal",
+      "Multiple Select",
+      "Multiple workers require Redis coordination.",
+      "Name a subject and DeepTutor writes you a book on it — a spine of chapters first, then each page written out in full.",
+      "Names a conversation from its opening exchange.",
+      "New mistakes",
+      "New note",
+      "New or manage workspaces",
+      "New questions",
+      "Next focus",
+      "No confirmed learning records yet.",
+      "No deleted chats",
+      "No durable indexing run recorded yet.",
+      "No models matched.",
+      "No partner conversations yet",
+      "No question sets yet",
+      "No session handoff yet.",
+      "No workspaces yet — make one to share files across chats.",
+      "Not Graded",
+      "Not in a workspace",
+      "Not selected",
+      "Notes are stamped with the moment you took them",
+      "Nothing is being taught yet — this mode agrees on what you will learn.",
+      "Offers a question grounded in the page you are on.",
+      "Offers a question to ask about the current waypoint.",
+      "One or more role models are unavailable. Choose accessible models before saving.",
+      "One or more selected indexing models are unavailable. Choose accessible models before continuing.",
+      "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.",
+      "Open a set and pick the questions you want the outline built around.",
+      "Open one and pick the conversations you mean.",
+      "Open original document",
+      "Organize saved outputs from chat, research, Co-Writer, and more.",
+      "Original source evidence",
+      "Output speed (TPS)",
+      "PDF pages and higher-detail regions are available through source inspection in chat.",
+      "Pages carry figures, timelines, quizzes and flash cards",
+      "Paper search tool",
+      "Parse cache reused",
+      "Partially Correct",
+      "Partners and groups",
+      "Pending configuration",
+      "Pending pinned indexing model",
+      "Permanently delete this session?",
+      "Phase completion does not mean the whole index is ready.",
+      "Phase progress is indeterminate.",
+      "Pinned indexing model",
+      "Play a video with the tutor watching alongside you, and ask about whatever is on screen as it runs.",
+      "Please review assessment {{questionId}} against its original source evidence. If it is unsupported, invalidate it and recompute learning state. Do not grant mastery merely because I challenged it.",
+      "Predicts the line you are likely to type next.",
+      "Preferred language",
+      "Prefilled from the engine's EXTRACT and VLM settings. Changes here apply only to this new or rebuilt index.",
+      "Provider connected",
+      "Provider name",
+      "Provider supports",
+      "Qualitative",
+      "Questions from chat, books and mastery paths collect automatically",
+      "Quiz me",
+      "Re-index with a pinned model",
+      "Re-indexing {{count}} document(s) with the selected embedding model...",
+      "Read aloud",
+      "Read your materials with a tutor by your side.",
+      "Reading composer hint",
+      "Reading level",
+      "Reading questions",
+      "Reason tool",
+      "Reasoning controls",
+      "Reasoning tokens (included in output)",
+      "Rebuild candidate in progress",
+      "Reconnect your Invidious account to browse your videos.",
+      "Recovery interval must be between 1 and 60 seconds.",
+      "Recycle Bin",
+      "Redis turn coordination",
+      "Reference generated book chapters in chat.",
+      "Reference imported reading sections in chat.",
+      "Reference materials",
+      "Refresh this shared book before editing it.",
+      "Remote Apache Tika server. Broad format support, no local install or model downloads. Point at an existing tika-server container.",
+      "Remote Docling settings saved.",
+      "Removing…",
+      "Responses API",
+      "Restore",
+      "Retained source figures",
+      "Retry reuses validated parser outputs. Interrupted embedding stages restart.",
+      "Review and reopen previous conversations.",
+      "Review in a few days",
+      "Review or challenge this assessment",
+      "Review re-tests what you have already mastered. Due items come first, but you can revisit anything.",
+      "Review submissions",
+      "Review what is due today",
+      "Reviewed today",
+      "Reviews fall due on their own schedule",
+      "Role concurrency and timeouts apply to subsequent tasks without rebuilding.",
+      "Run state",
+      "Runtime",
+      "Sanitized configuration snapshots, Skill files and MCP inventory. API keys and tokens stay in private configuration.",
+      "Sat",
+      "Saudi Arabic; enter a voice ID from the provider documentation.",
+      "Save Tika server",
+      "Save a provider before adding models.",
+      "Save failed. Your edits are kept. Try again.",
+      "Save materials",
+      "Save model choice",
+      "Save name",
+      "Save provider",
+      "Save remote server",
+      "Save restrictions",
+      "Save search configuration",
+      "Save the provider to put these changes into effect.",
+      "Save this model configuration and its provider credentials.",
+      "Save this provider and its models. Other settings stay as they are.",
+      "Say what you want to master. You and the tutor settle the outline together, and it becomes a map of knowledge points to work through.",
+      "Scheduled for later",
+      "Search models…",
+      "Search providers",
+      "Search the selected knowledge bases.",
+      "Select the models to add to this provider.",
+      "Selected model unavailable",
+      "Selected parser",
+      "Selected video provider",
+      "Send every request as Anthropic Messages (/v1/messages).",
+      "Send every request to /v1/chat/completions.",
+      "Send every request to /v1/responses. Endpoint errors are returned without falling back.",
+      "Service connections",
+      "Session statistics cover the current conversation branch.",
+      "Settings are written to data/user/settings/document_parsing.json.",
+      "Since activity",
+      "Since measurable progress",
+      "Single Choice",
+      "Some block types need an optional package that is not installed. Leave those types out of the book, or install the extra.",
+      "Some read permissions were missing. Reconnect and approve all listed permissions.",
+      "Some requests did not report cache usage; cache statistics cover reported requests only.",
+      "Source document is unavailable. Refresh the file list.",
+      "Source figure",
+      "Source visual coverage",
+      "Speech to text",
+      "Starter suggestions",
+      "Structured document conversion (layout/tables). Runs the in-process docling package (downloads models on first run) or points at a remote Docling Serve server. PDF/Office/HTML/images.",
+      "Study composer hint",
+      "Study guidance",
+      "Suggests how to work through the section you are reading.",
+      "Sun",
+      "Supported dimensions",
+      "Take a whole library, or open one and pick just the lessons you mean.",
+      "Takes effect on the first index. No index version has been published yet.",
+      "Temporary password",
+      "Test me on everything I have mastered",
+      "Text to speech",
+      "That question is no longer waiting for an answer, so this was sent as a new message.",
+      "The Invidious instance could not verify your account. Check the instance and reconnect.",
+      "The LightRAG base model is unavailable. Choose an accessible model.",
+      "The account could not be connected. Please start a new connection.",
+      "The bound embedding model does not match the index. Choose an embedding model to re-index this knowledge base.",
+      "The connection timed out. Check the address and network, then try again.",
+      "The default model when no role model is specified. Role models can inherit its model and reasoning setting.",
+      "The instance returned an unsupported token. Start a new connection and try again.",
+      "The model credentials were rejected.",
+      "The model provider was rate-limiting the requests.",
+      "The model provider was unreachable or timed out.",
+      "The model returned something the block could not read.",
+      "The outline is agreed in conversation before study begins",
+      "The provider is rate limiting requests. Try again later.",
+      "The provider rejected these credentials. Check the API key and its permissions.",
+      "The provider returned an error. Check the address or try again later.",
+      "The provider returned no playable audio.",
+      "The reference key is uncertain. This practice will remain ungraded.",
+      "The selected reasoning effort is no longer supported.",
+      "The source image is unavailable. Open the source or ask your tutor to inspect its current version.",
+      "The tutor reads the materials you chose, asks what you already know, and proposes a route you can change.",
+      "These models share the provider connection above. Select a model to use it after applying changes.",
+      "This authorization link expired or was already used. Click Connect Invidious to start again.",
+      "This book changed while you were working on it. The latest version is loaded — try again.",
+      "This endpoint cannot list models. Enter a model ID manually, then test the model to verify access.",
+      "This mode re-tests what you have already learned. It will not teach anything new.",
+      "This provider does not expose a model list. Its connection can be verified when you test a model or search configuration.",
+      "This question is no longer active, so your answer could not be sent. Send a new message to continue.",
+      "This selection will take effect when the empty knowledge base is indexed for the first time.",
+      "Thu",
+      "Tika has no server URL configured.",
+      "Time to first token (TTFT)",
+      "Tool calling",
+      "Translate to Chinese",
+      "Translate to English",
+      "Translates a passage you selected while reading.",
+      "Translation",
+      "True or False",
+      "Tue",
+      "Turns what you asked to learn into a short name.",
+      "Ungraded — mastery unchanged",
+      "Unknown Source",
+      "Upload images, Office docs, code & text.",
+      "Use a configured language model for conversation titles and starting suggestions. Existing task models remain available.",
+      "Use active chat model",
+      "Use an administrator-approved private MCP origin",
+      "Use engine default",
+      "Use for",
+      "Use the materials I chose and design the outline for this goal with me.",
+      "Used for current LightRAG queries and as the default indexing model for new or fully rebuilt knowledge bases. Published indexes keep their pinned indexing model.",
+      "Used to analyze images during indexing. The model must support image input.",
+      "Used to extract entities and relationships during indexing. Choose a fast, economical model with reasoning disabled.",
+      "Used to generate retrieval keywords before a query. Choose a fast model with reasoning disabled.",
+      "Used to produce the final answer from long, complex retrieval context. Choose a capable model; reasoning can be enabled.",
+      "VLM capability",
+      "VLM image analysis",
+      "Verified index version",
+      "Version source",
+      "Video Gen",
+      "Video generation",
+      "Video generation tool",
+      "View reports",
+      "Vision",
+      "Visual practice",
+      "Visual practice with the original source.",
+      "Vocabulary help",
+      "Voice preview failed.",
+      "Voice preview failed. Check the provider credentials, model, voice, language and format.",
+      "Voice preview was cancelled or timed out.",
+      "Volcengine Speech (Doubao)",
+      "Watch videos with a grounded AI companion.",
+      "Web search tool",
+      "Wed",
+      "Worker count must be between 1 and 32.",
+      "Workspaces default to root / workspace ID. Changing the root migrates the folders that follow it; custom locations stay in place. Remote deployments use server folders.",
+      "Writes practice questions from what you are reading.",
+      "Writes the openings offered under an empty composer.",
+      "Written Answer",
+      "Your DeepTutor login expired during authorization. Sign in, then start a new Invidious connection.",
+      "Your feedback schedules the next review. Original answers stay unchanged.",
+      "Your model credit or quota ran out.",
+      "Your place is kept, and the tutor reads along with you",
+      "Your question bank, mistakes and daily reviews.",
+      "Your tutor has no mission for you yet. Ask it to set one in conversation.",
+      "Your tutor's mission, handoff and confirmed learning records.",
+      "chapter",
+      "codex.oauth.callbackUrlInvalid",
+      "common.cancel",
+      "common.close",
+      "common.loading",
+      "common.save",
+      "correct",
+      "effective model",
+      "incorrect",
+      "liteparse isn't installed (pip install deeptutor[parse-liteparse]).",
+      "markitdown isn't installed (pip install deeptutor[parse-markitdown]).",
+      "masteryMode.outline",
+      "masteryMode.review",
+      "masteryMode.study",
+      "not used for this version",
+      "page",
+      "pymupdf4llm isn't installed (pip install deeptutor[parse-pymupdf4llm]).",
+      "qualitative",
+      "readiness.detail.active_model_missing",
+      "readiness.detail.active_model_not_selected",
+      "readiness.detail.active_profile_missing",
+      "readiness.detail.active_profile_not_selected",
+      "readiness.detail.cli_missing",
+      "readiness.detail.connection_test_failed",
+      "readiness.detail.coordination_not_selected",
+      "readiness.detail.enabled_tool_backend_failing",
+      "readiness.detail.knowledge_base_building",
+      "readiness.detail.knowledge_base_needs_reindex",
+      "readiness.detail.knowledge_base_not_ready",
+      "readiness.detail.model_identifier_missing",
+      "readiness.detail.models_missing",
+      "readiness.detail.multiple_workers_require_redis",
+      "readiness.detail.no_knowledge_base",
+      "readiness.detail.not_configured",
+      "readiness.detail.parser_not_ready",
+      "readiness.detail.parser_not_selected",
+      "readiness.detail.parser_package_missing",
+      "readiness.detail.parser_probe_failed",
+      "readiness.detail.provider_not_selected",
+      "readiness.detail.rag_prerequisite_missing",
+      "readiness.detail.redis_available_but_memory_selected",
+      "readiness.detail.redis_not_configured",
+      "readiness.detail.redis_unreachable",
+      "readiness.detail.redis_url_missing",
+      "readiness.detail.required_credential_missing",
+      "readiness.detail.selected_parser_unavailable",
+      "readiness.detail.selected_parser_unknown",
+      "readiness.detail.selected_parser_unreachable",
+      "readiness.detail.selected_video_provider_not_configured",
+      "readiness.detail.selected_video_provider_unknown",
+      "readiness.detail.tool_backend_not_configured",
+      "readiness.detail.tool_backend_unavailable",
+      "readiness.detail.tool_disabled",
+      "readiness.detail.update_required",
+      "readiness.detail.video_provider_not_configured",
+      "readiness.detail.video_provider_not_selected",
+      "readiness.detail.visualizer_disabled",
+      "readiness.detail.visualizer_not_installed",
+      "readiness.detail.visualizer_runtime_missing",
+      "readiness.section.catalog",
+      "readiness.section.document_parsing",
+      "readiness.section.knowledge",
+      "readiness.section.runtime",
+      "readiness.section.tools",
+      "readiness.section.video_learning",
+      "readiness.section.visualizers",
+      "readiness.state.available_disabled",
+      "readiness.state.enabled_verified",
+      "readiness.state.misconfigured",
+      "readiness.state.not_selected",
+      "readiness.state.unavailable",
+      "references",
+      "review",
+      "slide",
+      "used for this version",
+      "visualCoverage.asset_read_failed",
+      "visualCoverage.exceeds_5_mib",
+      "visualCoverage.extraction_coverage_unknown",
+      "visualCoverage.referenced_image_not_retained",
+      "visualCoverage.symbolic_link",
+      "visualCoverage.table_structure_requires_source_verification",
+      "visualCoverage.unsupported_or_invalid_pixels",
+      "{{count}} books_one",
+      "{{count}} books_other",
+      "{{count}} paths_one",
+      "{{count}} paths_other",
+      "{{count}} videos_one",
+      "{{count}} videos_other",
+      "{{date}} · {{turns}} turns · {{tokens}} tokens",
+      "{{days}} active days · {{turns}} turns",
+      "{{done}} of {{total}} reviewed"
+    ],
+    "de": [],
+    "uk": [],
+    "pl": []
+  },
+  "dedup": {
+    "branch": "myfork/fix/web-locales-parity-20261006 (df8bbc2e4, NOT merged into origin/main)",
+    "missing_used_covered": [
+      "Enter a valid HTTP or HTTPS provider address.",
+      "General workspace",
+      "Selected model unavailable"
+    ],
+    "missing_used_new_drift": [
+      "Add a note for this segment",
+      "Add segment note",
+      "Approve this MCP origin for private-network connections",
+      "Assisted practice is recorded separately from independent mastery.",
+      "Assisted",
+      "Cancel indexing",
+      "Cancellation pending at a safe boundary",
+      "Confirmed learning records",
+      "Could not read indexing state. Refresh and retry.",
+      "Could not read the learning journal. Its original data is preserved. Try refreshing.",
+      "Could not read visual coverage. Open the original document to inspect the source.",
+      "Current mission",
+      "Current model input has no verified source pixels. Retrieve the image again with a vision-capable model before grading.",
+      "Current phase",
+      "Delete note",
+      "Explained",
+      "Extracted figures do not prove complete visual coverage. Inspect the original page when labels, vectors or tables are missing.",
+      "Guided visual practice — this does not demonstrate independent mastery.",
+      "Independent visual evidence is still required for this objective.",
+      "Independent visual evidence",
+      "Indexing recovery details",
+      "Last-session handoff",
+      "Learning journal",
+      "Level",
+      "New note",
+      "Next focus",
+      "No confirmed learning records yet.",
+      "No durable indexing run recorded yet.",
+      "No session handoff yet.",
+      "Only this scheme, host and port can use private Docker or LAN addresses. Metadata addresses remain blocked.",
+      "Open original document",
+      "Original source evidence",
+      "PDF pages and higher-detail regions are available through source inspection in chat.",
+      "Parse cache reused",
+      "Phase completion does not mean the whole index is ready.",
+      "Phase progress is indeterminate.",
+      "Please review assessment {{questionId}} against its original source evidence. If it is unsupported, invalidate it and recompute learning state. Do not grant mastery merely because I challenged it.",
+      "Retained source figures",
+      "Retry reuses validated parser outputs. Interrupted embedding stages restart.",
+      "Review or challenge this assessment",
+      "Run state",
+      "Runtime",
+      "Since activity",
+      "Since measurable progress",
+      "Source document is unavailable. Refresh the file list.",
+      "Source figure",
+      "Source visual coverage",
+      "The reference key is uncertain. This practice will remain ungraded.",
+      "The source image is unavailable. Open the source or ask your tutor to inspect its current version.",
+      "Ungraded — mastery unchanged",
+      "Use an administrator-approved private MCP origin",
+      "Verified index version",
+      "Visual practice with the original source.",
+      "Visual practice",
+      "Your tutor has no mission for you yet. Ask it to set one in conversation.",
+      "Your tutor's mission, handoff and confirmed learning records."
+    ],
+    "catalog_gap_covered": 466,
+    "catalog_gap_new_drift": 63
+  }
+}

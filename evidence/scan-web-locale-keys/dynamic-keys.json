@@ -1,0 +1,1396 @@
+{
+  "definition": "t() calls with non-literal first argument — keys not statically resolvable; listed as scan limitation with call-site evidence",
+  "count": 278,
+  "sites": [
+    {
+      "file": "app/(admin)/admin/users/page.tsx",
+      "line": 567,
+      "snippet": "accountRoleLabelKey(user.role)"
+    },
+    {
+      "file": "app/(admin)/admin/users/page.tsx",
+      "line": 748,
+      "snippet": "accountRoleLabelKey(confirmTarget.user.role)"
+    },
+    {
+      "file": "app/(utility)/avatar-preview/page.tsx",
+      "line": 136,
+      "snippet": "{ running: \"Running\", unread: \"Unread\", failed: \"Failed\", idle: \"Idle\" }[mark]"
+    },
+    {
+      "file": "app/(utility)/profile/page.tsx",
+      "line": 259,
+      "snippet": "accountRoleLabelKey(profile.role)"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 95,
+      "snippet": "error"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 158,
+      "snippet": "error || 'kanban.loadError'"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 178,
+      "snippet": "column.title"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 205,
+      "snippet": "column.title"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 207,
+      "snippet": "column.hint"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 348,
+      "snippet": "columns[index - 1].title"
+    },
+    {
+      "file": "app/(workspace)/kanban/page.tsx",
+      "line": 364,
+      "snippet": "columns[index + 1].title"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookCreator.tsx",
+      "line": 274,
+      "snippet": "option.hint"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookCreator.tsx",
+      "line": 285,
+      "snippet": "option.label"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookGenerationActivity.tsx",
+      "line": 82,
+      "snippet": "key"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookHealthBanner.tsx",
+      "line": 143,
+      "snippet": "key"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookLibrary.tsx",
+      "line": 309,
+      "snippet": "status.label"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookSidebar.tsx",
+      "line": 169,
+      "snippet": "book.status"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/BookSidebar.tsx",
+      "line": 247,
+      "snippet": "STATUS_LABEL[page.status] || page.status"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/PageOutlineNav.tsx",
+      "line": 243,
+      "snippet": "TYPE_LABEL_EN[block.type] || block.type"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/PageReader.tsx",
+      "line": 490,
+      "snippet": "page.status"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/PageReader.tsx",
+      "line": 713,
+      "snippet": "blockType"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+      "line": 373,
+      "snippet": "opt.label"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+      "line": 378,
+      "snippet": "CONTENT_TYPE_OPTIONS.find(\n                        (o) => o.value === chapter.content_type,\n                      )?.des"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+      "line": 494,
+      "snippet": "ALWAYS_ON_TYPE"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/SpineEditor.tsx",
+      "line": 520,
+      "snippet": "option.value"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "line": 121,
+      "snippet": "block.type"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "line": 133,
+      "snippet": "block.type"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/blocks/BlockRenderer.tsx",
+      "line": 319,
+      "snippet": "type"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/blocks/PlaceholderBlock.tsx",
+      "line": 31,
+      "snippet": "label"
+    },
+    {
+      "file": "app/(workspace)/learning/books/components/blocks/PlaceholderBlock.tsx",
+      "line": 35,
+      "snippet": "intended"
+    },
+    {
+      "file": "components/access/RequireCapability.tsx",
+      "line": 21,
+      "snippet": "CAPABILITY_LABEL[capability]"
+    },
+    {
+      "file": "components/chat/MemoryPicker.tsx",
+      "line": 127,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/chat/MemoryPicker.tsx",
+      "line": 130,
+      "snippet": "option.description"
+    },
+    {
+      "file": "components/chat/QuestionBankPicker.tsx",
+      "line": 217,
+      "snippet": "label"
+    },
+    {
+      "file": "components/chat/ReadingReferencePicker.tsx",
+      "line": 171,
+      "snippet": "activeDetail.unit"
+    },
+    {
+      "file": "components/chat/ReadingReferencePicker.tsx",
+      "line": 466,
+      "snippet": "activeMaterial.unit"
+    },
+    {
+      "file": "components/chat/home/AskUserOptions.tsx",
+      "line": 1197,
+      "snippet": "submitFailureMessage ?? REPLY_NOT_DELIVERED"
+    },
+    {
+      "file": "components/chat/home/CapabilityConfigCard.tsx",
+      "line": 77,
+      "snippet": "label"
+    },
+    {
+      "file": "components/chat/home/ChatComposer.tsx",
+      "line": 145,
+      "snippet": "cap.label"
+    },
+    {
+      "file": "components/chat/home/ChatComposer.tsx",
+      "line": 148,
+      "snippet": "cap.description"
+    },
+    {
+      "file": "components/chat/home/ChatComposer.tsx",
+      "line": 1180,
+      "snippet": "activeCap.label"
+    },
+    {
+      "file": "components/chat/home/ChatComposer.tsx",
+      "line": 1186,
+      "snippet": "activeCap.label"
+    },
+    {
+      "file": "components/chat/home/ChatComposer.tsx",
+      "line": 1195,
+      "snippet": "activeCap.label"
+    },
+    {
+      "file": "components/chat/home/ComposerResources.tsx",
+      "line": 426,
+      "snippet": "group"
+    },
+    {
+      "file": "components/chat/home/ContextBudgetChip.tsx",
+      "line": 299,
+      "snippet": "`contextBudget.segment.${segment.key}`"
+    },
+    {
+      "file": "components/chat/home/MasteryQuestionCard.tsx",
+      "line": 168,
+      "snippet": "difficultyLabel"
+    },
+    {
+      "file": "components/chat/home/MasteryQuestionCard.tsx",
+      "line": 310,
+      "snippet": "REPLY_NOT_DELIVERED"
+    },
+    {
+      "file": "components/chat/home/ResourceSelector.tsx",
+      "line": 177,
+      "snippet": "option.source || \"account\""
+    },
+    {
+      "file": "components/chat/home/SessionActivityPanel.tsx",
+      "line": 478,
+      "snippet": "category.label"
+    },
+    {
+      "file": "components/chat/home/StandaloneComposer.tsx",
+      "line": 679,
+      "snippet": "capability.label"
+    },
+    {
+      "file": "components/chat/home/StandaloneComposer.tsx",
+      "line": 680,
+      "snippet": "capability.description"
+    },
+    {
+      "file": "components/chat/home/TurnNavigator.tsx",
+      "line": 368,
+      "snippet": "getModeBadgeLabel(hovered.capability)"
+    },
+    {
+      "file": "components/chat/space/ChatSpaceMenu.tsx",
+      "line": 183,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/chat/space/ChatSpaceMenu.tsx",
+      "line": 304,
+      "snippet": "label"
+    },
+    {
+      "file": "components/chat/space/ChatSpaceMenu.tsx",
+      "line": 308,
+      "snippet": "description"
+    },
+    {
+      "file": "components/courses/CourseDialog.tsx",
+      "line": 169,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/courses/CourseResources.tsx",
+      "line": 311,
+      "snippet": "route.label"
+    },
+    {
+      "file": "components/knowledge/CreateKbModal.tsx",
+      "line": 1015,
+      "snippet": "readinessReason ||\n                      \"This engine isn't ready on the server. Check its requirements before creating."
+    },
+    {
+      "file": "components/knowledge/IndexingModelSelector.tsx",
+      "line": 162,
+      "snippet": "label"
+    },
+    {
+      "file": "components/knowledge/IndexingModelSelector.tsx",
+      "line": 166,
+      "snippet": "description"
+    },
+    {
+      "file": "components/knowledge/IndexingModelSelector.tsx",
+      "line": 170,
+      "snippet": "label"
+    },
+    {
+      "file": "components/knowledge/IndexingModelSelector.tsx",
+      "line": 264,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/knowledge/KbIndexVersionsSection.tsx",
+      "line": 427,
+      "snippet": "dialogError"
+    },
+    {
+      "file": "components/knowledge/KbIndexingRun.tsx",
+      "line": 67,
+      "snippet": "`indexingState.${run.state}`"
+    },
+    {
+      "file": "components/knowledge/KbIndexingRun.tsx",
+      "line": 67,
+      "snippet": "`indexingPhase.${run.phase}`"
+    },
+    {
+      "file": "components/knowledge/KbIndexingRun.tsx",
+      "line": 72,
+      "snippet": "`indexingDocument.${doc.status}`"
+    },
+    {
+      "file": "components/knowledge/KbLinkedFoldersSection.tsx",
+      "line": 454,
+      "snippet": "task.label || \"Sync linked folder\""
+    },
+    {
+      "file": "components/knowledge/KbVisualCoverage.tsx",
+      "line": 47,
+      "snippet": "`visualCoverage.${issue.reason}`"
+    },
+    {
+      "file": "components/knowledge/KbWebSourcesSection.tsx",
+      "line": 404,
+      "snippet": "job.state === \"interrupted\" ? \"Interrupted\" : job.state"
+    },
+    {
+      "file": "components/knowledge/KnowledgeBaseDetail.tsx",
+      "line": 306,
+      "snippet": "label"
+    },
+    {
+      "file": "components/knowledge/LightRagRoleModelsEditor.tsx",
+      "line": 195,
+      "snippet": "ROLE_DESCRIPTIONS[role]"
+    },
+    {
+      "file": "components/learning/LearningDashboard.tsx",
+      "line": 100,
+      "snippet": "surface.title"
+    },
+    {
+      "file": "components/learning/LearningDashboard.tsx",
+      "line": 172,
+      "snippet": "surface.title"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 86,
+      "snippet": "surface.title"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 94,
+      "snippet": "surface.description"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 236,
+      "snippet": "surface.title"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 256,
+      "snippet": "surface.description"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 266,
+      "snippet": "surface.intro"
+    },
+    {
+      "file": "components/learning/LearningWays.tsx",
+      "line": 275,
+      "snippet": "highlight"
+    },
+    {
+      "file": "components/learning/practice/PracticeInsights.tsx",
+      "line": 149,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeInsights.tsx",
+      "line": 191,
+      "snippet": "metric.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeInsights.tsx",
+      "line": 198,
+      "snippet": "metric.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeInsights.tsx",
+      "line": 205,
+      "snippet": "SOURCES[source.source] || \"Other\""
+    },
+    {
+      "file": "components/learning/practice/PracticeInsights.tsx",
+      "line": 260,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeSession.tsx",
+      "line": 409,
+      "snippet": "rating.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeSession.tsx",
+      "line": 409,
+      "snippet": "rating.description"
+    },
+    {
+      "file": "components/learning/practice/PracticeSession.tsx",
+      "line": 419,
+      "snippet": "rating.label"
+    },
+    {
+      "file": "components/learning/practice/PracticeSession.tsx",
+      "line": 421,
+      "snippet": "rating.description"
+    },
+    {
+      "file": "components/learning/practice/ReviewHome.tsx",
+      "line": 200,
+      "snippet": "String(label)"
+    },
+    {
+      "file": "components/mcp/McpCatalogBrowser.tsx",
+      "line": 262,
+      "snippet": "`mcp.category.${chip.category}`"
+    },
+    {
+      "file": "components/mcp/McpCatalogBrowser.tsx",
+      "line": 272,
+      "snippet": "`mcp.tier.${item}`"
+    },
+    {
+      "file": "components/mcp/McpCatalogBrowser.tsx",
+      "line": 399,
+      "snippet": "`mcp.category.${entry.category}`"
+    },
+    {
+      "file": "components/mcp/McpCatalogBrowser.tsx",
+      "line": 532,
+      "snippet": "`mcp.category.${entry.category}`"
+    },
+    {
+      "file": "components/mcp/McpCatalogBrowser.tsx",
+      "line": 534,
+      "snippet": "`mcp.tier.${entry.tier}`"
+    },
+    {
+      "file": "components/memory/MemoryGraph.tsx",
+      "line": 508,
+      "snippet": "c.label"
+    },
+    {
+      "file": "components/memory/MemoryGraph.tsx",
+      "line": 586,
+      "snippet": "c.label"
+    },
+    {
+      "file": "components/memory/MemoryGraph.tsx",
+      "line": 973,
+      "snippet": "L3_LABEL[cluster as keyof typeof L3_LABEL] || cluster"
+    },
+    {
+      "file": "components/memory/MemoryGraph.tsx",
+      "line": 979,
+      "snippet": "SURFACE_LABEL[cluster as keyof typeof SURFACE_LABEL] || cluster"
+    },
+    {
+      "file": "components/memory/MemoryGraph.tsx",
+      "line": 986,
+      "snippet": "SURFACE_LABEL[cluster as keyof typeof SURFACE_LABEL] || cluster"
+    },
+    {
+      "file": "components/memory/MemoryL1Workbench.tsx",
+      "line": 138,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/memory/MemoryL1Workbench.tsx",
+      "line": 172,
+      "snippet": "label"
+    },
+    {
+      "file": "components/memory/MemoryRunPanel.tsx",
+      "line": 331,
+      "snippet": "tKey"
+    },
+    {
+      "file": "components/memory/MemoryWorkbench.tsx",
+      "line": 332,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/memory/MemoryWorkbench.tsx",
+      "line": 368,
+      "snippet": "label"
+    },
+    {
+      "file": "components/notebook/NotebookRecordRow.tsx",
+      "line": 128,
+      "snippet": "badge.labelKey"
+    },
+    {
+      "file": "components/notebook/SaveToNotebookModal.tsx",
+      "line": 550,
+      "snippet": "roleLabelKey(msg.role)"
+    },
+    {
+      "file": "components/partners/ChannelRuntimeStatus.tsx",
+      "line": 109,
+      "snippet": "setup.message"
+    },
+    {
+      "file": "components/quiz/QuizConfigPanel.tsx",
+      "line": 250,
+      "snippet": "QUIZ_TYPE_LABEL_KEYS[qt]"
+    },
+    {
+      "file": "components/quiz/QuizConfigPanel.tsx",
+      "line": 483,
+      "snippet": "QUIZ_TYPE_LABEL_KEYS[value[0]]"
+    },
+    {
+      "file": "components/quiz/QuizConfigPanel.tsx",
+      "line": 493,
+      "snippet": "QUIZ_TYPE_LABEL_KEYS[qt]"
+    },
+    {
+      "file": "components/quiz/QuizConfigPanel.tsx",
+      "line": 546,
+      "snippet": "QUIZ_TYPE_LABEL_KEYS[qt]"
+    },
+    {
+      "file": "components/reading/AnnotationList.tsx",
+      "line": 109,
+      "snippet": "unitLabel(unit)"
+    },
+    {
+      "file": "components/reading/AnnotationPopover.tsx",
+      "line": 175,
+      "snippet": "swatchLabel(swatch)"
+    },
+    {
+      "file": "components/reading/AnnotationPopover.tsx",
+      "line": 178,
+      "snippet": "swatchLabel(swatch)"
+    },
+    {
+      "file": "components/reading/ReaderPane.tsx",
+      "line": 880,
+      "snippet": "unitLabel(material.unit)"
+    },
+    {
+      "file": "components/reading/ReaderPane.tsx",
+      "line": 1167,
+      "snippet": "unitLabel(entry.source?.unit || \"section\")"
+    },
+    {
+      "file": "components/reading/ReadingActionsProvider.tsx",
+      "line": 125,
+      "snippet": "builtIn"
+    },
+    {
+      "file": "components/reading/ReadingExtensionBar.tsx",
+      "line": 238,
+      "snippet": "shortLabel"
+    },
+    {
+      "file": "components/reading/ReadingExtensionBar.tsx",
+      "line": 238,
+      "snippet": "builtInLabel"
+    },
+    {
+      "file": "components/reading/ReadingExtensionBar.tsx",
+      "line": 256,
+      "snippet": "shortLabel"
+    },
+    {
+      "file": "components/reading/ReadingExtensionBar.tsx",
+      "line": 256,
+      "snippet": "builtInLabel"
+    },
+    {
+      "file": "components/reading/TextUnitView.tsx",
+      "line": 506,
+      "snippet": "unitLabel(unit)"
+    },
+    {
+      "file": "components/reading/TextUnitView.tsx",
+      "line": 512,
+      "snippet": "unitLabel(unit)"
+    },
+    {
+      "file": "components/reading/library/AddMaterialsDialog.tsx",
+      "line": 771,
+      "snippet": "sourceKindKey[material.source_kind]"
+    },
+    {
+      "file": "components/reading/library/FolderDialog.tsx",
+      "line": 139,
+      "snippet": "row.label"
+    },
+    {
+      "file": "components/reading/library/FolderDialog.tsx",
+      "line": 143,
+      "snippet": "row.label"
+    },
+    {
+      "file": "components/reading/library/InvidiousAccountFeedback.tsx",
+      "line": 20,
+      "snippet": "message"
+    },
+    {
+      "file": "components/reading/library/MaterialLibrary.tsx",
+      "line": 448,
+      "snippet": "sourceKindKey[material.source_kind]"
+    },
+    {
+      "file": "components/reading/workspace/ReadingComposer.tsx",
+      "line": 123,
+      "snippet": "REPLY_SENT_AS_NEW_MESSAGE"
+    },
+    {
+      "file": "components/reading/workspace/ReadingComposer.tsx",
+      "line": 126,
+      "snippet": "COMMAND_CONFIRMATION_FAILED"
+    },
+    {
+      "file": "components/reading/workspace/SourceNavigator.tsx",
+      "line": 518,
+      "snippet": "material?.status || \"queued\""
+    },
+    {
+      "file": "components/research/ResearchConfigPanel.tsx",
+      "line": 112,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/research/ResearchConfigPanel.tsx",
+      "line": 126,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/settings/AddProviderPanel.tsx",
+      "line": 53,
+      "snippet": "label"
+    },
+    {
+      "file": "components/settings/AddProviderPanel.tsx",
+      "line": 137,
+      "snippet": "`settings.providerServices.filter.${item}`"
+    },
+    {
+      "file": "components/settings/AddProviderPanel.tsx",
+      "line": 168,
+      "snippet": "SERVICE_TITLES[service]"
+    },
+    {
+      "file": "components/settings/CodeBuddyAuthCard.tsx",
+      "line": 205,
+      "snippet": "errorKey"
+    },
+    {
+      "file": "components/settings/CodexOAuthCard.tsx",
+      "line": 350,
+      "snippet": "displayMessageKey"
+    },
+    {
+      "file": "components/settings/CodexOAuthCard.tsx",
+      "line": 397,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/settings/ModelCapabilityFields.tsx",
+      "line": 104,
+      "snippet": "label"
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 246,
+      "snippet": "SERVICE_TITLES[s]"
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 320,
+      "snippet": "SERVICE_TITLES[row.service]"
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 459,
+      "snippet": "SERVICE_TITLES[s]"
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 625,
+      "snippet": "SERVICE_TITLES[service]"
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 780,
+      "snippet": "active ? (service === \"search\" ? \"settings.serviceConfig.defaultSearch\" : \"Default model\") : \"Set as default\""
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 929,
+      "snippet": "{\n                          tools: \"Tool calling\",\n                          vision: \"Vision\",\n                         "
+    },
+    {
+      "file": "components/settings/ModelsWorkspace.tsx",
+      "line": 969,
+      "snippet": "label"
+    },
+    {
+      "file": "components/settings/ProviderModelDiscovery.tsx",
+      "line": 142,
+      "snippet": "result.status === \"connected\" && !result.models.length\n                ? \"Connected, but the provider returned no models"
+    },
+    {
+      "file": "components/settings/ProviderServices.tsx",
+      "line": 81,
+      "snippet": "SERVICE_TITLES[service]"
+    },
+    {
+      "file": "components/settings/ProviderServices.tsx",
+      "line": 83,
+      "snippet": "`settings.providerServices.evidence.${support.evidence}`"
+    },
+    {
+      "file": "components/settings/ProvidersWorkspace.tsx",
+      "line": 234,
+      "snippet": "SERVICE_TITLES[service]"
+    },
+    {
+      "file": "components/settings/ProvidersWorkspace.tsx",
+      "line": 416,
+      "snippet": "label"
+    },
+    {
+      "file": "components/settings/RegistryControls.tsx",
+      "line": 228,
+      "snippet": "result.status === \"connected\" && input.service !== \"search\" ? \"settings.providerServices.catalogListed\" : PROBE_MESSAGES"
+    },
+    {
+      "file": "components/settings/RegistryControls.tsx",
+      "line": 264,
+      "snippet": "label"
+    },
+    {
+      "file": "components/settings/RegistryControls.tsx",
+      "line": 266,
+      "snippet": "status"
+    },
+    {
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "line": 976,
+      "snippet": "option.label"
+    },
+    {
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "line": 1310,
+      "snippet": "SERVICE_LABEL[service]"
+    },
+    {
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "line": 1810,
+      "snippet": "API_FORMAT_LABELS[format] ?? format"
+    },
+    {
+      "file": "components/settings/ServiceConfigEditor.tsx",
+      "line": 1818,
+      "snippet": "API_FORMAT_HINTS[apiFormat]"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 188,
+      "snippet": "`settings.servicePreview.title.${service}`"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 192,
+      "snippet": "`settings.servicePreview.title.${service}`"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 194,
+      "snippet": "`settings.servicePreview.description.${service}`"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 248,
+      "snippet": "`settings.servicePreview.placeholder.${service}`"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 268,
+      "snippet": "`settings.servicePreview.action.${service}`"
+    },
+    {
+      "file": "components/settings/ServicePreviewPanel.tsx",
+      "line": 290,
+      "snippet": "`settings.servicePreview.status.${message}`"
+    },
+    {
+      "file": "components/settings/SettingsOverview.tsx",
+      "line": 40,
+      "snippet": "labelKey"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 111,
+      "snippet": "preset.label"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 114,
+      "snippet": "`settings.presets.cost.${preset.resource_cost}`"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 118,
+      "snippet": "preset.description"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 137,
+      "snippet": "`settings.presets.prerequisite.${item}`"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 148,
+      "snippet": "`settings.presets.credential.${item}`"
+    },
+    {
+      "file": "components/settings/SettingsPresetsPanel.tsx",
+      "line": 158,
+      "snippet": "`settings.presets.feature.${item}`"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 181,
+      "snippet": "row.label"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 207,
+      "snippet": "row.label"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 207,
+      "snippet": "`readiness.section.${notice.section}`"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 340,
+      "snippet": "`readiness.detail.${code}`"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 359,
+      "snippet": "`readiness.section.${section}`"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 394,
+      "snippet": "row.label"
+    },
+    {
+      "file": "components/settings/SettingsReadinessPanel.tsx",
+      "line": 431,
+      "snippet": "`readiness.state.${row.state}`"
+    },
+    {
+      "file": "components/settings/SettingsTourOverlay.tsx",
+      "line": 212,
+      "snippet": "guideStep.titleKey"
+    },
+    {
+      "file": "components/settings/SettingsTourOverlay.tsx",
+      "line": 215,
+      "snippet": "guideStep.descKey"
+    },
+    {
+      "file": "components/settings/TaskModelsWorkspace.tsx",
+      "line": 260,
+      "snippet": "GROUP_TEXT[entry.group] ?? entry.group"
+    },
+    {
+      "file": "components/settings/TaskModelsWorkspace.tsx",
+      "line": 264,
+      "snippet": "text.label"
+    },
+    {
+      "file": "components/settings/TaskModelsWorkspace.tsx",
+      "line": 269,
+      "snippet": "text.detail"
+    },
+    {
+      "file": "components/settings/VoiceModelFields.tsx",
+      "line": 146,
+      "snippet": "preset?.language_note ?? 'Language follows the text and selected voice.'"
+    },
+    {
+      "file": "components/settings/VoiceModelFields.tsx",
+      "line": 151,
+      "snippet": "preset.configuration_note"
+    },
+    {
+      "file": "components/settings/VoicePreviewPanel.tsx",
+      "line": 151,
+      "snippet": "error"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 270,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 289,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 330,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 568,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 577,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 583,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 625,
+      "snippet": "entry.label"
+    },
+    {
+      "file": "components/sidebar/SidebarNav.tsx",
+      "line": 629,
+      "snippet": "entry.tooltipKey"
+    },
+    {
+      "file": "components/sidebar/SidebarShell.tsx",
+      "line": 228,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/sidebar/SidebarShell.tsx",
+      "line": 232,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/sidebar/SidebarShell.tsx",
+      "line": 380,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/space/learning/MasteryComposer.tsx",
+      "line": 121,
+      "snippet": "REPLY_SENT_AS_NEW_MESSAGE"
+    },
+    {
+      "file": "components/space/learning/MasteryComposer.tsx",
+      "line": 124,
+      "snippet": "COMMAND_CONFIRMATION_FAILED"
+    },
+    {
+      "file": "components/space/learning/MasteryStudy.tsx",
+      "line": 702,
+      "snippet": "MODE_PRESENTATION[sessionMode].noteKey"
+    },
+    {
+      "file": "components/space/learning/MasteryStudy.tsx",
+      "line": 740,
+      "snippet": "MODE_PRESENTATION[sessionMode].emptyTitleKey"
+    },
+    {
+      "file": "components/space/learning/MasteryStudy.tsx",
+      "line": 743,
+      "snippet": "MODE_PRESENTATION[sessionMode].emptyBodyKey"
+    },
+    {
+      "file": "components/space/learning/MasteryStudy.tsx",
+      "line": 748,
+      "snippet": "starter.key"
+    },
+    {
+      "file": "components/space/learning/ModeSwitch.tsx",
+      "line": 56,
+      "snippet": "MASTERY_MODE_LABELS[candidate]"
+    },
+    {
+      "file": "components/space/learning/ModeSwitch.tsx",
+      "line": 78,
+      "snippet": "MASTERY_MODE_LABELS[candidate]"
+    },
+    {
+      "file": "components/space/learning/ObjectiveDetail.tsx",
+      "line": 109,
+      "snippet": "record.error_type"
+    },
+    {
+      "file": "components/space/learning/ObjectiveDetail.tsx",
+      "line": 136,
+      "snippet": "evidence.result"
+    },
+    {
+      "file": "components/space/learning/ObjectiveDetail.tsx",
+      "line": 136,
+      "snippet": "evidence.assessment_type"
+    },
+    {
+      "file": "components/space/learning/TopicWizardSteps.tsx",
+      "line": 227,
+      "snippet": "item.label"
+    },
+    {
+      "file": "components/space/learning/format.ts",
+      "line": 15,
+      "snippet": "label"
+    },
+    {
+      "file": "components/space/question-bank/BankScopeRail.tsx",
+      "line": 83,
+      "snippet": "label"
+    },
+    {
+      "file": "components/space/question-bank/QuestionCard.tsx",
+      "line": 234,
+      "snippet": "badge.label"
+    },
+    {
+      "file": "components/space/question-bank/QuestionCard.tsx",
+      "line": 251,
+      "snippet": "QUESTION_TYPE_LABELS[entry.question_type] || entry.question_type"
+    },
+    {
+      "file": "components/space/question-bank/QuestionCard.tsx",
+      "line": 255,
+      "snippet": "SOURCE_LABELS[entry.source] || \"Unknown Source\""
+    },
+    {
+      "file": "components/space/question-bank/QuestionCard.tsx",
+      "line": 259,
+      "snippet": "ASSESSMENT_TYPE_LABELS[entry.assessment_type]"
+    },
+    {
+      "file": "components/space/question-bank/QuestionCard.tsx",
+      "line": 264,
+      "snippet": "TREND_LABELS[entry.score_trend] || \"First Attempt\""
+    },
+    {
+      "file": "components/tasks/TaskColorPicker.tsx",
+      "line": 156,
+      "snippet": "`kanban.${key}`"
+    },
+    {
+      "file": "components/tasks/TaskColorPicker.tsx",
+      "line": 194,
+      "snippet": "`kanban.${status}`"
+    },
+    {
+      "file": "components/tasks/TaskColorPicker.tsx",
+      "line": 202,
+      "snippet": "`kanban.${status}`"
+    },
+    {
+      "file": "components/tasks/TaskLinkSelector.tsx",
+      "line": 96,
+      "snippet": "`kanban.${card.status}`"
+    },
+    {
+      "file": "components/tasks/TaskPanelSection.tsx",
+      "line": 93,
+      "snippet": "`kanban.${status}`"
+    },
+    {
+      "file": "components/visualize/VisualizeConfigPanel.tsx",
+      "line": 115,
+      "snippet": "item.display_name"
+    },
+    {
+      "file": "components/visualize/VisualizeConfigPanel.tsx",
+      "line": 172,
+      "snippet": "item.display_name"
+    },
+    {
+      "file": "components/visualize/VisualizeConfigPanel.tsx",
+      "line": 183,
+      "snippet": "item.display_name"
+    },
+    {
+      "file": "components/visualize/VisualizeConfigPanel.tsx",
+      "line": 199,
+      "snippet": "item.display_name"
+    },
+    {
+      "file": "components/workspaces/WorkspacePill.tsx",
+      "line": 98,
+      "snippet": "pickerLabel"
+    },
+    {
+      "file": "components/workspaces/WorkspacePill.tsx",
+      "line": 132,
+      "snippet": "pickerLabel"
+    },
+    {
+      "file": "components/workspaces/WorkspaceResourcePicker.tsx",
+      "line": 78,
+      "snippet": "label"
+    },
+    {
+      "file": "components/workspaces/WorkspaceResourcePicker.tsx",
+      "line": 81,
+      "snippet": "label"
+    },
+    {
+      "file": "components/workspaces/WorkspaceResourcePicker.tsx",
+      "line": 138,
+      "snippet": "item.source || 'account'"
+    },
+    {
+      "file": "features/chat/components/ChatWorkspace.tsx",
+      "line": 1862,
+      "snippet": "COMMAND_CONFIRMATION_FAILED"
+    },
+    {
+      "file": "features/chat/components/ChatWorkspace.tsx",
+      "line": 1871,
+      "snippet": "REPLY_SENT_AS_NEW_MESSAGE"
+    },
+    {
+      "file": "features/chat/components/ChatWorkspace.tsx",
+      "line": 2511,
+      "snippet": "welcomeGreeting"
+    },
+    {
+      "file": "features/chat/messages/ChatMessageList.tsx",
+      "line": 1380,
+      "snippet": "detail || (resp.status === 504 ? SPEECH_TIMEOUT_MESSAGE : SPEECH_PLAYBACK_FAILURE_MESSAGE)"
+    },
+    {
+      "file": "features/chat/messages/ChatMessageList.tsx",
+      "line": 1404,
+      "snippet": "SPEECH_PLAYBACK_FAILURE_MESSAGE"
+    },
+    {
+      "file": "features/chat/messages/ChatMessageList.tsx",
+      "line": 1418,
+      "snippet": "SPEECH_PLAYBACK_FAILURE_MESSAGE"
+    },
+    {
+      "file": "features/chat/messages/ChatMessageList.tsx",
+      "line": 1754,
+      "snippet": "getModeBadgeLabel(msg.capability)"
+    },
+    {
+      "file": "features/chat/trace/TracePresentation.tsx",
+      "line": 1962,
+      "snippet": "spec.titleKey"
+    },
+    {
+      "file": "features/chat/trace/TracePresentation.tsx",
+      "line": 1963,
+      "snippet": "spec.hintKey"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1142,
+      "snippet": "ACTION_LABELS[action]"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1843,
+      "snippet": "item.title"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 1846,
+      "snippet": "item.title"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2120,
+      "snippet": "TOOL_OPTIONS.find(\n                            (item) => item.name === selectionTools[0],\n                          )?.l"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2142,
+      "snippet": "tool.label"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2164,
+      "snippet": "MODE_OPTIONS.find((item) => item.value === selectionMode)\n                      ?.label || \"Mode\""
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2185,
+      "snippet": "mode.label"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2237,
+      "snippet": "TOOL_OPTIONS.find((item) => item.name === trace.name)\n                      ?.label || trace.name"
+    },
+    {
+      "file": "features/co-writer/components/CoWriterWorkspace.tsx",
+      "line": 2355,
+      "snippet": "ACTION_LABELS[a]"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 387,
+      "snippet": "desc"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 536,
+      "snippet": "p.desc"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 636,
+      "snippet": "indexType.desc"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1261,
+      "snippet": "validationError"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1569,
+      "snippet": "MODEL_KIND_LABEL[kind] ?? kind"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1685,
+      "snippet": "visibleCompatibility.message"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1737,
+      "snippet": "label"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1745,
+      "snippet": "detail"
+    },
+    {
+      "file": "features/knowledge/components/engines/EngineDetail.tsx",
+      "line": 1803,
+      "snippet": "prereq"
+    },
+    {
+      "file": "features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "line": 191,
+      "snippet": "permissionLabels[\n                              permission as (typeof PERMISSIONS)[number]\n                            ]"
+    },
+    {
+      "file": "features/multi-user/components/GuardianRelationshipsEditor.tsx",
+      "line": 256,
+      "snippet": "permissionLabels[permission]"
+    },
+    {
+      "file": "features/multi-user/components/LearnerProfileEditor.tsx",
+      "line": 100,
+      "snippet": "fieldLabels[field]"
+    },
+    {
+      "file": "features/runtime-status/TurnCoordinationSettings.tsx",
+      "line": 167,
+      "snippet": "error"
+    },
+    {
+      "file": "features/settings/components/UsageActivity.tsx",
+      "line": 83,
+      "snippet": "['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i]"
+    },
+    {
+      "file": "features/settings/sections/AboutSettingsSection.tsx",
+      "line": 269,
+      "snippet": "status?.installation.reason || \"How DeepTutor is installed here.\""
+    },
+    {
+      "file": "features/settings/sections/AboutSettingsSection.tsx",
+      "line": 274,
+      "snippet": "INSTALLATION_LABELS[installMode]"
+    },
+    {
+      "file": "features/settings/sections/AboutSettingsSection.tsx",
+      "line": 360,
+      "snippet": "status.installation.reason"
+    },
+    {
+      "file": "features/settings/sections/AboutSettingsSection.tsx",
+      "line": 383,
+      "snippet": "`updateJob.${job.status}`"
+    },
+    {
+      "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 181,
+      "snippet": "nameKey"
+    },
+    {
+      "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 196,
+      "snippet": "descriptionKey"
+    },
+    {
+      "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 325,
+      "snippet": "readiness.message"
+    },
+    {
+      "file": "features/settings/sections/DocumentParsingSettingsSection.tsx",
+      "line": 349,
+      "snippet": "readiness.message"
+    },
+    {
+      "file": "features/settings/sections/GuardianSettingsSection.tsx",
+      "line": 220,
+      "snippet": "permissionKeys[permission] ?? permission"
+    },
+    {
+      "file": "features/settings/sections/LearnerProfileSettingsSection.tsx",
+      "line": 61,
+      "snippet": "label"
+    },
+    {
+      "file": "lib/book-activity.ts",
+      "line": 150,
+      "snippet": "type"
+    },
+    {
+      "file": "lib/book-errors.ts",
+      "line": 26,
+      "snippet": "known"
+    },
+    {
+      "file": "lib/knowledge-helpers.ts",
+      "line": 82,
+      "snippet": "progress.message_key"
+    },
+    {
+      "file": "lib/mcp-store.ts",
+      "line": 116,
+      "snippet": "key"
+    },
+    {
+      "file": "lib/mcp-store.ts",
+      "line": 116,
+      "snippet": "key"
+    }
+  ]
+}
