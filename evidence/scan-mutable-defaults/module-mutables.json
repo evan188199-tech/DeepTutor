@@ -1,0 +1,4121 @@
+[
+ {
+  "file": "tests/test_release_workflow_guards.py",
+  "line": 14,
+  "name": "RELEASE_WORKFLOWS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/reading/test_capability.py",
+  "line": 36,
+  "name": "PAGES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/reading/test_router.py",
+  "line": 27,
+  "name": "PAGES",
+  "kind": "List",
+  "used_as_default": true,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/tools/test_knowledge_frontier_tool.py",
+  "line": 21,
+  "name": "_PAPER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/tools/test_kb_files_tool.py",
+  "line": 28,
+  "name": "_READY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/tools/test_write_note.py",
+  "line": 57,
+  "name": "_SAMPLE_HISTORY",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/capabilities/test_mastery_echoed_options.py",
+  "line": 14,
+  "name": "_REAL_OPTIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/integration/test_prompt_cache.py",
+  "line": 27,
+  "name": "pytestmark",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/runtime/test_uvicorn_launch_flags.py",
+  "line": 28,
+  "name": "_LAUNCH_POINTS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/runtime/coordination/test_redis_integration.py",
+  "line": 11,
+  "name": "pytestmark",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/runtime/coordination/test_redis_stress.py",
+  "line": 12,
+  "name": "pytestmark",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/agents/chat/test_prompt_identity.py",
+  "line": 12,
+  "name": "PROMPTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/agents/chat/test_learning_journal_injection.py",
+  "line": 14,
+  "name": "PROMPTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/agents/chat/test_runtime_context.py",
+  "line": 24,
+  "name": "PROMPTS_NO_RUNTIME",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/agents/visualize/test_analysis_fallback.py",
+  "line": 37,
+  "name": "_AUTO_PROMPTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/agents/visualize/test_analysis_fallback.py",
+  "line": 32,
+  "name": "_FIXED_PROMPTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/utils/test_archive_extractor.py",
+  "line": 21,
+  "name": "DOC_EXTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/knowledge/test_manifest.py",
+  "line": 25,
+  "name": "_READY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/book/test_overview_copy.py",
+  "line": 25,
+  "name": "PICKER_LANGUAGES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/book/test_progress.py",
+  "line": 10,
+  "name": "PAGE_TO_CHAPTER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/book/test_visual_block_prompts.py",
+  "line": 20,
+  "name": "FILLERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/test_image_description_settings.py",
+  "line": 11,
+  "name": "SELECTION",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/test_knowledge_zip_upload.py",
+  "line": 22,
+  "name": "ALLOWED",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/test_codex_oauth_scope.py",
+  "line": 26,
+  "name": "CODEX_ROUTES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/test_notebook_api_contract.py",
+  "line": 27,
+  "name": "PINNED_SOURCES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/routers/test_reading_progress.py",
+  "line": 35,
+  "name": "SAVED_POSITION",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/api/routers/test_learning_records_access.py",
+  "line": 28,
+  "name": "_TOKENS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/llm/test_native_web_search.py",
+  "line": 58,
+  "name": "_TOOLS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/llm/test_responses_forced_tool_choice.py",
+  "line": 30,
+  "name": "_TOOLS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/llm/test_responses_forced_tool_choice.py",
+  "line": 41,
+  "name": "_CHAT_SHAPE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/llm/test_responses_forced_tool_choice.py",
+  "line": 42,
+  "name": "_RESPONSES_SHAPE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/config/test_staged_capability_params.py",
+  "line": 31,
+  "name": "SHIPPED_BUDGETS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/embedding/test_gemini_adapter.py",
+  "line": 325,
+  "name": "_INLINE_PNG",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/mcp/test_catalog.py",
+  "line": 454,
+  "name": "_GOOD_ENTRY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/rag/test_ima_inventory.py",
+  "line": 36,
+  "name": "ENTRY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/rag/test_llamaindex_faiss_vector_store.py",
+  "line": 28,
+  "name": "_VECTORS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/search/test_search_providers.py",
+  "line": 364,
+  "name": "_SERPLY_BODIES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/search/test_search_providers.py",
+  "line": 142,
+  "name": "_NEW_PROVIDERS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/search/test_search_providers.py",
+  "line": 126,
+  "name": "_EMPTY_BODY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/sandbox/test_argv_exec.py",
+  "line": 30,
+  "name": "HOSTILE_ARGS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/cron/test_cron_tool.py",
+  "line": 25,
+  "name": "PARTNER_OWNER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/cron/test_cron_tool.py",
+  "line": 24,
+  "name": "CHAT_OWNER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/session/test_import_session.py",
+  "line": 26,
+  "name": "_MSGS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "tests/services/session/test_sqlite_store.py",
+  "line": 1177,
+  "name": "_ASK_USER_EVENTS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "scripts/export_discord_history.py",
+  "line": 55,
+  "name": "THREAD_PARENT_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "scripts/export_discord_history.py",
+  "line": 38,
+  "name": "CHANNEL_TYPE_NAMES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "scripts/export_discord_history.py",
+  "line": 53,
+  "name": "MESSAGE_CHANNEL_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "scripts/export_discord_history.py",
+  "line": 54,
+  "name": "THREAD_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "scripts/check_repo_hygiene.py",
+  "line": 10,
+  "name": "FORBIDDEN_PARTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor_cli/init_wizard.py",
+  "line": 57,
+  "name": "LLM_FALLBACK_MODELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor_cli/init_wizard.py",
+  "line": 106,
+  "name": "EMBEDDING_FALLBACK_MODELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/reading/ingestion.py",
+  "line": 53,
+  "name": "_BILIBILI_HOSTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/reading/ingestion.py",
+  "line": 45,
+  "name": "_YOUTUBE_HOSTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/reading/ingestion.py",
+  "line": 66,
+  "name": "_MEDIA_MIME",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/reading/ingestion.py",
+  "line": 61,
+  "name": "_AUDIO_SUFFIXES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/reading/models.py",
+  "line": 38,
+  "name": "ANNOTATION_COLORS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/web_fetch.py",
+  "line": 42,
+  "name": "ALLOWED_SCHEMES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/__init__.py",
+  "line": 7,
+  "name": "_LAZY_EXPORTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/builtin_specs.py",
+  "line": 233,
+  "name": "TOOL_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/media_gen_tool.py",
+  "line": 34,
+  "name": "_EXT_BY_CONTENT_TYPE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/prompting/__init__.py",
+  "line": 23,
+  "name": "_PHASE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/prompting/__init__.py",
+  "line": 40,
+  "name": "_PHASE_ORDER",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/prompting/__init__.py",
+  "line": 15,
+  "name": "_GUIDELINE_HEADER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/vision/image_utils.py",
+  "line": 12,
+  "name": "SUPPORTED_IMAGE_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/vision/ggb_validator.py",
+  "line": 23,
+  "name": "COMMANDS_WITH_BRACKETS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/vision/ggb_validator.py",
+  "line": 92,
+  "name": "COMMON_MISTAKES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/tools/builtin/__init__.py",
+  "line": 2037,
+  "name": "_LAZY_CLASS_EXPORTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/co_writer/storage.py",
+  "line": 235,
+  "name": "_storages",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 241,
+    "kind": "item-assign",
+    "func": "get_co_writer_storage"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/co_writer/docx_converter.py",
+  "line": 32,
+  "name": "_HEADING_STYLES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/co_writer/docx_converter.py",
+  "line": 28,
+  "name": "_CODE_FONTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/co_writer/docx_converter.py",
+  "line": 45,
+  "name": "_ORDERED_NUM_FMTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/co_writer/docx_converter.py",
+  "line": 42,
+  "name": "_QUOTE_STYLES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/core/turn_request.py",
+  "line": 12,
+  "name": "_LEGACY_RUNTIME_CONFIG_KEYS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/__init__.py",
+  "line": 17,
+  "name": "_REGISTRY_EXPORTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/reading/capability.py",
+  "line": 73,
+  "name": "_PROMPT_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 92,
+    "kind": "item-assign",
+    "func": "_load_prompts"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/mastery/mode.py",
+  "line": 71,
+  "name": "TOOL_MODES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/setup/tools.py",
+  "line": 46,
+  "name": "_CREDENTIAL_ROUTES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/explore_context/explorer.py",
+  "line": 85,
+  "name": "_KIND_BY_PREFIX",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/explore_context/capability.py",
+  "line": 45,
+  "name": "_PROMPT_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 64,
+    "kind": "item-assign",
+    "func": "_load_prompts"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/course_study/tools.py",
+  "line": 82,
+  "name": "COURSE_HANDOFF_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/course_study/tools.py",
+  "line": 78,
+  "name": "HANDOFF_REF_KINDS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/course_study/capability.py",
+  "line": 54,
+  "name": "_PROMPT_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 73,
+    "kind": "item-assign",
+    "func": "_load_prompts"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/capabilities/marginnote4/tools.py",
+  "line": 50,
+  "name": "_STORE_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 46,
+    "kind": "item-assign",
+    "func": "_store"
+   },
+   {
+    "line": 55,
+    "kind": ".clear()",
+    "func": "_clear_store_cache"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/paths.py",
+  "line": 42,
+  "name": "_path_services",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 145,
+    "kind": "item-assign",
+    "func": "get_path_service_for_scope"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/grants.py",
+  "line": 22,
+  "name": "LEARNING_CAPABILITIES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/grants.py",
+  "line": 24,
+  "name": "LEARNING_PERSONAS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/grants.py",
+  "line": 25,
+  "name": "LEARNING_SURFACES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/grants.py",
+  "line": 27,
+  "name": "_GRANT_THREAD_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 51,
+    "kind": ".setdefault()",
+    "func": "_grant_write_lock"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/grants.py",
+  "line": 23,
+  "name": "LEARNING_AGE_BANDS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/multi_user/knowledge_access.py",
+  "line": 27,
+  "name": "DEFAULT_KB_ALIASES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/textbook_struct/chapter_rebuild.py",
+  "line": 205,
+  "name": "PARENT_UNITS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/textbook_struct/chapter_rebuild.py",
+  "line": 198,
+  "name": "UNIT_RE_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/plugins/registry.py",
+  "line": 44,
+  "name": "HOST_API_VERSIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/plugins/runtime.py",
+  "line": 441,
+  "name": "_GROUP_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/plugins/runtime.py",
+  "line": 46,
+  "name": "_PERMISSION_KEYS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/plugins/runtime.py",
+  "line": 439,
+  "name": "_IMPORTED_GENERATIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 498,
+    "kind": "item-assign",
+    "func": "entry_point_can_load"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/models.py",
+  "line": 50,
+  "name": "_STAGE_LEGACY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/models.py",
+  "line": 9,
+  "name": "_KNOWLEDGE_TYPE_LEGACY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/models.py",
+  "line": 16,
+  "name": "_ERROR_TYPE_LEGACY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/mastery.py",
+  "line": 21,
+  "name": "_CONFIDENCE_CAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/policy.py",
+  "line": 36,
+  "name": "QUANTITATIVE_GATE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/prompts.py",
+  "line": 64,
+  "name": "_MUST_COVER_HEADERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/storage.py",
+  "line": 58,
+  "name": "_ALLOWED_INTERACTION_TRANSITIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/storage.py",
+  "line": 51,
+  "name": "_initialized_db_paths",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 590,
+    "kind": ".add()",
+    "func": "_ensure_initialized"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/navigation.py",
+  "line": 188,
+  "name": "_CN_NUMERALS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/scheduler.py",
+  "line": 16,
+  "name": "INTERVAL_SEQUENCES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/scheduler.py",
+  "line": 23,
+  "name": "_TYPE_PRIORITY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/scheduler.py",
+  "line": 47,
+  "name": "_EVIDENCE_SOURCE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/learning/scheduler.py",
+  "line": 30,
+  "name": "_TYPE_DIFFICULTY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/visualizers/store.py",
+  "line": 18,
+  "name": "_ALLOWED_SUFFIXES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/stream_bus.py",
+  "line": 360,
+  "name": "_bus_registry",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 365,
+    "kind": "item-assign",
+    "func": "register_bus"
+   },
+   {
+    "line": 370,
+    "kind": ".pop()",
+    "func": "unregister_bus"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/memory_reclaim.py",
+  "line": 13,
+  "name": "_reclaim_tasks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 62,
+    "kind": "item-assign",
+    "func": "schedule_memory_reclaim"
+   },
+   {
+    "line": 67,
+    "kind": ".pop()",
+    "func": "schedule_memory_reclaim"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/launcher.py",
+  "line": 68,
+  "name": "SOURCE_BUILD_EXCLUDED_DIRS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/banner.py",
+  "line": 25,
+  "name": "LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/request_contracts.py",
+  "line": 150,
+  "name": "CAPABILITY_CONFIG_MODELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/request_contracts.py",
+  "line": 141,
+  "name": "CAPABILITY_CONFIG_VALIDATORS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": [
+   {
+    "line": 181,
+    "kind": ".setdefault()"
+   }
+  ]
+ },
+ {
+  "file": "deeptutor/runtime/bootstrap/builtin_capabilities.py",
+  "line": 35,
+  "name": "BUILTIN_CAPABILITY_CLASSES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/bootstrap/builtin_capabilities.py",
+  "line": 50,
+  "name": "BUILTIN_CAPABILITY_SPECS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/agentic/client.py",
+  "line": 361,
+  "name": "_NATIVE_ADAPTER_BUILDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/agentic/__init__.py",
+  "line": 49,
+  "name": "_EXPORT_MODULES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/runtime/registry/__init__.py",
+  "line": 7,
+  "name": "_EXPORTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/pipeline.py",
+  "line": 2439,
+  "name": "_REPORT_STOPWORDS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/mode_strategy.py",
+  "line": 21,
+  "name": "_AUTO_SUBTOPICS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/mode_strategy.py",
+  "line": 97,
+  "name": "STRATEGIES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/mode_strategy.py",
+  "line": 20,
+  "name": "_MANUAL_SUBTOPICS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/data_structures.py",
+  "line": 23,
+  "name": "_TOPIC_STOPWORDS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/research/utils/token_tracker.py",
+  "line": 24,
+  "name": "MODEL_PRICING",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/visualize/capability.py",
+  "line": 71,
+  "name": "_MANIM_RENDER_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/visualize/capability.py",
+  "line": 59,
+  "name": "_VISUALIZE_STAGES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/_shared/tool_composition.py",
+  "line": 47,
+  "name": "_CONDITIONAL_MOUNT_FLAGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/_shared/tool_runtime.py",
+  "line": 14,
+  "name": "GENERATION_TOOL_SERVICES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/math_animator/renderer.py",
+  "line": 24,
+  "name": "QUALITY_FLAG_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/loop/context_budget.py",
+  "line": 37,
+  "name": "_BLOCK_SEGMENTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/agents/loop/pipeline.py",
+  "line": 99,
+  "name": "LOOP_EXCLUDED_TOOLS",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/utils/bibtex_converter.py",
+  "line": 12,
+  "name": "_DELIMITERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/utils/bibtex_converter.py",
+  "line": 13,
+  "name": "_METADATA_ENTRY_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/utils/bibtex_converter.py",
+  "line": 26,
+  "name": "_TYPE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/utils/document_images.py",
+  "line": 76,
+  "name": "_MIME_BY_EXT",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 97,
+  "name": "_REMOTE_INVENTORY_READERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 321,
+  "name": "_UNAVAILABLE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 337,
+  "name": "_NOTE_TEXT",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 370,
+  "name": "_REPORT_TEXT",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 72,
+  "name": "_NON_DOCUMENT_KB_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/manifest.py",
+  "line": 302,
+  "name": "_STATUS_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/knowledge/indexing_run.py",
+  "line": 31,
+  "name": "_TERMINAL",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/network.py",
+  "line": 17,
+  "name": "_BLOCKED_NETWORKS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/matrix.py",
+  "line": 62,
+  "name": "_MSGTYPE_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/matrix.py",
+  "line": 103,
+  "name": "MATRIX_ALLOWED_HTML_ATTRIBUTES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/matrix.py",
+  "line": 109,
+  "name": "MATRIX_ALLOWED_URL_SCHEMES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/matrix.py",
+  "line": 72,
+  "name": "MATRIX_ALLOWED_HTML_TAGS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/feishu.py",
+  "line": 80,
+  "name": "MSG_TYPE_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/msteams.py",
+  "line": 58,
+  "name": "MSTEAMS_DEFAULT_TRUSTED_SERVICE_URL_HOSTS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/weixin.py",
+  "line": 110,
+  "name": "_VIDEO_EXTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/weixin.py",
+  "line": 76,
+  "name": "BASE_INFO",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/weixin.py",
+  "line": 109,
+  "name": "_IMAGE_EXTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/weixin.py",
+  "line": 111,
+  "name": "_VOICE_EXTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/manager.py",
+  "line": 25,
+  "name": "_BOOL_CAMEL_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/partners/channels/wecom.py",
+  "line": 31,
+  "name": "MSG_TYPE_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/models.py",
+  "line": 100,
+  "name": "DEPTH_WORD_SCALE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/overview_copy.py",
+  "line": 35,
+  "name": "_COPY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/__init__.py",
+  "line": 13,
+  "name": "_MODEL_EXPORTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/__init__.py",
+  "line": 27,
+  "name": "_ENGINE_EXPORTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/event_hub.py",
+  "line": 42,
+  "name": "_buses",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 54,
+    "kind": "item-assign",
+    "func": "get_book_bus"
+   },
+   {
+    "line": 68,
+    "kind": ".pop()",
+    "func": "close_book_bus"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/export.py",
+  "line": 30,
+  "name": "_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/engine.py",
+  "line": 2170,
+  "name": "_engines",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 2178,
+    "kind": "item-assign",
+    "func": "get_book_engine"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/storage.py",
+  "line": 385,
+  "name": "_storages",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 391,
+    "kind": "item-assign",
+    "func": "get_book_storage"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/blocks/code.py",
+  "line": 43,
+  "name": "_CHECKABLE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/blocks/text.py",
+  "line": 19,
+  "name": "_NONE_LABEL",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/blocks/callout.py",
+  "line": 15,
+  "name": "_VARIANT_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/agents/source_explorer.py",
+  "line": 112,
+  "name": "_DEFAULT_QUERIES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/agents/page_planner.py",
+  "line": 59,
+  "name": "_PHASE1_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/agents/page_planner.py",
+  "line": 73,
+  "name": "_TEMPLATES_V2",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/book/agents/page_planner.py",
+  "line": 158,
+  "name": "_PHASE1_SUBSTITUTES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/main.py",
+  "line": 597,
+  "name": "_admin",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/main.py",
+  "line": 593,
+  "name": "_auth",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1224,
+  "name": "_AVATAR_MEDIA_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 113,
+  "name": "_draft_confirm_locks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 132,
+    "kind": "item-assign",
+    "func": "_get_draft_confirm_lock"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 104,
+  "name": "_USABLE",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 111,
+  "name": "_start_locks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 122,
+    "kind": "item-assign",
+    "func": "_get_start_lock"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 105,
+  "name": "_MANAGEABLE",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 76,
+  "name": "_MEDIA_EXTENSIONS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/agent_config.py",
+  "line": 11,
+  "name": "AGENT_REGISTRY",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/imports.py",
+  "line": 33,
+  "name": "_ALLOWED_SOURCES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/quiz_judge.py",
+  "line": 29,
+  "name": "_JUDGE_SYSTEM_PROMPTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 138,
+  "name": "DEFAULT_UI_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 133,
+  "name": "DEFAULT_SIDEBAR_NAV_ORDER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/book.py",
+  "line": 446,
+  "name": "_CAPTURE_TRANSITIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 34,
+  "name": "_auth",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 248,
+  "name": "IMAGE_ACCEPT_MIME_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 138,
+  "name": "DEFAULT_KB_ALIASES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/api/contracts/export.py",
+  "line": 25,
+  "name": "HTTP_METHODS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/i18n/metadata_i18n.py",
+  "line": 40,
+  "name": "_TOOL_DESCRIPTIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/i18n/metadata_i18n.py",
+  "line": 5,
+  "name": "_CAPABILITY_DESCRIPTIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/logging/stats/llm_stats.py",
+  "line": 30,
+  "name": "MODEL_PRICING",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/courses_state.py",
+  "line": 205,
+  "name": "_INDEX_LOADERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/reading_hints.py",
+  "line": 23,
+  "name": "_MAX_HINT_CHARS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/reading_hints.py",
+  "line": 286,
+  "name": "_EN_STOP_WORDS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 258,
+  "name": "_SURFACE_LABELS_ZH",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 121,
+  "name": "_last_probe",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 643,
+    "kind": "item-assign",
+    "func": "refresh_suggestions"
+   },
+   {
+    "line": 703,
+    "kind": "item-assign",
+    "func": "_schedule_probe"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 114,
+  "name": "_MAX_PROMPT_CHARS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 113,
+  "name": "_MAX_LABEL_CHARS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 118,
+  "name": "_inflight",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 642,
+    "kind": "item-assign",
+    "func": "refresh_suggestions"
+   },
+   {
+    "line": 651,
+    "kind": ".pop()",
+    "func": "refresh_suggestions"
+   },
+   {
+    "line": 712,
+    "kind": ".pop()",
+    "func": "_schedule_probe"
+   },
+   {
+    "line": 715,
+    "kind": "item-assign",
+    "func": "_schedule_probe"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 249,
+  "name": "_SURFACE_LABELS_EN",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/suggestions.py",
+  "line": 122,
+  "name": "_failures",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 616,
+    "kind": "item-assign",
+    "func": "_generate_and_cache"
+   },
+   {
+    "line": 618,
+    "kind": ".pop()",
+    "func": "_generate_and_cache"
+   },
+   {
+    "line": 661,
+    "kind": "item-assign",
+    "func": "_bounded_generation"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/pocketbase_client.py",
+  "line": 38,
+  "name": "_TOKEN_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 156,
+    "kind": "item-assign",
+    "func": "validate_pb_token"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/chat_hints.py",
+  "line": 40,
+  "name": "_MAX_HINT_CHARS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/mastery_hints.py",
+  "line": 51,
+  "name": "_MAX_HINT_CHARS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/i18n.py",
+  "line": 15,
+  "name": "_MESSAGES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/courses.py",
+  "line": 237,
+  "name": "_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 246,
+    "kind": "item-assign",
+    "func": "_lock_for"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/provider_registry.py",
+  "line": 130,
+  "name": "PROVIDER_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/provider_registry.py",
+  "line": 667,
+  "name": "_WIRE_API_BY_FORMAT",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/provider_registry.py",
+  "line": 671,
+  "name": "_FORMAT_BY_WIRE_API",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/research/primitives.py",
+  "line": 28,
+  "name": "_HOSTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/settings/service_preview.py",
+  "line": 18,
+  "name": "AUDIO_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/settings/starter_settings.py",
+  "line": 29,
+  "name": "DEFAULT_STARTER_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/settings/interface_settings.py",
+  "line": 38,
+  "name": "_RESPONSE_LANGUAGE_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/settings/interface_settings.py",
+  "line": 24,
+  "name": "DEFAULT_UI_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/settings/interface_settings.py",
+  "line": 36,
+  "name": "_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 70,
+    "kind": "item-assign",
+    "func": "_settings_lock"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/context_window.py",
+  "line": 34,
+  "name": "KNOWN_CONTEXT_WINDOWS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/error_mapping.py",
+  "line": 122,
+  "name": "_GLOBAL_RULES",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/registry.py",
+  "line": 11,
+  "name": "_provider_registry",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 28,
+    "kind": "item-assign",
+    "func": "register_provider"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/factory.py",
+  "line": 36,
+  "name": "STREAM_CONTROL_TOKENS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/openai_http_client.py",
+  "line": 50,
+  "name": "_sanitized_warned",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 80,
+    "kind": ".add()",
+    "func": "sanitize_invalid_ssl_env"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/openai_http_client.py",
+  "line": 23,
+  "name": "OPENROUTER_ATTRIBUTION_HEADERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/reasoning_params.py",
+  "line": 47,
+  "name": "_MINIMAL_NOT_OFF_PATTERNS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/reasoning_params.py",
+  "line": 40,
+  "name": "_PROVIDER_DEFAULT_OFF_PATTERNS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/reasoning_params.py",
+  "line": 13,
+  "name": "_THINKING_STYLE_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/reasoning_params.py",
+  "line": 23,
+  "name": "_PROVIDER_THINKING_STYLES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/reasoning_params.py",
+  "line": 32,
+  "name": "_PROVIDER_REASONING_PATTERNS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/utils.py",
+  "line": 43,
+  "name": "LOCAL_HOSTS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/utils.py",
+  "line": 49,
+  "name": "V1_SUFFIX_PORTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/utils.py",
+  "line": 17,
+  "name": "CLOUD_DOMAINS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/utils.py",
+  "line": 32,
+  "name": "LOCAL_PORTS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 360,
+  "name": "_CATALOG_OVERRIDES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 381,
+    "kind": ".clear()",
+    "func": "set_catalog_capability_overrides"
+   },
+   {
+    "line": 382,
+    "kind": ".update()",
+    "func": "set_catalog_capability_overrides"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 355,
+  "name": "CATALOG_CAPABILITY_FIELDS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 266,
+  "name": "MODEL_OVERRIDES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 27,
+  "name": "PROVIDER_CAPABILITIES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 516,
+  "name": "_RUNTIME_DISABLED_FORCED_TOOL_CHOICE",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 523,
+    "kind": ".add()",
+    "func": "disable_forced_tool_choice_at_runtime"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 252,
+  "name": "DEFAULT_CAPABILITIES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/capabilities.py",
+  "line": 487,
+  "name": "_RUNTIME_DISABLED_RESPONSE_FORMAT",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 501,
+    "kind": ".add()",
+    "func": "disable_response_format_at_runtime"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/provider_core/__init__.py",
+  "line": 34,
+  "name": "_LAZY_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+  "line": 35,
+  "name": "_REPLAYABLE_OUTPUT_ITEM_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+  "line": 17,
+  "name": "FINISH_REASON_MAP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/llm/provider_core/openai_responses/parsing.py",
+  "line": 27,
+  "name": "_WEB_SEARCH_ITEM_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/trace.py",
+  "line": 24,
+  "name": "_locks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 31,
+    "kind": "item-assign",
+    "func": "_lock_for"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/recall.py",
+  "line": 195,
+  "name": "_QUERY_KINDS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/snapshot/__init__.py",
+  "line": 127,
+  "name": "_",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 638,
+  "name": "_READERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/snapshot/adapters.py",
+  "line": 652,
+  "name": "_PROBES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/consolidator/modes/_runtime.py",
+  "line": 32,
+  "name": "_PROMPT_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 49,
+    "kind": "item-assign",
+    "func": "load_prompt"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/memory/consolidator/modes/_runtime.py",
+  "line": 35,
+  "name": "_META_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 61,
+    "kind": "item-assign",
+    "func": "load_focus_meta"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/skill/service.py",
+  "line": 1026,
+  "name": "_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 1049,
+    "kind": "item-assign",
+    "func": "get_skill_service"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/skill/hub.py",
+  "line": 77,
+  "name": "_BUILTIN_HUBS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 361,
+  "name": "DEFAULT_LIGHTRAG_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 393,
+  "name": "TRUTHY",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 347,
+  "name": "DEFAULT_GRAPHRAG_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 378,
+  "name": "DEFAULT_LIGHTRAG_SERVER_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 321,
+  "name": "DEFAULT_LLAMAINDEX_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 16,
+  "name": "DEFAULT_SYSTEM_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 81,
+  "name": "DEFAULT_AUTH_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 198,
+  "name": "_DEFAULT_DOCLING_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 275,
+  "name": "DEFAULT_PAGEINDEX_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 235,
+  "name": "_DEFAULT_TIKA_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 217,
+  "name": "_DEFAULT_PYMUPDF4LLM_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 209,
+  "name": "_DEFAULT_MARKITDOWN_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 394,
+  "name": "FALSY",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 91,
+  "name": "DEFAULT_INTEGRATIONS_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 227,
+  "name": "_DEFAULT_LITEPARSE_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 286,
+  "name": "DEFAULT_IMA_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 247,
+  "name": "DEFAULT_DOCUMENT_PARSING_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 169,
+  "name": "_DEFAULT_MINERU_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/runtime_settings.py",
+  "line": 241,
+  "name": "_DEFAULT_TEXT_ONLY_ENGINE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 323,
+  "name": "TTS_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 388,
+  "name": "STT_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 445,
+  "name": "VOICE_PROVIDER_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 167,
+  "name": "EMBEDDING_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 559,
+  "name": "GENERATION_PROVIDER_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 485,
+  "name": "IMAGEGEN_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 88,
+  "name": "SEARCH_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/provider_runtime.py",
+  "line": 537,
+  "name": "VIDEOGEN_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/model_catalog.py",
+  "line": 178,
+  "name": "_CONNECTION_BASE_SUFFIX",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/model_catalog.py",
+  "line": 196,
+  "name": "_DASHSCOPE_VOICE_BINDINGS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/loader.py",
+  "line": 337,
+  "name": "_STAGED_CAPABILITY_DEFAULTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/loader.py",
+  "line": 314,
+  "name": "DEFAULT_QUESTION_PARAMS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/loader.py",
+  "line": 332,
+  "name": "DEFAULT_EXPLORE_CONTEXT_PARAMS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/loader.py",
+  "line": 322,
+  "name": "DEFAULT_RESEARCH_PARAMS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/loader.py",
+  "line": 287,
+  "name": "DEFAULT_CHAT_PARAMS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/embedding_endpoint.py",
+  "line": 130,
+  "name": "EMBEDDING_PROVIDERS_REQUIRING_EMBEDDINGS_PATH",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/embedding_endpoint.py",
+  "line": 92,
+  "name": "EMBEDDING_PROVIDER_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/embedding_endpoint.py",
+  "line": 100,
+  "name": "EMBEDDING_PROVIDER_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/embedding_endpoint.py",
+  "line": 113,
+  "name": "EMBEDDING_PROVIDER_DEFAULT_ENDPOINTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/readiness.py",
+  "line": 146,
+  "name": "_TOOL_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/readiness.py",
+  "line": 135,
+  "name": "_SERVICE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/readiness.py",
+  "line": 191,
+  "name": "_TOOL_DEPENDENCIES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/capabilities_settings.py",
+  "line": 68,
+  "name": "_MAIN_YAML_RUNTIME_DEFAULTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/capabilities_settings.py",
+  "line": 43,
+  "name": "_AGENTS_YAML_CAPABILITY_SECTIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/config/capabilities_settings.py",
+  "line": 53,
+  "name": "_SIMPLE_LLM_DEFAULTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partner_groups/store.py",
+  "line": 22,
+  "name": "_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 32,
+    "kind": ".setdefault()",
+    "func": "_lock_for"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partner_groups/memory.py",
+  "line": 14,
+  "name": "_WHITEBOARD_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 21,
+    "kind": ".setdefault()",
+    "func": "_whiteboard_lock"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/workspace/data_migration.py",
+  "line": 31,
+  "name": "FEATURES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/workspace/dependencies.py",
+  "line": 11,
+  "name": "MODES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/embedding/request_options.py",
+  "line": 7,
+  "name": "_JINA_VARIABLE_DIMENSIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/embedding/adapters/__init__.py",
+  "line": 17,
+  "name": "ADAPTER_BACKENDS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/codex_auth/service.py",
+  "line": 1167,
+  "name": "_SERVICE_INSTANCES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 1296,
+    "kind": "item-assign",
+    "func": "get_codex_oauth_service"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/codex_auth/service.py",
+  "line": 1168,
+  "name": "_RELOCATED_SECRET_ROOTS",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 1209,
+    "kind": ".add()",
+    "func": "_codex_secrets_root"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/setup/init.py",
+  "line": 24,
+  "name": "DEFAULT_INTERFACE_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/setup/init.py",
+  "line": 78,
+  "name": "DEFAULT_AGENTS_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/setup/init.py",
+  "line": 36,
+  "name": "DEFAULT_MAIN_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/cli_apps/installer.py",
+  "line": 69,
+  "name": "_locks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 96,
+    "kind": ".setdefault()",
+    "func": "install_app"
+   },
+   {
+    "line": 115,
+    "kind": ".setdefault()",
+    "func": "uninstall_app"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/cli_apps/vendor/build_snapshot.py",
+  "line": 44,
+  "name": "seen",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": [
+   {
+    "line": 48,
+    "kind": "item-assign"
+   }
+  ]
+ },
+ {
+  "file": "deeptutor/services/cli_apps/vendor/build_snapshot.py",
+  "line": 36,
+  "name": "out",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": [
+   {
+    "line": 41,
+    "kind": ".append()"
+   },
+   {
+    "line": 43,
+    "kind": ".sort()"
+   }
+  ]
+ },
+ {
+  "file": "deeptutor/services/cli_apps/vendor/build_snapshot.py",
+  "line": 50,
+  "name": "payload",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/mcp/network.py",
+  "line": 34,
+  "name": "_BLOCKED_NETWORKS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/mcp/network.py",
+  "line": 45,
+  "name": "_STRICT_EXTRA_NETWORKS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/mcp/oauth.py",
+  "line": 323,
+  "name": "_PENDING",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 364,
+    "kind": "item-assign",
+    "func": "begin_authorization"
+   },
+   {
+    "line": 394,
+    "kind": ".pop()",
+    "func": "begin_authorization"
+   },
+   {
+    "line": 410,
+    "kind": ".pop()",
+    "func": "complete_authorization"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/mcp/catalog/models.py",
+  "line": 75,
+  "name": "_TRANSPORT_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/factory.py",
+  "line": 64,
+  "name": "_PIPELINE_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 208,
+    "kind": "item-assign",
+    "func": "get_pipeline"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/embedding_binding.py",
+  "line": 18,
+  "name": "EMBEDDING_PROVIDERS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/visual_assets.py",
+  "line": 30,
+  "name": "_MIME_EXT",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/preflight.py",
+  "line": 258,
+  "name": "_PREFLIGHTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/llamaindex/config.py",
+  "line": 14,
+  "name": "SUPPORTED_VECTOR_INDEX_TYPES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/llamaindex/config.py",
+  "line": 11,
+  "name": "SUPPORTED_RETRIEVAL_PROFILES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/llamaindex/exercise_lookup.py",
+  "line": 22,
+  "name": "_SKIP",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/llamaindex/pipeline.py",
+  "line": 44,
+  "name": "_INDEX_WORKERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 76,
+    "kind": "item-assign",
+    "func": "_claim_index_worker"
+   },
+   {
+    "line": 86,
+    "kind": ".pop()",
+    "func": "_release_index_worker"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/lightrag/block_policy.py",
+  "line": 39,
+  "name": "V2_AUXILIARY_EQUIVALENTS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/lightrag/storage.py",
+  "line": 47,
+  "name": "_FAILED_STATUSES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/lightrag/storage.py",
+  "line": 46,
+  "name": "_SUCCESS_STATUSES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/graphrag/completion_adapter.py",
+  "line": 23,
+  "name": "_JSON_OBJECT_CAPABILITIES",
+  "kind": "set",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 42,
+    "kind": ".add()",
+    "func": "_remember_json_object"
+   },
+   {
+    "line": 69,
+    "kind": ".clear()",
+    "func": "clear_capability_cache"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/graphrag/engine.py",
+  "line": 62,
+  "name": "_OUTPUTS_BY_MODE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/ima/media.py",
+  "line": 62,
+  "name": "_CONTENT_TYPE_EXTENSIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/ima/inventory.py",
+  "line": 71,
+  "name": "_CACHE",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 129,
+    "kind": ".clear()",
+    "func": "clear_cache"
+   },
+   {
+    "line": 189,
+    "kind": ".pop()",
+    "func": "_cached"
+   },
+   {
+    "line": 196,
+    "kind": "item-assign",
+    "func": "_store"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/pageindex/tools.py",
+  "line": 17,
+  "name": "TOOL_PREFIXES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/pageindex/pipeline.py",
+  "line": 34,
+  "name": "SUPPORTED_EXTENSIONS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/rag/pipelines/pageindex/pipeline.py",
+  "line": 47,
+  "name": "OSS_SUPPORTED_EXTENSIONS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/storage/file_library.py",
+  "line": 56,
+  "name": "_MIGRATIONS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/storage/file_library.py",
+  "line": 454,
+  "name": "_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 474,
+    "kind": "item-assign",
+    "func": "get_file_library_store"
+   },
+   {
+    "line": 480,
+    "kind": ".clear()",
+    "func": "reset_file_library_store"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/storage/attachment_store.py",
+  "line": 279,
+  "name": "_stores",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 292,
+    "kind": "item-assign",
+    "func": "get_attachment_store"
+   },
+   {
+    "line": 325,
+    "kind": ".clear()",
+    "func": "reset_attachment_store"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/source_filter.py",
+  "line": 94,
+  "name": "_web_risk_inflight",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 306,
+    "kind": "item-assign",
+    "func": "_web_risk_rejections"
+   },
+   {
+    "line": 333,
+    "kind": ".pop()",
+    "func": "_cache_web_risk_result"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/source_filter.py",
+  "line": 92,
+  "name": "_web_risk_cache",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 338,
+    "kind": ".pop()",
+    "func": "_cache_web_risk_result"
+   },
+   {
+    "line": 339,
+    "kind": "item-assign",
+    "func": "_cache_web_risk_result"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/consolidation.py",
+  "line": 27,
+  "name": "PROVIDER_TEMPLATES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/providers/bocha.py",
+  "line": 22,
+  "name": "_FRESHNESS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/providers/__init__.py",
+  "line": 20,
+  "name": "_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 54,
+    "kind": "item-assign",
+    "func": "register_provider"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/search/providers/serply.py",
+  "line": 29,
+  "name": "_MODES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/prompt/language.py",
+  "line": 10,
+  "name": "_LANGUAGE_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/options.py",
+  "line": 27,
+  "name": "OPENAI_FORMATS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 205,
+  "name": "_BLACKBOARD",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 236,
+  "name": "_UNICODE_MATH",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 26,
+  "name": "_GREEK",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 312,
+  "name": "_LIMIT_HEAD",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 299,
+  "name": "_ACCENT_SPEAK",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 174,
+  "name": "_SPACING_DROP",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 100,
+  "name": "_OPERATORS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/speech_text.py",
+  "line": 69,
+  "name": "_FUNCTIONS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/adapters/__init__.py",
+  "line": 34,
+  "name": "STT_ADAPTERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/adapters/__init__.py",
+  "line": 25,
+  "name": "TTS_ADAPTERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/adapters/dashscope.py",
+  "line": 31,
+  "name": "_AUDIO_CONTENT_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/adapters/openai_compat.py",
+  "line": 45,
+  "name": "_OPENAI_TTS_VOICES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/voice/adapters/openai_compat.py",
+  "line": 35,
+  "name": "_FORMAT_CONTENT_TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/sessions.py",
+  "line": 36,
+  "name": "_CONVERSATION_SCOPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/channel_state_migration.py",
+  "line": 66,
+  "name": "_CLAIMS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/channel_state_migration.py",
+  "line": 37,
+  "name": "LEGACY_STATE_DIRS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/interaction.py",
+  "line": 73,
+  "name": "_STORES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 100,
+    "kind": "item-assign",
+    "func": "session_store_for"
+   },
+   {
+    "line": 108,
+    "kind": ".pop()",
+    "func": "forget_partner_stores"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/weixin_onboarding.py",
+  "line": 69,
+  "name": "_attempts",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 80,
+    "kind": ".pop()",
+    "func": "_prune"
+   },
+   {
+    "line": 163,
+    "kind": "item-assign",
+    "func": "start_login"
+   },
+   {
+    "line": 315,
+    "kind": ".pop()",
+    "func": "forget"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/channel_onboarding.py",
+  "line": 50,
+  "name": "_FEISHU_ACCOUNTS_URLS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/links.py",
+  "line": 38,
+  "name": "_locks",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 62,
+    "kind": "item-assign",
+    "func": "_lock"
+   },
+   {
+    "line": 197,
+    "kind": ".pop()",
+    "func": "forget_partner_links"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/runtime.py",
+  "line": 70,
+  "name": "_THINKING_NOTICES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/drafts.py",
+  "line": 23,
+  "name": "_LOCKS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 30,
+    "kind": ".setdefault()",
+    "func": "_lock_for"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/manager.py",
+  "line": 1801,
+  "name": "_LEGACY_SOUL_ID_ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/partners/manager.py",
+  "line": 121,
+  "name": "_RESERVED_NAMES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/web_source/html_extractor.py",
+  "line": 95,
+  "name": "_SIDEBAR_XPATHS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/web_source/html_extractor.py",
+  "line": 37,
+  "name": "_CONTENT_XPATHS",
+  "kind": "List",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/web_source/bilingual.py",
+  "line": 15,
+  "name": "_CANONICAL_LANGUAGES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/web_source/crawler.py",
+  "line": 189,
+  "name": "_RETRY_STATUS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/persona/service.py",
+  "line": 342,
+  "name": "_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 358,
+    "kind": "item-assign",
+    "func": "get_persona_service"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/notebook/service.py",
+  "line": 701,
+  "name": "_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 708,
+    "kind": "item-assign",
+    "func": "get_notebook_manager"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/factory.py",
+  "line": 70,
+  "name": "_ENGINE_LOADERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/factory.py",
+  "line": 83,
+  "name": "_ENGINE_META",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/_install.py",
+  "line": 39,
+  "name": "ENGINE_PIP_SPECS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/_install.py",
+  "line": 57,
+  "name": "ENGINE_MODEL_DOWNLOADERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/mineru/backend.py",
+  "line": 37,
+  "name": "_LOCAL_FAILURE_MESSAGES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/practice/importing.py",
+  "line": 27,
+  "name": "TYPES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/practice/importing.py",
+  "line": 17,
+  "name": "ALIASES",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/subagent/models.py",
+  "line": 398,
+  "name": "_PROVIDERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/subagent/images.py",
+  "line": 23,
+  "name": "_EXT_BY_MIME",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/subagent/opencode_server.py",
+  "line": 68,
+  "name": "_servers",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 93,
+    "kind": ".pop()",
+    "func": "acquire_server"
+   },
+   {
+    "line": 95,
+    "kind": "item-assign",
+    "func": "acquire_server"
+   },
+   {
+    "line": 168,
+    "kind": ".pop()",
+    "func": "_reap_stale"
+   },
+   {
+    "line": 184,
+    "kind": ".clear()",
+    "func": "shutdown_servers"
+   },
+   {
+    "line": 201,
+    "kind": ".clear()",
+    "func": "_atexit_cleanup"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/imagegen/adapters/__init__.py",
+  "line": 16,
+  "name": "IMAGEGEN_ADAPTERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/async_task.py",
+  "line": 37,
+  "name": "_SUCCESS_STATES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/async_task.py",
+  "line": 38,
+  "name": "_FAILURE_STATES",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/__init__.py",
+  "line": 16,
+  "name": "VIDEOGEN_ADAPTERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/dashscope.py",
+  "line": 28,
+  "name": "_SIZES_BY_TIER",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/dashscope.py",
+  "line": 46,
+  "name": "_MODEL_TIERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/videogen/adapters/dashscope.py",
+  "line": 53,
+  "name": "_FIXED_FIVE_SECOND_MODELS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/source_inventory.py",
+  "line": 841,
+  "name": "_EXTERNAL_AGENT_LABELS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/__init__.py",
+  "line": 12,
+  "name": "_pocketbase_store_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 36,
+    "kind": "item-assign",
+    "func": "get_session_store"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/sqlite_store.py",
+  "line": 4581,
+  "name": "_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 4588,
+    "kind": "item-assign",
+    "func": "get_sqlite_session_store"
+   },
+   {
+    "line": 4602,
+    "kind": "item-assign",
+    "func": "get_sqlite_session_store_for"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/_turn_runtime_shared.py",
+  "line": 439,
+  "name": "_MASTERY_AGENTIC_ACTIONS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/turn_runtime.py",
+  "line": 40,
+  "name": "_runtime_instances",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [
+   {
+    "line": 51,
+    "kind": "item-assign",
+    "func": "get_turn_runtime_manager"
+   }
+  ],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/services/session/turns/request_preparer.py",
+  "line": 53,
+  "name": "_REPLAY_SNAPSHOT_FIELDS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/video_learning/service.py",
+  "line": 585,
+  "name": "PROVIDER_RESOLVERS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/video_learning/service.py",
+  "line": 64,
+  "name": "DEFAULT_VIDEO_LEARNING_SETTINGS",
+  "kind": "Dict",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ },
+ {
+  "file": "deeptutor/video_learning/service.py",
+  "line": 31,
+  "name": "YOUTUBE_HOSTS",
+  "kind": "Set",
+  "used_as_default": false,
+  "mut_in_func": [],
+  "mut_at_module": []
+ }
+]
