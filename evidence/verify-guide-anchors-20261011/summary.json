@@ -1,0 +1,1560 @@
+{
+ "summary": {
+  "baseline": {
+   "ref": "origin/main",
+   "sha": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+   "tag": "v1.6.14"
+  },
+  "guide_branches_total": 116,
+  "branches_with_anchors": 109,
+  "branches_sampled_ge5": 109,
+  "anchors_sampled": 870,
+  "verdicts": {
+   "有效": 383,
+   "微漂移": 49,
+   "可定位(未核声明)": 170,
+   "未定(歧义)": 72,
+   "行漂移": 157,
+   "内容漂移": 38,
+   "失效": 1
+  },
+  "rot_rate_strict": 0.3121,
+  "rot_rate_incl_micro": 0.3901,
+  "judged_count": 628,
+  "unverifiable_count": 242
+ },
+ "branches": [
+  {
+   "branch": "myfork/agent/agen1031-llm-clients-guide",
+   "docs": [
+    "docs/guides/llm-clients.md"
+   ],
+   "anchors_total": 125,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 7,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/agent/dt468-routers-guide",
+   "docs": [
+    "evidence/guide-routers-2026-10-04/guide.md"
+   ],
+   "anchors_total": 150,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "可定位(未核声明)": 1,
+    "微漂移": 2,
+    "未定(歧义)": 1,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/codex/mini-watching-aligned-baseline",
+   "docs": [
+    "docs/guides/watching-learning.md",
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/upstream-watching-workspace",
+   "docs": [
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/watching-bookmark-notes",
+   "docs": [
+    "docs/guides/watching-learning.md",
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/watching-center-transcript",
+   "docs": [
+    "docs/guides/watching-learning.md",
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/watching-fullscreen-captions",
+   "docs": [
+    "docs/guides/watching-learning.md",
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/watching-notes-reliability",
+   "docs": [
+    "docs/guides/watching-learning.md",
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/codex/watching-workspace",
+   "docs": [
+    "docs/guides/watching-workspace.md"
+   ],
+   "anchors_total": 0,
+   "sampled": 0,
+   "note": "无 path:line 锚点"
+  },
+  {
+   "branch": "myfork/docs/capability-instances-guide-20261007",
+   "docs": [
+    "docs/guides/capability-instances.md"
+   ],
+   "anchors_total": 102,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "未定(歧义)": 2,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guide-imagegen",
+   "docs": [
+    "docs/guides/imagegen-domain.md"
+   ],
+   "anchors_total": 68,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "有效": 4,
+    "微漂移": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guide-invidious-accounts-20261011",
+   "docs": [
+    "docs/guides/invidious-accounts.md"
+   ],
+   "anchors_total": 6,
+   "sampled": 6,
+   "verdicts": {
+    "有效": 3,
+    "可定位(未核声明)": 3
+   }
+  },
+  {
+   "branch": "myfork/docs/guide-multi-user",
+   "docs": [
+    "docs/guide-multi-user.md"
+   ],
+   "anchors_total": 118,
+   "sampled": 8,
+   "verdicts": {
+    "未定(歧义)": 1,
+    "有效": 5,
+    "行漂移": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guide-tex-tools-20261008",
+   "docs": [
+    "docs/guides/tex-tools.md"
+   ],
+   "anchors_total": 25,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 6,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/book-pipeline",
+   "docs": [
+    "docs/guides/book-pipeline.md"
+   ],
+   "anchors_total": 131,
+   "sampled": 8,
+   "verdicts": {
+    "微漂移": 1,
+    "有效": 4,
+    "行漂移": 3
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/chat-runtime",
+   "docs": [
+    "docs/guides/chat-runtime.md"
+   ],
+   "anchors_total": 82,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "内容漂移": 1,
+    "行漂移": 2,
+    "有效": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/ci-workflows",
+   "docs": [
+    "docs/guides/ci-workflows.md"
+   ],
+   "anchors_total": 17,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 5,
+    "行漂移": 2,
+    "有效": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/co-writer",
+   "docs": [
+    "docs/guides/co-writer.md"
+   ],
+   "anchors_total": 41,
+   "sampled": 8,
+   "verdicts": {
+    "内容漂移": 1,
+    "有效": 4,
+    "微漂移": 1,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/co-writer-20261011",
+   "docs": [
+    "docs/guides/co-writer.md"
+   ],
+   "anchors_total": 70,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "内容漂移": 2,
+    "可定位(未核声明)": 2,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/codex-auth",
+   "docs": [
+    "docs/guides/codex-auth.md"
+   ],
+   "anchors_total": 143,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "未定(歧义)": 3,
+    "行漂移": 1,
+    "内容漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/courses-domain",
+   "docs": [
+    "docs/guides/courses-domain.md"
+   ],
+   "anchors_total": 76,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "未定(歧义)": 2,
+    "有效": 4
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/cron-scheduling-20261011",
+   "docs": [
+    "docs/guides/cron-scheduling.md"
+   ],
+   "anchors_total": 101,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 2,
+    "微漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/deep-research",
+   "docs": [
+    "docs/guides/deep-research.md"
+   ],
+   "anchors_total": 43,
+   "sampled": 8,
+   "verdicts": {
+    "未定(歧义)": 4,
+    "行漂移": 3,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/embedding-progress",
+   "docs": [
+    "docs/guides/embedding-progress.md"
+   ],
+   "anchors_total": 72,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "行漂移": 2,
+    "未定(歧义)": 1,
+    "有效": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/launcher",
+   "docs": [
+    "docs/guides/launcher.md"
+   ],
+   "anchors_total": 106,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 4,
+    "行漂移": 3
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/local-db",
+   "docs": [
+    "docs/guides/local-db.md"
+   ],
+   "anchors_total": 33,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 8
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/math-animator",
+   "docs": [
+    "docs/guides/math-animator.md"
+   ],
+   "anchors_total": 103,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "有效": 4,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/partner-channels-20261011",
+   "docs": [
+    "docs/guides/partner-channels.md"
+   ],
+   "anchors_total": 71,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 3,
+    "微漂移": 1,
+    "行漂移": 2,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/question-pipeline",
+   "docs": [
+    "evidence/guide-question-2026-10-03/guide.md"
+   ],
+   "anchors_total": 65,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 3,
+    "有效": 3,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/quiz-notebook",
+   "docs": [
+    "docs/guides/quiz-notebook.md"
+   ],
+   "anchors_total": 83,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 1,
+    "可定位(未核声明)": 2,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/research-primitives",
+   "docs": [
+    "docs/guides/research-primitives.md"
+   ],
+   "anchors_total": 77,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/runtime-subpackages",
+   "docs": [
+    "docs/guides/runtime-subpackages.md"
+   ],
+   "anchors_total": 88,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/runtime-update-chain",
+   "docs": [
+    "evidence/guide-runtime-2026-10-04/guide.md"
+   ],
+   "anchors_total": 98,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "行漂移": 3,
+    "有效": 2,
+    "内容漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/search-providers",
+   "docs": [
+    "docs/guides/search-providers.md"
+   ],
+   "anchors_total": 114,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "微漂移": 1,
+    "有效": 3,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/services-partners",
+   "docs": [
+    "docs/guides/services-partners.md"
+   ],
+   "anchors_total": 86,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 7,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/session-history",
+   "docs": [
+    "docs/guides/session-history.md"
+   ],
+   "anchors_total": 88,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 6,
+    "行漂移": 1,
+    "有效": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/settings-system-20261011",
+   "docs": [
+    "docs/guides/settings-system.md"
+   ],
+   "anchors_total": 85,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 7,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/skills-mcp",
+   "docs": [
+    "evidence/guide-skills-20261003/guide.md"
+   ],
+   "anchors_total": 108,
+   "sampled": 8,
+   "verdicts": {
+    "未定(歧义)": 5,
+    "有效": 2,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/subagent-family-20261011",
+   "docs": [
+    "docs/guides/subagent-family.md"
+   ],
+   "anchors_total": 161,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "未定(歧义)": 3,
+    "可定位(未核声明)": 1,
+    "微漂移": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/textbook-struct",
+   "docs": [
+    "docs/guides/textbook-struct.md"
+   ],
+   "anchors_total": 67,
+   "sampled": 8,
+   "verdicts": {
+    "微漂移": 1,
+    "有效": 5,
+    "内容漂移": 1,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/tools-prompting",
+   "docs": [
+    "docs/guides/tools-prompting.md"
+   ],
+   "anchors_total": 69,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "未定(歧义)": 4,
+    "可定位(未核声明)": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/upstream-contrib",
+   "docs": [
+    "docs/guides/upstream-contrib.md"
+   ],
+   "anchors_total": 8,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 8
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/usage-ledger-20261011",
+   "docs": [
+    "docs/guides/usage-ledger.md"
+   ],
+   "anchors_total": 46,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "可定位(未核声明)": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/visual-grounding-20261010",
+   "docs": [
+    "docs/guides/visual-page-grounding.md"
+   ],
+   "anchors_total": 33,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "有效": 5,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/visualizers",
+   "docs": [
+    "docs/guides/visualizers.md"
+   ],
+   "anchors_total": 68,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "可定位(未核声明)": 1,
+    "有效": 6
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/web-activity",
+   "docs": [
+    "docs/guides/web-activity.md"
+   ],
+   "anchors_total": 79,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "行漂移": 2,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/web-contracts",
+   "docs": [
+    "docs/guides/web-contracts.md"
+   ],
+   "anchors_total": 39,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "可定位(未核声明)": 2,
+    "微漂移": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/guides/web-source",
+   "docs": [
+    "docs/guides/web-source.md"
+   ],
+   "anchors_total": 98,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "行漂移": 3,
+    "可定位(未核声明)": 3
+   }
+  },
+  {
+   "branch": "myfork/docs/packaging-startup-guide-20261007",
+   "docs": [
+    "docs/guides/packaging-startup.md"
+   ],
+   "anchors_total": 39,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 3,
+    "微漂移": 1,
+    "行漂移": 2,
+    "未定(歧义)": 1,
+    "失效": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/skills-system-guide",
+   "docs": [
+    "docs/guides/skills-system.md"
+   ],
+   "anchors_total": 101,
+   "sampled": 8,
+   "verdicts": {
+    "微漂移": 2,
+    "有效": 2,
+    "行漂移": 2,
+    "可定位(未核声明)": 2
+   }
+  },
+  {
+   "branch": "myfork/docs/task-board-guide-20261006",
+   "docs": [
+    "docs/guides/task-board.md"
+   ],
+   "anchors_total": 26,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "微漂移": 2,
+    "可定位(未核声明)": 1,
+    "未定(歧义)": 3
+   }
+  },
+  {
+   "branch": "myfork/docs/usage-stats-guide",
+   "docs": [
+    "docs/guides/usage-stats.md"
+   ],
+   "anchors_total": 104,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 6,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/watching-convergence-guide-20261011",
+   "docs": [
+    "docs/guides/watching-convergence-migration.md"
+   ],
+   "anchors_total": 48,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "有效": 3,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/docs/workspace-migration-guide-20261006",
+   "docs": [
+    "docs/guides/workspace-migration.md"
+   ],
+   "anchors_total": 77,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 4
+   }
+  },
+  {
+   "branch": "myfork/dt-agen1335-mineru-indexing-guide",
+   "docs": [
+    "docs/guides/mineru-local-indexing.md"
+   ],
+   "anchors_total": 96,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "可定位(未核声明)": 4,
+    "未定(歧义)": 2
+   }
+  },
+  {
+   "branch": "myfork/dt-agen1728-partnerguide",
+   "docs": [
+    "docs/guides/partners-channels.md"
+   ],
+   "anchors_total": 47,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "有效": 4,
+    "微漂移": 1,
+    "未定(歧义)": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/evidence/guide-file-io-path-durability-20261009",
+   "docs": [
+    "evidence/guide-file-io-path-durability-20261009/report.md"
+   ],
+   "anchors_total": 74,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 7,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/evidence/guide-realtime-push-2026-10-07",
+   "docs": [
+    "evidence/guide-realtime-push-2026-10-07/report.md"
+   ],
+   "anchors_total": 39,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/evidence/guide-session-stores-20261007",
+   "docs": [
+    "evidence/guide-session-stores-20261007/report.md"
+   ],
+   "anchors_total": 43,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 4
+   }
+  },
+  {
+   "branch": "myfork/guide-channels-20261005",
+   "docs": [
+    "evidence/guide-channels-20261005/guide.md"
+   ],
+   "anchors_total": 97,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "未定(歧义)": 1,
+    "行漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide-cli-agen477",
+   "docs": [
+    "evidence/guide-cli-2026-10-04/guide.md"
+   ],
+   "anchors_total": 128,
+   "sampled": 8,
+   "verdicts": {
+    "未定(歧义)": 1,
+    "可定位(未核声明)": 3,
+    "行漂移": 2,
+    "有效": 2
+   }
+  },
+  {
+   "branch": "myfork/guide-i18n-20261004",
+   "docs": [
+    "evidence/guide-i18n-2026-10-04/guide.md"
+   ],
+   "anchors_total": 66,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide-local-db-401",
+   "docs": [
+    "docs/guides/local-db.md"
+   ],
+   "anchors_total": 67,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "可定位(未核声明)": 2,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide-partners-agen371",
+   "docs": [
+    "evidence/guide-partners-2026-10-03/guide.md"
+   ],
+   "anchors_total": 67,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 3,
+    "有效": 4,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide-storage-agen449",
+   "docs": [
+    "evidence/guide-storage-2026-10-04/guide.md"
+   ],
+   "anchors_total": 49,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/agents-20261004",
+   "docs": [
+    "evidence/guide-agents-20261004/guide.md"
+   ],
+   "anchors_total": 58,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 1,
+    "可定位(未核声明)": 1,
+    "未定(歧义)": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/app-update-20261005",
+   "docs": [
+    "evidence/app-update-guide-2026-10-05/report.md"
+   ],
+   "anchors_total": 146,
+   "sampled": 8,
+   "verdicts": {
+    "内容漂移": 2,
+    "有效": 2,
+    "行漂移": 2,
+    "可定位(未核声明)": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/ask-user-20261006",
+   "docs": [
+    "docs/guides/ask-user-chain.md"
+   ],
+   "anchors_total": 190,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "行漂移": 4,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/audio-overview-20261007",
+   "docs": [
+    "docs/guides/audio-overview.md"
+   ],
+   "anchors_total": 81,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "微漂移": 2,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/authn-20261004",
+   "docs": [
+    "evidence/authn-guide-20261004/report.md"
+   ],
+   "anchors_total": 98,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 5,
+    "行漂移": 1,
+    "有效": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/background-leader-20261006",
+   "docs": [
+    "docs/guides/background-leader.md"
+   ],
+   "anchors_total": 45,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 5,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/book-20261004",
+   "docs": [
+    "evidence/guide-book-2026-10-04/guide.md"
+   ],
+   "anchors_total": 234,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 1,
+    "未定(歧义)": 6,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/capabilities-20261005",
+   "docs": [
+    "evidence/guide-capabilities-20261005/guide.md"
+   ],
+   "anchors_total": 155,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 1,
+    "微漂移": 1,
+    "未定(歧义)": 3,
+    "行漂移": 3
+   }
+  },
+  {
+   "branch": "myfork/guide/core-protocols-20261007",
+   "docs": [
+    "docs/guides/core-protocols.md"
+   ],
+   "anchors_total": 150,
+   "sampled": 8,
+   "verdicts": {
+    "内容漂移": 1,
+    "有效": 4,
+    "微漂移": 1,
+    "行漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/cron-20261006",
+   "docs": [
+    "docs/guides/cron.md"
+   ],
+   "anchors_total": 57,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "有效": 4
+   }
+  },
+  {
+   "branch": "myfork/guide/embedding-reliability-20261011",
+   "docs": [
+    "docs/guides/embedding-reliability.md"
+   ],
+   "anchors_total": 78,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "可定位(未核声明)": 2,
+    "未定(歧义)": 2,
+    "内容漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/events-20261004",
+   "docs": [
+    "evidence/guide-events-2026-10-04/guide.md"
+   ],
+   "anchors_total": 59,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "行漂移": 3,
+    "可定位(未核声明)": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/events-20261004-v2",
+   "docs": [
+    "docs/guides/events-and-progress-chain.md"
+   ],
+   "anchors_total": 59,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "行漂移": 3,
+    "可定位(未核声明)": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/frontend-20261004",
+   "docs": [
+    "evidence/guide-frontend-20261004/guide.md"
+   ],
+   "anchors_total": 102,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "行漂移": 3,
+    "微漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/i18n-20261004",
+   "docs": [
+    "evidence/guide-i18n-2026-10-04/guide.md"
+   ],
+   "anchors_total": 66,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 6,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/ima-pipeline-20261005",
+   "docs": [
+    "evidence/ima-pipeline-guide-20261005/report.md"
+   ],
+   "anchors_total": 124,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 3,
+    "可定位(未核声明)": 2,
+    "有效": 3
+   }
+  },
+  {
+   "branch": "myfork/guide/journal-20261004",
+   "docs": [
+    "evidence/journal-guide-20261004/report.md"
+   ],
+   "anchors_total": 41,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "内容漂移": 2,
+    "行漂移": 1,
+    "可定位(未核声明)": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/learning-domain-20261007",
+   "docs": [
+    "docs/guides/learning-domain.md"
+   ],
+   "anchors_total": 85,
+   "sampled": 8,
+   "verdicts": {
+    "未定(歧义)": 5,
+    "可定位(未核声明)": 2,
+    "有效": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/llm-providers-20261004",
+   "docs": [
+    "evidence/guide-llm-providers-20261004/guide.md"
+   ],
+   "anchors_total": 241,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "有效": 4,
+    "微漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/logging-20261005",
+   "docs": [
+    "evidence/guide-logging-20261005/guide.md"
+   ],
+   "anchors_total": 79,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "内容漂移": 1,
+    "可定位(未核声明)": 2,
+    "有效": 4
+   }
+  },
+  {
+   "branch": "myfork/guide/marginnote-bridge-20261006",
+   "docs": [
+    "docs/guides/marginnote-bridge.md"
+   ],
+   "anchors_total": 48,
+   "sampled": 8,
+   "verdicts": {
+    "微漂移": 2,
+    "有效": 3,
+    "行漂移": 2,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/mcp-integration-20261005",
+   "docs": [
+    "evidence/mcp-guide-20261005/report.md"
+   ],
+   "anchors_total": 147,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 4,
+    "未定(歧义)": 1,
+    "可定位(未核声明)": 1,
+    "有效": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/memory-20261006",
+   "docs": [
+    "docs/guides/memory.md"
+   ],
+   "anchors_total": 65,
+   "sampled": 8,
+   "verdicts": {
+    "内容漂移": 1,
+    "可定位(未核声明)": 2,
+    "未定(歧义)": 2,
+    "微漂移": 1,
+    "有效": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/net-validation-20261006",
+   "docs": [
+    "evidence/net-validation-guide-20261006/report.md"
+   ],
+   "anchors_total": 43,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "行漂移": 3,
+    "内容漂移": 2,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/notebook-20261004-v1",
+   "docs": [
+    "evidence/notebook-guide-20261004/report.md"
+   ],
+   "anchors_total": 80,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "未定(歧义)": 1,
+    "有效": 4,
+    "微漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/parsing-20261004",
+   "docs": [
+    "evidence/guide-parsing-20261004/guide.md"
+   ],
+   "anchors_total": 133,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 5,
+    "行漂移": 1,
+    "内容漂移": 1,
+    "可定位(未核声明)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/parsing-engines-20261011",
+   "docs": [
+    "docs/guides/parsing-engines.md"
+   ],
+   "anchors_total": 148,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 3,
+    "有效": 4,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/partner-groups-20261011",
+   "docs": [
+    "docs/guides/partner-groups.md"
+   ],
+   "anchors_total": 29,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "有效": 4,
+    "可定位(未核声明)": 1,
+    "未定(歧义)": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/plugins-20261005",
+   "docs": [
+    "evidence/guide-plugins-2026-10-05/guide.md"
+   ],
+   "anchors_total": 71,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "内容漂移": 2,
+    "有效": 5
+   }
+  },
+  {
+   "branch": "myfork/guide/practice-domain-20261006",
+   "docs": [
+    "docs/guides/practice.md"
+   ],
+   "anchors_total": 36,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 3,
+    "内容漂移": 1,
+    "可定位(未核声明)": 2,
+    "微漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/provider-registry-20261009",
+   "docs": [
+    "evidence/guide-provider-registry-20261009/report.md"
+   ],
+   "anchors_total": 44,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 8
+   }
+  },
+  {
+   "branch": "myfork/guide/quiz-20261004",
+   "docs": [
+    "evidence/quiz-guide-20261004/report.md"
+   ],
+   "anchors_total": 147,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "可定位(未核声明)": 1,
+    "行漂移": 1,
+    "未定(歧义)": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/rag-eval-20261006",
+   "docs": [
+    "docs/guides/rag-eval.md"
+   ],
+   "anchors_total": 107,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "可定位(未核声明)": 2,
+    "有效": 4,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/rag-pipelines-20261006",
+   "docs": [
+    "evidence/rag-pipelines-guide-20261006/report.md"
+   ],
+   "anchors_total": 104,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "未定(歧义)": 4,
+    "有效": 1,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/sandbox-20261006",
+   "docs": [
+    "docs/guides/sandbox.md"
+   ],
+   "anchors_total": 192,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "微漂移": 1,
+    "行漂移": 3
+   }
+  },
+  {
+   "branch": "myfork/guide/session-turns-20261007",
+   "docs": [
+    "docs/guides/session-turns.md"
+   ],
+   "anchors_total": 58,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 2,
+    "可定位(未核声明)": 2,
+    "内容漂移": 1,
+    "未定(歧义)": 1,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/subagent-20261004",
+   "docs": [
+    "evidence/guide-subagent-20261004/guide.md"
+   ],
+   "anchors_total": 190,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 3,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/suggestions-20261009",
+   "docs": [
+    "evidence/guide-suggestions-20261009/report.md"
+   ],
+   "anchors_total": 18,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 1,
+    "有效": 3,
+    "微漂移": 2,
+    "行漂移": 1,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/testing-20261004",
+   "docs": [
+    "evidence/guide-testing-20261004/guide.md"
+   ],
+   "anchors_total": 49,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 3,
+    "未定(歧义)": 2,
+    "有效": 2,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/tools-20261004",
+   "docs": [
+    "evidence/guide-tools-2026-10-04/guide.md"
+   ],
+   "anchors_total": 52,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 3,
+    "有效": 4,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/tools-20261004-v2",
+   "docs": [
+    "docs/guides/tools-surface.md"
+   ],
+   "anchors_total": 52,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 3,
+    "有效": 4,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/video-learning-20261007",
+   "docs": [
+    "docs/guides/video-learning.md"
+   ],
+   "anchors_total": 84,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 2,
+    "有效": 5,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/vision-tools-20261007",
+   "docs": [
+    "docs/guides/vision-tools.md"
+   ],
+   "anchors_total": 110,
+   "sampled": 8,
+   "verdicts": {
+    "微漂移": 1,
+    "行漂移": 3,
+    "有效": 1,
+    "内容漂移": 1,
+    "可定位(未核声明)": 2
+   }
+  },
+  {
+   "branch": "myfork/guide/viz-chain-20261004",
+   "docs": [
+    "evidence/guide-visualize-20261004/guide.md"
+   ],
+   "anchors_total": 73,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "行漂移": 2,
+    "可定位(未核声明)": 3
+   }
+  },
+  {
+   "branch": "myfork/guide/voice-20261005",
+   "docs": [
+    "evidence/guide-voice-20261005/guide.md"
+   ],
+   "anchors_total": 48,
+   "sampled": 8,
+   "verdicts": {
+    "行漂移": 1,
+    "可定位(未核声明)": 3,
+    "有效": 3,
+    "未定(歧义)": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/web-guards-20261006",
+   "docs": [
+    "docs/guides/web-guard-layers.md"
+   ],
+   "anchors_total": 49,
+   "sampled": 8,
+   "verdicts": {
+    "内容漂移": 2,
+    "可定位(未核声明)": 3,
+    "有效": 2,
+    "微漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/guide/web-state-20261007",
+   "docs": [
+    "docs/guides/web-state.md"
+   ],
+   "anchors_total": 174,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 3,
+    "可定位(未核声明)": 3,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/myfork/docs/guides/immersive-reading",
+   "docs": [
+    "docs/guides/immersive-reading.md"
+   ],
+   "anchors_total": 69,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "有效": 3,
+    "行漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/myfork/docs/guides/knowledge-base",
+   "docs": [
+    "docs/guides/knowledge-base.md"
+   ],
+   "anchors_total": 93,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 2,
+    "有效": 3,
+    "行漂移": 2,
+    "内容漂移": 1
+   }
+  },
+  {
+   "branch": "myfork/myfork/docs/guides/learner-accounts",
+   "docs": [
+    "docs/guides/learner-accounts.md"
+   ],
+   "anchors_total": 93,
+   "sampled": 8,
+   "verdicts": {
+    "可定位(未核声明)": 4,
+    "有效": 2,
+    "行漂移": 2
+   }
+  },
+  {
+   "branch": "myfork/myfork/docs/guides/mastery-path",
+   "docs": [
+    "docs/guides/mastery-path.md"
+   ],
+   "anchors_total": 90,
+   "sampled": 8,
+   "verdicts": {
+    "有效": 4,
+    "行漂移": 3,
+    "内容漂移": 1
+   }
+  }
+ ]
+}
