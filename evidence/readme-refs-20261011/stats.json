@@ -1,0 +1,12 @@
+{
+  "files": 12,
+  "total_refs": 1825,
+  "by_status": {
+    "OK-LOCAL": 636,
+    "EXTERNAL-URL": 1093,
+    "ANCHOR-OK": 108,
+    "OUTDATED-DIR(web-1.4.6+)": 228
+  },
+  "outdated_refs": 228,
+  "problems": 0
+}
