@@ -6,11 +6,16 @@ agent run surfaces live in the sidebar instead of all at once at the end — the
 guarantee the process is torn down when the consumer stops early or the turn is
 cancelled.
 
-There is deliberately **no timeout** on the wait: per the product contract,
-DeepTutor waits unconditionally for the subagent's own logic to finish; only the
-subagent exiting (cleanly or with an error) ends the stream. Cancellation (the
-user aborting the turn) propagates as ``CancelledError`` and the ``finally``
-block terminates the child so no orphaned agent process is left behind.
+There is deliberately **no timeout** on the wait by default: per the product
+contract, DeepTutor waits unconditionally for the subagent's own logic to
+finish; only the subagent exiting (cleanly or with an error) ends the stream.
+Cancellation (the user aborting the turn) propagates as ``CancelledError`` and
+the ``finally`` block terminates the child so no orphaned agent process is left
+behind. Callers may opt in to a wall-clock cap on the wait via
+``stream_process_lines(wait_timeout_seconds=...)`` — the same protection
+hermes_remote's ``idle_timeout`` gives the remote axis — so a hung local CLI
+is interrupted instead of pinning the session thread. The cap is off unless
+requested, keeping the wait-unconditionally contract.
 """
 
 from __future__ import annotations
@@ -58,18 +63,34 @@ ProcessLine = tuple[str, str]
 
 _TERMINATE_GRACE_SECONDS = 5.0
 
+# What a fired wall-clock cap reports. "wall-clock" says which bound tripped
+# and "idle_timeout" matches the failure surface hermes_remote and the
+# opencode family already use, so a surfaced error is recognizable everywhere.
+_CAP_MESSAGE = "local CLI consult hit the {seconds}s wall-clock cap (idle_timeout)"
+
 
 async def stream_process_lines(
     cmd: Sequence[str],
     *,
     cwd: str | None = None,
     env: Mapping[str, str] | None = None,
+    wait_timeout_seconds: float | None = None,
 ) -> AsyncIterator[ProcessLine]:
     """Yield ``(channel, line)`` for each stdout/stderr line until the process exits.
 
     The final item is always ``("exit", "<returncode>")`` so callers can tell a
     clean finish from an early break. stdout and stderr are interleaved in
     arrival order via a shared queue.
+
+    ``wait_timeout_seconds`` is an opt-in wall-clock ceiling over the whole
+    wait — from spawn to the final exit line. ``None`` (the default) and any
+    value <= 0 (matching the ``idle_timeout_seconds`` knob's 0-means-off
+    convention) keep the module contract: wait unconditionally for the
+    subagent's own logic. When the cap fires, the child is torn down by the
+    same ``finally`` as an early break and a ``TimeoutError`` carrying an
+    ``idle_timeout`` message propagates — the backend consult loops' existing
+    ``except Exception`` boundary turns that into a visible ``result.error``
+    plus error event, with no per-backend handling needed.
     """
     full_env = {**os.environ, **(env or {})}
     resolved_cmd = resolve_cli_command(cmd, path=full_env.get("PATH"))
@@ -83,6 +104,27 @@ async def stream_process_lines(
     )
 
     queue: asyncio.Queue[ProcessLine | None] = asyncio.Queue()
+
+    # One wall-clock ceiling over the consult wait: every internal wait (queue
+    # reads and the final exit wait) is bounded by the remaining time. ``None``
+    # or <= 0 keeps the historical no-timeout contract.
+    loop = asyncio.get_running_loop()
+    deadline = (
+        loop.time() + wait_timeout_seconds
+        if wait_timeout_seconds is not None and wait_timeout_seconds > 0
+        else None
+    )
+
+    async def _await_bounded(awaitable: Any) -> Any:
+        if deadline is None:
+            return await awaitable
+        remaining = deadline - loop.time()
+        if remaining <= 0:
+            raise TimeoutError(_CAP_MESSAGE.format(seconds=wait_timeout_seconds))
+        try:
+            return await asyncio.wait_for(awaitable, timeout=remaining)
+        except TimeoutError:
+            raise TimeoutError(_CAP_MESSAGE.format(seconds=wait_timeout_seconds)) from None
 
     async def _pump(stream: asyncio.StreamReader | None, channel: str) -> None:
         if stream is None:
@@ -106,12 +148,12 @@ async def stream_process_lines(
     drained = 0
     try:
         while drained < len(readers):
-            item = await queue.get()
+            item = await _await_bounded(queue.get())
             if item is None:
                 drained += 1
                 continue
             yield item
-        returncode = await process.wait()
+        returncode = await _await_bounded(process.wait())
         yield "exit", str(returncode)
     finally:
         for task in readers:

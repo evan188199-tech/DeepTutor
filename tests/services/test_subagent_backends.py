@@ -9,7 +9,11 @@ to prove the streaming primitive surfaces stdout/stderr in order with an exit.
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
+import os
 import sys
+import time
 
 import pytest
 
@@ -636,6 +640,112 @@ async def test_stream_process_lines_reports_nonzero_exit() -> None:
         async for item in stream_process_lines([sys.executable, "-c", "import sys; sys.exit(3)"])
     ]
     assert seen[-1] == ("exit", "3")
+
+
+@pytest.mark.asyncio
+async def test_stream_process_lines_cap_interrupts_hung_cli(tmp_path) -> None:
+    # net#24: a local CLI that emits its banner, then hangs silently. Without
+    # the opt-in cap this wait is unbounded (the module's declared contract);
+    # with it, the consult is interrupted, the error says what happened, and
+    # the child is torn down by the same finally as an early break.
+    pid_file = tmp_path / "child.pid"
+    script = (
+        "import os, time\n"
+        "print('banner', flush=True)\n"
+        f"open({str(pid_file)!r}, 'w').write(str(os.getpid()))\n"
+        "time.sleep(60)\n"
+    )
+    seen: list[tuple[str, str]] = []
+    started = time.monotonic()
+    with pytest.raises(TimeoutError) as excinfo:
+        async for item in stream_process_lines(
+            [sys.executable, "-c", script], wait_timeout_seconds=0.5
+        ):
+            seen.append(item)
+    assert time.monotonic() - started < 10
+    # Whatever streamed before the hang still reached the consumer.
+    assert ("stdout", "banner") in seen
+    # A message, not a bare TimeoutError, so the backends' except-Exception
+    # boundary surfaces a visible error.
+    assert "wall-clock" in str(excinfo.value)
+    # No orphaned agent process: the child is gone shortly after the cap fires.
+    pid = int(pid_file.read_text())
+    for _ in range(100):
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            break
+        await asyncio.sleep(0.1)
+    else:
+        pytest.fail("hung CLI child was not terminated after the cap fired")
+
+
+@pytest.mark.asyncio
+async def test_stream_process_lines_default_wait_stays_unbounded() -> None:
+    # Default-off regression: without the opt-in cap the wait outlives any
+    # fixed window and only cancellation (or the CLI exiting) ends it —
+    # the wait-unconditionally contract is unchanged.
+    script = "import time; time.sleep(5)"
+    items: list[tuple[str, str]] = []
+
+    async def consume() -> None:
+        async for item in stream_process_lines([sys.executable, "-c", script]):
+            items.append(item)
+
+    task = asyncio.create_task(consume())
+    # Any accidental default cap would fire well inside this window.
+    await asyncio.sleep(1.0)
+    assert not task.done()
+    task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await task
+    assert items == []
+
+
+@pytest.mark.asyncio
+async def test_stream_process_lines_zero_cap_means_off() -> None:
+    # 0 mirrors the idle_timeout_seconds knob's "cap off" convention, so a
+    # zero value must not degrade into an instant timeout.
+    script = "import time; time.sleep(1.5); print('done', flush=True)"
+    seen = [
+        item
+        async for item in stream_process_lines(
+            [sys.executable, "-c", script], wait_timeout_seconds=0
+        )
+    ]
+    assert ("stdout", "done") in seen
+    assert seen[-1] == ("exit", "0")
+
+
+@pytest.mark.asyncio
+async def test_stream_process_lines_cap_spares_fast_cli() -> None:
+    # An enabled cap must not disturb a well-behaved CLI that finishes on its
+    # own: same lines, same exit, no error.
+    script = "import sys; print('out1'); print('err1', file=sys.stderr); sys.exit(0)"
+    seen = [
+        item
+        async for item in stream_process_lines(
+            [sys.executable, "-c", script], wait_timeout_seconds=30
+        )
+    ]
+    assert ("stdout", "out1") in seen
+    assert ("stderr", "err1") in seen
+    assert seen[-1] == ("exit", "0")
+
+
+@pytest.mark.asyncio
+async def test_stream_process_lines_cap_is_wall_clock_not_idle() -> None:
+    # A chatty CLI that never exits: the cap is one wall-clock ceiling over
+    # the whole wait, so it fires even while lines keep arriving — an
+    # idle-style timeout would never trip here.
+    script = "import time\nwhile True:\n    print('tick', flush=True)\n    time.sleep(0.1)\n"
+    seen: list[tuple[str, str]] = []
+    with pytest.raises(TimeoutError):
+        async for item in stream_process_lines(
+            [sys.executable, "-c", script], wait_timeout_seconds=0.6
+        ):
+            seen.append(item)
+    assert seen  # lines kept flowing; the ceiling, not silence, ended the wait
 
 
 # ---- command resolution (Windows .cmd shim fix, issue #759) -------------------
