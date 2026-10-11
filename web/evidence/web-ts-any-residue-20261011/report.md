@@ -23,7 +23,7 @@
 | 边界层 | 36 | 26% | 全部在 `tests/`：global stub（`(global.window as any)`）、私有成员访问（`(settingsContext as any).sync…`）、不完整 fixture（`} as any`）、宽松事件/局部变量（`event: any`、`let stored: any`） |
 | 临时绕过（app 内） | 1 | 1% | `app/(workspace)/learning/books/components/LearningCapturePanel.tsx:25` 的 i18n 插值参数 `values?: any` |
 
-vendor/ 目录无命中；`types/*.d.ts` 无命中；`@ts-ignore` 全树为 0。与已完成的 catch 块轴扫描（agen421）无重叠。
+vendor/ 目录无命中；`types/*.d.ts` 无命中；`@ts-ignore` 全树为 0。catch 块轴的异常处理扫描此前已单独完成，本清单与其不重叠。
 
 ## 分布
 
