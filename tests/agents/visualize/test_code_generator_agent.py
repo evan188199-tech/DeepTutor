@@ -38,6 +38,21 @@ PROMPTS = {
 }
 
 
+@pytest.fixture(autouse=True)
+def _stub_agent_params(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Decouple from the local, git-ignored ``agents.yaml``.
+
+    ``BaseAgent.__init__`` eagerly calls ``get_agent_params(module_name)``,
+    which raises ``FileNotFoundError`` on a clean checkout (CI included)
+    because ``data/user/settings/agents.yaml`` is untracked. Stub it with a
+    default dict so instantiating ``CodeGeneratorAgent`` stays config-free.
+    """
+    monkeypatch.setattr(
+        "deeptutor.agents.base_agent.get_agent_params",
+        lambda _module_name: {},
+    )
+
+
 def _make_agent(
     monkeypatch: pytest.MonkeyPatch,
     *,
