@@ -1,0 +1,49 @@
+{
+  "audit_target": "deeptutor/services/learning_journal",
+  "head": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+  "head_subject": "release: v1.6.14",
+  "measured_bounds": {
+    "worst_case_journal_json_bytes": 54485,
+    "worst_case_record_bytes_each": 1041,
+    "mission_session_bytes": 2435,
+    "max_records": 50,
+    "growth_model": "O(users) x 54485 B; constant per user"
+  },
+  "writer_paths": [
+    {"id": "W1", "path": "deeptutor/tools/learning_journal_tools.py:120-167", "ops": "set_mission/note_session/add_record", "store_refs": "store.py:185-216,218-245,247-289"},
+    {"id": "W2", "path": "deeptutor/services/learning_journal/store.py:299-310", "via": "_mutate -> _atomic_write -> atomic_write_json", "file_io": "deeptutor/services/file_io.py:72-92"}
+  ],
+  "reader_paths": [
+    {"id": "R-turn", "path": "deeptutor/services/session/turns/executor.py:569", "detail": "per-turn injection_markdown load"},
+    {"id": "R-tool", "path": "deeptutor/tools/learning_journal_tools.py:38", "detail": "learning_status status_markdown"},
+    {"id": "R-api", "path": "deeptutor/api/routers/learning_journal.py:13", "detail": "GET overview"}
+  ],
+  "risks": [
+    {"id": "R1", "severity": "info", "risk": "premise correction: FIFO count-cap exists, file bounded", "path_line": "deeptutor/services/learning_journal/store.py:26,280-281", "trigger": "51st distinct add_record truncates to last 50"},
+    {"id": "R2", "severity": "medium", "risk": "silent FIFO eviction without archive/log/metric", "path_line": "deeptutor/services/learning_journal/store.py:280-281", "trigger": ">50 distinct records accumulated"},
+    {"id": "R3", "severity": "low", "risk": "crash-orphaned tmp files never swept", "path_line": "deeptutor/services/file_io.py:78-84,89-92", "trigger": "process killed between temp create and os.replace"},
+    {"id": "R4", "severity": "low", "risk": "lock file persists forever", "path_line": "deeptutor/services/learning_journal/store.py:327", "trigger": "any write creates journal.json.lock; never unlinked"},
+    {"id": "R5", "severity": "low", "risk": "per-path lock map never evicted in singleton", "path_line": "deeptutor/services/learning_journal/store.py:62,312-318,351-358", "trigger": "O(users) lock entries over process lifetime in multi-user deployment"},
+    {"id": "R6", "severity": "low", "risk": "note_session/set_mission rewrite on identical content; touch() bumps timestamp", "path_line": "deeptutor/services/learning_journal/store.py:233-243,304; contrast 260-269,308-309", "trigger": "repeated identical note_session calls"},
+    {"id": "R7", "severity": "edge", "risk": "record-count invariant not enforced on read", "path_line": "deeptutor/services/learning_journal/store.py:82-87 (no clamp); clamp only at 280-281", "trigger": "externally edited file with >50 records read via overview"},
+    {"id": "R8", "severity": "info", "risk": "full-file parse+validate per turn/call (CPU only, no storage)", "path_line": "deeptutor/services/session/turns/executor.py:569; store.py:67-87", "trigger": "every turn / tool call / GET"},
+    {"id": "R9", "severity": "info", "risk": "no-user contexts share default-root journal", "path_line": "deeptutor/multi_user/paths.py:158", "trigger": "store used outside user request scope"}
+  ],
+  "policy_recommendations": [
+    {"id": "P1", "addresses": "R2", "summary": "TTL + archive-on-evict to journal.archive.jsonl, size-capped with rotation"},
+    {"id": "P2", "addresses": "R6", "summary": "content-hash no-op short-circuit for note_session/set_mission"},
+    {"id": "P3", "addresses": "R3", "summary": "startup sweep of tmp* older than ~24h under learning_journal dirs; do not sweep .lock"},
+    {"id": "P4", "addresses": "R7", "summary": "clamp records to MAX_RECORDS in load()/from_dict"}
+  ],
+  "cleanup_hook_locations": [
+    {"id": "H1", "path_line": "deeptutor/services/learning_journal/store.py:299-310", "purpose": "eviction/archive hook (pre-write)"},
+    {"id": "H2", "path_line": "deeptutor/api/main.py (startup lifespan)", "purpose": "orphan tmp sweep"},
+    {"id": "H3", "path_line": "deeptutor/services/learning_journal/models.py:118-132", "purpose": "read-side invariant clamp"},
+    {"id": "H4", "path_line": "deeptutor/multi_user/paths.py", "purpose": "workspace deletion must remove learning_journal tree"}
+  ],
+  "split_cards": [
+    {"n": 1, "type": "test (TDD backend)", "title": "add_record archive-on-evict", "assertions": ["51st distinct record keeps len==50 and evicts oldest", "evicted record appears exactly once in archive file", "duplicate 51st add hits dedup path, evicts and archives nothing", "existing store tests pass"]},
+    {"n": 2, "type": "fix + tests", "title": "note_session/set_mission no-op short-circuit", "assertions": ["identical second note_session: accepted, deduplicated=True, file bytes unchanged", "changed content still writes", "empty payloads rejected without write", "set_mission same behavior"]},
+    {"n": 3, "type": "chore + tests", "title": "startup sweep of stale tmp* under learning_journal dirs", "assertions": ["tmp older than TTL removed; recent tmp kept", "journal.json and journal.json.lock never touched", "idempotent and tolerant of missing dir"]}
+  ]
+}

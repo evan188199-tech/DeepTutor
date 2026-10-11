@@ -1,0 +1,17 @@
+{
+  "max_records": 50,
+  "clip_limits": {
+    "topic": 200,
+    "why": 800,
+    "level": 40,
+    "summary": 800,
+    "next_focus": 400,
+    "title": 120,
+    "insight": 800
+  },
+  "worst_case_journal_json_bytes": 54485,
+  "worst_case_record_bytes_each": 1041,
+  "mission_session_bytes": 2435,
+  "lock_file_bytes": 1,
+  "growth_model": "per-user bounded ~worst_case_journal_json_bytes; aggregate = users x worst_case_journal_json_bytes (linear in users, constant per user)"
+}
