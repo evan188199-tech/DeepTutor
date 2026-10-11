@@ -165,6 +165,234 @@ test("only non-terminal jobs remain active", () => {
   assert.equal(updateJobIsActive("failed"), false);
 });
 
+test("background check failures keep the status usable and surface check_error", async () => {
+  const signals: Array<{ version?: string; error: string }> = [];
+  const unsubscribe = subscribeAppUpdateStatus((signal) => {
+    signals.push({
+      version: signal.status?.current_version,
+      error: signal.error,
+    });
+  });
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        ...statusPayload,
+        cached: true,
+        check_error: "GitHub API rate limit exceeded",
+        update_available: false,
+        release: null,
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+
+  try {
+    const status = await fetchAppUpdateStatus();
+    assert.equal(status.check_error, "GitHub API rate limit exceeded");
+    assert.equal(status.update_available, false);
+    assert.equal(status.release, null);
+    assert.equal(status.current_version, "1.6.1");
+  } finally {
+    globalThis.fetch = originalFetch;
+    unsubscribe();
+  }
+
+  assert.deepEqual(signals, [
+    { version: "1.6.1", error: "GitHub API rate limit exceeded" },
+  ]);
+});
+
+test("non-JSON failures degrade to the status-only update error", async () => {
+  const signals: string[] = [];
+  const unsubscribe = subscribeAppUpdateStatus((signal) =>
+    signals.push(signal.error),
+  );
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response("<html>Service Unavailable</html>", {
+      status: 503,
+      headers: { "content-type": "text/html" },
+    });
+
+  try {
+    await assert.rejects(
+      checkAppUpdate(),
+      /Update request failed \(HTTP 503\)/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+    unsubscribe();
+  }
+
+  assert.deepEqual(signals, ["Update request failed (HTTP 503)"]);
+});
+
+test("structured FastAPI details fall back to the status-only update error", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ detail: { reason: "not updatable" } }), {
+      status: 409,
+      headers: { "content-type": "application/json" },
+    });
+
+  try {
+    await assert.rejects(
+      requestAppUpdate(),
+      /Update request failed \(HTTP 409\)/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("unreadable status payloads reject and notify compact surfaces", async () => {
+  const signals: string[] = [];
+  const unsubscribe = subscribeAppUpdateStatus((signal) =>
+    signals.push(signal.error),
+  );
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response("not json", {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+
+  let caught: unknown;
+  try {
+    await fetchAppUpdateStatus();
+  } catch (error) {
+    caught = error;
+  } finally {
+    globalThis.fetch = originalFetch;
+    unsubscribe();
+  }
+
+  assert.ok(caught instanceof Error);
+  assert.deepEqual(signals, [caught.message]);
+});
+
+test("update job snapshots may be absent", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify(null), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+
+  try {
+    assert.equal(await fetchAppUpdateJob(), null);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("unsubscribed compact surfaces stop receiving update signals", async () => {
+  const signals: Array<{ version?: string; error: string }> = [];
+  const unsubscribe = subscribeAppUpdateStatus((signal) => {
+    signals.push({ version: signal.status?.current_version, error: signal.error });
+  });
+  unsubscribe();
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify(statusPayload), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+
+  try {
+    await fetchAppUpdateStatus();
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.deepEqual(signals, []);
+});
+
+test("client forwards abort signals to update requests", async () => {
+  const seenSignals: Array<AbortSignal | null | undefined> = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (_input, init) => {
+    seenSignals.push(init?.signal);
+    return new Response(JSON.stringify(statusPayload), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+  const controller = new AbortController();
+
+  try {
+    await fetchAppUpdateStatus(controller.signal);
+    await fetchAppUpdateJob(controller.signal);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(seenSignals[0], controller.signal);
+  assert.equal(seenSignals[1], controller.signal);
+});
+
+test("status payloads follow the backend app_update contract", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        current_version: "1.6.1",
+        check_enabled: true,
+        checked_at: "2026-08-30T00:00:00Z",
+        cached: false,
+        check_error: "",
+        update_available: true,
+        release: {
+          version: "1.7.0",
+          name: "DeepTutor 1.7",
+          published_at: "2026-08-30T00:00:00Z",
+          url: "https://github.com/HKUDS/DeepTutor/releases/tag/v1.7.0",
+          excerpt: "Use the new updater with one confirmation.",
+          migration_warning: true,
+        },
+        installation: {
+          mode: "source",
+          automatic_update: false,
+          command: "git pull && pip install -e .",
+          reason: "Source checkouts update via git pull.",
+        },
+        launcher_managed: false,
+        is_admin: false,
+        job: jobPayload,
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+
+  let status: Awaited<ReturnType<typeof fetchAppUpdateStatus>> | undefined;
+  try {
+    status = await fetchAppUpdateStatus();
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.ok(status);
+  assert.equal(status.release?.version, "1.7.0");
+  assert.equal(status.release?.name, "DeepTutor 1.7");
+  assert.equal(status.release?.published_at, "2026-08-30T00:00:00Z");
+  assert.equal(
+    status.release?.url,
+    "https://github.com/HKUDS/DeepTutor/releases/tag/v1.7.0",
+  );
+  assert.equal(
+    status.release?.excerpt,
+    "Use the new updater with one confirmation.",
+  );
+  assert.equal(status.release?.migration_warning, true);
+  assert.equal(status.installation.mode, "source");
+  assert.equal(status.installation.automatic_update, false);
+  assert.equal(status.installation.command, "git pull && pip install -e .");
+  assert.equal(status.launcher_managed, false);
+  assert.equal(status.is_admin, false);
+  assert.equal(status.job?.status, "pending");
+  assert.equal(updateJobIsActive("handoff"), true);
+});
+
 test("sidebar presents the update state as a clickable status dot", () => {
   const badge = readFileSync(
     path.join(process.cwd(), "components", "sidebar", "VersionBadge.tsx"),
