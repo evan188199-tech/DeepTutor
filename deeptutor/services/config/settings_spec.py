@@ -569,7 +569,10 @@ async def _probe_embedding(value: str) -> ProbeResult:
     import asyncio
     import time
 
-    from deeptutor.services.config.provider_runtime import resolve_embedding_runtime_config
+    from deeptutor.services.config.provider_runtime import (
+        clamp_max_inflight,
+        resolve_embedding_runtime_config,
+    )
     from deeptutor.services.embedding.client import EmbeddingClient
     from deeptutor.services.embedding.config import EmbeddingConfig
 
@@ -601,6 +604,9 @@ async def _probe_embedding(value: str) -> ProbeResult:
                 request_timeout=max(1, min(resolved.request_timeout, int(_PROBE_TIMEOUT_SECONDS))),
                 batch_size=max(1, resolved.batch_size),
                 batch_delay=max(0.0, resolved.batch_delay),
+                max_inflight_requests=clamp_max_inflight(
+                    getattr(resolved, "max_inflight_requests", 0)
+                ),
             )
         )
         vectors = await asyncio.wait_for(client.embed(["ping"]), timeout=_PROBE_TIMEOUT_SECONDS)

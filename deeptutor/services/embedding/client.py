@@ -20,6 +20,68 @@ from .config import EmbeddingConfig, get_embedding_config
 from .validation import validate_embedding_batch
 
 
+class _EndpointInflightGate:
+    """Cross-loop counting gate bounding in-flight embedding requests.
+
+    An :class:`asyncio.Semaphore` cannot be shared across the per-thread event
+    loops DeepTutor embeds from (LlamaIndex worker threads each run their own
+    loop, see ``EmbeddingClient._spacing_lock``): releasing from another
+    loop's thread races on the non-thread-safe ``call_soon`` wakeup. This gate
+    keeps all state behind a ``threading.Lock`` and waits with a short async
+    poll, so it is safe across loops, threads, and processes' worker pools.
+    """
+
+    __slots__ = ("limit", "_active", "_guard")
+
+    def __init__(self, limit: int) -> None:
+        self.limit = max(1, int(limit))
+        self._active = 0
+        self._guard = threading.Lock()
+
+    def try_acquire(self) -> bool:
+        """Claim one slot without blocking; False while the endpoint is full."""
+        with self._guard:
+            if self._active < self.limit:
+                self._active += 1
+                return True
+            return False
+
+    def release(self) -> None:
+        with self._guard:
+            self._active = max(0, self._active - 1)
+
+
+# Process-wide gates keyed by endpoint URL: every EmbeddingClient built for
+# the same base_url — across KB workers, LightRAG tasks, and retrieval
+# queries — shares one cap on that single backend.
+_ENDPOINT_INFLIGHT_GATES: Dict[str, _EndpointInflightGate] = {}
+_endpoint_gates_guard = threading.Lock()
+
+
+def _inflight_gate_for(endpoint: str, limit: int) -> _EndpointInflightGate:
+    """Return the shared gate for ``endpoint``, refreshing its live limit.
+
+    The first client to reach an endpoint creates its gate; later clients
+    (with the same or a different configured cap) update the limit so editing
+    the profile takes effect on new requests without a restart. Shrinking
+    never cancels admitted requests — the cap applies at admission time.
+    """
+    with _endpoint_gates_guard:
+        gate = _ENDPOINT_INFLIGHT_GATES.get(endpoint)
+        if gate is None:
+            gate = _EndpointInflightGate(limit)
+            _ENDPOINT_INFLIGHT_GATES[endpoint] = gate
+        else:
+            gate.limit = max(1, int(limit))
+        return gate
+
+
+def _reset_endpoint_inflight_gates() -> None:
+    """Drop all per-endpoint gates (test isolation helper)."""
+    with _endpoint_gates_guard:
+        _ENDPOINT_INFLIGHT_GATES.clear()
+
+
 def _resolve_adapter_class(binding: str) -> type[BaseEmbeddingAdapter]:
     provider = (binding or "").strip().lower()
     spec = EMBEDDING_PROVIDERS.get(provider)
@@ -115,6 +177,32 @@ class EmbeddingClient:
             f"(model: {self.config.model}, dimensions: {self.config.dim})"
         )
 
+    @asynccontextmanager
+    async def _endpoint_inflight_slot(self):
+        """Hold one per-endpoint in-flight slot around an adapter call.
+
+        Enabled only when the resolved embedding profile sets
+        ``max_inflight_requests > 0``; the default ``0`` keeps the historical
+        unbounded behavior (no gate is created, no poll, no delay).
+        """
+        import asyncio
+
+        limit = int(getattr(self.config, "max_inflight_requests", 0) or 0)
+        if limit <= 0:
+            yield
+            return
+        endpoint = str((self.config.effective_url or self.config.base_url or "").strip())
+        if not endpoint:
+            yield
+            return
+        gate = _inflight_gate_for(endpoint, limit)
+        while not gate.try_acquire():
+            await asyncio.sleep(0.02)
+        try:
+            yield
+        finally:
+            gate.release()
+
     async def embed(
         self,
         texts: List[str],
@@ -157,7 +245,8 @@ class EmbeddingClient:
             )
             try:
                 await self._wait_for_request_slot()
-                response = await self.adapter.embed(request)
+                async with self._endpoint_inflight_slot():
+                    response = await self.adapter.embed(request)
             except Exception as exc:
                 # Capture batch context so the task log stream / KB diagnostics
                 # show actionable info instead of a bare exception string.
@@ -263,7 +352,8 @@ class EmbeddingClient:
                 enable_fusion=False,
             )
             await self._wait_for_request_slot()
-            response = await self.adapter.embed(request)
+            async with self._endpoint_inflight_slot():
+                response = await self.adapter.embed(request)
             validated = validate_embedding_batch(
                 response.embeddings,
                 expected_count=len(batch),

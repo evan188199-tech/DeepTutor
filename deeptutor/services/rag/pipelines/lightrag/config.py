@@ -182,16 +182,29 @@ def indexing_kwargs_from_settings() -> dict:
 
 
 def constructor_kwargs_from_settings() -> dict:
-    """Direct LightRAG constructor knobs from runtime settings."""
+    """Direct LightRAG constructor knobs from runtime settings.
+
+    ``embedding_func_max_async`` / ``embedding_batch_num`` bound how hard
+    LightRAG's internal embedding fan-out hits the embedding endpoint. They
+    are forwarded only when explicitly configured; when unset they stay
+    absent so the pinned lightrag-hku SDK keeps supplying its own defaults
+    (including the EMBEDDING_FUNC_MAX_ASYNC / EMBEDDING_BATCH_NUM environment
+    overrides), preserving the behavior of deployments that never set them.
+    """
     try:
         from deeptutor.services.config import load_lightrag_settings
 
         settings = load_lightrag_settings()
-        return {
+        kwargs = {
             "llm_model_max_async": int(settings.get("llm_model_max_async", 4)),
             "entity_extract_max_gleaning": int(settings.get("entity_extract_max_gleaning", 1)),
             "default_llm_timeout": int(settings.get("llm_timeout", 240)),
         }
+        for key in ("embedding_func_max_async", "embedding_batch_num"):
+            value = settings.get(key)
+            if value is not None:
+                kwargs[key] = int(value)
+        return kwargs
     except Exception:
         return {}
 

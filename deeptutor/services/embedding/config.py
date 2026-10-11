@@ -8,6 +8,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 from deeptutor.services.config import resolve_embedding_runtime_config
+from deeptutor.services.config.provider_runtime import clamp_max_inflight
 
 
 @dataclass
@@ -28,6 +29,13 @@ class EmbeddingConfig:
     request_timeout: int = 60
     batch_size: int = 10
     batch_delay: float = 0.0
+    # Per-endpoint cap on in-flight embedding requests (profile knob
+    # ``max_inflight_requests``). ``0`` disables the cap and keeps the
+    # historical unbounded behavior; ``> 0`` bounds how many adapter calls to
+    # the same base_url may be awaiting a response at once, protecting local
+    # single-process backends (Lemonade/vLLM/Ollama) from overlapping re-index
+    # workers, LightRAG's internal fan-out, and retrieval queries.
+    max_inflight_requests: int = 0
 
 
 _scoped_config: ContextVar[EmbeddingConfig | None] = ContextVar("embedding_config", default=None)
@@ -111,4 +119,5 @@ def get_embedding_config(
         request_timeout=max(1, resolved.request_timeout),
         batch_size=max(1, resolved.batch_size),
         batch_delay=max(0.0, resolved.batch_delay),
+        max_inflight_requests=clamp_max_inflight(getattr(resolved, "max_inflight_requests", 0)),
     )

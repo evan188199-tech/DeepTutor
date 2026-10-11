@@ -13,6 +13,7 @@ from .context_window_detection import detect_context_window
 from .embedding_endpoint import redact_embedding_endpoint_for_display
 from .model_catalog import get_model_catalog_service, redact_catalog_secrets
 from .provider_runtime import (
+    clamp_max_inflight,
     resolve_embedding_runtime_config,
     resolve_llm_runtime_config,
     resolve_search_runtime_config,
@@ -374,6 +375,7 @@ class ConfigTestRunner:
             request_timeout=max(1, resolved.request_timeout),
             batch_size=max(1, resolved.batch_size),
             batch_delay=max(0.0, resolved.batch_delay),
+            max_inflight_requests=clamp_max_inflight(getattr(resolved, "max_inflight_requests", 0)),
         )
         run.emit(
             "info", f"Resolved embedding model `{config.model}` with binding `{config.binding}`."

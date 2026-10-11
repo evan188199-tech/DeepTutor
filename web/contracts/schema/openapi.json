@@ -4911,6 +4911,28 @@
       "LightRagConfigUpdate": {
         "description": "Partial update for LightRAG query + indexing knobs (omitted fields kept).",
         "properties": {
+          "embedding_batch_num": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Batch Num"
+          },
+          "embedding_func_max_async": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Func Max Async"
+          },
           "entity_extract_max_gleaning": {
             "anyOf": [
               {

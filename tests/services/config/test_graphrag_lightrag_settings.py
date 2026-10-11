@@ -86,6 +86,22 @@ def test_lightrag_indexing_knobs_round_trip_and_clamp(tmp_path: Path) -> None:
     assert clamped["response_type"] == "Multiple Paragraphs"
 
 
+def test_lightrag_embedding_knobs_default_to_sdk_and_clamp(tmp_path: Path) -> None:
+    """The embedding fan-out knobs stay ``None`` (SDK default) unless set."""
+    svc = RuntimeSettingsService(tmp_path, process_env={})
+    defaults = svc.load_lightrag()
+    assert defaults["embedding_func_max_async"] is None
+    assert defaults["embedding_batch_num"] is None
+
+    saved = svc.save_lightrag({"embedding_func_max_async": 999, "embedding_batch_num": 0})
+    assert saved["embedding_func_max_async"] == 32  # clamped to max
+    assert saved["embedding_batch_num"] == 1  # clamped to min
+
+    invalid = svc.save_lightrag({"embedding_func_max_async": "soon", "embedding_batch_num": "  "})
+    assert invalid["embedding_func_max_async"] is None
+    assert invalid["embedding_batch_num"] is None
+
+
 def test_lightrag_settings_written_before_the_indexing_knobs_still_load(
     tmp_path: Path,
 ) -> None:

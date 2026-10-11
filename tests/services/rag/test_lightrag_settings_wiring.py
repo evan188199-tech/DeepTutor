@@ -51,6 +51,8 @@ def test_native_constructor_receives_every_supported_knob(monkeypatch, tmp_path:
             "llm_model_max_async": 8,
             "entity_extract_max_gleaning": 2,
             "default_llm_timeout": 480,
+            "embedding_func_max_async": 12,
+            "embedding_batch_num": 64,
         },
     )
 
@@ -65,6 +67,8 @@ def test_native_constructor_receives_every_supported_knob(monkeypatch, tmp_path:
     assert rag.kwargs["llm_model_max_async"] == 8
     assert rag.kwargs["entity_extract_max_gleaning"] == 2
     assert rag.kwargs["default_llm_timeout"] == 480
+    assert rag.kwargs["embedding_func_max_async"] == 12
+    assert rag.kwargs["embedding_batch_num"] == 64
     assert rag.kwargs["vlm_process_enable"] is False
     assert rag.kwargs["llm_model_name"] == "query-fingerprint"
     assert set(rag.kwargs["role_llm_configs"]) == {"keyword", "query"}

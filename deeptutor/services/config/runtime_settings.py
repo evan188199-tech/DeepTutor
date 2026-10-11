@@ -368,6 +368,15 @@ DEFAULT_LIGHTRAG_SETTINGS: dict[str, Any] = {
     # Maps to LightRAG's ``default_llm_timeout`` (seconds). LightRAG derives its
     # worker execution cap as 2x this value, so 240 -> a 480s per-call ceiling.
     "llm_timeout": 240,
+    # Optional caps on LightRAG's embedding calls, forwarded to the pinned
+    # SDK constructor as ``embedding_func_max_async`` / ``embedding_batch_num``.
+    # ``None`` (the default) keeps the lightrag-hku SDK defaults — including
+    # its EMBEDDING_FUNC_MAX_ASYNC / EMBEDDING_BATCH_NUM environment overrides
+    # — so deployments that never set these behave exactly as before; set
+    # ints to bound how hard LightRAG's internal fan-out hits the embedding
+    # endpoint (typically a local single-process backend).
+    "embedding_func_max_async": None,
+    "embedding_batch_num": None,
     "llm_profile_id": "",
     "llm_model_id": "",
 }
@@ -414,6 +423,22 @@ def _coerce_int(value: Any, default: int) -> int:
 
 def _coerce_clamped_int(value: Any, default: int, low: int, high: int) -> int:
     coerced = _coerce_int(value, default)
+    return max(low, min(high, coerced))
+
+
+def _coerce_optional_clamped_int(value: Any, low: int, high: int) -> int | None:
+    """Clamp an optional int knob; unset or malformed values mean ``None``.
+
+    ``None`` is the "not configured" signal for knobs whose effective default
+    must keep coming from the consuming SDK rather than DeepTutor, so a
+    malformed value falls back to the SDK default instead of inventing a cap.
+    """
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    try:
+        coerced = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
     return max(low, min(high, coerced))
 
 
@@ -1069,6 +1094,13 @@ class RuntimeSettingsService:
                 settings.get("entity_extract_max_gleaning"), 1, 0, 5
             ),
             "llm_timeout": _coerce_clamped_int(settings.get("llm_timeout"), 240, 60, 3600),
+            # None keeps the lightrag-hku SDK defaults (see DEFAULT_LIGHTRAG_SETTINGS).
+            "embedding_func_max_async": _coerce_optional_clamped_int(
+                settings.get("embedding_func_max_async"), 1, 32
+            ),
+            "embedding_batch_num": _coerce_optional_clamped_int(
+                settings.get("embedding_batch_num"), 1, 256
+            ),
             "llm_profile_id": _string(settings.get("llm_profile_id"))[:128],
             "llm_model_id": _string(settings.get("llm_model_id"))[:128],
         }

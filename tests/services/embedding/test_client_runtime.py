@@ -528,3 +528,159 @@ def test_embedding_spacing_shared_across_thread_event_loops(monkeypatch):
         futures = [executor.submit(asyncio.run, client.embed(["text"])) for client in clients]
         assert all(len(future.result(timeout=3)) == 1 for future in futures)
     assert starts[1] - starts[0] >= config.batch_delay
+
+
+class _InflightCountingAdapter(_FakeAdapter):
+    """Fake backend counting concurrent embed() calls across loops/threads."""
+
+    guard = threading.Lock()
+    in_flight = 0
+    max_in_flight = 0
+
+    @classmethod
+    def _enter(cls) -> None:
+        with cls.guard:
+            cls.in_flight += 1
+            cls.max_in_flight = max(cls.max_in_flight, cls.in_flight)
+
+    @classmethod
+    def _leave(cls) -> None:
+        with cls.guard:
+            cls.in_flight -= 1
+
+    @classmethod
+    def reset_counters(cls) -> None:
+        with cls.guard:
+            cls.in_flight = 0
+            cls.max_in_flight = 0
+
+    async def embed(self, request):
+        self._enter()
+        try:
+            await asyncio.sleep(0.02)
+            return await super().embed(request)
+        finally:
+            self._leave()
+
+
+def _install_counting_adapter(monkeypatch) -> None:
+    from deeptutor.services.embedding import client as client_module
+
+    _InflightCountingAdapter.reset_counters()
+    _InflightCountingAdapter.instances = []
+    client_module._reset_endpoint_inflight_gates()
+    monkeypatch.setattr(
+        client_module, "_resolve_adapter_class", lambda _b: _InflightCountingAdapter
+    )
+
+
+@pytest.mark.asyncio
+async def test_no_inflight_cap_by_default_keeps_unbounded_concurrency(monkeypatch) -> None:
+    """Without the new knob, concurrent embeds overlap exactly as before."""
+    _install_counting_adapter(monkeypatch)
+    config = _build_config("openai")
+    assert config.max_inflight_requests == 0
+    clients = [EmbeddingClient(config) for _ in range(3)]
+
+    vectors = await asyncio.wait_for(
+        asyncio.gather(*[client.embed(["text"]) for client in clients]), timeout=2
+    )
+
+    assert [len(v) for v in vectors] == [1, 1, 1]
+    assert _InflightCountingAdapter.max_in_flight == 3
+    # No gate may be registered when the cap is disabled.
+    from deeptutor.services.embedding import client as client_module
+
+    assert client_module._ENDPOINT_INFLIGHT_GATES == {}
+
+
+@pytest.mark.asyncio
+async def test_endpoint_inflight_cap_limits_concurrent_embeds(monkeypatch) -> None:
+    """Multiple workers against one endpoint never exceed the configured cap."""
+    _install_counting_adapter(monkeypatch)
+    config = _build_config("openai")
+    config.max_inflight_requests = 2
+    clients = [EmbeddingClient(config) for _ in range(4)]
+
+    vectors = await asyncio.wait_for(
+        asyncio.gather(*[client.embed(["text"]) for client in clients]), timeout=5
+    )
+
+    assert [len(v) for v in vectors] == [1, 1, 1, 1]
+    assert _InflightCountingAdapter.max_in_flight <= 2
+
+
+def test_endpoint_inflight_cap_shared_across_thread_event_loops(monkeypatch) -> None:
+    """KB re-index workers run on separate thread event loops but share the cap."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    _install_counting_adapter(monkeypatch)
+    config = _build_config("openai")
+    config.max_inflight_requests = 2
+    clients = [EmbeddingClient(config) for _ in range(4)]
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(asyncio.run, client.embed(["text"])) for client in clients]
+        assert all(len(future.result(timeout=5)) == 1 for future in futures)
+
+    assert _InflightCountingAdapter.max_in_flight <= 2
+
+
+@pytest.mark.asyncio
+async def test_multimodal_contents_share_the_endpoint_cap(monkeypatch) -> None:
+    class _MultimodalAdapter(_InflightCountingAdapter):
+        def get_model_info(self):
+            return {"multimodal": True}
+
+        async def embed(self, request):
+            self._enter()
+            try:
+                await asyncio.sleep(0.02)
+                items = request.contents or [{"text": t} for t in request.texts]
+                return type(
+                    "Resp", (), {"embeddings": [[float(i)] * 2 for i, _ in enumerate(items)]}
+                )()
+            finally:
+                self._leave()
+
+    from deeptutor.services.embedding import client as client_module
+
+    _InflightCountingAdapter.reset_counters()
+    _InflightCountingAdapter.instances = []
+    client_module._reset_endpoint_inflight_gates()
+    monkeypatch.setattr(client_module, "_resolve_adapter_class", lambda _b: _MultimodalAdapter)
+    config = _build_config("openai")
+    config.max_inflight_requests = 1
+    clients = [EmbeddingClient(config) for _ in range(2)]
+
+    vectors = await asyncio.wait_for(
+        asyncio.gather(
+            *[
+                client.embed_contents([{"text": "a"}, {"image": "data:image/png;base64,x"}])
+                for client in clients
+            ]
+        ),
+        timeout=5,
+    )
+
+    assert [len(v) for v in vectors] == [2, 2]
+    assert _InflightCountingAdapter.max_in_flight <= 1
+
+
+def test_endpoint_inflight_gates_keyed_per_endpoint(monkeypatch) -> None:
+    """Different endpoints keep independent caps; same endpoint shares one gate."""
+    from deeptutor.services.embedding import client as client_module
+
+    _install_counting_adapter(monkeypatch)
+    first = _build_config("openai")
+    first.max_inflight_requests = 3
+    second = _build_config("openai", base_url="https://relay.example.com/v1/embeddings")
+    second.max_inflight_requests = 5
+    # Gates register lazily on the first gated adapter call, not at construction.
+    asyncio.run(EmbeddingClient(first).embed(["a"]))
+    asyncio.run(EmbeddingClient(second).embed(["b"]))
+
+    gates = client_module._ENDPOINT_INFLIGHT_GATES
+    assert gates["https://api.openai.com/v1/embeddings"].limit == 3
+    assert gates["https://relay.example.com/v1/embeddings"].limit == 5
+    assert len(gates) == 2

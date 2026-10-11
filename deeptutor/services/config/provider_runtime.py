@@ -630,6 +630,7 @@ class ResolvedEmbeddingConfig:
     request_timeout: int = 60
     batch_size: int = 10
     batch_delay: float = 0.0
+    max_inflight_requests: int = 0
 
 
 @dataclass(slots=True)
@@ -1210,6 +1211,7 @@ def resolve_embedding_runtime_config(
         # allow per-profile batch_size/batch_delay in the embedding profile, defaults unchanged
         batch_size=_clamp_batch_size(profile),
         batch_delay=_clamp_batch_delay(profile),
+        max_inflight_requests=_clamp_max_inflight(profile),
     )
 
 
@@ -1632,3 +1634,21 @@ def _clamp_batch_delay(profile: dict | None) -> float:
         return max(0.0, float((profile or {}).get("batch_delay", 0.0)))
     except Exception:
         return 0.0
+
+
+def clamp_max_inflight(value: object) -> int:
+    """Coerce a configured in-flight cap; anything unusable means "no cap".
+
+    ``0`` disables the per-endpoint in-flight limit, keeping the historical
+    unbounded behavior. Tolerant on purpose: probes and tests resolve config
+    through doubles that may not carry the knob.
+    """
+    try:
+        return max(0, int(value))  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return 0
+
+
+def _clamp_max_inflight(profile: dict | None) -> int:
+    """Cap on in-flight embedding requests per endpoint from the profile."""
+    return clamp_max_inflight((profile or {}).get("max_inflight_requests", 0))

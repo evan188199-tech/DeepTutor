@@ -1680,6 +1680,10 @@ class LightRagConfigUpdate(BaseModel):
     max_concurrent_files: int | None = None
     llm_model_max_async: int | None = None
     entity_extract_max_gleaning: int | None = None
+    # Optional caps on LightRAG's embedding fan-out, forwarded to the pinned
+    # SDK constructor only when set; omitted values keep the SDK defaults.
+    embedding_func_max_async: int | None = None
+    embedding_batch_num: int | None = None
     llm_timeout: int | None = None
     llm_profile_id: str | None = None
     llm_model_id: str | None = None
