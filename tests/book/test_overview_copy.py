@@ -81,3 +81,82 @@ def test_the_translation_gap_is_reported_honestly() -> None:
 def test_english_is_always_present_because_it_is_the_fallback() -> None:
     assert "en" in _COPY
     assert REQUIRED_KEYS <= set(_COPY["en"])
+
+
+# --- Degenerate and oversized inputs resolve instead of raising -------------
+
+
+@pytest.mark.parametrize(
+    ("tag", "expected"),
+    [
+        ("ZH", "zh"),
+        ("  zh  ", "zh"),
+        ("ZH-TW", "zh"),
+        ("zh-TW-Hant", "zh"),
+        ("EN-gb", "en"),
+    ],
+)
+def test_case_and_whitespace_are_normalized_before_lookup(tag: str, expected: str) -> None:
+    assert overview_copy(tag) is _COPY[expected]
+
+
+def test_an_oversized_language_tag_still_falls_back_without_raising() -> None:
+    oversized = "z" * 10_000
+    assert overview_copy(oversized) is _COPY["en"]
+
+
+def test_regional_fallback_is_one_level_deep() -> None:
+    """A three-part tag keeps only its base; anything past that falls to English."""
+    assert overview_copy("zz-qq") is _COPY["en"]
+    assert overview_copy("zz-qq-ww") is _COPY["en"]
+
+
+def test_missing_languages_normalizes_its_input_before_judging() -> None:
+    assert missing_languages([" ZH ", "EN", "zh-TW", "FR"]) == ["FR"]
+    assert missing_languages([]) == []
+
+
+def test_missing_languages_keeps_duplicates_countable() -> None:
+    assert missing_languages(["xx", "xx", "xx"]) == ["xx", "xx", "xx"]
+
+
+# --- A degenerate table entry is served verbatim and fails loudly -----------
+
+
+def test_a_partial_translation_is_returned_verbatim_not_merged_with_english(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No silent English backfill: a broken entry reaches the consumer as-is."""
+    partial = {"chapter_title": "仅存一个键"}
+    monkeypatch.setitem(_COPY, "zh", partial)
+    assert overview_copy("zh") is partial
+
+
+def test_a_partial_translation_fails_loudly_at_the_consumer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """engine.py subscripts every key directly, so a gap raises instead of
+    rendering a stray English string mid-page."""
+    monkeypatch.setitem(_COPY, "zh", {"chapter_title": "仅存一个键"})
+    copy = overview_copy("zh")
+    with pytest.raises(KeyError):
+        copy["intro_body"]  # noqa: B018
+
+
+# --- The consumer's assembly contract ---------------------------------------
+
+
+def test_every_key_the_engine_consumes_is_declared_required() -> None:
+    """engine.py reads exactly these keys via direct subscript (lines 736-845)."""
+    engine_consumed = {
+        "chapter_title",
+        "objectives",
+        "chapter_summary",
+        "untitled_book",
+        "intro_title",
+        "intro_body",
+        "concept_map_title",
+        "chapter_index_title",
+        "chapter_index_heading",
+    }
+    assert engine_consumed == REQUIRED_KEYS
