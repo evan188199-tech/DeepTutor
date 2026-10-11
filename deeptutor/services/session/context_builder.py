@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from typing import Any, Awaitable, Callable
 
 from deeptutor.agents.base_agent import BaseAgent
@@ -37,6 +38,24 @@ TRUNCATION_GUARD_RATIO = 0.95
 MAX_HISTORY_PLAN_TOKENS = 131_072
 MAX_SUMMARY_OUTPUT_TOKENS = 16_384
 MAX_RAW_REBUILD_TOKENS = 131_072
+
+#: Per-turn replay budget, independent of the window size (#1926). A large
+#: context window alone postpones the ratio-based plan far beyond what a
+#: sustained tutoring session can afford to re-carry on every internal
+#: model call, so the history one turn may replay is additionally bounded
+#: by this soft threshold: exceeding it triggers the regular on-demand
+#: summarization earlier. The default keeps every window up to ~140k
+#: tokens on the exact plan the 0.35 ratio already produced; larger
+#: windows no longer scale the replay with the window.
+DEFAULT_TURN_HISTORY_BUDGET_TOKENS = 49_152
+#: Backstop for the same replay: when compaction is disabled, fails, or is
+#: configured away, oldest whole turns are dropped (never the newest
+#: exchange, and never from the store) until the replay fits this hard
+#: cap. Setting either knob to ``0`` disables that bound and restores the
+#: ratio-only plan.
+DEFAULT_TURN_HISTORY_HARD_CAP_TOKENS = 65_536
+_TURN_HISTORY_BUDGET_ENV = "DEEPTUTOR_TURN_HISTORY_BUDGET_TOKENS"
+_TURN_HISTORY_HARD_CAP_ENV = "DEEPTUTOR_TURN_HISTORY_HARD_CAP_TOKENS"
 
 
 # Planning allowance per image, not provider-reported usage. Counting encoded
@@ -88,6 +107,16 @@ def _count_model_context_tokens(value: Any) -> int:
 
     serialized = json.dumps(accounting_view(value), ensure_ascii=False)
     return count_tokens(serialized) + image_count * IMAGE_CONTEXT_TOKEN_ESTIMATE
+
+
+def _env_budget_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw.strip())
+    except ValueError:
+        return default
 
 
 def trim_incomplete_tail(text: str) -> str:
@@ -201,6 +230,11 @@ class ContextBuilder:
 
     The budget is a planning target, not destructive truncation: the newest
     non-empty message is retained even when that single message exceeds it.
+    On top of the window-ratio plan, the history one turn may replay is
+    bounded by an absolute per-turn budget (#1926): a soft threshold that
+    triggers the on-demand summarization earlier on large-context models,
+    and a hard cap that drops oldest whole turns when compaction cannot
+    run. Both knobs are configurable per instance or via environment.
     """
 
     def __init__(
@@ -208,10 +242,26 @@ class ContextBuilder:
         store: SessionStoreProtocol,
         history_budget_ratio: float = 0.35,
         summary_target_ratio: float = 0.40,
+        *,
+        turn_history_budget_tokens: int | None = None,
+        turn_history_hard_cap_tokens: int | None = None,
     ) -> None:
         self.store = store
         self.history_budget_ratio = history_budget_ratio
         self.summary_target_ratio = summary_target_ratio
+        # Explicit arguments win, then environment overrides, then the
+        # #1926 defaults. ``0`` is honoured as "disabled" by the budget
+        # helpers below, restoring the pre-#1926 ratio-only plan.
+        self.turn_history_budget_tokens = (
+            _env_budget_int(_TURN_HISTORY_BUDGET_ENV, DEFAULT_TURN_HISTORY_BUDGET_TOKENS)
+            if turn_history_budget_tokens is None
+            else max(0, int(turn_history_budget_tokens))
+        )
+        self.turn_history_hard_cap_tokens = (
+            _env_budget_int(_TURN_HISTORY_HARD_CAP_ENV, DEFAULT_TURN_HISTORY_HARD_CAP_TOKENS)
+            if turn_history_hard_cap_tokens is None
+            else max(0, int(turn_history_hard_cap_tokens))
+        )
 
     def _effective_context_window(self, llm_config: LLMConfig) -> int:
         return resolve_effective_context_window(
@@ -223,7 +273,12 @@ class ContextBuilder:
     def _history_budget(self, llm_config: LLMConfig) -> int:
         effective_context_window = self._effective_context_window(llm_config)
         ratio_budget = max(256, int(effective_context_window * self.history_budget_ratio))
-        return min(ratio_budget, MAX_HISTORY_PLAN_TOKENS)
+        budget = min(ratio_budget, MAX_HISTORY_PLAN_TOKENS)
+        if self.turn_history_budget_tokens > 0:
+            # Soft threshold (#1926): the per-turn replay budget binds
+            # before the window ratio on large-context models.
+            budget = min(budget, self.turn_history_budget_tokens)
+        return max(256, budget)
 
     def _summary_budget(self, budget: int, llm_config: LLMConfig | None = None) -> int:
         ratio_budget = max(96, int(budget * self.summary_target_ratio))
@@ -312,6 +367,31 @@ class ContextBuilder:
         return count_tokens(build_history_text(self._build_history(summary, messages))) + sum(
             _provider_response_state_tokens(row) for row in messages
         )
+
+    def _trim_replay_to_cap(
+        self,
+        rows: list[dict[str, Any]],
+        summary: str,
+        cap: int,
+    ) -> list[dict[str, Any]]:
+        """Drop oldest whole turns until the replayed history fits ``cap``.
+
+        Hard backstop for the per-turn replay budget (#1926): applied after
+        the regular summarize/degrade paths and on the within-budget fast
+        path, so a turn never re-carries more replayed history than the
+        configured cap even when compaction is disabled or fails. Whole
+        turns are dropped oldest-first, the newest exchange is always
+        retained, and nothing is removed from the store — the summarize
+        watermark only ever advances through ``update_summary``.
+        """
+        if cap <= 0:
+            return rows
+        groups = history_groups(rows)
+        retained = rows
+        while len(groups) > 1 and self._model_tokens(retained, summary) > cap:
+            groups.pop(0)
+            retained = [row for group in groups for row in group]
+        return retained
 
     async def _summarize(
         self,
@@ -553,14 +633,26 @@ class ContextBuilder:
             {"provider": binding, "model": llm_config.model} if isinstance(binding, str) else None
         )
         if current_tokens <= budget:
+            # Within the soft budget the replay rides verbatim; the hard cap
+            # is still enforced as a backstop (it binds when the soft budget
+            # is disabled or configured above the cap).
+            retained_rows = self._trim_replay_to_cap(
+                unsummarized, stored_summary, self.turn_history_hard_cap_tokens
+            )
+            trimmed = len(retained_rows) < len(unsummarized)
+            final_history = (
+                self._build_history(stored_summary, retained_rows) if trimmed else current_history
+            )
             return ContextBuildResult(
-                conversation_history=current_history,
+                conversation_history=final_history,
                 conversation_summary=stored_summary,
-                context_text=build_history_text(current_history),
+                context_text=build_history_text(final_history),
                 events=[],
-                token_count=current_tokens,
+                token_count=(
+                    self._model_tokens(retained_rows, stored_summary) if trimmed else current_tokens
+                ),
                 budget=budget,
-                model_history=replay_history(unsummarized, stored_summary, route),
+                model_history=replay_history(retained_rows, stored_summary, route),
                 previous_model_turn=previous_model_turn,
             )
 
@@ -644,6 +736,9 @@ class ContextBuilder:
         ):
             retained_groups.pop(0)
             retained_rows = [row for group in retained_groups for row in group]
+        retained_rows = self._trim_replay_to_cap(
+            retained_rows, stored_summary, self.turn_history_hard_cap_tokens
+        )
         final_history = self._build_history(stored_summary, retained_rows)
 
         final_text = build_history_text(final_history)

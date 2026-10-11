@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from deeptutor.services.session.context_builder import (
+    DEFAULT_TURN_HISTORY_BUDGET_TOKENS,
     MAX_HISTORY_PLAN_TOKENS,
     MAX_RAW_REBUILD_TOKENS,
     MAX_SUMMARY_OUTPUT_TOKENS,
@@ -157,9 +158,27 @@ class TestContextBuilderBudgets:
         assert budget == int(128000 * 0.35)
 
     def test_history_budget_has_absolute_cap(self) -> None:
-        builder = ContextBuilder(store=MagicMock(), history_budget_ratio=0.35)
+        builder = ContextBuilder(
+            store=MagicMock(), history_budget_ratio=0.35, turn_history_budget_tokens=0
+        )
         budget = builder._history_budget(self._make_llm_config(4096, context_window=983_616))
         assert budget == MAX_HISTORY_PLAN_TOKENS
+
+    def test_history_budget_turn_bound_binds_before_window_cap(self) -> None:
+        # #1926: the per-turn replay budget keeps a huge window from
+        # postponing compaction; 0 restores the ratio-only plan.
+        bounded = ContextBuilder(store=MagicMock(), history_budget_ratio=0.35)
+        assert (
+            bounded._history_budget(self._make_llm_config(4096, context_window=983_616))
+            == DEFAULT_TURN_HISTORY_BUDGET_TOKENS
+        )
+        disabled = ContextBuilder(
+            store=MagicMock(), history_budget_ratio=0.35, turn_history_budget_tokens=0
+        )
+        assert (
+            disabled._history_budget(self._make_llm_config(4096, context_window=983_616))
+            == MAX_HISTORY_PLAN_TOKENS
+        )
 
     def test_history_budget_minimum(self) -> None:
         builder = ContextBuilder(store=MagicMock(), history_budget_ratio=0.01)
@@ -472,9 +491,9 @@ class TestContextBuilderBuild:
         ):
             result = await builder.build(session_id="s1", llm_config=cfg)
 
-        assert result.budget == MAX_HISTORY_PLAN_TOKENS
+        assert result.budget == DEFAULT_TURN_HISTORY_BUDGET_TOKENS
         assert builder._summarize.call_args.kwargs["summary_budget"] == 4096
-        assert select_recent.call_args.args[1] == int(MAX_HISTORY_PLAN_TOKENS * 0.60)
+        assert select_recent.call_args.args[1] == int(DEFAULT_TURN_HISTORY_BUDGET_TOKENS * 0.60)
         store.update_summary.assert_awaited_once_with("s1", "SUMMARY", 1)
 
 
