@@ -993,6 +993,112 @@ class TestPipelineSearch:
         assert "offline" in result["answer"]
 
 
+class TestPipelineStatusReporting:
+    """#1500: a successful no-hit search, a transport failure, and partially
+    readable evidence are three different outcomes, and each is reported as
+    the one it is — failures carry an error marker, no-hit searches do not,
+    and incomplete evidence is marked instead of passed off as complete."""
+
+    def test_successful_search_without_matches_reports_no_matches_not_failure(
+        self, tmp_path
+    ) -> None:
+        base = _kb_config(
+            tmp_path, {"client_id": "cid", "api_key": "key", "knowledge_base_id": "kb-1"}
+        )
+        pipeline = ImaPipeline(kb_base_dir=base, client_factory=lambda _c: _SearchStub())
+
+        result = asyncio.run(pipeline.search("multiplication", "IMA"))
+
+        assert result["retrieval_status"] == "no_matches"
+        assert result["sources"] == []
+        assert "no matching passages" in result["answer"]
+        # A successful search that matched nothing is not an error, so it
+        # must not carry a failure marker the model could misread.
+        assert "error_type" not in result
+
+    def test_fully_readable_search_reports_ready_with_diagnostics(self, tmp_path) -> None:
+        base = _kb_config(
+            tmp_path, {"client_id": "cid", "api_key": "key", "knowledge_base_id": "kb-1"}
+        )
+        stub = _SearchStub(
+            [
+                {"media_id": "m1", "title": "Alpha", "highlight_content": _thick("alpha text")},
+                {"media_id": "m2", "title": "Beta", "highlight_content": _thick("beta text")},
+            ]
+        )
+        result = asyncio.run(
+            ImaPipeline(kb_base_dir=base, client_factory=lambda _c: stub).search("q", "IMA")
+        )
+
+        assert result["retrieval_status"] == "ready"
+        assert "error_type" not in result
+        assert result["diagnostics"] == {
+            "knowledge_base": "IMA",
+            "matched_documents": 2,
+            "readable_documents": 2,
+            "unreadable_documents": 0,
+            "unverified_documents": 0,
+            "hydration_failures": [],
+        }
+
+    def test_media_that_yields_no_text_marks_the_result_partial(self, tmp_path) -> None:
+        """A fetch returning no text is a hydration failure like any other:
+        the readable passage stays citable, the gap is reported, and the
+        answer warns against inventing the missing source text."""
+        base = _kb_config(
+            tmp_path, {"client_id": "cid", "api_key": "key", "knowledge_base_id": "kb-1"}
+        )
+        stub = _SearchStub(
+            [
+                {
+                    "media_id": "readable",
+                    "title": "Math",
+                    "highlight_content": _thick("Three groups of four make twelve."),
+                },
+                {"media_id": "unreadable", "title": "Blank chapter"},
+            ],
+            media={"unreadable": None},
+        )
+        result = asyncio.run(
+            ImaPipeline(kb_base_dir=base, client_factory=lambda _c: stub).search(
+                "multiplication", "IMA"
+            )
+        )
+
+        assert result["retrieval_status"] == "partial"
+        assert [source["chunk_id"] for source in result["sources"]] == ["readable"]
+        assert "Blank chapter" not in result["content"]
+        assert "Three groups of four" in result["content"]
+        assert "do not invent" in result["answer"]
+        assert result["diagnostics"]["unreadable_documents"] == 1
+        assert result["diagnostics"]["hydration_failures"] == [
+            {"source_id": "unreadable", "error_type": "content_unavailable"}
+        ]
+
+    def test_failure_and_successful_no_hit_are_distinct_outcomes(self, tmp_path) -> None:
+        base = _kb_config(
+            tmp_path, {"client_id": "cid", "api_key": "key", "knowledge_base_id": "kb-1"}
+        )
+        failed = asyncio.run(
+            ImaPipeline(
+                kb_base_dir=base,
+                client_factory=lambda _c: _SearchStub(error=httpx.ConnectError("offline")),
+            ).search("multiplication", "IMA")
+        )
+        no_hit = asyncio.run(
+            ImaPipeline(kb_base_dir=base, client_factory=lambda _c: _SearchStub()).search(
+                "multiplication", "IMA"
+            )
+        )
+
+        assert failed["retrieval_status"] == "failed"
+        assert failed["error_type"] == "network_error"
+        assert failed["sources"] == []
+        assert no_hit["retrieval_status"] == "no_matches"
+        assert "error_type" not in no_hit
+        assert no_hit["sources"] == []
+
+
 class TestPipelineLifecycle:
     def test_indexing_is_refused(self, tmp_path) -> None:
         pipeline = ImaPipeline(kb_base_dir=str(tmp_path))
