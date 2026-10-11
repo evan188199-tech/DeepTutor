@@ -32,7 +32,11 @@
 #   because Docker maps port 8001 from the container to your local machine.
 #
 # REMOTE SERVER deployment (Docker on a server, accessed from another machine):
-#   Set system.next_public_api_base_external to your server's public IP or hostname, e.g.:
+#   1. Set DEEPTUTOR_DOCKER_BIND=0.0.0.0 before starting — host-side port
+#      bindings default to loopback (127.0.0.1), so without this the published
+#      ports only accept connections from the server itself. A reverse proxy
+#      running on the same host keeps working against the loopback default.
+#   2. Set system.next_public_api_base_external to your server's public IP or hostname, e.g.:
 #     "next_public_api_base_external": "http://203.0.113.10:8001"
 #   Without this, the browser will try to reach localhost:8001 on the USER'S laptop
 #   (not the server), and all API calls will fail.
@@ -61,9 +65,10 @@ services:
     pull_policy: always
     container_name: deeptutor
     restart: unless-stopped
+    # Loopback by default; widen via DEEPTUTOR_DOCKER_BIND (see header note).
     ports:
-      - "${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
-      - "${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
+      - "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
+      - "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
 
     volumes:
       # Persist every workspace and deployment secret across recreation.

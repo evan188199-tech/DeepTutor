@@ -13,6 +13,11 @@
 #   2. Configure model providers from the web Settings page or model_catalog.json
 #   3. Use scripts/docker_compose.py so port mappings are rendered from system.json
 #
+# Host-side port bindings default to loopback (127.0.0.1), matching the
+# docker run examples in docs-for-user/CONTAINERIZATION.md. Set
+# DEEPTUTOR_DOCKER_BIND=0.0.0.0 to publish on all interfaces intentionally
+# (e.g. LAN/remote access); the variable survives the docker_compose.py wrapper.
+#
 # Local LLM (LM Studio / Ollama / vLLM):
 #   Use "host.docker.internal" instead of "localhost" in provider base_url fields.
 #   Configure provider endpoints in data/user/settings/model_catalog.json or the UI.
@@ -52,7 +57,7 @@ services:
     container_name: pocketbase
     restart: unless-stopped
     ports:
-      - "${DEEPTUTOR_DOCKER_POCKETBASE_PORT:-8090}:8090"
+      - "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:${DEEPTUTOR_DOCKER_POCKETBASE_PORT:-8090}:8090"
     volumes:
       # The upstream pocketbase image's entrypoint uses absolute paths
       # (no /pb/ prefix): --dir=/pb_data --publicDir=/pb_public
@@ -81,9 +86,10 @@ services:
       target: production
     container_name: deeptutor
     restart: unless-stopped
+    # Loopback by default; widen via DEEPTUTOR_DOCKER_BIND (see header note).
     ports:
-      - "${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
-      - "${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
+      - "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
+      - "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
 
     volumes:
       # Everything DeepTutor persists lives under ./data — one tree to mount

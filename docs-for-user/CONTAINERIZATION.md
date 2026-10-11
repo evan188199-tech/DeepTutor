@@ -239,6 +239,12 @@ to configure an API base at all. The browser issues relative `/api/*` and
 forwards them to the backend on `localhost:8001`. Just point your reverse
 proxy / TLS terminator at the published `:3782` and you're done.
 
+The shipped Compose files (`docker-compose.yml`, `docker-compose.ghcr.yml`)
+publish their host-side ports on `127.0.0.1` by default, so a reverse proxy
+on the same host reaches them as-is. For direct access from another machine
+(no same-host proxy), start with `DEEPTUTOR_DOCKER_BIND=0.0.0.0` to widen
+the binding intentionally — and prefer enabling auth in that posture.
+
 You only need to set an API base for a **split deployment** where the
 backend runs in a separate container. Edit `data/user/settings/system.json`
 on the host (inside the `deeptutor-data` volume — `docker volume inspect

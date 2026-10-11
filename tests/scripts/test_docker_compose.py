@@ -95,6 +95,49 @@ def test_compose_files_do_not_consume_legacy_env_names() -> None:
         assert "DEEPTUTOR_DOCKER_BACKEND_PORT" in content
 
 
+def _published_port_entries(root: Path, name: str) -> list[str]:
+    content = yaml.safe_load((root / name).read_text(encoding="utf-8"))
+    entries: list[str] = []
+    for service in content.get("services", {}).values():
+        entries.extend(str(port) for port in (service.get("ports") or []))
+    return entries
+
+
+def test_compose_files_publish_ports_on_loopback_by_default() -> None:
+    """Every shipped compose file keeps the host side of each port mapping on
+    loopback unless an operator explicitly widens the binding."""
+    root = Path(__file__).resolve().parents[2]
+    for name in ("docker-compose.yml", "docker-compose.ghcr.yml", "compose.yaml"):
+        entries = _published_port_entries(root, name)
+        assert entries, f"{name} lost its published port mappings"
+        for entry in entries:
+            if entry.startswith("${"):
+                assert entry.startswith("${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:"), (
+                    name,
+                    entry,
+                )
+            else:
+                assert entry.startswith("127.0.0.1:"), (name, entry)
+
+
+def test_compose_wider_host_binding_is_explicit_opt_in() -> None:
+    """Non-loopback deployments opt in via DEEPTUTOR_DOCKER_BIND; the shipped
+    default stays loopback."""
+    root = Path(__file__).resolve().parents[2]
+    for name in ("docker-compose.yml", "docker-compose.ghcr.yml"):
+        content = (root / name).read_text(encoding="utf-8")
+        assert "${DEEPTUTOR_DOCKER_BIND:-127.0.0.1}:" in content, name
+
+
+def test_compose_wrapper_keeps_host_bind_passthrough() -> None:
+    """scripts/docker_compose.py must not strip the host-bind opt-in variable
+    from the environment it hands to docker compose."""
+    root = Path(__file__).resolve().parents[2]
+    source = (root / "scripts" / "docker_compose.py").read_text(encoding="utf-8")
+    scrub_keys = source.split("for key in (", 1)[1].split("):", 1)[0]
+    assert "DEEPTUTOR_DOCKER_BIND" not in scrub_keys
+
+
 def _compose_service(root: Path, name: str) -> dict:
     content = yaml.safe_load((root / name).read_text(encoding="utf-8"))
     return content["services"]["deeptutor"]
