@@ -21,6 +21,48 @@ def test_extract_json_object(text: str, expected: dict[str, int]) -> None:
     assert extract_json_object(text) == expected
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ('{"value": 1}\nNote: see {docs} for details', {"value": 1}),
+        ('{"value": 1}\nAlso ranked: [9, 8]', {"value": 1}),
+        ("# Analysis\n- point one\n- point two\n\n" + '{"value": 1}', {"value": 1}),
+        (
+            "Step 1: think.\nStep 2: act.\n\n" + '{"action": "go", "count": 3}',
+            {"action": "go", "count": 3},
+        ),
+    ],
+    ids=[
+        "brace-bearing-suffix",
+        "array-noise-suffix",
+        "markdown-bullet-prefix",
+        "numbered-steps-prefix",
+    ],
+)
+def test_extract_json_object_ignores_noise_around_payload(
+    text: str, expected: dict[str, object]
+) -> None:
+    assert extract_json_object(text) == expected
+
+
+def test_extract_json_object_reads_non_json_language_fence() -> None:
+    raw = "```python\n" + '{"value": 1}\n' + "```"
+
+    assert extract_json_object(raw) == {"value": 1}
+
+
+def test_extract_json_object_reads_unclosed_fence() -> None:
+    raw = "```json\n" + '{"value": 1}'
+
+    assert extract_json_object(raw) == {"value": 1}
+
+
+def test_extract_json_object_reads_payload_between_stray_fences() -> None:
+    raw = "```\npreamble\n```\n" + '{"value": 1}\n' + "```"
+
+    assert extract_json_object(raw) == {"value": 1}
+
+
 def test_extract_json_object_rejects_output_without_an_object() -> None:
     with pytest.raises(json.JSONDecodeError, match="No JSON object found"):
         extract_json_object("No structured output")
