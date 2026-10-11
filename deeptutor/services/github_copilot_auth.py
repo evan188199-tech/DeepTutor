@@ -25,6 +25,10 @@ USER_AGENT = "DeepTutor/1"
 EDITOR_VERSION = "vscode/1.99.0"
 EDITOR_PLUGIN_VERSION = "copilot-chat/0.26.0"
 _LONG_LIVED_TOKEN_SECONDS = 315_360_000
+# Shared HTTP budget for the GitHub/Copilot endpoints: 20s overall, with the
+# connect phase split off at 5s so an unreachable network fails fast instead
+# of burning the whole budget on TCP/TLS setup.
+_HTTP_TIMEOUT = httpx.Timeout(20.0, connect=5.0)
 
 
 @dataclass(frozen=True)
@@ -62,7 +66,7 @@ async def login_github_copilot(
     """Run GitHub's device flow and persist the resulting OAuth token."""
     storage = get_github_copilot_storage()
     printer = print_fn or print
-    timeout = httpx.Timeout(20.0, connect=20.0)
+    timeout = _HTTP_TIMEOUT
     client_id = _resolve("DEEPTUTOR_GITHUB_COPILOT_CLIENT_ID", GITHUB_COPILOT_CLIENT_ID)
     device_code_url = _resolve("DEEPTUTOR_GITHUB_DEVICE_CODE_URL", DEFAULT_GITHUB_DEVICE_CODE_URL)
     access_token_url = _resolve(
@@ -167,7 +171,7 @@ async def exchange_copilot_token(github_token: str | None = None) -> CopilotAcce
         )
 
     async with httpx.AsyncClient(
-        timeout=httpx.Timeout(20.0, connect=20.0),
+        timeout=_HTTP_TIMEOUT,
         follow_redirects=True,
         trust_env=True,
     ) as client:
@@ -202,7 +206,7 @@ class CopilotModel:
 async def fetch_github_copilot_models(access: CopilotAccess) -> list[CopilotModel]:
     """Keep protocol metadata alongside IDs; omit explicitly unsupported models."""
     async with httpx.AsyncClient(
-        timeout=httpx.Timeout(20.0, connect=20.0),
+        timeout=_HTTP_TIMEOUT,
         follow_redirects=True,
         trust_env=True,
     ) as client:

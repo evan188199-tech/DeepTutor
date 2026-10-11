@@ -8,6 +8,7 @@ passed `proxies`) and Jina used to return every result it got.
 
 from __future__ import annotations
 
+import inspect
 from typing import Any
 
 import pytest
@@ -497,3 +498,44 @@ def test_serply_rejects_an_unknown_mode() -> None:
 
     with pytest.raises(ValueError, match="mode"):
         SerplyProvider(api_key="k").search("q", mode="images")
+
+
+def test_provider_timeout_defaults_come_from_the_shared_tiers() -> None:
+    """Every provider that exposes a ``timeout`` knob defaults it to a tier.
+
+    The tiers live in services/search/base.py; a literal default here
+    re-introduces the 20/30/60 scatter the network-timeout scan flagged, and
+    stops tier changes from propagating to the provider. A provider without
+    the knob (perplexity delegates to its SDK) is not in the contract.
+    """
+    from deeptutor.services.search.base import (
+        SEARCH_TIMEOUT_FAST_S,
+        SEARCH_TIMEOUT_SLOW_S,
+        SEARCH_TIMEOUT_STANDARD_S,
+    )
+    from deeptutor.services.search.providers import _PROVIDERS
+
+    expected = {
+        "searxng": SEARCH_TIMEOUT_FAST_S,
+        "brave": SEARCH_TIMEOUT_FAST_S,
+        "duckduckgo": SEARCH_TIMEOUT_FAST_S,
+        "serper": SEARCH_TIMEOUT_STANDARD_S,
+        "serply": SEARCH_TIMEOUT_STANDARD_S,
+        "qianfan": SEARCH_TIMEOUT_STANDARD_S,
+        "zhipu": SEARCH_TIMEOUT_STANDARD_S,
+        "bocha": SEARCH_TIMEOUT_STANDARD_S,
+        "aliyun_iqs": SEARCH_TIMEOUT_STANDARD_S,
+        "doubao": SEARCH_TIMEOUT_SLOW_S,
+        "firecrawl": SEARCH_TIMEOUT_SLOW_S,
+        "jina": SEARCH_TIMEOUT_SLOW_S,
+        "tavily": SEARCH_TIMEOUT_SLOW_S,
+    }
+    with_timeout = {
+        name
+        for name, cls in _PROVIDERS.items()
+        if "timeout" in inspect.signature(cls.search).parameters
+    }
+    assert with_timeout == set(expected)
+    for name, tier in expected.items():
+        default = inspect.signature(_PROVIDERS[name].search).parameters["timeout"].default
+        assert default == tier, f"{name} must default to its shared timeout tier"

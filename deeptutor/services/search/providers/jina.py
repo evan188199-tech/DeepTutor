@@ -21,7 +21,7 @@ import urllib.parse
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_SLOW_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -39,7 +39,7 @@ class JinaProvider(BaseSearchProvider):
         query: str,
         enrich: bool = True,
         max_results: int | None = None,
-        timeout: int = 60,
+        timeout: int = SEARCH_TIMEOUT_SLOW_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """

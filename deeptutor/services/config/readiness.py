@@ -821,6 +821,17 @@ def readiness_snapshot(
     }
 
 
+# Probe timeouts, in seconds, for the readiness matrix's remote checks. They
+# sit at the fast end of the shared 2-5s probe band (the PocketBase liveness
+# ping in services/pocketbase_client.py is the top-of-band counterpart):
+# readiness wants a fast negative, because a slow answer is only reported as
+# not-ready and should not delay the Settings overview.
+_REMOTE_PARSER_VERIFY_TIMEOUT_S: float = 2.0
+_REMOTE_PARSER_WAIT_TIMEOUT_S: float = 3.0
+_MINERU_PROBE_TIMEOUT_S: float = 2.0
+_REDIS_HEALTH_TIMEOUT_S: float = 1.5
+
+
 async def _selected_remote_parser_reachable(
     engine_id: str, parser: Any, config: Any
 ) -> bool | None:
@@ -831,7 +842,8 @@ async def _selected_remote_parser_reachable(
             )
 
             ok, _ = await asyncio.wait_for(
-                asyncio.to_thread(verify_tika_remote, config, 2.0), timeout=3.0
+                asyncio.to_thread(verify_tika_remote, config, _REMOTE_PARSER_VERIFY_TIMEOUT_S),
+                timeout=_REMOTE_PARSER_WAIT_TIMEOUT_S,
             )
             return bool(ok)
         if engine_id == "docling" and bool(getattr(config, "is_remote", False)):
@@ -840,13 +852,16 @@ async def _selected_remote_parser_reachable(
             )
 
             ok, _ = await asyncio.wait_for(
-                asyncio.to_thread(verify_docling_remote, config, 2.0), timeout=3.0
+                asyncio.to_thread(verify_docling_remote, config, _REMOTE_PARSER_VERIFY_TIMEOUT_S),
+                timeout=_REMOTE_PARSER_WAIT_TIMEOUT_S,
             )
             return bool(ok)
         if engine_id == "mineru" and bool(getattr(config, "is_cloud", False)):
             import httpx
 
-            async with httpx.AsyncClient(timeout=2.0, follow_redirects=True) as client:
+            async with httpx.AsyncClient(
+                timeout=_MINERU_PROBE_TIMEOUT_S, follow_redirects=True
+            ) as client:
                 response = await client.get(str(getattr(config, "api_base_url", "") or ""))
             return response.status_code < 500
     except Exception:
@@ -862,7 +877,7 @@ async def _redis_reachable(redis_url: str) -> bool:
         from deeptutor.runtime.coordination.redis import RedisCoordinator
 
         coordinator = RedisCoordinator(redis_url)
-        return bool(await asyncio.wait_for(coordinator.health(), timeout=1.5))
+        return bool(await asyncio.wait_for(coordinator.health(), timeout=_REDIS_HEALTH_TIMEOUT_S))
     except Exception:
         return False
     finally:

@@ -21,7 +21,7 @@ from urllib.parse import urlencode
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_STANDARD_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -47,7 +47,7 @@ class SerplyProvider(BaseSearchProvider):
         query: str,
         mode: str = "search",
         max_results: int = 5,
-        timeout: int = 30,
+        timeout: int = SEARCH_TIMEOUT_STANDARD_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search Serply.

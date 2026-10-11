@@ -15,7 +15,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_SLOW_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -38,7 +38,7 @@ class FirecrawlProvider(BaseSearchProvider):
         scrape: bool = False,
         categories: list[str] | None = None,
         tbs: str | None = None,
-        timeout: int = 60,
+        timeout: int = SEARCH_TIMEOUT_SLOW_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search Firecrawl.

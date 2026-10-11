@@ -18,7 +18,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_SLOW_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -43,7 +43,7 @@ class TavilyProvider(BaseSearchProvider):
         days: int | None = None,  # Time filter (1-365)
         include_domains: list[str] | None = None,
         exclude_domains: list[str] | None = None,
-        timeout: int = 60,
+        timeout: int = SEARCH_TIMEOUT_SLOW_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """

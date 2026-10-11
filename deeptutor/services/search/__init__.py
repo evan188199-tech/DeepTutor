@@ -194,6 +194,8 @@ def web_search(
     # A rate-limited or unreachable engine costs the query its first choice, not
     # the whole turn: fall through the user's other configured search profiles
     # and finally the credential-free provider, recording what was skipped.
+    # Candidates are tried serially, so the worst-case wall time is the sum of
+    # each surviving candidate's timeout tier (see SEARCH_TIMEOUT_* in base.py).
     attempts: list[str] = [provider_name, *search_fallback_candidates(provider_name)]
     failures: list[str] = []
     response: WebSearchResponse | None = None

@@ -7,7 +7,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_FAST_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -24,7 +24,7 @@ class BraveProvider(BaseSearchProvider):
         self,
         query: str,
         max_results: int = 5,
-        timeout: int = 20,
+        timeout: int = SEARCH_TIMEOUT_FAST_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         headers = {

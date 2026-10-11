@@ -38,6 +38,14 @@ _client_key = ""
 _TOKEN_CACHE: dict[str, tuple[dict[str, Any], float]] = {}
 _TOKEN_CACHE_TTL: float = 60.0  # seconds
 
+# Startup liveness probe for the session store, in seconds. Readiness probes
+# in services/config/readiness.py answer on the fast end of the shared 2-5s
+# probe band -- a slow answer there only marks a feature not-ready -- while
+# this ping sits at the top of the band: a false negative demotes sessions to
+# the SQLite fallback, and the PocketBase container may still be warming up
+# when the API server boots.
+_HEALTH_CHECK_TIMEOUT_S: float = 5.0
+
 
 def is_pocketbase_enabled() -> bool:
     """Return True when integrations.pocketbase_url is configured."""
@@ -177,7 +185,7 @@ async def ping_pocketbase() -> bool:
     try:
         import httpx
 
-        async with httpx.AsyncClient(timeout=5.0) as client:
+        async with httpx.AsyncClient(timeout=_HEALTH_CHECK_TIMEOUT_S) as client:
             resp = await client.get(f"{pocketbase_url}/api/health")
             if resp.status_code == 200:
                 logger.info(f"PocketBase health check passed at {pocketbase_url}")

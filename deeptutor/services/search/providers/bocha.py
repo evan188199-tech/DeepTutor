@@ -14,7 +14,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_STANDARD_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -36,7 +36,7 @@ class BochaProvider(BaseSearchProvider):
         max_results: int = 5,
         freshness: str = "noLimit",
         summary: bool = True,
-        timeout: int = 30,
+        timeout: int = SEARCH_TIMEOUT_STANDARD_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search Bocha.

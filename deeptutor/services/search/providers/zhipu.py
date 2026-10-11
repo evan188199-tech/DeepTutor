@@ -14,7 +14,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_STANDARD_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -40,7 +40,7 @@ class ZhipuProvider(BaseSearchProvider):
         search_engine: str = "search_std",
         content_size: str = "medium",
         search_recency_filter: str = "noLimit",
-        timeout: int = 30,
+        timeout: int = SEARCH_TIMEOUT_STANDARD_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search Zhipu.

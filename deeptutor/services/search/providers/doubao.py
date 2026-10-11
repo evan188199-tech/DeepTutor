@@ -19,7 +19,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_SLOW_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -43,7 +43,7 @@ class DoubaoProvider(BaseSearchProvider):
         model: str = _DEFAULT_MODEL,
         sources: list[str] | None = None,
         max_keyword: int | None = None,
-        timeout: int = 60,
+        timeout: int = SEARCH_TIMEOUT_SLOW_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search via Doubao's web_search tool.

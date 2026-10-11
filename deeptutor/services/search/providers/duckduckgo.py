@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_FAST_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -21,7 +21,7 @@ class DuckDuckGoProvider(BaseSearchProvider):
         self,
         query: str,
         max_results: int = 5,
-        timeout: int = 20,
+        timeout: int = SEARCH_TIMEOUT_FAST_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         from ddgs import DDGS

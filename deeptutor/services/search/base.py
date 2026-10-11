@@ -7,7 +7,7 @@ Providers read credentials from data/user/settings/model_catalog.json.
 
 from abc import ABC, abstractmethod
 import logging
-from typing import Any
+from typing import Any, Final
 
 from deeptutor.services.config import search_provider_credentials
 
@@ -15,6 +15,27 @@ from .types import WebSearchResponse
 
 # Legacy name retained for provider metadata only.
 SEARCH_API_KEY_ENV = "SEARCH_API_KEY"
+
+# Shared per-request transport timeout tiers, in seconds. Every provider's
+# ``timeout`` default must be one of these named tiers instead of a literal,
+# so the whole family's timeout surface stays reviewable here.
+#
+# Coverage:
+# - FAST (20s) — lightweight metasearch/SERP relays that only return result
+#   lists: searxng, brave, duckduckgo.
+# - STANDARD (30s) — ordinary SERP-family APIs: serper, serply, qianfan,
+#   zhipu, bocha, aliyun_iqs. Default tier for new providers.
+# - SLOW (60s) — engines that read or fetch the pages before answering:
+#   doubao, firecrawl, jina, tavily.
+#
+# The tiers bound a single request. The failover chain in ``__init__`` walks
+# the configured candidates serially, so its worst-case wall time is the sum
+# of the surviving candidates' tier values; keep new providers on the lowest
+# tier their latency profile allows. Callers may still override ``timeout``
+# per call.
+SEARCH_TIMEOUT_FAST_S: Final[int] = 20
+SEARCH_TIMEOUT_STANDARD_S: Final[int] = 30
+SEARCH_TIMEOUT_SLOW_S: Final[int] = 60
 
 
 class BaseSearchProvider(ABC):
@@ -86,4 +107,10 @@ class BaseSearchProvider(ABC):
             return False
 
 
-__all__ = ["BaseSearchProvider", "SEARCH_API_KEY_ENV"]
+__all__ = [
+    "BaseSearchProvider",
+    "SEARCH_API_KEY_ENV",
+    "SEARCH_TIMEOUT_FAST_S",
+    "SEARCH_TIMEOUT_STANDARD_S",
+    "SEARCH_TIMEOUT_SLOW_S",
+]

@@ -19,7 +19,7 @@ from typing import Any
 
 import requests
 
-from ..base import BaseSearchProvider
+from ..base import SEARCH_TIMEOUT_STANDARD_S, BaseSearchProvider
 from ..types import Citation, SearchResult, WebSearchResponse
 from . import register_provider
 
@@ -45,7 +45,7 @@ class QianfanProvider(BaseSearchProvider):
         search_recency_filter: str | None = None,
         edition: str = "standard",
         safe_search: bool = False,
-        timeout: int = 30,
+        timeout: int = SEARCH_TIMEOUT_STANDARD_S,
         **kwargs: Any,
     ) -> WebSearchResponse:
         """Search Baidu Qianfan.
