@@ -1038,6 +1038,29 @@ def normalize_epub_archive(data: bytes, filename: str) -> bytes:
         ) from exc
 
 
+def is_epub_archive(data: bytes) -> bool:
+    """Return whether a ZIP payload declares EPUB structure.
+
+    A folder dragged onto a web page arrives as ``<name>.zip`` — Safari and
+    Chrome archive it themselves — so an unpacked ``book.epub/`` directory
+    carries a ``.zip`` suffix by the time an upload route sees it. Routing
+    such uploads by payload needs a structural test, not the filename: only
+    a ZIP whose members include the EPUB container
+    (``META-INF/container.xml``, a Finder-style wrapper directory included)
+    counts as a book; every other ZIP keeps the unsupported-extension
+    rejection of its filename.
+    """
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as zf:
+            names = [info.filename for info in zf.infolist() if not info.is_dir()]
+    except (zipfile.BadZipFile, OSError):
+        return False
+    return any(
+        not _epub_is_packaging_residue(name) and name.endswith(_EPUB_CONTAINER_PATH)
+        for name in names
+    )
+
+
 def _extract_epub(data: bytes, filename: str) -> str:
     """Extract the reading text of an EPUB with only the standard library."""
     units, _ = extract_epub_spine(data, filename)

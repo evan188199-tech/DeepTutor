@@ -423,6 +423,45 @@ def test_epub_store_normalizes_finder_packages_for_browser_readers(
     )
 
 
+def test_store_ingests_a_browser_archived_epub_folder_zip(
+    store: ReadingStore, tmp_path: Path
+) -> None:
+    # Safari and Chrome hand a dragged folder to the page as "<name>.zip",
+    # so an unpacked "book.epub/" arrives with a .zip suffix.
+    epub = _write_epub(tmp_path / "book.epub")
+    archive_path = _wrap_epub_for_finder(epub).rename(tmp_path / "book.epub.zip")
+
+    manifest = store.ingest(archive_path)
+
+    assert manifest.render_mode == "epub"
+    assert manifest.filename == "book.epub.zip"
+    assert [ref.source_href for ref in store.unit_references(manifest.material_id)] == [
+        "OEBPS/chapters/one.xhtml",
+        "OEBPS/chapters/two.xhtml",
+    ]
+    raw = store.raw_path(manifest.material_id)
+    render = store.render_path(manifest.material_id)
+    assert raw is not None and raw.read_bytes() == archive_path.read_bytes()
+    assert render is not None and render.read_bytes() != archive_path.read_bytes()
+    # The same payload imported under a plain .epub name is the same material.
+    twin = tmp_path / "twin.epub"
+    twin.write_bytes(archive_path.read_bytes())
+    assert store.ingest(twin).material_id == manifest.material_id
+
+
+def test_store_rejects_a_plain_zip_with_the_original_extension_error(
+    store: ReadingStore, tmp_path: Path
+) -> None:
+    archive_path = tmp_path / "photos.zip"
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("notes.txt", "holiday notes")
+
+    with pytest.raises(ReadingError) as excinfo:
+        store.ingest(archive_path)
+
+    assert "unsupported extension '.zip'" in str(excinfo.value)
+
+
 def test_position_round_trip_validates_locator_and_anchor(
     store: ReadingStore, tmp_path: Path
 ) -> None:

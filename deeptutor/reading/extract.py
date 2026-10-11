@@ -128,20 +128,25 @@ def _media_for_units(
     return tuple(items)
 
 
-def extract_material(path: str | Path, *, data: bytes | None = None) -> Extraction:
+def extract_material(
+    path: str | Path, *, data: bytes | None = None, assume_epub: bool = False
+) -> Extraction:
     """Cut *path* into units, dispatching on its extension.
 
     Raises :class:`ReadingError` when the file cannot be read at all, or when
     it yields no text — an image-only scan, for instance, which the reader
     would otherwise present as an empty document with no explanation. For an
     EPUB, ``data`` may contain already-normalized archive bytes so callers can
-    extract and store exactly what they read.
+    extract and store exactly what they read. ``assume_epub`` routes the
+    payload through the EPUB extractor whatever the filename says — the
+    reading store uses it to try a browser-archived ``.zip`` upload as the
+    book folder it may contain.
     """
     source = Path(path)
     if not source.is_file():
         raise ReadingError(f"{source.name}: file not found")
 
-    suffix = source.suffix.lower()
+    suffix = ".epub" if assume_epub else source.suffix.lower()
     if suffix == ".pdf":
         extraction = _extract_pdf(source)
     elif suffix == ".epub":

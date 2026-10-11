@@ -42,7 +42,7 @@ import time
 from typing import Any, Iterator, Literal, Mapping, Sequence
 import uuid
 
-from deeptutor.reading.extract import extract_material, synthesise_outline
+from deeptutor.reading.extract import Extraction, extract_material, synthesise_outline
 from deeptutor.reading.models import (
     MAX_TEXT_SELECTOR_CHARS,
     Annotation,
@@ -266,8 +266,34 @@ class ReadingStore:
             raise ReadingError(f"{path.name} is empty")
 
         source_data = data
-        is_epub = path.suffix.lower() == ".epub"
-        if is_epub:
+        suffix = path.suffix.lower()
+        is_epub = suffix == ".epub"
+        epub_zip: Extraction | None = None
+        if suffix == ".zip":
+            from deeptutor.utils.document_extractor import (
+                is_epub_archive,
+                normalize_epub_archive,
+            )
+
+            # Safari and Chrome archive a folder dragged onto a page into
+            # "<name>.zip", so an unpacked "book.epub/" arrives as
+            # "book.epub.zip" — a readable book the extension gate below
+            # refuses without ever looking at the bytes. Route by payload: a
+            # zip that declares EPUB structure is extracted as the book it
+            # contains, and normalize_epub_archive repairs the Finder-style
+            # wrapper for the browser reader along the way. A zip the reader
+            # cannot actually open falls back to plain .zip routing, keeping
+            # the original unsupported-extension error.
+            if is_epub_archive(source_data):
+                try:
+                    data = normalize_epub_archive(source_data, path.name)
+                    epub_zip = extract_material(path, data=data, assume_epub=True)
+                except Exception:
+                    data = source_data
+                    epub_zip = None
+                else:
+                    is_epub = True
+        elif is_epub:
             from deeptutor.utils.document_extractor import (
                 DocumentExtractionError,
                 normalize_epub_archive,
@@ -286,9 +312,7 @@ class ReadingStore:
         with self._locked(material_id):
             existing = self._load_manifest(material_id)
             if existing is not None and self._is_complete(material_id, existing):
-                wants_epub_upgrade = (
-                    path.suffix.lower() == ".epub" and existing.render_mode != "epub"
-                )
+                wants_epub_upgrade = is_epub and existing.render_mode != "epub"
                 needs_render_archive = (
                     is_epub
                     and data != source_data
@@ -302,7 +326,11 @@ class ReadingStore:
                         "Export those annotations before replacing it with the source-faithful version."
                     )
 
-            extraction = extract_material(path, data=data if is_epub else None)
+            extraction = (
+                epub_zip
+                if epub_zip is not None
+                else extract_material(path, data=data if is_epub else None)
+            )
             material_dir = self._dir(material_id)
             stage_dir = self.root / f".{material_id}.{uuid.uuid4().hex[:8]}.staging"
             backup_dir = self.root / f".{material_id}.{uuid.uuid4().hex[:8]}.backup"
@@ -466,7 +494,14 @@ class ReadingStore:
                 )
 
             # Validate the new extraction fully before touching the store.
-            extraction = extract_material(raw_path)
+            # A book imported from a browser-archived ".epub.zip" keeps that
+            # name under raw/, so its re-extraction routes by payload too.
+            from deeptutor.utils.document_extractor import is_epub_archive
+
+            assume_epub = raw_path.suffix.lower() == ".zip" and is_epub_archive(
+                raw_path.read_bytes()
+            )
+            extraction = extract_material(raw_path, assume_epub=assume_epub)
             if len(extraction.units) != existing.unit_count:
                 raise ReadingError(
                     f"{existing.filename}: re-extraction produced "

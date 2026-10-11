@@ -146,6 +146,43 @@ def test_upload_of_an_image_only_pdf_explains_itself(client: TestClient) -> None
     assert "OCR" in response.json()["detail"]
 
 
+def test_upload_accepts_a_browser_archived_epub_folder_as_a_book(
+    client: TestClient,
+) -> None:
+    # Dragging an unpacked "book.epub/" folder onto a page makes Safari and
+    # Chrome hand the site "book.epub.zip"; the payload is the book.
+    uploaded = _epub_bytes(finder_package=True)
+
+    material = _upload(client, name="book.epub.zip", data=uploaded)
+
+    assert material["render_mode"] == "epub"
+    assert material["unit_count"] >= 1
+    raw = client.get(f"/api/reading/materials/{material['material_id']}/raw")
+    render = client.get(f"/api/reading/materials/{material['material_id']}/render")
+    assert raw.status_code == 200
+    assert raw.content == uploaded
+    assert render.status_code == 200
+    with zipfile.ZipFile(io.BytesIO(render.content)) as archive:
+        assert archive.read("mimetype") == b"application/epub+zip"
+        assert "META-INF/container.xml" in archive.namelist()
+        assert all("__MACOSX" not in name for name in archive.namelist())
+
+
+def test_upload_still_rejects_a_zip_without_epub_structure(client: TestClient) -> None:
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("notes.txt", "holiday notes")
+        archive.writestr("IMG_0001.bin", b"\x00\x01\x02")
+
+    response = client.post(
+        "/api/reading/materials",
+        files={"file": ("photos.zip", io.BytesIO(stream.getvalue()), "application/zip")},
+    )
+
+    assert response.status_code == 400
+    assert "unsupported extension '.zip'" in response.json()["detail"]
+
+
 def test_list_materials_reports_annotation_counts(client: TestClient) -> None:
     material = _upload(client)
     client.put(
