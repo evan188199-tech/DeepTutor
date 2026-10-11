@@ -7,11 +7,13 @@ from typing import Any
 import pytest
 
 from deeptutor.services.rag.index_probe import (
+    _lightrag_doc_count,
     _llamaindex_doc_count,
     has_ready_provider_index,
     inspect_kb_versions,
     inspect_provider_index,
     inspect_provider_version,
+    latest_ready_provider_version,
     provider_failure_summary,
 )
 from deeptutor.services.rag.pipelines.graphrag import storage as graphrag_storage
@@ -266,3 +268,203 @@ def test_provider_failure_summary_reuses_precomputed_versions(tmp_path: Path) ->
     assert provider_failure_summary(tmp_path, "llamaindex", versions=versions) == (
         "Missing LlamaIndex docstore.json."
     )
+
+
+def test_inspect_provider_index_without_storage_path_is_not_ready() -> None:
+    probe = inspect_provider_index("llamaindex", None)
+
+    assert probe.ready is False
+    assert probe.storage_dir is None
+    assert "No storage path" in probe.failure_summary
+
+
+def test_inspect_provider_index_normalizes_unknown_provider_to_default(
+    tmp_path: Path,
+) -> None:
+    storage = tmp_path / "storage"
+    storage.mkdir()
+    (storage / "docstore.json").write_text("{}", encoding="utf-8")
+    (storage / "index_store.json").write_text("{}", encoding="utf-8")
+
+    probe = inspect_provider_index("mystery-engine", storage)
+
+    assert probe.provider == "llamaindex"
+    assert probe.ready is True
+
+
+def test_inspect_provider_index_missing_dir_is_not_ready(tmp_path: Path) -> None:
+    probe = inspect_provider_index("llamaindex", tmp_path / "absent")
+
+    assert probe.ready is False
+    assert "does not exist" in probe.failure_summary
+    assert probe.doc_count is None
+
+
+def test_llamaindex_building_marker_requires_verified_publication(tmp_path: Path) -> None:
+    version_dir = tmp_path / "version-1"
+    version_dir.mkdir()
+    for name in ("docstore.json", "index_store.json"):
+        (version_dir / name).write_text("{}", encoding="utf-8")
+    (version_dir / ".building.json").write_text("{}", encoding="utf-8")
+
+    probe = inspect_provider_index("llamaindex", version_dir)
+    assert probe.ready is False
+    assert "persistence verification" in probe.failure_summary
+
+    (version_dir / "meta.json").write_text(
+        json.dumps({"state": "published", "readiness_verified": True}),
+        encoding="utf-8",
+    )
+    assert inspect_provider_index("llamaindex", version_dir).ready is True
+
+
+def test_llamaindex_missing_docstore_is_not_ready(tmp_path: Path) -> None:
+    version_dir = tmp_path / "version-1"
+    version_dir.mkdir()
+    (version_dir / "index_store.json").write_text("{}", encoding="utf-8")
+
+    probe = inspect_provider_index("llamaindex", version_dir)
+
+    assert probe.ready is False
+    assert "docstore.json" in probe.failure_summary
+
+
+def test_llamaindex_doc_count_rejects_malformed_docstore(tmp_path: Path) -> None:
+    docstore = tmp_path / "docstore.json"
+
+    docstore.write_text("not json", encoding="utf-8")
+    assert _llamaindex_doc_count(docstore) is None
+
+    docstore.write_text(json.dumps(["not", "a", "dict"]), encoding="utf-8")
+    assert _llamaindex_doc_count(docstore) is None
+
+    docstore.write_text(
+        json.dumps({"docstore/data": ["still", "a", "list"]}),
+        encoding="utf-8",
+    )
+    assert _llamaindex_doc_count(docstore) is None
+
+
+def test_inspect_provider_version_probes_matching_entry(tmp_path: Path) -> None:
+    version_dir = tmp_path / "version-1"
+    version_dir.mkdir()
+    (version_dir / "docstore.json").write_text(
+        json.dumps({"docstore/data": {"d1": {}, "d2": {}}}),
+        encoding="utf-8",
+    )
+    (version_dir / "index_store.json").write_text("{}", encoding="utf-8")
+    entry = {
+        "provider": "llamaindex",
+        "signature": "sig-1",
+        "storage_path": str(version_dir),
+    }
+
+    probe = inspect_provider_version(entry, "llamaindex")
+    assert probe.ready is True
+    assert probe.doc_count == 2
+
+    probe = inspect_provider_version({"provider": "llamaindex"}, "llamaindex")
+    assert probe.ready is False
+    assert probe.storage_dir is None
+    assert "No storage path" in probe.failure_summary
+
+
+def test_inspect_kb_versions_carries_probe_diagnostics_and_doc_count(
+    tmp_path: Path,
+) -> None:
+    ready_dir = tmp_path / "version-1"
+    ready_dir.mkdir()
+    (ready_dir / "docstore.json").write_text(
+        json.dumps({"docstore/data": {"d1": {}}}),
+        encoding="utf-8",
+    )
+    (ready_dir / "index_store.json").write_text("{}", encoding="utf-8")
+    _write_meta(ready_dir, provider="llamaindex", signature="sig-1")
+    broken_dir = tmp_path / "version-2"
+    broken_dir.mkdir()
+    _write_meta(broken_dir, provider="llamaindex", signature="sig-2")
+
+    versions = inspect_kb_versions(tmp_path, "llamaindex")
+
+    assert [entry["version"] for entry in versions] == ["version-2", "version-1"]
+    broken, ready = versions
+    assert broken["ready"] is False
+    assert "docstore.json" in broken["failure_summary"]
+    assert ready["ready"] is True
+    assert ready["doc_count"] == 1
+    assert ready["probe_diagnostics"]["vector_stores"] == []
+
+
+def test_latest_ready_provider_version_skips_unready_newer_versions(
+    tmp_path: Path,
+) -> None:
+    stale = tmp_path / "version-1"
+    stale.mkdir()
+    for name in ("docstore.json", "index_store.json"):
+        (stale / name).write_text("{}", encoding="utf-8")
+    _write_meta(stale, provider="llamaindex", signature="sig-1")
+    broken = tmp_path / "version-2"
+    broken.mkdir()
+    _write_meta(broken, provider="llamaindex", signature="sig-2")
+
+    latest = latest_ready_provider_version(tmp_path, "llamaindex")
+    assert latest is not None
+    assert latest["version"] == "version-1"
+    assert has_ready_provider_index(tmp_path, "llamaindex") is True
+
+    assert latest_ready_provider_version(tmp_path / "empty", "llamaindex") is None
+
+
+def test_provider_failure_summary_joins_and_respects_limit(tmp_path: Path) -> None:
+    for n in (1, 2, 3):
+        version_dir = tmp_path / f"version-{n}"
+        version_dir.mkdir()
+        _write_meta(version_dir, provider="llamaindex", signature=f"sig-{n}")
+
+    versions = inspect_kb_versions(tmp_path, "llamaindex")
+    assert len(versions) == 3
+
+    full = provider_failure_summary(tmp_path, "llamaindex", versions=versions)
+    assert full.count("Missing LlamaIndex docstore.json.") == 3
+    assert full.count("; ") == 2
+
+    limited = provider_failure_summary(tmp_path, "llamaindex", versions=versions, limit=2)
+    assert limited.count("Missing LlamaIndex docstore.json.") == 2
+    assert limited.count("; ") == 1
+
+
+def test_lightrag_doc_count_counts_only_usable_rows(tmp_path: Path) -> None:
+    (tmp_path / "kv_store_doc_status.json").write_text(
+        json.dumps(
+            {
+                "doc-1": {"status": "done"},
+                "doc-2": {"status": "pending", "chunks_list": ["c1"]},
+                "doc-3": {"status": "pending"},
+                "doc-4": "not-a-row",
+                "doc-5": {"status": "indexed"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert _lightrag_doc_count(tmp_path) == 3
+
+
+def test_read_json_returns_none_for_malformed_or_non_dict_payloads(
+    tmp_path: Path,
+) -> None:
+    from deeptutor.services.rag.index_probe import _read_json
+
+    assert _read_json(tmp_path / "absent.json") is None
+
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not json", encoding="utf-8")
+    assert _read_json(bad) is None
+
+    array = tmp_path / "array.json"
+    array.write_text("[]", encoding="utf-8")
+    assert _read_json(array) is None
+
+    good = tmp_path / "good.json"
+    good.write_text('{"ok": true}', encoding="utf-8")
+    assert _read_json(good) == {"ok": True}
