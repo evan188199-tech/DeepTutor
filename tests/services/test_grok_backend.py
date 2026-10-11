@@ -319,3 +319,148 @@ async def test_grok_detection_requires_every_unconditional_flag(monkeypatch, mis
 
     monkeypatch.setattr("deeptutor.services.subagent.grok.probe_version", probe)
     assert not (await GrokBackend().detect()).available
+
+
+# --- Parsing edge cases: frames the protocol tolerates without crashing. ---
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("bad_delta", [123, "", None])
+async def test_non_string_text_deltas_are_skipped_and_stream_continues(monkeypatch, bad_delta):
+    result, seen = await _consult(
+        monkeypatch,
+        {"type": "text", "data": bad_delta},
+        {"type": "text", "data": "kept"},
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is True
+    assert result.final_text == "kept"
+    assert [e.text for e in seen] == ["kept"]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("untyped", [{"data": "private marker"}, {"type": ""}])
+async def test_events_without_a_type_are_ignored_entirely(monkeypatch, untyped):
+    result, seen = await _consult(
+        monkeypatch,
+        untyped,
+        {"type": "text", "data": "ok"},
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is True
+    assert result.event_count == len(seen) == 1
+    assert [e.text for e in seen] == ["ok"]
+    assert "private marker" not in repr(seen)
+
+
+@pytest.mark.asyncio
+async def test_blank_stdout_and_stderr_frames_are_dropped_silently(monkeypatch):
+    result, seen = await _consult(
+        monkeypatch,
+        ("stderr", "   "),
+        ("stdout", " \t "),
+        {"type": "text", "data": "ok"},
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is True
+    assert result.final_text == "ok"
+    assert [e.kind for e in seen] == ["text"]
+
+
+@pytest.mark.asyncio
+async def test_end_event_accepts_snake_case_session_and_stop_keys(monkeypatch):
+    result, _ = await _consult(
+        monkeypatch,
+        {"type": "text", "data": "done"},
+        {"type": "end", "session_id": "sid-snake", "stop_reason": "end_turn"},
+    )
+    assert result.success is True
+    assert result.session_id == "sid-snake"
+
+
+# --- Failure branches: infrastructure exceptions and error deduplication. ---
+
+
+@pytest.mark.asyncio
+async def test_stream_infrastructure_failure_becomes_error_result(monkeypatch):
+    async def stream(cmd, cwd=None):  # noqa: ARG001
+        raise OSError("spawn failed")
+        yield
+
+    monkeypatch.setattr("deeptutor.services.subagent.grok.stream_process_lines", stream)
+    seen = []
+
+    async def on_event(event):
+        seen.append(event)
+
+    result = await GrokBackend().consult("question", on_event=on_event)
+    assert result.success is False
+    assert result.error == "spawn failed"
+    assert len(seen) == 1 and seen[0].kind == "error"
+    assert result.event_count == 1
+
+
+@pytest.mark.asyncio
+async def test_repeated_failures_emit_a_single_error_event(monkeypatch):
+    result, seen = await _consult(
+        monkeypatch,
+        ("stderr", "  "),  # dropped: blank
+        {"type": "error", "message": "Authentication required"},
+        ("stdout", "not json"),  # malformed, non-blank -> fail (already failed: no-op)
+        exit_code="3",
+    )
+    assert result.success is False
+    assert result.error == "Authentication required"
+    assert [e.kind for e in seen] == ["error"]
+    assert result.event_count == 1
+
+
+@pytest.mark.asyncio
+async def test_error_event_without_a_message_uses_the_default(monkeypatch):
+    result, seen = await _consult(
+        monkeypatch,
+        {"type": "error"},
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is False
+    assert result.error == "Grok CLI error"
+    assert [e.kind for e in seen] == ["error"]
+
+
+# --- Degraded reporting: sparse tool updates and non-answer endings. ---
+
+
+@pytest.mark.asyncio
+async def test_tool_update_without_id_or_name_degrades_gracefully(monkeypatch):
+    result, seen = await _consult(
+        monkeypatch,
+        {"type": "text", "data": "checking"},
+        {
+            "type": "tool_call_update",
+            "status": "failed",
+            "content": "boom",
+            "toolCallId": None,
+        },
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is True
+    tools = [e for e in seen if e.kind in ("tool", "tool_result")]
+    assert len(tools) == 1
+    assert tools[0].kind == "tool_result"
+    assert tools[0].text == 'Tool · failed · "boom"'
+    assert tools[0].meta.get("merge_id") is None
+    assert tools[0].raw["toolCallId"] == ""
+
+
+@pytest.mark.asyncio
+async def test_whitespace_only_answer_still_fails_without_an_answer(monkeypatch):
+    result, seen = await _consult(
+        monkeypatch,
+        {"type": "text", "data": "   "},
+        {"type": "usage"},
+        {"type": "end", "stopReason": "end_turn"},
+    )
+    assert result.success is False
+    assert "without an answer" in result.error
+    assert [e.text for e in seen] == ["   ", "Grok CLI completed without an answer."]
+    assert [e.kind for e in seen] == ["text", "error"]
