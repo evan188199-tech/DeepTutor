@@ -1015,7 +1015,7 @@ class WeixinChannel(BaseChannel):
             for media_path in msg.media or []:
                 try:
                     await self._send_media_file(msg.chat_id, media_path, ctx_token)
-                except httpx.TimeoutException as e:
+                except httpx.TransportError as e:
                     # Network/transport errors: do NOT fall back to text —
                     # the text send would also likely fail, and the outer
                     # except will re-raise so ChannelManager retries properly.
