@@ -1262,6 +1262,10 @@ class AgentLoop:
                         await asyncio.wait_for(reasoning_progress_done.wait(), timeout=interval)
                     except asyncio.TimeoutError:
                         pass
+                    if reasoning_progress_done.is_set():
+                        # The stream finished; exit without emitting one
+                        # more progress frame past the done signal.
+                        break
                     if action_started or reasoning_chars <= 0:
                         return
                     await _maybe_emit_reasoning_progress()

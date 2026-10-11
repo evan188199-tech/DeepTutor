@@ -828,18 +828,26 @@ class FeishuChannel(BaseChannel):
                 _, _, message_id, receipt = heapq.heappop(heap)
                 if self._working_reactions.get(message_id) == receipt:
                     await self._finish_reaction(message_id)
-            delay: float | None = None
-            if heap:
-                delay = max(0.0, heap[0][0] - time.monotonic())
-            if delay:
-                try:
-                    await asyncio.wait_for(self._reaction_expiry_wakeup.wait(), timeout=delay)
-                except asyncio.TimeoutError:
-                    pass
-                self._reaction_expiry_wakeup.clear()
-            else:
+                # _finish_reaction does network I/O; refresh the clock so
+                # receipts that came due meanwhile are drained on this pass
+                # instead of being parked behind the timed wait below.
+                now = time.monotonic()
+            if not heap:
                 await self._reaction_expiry_wakeup.wait()
                 self._reaction_expiry_wakeup.clear()
+                continue
+            delay = max(0.0, heap[0][0] - now)
+            if delay <= 0:
+                # The top receipt is already due (finishing above took
+                # time). Loop back and consume it; parking on the wakeup
+                # event here has no timeout and would strand every due
+                # receipt in the heap.
+                continue
+            try:
+                await asyncio.wait_for(self._reaction_expiry_wakeup.wait(), timeout=delay)
+            except asyncio.TimeoutError:
+                pass
+            self._reaction_expiry_wakeup.clear()
 
     def _schedule_reaction_cleanup(self, message_id: str, receipt: tuple[str, float]) -> None:
         key = (message_id, receipt[0])

@@ -5,9 +5,9 @@ import json
 import logging
 from pathlib import Path
 
-import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+import pytest
 
 from deeptutor.api.routers import auth
 from deeptutor.api.routers import knowledge as knowledge_router
