@@ -1,0 +1,120 @@
+diff --git a/packaging/deeptutor-cli/pyproject.toml b/packaging/deeptutor-cli/pyproject.toml
+index 22d124cad..fdbf078c1 100644
+--- a/packaging/deeptutor-cli/pyproject.toml
++++ b/packaging/deeptutor-cli/pyproject.toml
+@@ -20,8 +20,6 @@ dependencies = [
+     "httpx>=0.27.0",
+     "requests>=2.32.2",
+     "ddgs>=9.9.1",
+-    "nest_asyncio>=1.5.8",
+-    "tenacity>=8.0.0",
+     "pydantic>=2.0.0",
+     "pydantic-settings>=2.0.0",
+     "packaging>=24.2",
+@@ -29,7 +27,6 @@ dependencies = [
+     "aiosqlite>=0.19.0",
+     "typer>=0.9.0",
+     "rich>=13.0.0",
+-    "prompt_toolkit>=3.0.36",
+     "pyte>=0.8.1",
+     # Imported eagerly by the shared LLM provider stack.  These must remain
+     # core dependencies: even `deeptutor --help` imports that stack.
+@@ -44,7 +41,6 @@ dependencies = [
+     "anthropic>=0.30.0",
+     "dashscope>=1.14.0",
+     "perplexityai>=0.1.0",
+-    "oauth-cli-kit>=0.1.1",
+     "llama-index>=0.14.12",
+     # PyStemmer 2.x has no Python 3.14 wheel; the runtime falls back to vector
+     # retrieval when this optional BM25 integration is absent.
+diff --git a/pyproject.toml b/pyproject.toml
+index 0f5bc7c5e..b75fbe7a4 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -26,8 +26,6 @@ dependencies = [
+     "httpx>=0.27.0",
+     "requests>=2.32.2",
+     "ddgs>=9.9.1",
+-    "nest_asyncio>=1.5.8",
+-    "tenacity>=8.0.0",
+     "pydantic>=2.0.0",
+     "pydantic-settings>=2.0.0",
+     "packaging>=24.2",
+@@ -35,7 +33,6 @@ dependencies = [
+     "aiosqlite>=0.19.0",
+     "typer>=0.9.0",
+     "rich>=13.0.0",
+-    "prompt_toolkit>=3.0.36",
+     "pyte>=0.8.1",  # in-memory terminal emulator: scrape Claude Code's /model TUI on sync
+     # MCP client. Core rather than a `partners`-only extra (issue #792): the
+     # default chat/tool surface includes configurable MCP servers, so a plain
+@@ -52,7 +49,6 @@ dependencies = [
+     "anthropic>=0.30.0",
+     "dashscope>=1.14.0",
+     "perplexityai>=0.1.0",
+-    "oauth-cli-kit>=0.1.1",
+     "llama-index>=0.14.12",
+     # The current BM25 integration pins PyStemmer <3, whose 2.x line has no
+     # Python 3.14 wheels. Skip it there so ordinary installs never require a C
+@@ -114,7 +110,6 @@ cli = [
+     "anthropic>=0.30.0",
+     "dashscope>=1.14.0",
+     "perplexityai>=0.1.0",
+-    "oauth-cli-kit>=0.1.1",
+     "pageindex>=0.2.10,<0.3.0",
+     # RAG (LlamaIndex)
+     "llama-index>=0.14.12",
+@@ -190,9 +185,7 @@ partners = [
+     "qq-botpy>=1.2.0,<2.0.0",
+     "python-socketio>=5.16.0,<6.0.0",
+     "msgpack>=1.1.0,<2.0.0",
+-    "python-socks[asyncio]>=2.8.0,<3.0.0",
+     "socksio>=1.0.0,<2.0.0",
+-    "websocket-client>=1.9.0,<2.0.0",
+     "zulip>=0.8.0,<1.0.0",
+     # slack-sdk Socket Mode + napcat need the async `websockets` lib — pin it
+     # explicitly instead of relying on dingtalk-stream/lark-oapi transitives.
+diff --git a/requirements/cli.txt b/requirements/cli.txt
+index 092bdaa1a..8c301c4b4 100644
+--- a/requirements/cli.txt
++++ b/requirements/cli.txt
+@@ -20,17 +20,12 @@ tiktoken>=0.5.0
+ anthropic>=0.30.0
+ dashscope>=1.14.0
+ perplexityai>=0.1.0
+-oauth-cli-kit>=0.1.1; python_version >= "3.11"
+ 
+ # --- HTTP clients ---
+ aiohttp>=3.9.4
+ httpx>=0.27.0
+ requests>=2.32.2
+ 
+-# --- Async helpers ---
+-nest_asyncio>=1.5.8
+-tenacity>=8.0.0
+-
+ # --- Data models & storage ---
+ pydantic>=2.0.0
+ pydantic-settings>=2.0.0
+@@ -69,7 +64,6 @@ ddgs>=9.9.1
+ # --- CLI framework ---
+ typer>=0.9.0
+ rich>=13.0.0
+-prompt_toolkit>=3.0.36
+ pyte>=0.8.1
+ 
+ # --- Shared LLM runtime (imported by the CLI entry point) ---
+diff --git a/requirements/partners.txt b/requirements/partners.txt
+index e52282e50..8452e4c30 100644
+--- a/requirements/partners.txt
++++ b/requirements/partners.txt
+@@ -24,9 +24,7 @@ slackify-markdown>=0.2.0,<1.0.0
+ qq-botpy>=1.2.0,<2.0.0
+ python-socketio>=5.16.0,<6.0.0
+ msgpack>=1.1.0,<2.0.0
+-python-socks[asyncio]>=2.8.0,<3.0.0
+ socksio>=1.0.0,<2.0.0
+-websocket-client>=1.9.0,<2.0.0
+ zulip>=0.8.0,<1.0.0
+ # slack-sdk Socket Mode + napcat need the async `websockets` lib — pin it
+ # explicitly instead of relying on dingtalk-stream/lark-oapi transitives.
