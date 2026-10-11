@@ -1,0 +1,181 @@
+category	path	line	snippet	risk
+A-naive-construction	deeptutor/api/routers/knowledge.py	4422	return (datetime.now() - parsed).total_seconds()	HIGH
+B-utc-mixing	deeptutor/book/storage.py	370	ts = datetime.now(timezone.utc).replace(tzinfo=None).isoformat(timespec="seconds")	HIGH
+D-cross-tz-comparison	deeptutor/knowledge/manager.py	104	return datetime.fromisoformat(raw) > cutoff	HIGH
+A-naive-construction	deeptutor/knowledge/manager.py	687	grace_cutoff = datetime.now() - timedelta(seconds=_ORPHAN_PRUNE_GRACE_SECONDS)	HIGH
+A-naive-construction	deeptutor/knowledge/manager.py	2148	file_mtime = datetime.fromtimestamp(file_path.stat().st_mtime)	HIGH
+A-naive-construction	deeptutor/knowledge/manager.py	2222	mtime = datetime.fromtimestamp(p.stat().st_mtime)	HIGH
+B-utc-mixing	deeptutor/partners/channels/mochat.py	118	"timestamp": timestamp or datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),	HIGH
+B-utc-mixing	deeptutor/partners/channels/mochat.py	222	return int(datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp() * 1000)	HIGH
+B-utc-mixing	deeptutor/partners/channels/mochat.py	1013	"updatedAt": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),	HIGH
+B-utc-mixing	deeptutor/services/memory/snapshot/adapters.py	54	datetime.fromisoformat(ts.replace("Z", "+00:00"))	HIGH
+B-utc-mixing	deeptutor/services/parsing/cache.py	88	"created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",	HIGH
+B-utc-mixing	deeptutor/services/rag/index_versioning.py	320	"created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",	HIGH
+B-utc-mixing	deeptutor/services/rag/pipelines/graphrag/storage.py	110	"created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",	HIGH
+B-utc-mixing	deeptutor/services/rag/pipelines/lightrag/storage.py	295	now = datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z"	HIGH
+B-utc-mixing	deeptutor/services/rag/pipelines/pageindex/storage.py	77	"created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",	HIGH
+B-utc-mixing	deeptutor/services/session/pocketbase_store.py	98	return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()	HIGH
+A-naive-construction	deeptutor/api/routers/co_writer.py	341	operation_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:6]	LOW
+A-naive-construction	deeptutor/api/routers/co_writer.py	454	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/api/routers/question.py	99	task_id = f"question_mimic_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"	LOW
+A-naive-construction	deeptutor/api/routers/question.py	201	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	LOW
+A-naive-construction	deeptutor/api/routers/question.py	249	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	146	operation_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:6]	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	214	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	234	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	281	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	310	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	333	operation_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:6]	LOW
+A-naive-construction	deeptutor/co_writer/edit_agent.py	356	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/services/partners/sessions.py	178	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/services/partners/sessions.py	229	stamp = datetime.now().strftime("%Y%m%d-%H%M%S")	LOW
+A-naive-construction	deeptutor/services/partners/sessions.py	413	"updated_at": datetime.fromtimestamp(path.stat().st_mtime).isoformat(),	LOW
+A-naive-construction	deeptutor/services/search/__init__.py	66	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	LOW
+A-naive-construction	deeptutor/services/search/__init__.py	109	"timestamp": datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/services/search/providers/aliyun_iqs.py	36	return datetime.fromtimestamp(int(value) / 1000).strftime("%Y-%m-%d")	LOW
+A-naive-construction	deeptutor/services/search/providers/aliyun_iqs.py	154	timestamp=datetime.now().isoformat(),	LOW
+A-naive-construction	deeptutor/tools/list_notebook.py	201	return _dt.datetime.fromtimestamp(ts).strftime("%Y-%m-%d")	LOW
+A-naive-construction	deeptutor/tools/question/question_extractor.py	297	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	LOW
+A-naive-construction	deeptutor/tools/question/question_extractor.py	301	"extraction_time": datetime.now().isoformat(),	LOW
+C-serialization-loses-tz	deeptutor/agents/loop/prompt_blocks.py	259	dt_str = now.date().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	78	timestamp: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	200	created_at: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	201	updated_at: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	207	self.updated_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	259	self.created_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	450	block.updated_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	468	block.updated_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/data_structures.py	486	block.updated_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/agents/research/utils/citation_manager.py	207	"updated_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/agents/research/utils/token_tracker.py	98	timestamp: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	262	task_key = f"{task_key_prefix}_{datetime.now().isoformat()}_{uuid4().hex[:8]}"	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	304	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	1055	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	1105	"timestamp": datetime.now().isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/api/routers/knowledge.py	1199	).isoformat()	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	2122	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	3747	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	3926	completed_at = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	4511	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	4537	task_metadata.get("finished_at") or datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/api/routers/knowledge.py	4675	or datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/api/routers/question.py	142	timestamp=datetime.now().timestamp(),	MEDIUM
+A-naive-construction	deeptutor/api/routers/system.py	327	"backend": {"status": "online", "timestamp": datetime.now().isoformat()},	MEDIUM
+A-naive-construction	deeptutor/api/utils/task_id_manager.py	51	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	MEDIUM
+A-naive-construction	deeptutor/api/utils/task_id_manager.py	60	"created_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/api/utils/task_id_manager.py	78	self._task_metadata[task_id]["finished_at"] = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/api/utils/task_id_manager.py	88	cutoff = datetime.now() - timedelta(hours=max_age_hours)	MEDIUM
+C-serialization-loses-tz	deeptutor/capabilities/marginnote4/store.py	89	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/capabilities/obsidian/tools.py	69	return value.isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/events/event_bus.py	54	"timestamp": self.timestamp.isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	498	timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	568	ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	586	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	630	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	667	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	692	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/add_documents.py	718	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/initializer.py	104	timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")	MEDIUM
+A-naive-construction	deeptutor/knowledge/initializer.py	144	"created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),	MEDIUM
+A-naive-construction	deeptutor/knowledge/initializer.py	368	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/initializer.py	387	"timestamp": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	542	kb_config["updated_at"] = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	573	progress.get("timestamp") or datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	585	kb_config["last_error_at"] = progress.get("timestamp") or datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	761	"updated_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	882	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	927	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	977	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1022	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1079	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1154	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1198	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1238	now = datetime.now().isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	1948	timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	2019	"added_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	2210	folder["last_sync"] = datetime.now().isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/knowledge/manager.py	2223	file_states[file_path] = mtime.isoformat()	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	2274	"added_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/manager.py	2369	"added_at": datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/knowledge/progress_tracker.py	212	"timestamp": datetime.now().isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/learning/migration.py	107	stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")	MEDIUM
+C-serialization-loses-tz	deeptutor/logging/formatters.py	31	"timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),	MEDIUM
+A-naive-construction	deeptutor/logging/stats/llm_stats.py	72	timestamp: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/audit.py	51	"time": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/audit.py	76	"time": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/audit.py	98	"time": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/device_credentials.py	34	return value.isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/device_credentials.py	167	current_day = now.date().isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/guardians.py	26	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/multi_user/identity.py	49	return datetime.now(timezone.utc).isoformat()	MEDIUM
+A-naive-construction	deeptutor/partners/helpers.py	29	return datetime.now().isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/plugins/lifecycle.py	461	return datetime.now(UTC).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/plugins/registry.py	594	return datetime.now(UTC).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/reading/epub_bilingual.py	205	"confirmed_at": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/app_update.py	151	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/auth.py	120	"created_at": created_at or datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/config/context_window_detection.py	168	detected_at = datetime.now(timezone.utc).isoformat()	MEDIUM
+A-naive-construction	deeptutor/services/cron/service.py	136	tz = ZoneInfo(schedule.tz) if schedule.tz else datetime.now().astimezone().tzinfo	MEDIUM
+C-serialization-loses-tz	deeptutor/services/github_source/sync.py	35	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/learning_journal/models.py	11	return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/consolidator/meta.py	182	return datetime.now(tz=timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/consolidator/modes/_runtime.py	304	return datetime.now(tz=timezone.utc).date().isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/consolidator/runs.py	383	return datetime.now(tz=timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/paths.py	74	return trace_dir(surface) / f"{day.isoformat()}.jsonl"	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/snapshot/__init__.py	89	last_refresh=datetime.now(tz=timezone.utc).isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/memory/snapshot/adapters.py	60	return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/snapshot/diff.py	27	ts = datetime.now(tz=timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/store.py	284	updated_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/store.py	346	ts = datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/trace.py	57	ts=datetime.now(tz=timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/trace.py	93	cutoff_iso = since.isoformat() if since else ""	MEDIUM
+C-serialization-loses-tz	deeptutor/services/memory/trace.py	94	cutoff_date_iso = since.date().isoformat() if since else ""	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partner_groups/models.py	11	return datetime.now(UTC).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partner_groups/store.py	271	created_at = datetime.fromtimestamp(timestamp, UTC).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/channel_onboarding.py	122	"expires_at": self.expires_at.isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/drafts.py	77	created_at=datetime.now(UTC).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/links.py	121	expires_at = (_now() + _CODE_TTL).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/links.py	157	"linked_at": _now().isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/manager.py	477	"started_at": self.started_at.isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/partners/manager.py	510	started_at=(instance.started_at.isoformat() if instance is not None else None),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/practice/analytics.py	21	(first + timedelta(days=i)).isoformat(): {"questions": 0, "mistakes": 0, "reviews": 0}	MEDIUM
+C-serialization-loses-tz	deeptutor/services/practice/analytics.py	26	"practice_day", 1, lambda ts: datetime.fromtimestamp(ts, zone).date().isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/practice/analytics.py	61	"start_date": first.isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/practice/analytics.py	62	"end_date": today.isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/rag/pipelines/pageindex/storage.py	106	"submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/bocha.py	127	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/brave.py	72	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/doubao.py	170	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/duckduckgo.py	60	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/firecrawl.py	130	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/jina.py	162	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/perplexity.py	147	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/qianfan.py	144	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/searxng.py	99	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/serper.py	209	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/serply.py	115	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/tavily.py	154	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/providers/zhipu.py	137	timestamp=datetime.now().isoformat(),	MEDIUM
+A-naive-construction	deeptutor/services/search/types.py	54	timestamp: str = field(default_factory=lambda: datetime.now().isoformat())	MEDIUM
+C-serialization-loses-tz	deeptutor/services/session/legacy_migration.py	60	return datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")	MEDIUM
+C-serialization-loses-tz	deeptutor/services/session/legacy_migration.py	217	"completed_at": datetime.now(UTC).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/session/usage_statistics.py	169	key = day.isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/session/usage_statistics.py	181	key = datetime.fromtimestamp(stamp, zone).date().isoformat()	MEDIUM
+A-naive-construction	deeptutor/services/session/usage_statistics.py	237	updated_at=datetime.now().timestamp(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/subagent/claude_models.py	88	fetched_at = datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/task_board.py	203	now = datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/task_board.py	231	datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/web_source/sync.py	46	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/catalog.py	39	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/data_migration.py	548	"created_at": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/data_migration.py	587	"created_at": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/data_migration.py	967	).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/service.py	37	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/services/workspace/snapshot.py	112	"generated_at": datetime.now(timezone.utc).isoformat(),	MEDIUM
+A-naive-construction	deeptutor/tools/cron_tool.py	27	return datetime.fromtimestamp(ms / 1000).astimezone().strftime("%Y-%m-%d %H:%M %Z")	MEDIUM
+A-naive-construction	deeptutor/tools/paper_search_tool.py	82	current_year = datetime.now().year	MEDIUM
+C-serialization-loses-tz	deeptutor/tools/paper_search_tool.py	132	"published": published_date.isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/video_learning/invidious_account.py	186	"connected_at": datetime.now(timezone.utc).isoformat(),	MEDIUM
+C-serialization-loses-tz	deeptutor/video_learning/marks.py	31	return datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/video_learning/service.py	370	payload["updated_at"] = datetime.now(timezone.utc).isoformat()	MEDIUM
+C-serialization-loses-tz	deeptutor/video_learning/service.py	650	"created_at": existing.get("created_at") or datetime.now(timezone.utc).isoformat(),	MEDIUM
