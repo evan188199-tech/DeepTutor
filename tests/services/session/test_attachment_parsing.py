@@ -228,3 +228,229 @@ async def test_parser_failure_preserves_usable_native_pdf_text(
     assert "extraction_error" not in records[0]
     assert contexts == ["[File: notes.pdf]\nnative text"]
     assert progress == ["submitting", "fallback"]
+
+
+@pytest.mark.asyncio
+async def test_mixed_batch_parses_only_the_pdf_records(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            assert path.name == "pdf_notes.pdf"
+            return ParsedDocument(markdown="# Parsed layout")
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    txt_record = {"id": "txt", "filename": "notes.txt", "extracted_text": "hello"}
+    records, contexts = await parse_chat_pdf_attachments(
+        [txt_record, {"id": "pdf", "filename": "notes.pdf", "extracted_text": "native"}],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    assert records[0] == {"id": "txt", "filename": "notes.txt", "extracted_text": "hello"}
+    assert records[1]["extracted_text"] == "# Parsed layout"
+    assert contexts == ["[File: notes.pdf]\n# Parsed layout"]
+
+
+@pytest.mark.asyncio
+async def test_missing_stored_file_keeps_native_text_without_calling_parser(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    progress: list[str] = []
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            raise AssertionError("parser must not run for a missing attachment")
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    records, contexts = await parse_chat_pdf_attachments(
+        [
+            {
+                "id": "ghost",
+                "filename": "ghost.pdf",
+                "extracted_text": "native text",
+                "extracted_chars": 11,
+            }
+        ],
+        attachment_store=store,
+        session_id="session",
+        document_texts=["[File: ghost.pdf]\nnative text"],
+        on_progress=lambda _aid, phase, _detail: progress.append(phase),
+    )
+
+    assert records[0]["extracted_text"] == "native text"
+    assert "could not be found" in records[0]["parser_error"]
+    assert "extraction_error" not in records[0]
+    assert contexts == ["[File: ghost.pdf]\nnative text"]
+    assert progress == ["submitting", "fallback"]
+
+
+@pytest.mark.asyncio
+async def test_pdf_is_skipped_when_total_text_quota_already_exhausted(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            raise AssertionError("parser must not run once the total quota is gone")
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_chat_attachment_limits",
+        lambda: ChatAttachmentLimits(1000, 1000, 5000, 100),
+    )
+    records, contexts = await parse_chat_pdf_attachments(
+        [
+            {"id": "txt", "filename": "notes.txt", "extracted_text": "x" * 100, "extracted_chars": 100},
+            {"id": "pdf", "filename": "notes.pdf", "extracted_text": ""},
+        ],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    assert records[1]["extracted_text"] == ""
+    assert records[1]["extracted_chars"] == 0
+    assert records[1]["extraction_error"] == "total extracted-text quota exceeded"
+    assert contexts == [
+        "[File: notes.pdf - could not be read: total extracted-text quota exceeded]"
+    ]
+
+
+@pytest.mark.asyncio
+async def test_parser_returning_no_markdown_reports_empty_result(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            return ParsedDocument(markdown="   ")
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    records, contexts = await parse_chat_pdf_attachments(
+        [{"id": "pdf", "filename": "notes.pdf", "extracted_text": ""}],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    assert records[0]["extracted_text"] == ""
+    assert records[0]["extracted_chars"] == 0
+    assert records[0]["extraction_error"] == "configured parser produced no content"
+    assert contexts == [
+        "[File: notes.pdf - could not be read: configured parser produced no content]"
+    ]
+
+
+@pytest.mark.asyncio
+async def test_plain_pdf_text_is_truncated_with_marker_when_quota_hit(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            return ParsedDocument(markdown="P" * 300)
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_chat_attachment_limits",
+        lambda: ChatAttachmentLimits(1000, 1000, 120, 120),
+    )
+    records, _ = await parse_chat_pdf_attachments(
+        [{"id": "pdf", "filename": "notes.pdf", "extracted_text": "plain native text"}],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    extracted = records[0]["extracted_text"]
+    assert extracted == "P" * 120 + "... (truncated, 300 chars total; chat quota hit)"
+    assert records[0]["extracted_chars"] == len(extracted)
+
+
+@pytest.mark.asyncio
+async def test_image_note_that_fits_nowhere_leaves_plain_capped_text(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            return ParsedDocument(markdown="P" * 500)
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_chat_attachment_limits",
+        lambda: ChatAttachmentLimits(1000, 1000, 50, 1000),
+    )
+    records, _ = await parse_chat_pdf_attachments(
+        [{"id": "pdf", "filename": "notes.pdf", "extracted_text": "--- Page 1 ---\n[图片 1: a]"}],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    extracted = records[0]["extracted_text"]
+    assert extracted == "P" * 50
+    assert records[0]["extracted_chars"] == 50
+
+
+@pytest.mark.asyncio
+async def test_image_note_keeps_only_locations_that_fit_the_quota(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    store = LocalDiskAttachmentStore(root=tmp_path / "attachments")
+    await store.put(session_id="session", attachment_id="pdf", filename="notes.pdf", data=b"pdf")
+
+    class Parser:
+        def parse(self, path: Path, **_: object) -> ParsedDocument:
+            return ParsedDocument(markdown="P" * 500)
+
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_parse_service", lambda: Parser()
+    )
+    monkeypatch.setattr(
+        "deeptutor.services.session.attachment_parsing.get_chat_attachment_limits",
+        lambda: ChatAttachmentLimits(1000, 1000, 100, 1000),
+    )
+    fitting = "x" * 10
+    oversized = "y" * 40
+    native = (
+        f"--- Page 1 ---\n[图片 1: {fitting}]"
+        f"\n\n--- Page 2 ---\n[图片 1: {oversized}]"
+    )
+    records, _ = await parse_chat_pdf_attachments(
+        [{"id": "pdf", "filename": "notes.pdf", "extracted_text": native}],
+        attachment_store=store,
+        session_id="session",
+        document_texts=[],
+    )
+
+    extracted = records[0]["extracted_text"]
+    assert len(extracted) == records[0]["extracted_chars"] == 100
+    assert extracted.endswith(f"--- Page 1 ---\n[图片 1: {fitting}]")
+    assert oversized not in extracted
