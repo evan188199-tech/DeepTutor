@@ -7,6 +7,7 @@ import logging
 import os
 from pathlib import Path
 import signal
+import stat
 import subprocess
 import sys
 from threading import Thread
@@ -1025,6 +1026,90 @@ def test_stop_requests_only_the_registered_detached_launcher(
     assert launcher.stop(tmp_path, timeout=0.5) is True
     assert not paths.state.exists()
     assert not paths.stop.exists()
+
+
+posix_only = pytest.mark.skipif(
+    os.name != "posix", reason="POSIX permission bits are not modelled on Windows"
+)
+
+
+@posix_only
+def test_stop_token_file_is_owner_only_under_permissive_umask(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    paths = launcher._detached_launcher_paths(tmp_path)
+    launcher._write_detached_state(
+        paths,
+        {"version": 1, "token": "launch-token", "pid": 4242, "status": "ready"},
+    )
+    monkeypatch.setattr(launcher, "get_runtime_home", lambda _home=None: tmp_path)
+    monkeypatch.setattr(launcher, "validate_runtime_home", lambda _home: None)
+    monkeypatch.setattr(launcher, "resolve_language", lambda: "en")
+    monkeypatch.setattr(launcher, "_log", lambda _message: None)
+
+    observed: list[tuple[str, int]] = []
+    probes = {"count": 0}
+
+    def fake_is_pid_alive(_pid: int | None) -> bool:
+        probes["count"] += 1
+        if probes["count"] == 1:
+            return True
+        assert paths.stop.exists()
+        observed.append(
+            (paths.stop.read_text(encoding="utf-8"), stat.S_IMODE(paths.stop.stat().st_mode))
+        )
+        return False
+
+    monkeypatch.setattr(launcher, "_is_pid_alive", fake_is_pid_alive)
+
+    previous = os.umask(0)
+    try:
+        assert launcher.stop(tmp_path, timeout=0.5) is True
+    finally:
+        os.umask(previous)
+
+    assert observed == [("launch-token", 0o600)]
+    assert not paths.stop.exists()
+
+
+def test_failed_stop_token_write_keeps_previous_request(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    import deeptutor.services.file_io as file_io
+
+    paths = launcher._detached_launcher_paths(tmp_path)
+    launcher._write_detached_state(
+        paths,
+        {"version": 1, "token": "launch-token", "pid": 4242, "status": "ready"},
+    )
+    paths.stop.write_text("previous-token", encoding="utf-8")
+    monkeypatch.setattr(launcher, "get_runtime_home", lambda _home=None: tmp_path)
+    monkeypatch.setattr(launcher, "validate_runtime_home", lambda _home: None)
+    monkeypatch.setattr(launcher, "resolve_language", lambda: "en")
+    monkeypatch.setattr(launcher, "_log", lambda _message: None)
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda _pid: True)
+
+    real_temporary_file = file_io.tempfile.NamedTemporaryFile
+
+    def exploding_temporary_file(*args, **kwargs):
+        handle = real_temporary_file(*args, **kwargs)
+        handle.write = lambda _data: (_ for _ in ()).throw(OSError("disk full"))
+        return handle
+
+    monkeypatch.setattr(file_io.tempfile, "NamedTemporaryFile", exploding_temporary_file)
+
+    with pytest.raises(OSError):
+        launcher.stop(tmp_path, timeout=0.5)
+
+    assert paths.stop.read_text(encoding="utf-8") == "previous-token"
+    leftovers = sorted(
+        entry.name
+        for entry in paths.stop.parent.iterdir()
+        if entry.name not in {"launcher.json", "launcher.stop", "launcher.log"}
+    )
+    assert leftovers == []
 
 
 def test_ready_timeout_is_overridable_for_slow_hardware(monkeypatch) -> None:

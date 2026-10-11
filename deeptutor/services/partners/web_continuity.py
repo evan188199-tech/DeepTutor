@@ -89,12 +89,9 @@ def _read(path: Path) -> dict[str, str | bool | None]:
 
 
 def _write(path: Path, state: dict[str, str | bool | None]) -> None:
-    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
-    try:
-        temporary.write_text(json.dumps(state), encoding="utf-8")
-        temporary.replace(path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    from deeptutor.services.file_io import atomic_write_json
+
+    atomic_write_json(path, state)
 
 
 def get_web_continuity(partner_id: str, account_id: str) -> dict[str, str | bool | None]:

@@ -1311,8 +1311,9 @@ def stop(home: str | Path | None = None, *, timeout: float = 15) -> bool:
         _log(_t("stop.not_running"))
         return False
 
-    paths.stop.parent.mkdir(parents=True, exist_ok=True)
-    paths.stop.write_text(token, encoding="utf-8")
+    from deeptutor.services.file_io import atomic_write_text
+
+    atomic_write_text(paths.stop, token)
     _log(_t("stop.requested", pid=pid))
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
