@@ -322,10 +322,19 @@ def _reconcile_embedding_flags(knowledge_bases: dict, base_dir: Path | None = No
     return changed
 
 
+def default_knowledge_base_dir() -> Path:
+    """Default KB root, derived through PathService so it follows the runtime home."""
+    from deeptutor.services.path_service import get_path_service
+
+    return get_path_service().get_knowledge_bases_root()
+
+
 class KnowledgeBaseManager:
     """Manager for knowledge bases"""
 
-    def __init__(self, base_dir="./data/knowledge_bases"):
+    def __init__(self, base_dir: str | Path | None = None):
+        if base_dir is None:
+            base_dir = default_knowledge_base_dir()
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
 

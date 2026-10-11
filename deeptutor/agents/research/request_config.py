@@ -174,13 +174,16 @@ def build_research_runtime_config(
 
     system_cfg = dict(runtime_config.get("system", {}) or {})
     paths_cfg = dict(runtime_config.get("paths", {}) or {})
+    from deeptutor.services.path_service import get_path_service
+
+    path_service = get_path_service()
     system_cfg["output_base_dir"] = paths_cfg.get(
         "research_output_dir",
-        "./data/user/workspace/chat/deep_research",
+        str(path_service.get_research_dir()),
     )
     system_cfg["reports_dir"] = paths_cfg.get(
         "research_reports_dir",
-        "./data/user/workspace/chat/deep_research/reports",
+        str(path_service.get_research_reports_dir()),
     )
     runtime_config["system"] = system_cfg
 

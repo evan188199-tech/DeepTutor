@@ -27,18 +27,20 @@ from deeptutor.knowledge.manager import KnowledgeBaseManager
 def _current_manager() -> KnowledgeBaseManager:
     """The KB manager rooted at the *current user's* knowledge bases.
 
-    Constructing ``KnowledgeBaseManager()`` directly picks up its CWD-relative
-    default root, which under multi-user points at the wrong workspace (and
-    under any deployment where the process CWD isn't the data dir, at nothing).
     ``current_kb_manager`` resolves through PathService like the knowledge and
-    subagent routers do.
+    subagent routers do. Multi-user resolution failures must surface, not be
+    swallowed; the bare ``KnowledgeBaseManager()`` default is only used when
+    no user context exists (single-user / bare-SDK), and itself derives its
+    root through PathService.
     """
-    try:
-        from deeptutor.multi_user.knowledge_access import current_kb_manager
+    from deeptutor.multi_user.context import get_current_user_or_none
 
-        return current_kb_manager()
-    except Exception:  # noqa: BLE001 - single-user / bare-SDK fallback
+    if get_current_user_or_none() is None:
         return KnowledgeBaseManager()
+
+    from deeptutor.multi_user.knowledge_access import current_kb_manager
+
+    return current_kb_manager()
 
 
 from .models import Book

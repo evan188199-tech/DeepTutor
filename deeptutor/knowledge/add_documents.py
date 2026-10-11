@@ -15,6 +15,7 @@ from pathlib import Path
 import shutil
 from typing import TYPE_CHECKING, List, Optional
 
+from deeptutor.knowledge.manager import default_knowledge_base_dir
 from deeptutor.services.config import resolve_llm_runtime_config
 from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.rag.factory import (
@@ -36,7 +37,7 @@ from deeptutor.services.setup.data_volume import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_BASE_DIR = "./data/knowledge_bases"
+DEFAULT_BASE_DIR = str(default_knowledge_base_dir())
 
 if TYPE_CHECKING:
     from deeptutor.knowledge.manager import KnowledgeBaseManager
@@ -175,7 +176,7 @@ class DocumentAdder:
     def __init__(
         self,
         kb_name: str,
-        base_dir: str = DEFAULT_BASE_DIR,
+        base_dir: str | None = None,
         api_key: str | None = None,
         base_url: str | None = None,
         progress_tracker=None,
@@ -183,7 +184,7 @@ class DocumentAdder:
         accepted_indexing_snapshot=None,
     ):
         self.kb_name = kb_name
-        self.base_dir = Path(base_dir)
+        self.base_dir = default_knowledge_base_dir() if base_dir is None else Path(base_dir)
         self.kb_dir = self.base_dir / kb_name
 
         if not self.kb_dir.exists():
@@ -604,7 +605,7 @@ async def _bootstrap_index_from_files(
 async def add_documents(
     kb_name: str,
     source_files: list[str],
-    base_dir: str = DEFAULT_BASE_DIR,
+    base_dir: str | None = None,
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
     allow_duplicates: bool = False,
@@ -734,7 +735,7 @@ async def main() -> None:
     parser.add_argument("kb_name", help="KB Name")
     parser.add_argument("--docs", nargs="+", help="Files")
     parser.add_argument("--docs-dir", help="Directory")
-    parser.add_argument("--base-dir", default=DEFAULT_BASE_DIR)
+    parser.add_argument("--base-dir", default=str(default_knowledge_base_dir()))
     parser.add_argument("--api-key", default=default_api_key)
     parser.add_argument("--base-url", default=default_base_url)
     parser.add_argument("--allow-duplicates", action="store_true")

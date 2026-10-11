@@ -38,7 +38,7 @@ class KnowledgeBaseInitializer:
     def __init__(
         self,
         kb_name: str,
-        base_dir: str = "./data/knowledge_bases",
+        base_dir: str | Path | None = None,
         api_key: str | None = None,
         base_url: str | None = None,
         progress_tracker: ProgressTracker | None = None,
@@ -46,8 +46,10 @@ class KnowledgeBaseInitializer:
         indexing_snapshot: IndexingPolicySnapshot | None = None,
         owner: CurrentUser | None = None,
     ):
+        from deeptutor.knowledge.manager import default_knowledge_base_dir
+
         self.kb_name = validate_knowledge_base_name(kb_name)
-        self.base_dir = Path(base_dir)
+        self.base_dir = default_knowledge_base_dir() if base_dir is None else Path(base_dir)
         self.kb_dir = self.base_dir / self.kb_name
 
         self.raw_dir = self.kb_dir / "raw"
@@ -334,7 +336,7 @@ class KnowledgeBaseInitializer:
 async def initialize_knowledge_base(
     kb_name: str,
     source_files: list[str],
-    base_dir: str = "./data/knowledge_bases",
+    base_dir: str | Path | None = None,
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
     rag_provider: Optional[str] = None,
