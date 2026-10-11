@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 import logging
+import os
 import sys
 
 from fastapi import Depends, FastAPI, Request
@@ -13,6 +14,7 @@ from deeptutor.services.config import (
     export_runtime_settings_to_env,
     load_auth_settings,
     load_system_settings,
+    permissive_cors_enabled,
 )
 from deeptutor.services.config.origins import normalize_origins
 from deeptutor.services.path_service import get_path_service
@@ -71,7 +73,15 @@ def validate_tool_consistency():
 
 
 def _build_cors_settings() -> dict[str, object]:
-    """Build CORS settings for both localhost and remote Docker deployments."""
+    """Build the CORS policy.
+
+    Default: same-origin requests plus the explicit allowlist — the loopback
+    frontend ports and any CORS_ORIGIN/CORS_ORIGINS entries. The permissive
+    any-http(s)-origin regex (legacy remote Docker/LAN mode) is opt-in via
+    the ``cors_permissive`` system setting / ``CORS_PERMISSIVE`` env var and
+    is never active when auth is enabled: credentialed cross-origin requests
+    then always require explicit origins.
+    """
     system_settings = load_system_settings()
     auth_settings = load_auth_settings()
     frontend_port = str(system_settings["frontend_port"])
@@ -88,17 +98,50 @@ def _build_cors_settings() -> dict[str, object]:
         if origin not in origins:
             origins.append(origin)
 
-    # Auth is disabled by default. In that local/single-user mode, mirror the
-    # pre-v1.3.8 behavior and allow remote Docker/LAN origins out of the box.
-    # When auth is enabled, require explicit CORS_ORIGIN(S) for credentialed
-    # cross-origin requests.
-    allow_origin_regex = None if auth_settings["enabled"] else r"https?://.*"
-    mode = "explicit" if auth_settings["enabled"] else "permissive"
+    permissive = permissive_cors_enabled(system_settings, auth_settings)
+    allow_origin_regex = r"https?://.*" if permissive else None
+    mode = "permissive" if permissive else "explicit"
     return {
         "allow_origins": origins,
         "allow_origin_regex": allow_origin_regex,
         "mode": mode,
     }
+
+
+_DOCS_URLS_ENABLED = {
+    "docs_url": "/docs",
+    "redoc_url": "/redoc",
+    "openapi_url": "/openapi.json",
+}
+_DOCS_URLS_DISABLED = {
+    "docs_url": None,
+    "redoc_url": None,
+    "openapi_url": None,
+}
+_DOCS_ENABLED_OVERRIDE = {"1": True, "true": True, "yes": True, "on": True}
+_DOCS_DISABLED_OVERRIDE = {"0": False, "false": False, "no": False, "off": False}
+
+
+def _resolve_docs_urls() -> dict[str, str | None]:
+    """Resolve the interactive docs / OpenAPI schema endpoint URLs.
+
+    ``/docs``, ``/redoc`` and ``/openapi.json`` are not covered by the router
+    auth dependencies, so their default follows the deployment shape: enabled
+    for local development (auth disabled and ENVIRONMENT not prod/production),
+    disabled once auth is enabled or the process runs in production. Set
+    ``DEEPTUTOR_API_DOCS_ENABLED=true|false`` to override the default in
+    either direction; the endpoints (and this override) only take effect at
+    process start.
+    """
+    auth_enabled = bool(load_auth_settings()["enabled"])
+    production = (os.environ.get("ENVIRONMENT") or "").strip().lower() in {"prod", "production"}
+    enabled = not (auth_enabled or production)
+    override = (os.environ.get("DEEPTUTOR_API_DOCS_ENABLED") or "").strip().lower()
+    if override in _DOCS_ENABLED_OVERRIDE:
+        enabled = True
+    elif override in _DOCS_DISABLED_OVERRIDE:
+        enabled = False
+    return dict(_DOCS_URLS_ENABLED if enabled else _DOCS_URLS_DISABLED)
 
 
 @asynccontextmanager
@@ -401,6 +444,12 @@ async def lifespan(app: FastAPI):
 
 from deeptutor.services.workspace.activity import WorkspaceActivityMiddleware
 
+_docs_urls = _resolve_docs_urls()
+logger.info(
+    "API docs endpoints: %s",
+    "enabled" if _docs_urls["docs_url"] else "disabled",
+)
+
 app = FastAPI(
     title="DeepTutor API",
     version="1.0.0",
@@ -410,6 +459,9 @@ app = FastAPI(
     # Without this, FastAPI's 307 redirects may change HTTPS to HTTP.
     # See: https://github.com/HKUDS/DeepTutor/issues/112
     redirect_slashes=False,
+    docs_url=_docs_urls["docs_url"],
+    redoc_url=_docs_urls["redoc_url"],
+    openapi_url=_docs_urls["openapi_url"],
 )
 app.add_middleware(WorkspaceActivityMiddleware)
 

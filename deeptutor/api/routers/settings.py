@@ -45,6 +45,7 @@ from deeptutor.services.config.runtime_settings import (
     CHAT_ATTACHMENT_MAX_FILE_MB_RANGE,
     CHAT_ATTACHMENT_MAX_TOTAL_MB_RANGE,
     compute_ws_max_size,
+    permissive_cors_enabled,
 )
 from deeptutor.services.config.settings_draft import (
     get_settings_draft_service,
@@ -876,6 +877,9 @@ def _network_settings_payload() -> dict[str, Any]:
     )
     auth_enabled = bool(auth["enabled"])
     cookie_secure = bool(auth["cookie_secure"])
+    # Same policy the API CORS middleware applies (shared helper) so the
+    # reported mode never drifts from the live middleware.
+    permissive = permissive_cors_enabled(effective_system, auth)
     return {
         "settings": {
             "backend_port": file_system["backend_port"],
@@ -890,9 +894,9 @@ def _network_settings_payload() -> dict[str, Any]:
             "frontend_url": f"http://localhost:{effective_system['frontend_port']}",
             "browser_api_base": browser_api_base,
             "api_base_source": _api_base_source(effective_system),
-            "cors_mode": "explicit" if auth_enabled else "permissive",
+            "cors_mode": "permissive" if permissive else "explicit",
             "cors_origins": cors_origins,
-            "allow_remote_http_origins": not auth_enabled,
+            "allow_remote_http_origins": permissive,
         },
         "auth": {
             "enabled": auth_enabled,

@@ -381,6 +381,36 @@ async def test_network_settings_roundtrip_normalizes_cors_origins(
 
 
 @pytest.mark.asyncio
+async def test_network_settings_report_explicit_mode_by_default_when_auth_disabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    service = RuntimeSettingsService(tmp_path / "settings", process_env={})
+    service.save_system({"backend_port": 8001, "frontend_port": 3782})
+    service.save_auth({"enabled": False})
+    monkeypatch.setattr(settings_router, "get_runtime_settings_service", lambda: service)
+
+    response = await settings_router.get_network_settings()
+
+    assert response["effective"]["cors_mode"] == "explicit"
+    assert response["effective"]["allow_remote_http_origins"] is False
+
+
+@pytest.mark.asyncio
+async def test_network_settings_report_permissive_mode_only_after_opt_in(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    service = RuntimeSettingsService(tmp_path / "settings", process_env={})
+    service.save_system({"backend_port": 8001, "frontend_port": 3782, "cors_permissive": True})
+    service.save_auth({"enabled": False})
+    monkeypatch.setattr(settings_router, "get_runtime_settings_service", lambda: service)
+
+    response = await settings_router.get_network_settings()
+
+    assert response["effective"]["cors_mode"] == "permissive"
+    assert response["effective"]["allow_remote_http_origins"] is True
+
+
+@pytest.mark.asyncio
 async def test_chat_attachment_settings_roundtrip(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:

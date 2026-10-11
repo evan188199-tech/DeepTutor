@@ -11,6 +11,7 @@ from deeptutor.services.config.runtime_settings import (
     SETTINGS_DERIVED_ENV_KEYS,
     RuntimeSettingsService,
     ensure_runtime_settings_files,
+    permissive_cors_enabled,
 )
 
 RUNTIME_ENV_KEYS = (
@@ -22,6 +23,7 @@ RUNTIME_ENV_KEYS = (
     "NEXT_PUBLIC_API_BASE",
     "CORS_ORIGIN",
     "CORS_ORIGINS",
+    "CORS_PERMISSIVE",
     "DISABLE_SSL_VERIFY",
     "CHAT_ATTACHMENT_DIR",
     "AUTH_ENABLED",
@@ -68,6 +70,41 @@ def test_capability_routing_defaults_to_disabled(tmp_path) -> None:
     service = RuntimeSettingsService(tmp_path / "settings")
 
     assert service.load_system()["capability_routing_enabled"] is False
+
+
+def test_cors_permissive_defaults_to_disabled(tmp_path) -> None:
+    service = RuntimeSettingsService(tmp_path / "settings")
+
+    assert service.load_system()["cors_permissive"] is False
+
+
+def test_cors_permissive_process_env_override(tmp_path) -> None:
+    service = RuntimeSettingsService(
+        tmp_path / "settings",
+        process_env={"CORS_PERMISSIVE": "true"},
+    )
+    service.save_system({"cors_permissive": False})
+
+    assert service.load_system()["cors_permissive"] is True
+    assert _read_json(service.path_for("system"))["cors_permissive"] is False
+
+
+def test_cors_permissive_renders_into_environment(monkeypatch, tmp_path: Path) -> None:
+    _clear_runtime_env(monkeypatch)
+    service = RuntimeSettingsService(tmp_path / "settings")
+    service.save_system({"cors_permissive": True})
+
+    assert service.render_environment()["CORS_PERMISSIVE"] == "true"
+
+
+def test_permissive_cors_enabled_requires_opt_in_and_disabled_auth() -> None:
+    system = {"cors_permissive": False}
+    auth = {"enabled": False}
+
+    assert permissive_cors_enabled(system, auth) is False
+
+    assert permissive_cors_enabled({"cors_permissive": True}, {"enabled": False}) is True
+    assert permissive_cors_enabled({"cors_permissive": True}, {"enabled": True}) is False
 
 
 def test_web_search_source_filter_defaults_to_safe_runtime_json(tmp_path) -> None:

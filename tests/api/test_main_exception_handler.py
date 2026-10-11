@@ -34,7 +34,9 @@ def test_unhandled_exception_response_carries_cors_headers() -> None:
     middleware registered inside CORS precisely so this header survives.
     """
     client = _client_with_failing_route()
-    origin = "http://cross-origin.test"
+    # An origin the default allowlist already grants, so the assertion below
+    # holds under both the explicit and the opt-in permissive CORS modes.
+    origin = "http://localhost:3000"
 
     ok = client.get("/api/health", headers={"Origin": origin})
     error = client.get("/api/__test_unhandled_exception__", headers={"Origin": origin})

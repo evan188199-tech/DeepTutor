@@ -27,6 +27,13 @@ DEFAULT_SYSTEM_SETTINGS: dict[str, Any] = {
     "next_public_api_base": "",
     "cors_origin": "",
     "cors_origins": [],
+    # Opt-in restore of the legacy behaviour where a backend with auth
+    # disabled answered any http(s) origin. The default CORS policy is
+    # same-origin plus the explicit allowlist (loopback frontend ports and
+    # CORS_ORIGIN/CORS_ORIGINS); remote Docker/LAN single-user deployments
+    # that need browser access from arbitrary hosts can set this true
+    # (env override: CORS_PERMISSIVE). Never active when auth is enabled.
+    "cors_permissive": False,
     "disable_ssl_verify": False,
     "chat_attachment_dir": "",
     # Enable the restricted-subprocess code-execution sandbox (the `exec` /
@@ -715,6 +722,7 @@ class RuntimeSettingsService:
             "NEXT_PUBLIC_API_BASE": system["next_public_api_base"],
             "CORS_ORIGIN": system["cors_origin"],
             "CORS_ORIGINS": ",".join(system["cors_origins"]),
+            "CORS_PERMISSIVE": _bool_env(system["cors_permissive"]),
             "DISABLE_SSL_VERIFY": _bool_env(system["disable_ssl_verify"]),
             "CHAT_ATTACHMENT_DIR": system["chat_attachment_dir"],
             "DEEPTUTOR_SANDBOX_ALLOW_SUBPROCESS": _bool_env(system["sandbox_allow_subprocess"]),
@@ -855,6 +863,8 @@ class RuntimeSettingsService:
             payload["cors_origin"] = value
         if value := self._process_env_value("CORS_ORIGINS"):
             payload["cors_origins"] = value
+        if value := self._process_env_value("CORS_PERMISSIVE"):
+            payload["cors_permissive"] = value
         if value := self._process_env_value("DISABLE_SSL_VERIFY"):
             payload["disable_ssl_verify"] = value
         if value := self._process_env_value("CHAT_ATTACHMENT_DIR"):
@@ -1271,6 +1281,7 @@ class RuntimeSettingsService:
             "next_public_api_base": _string(settings.get("next_public_api_base")),
             "cors_origin": _string(settings.get("cors_origin")),
             "cors_origins": _coerce_origins(settings.get("cors_origins")),
+            "cors_permissive": _coerce_bool(settings.get("cors_permissive"), False),
             "disable_ssl_verify": _coerce_bool(settings.get("disable_ssl_verify"), False),
             "chat_attachment_dir": _string(settings.get("chat_attachment_dir")),
             "sandbox_allow_subprocess": _coerce_bool(
@@ -1386,6 +1397,20 @@ def ensure_runtime_settings_files() -> None:
 
 def load_system_settings() -> dict[str, Any]:
     return get_runtime_settings_service().load_system()
+
+
+def permissive_cors_enabled(system_settings: dict[str, Any], auth_settings: dict[str, Any]) -> bool:
+    """Whether the permissive any-http(s)-origin CORS regex should be active.
+
+    Only when auth is disabled *and* the operator opted in via the
+    ``cors_permissive`` system setting (env override ``CORS_PERMISSIVE``).
+    The default CORS policy is same-origin plus the explicit allowlist
+    (loopback frontend ports and CORS_ORIGIN/CORS_ORIGINS); auth-enabled
+    deployments always require explicit origins for credentialed
+    cross-origin requests. Shared by the API CORS middleware and the
+    network settings payload so the two never drift apart.
+    """
+    return bool(system_settings["cors_permissive"]) and not bool(auth_settings["enabled"])
 
 
 @dataclass(frozen=True)
@@ -1549,4 +1574,5 @@ __all__ = [
     "load_llamaindex_settings",
     "load_mineru_settings",
     "load_system_settings",
+    "permissive_cors_enabled",
 ]

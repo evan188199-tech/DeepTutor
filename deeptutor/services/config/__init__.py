@@ -44,6 +44,7 @@ from .runtime_settings import (
     load_llamaindex_settings,
     load_mineru_settings,
     load_system_settings,
+    permissive_cors_enabled,
 )
 
 # Re-export the loader module itself for code paths that monkeypatch via the
@@ -110,6 +111,7 @@ __all__ = [
     "load_llamaindex_settings",
     "load_mineru_settings",
     "load_system_settings",
+    "permissive_cors_enabled",
 ]
 
 
