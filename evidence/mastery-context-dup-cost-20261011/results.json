@@ -1,0 +1,452 @@
+{
+  "meta": {
+    "repo_head": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+    "token_estimator": "tiktoken/cl100k_base",
+    "fixture": "shape-faithful mastery tool payloads; replayed via real replay_history",
+    "offline": true,
+    "python": "3.13.13"
+  },
+  "scenarios": [
+    {
+      "scenario": "dialogue-only baseline (20 turns, no mastery tools)",
+      "turns": 20,
+      "replayed_messages": 40,
+      "replayed_bytes_serialized": 12432,
+      "replayed_tokens_est": 3081,
+      "bytes_by_role": {
+        "user": 2271,
+        "assistant": 10120
+      },
+      "tool_result_bytes": 0,
+      "tool_result_share_pct": 0.0,
+      "bytes_by_tool": {},
+      "exact_duplicate_messages": {
+        "count": 19,
+        "bytes": 9614,
+        "share_pct": 77.3
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 0,
+        "bytes": 0,
+        "share_pct": 0.0,
+        "largest_repeat": {
+          "where": "",
+          "bytes": 0,
+          "seen_at_turn": 0
+        }
+      }
+    },
+    {
+      "scenario": "mastery S (3x5, 5 turns)",
+      "turns": 5,
+      "replayed_messages": 47,
+      "replayed_bytes_serialized": 116980,
+      "replayed_tokens_est": 34938,
+      "bytes_by_role": {
+        "user": 1595,
+        "assistant": 4980,
+        "tool": 110357
+      },
+      "tool_result_bytes": 110357,
+      "tool_result_share_pct": 94.3,
+      "bytes_by_tool": {
+        "mastery_status": 94002,
+        "mastery_build": 6631,
+        "mastery_quiz": 1204,
+        "mastery_grade": 1960,
+        "mastery_revise": 6560
+      },
+      "exact_duplicate_messages": {
+        "count": 4,
+        "bytes": 2024,
+        "share_pct": 1.7
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 129,
+        "bytes": 58799,
+        "share_pct": 50.3,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 5396,
+          "seen_at_turn": 5396
+        }
+      }
+    },
+    {
+      "scenario": "mastery S (3x5, 10 turns)",
+      "turns": 10,
+      "replayed_messages": 98,
+      "replayed_bytes_serialized": 235627,
+      "replayed_tokens_est": 70507,
+      "bytes_by_role": {
+        "user": 3192,
+        "assistant": 10268,
+        "tool": 222068
+      },
+      "tool_result_bytes": 222068,
+      "tool_result_share_pct": 94.2,
+      "bytes_by_tool": {
+        "mastery_status": 187852,
+        "mastery_build": 6631,
+        "mastery_quiz": 3013,
+        "mastery_grade": 4900,
+        "mastery_revise": 19672
+      },
+      "exact_duplicate_messages": {
+        "count": 9,
+        "bytes": 4554,
+        "share_pct": 1.9
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 287,
+        "bytes": 113120,
+        "share_pct": 48.0,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 5396,
+          "seen_at_turn": 5396
+        }
+      }
+    },
+    {
+      "scenario": "mastery S (3x5, 20 turns)",
+      "turns": 20,
+      "replayed_messages": 194,
+      "replayed_bytes_serialized": 464344,
+      "replayed_tokens_est": 139250,
+      "bytes_by_role": {
+        "user": 6402,
+        "assistant": 20413,
+        "tool": 437334
+      },
+      "tool_result_bytes": 437334,
+      "tool_result_share_pct": 94.2,
+      "bytes_by_tool": {
+        "mastery_status": 375536,
+        "mastery_build": 6631,
+        "mastery_quiz": 6038,
+        "mastery_grade": 9810,
+        "mastery_revise": 39319
+      },
+      "exact_duplicate_messages": {
+        "count": 19,
+        "bytes": 9614,
+        "share_pct": 2.1
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 593,
+        "bytes": 228817,
+        "share_pct": 49.3,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 5396,
+          "seen_at_turn": 5396
+        }
+      }
+    },
+    {
+      "scenario": "mastery M (6x8, 5 turns)",
+      "turns": 5,
+      "replayed_messages": 47,
+      "replayed_bytes_serialized": 297760,
+      "replayed_tokens_est": 90546,
+      "bytes_by_role": {
+        "user": 1595,
+        "assistant": 4980,
+        "tool": 291137
+      },
+      "tool_result_bytes": 291137,
+      "tool_result_share_pct": 97.8,
+      "bytes_by_tool": {
+        "mastery_status": 249272,
+        "mastery_build": 19386,
+        "mastery_quiz": 1204,
+        "mastery_grade": 1960,
+        "mastery_revise": 19315
+      },
+      "exact_duplicate_messages": {
+        "count": 4,
+        "bytes": 2024,
+        "share_pct": 0.7
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 129,
+        "bytes": 161835,
+        "share_pct": 54.4,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 16246,
+          "seen_at_turn": 16246
+        }
+      }
+    },
+    {
+      "scenario": "mastery M (6x8, 10 turns)",
+      "turns": 10,
+      "replayed_messages": 98,
+      "replayed_bytes_serialized": 597187,
+      "replayed_tokens_est": 181723,
+      "bytes_by_role": {
+        "user": 3192,
+        "assistant": 10268,
+        "tool": 583628
+      },
+      "tool_result_bytes": 583628,
+      "tool_result_share_pct": 97.7,
+      "bytes_by_tool": {
+        "mastery_status": 498392,
+        "mastery_build": 19386,
+        "mastery_quiz": 3013,
+        "mastery_grade": 4900,
+        "mastery_revise": 57937
+      },
+      "exact_duplicate_messages": {
+        "count": 9,
+        "bytes": 4554,
+        "share_pct": 0.8
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 286,
+        "bytes": 308341,
+        "share_pct": 51.6,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 16246,
+          "seen_at_turn": 16246
+        }
+      }
+    },
+    {
+      "scenario": "mastery M (6x8, 20 turns)",
+      "turns": 20,
+      "replayed_messages": 194,
+      "replayed_bytes_serialized": 1174728,
+      "replayed_tokens_est": 357983,
+      "bytes_by_role": {
+        "user": 6402,
+        "assistant": 20413,
+        "tool": 1147718
+      },
+      "tool_result_bytes": 1147718,
+      "tool_result_share_pct": 97.7,
+      "bytes_by_tool": {
+        "mastery_status": 996633,
+        "mastery_build": 19386,
+        "mastery_quiz": 6038,
+        "mastery_grade": 9810,
+        "mastery_revise": 115851
+      },
+      "exact_duplicate_messages": {
+        "count": 19,
+        "bytes": 9614,
+        "share_pct": 0.8
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 593,
+        "bytes": 622210,
+        "share_pct": 53.0,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 16246,
+          "seen_at_turn": 16246
+        }
+      }
+    },
+    {
+      "scenario": "mastery L (10x12, 5 turns)",
+      "turns": 5,
+      "replayed_messages": 47,
+      "replayed_bytes_serialized": 687130,
+      "replayed_tokens_est": 210306,
+      "bytes_by_role": {
+        "user": 1595,
+        "assistant": 4980,
+        "tool": 680507
+      },
+      "tool_result_bytes": 680507,
+      "tool_result_share_pct": 99.0,
+      "bytes_by_tool": {
+        "mastery_status": 583892,
+        "mastery_build": 46762,
+        "mastery_quiz": 1204,
+        "mastery_grade": 1960,
+        "mastery_revise": 46689
+      },
+      "exact_duplicate_messages": {
+        "count": 4,
+        "bytes": 2024,
+        "share_pct": 0.3
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 129,
+        "bytes": 383859,
+        "share_pct": 55.9,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 39536,
+          "seen_at_turn": 39536
+        }
+      }
+    },
+    {
+      "scenario": "mastery L (10x12, 10 turns)",
+      "turns": 10,
+      "replayed_messages": 98,
+      "replayed_bytes_serialized": 1375925,
+      "replayed_tokens_est": 421243,
+      "bytes_by_role": {
+        "user": 3192,
+        "assistant": 10268,
+        "tool": 1362366
+      },
+      "tool_result_bytes": 1362366,
+      "tool_result_share_pct": 99.0,
+      "bytes_by_tool": {
+        "mastery_status": 1167632,
+        "mastery_build": 46762,
+        "mastery_quiz": 3013,
+        "mastery_grade": 4900,
+        "mastery_revise": 140059
+      },
+      "exact_duplicate_messages": {
+        "count": 9,
+        "bytes": 4554,
+        "share_pct": 0.3
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 286,
+        "bytes": 729099,
+        "share_pct": 53.0,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 39536,
+          "seen_at_turn": 39536
+        }
+      }
+    },
+    {
+      "scenario": "mastery L (10x12, 20 turns)",
+      "turns": 20,
+      "replayed_messages": 194,
+      "replayed_bytes_serialized": 2704829,
+      "replayed_tokens_est": 829083,
+      "bytes_by_role": {
+        "user": 6402,
+        "assistant": 20413,
+        "tool": 2677819
+      },
+      "tool_result_bytes": 2677819,
+      "tool_result_share_pct": 99.0,
+      "bytes_by_tool": {
+        "mastery_status": 2335114,
+        "mastery_build": 46762,
+        "mastery_quiz": 6038,
+        "mastery_grade": 9810,
+        "mastery_revise": 280095
+      },
+      "exact_duplicate_messages": {
+        "count": 19,
+        "bytes": 9614,
+        "share_pct": 0.4
+      },
+      "exact_duplicate_subtrees": {
+        "occurrences": 592,
+        "bytes": 1470193,
+        "share_pct": 54.4,
+        "largest_repeat": {
+          "where": "mastery_build.map",
+          "bytes": 39536,
+          "seen_at_turn": 39536
+        }
+      }
+    }
+  ],
+  "loop_carriage": {
+    "turns=10": {
+      "rounds": 3,
+      "per_round_tokens_est": [
+        184049,
+        190872,
+        197696
+      ],
+      "total_tokens_est": 572617,
+      "history_carried_per_round_tokens_est": 181723,
+      "duplication_ratio": 3.11,
+      "final_merged_bytes": 674155
+    },
+    "turns=20": {
+      "rounds": 3,
+      "per_round_tokens_est": [
+        360309,
+        367132,
+        373956
+      ],
+      "total_tokens_est": 1101397,
+      "history_carried_per_round_tokens_est": 357983,
+      "duplication_ratio": 3.06,
+      "final_merged_bytes": 1251696
+    }
+  },
+  "snapshot_accumulation": {
+    "turns=5": {
+      "turns": 5,
+      "snapshot_rows_retained": 5,
+      "snapshot_bytes": 1030,
+      "history_bytes": 297760,
+      "snapshot_share_pct": 0.35,
+      "distinct_snapshot_values": 5
+    },
+    "turns=10": {
+      "turns": 10,
+      "snapshot_rows_retained": 10,
+      "snapshot_bytes": 2061,
+      "history_bytes": 597187,
+      "snapshot_share_pct": 0.35,
+      "distinct_snapshot_values": 10
+    },
+    "turns=20": {
+      "turns": 20,
+      "snapshot_rows_retained": 20,
+      "snapshot_bytes": 4131,
+      "history_bytes": 1174728,
+      "snapshot_share_pct": 0.35,
+      "distinct_snapshot_values": 20
+    }
+  },
+  "status_payload_anatomy": {
+    "payload_bytes": 20733,
+    "bytes_by_key": {
+      "map": 16238,
+      "visual_requirements": 2161,
+      "learning_stages": 1057,
+      "learner_profile": 370,
+      "next": 322,
+      "sources": 241,
+      "pending_interaction": 212,
+      "goal": 58,
+      "path_name": 35,
+      "path_id": 18,
+      "status": 8,
+      "mode": 7,
+      "intake_needed": 5,
+      "path_revision": 1
+    },
+    "unchanged_between_consecutive_calls": [
+      "status",
+      "path_revision",
+      "path_id",
+      "path_name",
+      "goal",
+      "sources",
+      "mode",
+      "next",
+      "intake_needed",
+      "visual_requirements"
+    ],
+    "stable_bytes": 2856,
+    "stable_share_pct": 13.8,
+    "map_kp_entry_stability_pct": 89.7,
+    "map_kp_entry_identical_bytes": 14566,
+    "map_bytes": 16238
+  }
+}
