@@ -6,6 +6,7 @@ import asyncio
 from contextvars import ContextVar
 from dataclasses import dataclass
 import logging
+import threading
 from typing import Any, Callable, List
 
 from llama_index.core import Settings
@@ -36,6 +37,22 @@ _task_progress_callback: ContextVar[Callable[[int, int], None] | None] = Context
 _indexing_progress: ContextVar[_IndexingProgress | None] = ContextVar(
     "llamaindex_indexing_progress", default=None
 )
+
+# Sync embedding calls run on executor threads during concurrent indexing.
+# Creating (and closing) a fresh event loop per call multiplies loop setup
+# cost, so each thread caches its loop here. A loop is never shared between
+# threads, so reuse stays race-free; the client's cross-thread spacing lock
+# remains the only coordination point between thread loops.
+_sync_loop_state = threading.local()
+
+
+def _thread_sync_loop() -> asyncio.AbstractEventLoop:
+    """Return this thread's cached event loop for sync embedding calls."""
+    loop = getattr(_sync_loop_state, "loop", None)
+    if loop is None or loop.is_closed():
+        loop = asyncio.new_event_loop()
+        _sync_loop_state.loop = loop
+    return loop
 
 
 def _config_fingerprint(config: EmbeddingConfig) -> tuple[Any, ...]:
@@ -124,13 +141,9 @@ class CustomEmbedding(BaseEmbedding):
     def class_name(cls) -> str:
         return "custom_embedding"
 
-    def _run_in_new_loop(self, coro):
-        """Run an async coroutine from sync context using a fresh event loop."""
-        loop = asyncio.new_event_loop()
-        try:
-            return loop.run_until_complete(coro)
-        finally:
-            loop.close()
+    def _run_in_thread_loop(self, coro):
+        """Run an async coroutine from sync context on this thread's event loop."""
+        return _thread_sync_loop().run_until_complete(coro)
 
     async def _aget_query_embedding(self, query: str) -> List[float]:
         client = self.refresh_client()
@@ -181,14 +194,14 @@ class CustomEmbedding(BaseEmbedding):
         )
 
     def _get_query_embedding(self, query: str) -> List[float]:
-        return self._run_in_new_loop(self._aget_query_embedding(query))
+        return self._run_in_thread_loop(self._aget_query_embedding(query))
 
     def _get_text_embedding(self, text: str) -> List[float]:
-        return self._run_in_new_loop(self._aget_text_embedding(text))
+        return self._run_in_thread_loop(self._aget_text_embedding(text))
 
     def _get_text_embeddings(self, texts: List[str]) -> List[List[float]]:
         self._logger.info(f"Embedding {len(texts)} text chunks...")
-        result = self._run_in_new_loop(self._aget_text_embeddings(texts))
+        result = self._run_in_thread_loop(self._aget_text_embeddings(texts))
         self._logger.info(f"Embedding complete: {len(result)} vectors")
         return result
 

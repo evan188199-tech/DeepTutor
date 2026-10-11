@@ -528,3 +528,60 @@ def test_embedding_spacing_shared_across_thread_event_loops(monkeypatch):
         futures = [executor.submit(asyncio.run, client.embed(["text"])) for client in clients]
         assert all(len(future.result(timeout=3)) == 1 for future in futures)
     assert starts[1] - starts[0] >= config.batch_delay
+
+
+def test_sync_embedding_adapter_reuses_thread_loop_and_keeps_spacing(monkeypatch):
+    """E-5: the LlamaIndex sync embedding path must reuse one event loop per
+    thread while the client's cross-thread spacing lock still delays request
+    starts made from different thread loops."""
+    from concurrent.futures import ThreadPoolExecutor
+    from time import monotonic
+
+    from deeptutor.services.rag.pipelines.llamaindex import (
+        embedding_adapter as embedding_module,
+    )
+
+    starts: list[tuple[float, int]] = []
+    starts_guard = threading.Lock()
+    requests_started = threading.Event()
+
+    class Adapter(_FakeAdapter):
+        async def embed(self, request):
+            loop_id = id(asyncio.get_running_loop())
+            with starts_guard:
+                starts.append((monotonic(), loop_id))
+                if len(starts) == 2:
+                    # Both thread loops have a request in flight at once.
+                    requests_started.set()
+            deadline = monotonic() + 5
+            while not requests_started.is_set():
+                assert monotonic() < deadline, "HTTP calls serialized across thread loops"
+                await asyncio.sleep(0.005)
+            return await super().embed(request)
+
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class", lambda _: Adapter
+    )
+    monkeypatch.setattr(EmbeddingClient, "_spacing_lock", None)
+    monkeypatch.setattr(EmbeddingClient, "_last_request_monotonic", 0.0)
+    config = _build_config("openai")
+    config.batch_delay = 0.02
+    client = EmbeddingClient(config)
+    monkeypatch.setattr(embedding_module, "get_embedding_client", lambda _config=None: client)
+    embedding = embedding_module.CustomEmbedding()
+
+    def worker() -> None:
+        for _ in range(2):
+            assert embedding._get_text_embeddings(["text"]) == [[0.0] * 8]
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [executor.submit(worker) for _ in range(2)]
+        for future in futures:
+            future.result(timeout=10)
+
+    assert len(starts) == 4
+    ordered = sorted(starts)
+    gaps = [later - earlier for (earlier, _), (later, _) in zip(ordered, ordered[1:])]
+    assert all(gap >= config.batch_delay for gap in gaps), gaps
+    loop_ids = {loop_id for _, loop_id in starts}
+    assert len(loop_ids) == 2, "each executor thread must reuse its own single loop"

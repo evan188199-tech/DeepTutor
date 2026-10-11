@@ -40,7 +40,7 @@ class EmbeddingClient:
     """Unified embedding client for RAG and retrieval services."""
 
     # 全局发帖节流：KB reindex 时 LlamaIndex 用线程池并发调 embedding，
-    # 每个线程经 _run_in_new_loop 跑独立 event loop——asyncio.Lock 绑定
+    # 每个线程跑独立（threading.local 复用的）event loop——asyncio.Lock 绑定
     # 创建时的 loop，跨 loop 既不互斥还会挂死。必须用线程级锁。
     _spacing_lock: Any = None
     _last_request_monotonic: float = 0.0
