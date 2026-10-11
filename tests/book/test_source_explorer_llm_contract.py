@@ -368,7 +368,7 @@ def test_balanced_slice_round_robins_across_sources() -> None:
                     kb_name=kb,
                     source="kb",
                     ref=f"{kb}-{rank}",
-                    text=f"{kb} evidence {rank}",
+                    text=f"{kb} passage {rank}",
                     score=10.0 - rank,
                 )
             )

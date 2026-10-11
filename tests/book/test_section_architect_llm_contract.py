@@ -86,7 +86,7 @@ async def test_plan_blocks_async_builds_blocks_from_a_good_llm_payload(
     chapter = _chapter()
 
     blocks = await SectionArchitect().plan_blocks_async(
-        chapter, exploration=ExplorationReport(summary="RAG evidence brief")
+        chapter, exploration=ExplorationReport(summary="Retrieved-passage brief")
     )
 
     assert [b.type for b in blocks] == [BlockType.SECTION, BlockType.QUIZ]
@@ -117,12 +117,12 @@ async def test_the_llm_prompt_assembles_chapter_and_exploration_inputs(
     chapter = _chapter()
 
     await SectionArchitect().plan_blocks_async(
-        chapter, exploration=ExplorationReport(summary="Evidence: span of vectors")
+        chapter, exploration=ExplorationReport(summary="Span of vectors covered")
     )
 
     assert "Vector Spaces" in calls[0]["user_prompt"]
     assert "Define a basis" in calls[0]["user_prompt"]
-    assert "Evidence: span of vectors" in calls[0]["user_prompt"]
+    assert "Span of vectors covered" in calls[0]["user_prompt"]
     assert calls[0]["system_prompt"].strip()
 
 
