@@ -2431,12 +2431,15 @@ async def test_cold_start_stalled_provider_settles_with_bounded_retries(monkeypa
         assert failure.value.partial_response is (phase == "partial_stream")
         if phase != "connect":
             assert len(stopped) == len(attempts)
-        assert (
-            sum(event.metadata.get("error_code") == "provider_transport" for event in events) >= 1
-        )
     finally:
+        # Drain the subscriber before reading ``events``: the bus is async, so
+        # the final ``provider_transport`` trace of a partial stream is still
+        # queued for the consumer when ``run()`` raises. Unlike the retried
+        # phases, partial streams get no earlier retry warning to satisfy the
+        # assertion while the turn is still settling.
         await bus.close()
         await consumer
+    assert sum(event.metadata.get("error_code") == "provider_transport" for event in events) >= 1
 
 
 @pytest.mark.asyncio
