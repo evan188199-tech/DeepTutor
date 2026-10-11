@@ -1,0 +1,1085 @@
+[
+ {
+  "file": "deeptutor/api/contracts/export.py",
+  "results": [
+   {
+    "line": 102,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 105,
+    "function": "main",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": []
+ },
+ {
+  "file": "deeptutor/agents/loop/dsml_tool_calls.py",
+  "results": [],
+  "attr_print_fps": [],
+  "string_print_fps": [
+   1
+  ],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "_clean_block",
+   "feed",
+   "flush"
+  ]
+ },
+ {
+  "file": "deeptutor/runtime/banner.py",
+  "results": [],
+  "attr_print_fps": [
+   567
+  ],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "labels_for",
+   "print_banner",
+   "resolve_language"
+  ]
+ },
+ {
+  "file": "deeptutor/services/prompt/manager.py",
+  "results": [
+   {
+    "line": 121,
+    "function": "PromptManager._load_with_fallback",
+    "scope": "prod-path"
+   },
+   {
+    "line": 124,
+    "function": "PromptManager._load_with_fallback",
+    "scope": "prod-path"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__new__",
+   "_build_cache_key",
+   "_candidate_prompt_dirs",
+   "_fallback_chain",
+   "_load_with_fallback",
+   "_resolve_prompt_path",
+   "clear_cache",
+   "get_prompt",
+   "get_prompt_manager",
+   "load_prompts",
+   "reload_prompts"
+  ]
+ },
+ {
+  "file": "deeptutor/runtime/launcher.py",
+  "results": [
+   {
+    "line": 140,
+    "function": "_log",
+    "scope": "prod-path"
+   },
+   {
+    "line": 317,
+    "function": "_stream_output",
+    "scope": "prod-path"
+   },
+   {
+    "line": 452,
+    "function": "_prompt_port",
+    "scope": "prod-path"
+   },
+   {
+    "line": 472,
+    "function": "_prompt_conflict_choice",
+    "scope": "prod-path"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "_handler",
+   "_stream_output",
+   "start",
+   "still_owned",
+   "stop"
+  ]
+ },
+ {
+  "file": "deeptutor/runtime/update_worker.py",
+  "results": [
+   {
+    "line": 120,
+    "function": "_log_aborted_recovery",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "wait_for_process_exit"
+  ]
+ },
+ {
+  "file": "deeptutor/agents/research/data_structures.py",
+  "results": [
+   {
+    "line": 554,
+    "function": "DynamicTopicQueue._auto_save",
+    "scope": "prod-path"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "__post_init__",
+   "_auto_save",
+   "_normalize_topic",
+   "_topic_similarity",
+   "_topic_tokens",
+   "_truncate_raw_answer",
+   "add_block",
+   "add_tool_trace",
+   "append_child",
+   "create_with_size_limit",
+   "find_similar",
+   "from_dict",
+   "get_all_completed_blocks",
+   "get_all_pending_blocks",
+   "get_all_summaries",
+   "get_block_by_id",
+   "get_latest_trace",
+   "get_pending_block",
+   "get_statistics",
+   "has_topic",
+   "is_all_completed",
+   "is_full",
+   "list_topics",
+   "load_from_json",
+   "mark_completed",
+   "mark_failed",
+   "mark_researching",
+   "save_to_json",
+   "set_state_file",
+   "to_dict"
+  ]
+ },
+ {
+  "file": "deeptutor/runtime/stream_bus.py",
+  "results": [],
+  "attr_print_fps": [],
+  "string_print_fps": [
+   1
+  ],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "close",
+   "content",
+   "emit",
+   "error",
+   "event_to_json",
+   "get_bus",
+   "latest_seq",
+   "mark_closed",
+   "observation",
+   "progress",
+   "register_bus",
+   "result",
+   "sources",
+   "stage",
+   "submit_input",
+   "subscribe",
+   "thinking",
+   "tool_call",
+   "tool_result",
+   "unregister_bus",
+   "wait_for_input"
+  ]
+ },
+ {
+  "file": "deeptutor/agents/research/utils/citation_manager.py",
+  "results": [
+   {
+    "line": 174,
+    "function": "CitationManager._load_citations",
+    "scope": "prod-path"
+   },
+   {
+    "line": 217,
+    "function": "CitationManager._save_citations",
+    "scope": "prod-path"
+   },
+   {
+    "line": 331,
+    "function": "CitationManager.add_citation",
+    "scope": "prod-path"
+   },
+   {
+    "line": 381,
+    "function": "CitationManager._extract_rag_citation",
+    "scope": "prod-path"
+   },
+   {
+    "line": 530,
+    "function": "CitationManager._extract_paper_citation",
+    "scope": "prod-path"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "_extract_citation_sort_key",
+   "_extract_code_citation",
+   "_extract_generic_citation",
+   "_extract_paper_citation",
+   "_extract_rag_citation",
+   "_extract_web_citation",
+   "_format_one_apa",
+   "_format_paper_search_apa",
+   "_format_web_search_with_links",
+   "_get_citation_dedup_key",
+   "_load_citations",
+   "_restore_counters_from_citations",
+   "_save_citations",
+   "add_citation",
+   "add_citation_async",
+   "build_ref_number_map",
+   "citation_exists",
+   "fix_invalid_citations",
+   "format_citation_for_report",
+   "generate_plan_citation_id",
+   "generate_plan_citation_id_async",
+   "generate_research_citation_id",
+   "generate_research_citation_id_async",
+   "get_all_citations",
+   "get_citation",
+   "get_citations_file_path",
+   "get_next_citation_id",
+   "get_next_citation_id_async",
+   "get_ref_number",
+   "get_ref_number_map",
+   "replace_invalid",
+   "validate_citation_references"
+  ]
+ },
+ {
+  "file": "deeptutor/knowledge/manager.py",
+  "results": [
+   {
+    "line": 1824,
+    "function": "KnowledgeBaseManager.delete_knowledge_base",
+    "scope": "main-only"
+   },
+   {
+    "line": 1825,
+    "function": "KnowledgeBaseManager.delete_knowledge_base",
+    "scope": "main-only"
+   },
+   {
+    "line": 1828,
+    "function": "KnowledgeBaseManager.delete_knowledge_base",
+    "scope": "main-only"
+   },
+   {
+    "line": 2503,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2504,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2506,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2510,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2511,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2517,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2518,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2519,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2520,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2521,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2524,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2526,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2528,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2530,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2531,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2532,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2533,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2536,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2538,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2540,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2542,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2547,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2549,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2555,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2557,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 2563,
+    "function": "main",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "_auto_register_kb",
+   "_catalog_revision",
+   "_delete_marginnote4_store",
+   "_embedding_fields",
+   "_get_info",
+   "_list_knowledge_bases",
+   "_load_config",
+   "_marginnote4_store_owner",
+   "_on_rmtree_error",
+   "_read_and_reconcile_config",
+   "_read_kb_metadata",
+   "_save_config",
+   "_sync_kb_to_pb",
+   "add_github_source",
+   "add_web_source",
+   "clean_rag_storage",
+   "delete_knowledge_base",
+   "detect_folder_changes",
+   "get_all_github_sources",
+   "get_all_web_sources",
+   "get_content_list_path",
+   "get_default",
+   "get_github_sources",
+   "get_images_path",
+   "get_info",
+   "get_kb_entry",
+   "get_kb_status",
+   "get_knowledge_base_path",
+   "get_linked_folders",
+   "get_metadata",
+   "get_rag_storage_path",
+   "get_raw_path",
+   "get_web_sources",
+   "link_folder",
+   "list_knowledge_bases",
+   "register_connected_entry",
+   "register_ima_kb",
+   "register_kiwix_kb",
+   "register_knowledge_base",
+   "register_lightrag_server_kb",
+   "register_linked_kb",
+   "register_marginnote4_kb",
+   "register_obsidian_vault",
+   "register_subagent_connection",
+   "register_weknora_kb",
+   "remove_github_source",
+   "remove_web_source",
+   "scan_linked_folder",
+   "set_default",
+   "unlink_folder",
+   "update_folder_sync_state",
+   "update_github_source_state",
+   "update_kb_status",
+   "update_web_source_schedule",
+   "update_web_source_state"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/tex_downloader.py",
+  "results": [
+   {
+    "line": 82,
+    "function": "TexDownloader.download_arxiv_source",
+    "scope": "main-only"
+   },
+   {
+    "line": 171,
+    "function": "safe_members",
+    "scope": "prod-path"
+   },
+   {
+    "line": 251,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 252,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 253,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 254,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 256,
+    "function": "<__main__>",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "_extract_arxiv_id",
+   "_extract_tar",
+   "_extract_zip",
+   "_find_main_tex",
+   "_is_tar_file",
+   "_is_zip_file",
+   "_read_tex_file",
+   "download_arxiv_source",
+   "read_tex_file"
+  ]
+ },
+ {
+  "file": "deeptutor/services/llm/__init__.py",
+  "results": [],
+  "attr_print_fps": [],
+  "string_print_fps": [
+   1
+  ],
+  "unreferenced_top_funcs": [
+   "__getattr__"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/reason.py",
+  "results": [],
+  "attr_print_fps": [],
+  "string_print_fps": [
+   1
+  ],
+  "unreferenced_top_funcs": [
+   "reason"
+  ]
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/mineru/local.py",
+  "results": [
+   {
+    "line": 150,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 154,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 155,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 156,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 157,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 158,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 159,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 164,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 168,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 173,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 180,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 181,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 199,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 200,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 201,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 219,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 295,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 296,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 303,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 308,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 337,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 339,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 343,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 349,
+    "function": "parse_document_with_mineru_result",
+    "scope": "main-only"
+   },
+   {
+    "line": 422,
+    "function": "parse_pdf_with_mineru",
+    "scope": "main-only"
+   },
+   {
+    "line": 463,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 466,
+    "function": "main",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "failure",
+   "success",
+   "watch"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/question/question_extractor.py",
+  "results": [
+   {
+    "line": 70,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 74,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 78,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 87,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 91,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 96,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 98,
+    "function": "load_parsed_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 210,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 211,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 212,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 213,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 270,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 271,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 278,
+    "function": "extract_questions_with_llm",
+    "scope": "main-only"
+   },
+   {
+    "line": 310,
+    "function": "save_questions_json",
+    "scope": "main-only"
+   },
+   {
+    "line": 312,
+    "function": "save_questions_json",
+    "scope": "main-only"
+   },
+   {
+    "line": 313,
+    "function": "save_questions_json",
+    "scope": "main-only"
+   },
+   {
+    "line": 316,
+    "function": "save_questions_json",
+    "scope": "main-only"
+   },
+   {
+    "line": 334,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 337,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 342,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 348,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 349,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 364,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 375,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   },
+   {
+    "line": 376,
+    "function": "extract_questions_from_paper",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": []
+ },
+ {
+  "file": "deeptutor/services/cli_apps/vendor/build_snapshot.py",
+  "results": [
+   {
+    "line": 65,
+    "function": "<module>",
+    "scope": "module"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": []
+ },
+ {
+  "file": "deeptutor/services/parsing/engines/docling/local_worker.py",
+  "results": [
+   {
+    "line": 153,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 155,
+    "function": "main",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "parse_local"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/rag_tool.py",
+  "results": [
+   {
+    "line": 97,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 99,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 100,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 108,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 109,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 110,
+    "function": "<__main__>",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "delete_rag",
+   "initialize_rag"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/tex_chunker.py",
+  "results": [
+   {
+    "line": 64,
+    "function": "TexChunker.estimate_tokens",
+    "scope": "main-only"
+   },
+   {
+    "line": 84,
+    "function": "TexChunker._clean_text",
+    "scope": "main-only"
+   },
+   {
+    "line": 115,
+    "function": "TexChunker.split_tex_into_chunks",
+    "scope": "main-only"
+   },
+   {
+    "line": 116,
+    "function": "TexChunker.split_tex_into_chunks",
+    "scope": "main-only"
+   },
+   {
+    "line": 163,
+    "function": "TexChunker.split_tex_into_chunks",
+    "scope": "main-only"
+   },
+   {
+    "line": 331,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 336,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 340,
+    "function": "<__main__>",
+    "scope": "main-only"
+   },
+   {
+    "line": 341,
+    "function": "<__main__>",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "_clean_text",
+   "_get_overlap_text",
+   "_split_by_paragraphs",
+   "_split_by_sections",
+   "estimate_tokens",
+   "split_tex_into_chunks"
+  ]
+ },
+ {
+  "file": "deeptutor/services/auth.py",
+  "results": [],
+  "attr_print_fps": [],
+  "string_print_fps": [
+   1
+  ],
+  "unreferenced_top_funcs": [
+   "_make_user_record",
+   "add_user",
+   "authenticate",
+   "authenticate_device",
+   "authenticate_pb",
+   "create_token",
+   "decode_token",
+   "delete_user",
+   "get_learner_profile",
+   "get_user_info",
+   "is_first_user",
+   "register_pb",
+   "set_avatar",
+   "set_learner_profile",
+   "set_role"
+  ]
+ },
+ {
+  "file": "deeptutor/tools/paper_search_tool.py",
+  "results": [
+   {
+    "line": 185,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 190,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 193,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 194,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 195,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 196,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 197,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 198,
+    "function": "main",
+    "scope": "main-only"
+   },
+   {
+    "line": 199,
+    "function": "main",
+    "scope": "main-only"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "__init__",
+   "extract_arxiv_id_from_url",
+   "format_paper_citation",
+   "search_papers"
+  ]
+ },
+ {
+  "file": "deeptutor/reading/refresh.py",
+  "results": [
+   {
+    "line": 140,
+    "function": "refresh_materials",
+    "scope": "prod-path"
+   },
+   {
+    "line": 165,
+    "function": "refresh_materials",
+    "scope": "prod-path"
+   },
+   {
+    "line": 181,
+    "function": "refresh_materials",
+    "scope": "prod-path"
+   }
+  ],
+  "attr_print_fps": [],
+  "string_print_fps": [],
+  "unreferenced_top_funcs": [
+   "pdf_materials",
+   "refresh_materials"
+  ]
+ }
+]
