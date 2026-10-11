@@ -1,0 +1,1193 @@
+[
+ {
+  "path": "deeptutor/services/llm/cloud_provider.py",
+  "line": 110,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return []\n        except Exception as e:\n            logger.error(\"Error fetching models from %s: %s\", base_url, e)"
+ },
+ {
+  "path": "deeptutor/services/llm/local_provider.py",
+  "line": 82,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return collect_model_names(data)\n        except Exception as e:\n            logger.error(\"Error fetching models from %s: %s\", base_url, e)"
+ },
+ {
+  "path": "deeptutor/services/llm/local_provider.py",
+  "line": 61,
+  "method": "debug",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "return collect_model_names(data[\"models\"])\n            except Exception as exc:\n                logger.debug("
+ },
+ {
+  "path": "deeptutor/services/llm/multimodal.py",
+  "line": 117,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "data = target.read_bytes()\n    except Exception as exc:\n        logger.warning(\"failed to resolve local attachment %s: %s\", url, exc)"
+ },
+ {
+  "path": "deeptutor/services/llm/provider_core/openai_codex_provider.py",
+  "line": 131,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "# The user-facing text stays generic so upstream payloads never\n                # leak, but an operator still needs the real cause in the log.\n                logger.exception(\"Codex request failed\")"
+ },
+ {
+  "path": "deeptutor/services/llm/telemetry.py",
+  "line": 41,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return result\n            except Exception as e:\n                logger.warning(\"LLM call to %s failed: %s\", provider_name, e)"
+ },
+ {
+  "path": "deeptutor/services/embedding/adapters/ollama.py",
+  "line": 108,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except httpx.HTTPError as e:\n            logger.error(f\"Ollama API error: {e}\")"
+ },
+ {
+  "path": "deeptutor/services/embedding/adapters/openai_compatible.py",
+  "line": 343,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "if attempt < self._MAX_RETRIES:\n                    wait = self._RETRY_BACKOFF * (2**attempt)\n                    logger.warning("
+ },
+ {
+  "path": "deeptutor/services/embedding/adapters/openai_compatible.py",
+  "line": 350,
+  "method": "error",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "await asyncio.sleep(wait)\n                else:\n                    logger.error("
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 168,
+  "method": "error",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "first_chunk_chars = len(batch[0]) if batch else 0\n                longest_chunk_chars = max((len(t) for t in batch), default=0)\n                self.logger.error("
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 208,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>",
+   "exc_info=True"
+  ],
+  "snippet": "# run, but never lose the failure silently either — index\n                    # progress would read as stalled with no trace why.\n                    self.logger.warning("
+ },
+ {
+  "path": "deeptutor/services/embedding/client.py",
+  "line": 284,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>",
+   "exc_info=True"
+  ],
+  "snippet": "# Same contract as embed(): log and continue, so a broken\n                    # progress sink cannot stall multimodal indexing invisibly.\n                    self.logger.warning("
+ },
+ {
+  "path": "deeptutor/services/search/__init__.py",
+  "line": 48,
+  "method": "debug",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "return config.get(\"tools\", {}).get(\"web_search\", {})\n    except Exception as exc:\n        _logger.debug(f\"Could not load config: {exc}\")"
+ },
+ {
+  "path": "deeptutor/services/search/__init__.py",
+  "line": 57,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "system = load_system_settings()\n    except Exception as exc:\n        _logger.warning(\"Could not load web-search source policy: %s\", exc)"
+ },
+ {
+  "path": "deeptutor/services/search/__init__.py",
+  "line": 214,
+  "method": "error",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "response, supports_answer = _run_provider(candidate, query, candidate_kwargs)\n        except Exception as exc:\n            _logger.error(f\"[{candidate}] Search failed: {exc}\")"
+ },
+ {
+  "path": "deeptutor/services/search/consolidation.py",
+  "line": 291,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return rendered\n        except Exception as e:\n            _logger.error(f\"Template rendering failed: {e}\")"
+ },
+ {
+  "path": "deeptutor/services/search/source_filter.py",
+  "line": 236,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "raise ValueError(\"Moderation returned an unexpected result count\")\n    except Exception as exc:  # noqa: BLE001 — network / JSON / provider quirks\n        _logger.warning(\"OpenAI Moderation skipped after error: %s\", exc)"
+ },
+ {
+  "path": "deeptutor/services/search/source_filter.py",
+  "line": 325,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": "return bool(requester(url, api_key=api_key))\n    except Exception as exc:  # noqa: BLE001 — network / JSON / quota quirks\n        _logger.warning(\"Web Risk lookup skipped after error: %s\", exc)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 102,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            logger.error(\"Error processing DingTalk message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 206,
+  "method": "exception",
+  "vectors": [
+   "direct<e>",
+   "logger.exception(traceback)"
+  ],
+  "snippet": "except Exception as e:\n            logger.exception(\"Failed to start DingTalk channel: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 196,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._client.start()\n                except Exception as e:\n                    logger.warning(\"DingTalk stream error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 249,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return self._access_token\n        except Exception as e:\n            logger.error(\"Failed to get DingTalk access token: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 311,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return data, local_path.name, content_type\n        except Exception as e:\n            logger.error(\"DingTalk media read error ref={} err={}\", media_ref, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 295,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return resp.content, filename, content_type or None\n            except Exception as e:\n                logger.error(\"DingTalk media download error ref={} err={}\", media_ref, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 365,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return str(media_id)\n        except Exception as e:\n            logger.error(\"DingTalk media upload error type={} err={}\", media_type, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 426,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return True\n        except Exception as e:\n            logger.error(\"Error sending DingTalk message msgKey={} err={}\", msg_key, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/dingtalk.py",
+  "line": 548,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.error(\"Error publishing DingTalk message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 97,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "break\n            except Exception as e:\n                logger.warning(\"Discord gateway error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 276,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n                if attempt == 2:\n                    logger.error(\"Error sending Discord message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 322,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n                if attempt == 2:\n                    logger.error(\"Error sending Discord file {}: {}\", path.name, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 400,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._ws.send(json.dumps(payload))\n                except Exception as e:\n                    logger.warning(\"Discord heartbeat failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 452,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "content_parts.append(f\"[attachment: {file_path}]\")\n            except Exception as e:\n                logger.warning(\"Failed to download Discord attachment: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/discord.py",
+  "line": 507,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return\n                except Exception as e:\n                    logger.debug(\"Discord typing indicator failed for {}: {}\", channel_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/email.py",
+  "line": 146,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n            except Exception as e:\n                logger.error(\"Email polling error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/email.py",
+  "line": 205,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await asyncio.to_thread(self._smtp_send, email_msg)\n        except Exception as e:\n            logger.error(\"Error sending email to {}: {}\", to_addr, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 70,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": ")\n            except Exception:\n                logger.exception(\"Feishu card callback failed (message_id={})\", message_id)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 308,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await conn.close()\n    except Exception as e:  # noqa: BLE001 - teardown is best effort\n        logger.debug(\"Error closing Feishu WebSocket connection: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 606,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "ws_loop.run_until_complete(_shutdown_ws_client(ws_client, ws_loop))\n                except Exception as e:  # noqa: BLE001 - teardown is best effort\n                    logger.debug(\"Error shutting down Feishu WebSocket: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 592,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "break\n                    except Exception as e:\n                        logger.warning(\"Feishu WebSocket error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 731,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return reaction_id if isinstance(reaction_id, str) and reaction_id else None\n        except Exception as e:\n            logger.warning(\"Error adding reaction: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 771,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.warning(\"Error removing Feishu working reaction: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1127,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return None\n        except Exception as e:\n            logger.error(\"Error uploading image {}: {}\", file_path, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1161,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return None\n        except Exception as e:\n            logger.error(\"Error uploading file {}: {}\", file_path, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1191,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return None, None\n        except Exception as e:\n            logger.error(\"Error downloading image {}: {}\", image_key, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1228,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "return None, None\n        except Exception:\n            logger.exception(\"Error downloading {} {}\", resource_type, file_key)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1317,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return message_id if isinstance(message_id, str) and message_id else \"posted\"\n        except Exception as e:\n            logger.debug(\"Error posting Feishu thinking notice: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1335,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.debug(\"Error retracting Feishu notice {}: {}\", message_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1445,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return True\n        except Exception as e:\n            logger.error(\"Error sending Feishu {} message: {}\", msg_type, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1541,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return None\n        except Exception as e:\n            logger.warning(\"Error creating Feishu streaming card: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1575,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return True\n        except Exception as e:\n            logger.warning(\"Error stream-updating Feishu card {}: {}\", card_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1612,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return True\n        except Exception as e:\n            logger.warning(\"Error closing streaming on Feishu card {}: {}\", card_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 1963,
+  "method": "warning",
+  "vectors": [
+   "direct<exc>"
+  ],
+  "snippet": ")\n        except Exception as exc:\n            logger.warning(\"Error patching Feishu model picker {}: {}\", message_id, exc)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 2323,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            logger.error(\"Error sending Feishu message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/feishu.py",
+  "line": 2446,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            logger.error(\"Error processing Feishu message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/matrix.py",
+  "line": 271,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "self.client.load_store()\n            except Exception:\n                logger.exception(\"Matrix store load failed; restart may replay recent messages.\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 158,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "break\n            except Exception as e:\n                logger.warning(\"Mattermost WebSocket error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 177,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._ws.close()\n            except Exception as e:\n                logger.warning(\"Mattermost WebSocket close failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 211,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return bool(self._bot_user_id)\n        except Exception as e:\n            logger.error(\"Mattermost: failed to resolve bot identity via /users/me: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 245,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "await self._handle_posted(data.get(\"data\") or {})\n            except Exception:\n                logger.exception(\"Mattermost: error handling posted event\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 367,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return str(dest)\n        except Exception as e:\n            logger.warning(\"Mattermost: failed to download attachment {}: {}\", file_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mattermost.py",
+  "line": 449,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return infos[0].get(\"id\")\n        except Exception as e:\n            logger.error(\"Mattermost file upload failed for {}: {}\", path.name, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 410,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.error(\"Failed to send Mochat message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 509,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return True\n        except Exception as e:\n            logger.error(\"Failed to connect Mochat websocket: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 595,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._refresh_targets(subscribe_new=self._ws_ready)\n            except Exception as e:\n                logger.warning(\"Mochat refresh failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 609,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "response = await self._post_json(\"/api/claw/sessions/list\", {})\n        except Exception as e:\n            logger.warning(\"Mochat listSessions failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 643,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "response = await self._post_json(\"/api/claw/groups/get\", {})\n        except Exception as e:\n            logger.warning(\"Mochat getWorkspaceGroup failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 712,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "break\n            except Exception as e:\n                logger.warning(\"Mochat watch fallback error ({}): {}\", session_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 745,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "break\n            except Exception as e:\n                logger.warning(\"Mochat panel polling error ({}): {}\", panel_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 998,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "data = json.loads(self._cursor_path.read_text(\"utf-8\"))\n        except Exception as e:\n            logger.warning(\"Failed to read Mochat cursor file: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/mochat.py",
+  "line": 1023,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.warning(\"Failed to save Mochat cursor file: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 191,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "payload = json.loads(raw.decode(\"utf-8\"))\n                except Exception as e:\n                    logger.warning(\"MSTeams invalid request body: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 218,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "fut.result(timeout=15)\n                except Exception as e:\n                    logger.warning(\"MSTeams activity handling failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 205,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "fut.result(timeout=15)\n                    except Exception as e:\n                        logger.warning(\"MSTeams inbound auth validation failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 300,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "self._touch_conversation_ref(str(msg.chat_id), persist=True)\n        except Exception:\n            logger.exception(\"MSTeams send failed\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 602,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "main_data = loaded\n            except Exception as e:\n                logger.warning(\"Failed to load MSTeams conversation refs: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 610,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "meta_data = loaded_meta\n            except Exception as e:\n                logger.warning(\"Failed to load MSTeams conversation refs metadata: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/msteams.py",
+  "line": 817,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "self._write_json_atomically(self._refs_meta_path, refs_meta)\n        except Exception as e:\n            logger.warning(\"Failed to save MSTeams conversation refs: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 111,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "raise\n            except Exception as e:\n                logger.warning(\"napcat: connection lost: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 239,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "pass\n            except Exception as e:\n                logger.warning(\"napcat: {} handler failed: {}\", kind, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 438,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return data.get(\"card\") or data.get(\"nickname\") or str(user_id)\n        except Exception as e:\n            logger.warning(\"napcat: get_group_member_info failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 484,
+  "method": "warning",
+  "vectors": [
+   "direct<err>"
+  ],
+  "snippet": "ok, err = validate_url_target(ref)\n            if not ok:\n                logger.warning(\"napcat: rejected remote image '{}': {}\", ref, err)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 535,
+  "method": "warning",
+  "vectors": [
+   "direct<err>"
+  ],
+  "snippet": "ok, err = validate_url_target(url)\n        if not ok:\n            logger.warning(\"napcat: skip image '{}': {}\", url, err)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 578,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "data = bytes(buf)\n        except Exception as e:\n            logger.warning(\"napcat: image download error url={} err={}\", url, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/napcat.py",
+  "line": 592,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await asyncio.to_thread(path.write_bytes, data)\n        except OSError as e:\n            logger.warning(\"napcat: failed to save image: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/qq.py",
+  "line": 119,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._client.start(appid=self.config.app_id, secret=self.config.secret)\n            except Exception as e:\n                logger.warning(\"QQ bot error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/qq.py",
+  "line": 203,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": ")\n        except Exception:\n            logger.exception(\"Error handling QQ message\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/registry.py",
+  "line": 60,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "plugins[ep.name] = cls\n        except Exception as e:\n            logger.warning(\"Failed to load channel plugin '{}': {}\", ep.name, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/registry.py",
+  "line": 90,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except ImportError as e:\n            errors[modname] = str(e)\n            logger.debug(\"Skipping built-in channel '{}': {}\", modname, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/slack.py",
+  "line": 106,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "logger.info(\"Slack bot connected as {}\", self._bot_user_id)\n        except Exception as e:\n            logger.warning(\"Slack auth_test failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/slack.py",
+  "line": 138,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._socket_client.close()\n            except Exception as e:\n                logger.warning(\"Slack socket close failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/slack.py",
+  "line": 173,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n            except Exception as e:\n                logger.error(\"Failed to upload file {}: {}\", media_path, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/slack.py",
+  "line": 245,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.debug(\"Slack reactions_add failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/slack.py",
+  "line": 265,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": ")\n        except Exception:\n            logger.exception(\"Error handling Slack message from {}\", sender_id)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 411,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "logger.debug(\"Telegram bot commands registered\")\n        except Exception as e:\n            logger.warning(\"Failed to register bot commands: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 510,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n                filename = media_path.rsplit(\"/\", 1)[-1]\n                logger.error(\"Failed to send media {}: {}\", media_path, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 547,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.warning(\"HTML parse failed, falling back to plain text: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 665,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "# network errors propagate so the manager can retry without\n                # doubling connection demand during pool exhaustion.\n                logger.debug(\"Final stream edit failed (HTML), trying plain: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 738,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "buf.last_edit = now\n                    return\n                logger.warning(\"Stream edit failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 682,
+  "method": "warning",
+  "vectors": [
+   "direct<e2>"
+  ],
+  "snippet": "logger.debug(\"Final stream plain edit already applied for {}\", chat_id)\n                    else:\n                        logger.warning(\"Final stream edit failed: {}\", e2)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 760,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            if not self._is_not_modified_error(e):\n                logger.warning(\"Stream overflow edit failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 892,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return [path_str], [f\"[{media_type}: {path_str}]\"]\n        except Exception as e:\n            logger.warning(\"Failed to download message media: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/telegram.py",
+  "line": 1123,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "pass\n        except Exception as e:\n            logger.debug(\"Typing indicator stopped for {}: {}\", chat_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/wecom.py",
+  "line": 204,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.error(\"Error handling enter_chat: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/wecom.py",
+  "line": 329,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            logger.error(\"Error processing WeCom message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/wecom.py",
+  "line": 362,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n            logger.error(\"Error downloading media: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 232,
+  "method": "error",
+  "vectors": [
+   "exc_info=True"
+  ],
+  "snippet": "return bool(self._token)\n        except Exception:\n            self.logger.error(\"Failed to load Weixin account state\", exc_info=True)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 378,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "if not self._running:\n                    break\n                self.logger.exception(\"WeChat poll loop error\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 483,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "await self._process_message(msg)\n            except Exception:\n                self.logger.exception(\"Failed to process WeChat message\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 780,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "except Exception:\n            self.logger.exception(\"Error downloading media\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 751,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n                    if should_fallback:\n                        self.logger.warning("
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 860,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "data = await self._api_post(\"ilink/bot/getconfig\", body)\n        except Exception as e:\n            self.logger.warning(\"WeChat getconfig failed for {}: {}\", chat_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 916,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "await self._send_text(chat_id, \"\\n\\n\".join(hints), ctx_token)\n        except Exception:\n            self.logger.exception(\"Failed to flush buffered tool hints for {}\", chat_id)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1065,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "await self._send_text(msg.chat_id, chunk, ctx_token)\n        except Exception:\n            self.logger.exception(\"Error sending message\")"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1039,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "# 4xx client errors are NOT retryable — fall back to text.\n                    filename = Path(media_path).name\n                    self.logger.exception(\"Failed to send media {}\", media_path)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1049,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "# notify the user via text fallback.\n                    filename = Path(media_path).name\n                    self.logger.exception(\"Failed to send media {}\", media_path)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1028,
+  "method": "exception",
+  "vectors": [
+   "logger.exception(traceback)"
+  ],
+  "snippet": "if status_code >= 500:\n                        # Server-side / retryable HTTP error — same as network.\n                        self.logger.exception("
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1101,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._send_typing(chat_id, ticket, TYPING_STATUS_TYPING)\n        except Exception as e:\n            self.logger.debug(\"typing indicator start failed for {}: {}\", chat_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1140,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._send_typing(chat_id, ticket, TYPING_STATUS_CANCEL)\n        except Exception as e:\n            self.logger.debug(\"typing clear failed for {}: {}\", chat_id, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1364,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "key = _parse_aes_key(aes_key_b64)\n    except Exception as e:\n        logger.warning(\"Failed to parse AES key for encryption, sending raw: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/weixin.py",
+  "line": 1398,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "key = _parse_aes_key(aes_key_b64)\n    except Exception as e:\n        logger.warning(\"Failed to parse AES key, returning raw data: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/whatsapp.py",
+  "line": 86,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "self._connected = False\n                self._ws = None\n                logger.warning(\"WhatsApp bridge connection error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/whatsapp.py",
+  "line": 79,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "await self._handle_bridge_message(message)\n                        except Exception as e:\n                            logger.error(\"Error handling bridge message: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 126,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n        except Exception as e:\n            logger.error(\"Failed to create Zulip client: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 223,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "if attempt < max_retries - 1:\n                    delay = 2**attempt\n                    logger.warning("
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 231,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "time.sleep(delay)\n                else:\n                    logger.error(\"Zulip API call failed after {} retries: {}\", max_retries, e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 280,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "except Exception as e:\n                logger.error(\"Zulip listener error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 250,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n                    except Exception as e:\n                        logger.warning(\"Zulip get_events error: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 297,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "result = self._call_with_retry(self._client.add_subscriptions, streams=subscriptions)\n        except Exception as e:\n            logger.error(\"Zulip auto-subscribe failed: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 313,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "result = self._call_with_retry(self._client.get_streams, include_all=True)\n        except Exception as e:\n            logger.error(\"Zulip get_streams failed during auto-subscribe: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 394,
+  "method": "error",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "self._queue_id = None\n        except Exception as e:\n            logger.error(\"Zulip register exception: {}\", e)"
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 672,
+  "method": "warning",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": "return str(dest)\n        except Exception as e:\n            logger.warning("
+ },
+ {
+  "path": "deeptutor/partners/channels/zulip.py",
+  "line": 845,
+  "method": "debug",
+  "vectors": [
+   "direct<e>"
+  ],
+  "snippet": ")\n                except Exception as e:\n                    logger.debug(\"Zulip typing status error: {}\", e)"
+ }
+]
