@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import sys
 import time
 from unittest.mock import AsyncMock, MagicMock
 
@@ -20,6 +21,8 @@ from deeptutor.partners.channels.weixin import (
     MESSAGE_TYPE_BOT,
     WeixinChannel,
     WeixinConfig,
+    _decrypt_aes_ecb,
+    _encrypt_aes_ecb,
     _parse_aes_key,
     _pkcs7_unpad_safe,
 )
@@ -443,3 +446,20 @@ class TestCryptoHelpers:
     def test_pkcs7_unpad_safe(self):
         assert _pkcs7_unpad_safe(b"abc" + b"\x0d" * 13) == b"abc"
         assert _pkcs7_unpad_safe(b"abc") == b"abc"
+
+    def test_aes_round_trip_without_pycryptodome(self, monkeypatch):
+        """Minimal installs never ship pycryptodome; `cryptography` alone must
+        carry the AES pair (declared in the `partners` extra, core transitive
+        elsewhere). Blocking the ``Crypto`` namespace pins the documented
+        fallback order to its guaranteed final backend."""
+        pytest.importorskip("cryptography")
+        monkeypatch.setitem(sys.modules, "Crypto", None)
+        monkeypatch.setitem(sys.modules, "Crypto.Cipher", None)
+
+        key = base64.b64encode(b"1234567890abcdef").decode()
+        payload = b"minimal-install fallback payload"
+
+        ciphertext = _encrypt_aes_ecb(payload, key)
+        assert ciphertext != payload
+        assert len(ciphertext) % 16 == 0
+        assert _decrypt_aes_ecb(ciphertext, key) == payload

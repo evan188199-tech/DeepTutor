@@ -1369,7 +1369,12 @@ def _encrypt_aes_ecb(data: bytes, aes_key_b64: str) -> bytes:
     padded = data + bytes([pad_len] * pad_len)
 
     # AES-128-ECB is mandated by the WeChat CDN media protocol — not our choice.
-    # The ``Crypto`` namespace is provided by the maintained pycryptodome fork.
+    # Backend fallback order: pycryptodome first (the ``Crypto`` namespace,
+    # maintained fork — opportunistic, DeepTutor never installs it), then
+    # `cryptography` (the default backend; declared in the `partners` extra,
+    # and every full-distribution install already pulls it via the core
+    # python-jose[cryptography] requirement). Only a CLI-only install can
+    # lack both; the guarded ImportError below then leaves media unencrypted.
     with suppress(ImportError):
         from Crypto.Cipher import AES  # nosec B413
 
@@ -1401,7 +1406,12 @@ def _decrypt_aes_ecb(data: bytes, aes_key_b64: str) -> bytes:
     decrypted: bytes | None = None
 
     # AES-128-ECB is mandated by the WeChat CDN media protocol — not our choice.
-    # The ``Crypto`` namespace is provided by the maintained pycryptodome fork.
+    # Same backend fallback order as `_encrypt_aes_ecb`: pycryptodome first
+    # (``Crypto`` namespace — opportunistic, DeepTutor never installs it),
+    # then `cryptography` (default; declared in the `partners` extra, already
+    # present in every full-distribution install via python-jose[cryptography]).
+    # Only a CLI-only install can lack both; the guarded ImportError below
+    # then returns the payload undecrypted.
     with suppress(ImportError):
         from Crypto.Cipher import AES  # nosec B413
 

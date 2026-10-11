@@ -484,3 +484,14 @@ class TestStop:
         assert ch._running is False
         assert ch._server is None
         assert ch._http is None
+
+
+class TestAvailabilityProbe:
+    def test_declared_deps_satisfy_the_availability_probe(self):
+        """`jwt` + `cryptography` are declared in the `partners` extra; when
+        both are importable the probe must report the channel available.
+        Skipped in environments without the partners extra, where the probe
+        correctly reports unavailable instead of failing at import time."""
+        pytest.importorskip("jwt")
+        pytest.importorskip("cryptography")
+        assert msteams_mod.MSTEAMS_AVAILABLE is True

@@ -40,6 +40,12 @@ from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
 
+# Bot Framework token validation needs PyJWT *and* `cryptography`: the RSA
+# algorithms PyJWT delegates to (`RSAAlgorithm.from_jwk` below) live in
+# `cryptography`. Both are declared in the `partners` extra — PyJWT[crypto]
+# pulls `cryptography` transitively, and it is also declared directly there.
+# On installs without the extra (e.g. CLI-only), the channel reports
+# unavailable via `MSTEAMS_AVAILABLE` instead of failing at import time.
 MSTEAMS_AVAILABLE = (
     importlib.util.find_spec("jwt") is not None
     and importlib.util.find_spec("cryptography") is not None

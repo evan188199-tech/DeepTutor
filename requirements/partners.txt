@@ -35,3 +35,7 @@ websockets>=12.0
 aiohttp>=3.10.0,<4.0.0
 # msteams Bot Framework token validation
 PyJWT[crypto]>=2.8.0,<3.0.0
+# weixin media AES (default backend) + msteams token validation import
+# `cryptography` directly; floor matches the PyJWT[crypto] /
+# python-jose[cryptography] transitives (see pyproject.toml partners extra).
+cryptography>=3.4.0

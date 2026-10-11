@@ -201,6 +201,15 @@ partners = [
     "aiohttp>=3.10.0,<4.0.0",
     # msteams Bot Framework token validation
     "PyJWT[crypto]>=2.8.0,<3.0.0",
+    # `cryptography` backs two partner channels directly: weixin media AES
+    # (fallback backend — the code prefers pycryptodome's ``Crypto`` when the
+    # user installs it herself, but DeepTutor never does, so this is the
+    # default backend) and msteams Bot Framework token validation (PyJWT's
+    # RSA algorithms). Previously satisfied only transitively via
+    # PyJWT[crypto] / python-jose[cryptography]; declared here so those direct
+    # imports no longer depend on another distribution's extra. The floor
+    # matches what both transitives already require.
+    "cryptography>=3.4.0",
 ]
 
 # Optional document-parsing engines for the shared parse layer

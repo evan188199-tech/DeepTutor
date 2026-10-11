@@ -214,3 +214,24 @@ def test_cli_runtime_dependencies_match_every_install_surface(expected: str) -> 
         .splitlines()
     ]
     assert requirement_lines.count(expected) == 1
+
+
+def test_partners_extra_declares_the_directly_imported_crypto_backend() -> None:
+    """Partner channels import `cryptography` directly and must not rely on
+    another distribution's extra to satisfy it.
+
+    weixin media AES falls back to `cryptography` when pycryptodome is absent
+    (DeepTutor never installs pycryptodome, so this is the default backend),
+    and msteams token validation needs it for PyJWT's RSA algorithms. Before
+    this declaration both were only transitively available via
+    PyJWT[crypto] / python-jose[cryptography]; the floor matches what those
+    transitives already require.
+    """
+    expected = "cryptography>=3.4.0"
+    with (REPOSITORY_ROOT / "pyproject.toml").open("rb") as file:
+        extras = tomllib.load(file)["project"]["optional-dependencies"]
+
+    assert expected in extras["partners"]
+
+    partners_text = (REPOSITORY_ROOT / "requirements" / "partners.txt").read_text(encoding="utf-8")
+    assert expected in partners_text
