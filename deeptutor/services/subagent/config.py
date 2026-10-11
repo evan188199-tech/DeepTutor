@@ -80,6 +80,11 @@ class BackendConfig:
     base_url: str = ""
     api_key_env: str = "DEEPTUTOR_HERMES_REMOTE_API_KEY"
     profile: str = ""
+    # Consult-wait ceiling in seconds, shared by the backends that consume it.
+    # hermes_remote reads it as the per-event idle ceiling (default 600); the
+    # opencode family reads it as one wall-clock cap over a consult's wait
+    # phase, where 0 disables the cap — the family default, preserving the
+    # wait-unconditionally contract (see ``default_backend_config``).
     idle_timeout_seconds: int = 600
 
 
@@ -123,6 +128,10 @@ def _backend_to_dict(kind: str, cfg: BackendConfig) -> dict[str, Any]:
                 "idle_timeout_seconds": cfg.idle_timeout_seconds,
             }
         )
+    elif kind in ("opencode", "mimo"):
+        # Consumed as the consult wall-clock cap; keep it across the
+        # save/load round-trip so an opted-in ceiling survives.
+        payload["idle_timeout_seconds"] = cfg.idle_timeout_seconds
     return payload
 
 
@@ -136,7 +145,13 @@ def _coerce_budget(value: Any) -> int:
 
 def default_backend_config(kind: str) -> BackendConfig:
     """Backend-specific defaults without changing existing CLI permissions."""
-    return BackendConfig(permission_mode="dontAsk") if kind == "grok" else BackendConfig()
+    if kind == "grok":
+        return BackendConfig(permission_mode="dontAsk")
+    if kind in ("opencode", "mimo"):
+        # Cap off by default: this family's contract waits unconditionally
+        # for the agent's own logic; opting in sets a wall-clock ceiling.
+        return BackendConfig(idle_timeout_seconds=0)
+    return BackendConfig()
 
 
 def _coerce_backend(raw: Any, kind: str = "") -> BackendConfig:
@@ -148,6 +163,9 @@ def _coerce_backend(raw: Any, kind: str = "") -> BackendConfig:
         idle_timeout = int(raw.get("idle_timeout_seconds", base.idle_timeout_seconds))
     except (TypeError, ValueError):
         idle_timeout = base.idle_timeout_seconds
+    # 0 ("cap off") is only meaningful for the opencode family; hermes_remote
+    # keeps its historical floor of 1 second.
+    idle_floor = 0 if kind in ("opencode", "mimo") else 1
     return BackendConfig(
         enabled=bool(raw.get("enabled", base.enabled)),
         model=str(raw.get("model") or "").strip(),
@@ -165,7 +183,7 @@ def _coerce_backend(raw: Any, kind: str = "") -> BackendConfig:
         base_url=str(raw.get("base_url") or "").strip(),
         api_key_env=str(raw.get("api_key_env") or base.api_key_env).strip() or base.api_key_env,
         profile=str(raw.get("profile") or "").strip(),
-        idle_timeout_seconds=max(1, min(86_400, idle_timeout)),
+        idle_timeout_seconds=max(idle_floor, min(86_400, idle_timeout)),
     )
 
 

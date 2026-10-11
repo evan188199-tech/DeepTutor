@@ -36,7 +36,7 @@ from typing import Any
 import httpx
 
 from deeptutor.services.subagent.base import OnEvent, SubagentBackend
-from deeptutor.services.subagent.config import BackendConfig
+from deeptutor.services.subagent.config import BackendConfig, default_backend_config
 from deeptutor.services.subagent.opencode_server import acquire_server
 from deeptutor.services.subagent.process import (
     compact_field as _compact,
@@ -67,6 +67,8 @@ _ATTACH_TIMEOUT_SECONDS = 15.0
 
 # No read timeout: per the product contract we wait unconditionally for the
 # agent's own logic to finish — only the run ending closes the request/stream.
+# The opt-in ``idle_timeout_seconds`` wall-clock cap in ``consult`` is the one
+# bound on that wait; without it a silently hung remote is waited out forever.
 _HTTP_TIMEOUT = httpx.Timeout(connect=10.0, read=None, write=60.0, pool=10.0)
 
 _TOOL_PRIMARY_ARGS = (
@@ -113,7 +115,12 @@ class OpencodeFamilyBackend(SubagentBackend):
         images: list[str] | None = None,
         partner_id: str | None = None,  # noqa: ARG002 — partner-only; ignored here
     ) -> ConsultResult:
-        config = config or BackendConfig()
+        config = config or default_backend_config(self.kind)
+        # Wall-clock ceiling over this consult's wait phase (session create,
+        # bus attach, the end-of-turn POST and the SSE read feeding it).
+        # ``0`` — this family's default — disables it, keeping the contract
+        # that we wait for the agent's own logic unconditionally.
+        cap = config.idle_timeout_seconds or 0
         result = ConsultResult(session_id=session_id)
         # Per-consult stream state: cumulative text per part id, each part's
         # channel (text vs reasoning), and any session error seen on the bus.
@@ -145,28 +152,54 @@ class OpencodeFamilyBackend(SubagentBackend):
                 base_url=handle.base_url, auth=handle.auth, timeout=_HTTP_TIMEOUT
             ) as client:
                 fresh_session = not session_id
-                sid = session_id or await self._create_session(client)
-                result.session_id = sid
-
-                attached = asyncio.Event()
-                listener = asyncio.create_task(
-                    self._listen(client, sid, state, emit, attached, config)
-                )
-                await _wait_attached(listener, attached)
-
-                body = self._prompt_body(
-                    question, config=config, images=images, fresh_session=fresh_session
-                )
+                sid = session_id or ""
+                abort_sent = False
                 try:
-                    response = await client.post(f"/session/{sid}/message", json=body)
-                    response.raise_for_status()
-                except asyncio.CancelledError:
-                    # The user aborted the turn — best-effort stop the run so
-                    # the agent doesn't keep working into a dead session.
-                    with_abort = client.post(f"/session/{sid}/abort", timeout=5.0)
-                    await asyncio.shield(_swallow(with_abort))
-                    raise
-                result.final_text = _text_from_parts(_response_parts(response))
+                    async with asyncio.timeout(cap if cap > 0 else None):
+                        sid = session_id or await self._create_session(client)
+                        result.session_id = sid
+
+                        attached = asyncio.Event()
+                        listener = asyncio.create_task(
+                            self._listen(client, sid, state, emit, attached, config)
+                        )
+                        await _wait_attached(listener, attached)
+
+                        body = self._prompt_body(
+                            question, config=config, images=images, fresh_session=fresh_session
+                        )
+                        try:
+                            response = await client.post(f"/session/{sid}/message", json=body)
+                            response.raise_for_status()
+                        except asyncio.CancelledError:
+                            # The user aborted the turn — best-effort stop the run so
+                            # the agent doesn't keep working into a dead session.
+                            # (Also entered when the cap cancels the POST; the flag
+                            # keeps the timeout handler from aborting twice.)
+                            with_abort = client.post(f"/session/{sid}/abort", timeout=5.0)
+                            await asyncio.shield(_swallow(with_abort))
+                            abort_sent = True
+                            raise
+                        result.final_text = _text_from_parts(_response_parts(response))
+                except TimeoutError:
+                    # The opt-in cap fired: the remote hung silently and the wait
+                    # would never end on its own. Same surface as hermes_remote's
+                    # idle_timeout — the ``idle_timeout`` result code and the
+                    # matching EVENT_ERROR row are the stable alert point for
+                    # monitoring; the warning log carries the per-consult detail.
+                    # Falls through (no return) so whatever streamed before the
+                    # hang still reaches the final-text fallback below.
+                    logger.warning(
+                        "%s consult hit the %ss wall-clock cap (idle_timeout)",
+                        self.kind,
+                        cap,
+                    )
+                    if sid and not abort_sent:
+                        with_abort = client.post(f"/session/{sid}/abort", timeout=5.0)
+                        await asyncio.shield(_swallow(with_abort))
+                    result.success = False
+                    result.error = "idle_timeout"
+                    await emit(EVENT_ERROR, "idle_timeout", {})
         except asyncio.CancelledError:
             raise
         except Exception as exc:
