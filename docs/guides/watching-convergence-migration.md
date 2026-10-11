@@ -38,7 +38,7 @@ the provider cache for old records"，投影从不改写旧 JSON 或 Notebook。
 | 笔记 | Notebook `"Video Learning"`（`deeptutor/video_learning/notes.py:20`；CRUD `:144/:188/:213`） | `Annotation`（`deeptutor/reading/models.py:359`，locator+quote+note），落 `ReadingStore.save_annotation`（`deeptutor/reading/store.py:1326`） |
 | 标记 | `learning.marks`（`deeptutor/video_learning/marks.py:123-126`，路由持久化 `deeptutor/api/routers/video_learning.py:343`） | **尚无对应物**（见 §5 空白 1） |
 | 进度 | `save_video_progress` 写回 TimedMedia（`deeptutor/api/routers/video_learning.py:243-254`） | `ReadingStore.save_position`（`deeptutor/reading/store.py:1105`，幂等判断 `:1100`） |
-| Provider | `_youtube_resolution`（`deeptutor/video_learning/service.py:484`）/ `_invidious_resolution`（`:547`），分发表 `:589-590`，缺省回退 youtube `:610` | Reading 摄取注入 `youtube_loader`（`deeptutor/reading/ingestion.py:158`），默认 `_load_youtube_captions`（`:167`）已走 `resolve_youtube_captions`（`deeptutor/video_learning/service.py:594`）——Provider 层合一；B 站独立 loader（`deeptutor/reading/ingestion.py:825`） |
+| Provider | `_youtube_resolution`（`deeptutor/video_learning/service.py:484`）/ `_invidious_resolution`（`:547`），分发表 `:589-590`，缺省回退 youtube `:610` | Reading 摄取注入 `youtube_loader`（`deeptutor/reading/ingestion.py:158`），默认 `_load_youtube_captions`（`:167`）已走 `resolve_youtube_captions`（`deeptutor/video_learning/service.py:594`）——Provider 层合一；B 站独立 loader（`deeptutor/reading/ingestion.py:820`） |
 
 注意区分：`deeptutor/reading/captions.py:53` 是**图片 captioning**（LLM 配图说明），
 与字幕无关，勿混入本链路。
@@ -67,9 +67,8 @@ the provider cache for old records"，投影从不改写旧 JSON 或 Notebook。
 | 触发点 | 位置 | 行为 |
 |---|---|---|
 | 发回合（旧会话继续说话/regenerate） | `deeptutor/services/session/turns/request_preparer.py:236-242`（payload/preferences 的 workspace_mode、capability、session_kind 任一为 `immersive_watching`） | 无 timed_media_id 直接 fail-closed（`:245-248`）；迁移成功后偏好改写为 `chat`+`immersive_reading`（`:262-268`），`timed_media_id` 降级为溯源字段（`:269-271` 注释），viewport 转 `reading_viewport` 并弹出旧字段（`:288-294`） |
-| 打开会话（显式迁移端点） | `deeptutor/api/routers/sessions.py:383` `POST /{session_id}/migrate-watching` → `_normalize_legacy_watching_session`（`:132`）；媒体 id 缺失时从消息 request_snapshot 回捞（`:143-149`，snapshot 写入点 `deeptutor/services/session/_turn_runtime_shared.py:956-958`） | 找不到媒体 → 降级为纯 chat 并打 `legacy_watching_unavailable`（`:152-161`，媒体缺失分支 `:166-179`）；迁移异常保留原会话返回 409（`:401-403`）；仅 `persist=True` 时写回偏好 |
+| 打开会话（显式迁移端点） | `deeptutor/api/routers/sessions.py:383` `POST /{session_id}/migrate-watching` → `_normalize_legacy_watching_session`（`:132`）；媒体 id 缺失时从消息 request_snapshot 回捞（`:143-149`，snapshot 写入点 `deeptutor/services/session/_turn_runtime_shared.py:956-958`） | 找不到媒体 → 降级为纯 chat 并打 `legacy_watching_unavailable`（`:150-161`，媒体缺失分支 `:171-180`）；迁移异常保留原会话返回 409（`:401-403`）；仅 `persist=True` 时写回偏好 |
 | 前端路由 | `web/lib/workspace-mode.ts:30` `immersive_watching → READING`（legacyCapability 同判 `:34-37`）；旧 URL 重定向 `web/features/chat/components/ChatWorkspace.tsx:660-661` + `web/lib/learning-routes.ts:41` | 前端一律落到 Reading 舞台（`web/components/reading/workspace/MediaReadingStage.tsx` + YouTube/Bilibili 播放器） |
-
 回合 schema 仍保留 `timed_media_id/viewport` 字段（`deeptutor/core/turn_request.py:173-174`），
 但执行前已被 preparer 弹出——读代码时不要据此认为回合仍消费 TimedMedia。
 
@@ -81,9 +80,9 @@ the provider cache for old records"，投影从不改写旧 JSON 或 Notebook。
   仅空位写 position（`:148-149`），重复触发不产生重复物料/笔记
   （测试 `tests/video_learning/test_reading_migration.py:111`）。
 - **失败语义分两级**：回合侧 fail-closed 报错不降级（`request_preparer.py:245-248`、
-  `:257-260`）；打开会话侧降级为 chat 保对话（`sessions.py:152-161`、`:166-179`）。
+  `:257-260`）；打开会话侧降级为 chat 保对话（`sessions.py:150-161`、`:171-180`）。
 - **不可回退点**：一旦旧会话偏好被重写为 `immersive_reading`（两处都持久化），
-  `immersive_watching` 字段即消失，仪表盘 `watching` 桶（`deeptutor/api/routers/dashboard.py:104-113`）
+  `immersive_watching` 字段即消失，仪表盘 `watching` 桶（`deeptutor/api/routers/dashboard.py:103-113`）
   不再计入——回退到"独立 Watching 面"需要恢复偏好字段，而能力注册已删
   （`tests/video_learning/test_turn_wiring.py:219`），实际上不可单靠数据回退。
 
@@ -98,13 +97,13 @@ the provider cache for old records"，投影从不改写旧 JSON 或 Notebook。
 | `deeptutor/video_learning/notes.py` | 旧笔记（Notebook） | `:20` 笔记本名；`:107` 列表 |
 | `deeptutor/video_learning/marks.py` | 旧标记（未迁移） | `:123-126` 存储；`:235-259` CRUD |
 | `deeptutor/api/routers/video_learning.py` | 旧 HTTP 面（进度/标记仍活跃） | `:243` 进度；`:322/:342-372` 标记 |
-| `deeptutor/reading/ingestion.py` | 新摄取（provider 感知） | `:151/:158/:180/:205/:295/:799/:825` |
+| `deeptutor/reading/ingestion.py` | 新摄取（provider 感知） | `:151/:158/:180/:205/:295/:799/:820` |
 | `deeptutor/reading/models.py` | locator/Annotation 模型 | `:3/:135/:359` |
 | `deeptutor/reading/store.py` | 位置/批注持久化 | `:1100/:1105/:1208/:1326` |
 | `deeptutor/reading/catalog_store.py` | 物料 SQLite 目录 | （与 `catalog_models.py:16-25` 同读） |
 | `deeptutor/capabilities/reading/capability.py` | 媒体回合种子 | `:227-240` render_mode 分支；`:394` 当前时间注入 |
 | `deeptutor/services/session/_turn_runtime_shared.py` | snapshot 回捞字段 | `:813`；`:956-958` |
-| `deeptutor/api/routers/dashboard.py` | 遗留会话计数 | `:104-113`（列表 `:209-210`） |
+| `deeptutor/api/routers/dashboard.py` | 遗留会话计数 | `:103-113`（列表 `:209-210`） |
 | `web/lib/workspace-mode.ts` | 前端模式归一化 | `:30-37` |
 | `web/components/reading/library/AddMaterialsDialog.tsx` | WatchingBrowser 复用为 Invidious 入口 | `:23/:531` |
 | `web/components/watching/WatchingMarksPanel.tsx` | 孤儿组件（无引用） | 全仓仅自引用 |
@@ -134,6 +133,6 @@ the provider cache for old records"，投影从不改写旧 JSON 或 Notebook。
    （`request_preparer.py:269-271`），但旧进度/标记端点仍写 TimedMedia
    （`video_learning.py:243-254`）；若 UI 或旧客户端继续调用，读路径已是 Reading
    ——需要一张"迁移后旧端点写密封堵或同步投影"的卡。
-4. **仪表盘 watching 桶无测试**：`dashboard.py:104-113` 的遗留计数零覆盖
+4. **仪表盘 watching 桶无测试**：`dashboard.py:103-113` 的遗留计数零覆盖
    （`tests/api/` 下仅 session 迁移测试触及 `watching`）。
 5. **`WatchingMarksPanel.tsx` 零测试 + 零引用**：随空白 1 一并处理，或单独删除。
