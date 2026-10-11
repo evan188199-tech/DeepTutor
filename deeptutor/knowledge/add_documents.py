@@ -615,6 +615,9 @@ async def add_documents(
     from deeptutor.knowledge.manager import KnowledgeBaseManager
 
     manager = KnowledgeBaseManager(base_dir=base_dir)
+    # Resolve the None sentinel once through the manager so every downstream
+    # consumer (DocumentAdder, empty-KB bootstrap) gets a concrete base dir.
+    effective_base_dir = str(manager.base_dir)
     published_count = 0
     try:
         manager.update_kb_status(
@@ -635,7 +638,7 @@ async def add_documents(
         try:
             adder = DocumentAdder(
                 kb_name=kb_name,
-                base_dir=base_dir,
+                base_dir=effective_base_dir,
                 api_key=api_key,
                 base_url=base_url,
                 accepted_indexing_snapshot=accepted_indexing_snapshot,
@@ -648,7 +651,7 @@ async def add_documents(
             return await _bootstrap_index_from_files(
                 kb_name=kb_name,
                 source_files=source_files,
-                base_dir=base_dir,
+                base_dir=effective_base_dir,
                 manager=manager,
             )
 

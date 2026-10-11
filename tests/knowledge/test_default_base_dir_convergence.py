@@ -209,3 +209,51 @@ def test_kb_health_routes_through_current_user_manager(monkeypatch, tmp_path: Pa
         assert kb_health._current_manager() is scoped
     finally:
         reset_current_user(token)
+
+
+def test_add_documents_default_base_dir_bootstraps_empty_kb(monkeypatch, tmp_path: Path) -> None:
+    """The empty-KB bootstrap must resolve the default base dir, not pass None.
+
+    ``add_documents`` catches the uninitialized-KB error and falls back to
+    bootstrapping a fresh index; with the default ``base_dir`` that fallback
+    used to receive the unresolved ``None`` sentinel and crash while building
+    the KB path. It must converge on the runtime-home-derived KB root.
+    """
+    import asyncio
+
+    from deeptutor.knowledge.add_documents import add_documents
+    from deeptutor.knowledge.manager import KnowledgeBaseManager
+
+    home = _runtime_home(monkeypatch, tmp_path)
+    kb_root = (home / "data" / "knowledge_bases").resolve()
+
+    (kb_root / "empty" / "raw").mkdir(parents=True)
+    manager = KnowledgeBaseManager()
+    manager.register_knowledge_base("empty")
+    manager.config["knowledge_bases"]["empty"]["rag_provider"] = "pageindex"
+    manager._save_config()
+    manager.update_kb_status(name="empty", status="ready")
+
+    doc = tmp_path / "lesson.md"
+    doc.write_text("Lesson", encoding="utf-8")
+    service_base_dirs: list[str] = []
+
+    class FakeRagService:
+        def __init__(self, *, kb_base_dir: str) -> None:
+            service_base_dirs.append(kb_base_dir)
+
+        async def initialize(self, *, kb_name, file_paths, indexed_file_callback) -> bool:
+            indexed_file_callback(file_paths)
+            return True
+
+        def _resolve_provider(self, _kb_name: str) -> str:
+            return "pageindex"
+
+    monkeypatch.setattr("deeptutor.knowledge.add_documents.RAGService", FakeRagService)
+
+    assert asyncio.run(add_documents("empty", [str(doc)])) == 1
+
+    assert service_base_dirs == [str(kb_root)]
+    assert (kb_root / "empty" / "metadata.json").is_file()
+    assert KnowledgeBaseManager().get_info("empty")["status"] == "ready"
+    assert not (Path.cwd() / "data").exists()
