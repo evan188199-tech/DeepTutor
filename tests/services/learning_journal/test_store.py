@@ -2,11 +2,24 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+import threading
 
 import pytest
 
-from deeptutor.services.learning_journal.store import LearningJournalStore
+from deeptutor.services.learning_journal.store import (
+    JOURNAL_VERSION,
+    MAX_INSIGHT_CHARS,
+    MAX_LEVEL_CHARS,
+    MAX_NEXT_FOCUS_CHARS,
+    MAX_RECORDS,
+    MAX_SUMMARY_CHARS,
+    MAX_TITLE_CHARS,
+    MAX_TOPIC_CHARS,
+    MAX_WHY_CHARS,
+    LearningJournalStore,
+)
 from deeptutor.services.path_service import PathService
 
 
@@ -161,3 +174,389 @@ def test_two_workers_do_not_drop_confirmed_records(journal_store):
     records = journal_store.load().records
     assert len(records) == 20
     assert len({record.id for record in records}) == 20
+
+
+# ---------------------------------------------------------------------------
+# Concurrency boundaries (in-process threads)
+# ---------------------------------------------------------------------------
+
+
+def test_threads_sharing_one_store_do_not_lose_records(journal_store: LearningJournalStore) -> None:
+    threads_count, per_thread = 8, 5
+    barrier = threading.Barrier(threads_count)
+    failures: list[BaseException] = []
+
+    def worker(worker_index: int) -> None:
+        try:
+            barrier.wait(timeout=10)
+            for n in range(per_thread):
+                result = journal_store.add_record(
+                    title=f"t{worker_index}-{n}", insight=f"i{worker_index}-{n}"
+                )
+                assert result.accepted
+        except BaseException as exc:  # pragma: no cover - surfaced via failures
+            failures.append(exc)
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(threads_count)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(30)
+        assert not thread.is_alive()
+    assert failures == []
+
+    journal = journal_store.load()
+    assert len(journal.records) == threads_count * per_thread
+    ids = [record.id for record in journal.records]
+    assert ids == [f"lr_{n:04d}" for n in range(1, threads_count * per_thread + 1)]
+    pairs = {(record.title, record.insight) for record in journal.records}
+    assert len(pairs) == threads_count * per_thread
+
+
+def test_threads_with_separate_stores_share_the_file_lock(
+    journal_store: LearningJournalStore,
+) -> None:
+    threads_count, per_thread = 6, 4
+    barrier = threading.Barrier(threads_count)
+    failures: list[BaseException] = []
+
+    def worker(worker_index: int) -> None:
+        try:
+            store = LearningJournalStore()
+            barrier.wait(timeout=10)
+            for n in range(per_thread):
+                result = store.add_record(
+                    title=f"w{worker_index}-{n}", insight=f"confirmed w{worker_index}-{n}"
+                )
+                assert result.accepted
+        except BaseException as exc:  # pragma: no cover - surfaced via failures
+            failures.append(exc)
+
+    threads = [threading.Thread(target=worker, args=(i,)) for i in range(threads_count)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(30)
+        assert not thread.is_alive()
+    assert failures == []
+
+    records = journal_store.load().records
+    assert len(records) == threads_count * per_thread
+    assert len({record.id for record in records}) == threads_count * per_thread
+    assert {record.title for record in records} == {
+        f"w{i}-{n}" for i in range(threads_count) for n in range(per_thread)
+    }
+
+
+def test_concurrent_mixed_ops_keep_journal_consistent(journal_store: LearningJournalStore) -> None:
+    barrier = threading.Barrier(10)
+    failures: list[BaseException] = []
+
+    def mission_worker(index: int) -> None:
+        try:
+            barrier.wait(timeout=10)
+            assert journal_store.set_mission(topic=f"topic-{index}").accepted
+        except BaseException as exc:  # pragma: no cover - surfaced via failures
+            failures.append(exc)
+
+    def session_worker() -> None:
+        try:
+            barrier.wait(timeout=10)
+            assert journal_store.note_session(summary="summary", next_focus="focus").accepted
+        except BaseException as exc:  # pragma: no cover - surfaced via failures
+            failures.append(exc)
+
+    def record_worker(index: int) -> None:
+        try:
+            barrier.wait(timeout=10)
+            assert journal_store.add_record(title=f"r{index}", insight=f"insight {index}").accepted
+        except BaseException as exc:  # pragma: no cover - surfaced via failures
+            failures.append(exc)
+
+    threads = [threading.Thread(target=mission_worker, args=(i,)) for i in range(3)]
+    threads += [threading.Thread(target=session_worker) for _ in range(2)]
+    threads += [threading.Thread(target=record_worker, args=(i,)) for i in range(5)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(30)
+        assert not thread.is_alive()
+    assert failures == []
+
+    journal = journal_store.load()
+    assert journal.mission.topic in {f"topic-{i}" for i in range(3)}
+    assert journal.last_session.summary == "summary"
+    assert len(journal.records) == 5
+    assert {record.insight for record in journal.records} == {f"insight {i}" for i in range(5)}
+
+
+# ---------------------------------------------------------------------------
+# Corruption and recovery boundaries
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "",
+        "\ufeff" + json.dumps({"version": JOURNAL_VERSION}),
+        '{"records": [{"id": "lr_',
+        json.dumps({"version": JOURNAL_VERSION, "last_session": {"summary": 3}}),
+        json.dumps(
+            {
+                "version": JOURNAL_VERSION,
+                "records": [
+                    {"id": "lr_0001", "title": "t", "insight": "i"},
+                    {"id": "", "title": "broken", "insight": ""},
+                ],
+            }
+        ),
+    ],
+)
+def test_more_corrupt_variants_are_preserved_byte_for_byte(journal_store, content):
+    path = journal_store.journal_path()
+    path.parent.mkdir(parents=True)
+    path.write_text(content, encoding="utf-8")
+    with pytest.raises(ValueError):
+        journal_store.load()
+    with pytest.raises(ValueError):
+        journal_store.note_session(summary="should not write")
+    with pytest.raises(ValueError):
+        journal_store.add_record(title="t", insight="i")
+    assert path.read_text(encoding="utf-8") == content
+    assert sorted(item.name for item in path.parent.iterdir()) == ["journal.json", "journal.lock"]
+
+
+def test_minimal_and_empty_object_files_load_as_empty_journal(journal_store):
+    path = journal_store.journal_path()
+    path.parent.mkdir(parents=True)
+    for content in ("{}", json.dumps({"version": JOURNAL_VERSION})):
+        path.write_text(content, encoding="utf-8")
+        journal = journal_store.load()
+        assert journal.is_empty()
+        assert journal.version == JOURNAL_VERSION
+        result = journal_store.add_record(title="t", insight="i")
+        assert result.accepted
+        assert result.record_id == "lr_0001"
+
+
+def test_journal_resumes_after_external_repair(journal_store: LearningJournalStore) -> None:
+    path = journal_store.journal_path()
+    path.parent.mkdir(parents=True)
+    path.write_text("{broken", encoding="utf-8")
+    with pytest.raises(ValueError):
+        journal_store.add_record(title="t", insight="i")
+
+    repaired = {
+        "version": JOURNAL_VERSION,
+        "updated_at": "2026-01-01T00:00:00Z",
+        "mission": {"topic": "Repaired topic"},
+        "records": [
+            {"id": f"lr_{n:04d}", "title": f"t{n}", "insight": f"i{n}"} for n in range(3, 6)
+        ],
+    }
+    path.write_text(json.dumps(repaired), encoding="utf-8")
+    journal = journal_store.load()
+    assert journal.mission.topic == "Repaired topic"
+    assert [record.id for record in journal.records] == ["lr_0003", "lr_0004", "lr_0005"]
+
+    result = journal_store.add_record(title="new", insight="post-repair insight")
+    assert result.accepted
+    assert result.record_id == "lr_0006"
+    assert len(journal_store.load().records) == 4
+
+
+def test_stale_lock_file_does_not_block_use(journal_store: LearningJournalStore) -> None:
+    lock_path = journal_store.journal_path().with_suffix(".lock")
+    lock_path.parent.mkdir(parents=True)
+    lock_path.write_bytes(b"garbage-from-a-crashed-writer")
+
+    assert journal_store.load().is_empty()
+    assert journal_store.set_mission(topic="After stale lock").accepted
+    assert journal_store.add_record(title="t", insight="i").record_id == "lr_0001"
+    assert lock_path.exists()
+
+
+# ---------------------------------------------------------------------------
+# Empty / overlong entry boundaries
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("blank", ["", " ", "\t\n  "])
+def test_add_record_rejects_blank_insight_and_writes_nothing(journal_store, blank):
+    result = journal_store.add_record(title="Title", insight=blank)
+    assert not result.accepted
+    assert "insight" in result.message
+    assert not journal_store.journal_path().parent.exists()
+
+
+def test_add_record_without_title_derives_it_from_insight(
+    journal_store: LearningJournalStore,
+) -> None:
+    long_insight = "abcdefghij" * 10
+    result = journal_store.add_record(title="", insight=long_insight)
+    assert result.accepted
+    record = journal_store.load().records[0]
+    assert record.title == "abcdefghij" * 5 + "abcdefghi" + "…"
+    assert len(record.title) == 60
+
+    short = journal_store.add_record(title=" ", insight="short insight")
+    assert short.accepted
+    assert journal_store.load().records[1].title == "short insight"
+
+
+@pytest.mark.parametrize(
+    ("field", "limit"),
+    [
+        ("topic", MAX_TOPIC_CHARS),
+        ("why", MAX_WHY_CHARS),
+        ("level", MAX_LEVEL_CHARS),
+        ("summary", MAX_SUMMARY_CHARS),
+        ("next_focus", MAX_NEXT_FOCUS_CHARS),
+        ("title", MAX_TITLE_CHARS),
+        ("insight", MAX_INSIGHT_CHARS),
+    ],
+)
+def test_oversized_values_clip_to_exact_limit(journal_store, field, limit):
+    journal_store.set_mission(topic="seed")
+    fill = "入" * 900
+
+    if field == "topic":
+        journal_store.set_mission(topic=fill)
+        stored = journal_store.load().mission
+    elif field in ("why", "level"):
+        journal_store.set_mission(topic="seed", **{field: fill})
+        stored = journal_store.load().mission
+    elif field == "summary":
+        journal_store.note_session(summary=fill)
+        stored = journal_store.load().last_session
+    elif field == "next_focus":
+        journal_store.note_session(summary="kept", next_focus=fill)
+        stored = journal_store.load().last_session
+    elif field == "title":
+        journal_store.add_record(title=fill, insight="kept")
+        stored = journal_store.load().records[0]
+    else:
+        journal_store.add_record(title="kept", insight=fill)
+        stored = journal_store.load().records[0]
+
+    value = getattr(stored, field)
+    assert len(value) == limit
+    assert value == "入" * (limit - 1) + "…"
+    assert "\n" not in value
+
+
+@pytest.mark.parametrize(
+    ("field", "limit", "write"),
+    [
+        ("topic", MAX_TOPIC_CHARS, lambda s, v: s.set_mission(topic=v)),
+        ("insight", MAX_INSIGHT_CHARS, lambda s, v: s.add_record(title="t", insight=v)),
+    ],
+)
+def test_value_exactly_at_limit_is_kept_unchanged(journal_store, field, limit, write):
+    exact = "a" * limit
+    assert write(journal_store, exact).accepted
+    stored = journal_store.load()
+    value = getattr(stored.mission if field == "topic" else stored.records[0], field)
+    assert value == exact
+
+
+def test_whitespace_collapses_to_single_spaces(journal_store: LearningJournalStore) -> None:
+    messy = "  sparks \n\n sample\t at  2x  "
+    journal_store.set_mission(topic=messy)
+    journal_store.add_record(title=messy, insight=messy)
+    journal = journal_store.load()
+    assert journal.mission.topic == "sparks sample at 2x"
+    assert journal.records[0].title == "sparks sample at 2x"
+    assert journal.records[0].insight == "sparks sample at 2x"
+
+
+def test_note_session_requires_summary_or_focus(journal_store: LearningJournalStore) -> None:
+    rejected = journal_store.note_session(summary="   ", next_focus="\t\n")
+    assert not rejected.accepted
+    assert not journal_store.journal_path().parent.exists()
+
+    focus_only = journal_store.note_session(summary="", next_focus="Aliasing")
+    assert focus_only.accepted
+    session = journal_store.load().last_session
+    assert session.summary == ""
+    assert session.next_focus == "Aliasing"
+    assert session.updated_at.endswith("Z")
+
+
+# ---------------------------------------------------------------------------
+# Dedup boundaries
+# ---------------------------------------------------------------------------
+
+
+def test_dedupe_normalizes_case_and_whitespace(journal_store: LearningJournalStore) -> None:
+    first = journal_store.add_record(
+        title="Fourier Transform", insight="Time stretch squeezes frequency."
+    )
+    path = journal_store.journal_path()
+    before = path.read_bytes()
+
+    second = journal_store.add_record(
+        title="  fourier   TRANSFORM ", insight="time\nstretch\tsqueezes frequency."
+    )
+    assert first.accepted and second.accepted
+    assert second.deduplicated
+    assert second.record_id == first.record_id
+    records = journal_store.load().records
+    assert len(records) == 1
+    assert path.read_bytes() == before
+
+
+def test_same_title_with_different_insight_is_not_a_duplicate(
+    journal_store: LearningJournalStore,
+) -> None:
+    first = journal_store.add_record(title="Nyquist", insight="Sample above twice the bandwidth.")
+    second = journal_store.add_record(title="Nyquist", insight="Sampling lower aliases signals.")
+    assert first.accepted and second.accepted
+    assert not second.deduplicated
+    assert second.record_id != first.record_id
+    assert [record.id for record in journal_store.load().records] == [
+        first.record_id,
+        second.record_id,
+    ]
+
+
+def test_record_cap_keeps_the_newest_window(journal_store: LearningJournalStore) -> None:
+    for n in range(1, MAX_RECORDS + 6):
+        result = journal_store.add_record(title=f"t{n}", insight=f"i{n}")
+        assert result.accepted
+
+    records = journal_store.load().records
+    assert len(records) == MAX_RECORDS
+    assert [record.id for record in records] == [f"lr_{n:04d}" for n in range(6, MAX_RECORDS + 6)]
+    assert records[-1].title == f"t{MAX_RECORDS + 5}"
+
+    readded = journal_store.add_record(title="t1", insight="i1")
+    assert readded.accepted
+    assert not readded.deduplicated
+    assert readded.record_id == f"lr_{MAX_RECORDS + 6:04d}"
+    still = journal_store.load().records
+    assert len(still) == MAX_RECORDS
+    assert still[0].id == f"lr_{7:04d}"
+
+
+def test_record_numbering_scans_existing_ids_on_disk(journal_store: LearningJournalStore) -> None:
+    path = journal_store.journal_path()
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps(
+            {
+                "version": JOURNAL_VERSION,
+                "records": [
+                    {"id": "lr_0005", "title": "t5", "insight": "i5"},
+                    {"id": "legacy-9", "title": "manual", "insight": "imported"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = journal_store.add_record(title="next", insight="after import")
+    assert result.accepted
+    assert result.record_id == "lr_0006"
+    ids = [record.id for record in journal_store.load().records]
+    assert ids == ["lr_0005", "legacy-9", "lr_0006"]
