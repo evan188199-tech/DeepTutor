@@ -17,7 +17,11 @@ from deeptutor.services.rag.pipelines.weknora.client import (
     WeKnoraAPIError,
     WeKnoraClient,
 )
-from deeptutor.services.rag.pipelines.weknora.config import config_from_entry
+from deeptutor.services.rag.pipelines.weknora.config import (
+    WeKnoraNotConfiguredError,
+    config_from_entry,
+    normalize_base_url,
+)
 from deeptutor.services.rag.pipelines.weknora.pipeline import WeKnoraPipeline
 from deeptutor.services.rag.pipelines.weknora.probe import probe_weknora
 
@@ -252,3 +256,212 @@ def test_manager_pointer_hides_api_key(tmp_path: Path) -> None:
     assert metadata["knowledge_base_id"] == "kb-1"
     assert "api_key" not in metadata
     assert "secret" not in str(metadata)
+
+
+def _payload_transport(
+    payload: bytes,
+    status_code: int = 200,
+    headers: dict[str, str] | None = None,
+) -> httpx.MockTransport:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(status_code, headers=headers or {}, content=payload)
+
+    return httpx.MockTransport(handler)
+
+
+def _stream_transport(chunks: list[bytes]) -> httpx.MockTransport:
+    async def chunk_iter():
+        for chunk in chunks:
+            yield chunk
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=chunk_iter())
+
+    return httpx.MockTransport(handler)
+
+
+def _configured_pipeline(tmp_path: Path, transport: httpx.MockTransport) -> WeKnoraPipeline:
+    return WeKnoraPipeline(
+        _kb_base(
+            tmp_path,
+            {
+                "type": WEKNORA_KB_TYPE,
+                "rag_provider": "weknora",
+                "server_url": "http://localhost:8080",
+                "api_key": "secret",
+                "knowledge_base_id": "kb-1",
+            },
+        ),
+        client_factory=lambda config: WeKnoraClient(config, transport=transport),
+    )
+
+
+def test_config_normalizes_and_rejects_server_urls() -> None:
+    assert normalize_base_url("http://host:8080/") == "http://host:8080"
+    assert normalize_base_url(None) == ""
+    assert normalize_base_url("http://host/path?x=1") == ""
+    assert normalize_base_url("http://host/path#frag") == ""
+
+    with pytest.raises(WeKnoraNotConfiguredError, match="API key"):
+        config_from_entry(
+            {
+                "server_url": "http://host",
+                "api_key": "   ",
+                "knowledge_base_id": "kb-1",
+            }
+        )
+    with pytest.raises(WeKnoraNotConfiguredError, match="knowledge base ID"):
+        config_from_entry(
+            {
+                "server_url": "http://host",
+                "api_key": "secret",
+                "knowledge_base_id": "  ",
+            }
+        )
+
+
+def test_client_rejects_non_json_and_non_object_payloads() -> None:
+    client = WeKnoraClient(_config(), transport=_payload_transport(b"<html>gateway error</html>"))
+    with pytest.raises(WeKnoraAPIError, match="non-JSON response"):
+        asyncio.run(client.search("q"))
+
+    client = WeKnoraClient(_config(), transport=_payload_transport(b'["not", "an", "object"]'))
+    with pytest.raises(WeKnoraAPIError, match="unexpected payload"):
+        asyncio.run(client.search("q"))
+
+
+def test_client_surfaces_http_error_preview() -> None:
+    client = WeKnoraClient(
+        _config(), transport=_payload_transport(b"upstream exploded", status_code=502)
+    )
+    with pytest.raises(WeKnoraAPIError, match="WeKnora returned 502: upstream exploded"):
+        asyncio.run(client.list_knowledge_bases())
+
+
+def test_client_validates_payload_shapes() -> None:
+    scalar = WeKnoraClient(
+        _config(), transport=_payload_transport(json.dumps({"data": "kb-1"}).encode())
+    )
+    with pytest.raises(WeKnoraAPIError, match="unexpected knowledge-base list"):
+        asyncio.run(scalar.list_knowledge_bases())
+
+    mixed = WeKnoraClient(
+        _config(),
+        transport=_payload_transport(json.dumps({"data": [{"id": "kb-1"}, "kb-2"]}).encode()),
+    )
+    with pytest.raises(WeKnoraAPIError, match="unexpected knowledge-base list"):
+        asyncio.run(mixed.list_knowledge_bases())
+
+    nested = WeKnoraClient(
+        _config(), transport=_payload_transport(json.dumps({"data": {"chunks": []}}).encode())
+    )
+    with pytest.raises(WeKnoraAPIError, match="unexpected search results"):
+        asyncio.run(nested.search("q"))
+
+
+def test_client_rejects_oversized_streamed_body_without_content_length() -> None:
+    transport = _stream_transport([b"x" * (MAX_RESPONSE_BYTES + 1)])
+    with pytest.raises(WeKnoraAPIError, match="4 MiB"):
+        asyncio.run(WeKnoraClient(_config(), transport=transport).list_knowledge_bases())
+
+
+def test_client_tolerates_malformed_content_length() -> None:
+    transport = _payload_transport(
+        json.dumps({"data": []}).encode(),
+        headers={"content-length": "not-a-number"},
+    )
+    result = asyncio.run(WeKnoraClient(_config(), transport=transport).list_knowledge_bases())
+    assert result == []
+
+
+def test_client_timeout_propagates_to_caller() -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("timed out", request=_request)
+
+    client = WeKnoraClient(_config(), transport=httpx.MockTransport(handler))
+    with pytest.raises(httpx.ReadTimeout):
+        asyncio.run(client.search("q"))
+
+
+def test_pipeline_maps_timeout_to_retrieval_error(tmp_path: Path) -> None:
+    def handler(_request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("timed out", request=_request)
+
+    pipeline = _configured_pipeline(tmp_path, httpx.MockTransport(handler))
+    result = asyncio.run(pipeline.search("q", "remote"))
+    assert result["error_type"] == "retrieval_error"
+    assert result["content"] == ""
+    assert result["sources"] == []
+
+
+def test_pipeline_joins_chunk_content_and_mirrors_answer(tmp_path: Path) -> None:
+    transport = httpx.MockTransport(
+        lambda _request: httpx.Response(
+            200,
+            json={"success": True, "data": [{"score": 0.5}, {"content": "two"}]},
+        )
+    )
+    pipeline = _configured_pipeline(tmp_path, transport)
+    result = asyncio.run(pipeline.search("q", "remote"))
+    assert result["content"] == "\n\n---\n\ntwo"
+    assert result["answer"] == result["content"]
+    assert result["sources"] == [{"score": 0.5}, {"content": "two"}]
+
+
+def test_pipeline_add_documents_refuses_and_delete_is_noop(tmp_path: Path) -> None:
+    pipeline = WeKnoraPipeline(str(tmp_path))
+    with pytest.raises(RuntimeError, match="managed in WeKnora"):
+        asyncio.run(pipeline.add_documents("remote", ["doc.pdf"]))
+    assert asyncio.run(pipeline.delete("remote")) is True
+
+
+def test_probe_requires_complete_binding() -> None:
+    def fail_factory(_config: object) -> object:
+        pytest.fail("probe must not open a client when the binding is incomplete")
+
+    probe = asyncio.run(
+        probe_weknora("http://localhost:8080", "   ", "kb-1", client_factory=fail_factory)
+    )
+    assert probe.ok is False
+    assert probe.reachable is False
+    assert "required" in (probe.error or "")
+
+    missing = asyncio.run(probe_weknora("", "", "", client_factory=fail_factory))
+    assert missing.knowledge_base_found is False
+    assert "required" in (missing.error or "")
+
+
+def test_probe_reports_connection_failures() -> None:
+    transport = httpx.MockTransport(lambda _request: httpx.Response(500, text="boom"))
+    probe = asyncio.run(
+        probe_weknora(
+            "http://localhost:8080",
+            "secret",
+            "kb-1",
+            client_factory=lambda config: WeKnoraClient(config, transport=transport),
+        )
+    )
+    assert probe.ok is False
+    assert probe.reachable is False
+    assert probe.credentials_ok is False
+    assert "Could not validate the WeKnora connection" in (probe.error or "")
+
+
+def test_probe_tolerates_unnamed_knowledge_base() -> None:
+    transport = httpx.MockTransport(
+        lambda _request: httpx.Response(
+            200, json={"success": True, "data": [{"id": "kb-1", "name": "   "}]}
+        )
+    )
+    probe = asyncio.run(
+        probe_weknora(
+            "http://localhost:8080",
+            "secret",
+            "kb-1",
+            client_factory=lambda config: WeKnoraClient(config, transport=transport),
+        )
+    )
+    assert probe.ok is True
+    assert probe.knowledge_base_found is True
+    assert probe.knowledge_base_name is None
+    assert probe.to_dict()["knowledge_base_id"] == "kb-1"
