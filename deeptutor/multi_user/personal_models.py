@@ -68,6 +68,8 @@ def _personal_catalog_profiles() -> list[dict[str, Any]]:
     """
     from .context import get_current_user_or_none
     from .model_access import is_owner_bound
+    from .personal_providers import MANAGED_BY as PERSONAL_API_KEY_MANAGED_BY
+    from .personal_providers import personal_providers_allowed
 
     user = get_current_user_or_none()
     if user is None or user.is_admin:
@@ -79,12 +81,19 @@ def _personal_catalog_profiles() -> list[dict[str, Any]]:
     if not service.path.exists():
         return []
     profiles = service.load().get("services", {}).get("llm", {}).get("profiles", []) or []
+    api_key_providers_allowed = personal_providers_allowed()
     return [
         profile
         for profile in profiles
         if isinstance(profile, dict)
         and is_owner_bound(profile)
         and (profile.get("managed_by") != _CODEX_MANAGED_BY or _codex_profile_is_current(profile))
+        # A personal API-key provider exists only while the deployment's
+        # administrator allows the feature (#1927); switching it off hides
+        # the profile from options, selection, and resolution at once —
+        # every path below funnels through this function — without deleting
+        # the stored key.
+        and (profile.get("managed_by") != PERSONAL_API_KEY_MANAGED_BY or api_key_providers_allowed)
     ]
 
 
@@ -139,7 +148,15 @@ def merge_personal_llm_profiles(catalog: dict[str, Any]) -> dict[str, Any]:
     id — and that one lists the administrator's models, which the user's plan
     may not include. The owner's own profile is the authority inside their
     own scope; the token is resolved per owner regardless.
+
+    Personal API-key profiles merge with their key attached (see
+    :func:`deeptutor.multi_user.personal_providers.inject_personal_api_keys`):
+    the stored catalog copy carries an empty ``api_key`` by design, and this
+    in-memory copy — read by the LLM layer and nothing else — is where the
+    key from the owner's secret store becomes usable.
     """
+    from .personal_providers import inject_personal_api_keys
+
     personal = _personal_catalog_profiles()
     if not personal:
         return catalog
@@ -152,7 +169,7 @@ def merge_personal_llm_profiles(catalog: dict[str, Any]) -> dict[str, Any]:
         for profile in llm.get("profiles") or []
         if not (isinstance(profile, dict) and str(profile.get("id") or "") in personal_ids)
     ]
-    llm["profiles"] = shared + personal
+    llm["profiles"] = shared + inject_personal_api_keys(personal)
     services["llm"] = llm
     merged["services"] = services
     return merged

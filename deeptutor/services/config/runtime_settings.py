@@ -38,6 +38,12 @@ DEFAULT_SYSTEM_SETTINGS: dict[str, Any] = {
     # Conservative chat -> deep_question routing. Explicit requests only, and
     # callers can still pass config.auto_route=false for a single turn.
     "capability_routing_enabled": False,
+    # Whether ordinary users may add their own API-key LLM providers (bring
+    # your own key, #1927). Off by default: an administrator opts a deployment
+    # in. The key itself always lives in the owner's secret store, never in
+    # this file or any catalog. DEEPTUTOR_ALLOW_PERSONAL_PROVIDERS is the
+    # read-only-volume deployment override.
+    "allow_personal_providers": False,
     # Reference policy applied after every web-search provider. This belongs in
     # runtime JSON so packaged installs and the settings service share one
     # source of truth; project main.yaml is intentionally not an operator
@@ -868,6 +874,8 @@ class RuntimeSettingsService:
             payload["sandbox_allow_subprocess"] = value
         if value := self._process_env_value("DEEPTUTOR_CAPABILITY_ROUTING_ENABLED"):
             payload["capability_routing_enabled"] = value
+        if value := self._process_env_value("DEEPTUTOR_ALLOW_PERSONAL_PROVIDERS"):
+            payload["allow_personal_providers"] = value
         if value := self._process_env_value("CHAT_ATTACHMENT_MAX_FILE_MB"):
             payload["chat_attachment_max_file_mb"] = value
         if value := self._process_env_value("CHAT_ATTACHMENT_MAX_TOTAL_MB"):
@@ -1278,6 +1286,9 @@ class RuntimeSettingsService:
             ),
             "capability_routing_enabled": _coerce_bool(
                 settings.get("capability_routing_enabled"), False
+            ),
+            "allow_personal_providers": _coerce_bool(
+                settings.get("allow_personal_providers"), False
             ),
             "web_search_source_filtering": {
                 "enabled": _coerce_bool(source_filter.get("enabled"), True),

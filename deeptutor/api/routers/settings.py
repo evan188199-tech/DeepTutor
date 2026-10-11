@@ -1037,6 +1037,142 @@ async def update_openai_codex_reasoning_effort(
     return status_payload
 
 
+# ---------------------------------------------------------------------------
+# Personal API-key providers (bring your own key, #1927)
+# ---------------------------------------------------------------------------
+
+
+class PersonalProviderModelPayload(BaseModel):
+    id: str = ""
+    name: str = ""
+    model: str
+
+
+class PersonalProviderPayload(BaseModel):
+    id: Optional[str] = None
+    name: str = ""
+    binding: str
+    api_key: Optional[str] = None
+    models: List[PersonalProviderModelPayload]
+
+
+class PersonalProviderPolicyPayload(BaseModel):
+    allow_personal_providers: bool
+
+
+def _require_personal_provider_actor() -> None:
+    """Gate personal-provider writes: an ordinary user acting for themselves.
+
+    A partner is refused for the same reason the Codex lifecycle refuses one:
+    it is a synthetic user whose owner is a real account, and a provider saved
+    "for a partner" would land in that person's scope. An administrator is
+    refused because they already hold the shared catalog — a personal copy of
+    it would only shadow what they manage directly.
+    """
+    from deeptutor.services.partners.scope import is_partner_user_id
+
+    user = get_current_user()
+    if is_partner_user_id(user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="A partner uses the providers of the account that owns it.",
+        )
+    if user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Administrators configure providers in the shared model catalog.",
+        )
+
+
+@router.get("/personal-providers")
+async def get_personal_providers() -> dict[str, Any]:
+    """The caller's own API-key providers plus what the policy allows.
+
+    Readable by any signed-in account — the composer needs to know whether to
+    offer the surface at all. Provider rows never contain key material, only
+    whether one is stored.
+    """
+    from deeptutor.multi_user.personal_providers import (
+        allowed_provider_bindings,
+        list_personal_providers,
+        personal_providers_allowed,
+    )
+
+    return {
+        "allowed": personal_providers_allowed(),
+        "providers": list_personal_providers(),
+        "bindings": allowed_provider_bindings(),
+    }
+
+
+@router.put("/personal-providers/policy")
+async def update_personal_provider_policy(
+    payload: PersonalProviderPolicyPayload,
+) -> dict[str, Any]:
+    """Deployment-wide switch: may ordinary users add their own providers."""
+    _require_settings_admin()
+    service = get_runtime_settings_service()
+    current = service.load_system(include_process_overrides=False)
+    saved = service.save_system(
+        {**current, "allow_personal_providers": payload.allow_personal_providers}
+    )
+    return {"settings": {"allow_personal_providers": saved["allow_personal_providers"]}}
+
+
+@router.put("/personal-providers")
+async def upsert_personal_provider(payload: PersonalProviderPayload) -> dict[str, Any]:
+    """Create or update one of the caller's own API-key provider profiles.
+
+    The profile lands in the caller's own catalog and the key in their secret
+    store; neither is ever written to the shared catalog or any grant.
+    """
+    from deeptutor.multi_user.personal_providers import (
+        PersonalProviderError,
+        personal_providers_allowed,
+        save_personal_provider,
+    )
+
+    _require_personal_provider_actor()
+    if not personal_providers_allowed():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Personal API-key providers are disabled by the administrator.",
+        )
+    try:
+        provider = save_personal_provider(
+            profile_id=payload.id,
+            name=payload.name,
+            binding=payload.binding,
+            api_key=payload.api_key,
+            models=[model.model_dump() for model in payload.models],
+        )
+    except PersonalProviderError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from None
+    return {"provider": provider}
+
+
+@router.delete("/personal-providers/{profile_id}")
+async def delete_personal_provider(profile_id: str) -> dict[str, Any]:
+    """Remove one of the caller's own provider profiles and its stored key.
+
+    Allowed while the policy is off: deleting only ever removes the caller's
+    own data, and a user should be able to take their key back out.
+    """
+    from deeptutor.multi_user.personal_providers import (
+        PersonalProviderError,
+    )
+    from deeptutor.multi_user.personal_providers import (
+        delete_personal_provider as remove_provider,
+    )
+
+    _require_personal_provider_actor()
+    try:
+        remove_provider(profile_id)
+    except PersonalProviderError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from None
+    return {"ok": True}
+
+
 @router.get("/catalog")
 async def get_catalog():
     _require_settings_admin()
