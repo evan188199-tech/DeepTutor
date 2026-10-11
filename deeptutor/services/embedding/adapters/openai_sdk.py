@@ -81,28 +81,25 @@ class OpenAISDKEmbeddingAdapter(BaseEmbeddingAdapter):
         try:
             response = await client.embeddings.create(**kwargs)
         except APIStatusError as exc:
-            try:
-                body = exc.response.text
-            except Exception:
-                body = str(exc)
+            # Provider error payloads may echo the request text or credentials;
+            # keep only the type name and HTTP status in the error object.
             raise EmbeddingProviderError(
-                f"OpenAI SDK request failed: {exc}",
+                f"OpenAI SDK request failed ({type(exc).__name__})",
                 status=getattr(exc, "status_code", None),
-                body=body,
                 model=model,
                 url=self.base_url,
                 provider="openai_sdk",
             ) from exc
         except APIConnectionError as exc:
             raise EmbeddingProviderError(
-                f"OpenAI SDK connection error: {exc}",
+                f"OpenAI SDK connection error ({type(exc).__name__})",
                 model=model,
                 url=self.base_url,
                 provider="openai_sdk",
             ) from exc
         except APIError as exc:
             raise EmbeddingProviderError(
-                f"OpenAI SDK API error: {exc}",
+                f"OpenAI SDK API error ({type(exc).__name__})",
                 model=model,
                 url=self.base_url,
                 provider="openai_sdk",

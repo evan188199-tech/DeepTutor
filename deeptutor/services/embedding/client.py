@@ -160,9 +160,8 @@ class EmbeddingClient:
                 response = await self.adapter.embed(request)
             except Exception as exc:
                 # Capture batch context so the task log stream / KB diagnostics
-                # show actionable info instead of a bare exception string.
-                import traceback
-
+                # show actionable info. Exception messages and tracebacks can
+                # echo provider response bodies, so record only the type name.
                 first_chunk_chars = len(batch[0]) if batch else 0
                 longest_chunk_chars = max((len(t) for t in batch), default=0)
                 self.logger.error(
@@ -170,8 +169,8 @@ class EmbeddingClient:
                     f"(binding={self.config.binding}, model={self.config.model}, "
                     f"batch_index={i + 1}/{total_batches}, batch_items={len(batch)}, "
                     f"first_chunk_chars={first_chunk_chars}, "
-                    f"longest_chunk_chars={longest_chunk_chars}): {exc}\n"
-                    f"{traceback.format_exc()}"
+                    f"longest_chunk_chars={longest_chunk_chars}, "
+                    f"error={type(exc).__name__})"
                 )
                 raise
             validated = validate_embedding_batch(

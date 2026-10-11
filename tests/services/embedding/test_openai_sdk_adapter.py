@@ -185,11 +185,13 @@ async def test_embed_rejects_multimodal_contents(stub_client: type[_ClientStub])
 
 
 @pytest.mark.asyncio
-async def test_embed_wraps_api_status_error_with_diagnostics(
-    stub_client: type[_ClientStub], monkeypatch: pytest.MonkeyPatch
+async def test_embed_wraps_api_status_error_with_sanitized_diagnostics(
+    stub_client: type[_ClientStub],
 ) -> None:
-    """Provider HTTP errors surface as ``EmbeddingProviderError`` with
-    status/url/model/body so the diagnostics UI can display them."""
+    """Provider HTTP errors surface as ``EmbeddingProviderError`` keeping
+    status/provider/model/url for diagnostics, without the provider
+    response body: it may echo request content, so it must not reach the
+    error message that downstream log streams display."""
     from openai import APIStatusError
 
     fake_response = MagicMock()
@@ -210,4 +212,28 @@ async def test_embed_wraps_api_status_error_with_diagnostics(
     assert err_obj.provider == "openai_sdk"
     assert err_obj.url == "https://openrouter.ai/api/v1"
     assert err_obj.model == "text-embedding-3-large"
-    assert "no embeddings here" in (err_obj.body or "")
+    assert err_obj.status == 404
+    assert err_obj.body is None
+    assert "APIStatusError" in str(err_obj)
+    rendered = str(err_obj)
+    assert "no embeddings here" not in rendered
+    assert "404 not found" not in rendered
+
+
+@pytest.mark.asyncio
+async def test_embed_wraps_connection_error_without_sdk_message(
+    stub_client: type[_ClientStub],
+) -> None:
+    """Connection failures keep the type name but never the SDK message."""
+    from openai import APIConnectionError
+
+    stub_client.raised = APIConnectionError(
+        message="Connection error to https://internal-gw", request=MagicMock()
+    )
+    adapter = _make_adapter()
+
+    with pytest.raises(EmbeddingProviderError) as excinfo:
+        await adapter.embed(EmbeddingRequest(texts=["x"], model="text-embedding-3-large"))
+
+    assert "APIConnectionError" in str(excinfo.value)
+    assert "internal-gw" not in str(excinfo.value)

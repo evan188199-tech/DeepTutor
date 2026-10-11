@@ -435,6 +435,40 @@ def test_embedding_client_multimodal_detection_uses_model_level_metadata() -> No
 
 
 @pytest.mark.asyncio
+async def test_embed_batch_failure_log_omits_exception_detail(monkeypatch, caplog) -> None:
+    """A failing batch must be logged with structured context and the
+    exception type name only: SDK/provider exception messages and tracebacks
+    can carry response bodies into the task log stream."""
+
+    class _FailingAdapter(_FakeAdapter):
+        async def embed(self, request):
+            self.calls.append(request)
+            raise RuntimeError("provider echoed: raw-response-fragment")
+
+    _FakeAdapter.instances = []
+    monkeypatch.setattr(
+        "deeptutor.services.embedding.client._resolve_adapter_class", lambda _b: _FailingAdapter
+    )
+    client = EmbeddingClient(_build_config("openai"))
+
+    with caplog.at_level(logging.ERROR, logger="deeptutor.services.embedding.client"):
+        with pytest.raises(RuntimeError):
+            await client.embed(["a", "b"])
+
+    errors = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert len(errors) == 1
+    record = errors[0]
+    message = record.getMessage()
+    assert "Embedding batch failed" in message
+    assert "binding=openai" in message
+    assert "model=text-embedding-3-small" in message
+    assert "batch_index=1/1" in message
+    assert "error=RuntimeError" in message
+    assert "raw-response-fragment" not in message
+    assert record.exc_info is None
+
+
+@pytest.mark.asyncio
 async def test_embed_progress_callback_failure_logged_and_not_fatal(monkeypatch, caplog) -> None:
     """A failing progress callback must not break embedding, but the failure
     cannot stay silent — swallowed errors make KB index progress untrustworthy."""
