@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
+import json
 from pathlib import Path
 from types import SimpleNamespace
+import zipfile
 
 import httpx
 import pytest
@@ -13,6 +16,7 @@ from deeptutor.plugins.distribution import (
     CatalogArtifactDownloader,
     CatalogInstallManager,
     PluginDistributionError,
+    _default_client,
 )
 
 
@@ -166,3 +170,209 @@ def test_failed_catalog_download_never_reaches_lifecycle() -> None:
             downloader_factory=FailedDownloader,
             lifecycle_factory=UnexpectedLifecycle,
         ).install("org.author.example")
+
+
+def test_downloader_rejects_non_positive_timeout_and_blank_url(tmp_path: Path) -> None:
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: _client(httpx.Response(200))
+    )
+
+    with pytest.raises(PluginDistributionError, match="timeout must be positive"):
+        downloader.download(
+            _artifact(b"payload"),
+            destination_dir=tmp_path,
+            timeout_seconds=0,
+        )
+    with pytest.raises(PluginDistributionError, match="no download URL"):
+        downloader.download(
+            SimpleNamespace(url="", size_bytes=1, sha256="0" * 64),
+            destination_dir=tmp_path,
+        )
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_downloader_rejects_non_wheel_artifact_name(tmp_path: Path) -> None:
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: _client(httpx.Response(200))
+    )
+
+    with pytest.raises(PluginDistributionError, match="invalid wheel filename"):
+        downloader.download(
+            SimpleNamespace(
+                url="https://artifacts.example.com/example-1.0.0.txt",
+                size_bytes=4,
+                sha256=hashlib.sha256(b"1234").hexdigest(),
+            ),
+            destination_dir=tmp_path,
+        )
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_downloader_rejects_http_error_status(tmp_path: Path) -> None:
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: _client(httpx.Response(404))
+    )
+
+    with pytest.raises(PluginDistributionError, match="download exited 404"):
+        downloader.download(_artifact(b"1234"), destination_dir=tmp_path)
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_downloader_rejects_invalid_content_length(tmp_path: Path) -> None:
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: _client(
+            httpx.Response(200, content=b"1234", headers={"content-length": "abc"})
+        )
+    )
+
+    with pytest.raises(PluginDistributionError, match="invalid Content-Length"):
+        downloader.download(_artifact(b"1234"), destination_dir=tmp_path)
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_downloader_rejects_undersized_body(tmp_path: Path) -> None:
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: _client(
+            httpx.Response(200, content=b"12", headers={"content-length": "4"})
+        )
+    )
+
+    with pytest.raises(PluginDistributionError, match="smaller than reviewed size"):
+        downloader.download(_artifact(b"1234"), destination_dir=tmp_path)
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_downloader_wraps_transport_failure_and_cleans_up(tmp_path: Path) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused", request=request)
+
+    downloader = CatalogArtifactDownloader(
+        client_factory=lambda timeout: httpx.Client(
+            transport=httpx.MockTransport(handler),
+            follow_redirects=False,
+        )
+    )
+
+    with pytest.raises(PluginDistributionError, match="catalog artifact download failed"):
+        downloader.download(_artifact(b"1234"), destination_dir=tmp_path)
+    assert list(tmp_path.iterdir()) == []
+
+
+def _wheel_bytes(raw_manifest: dict) -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(
+            "example_plugin/deeptutor.plugin.json",
+            json.dumps(raw_manifest),
+        )
+        archive.writestr(
+            "example_plugin-1.dist-info/METADATA",
+            "Name: example-plugin\nVersion: 1.0.0\n",
+        )
+    return buffer.getvalue()
+
+
+def _resolved_entry(manifest, artifact: SimpleNamespace) -> SimpleNamespace:
+    return SimpleNamespace(
+        artifact=artifact,
+        id=manifest.id,
+        version=str(manifest.version),
+        permissions=manifest.permissions,
+        dependencies=manifest.dependencies,
+        compatibility=manifest.compatibility,
+    )
+
+
+def test_install_rejects_entry_without_download_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    from deeptutor.plugins.manifest import parse_manifest
+    from tests.plugins.test_lifecycle import _raw_manifest
+
+    manifest = parse_manifest(_raw_manifest())
+    entry = _resolved_entry(manifest, SimpleNamespace(url="", size_bytes=0, sha256=""))
+    monkeypatch.setattr(
+        "deeptutor.plugins.distribution.resolve_catalog_entry",
+        lambda *args, **kwargs: entry,
+    )
+
+    def unexpected_downloader_factory():
+        raise AssertionError("entry without URL must not reach the downloader")
+
+    with pytest.raises(PluginDistributionError, match="has no download URL"):
+        CatalogInstallManager(
+            downloader_factory=unexpected_downloader_factory,
+        ).install("org.author.example")
+
+
+def test_install_rejects_wheel_manifest_drift_from_reviewed_snapshot(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.plugins.manifest import parse_manifest
+    from tests.plugins.test_lifecycle import _raw_manifest
+
+    reviewed = parse_manifest(_raw_manifest())
+    drifted = dict(_raw_manifest())
+    drifted["permissions"] = {"network": ["https://other.example.com"]}
+    payload = _wheel_bytes(drifted)
+    artifact = _artifact(payload)
+
+    monkeypatch.setattr(
+        "deeptutor.plugins.distribution.resolve_catalog_entry",
+        lambda *args, **kwargs: _resolved_entry(reviewed, artifact),
+    )
+
+    class UnexpectedLifecycle:
+        def install(self, *args, **kwargs):
+            raise AssertionError("manifest drift must not reach lifecycle")
+
+    with pytest.raises(
+        PluginDistributionError, match="does not match the reviewed catalog snapshot"
+    ):
+        CatalogInstallManager(
+            downloader_factory=lambda: CatalogArtifactDownloader(
+                client_factory=lambda timeout: _client(httpx.Response(200, content=payload))
+            ),
+            lifecycle_factory=UnexpectedLifecycle,
+        ).install("org.author.example")
+
+
+def test_install_forwards_reinstall_flag_to_lifecycle(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from deeptutor.plugins.manifest import parse_manifest
+    from tests.plugins.test_lifecycle import _raw_manifest, _wheel
+
+    payload = _wheel(tmp_path, "1.0.0").read_bytes()
+    manifest = parse_manifest(_raw_manifest())
+    artifact = _artifact(payload)
+    reinstall_flags: list[bool] = []
+
+    class RecordingLifecycle:
+        def install(self, path, *, expected_sha256, allow_reinstall=False):
+            reinstall_flags.append(allow_reinstall)
+            return SimpleNamespace(action="installed")
+
+    monkeypatch.setattr(
+        "deeptutor.plugins.distribution.resolve_catalog_entry",
+        lambda *args, **kwargs: _resolved_entry(manifest, artifact),
+    )
+
+    CatalogInstallManager(
+        downloader_factory=lambda: CatalogArtifactDownloader(
+            client_factory=lambda timeout: _client(httpx.Response(200, content=payload))
+        ),
+        lifecycle_factory=RecordingLifecycle,
+    ).install("org.author.example", version="1.0.0", allow_reinstall=True)
+
+    assert reinstall_flags == [True]
+
+
+def test_default_client_disables_redirects_and_uses_timeout() -> None:
+    client = _default_client(2.5)
+    try:
+        assert client.follow_redirects is False
+        assert client.timeout.read == 2.5
+        assert client.headers["user-agent"] == "DeepTutor-plugin-catalog/2"
+    finally:
+        client.close()
