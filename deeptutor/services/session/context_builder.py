@@ -605,7 +605,15 @@ class ContextBuilder:
                     {"role": "system", "content": previous_model_turn["system"]},
                     *[
                         {key: value for key, value in message.items() if key != "_context_snapshot"}
-                        for message in replay_history(older_unsummarized, stored_summary, route)
+                        # Raw replay: the drift-free rebuild must fold the
+                        # full evidence into the summary before the turns
+                        # scroll out of the retained window (#1920).
+                        for message in replay_history(
+                            older_unsummarized,
+                            stored_summary,
+                            route,
+                            condense_tool_results=False,
+                        )
                     ],
                 ],
                 "tools": previous_model_turn.get("tools"),
