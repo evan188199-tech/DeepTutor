@@ -11,6 +11,10 @@ const preamble = 'I will check the course material.\n\n'
 const teaching = 'Reducers accumulate values instead of overwriting history.'
 const question = 'Which reducer keeps history?'
 
+const splitLesson = 'A reducer folds the whole history into one accumulated value.'
+const splitTransition = 'Try checking that yourself now.'
+const splitQuestion = 'Which accumulator keeps every intermediate value?'
+
 function event(
   type: StreamEvent['type'],
   metadata: Record<string, unknown>,
@@ -115,5 +119,124 @@ describe('mastery teaching beside a question', () => {
     render(conversation([...events, event('done', { status: 'completed' })], false))
     expect(screen.getByText(teaching).closest('.opacity-0')).not.toBeNull()
     expect(screen.getByText('Which chapter should I check?').closest('.opacity-0')).toBeNull()
+  })
+})
+
+function splitLessonEvents(withGrade: boolean): StreamEvent[] {
+  const payload = {
+    question_id: 'q2', prompt: splitQuestion, question_type: 'choice',
+    objective: { id: 'kp2', name: 'Reducers' }, difficulty: 'medium', attempt: 1,
+    options: [{ label: 'A', body: 'overwrite' }, { label: 'B', body: 'accumulate' }],
+    allow_free_text: true,
+  }
+  const eLen = splitLesson.length
+  const events: StreamEvent[] = [
+    event('content', { call_id: 'r1', call_kind: 'agent_loop_round' }, splitLesson),
+    event('tool_call', {
+      call_id: 'note', tool_name: 'mastery_note_explained',
+      label: 'Record teaching note', assistant_content_offset: eLen,
+    }, 'mastery_note_explained'),
+    event('tool_result', {
+      call_id: 'note', tool: 'mastery_note_explained', assistant_content_offset: eLen,
+    }, '{"stage":"explained"}'),
+  ]
+  if (withGrade) {
+    events.push(
+      event('tool_call', {
+        call_id: 'grade2', tool_name: 'mastery_grade',
+        label: 'Record mastery grade', assistant_content_offset: eLen,
+      }, 'mastery_grade'),
+      event('tool_result', {
+        call_id: 'grade2', tool: 'mastery_grade', assistant_content_offset: eLen,
+      }, 'Recorded'),
+    )
+  }
+  events.push(
+    event('progress', {
+      call_id: 'r1', trace_kind: 'call_status', call_state: 'complete',
+      call_role: 'narration', answer_visible: true,
+    }),
+    event('content', { call_id: 'r2', call_kind: 'agent_loop_round' }, splitTransition),
+    event('tool_call', { call_id: 'quiz', tool_name: 'mastery_quiz' }, 'mastery_quiz'),
+    event('tool_result', {
+      tool_call_id: 'quiz', assistant_content_offset: eLen + splitTransition.length,
+      tool_metadata: { mastery_question: payload },
+    }),
+  )
+  return events
+}
+
+function splitConversation(
+  events: StreamEvent[],
+  isStreaming: boolean,
+  content = splitLesson + splitTransition,
+) {
+  return (
+
+      <ChatMessageList
+        messages={[{ id: 1, role: 'assistant', content, parentMessageId: null, events }]}
+        isStreaming={isStreaming}
+        onCopyAssistantMessage={async () => undefined}
+        onRegenerateMessage={() => undefined}
+      />
+
+  )
+}
+
+describe('mastery lesson split by bookkeeping rows', () => {
+  it.each([
+    { withGrade: false, name: 'one note row' },
+    { withGrade: true, name: 'several bookkeeping rows' },
+  ])('keeps the explanation outside the fold: $name', ({ withGrade }) => {
+    const live = splitLessonEvents(withGrade)
+    const { rerender } = render(splitConversation(live, true))
+    const assertLesson = () => {
+      const explanation = screen.getByText(splitLesson)
+      const transition = screen.getByText(splitTransition)
+      const card = screen.getByText(splitQuestion)
+      expect(explanation.closest('.grid')).toBeNull()
+      expect(transition.closest('.grid')).toBeNull()
+      expect(explanation).toBeVisible()
+      expect(transition).toBeVisible()
+      expect(card.closest('.opacity-0')).toBeNull()
+      expect(
+        explanation.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy()
+      expect(
+        transition.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy()
+    }
+    assertLesson()
+
+    const completed = [...live, event('done', { status: 'completed' })]
+    rerender(splitConversation(completed, false))
+    assertLesson()
+    expect(screen.getByText('Record teaching note').closest('.opacity-0')).not.toBeNull()
+    if (withGrade) {
+      expect(screen.getByText('Record mastery grade').closest('.opacity-0')).not.toBeNull()
+    }
+
+    const preview = compactTracePreview(completed).events
+    expect(preview.some((item) => item.type === 'content')).toBe(false)
+    rerender(splitConversation(preview, false))
+    assertLesson()
+    expect(screen.getByText('Record teaching note').closest('.opacity-0')).not.toBeNull()
+  })
+
+  it('keeps the explanation while the quiz call is still pending', () => {
+    const events = splitLessonEvents(false).slice(0, -1)
+    render(splitConversation(events, true))
+    expect(screen.getByText(splitLesson).closest('.grid')).toBeNull()
+    expect(screen.getByText(splitTransition).closest('.grid')).toBeNull()
+    expect(screen.getByText('Record teaching note')).toBeVisible()
+  })
+
+  it('keeps a teaching-only round that ends on bookkeeping', () => {
+    const events = splitLessonEvents(false).slice(0, -2)
+    const completed = [...events, event('done', { status: 'completed' })]
+    render(splitConversation(completed, false, splitLesson))
+    expect(screen.getByText(splitLesson).closest('.grid')).toBeNull()
+    expect(screen.getByText(splitLesson)).toBeVisible()
+    expect(screen.getByText('Record teaching note').closest('.opacity-0')).not.toBeNull()
   })
 })

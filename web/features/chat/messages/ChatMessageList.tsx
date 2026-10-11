@@ -374,30 +374,112 @@ type MessageBlock =
   | { kind: "answer"; key: string; segment: MessageSegment };
 
 /**
+ * Tool names a run of work called. Read off both the call row (which carries
+ * the name the dispatcher resolved) and the result row (which echoes it), so
+ * a run is still classified when only one of the two survived an event
+ * preview.
+ */
+function traceToolNames(segment: MessageSegment): string[] {
+  if (segment.kind !== "trace") return [];
+  const names: string[] = [];
+  for (const traceEvent of segment.events) {
+    const meta = (traceEvent.metadata ?? {}) as Record<string, unknown>;
+    if (traceEvent.type === "tool_call") {
+      const name =
+        typeof meta.tool_name === "string" && meta.tool_name.trim()
+          ? meta.tool_name
+          : traceEvent.content;
+      if (name.trim()) names.push(name.trim());
+    } else if (traceEvent.type === "tool_result") {
+      if (typeof meta.tool === "string" && meta.tool.trim()) {
+        names.push(meta.tool.trim());
+      }
+    }
+  }
+  return names;
+}
+
+/**
+ * Mastery tools that only record learning state — what was explained, a
+ * grade, the question just posed, its deferral. The query and navigation
+ * tools (``mastery_status`` & co.) are absent on purpose: prose introducing
+ * one of those is commentary on work about to happen, and folds with it.
+ */
+const MASTERY_BOOKKEEPING_TOOLS = new Set([
+  "mastery_note_explained",
+  "mastery_quiz",
+  "mastery_grade",
+  "mastery_assess",
+  "mastery_skip_question",
+  "mastery_repair_question",
+  "mastery_defer_objective",
+]);
+
+/**
+ * Whether a run of work only recorded Mastery state. Such a row rides along
+ * with teaching instead of bounding it: the lesson is the prose around it,
+ * not commentary on work the tutor did. Anything else a turn can call is
+ * work the prose above it talked about, and still ends the lesson.
+ */
+function isMasteryBookkeeping(segment: MessageSegment): boolean {
+  const names = traceToolNames(segment);
+  return (
+    names.length > 0 && names.every((name) => MASTERY_BOOKKEEPING_TOOLS.has(name))
+  );
+}
+
+/**
  * Split a message into its blocks.
  *
  * A mastery question ends its turn, so the prose introducing it is teaching,
  * not commentary awaiting a later answer. Keep that text outside the fold as
- * well as the card. Earlier exploration and any intervening tool rows still
- * fold normally. Answered clarifications belong to the same process as the
- * work before and after them; only pending cards stand outside the fold.
+ * well as the card — including a lesson the tutor split with bookkeeping
+ * rows (a recorded note, a grade), which belong to the teaching rather than
+ * bounding it. Real work still bounds the lesson: the text above a
+ * retrieval or execution row is commentary on that work and folds as
+ * before. Answered clarifications belong to the same process as the work
+ * before and after them; only pending cards stand outside the fold.
  */
 function buildMessageBlocks(
   segments: MessageSegment[],
   answerStart: number,
 ): MessageBlock[] {
   const teaching = new Set<number>();
-  segments.forEach((segment, index) => {
-    if (segment.kind !== "mastery_question") return;
+  const markTeachingBefore = (index: number, anyWork: boolean) => {
     let before = index - 1;
     // Recording a grade or updating state can share the round with the quiz.
     // Those rows do not turn the preceding teaching into working notes.
-    while (before >= 0 && segments[before].kind === "trace") before -= 1;
-    while (before >= 0 && segments[before].kind === "text") {
-      teaching.add(before);
+    while (
+      before >= 0 &&
+      segments[before].kind === "trace" &&
+      (anyWork || isMasteryBookkeeping(segments[before]))
+    ) {
       before -= 1;
     }
+    while (before >= 0) {
+      const segment = segments[before];
+      if (segment.kind === "text") {
+        teaching.add(before);
+      } else if (segment.kind !== "trace" || !isMasteryBookkeeping(segment)) {
+        // A card or a run of real work ends the exchange: the prose above
+        // it talked about that work, not the lesson being posed here.
+        break;
+      }
+      before -= 1;
+    }
+  };
+  segments.forEach((segment, index) => {
+    if (segment.kind !== "mastery_question") return;
+    markTeachingBefore(index, true);
   });
+  // The card is not what makes the prose teaching. The same walk runs from
+  // the end of the working-out whenever bookkeeping is what closed it, so a
+  // lesson stays visible while the quiz call is still pending and a round
+  // that only recorded what was explained still ends a teaching turn. Work
+  // other than bookkeeping closing the turn folds as before.
+  if (answerStart > 0 && isMasteryBookkeeping(segments[answerStart - 1])) {
+    markTeachingBefore(answerStart, false);
+  }
   const blocks: MessageBlock[] = [];
   let run: MessageSegment[] = [];
   const flush = () => {
