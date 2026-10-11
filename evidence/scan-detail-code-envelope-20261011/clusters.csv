@@ -1,0 +1,408 @@
+cluster_id,count,normalized_text,example_text,files,file_count
+C001,184,str exc,str(exc),deeptutor/api/routers/auth.py;deeptutor/api/routers/book.py;deeptutor/api/routers/co_writer.py;deeptutor/api/routers/courses.py;deeptutor/api/routers/file_preview.py;deeptutor/api/routers/knowledge.py;deeptutor/api/routers/mastery_path.py;deeptutor/api/routers/mcp_settings.py;...,27
+C002,69,str e,str(e),deeptutor/api/routers/co_writer.py;deeptutor/api/routers/knowledge.py;deeptutor/api/routers/notebook.py;deeptutor/api/routers/question_notebook.py,4
+C003,14,session not found,Session not found,deeptutor/api/routers/mastery_path.py;deeptutor/api/routers/partners.py;deeptutor/api/routers/sessions.py,3
+C004,12,user not found,User not found,deeptutor/api/routers/auth.py;deeptutor/api/routers/multi_user.py,2
+C005,11,detail,detail,deeptutor/api/routers/auth.py;deeptutor/api/routers/co_writer.py;deeptutor/api/routers/knowledge.py;deeptutor/api/routers/visualizers.py;deeptutor/api/utils/task_log_stream.py;deeptutor/services/rag/preflight.py,6
+C006,11,knowledge base _x_ not found,Knowledge base '{}' not found,deeptutor/api/routers/knowledge.py;deeptutor/multi_user/knowledge_access.py,2
+C007,10,book not found,Book not found,deeptutor/api/routers/book.py,1
+C008,9,course not found,Course not found,deeptutor/api/routers/courses.py;deeptutor/api/routers/question_notebook.py;deeptutor/api/routers/sessions.py,3
+C009,9,file not found,File not found,deeptutor/api/routers/file_library.py;deeptutor/api/routers/knowledge.py;deeptutor/api/routers/workspace.py,3
+C010,9,t api partner_not_found,t('api.partner_not_found'),deeptutor/api/routers/partners.py,1
+C011,8,entry not found,Entry not found,deeptutor/api/routers/dashboard.py;deeptutor/api/routers/memory.py;deeptutor/api/routers/question_notebook.py,3
+C012,7,mastery topic not found,Mastery topic not found,deeptutor/api/routers/mastery_path.py,1
+C013,7,plugin page not found,Plugin page not found,deeptutor/api/routers/plugins.py,1
+C014,7,progress not found,Progress not found,deeptutor/api/routers/mastery_path.py,1
+C015,5,preview source not found,Preview source not found,deeptutor/api/routers/file_preview.py,1
+C016,5,source _x_ not found,Source '{}' not found,deeptutor/api/routers/knowledge.py,1
+C017,4,block not found,Block not found,deeptutor/api/routers/book.py,1
+C018,4,conflicting workspace scopes,Conflicting workspace scopes.,deeptutor/api/routers/auth.py;deeptutor/api/routers/file_preview.py,2
+C019,4,document not found,Document not found,deeptutor/api/routers/co_writer.py,1
+C020,4,notebook not found,Notebook not found,deeptutor/api/routers/notebook.py,1
+C021,4,page not found,Page not found,deeptutor/api/routers/book.py,1
+C022,4,res detail,res.detail,deeptutor/services/memory/consolidator/modes/audit.py,1
+C023,4,skill not found _x_,Skill not found: {},deeptutor/api/routers/skills.py,1
+C024,4,t api persona_not_found name name,"t('api.persona_not_found', name=name)",deeptutor/api/routers/partners.py;deeptutor/api/routers/personas.py,2
+C025,3,access denied,Access denied,deeptutor/api/routers/knowledge.py;tests/services/rag/test_source_visual_grounding.py,2
+C026,3,authentication required,Authentication required,tests/api/test_plugins_router.py,1
+C027,3,auto,auto,deeptutor/services/llm/provider_core/openai_responses/converters.py;tests/services/llm/test_openai_codex_oauth_provider.py;tests/services/session/test_image_context_budget.py,3
+C028,3,invalid preview source query,Invalid preview source query,deeptutor/api/routers/file_preview.py,1
+C029,3,skill already exists _x_,Skill already exists: {},deeptutor/api/routers/multi_user.py;deeptutor/api/routers/skills.py,2
+C030,3,t api content_required,t('api.content_required'),deeptutor/api/routers/partners.py,1
+C031,3,t api soul_not_found,t('api.soul_not_found'),deeptutor/api/routers/partners.py,1
+C032,3,this reading extension is not allowed,This reading extension is not allowed.,deeptutor/api/routers/reading_extensions.py,1
+C033,3,too many handoff requests try again later,Too many handoff requests. Try again later.,deeptutor/api/routers/auth.py,1
+C034,3,unknown agent kind _x_,Unknown agent kind: {},deeptutor/api/routers/subagents.py,1
+C035,3,unknown run_id,unknown run_id,deeptutor/api/routers/memory.py,1
+C036,2,_x_ _x_,{}: {},deeptutor/api/main.py;deeptutor/api/routers/partners.py,2
+C037,2,_x_ exceeds the _x_ mb limit,{} exceeds the {} MB limit.,deeptutor/api/routers/co_writer.py;deeptutor/api/routers/reading.py,2
+C038,2,_x_ is empty,{} is empty.,deeptutor/api/routers/co_writer.py;deeptutor/api/routers/reading.py,2
+C039,2,active learning turn could not be stopped before changing this path,Active learning turn could not be stopped before changing this path,deeptutor/api/routers/mastery_path.py,1
+C040,2,admin access required,Admin access required,deeptutor/api/routers/auth.py;tests/api/test_plugins_router.py,2
+C041,2,assigned admin knowledge bases are read only,Assigned admin knowledge bases are read-only,deeptutor/multi_user/knowledge_access.py,1
+C042,2,attachment backend not servable,Attachment backend not servable,deeptutor/api/routers/attachments.py;deeptutor/api/routers/file_preview.py,2
+C043,2,avatar not found,Avatar not found,deeptutor/api/routers/auth.py,1
+C044,2,category not found,Category not found,deeptutor/api/routers/question_notebook.py,1
+C045,2,channel onboarding provider request failed _x_,Channel onboarding provider request failed ({}),deeptutor/api/routers/partners.py,1
+C046,2,configure lightrag models in settings per knowledge base overrides are no longer supported,Configure LightRAG models in Settings; per-knowledge-base overrides are no longer supported.,deeptutor/api/routers/knowledge.py,1
+C047,2,device credentials require built in authentication,Device credentials require built-in authentication.,deeptutor/api/routers/auth.py,1
+C048,2,error_message,error_message,deeptutor/api/routers/knowledge.py,1
+C049,2,error_msg,error_msg,deeptutor/api/routers/knowledge.py,1
+C050,2,failed to reload channels _x_,Failed to reload channels: {},deeptutor/api/routers/partners.py,1
+C051,2,file not found on disk,File not found on disk,deeptutor/api/routers/file_library.py,1
+C052,2,format_exception_message e,format_exception_message(e),deeptutor/api/routers/knowledge.py,1
+C053,2,high,high,tests/services/llm/test_image_replay.py;tests/services/llm/test_usage_estimation.py,2
+C054,2,hub _x_ does not support browsing,Hub `{}` does not support browsing.,deeptutor/api/routers/skills.py,1
+C055,2,knowledge base is not assigned to you,Knowledge base is not assigned to you,deeptutor/multi_user/knowledge_access.py;tests/services/rag/test_visual_assets.py,2
+C056,2,learner account has no learning policy,Learner account has no learning policy,deeptutor/api/routers/multi_user.py,1
+C057,2,learner profile required,Learner profile required,deeptutor/api/routers/auth.py,1
+C058,2,message not found,Message not found,deeptutor/api/routers/sessions.py,1
+C059,2,no connected subagent named _x_,No connected subagent named {}.,deeptutor/api/routers/subagents.py,1
+C060,2,no default knowledge base is configured,No default knowledge base is configured,deeptutor/api/routers/knowledge.py;deeptutor/multi_user/knowledge_access.py,2
+C061,2,no fields to update,No fields to update,deeptutor/api/routers/notebook.py;deeptutor/api/routers/question_notebook.py,2
+C062,2,not assigned,Not assigned,tests/services/rag/test_kiwix_pipeline.py,1
+C063,2,outcome verdict detail,outcome.verdict.detail,deeptutor/api/routers/multi_user.py;deeptutor/api/routers/skills.py,2
+C064,2,output not found,Output not found,deeptutor/api/routers/outputs.py,1
+C065,2,partner draft not found,Partner draft not found,deeptutor/api/routers/partners.py,1
+C066,2,preferences is written by the write_memory tool not consolidated,"preferences is written by the write_memory tool, not consolidated",deeptutor/api/routers/memory.py,1
+C067,2,reading extension not found,Reading extension not found.,deeptutor/api/routers/reading_extensions.py,1
+C068,2,record not found,Record not found,deeptutor/api/routers/notebook.py,1
+C069,2,record or target notebook not found,Record or target notebook not found,deeptutor/api/routers/notebook.py,1
+C070,2,self detail,self.detail,deeptutor/services/subagent/models.py;deeptutor/services/subagent/types.py,2
+C071,2,self registration is closed ask an administrator to create your account,Self-registration is closed. Ask an administrator to create your account.,deeptutor/api/routers/auth.py,1
+C072,2,session not found in recycle bin,Session not found in recycle bin,deeptutor/api/routers/sessions.py,1
+C073,2,skill is not assigned to you,Skill is not assigned to you,deeptutor/api/routers/skills.py;deeptutor/multi_user/skill_access.py,2
+C074,2,t api partner_stopped_start_required,t('api.partner_stopped_start_required'),deeptutor/api/routers/partners.py,1
+C075,2,tag already exists _x_,Tag already exists: {},deeptutor/api/routers/skills.py,1
+C076,2,tag not found _x_,Tag not found: {},deeptutor/api/routers/skills.py,1
+C077,2,the upload has no filename,The upload has no filename.,deeptutor/api/routers/co_writer.py;deeptutor/api/routers/reading.py,2
+C078,2,unknown surface _x_,unknown surface {},deeptutor/api/routers/memory.py,1
+C079,2,unsupported office file type,Unsupported Office file type,deeptutor/api/routers/file_preview.py,1
+C080,2,use role_models for this configuration,Use role_models for this configuration.,deeptutor/api/routers/knowledge.py,1
+C081,2,username already taken,Username already taken,deeptutor/api/routers/auth.py,1
+C082,1,_unavailable_detail reason busy_or_circuit_open,_unavailable_detail(reason='busy_or_circuit_open'),deeptutor/api/routers/reading_extensions.py,1
+C083,1,_unavailable_detail reason str exc,_unavailable_detail(reason=str(exc)),deeptutor/api/routers/reading_extensions.py,1
+C084,1,_unavailable_detail reason str exc message this reading action needs a working language model,"_unavailable_detail(reason=str(exc), message='This reading action needs a working language model.')",deeptutor/api/routers/reading_extensions.py,1
+C085,1,_unavailable_detail reason timed_out,_unavailable_detail(reason='timed_out'),deeptutor/api/routers/reading_extensions.py,1
+C086,1,_x_ already exists in the target folder,'{}' already exists in the target folder,deeptutor/api/routers/knowledge.py,1
+C087,1,_x_ has no stored original to render,{} has no stored original to render.,deeptutor/api/routers/reading.py,1
+C088,1,_x_ is not a valid zip archive,'{}' is not a valid zip archive.,deeptutor/api/routers/knowledge.py,1
+C089,1,a non empty message is required,A non-empty 'message' is required.,deeptutor/api/routers/subagents.py,1
+C090,1,a partner uses the codex login of the account that owns it,A partner uses the Codex login of the account that owns it.,deeptutor/api/routers/settings.py,1
+C091,1,a session cannot be its own parent,A session cannot be its own parent,deeptutor/api/routers/sessions.py,1
+C092,1,active conversation turn could not be stopped before deletion,Active conversation turn could not be stopped before deletion,deeptutor/api/routers/sessions.py,1
+C093,1,active guardian relationship not found,Active guardian relationship not found,deeptutor/api/routers/multi_user.py,1
+C094,1,add them under credentials or supply a pair per knowledge base when connecting one,"Add them under Credentials, or supply a pair per knowledge base when connecting one.",tests/services/rag/test_preflight.py,1
+C095,1,admin dependency called,admin dependency called,tests/video_learning/test_router.py,1
+C096,1,admin required,Admin required,tests/api/test_settings_service_preview.py,1
+C097,1,admin users use the main workspace and cannot receive assignments,Admin users use the main workspace and cannot receive assignments.,deeptutor/api/routers/multi_user.py,1
+C098,1,an indexing worker still owns this knowledge base,An indexing worker still owns this knowledge base.,deeptutor/api/routers/knowledge.py,1
+C099,1,annotation not found,annotation not found,deeptutor/api/routers/reading.py,1
+C100,1,archive _x_ contained no supported files,Archive '{}' contained no supported files.,deeptutor/api/routers/knowledge.py,1
+C101,1,archive _x_ exceeds maximum size limit of _x_,Archive '{}' exceeds maximum size limit of {},deeptutor/api/routers/knowledge.py,1
+C102,1,asset not found,Asset not found,deeptutor/api/routers/partners.py,1
+C103,1,at least one learning module is required,At least one learning module is required,deeptutor/api/routers/mastery_path.py,1
+C104,1,attachment batch too large,Attachment batch too large,deeptutor/api/routers/partners.py,1
+C105,1,attachment not found,Attachment not found,deeptutor/api/routers/attachments.py,1
+C106,1,attachment too large _x_,Attachment too large: {},deeptutor/api/routers/partners.py,1
+C107,1,audio exceeds the 25 mb limit,Audio exceeds the 25 MB limit.,deeptutor/api/routers/voice.py,1
+C108,1,auth is disabled profiles are not available,Auth is disabled — profiles are not available.,deeptutor/api/routers/auth.py,1
+C109,1,auth is disabled registration is not available,Auth is disabled — registration is not available.,deeptutor/api/routers/auth.py,1
+C110,1,auth is disabled user creation is not available,Auth is disabled — user creation is not available.,deeptutor/api/routers/auth.py,1
+C111,1,auth is disabled user import is not available,Auth is disabled — user import is not available.,deeptutor/api/routers/auth.py,1
+C112,1,avatar image is too large max 1 mb,Avatar image is too large (max 1 MB).,deeptutor/api/routers/auth.py,1
+C113,1,avatar must be a data image url,Avatar must be a data:image/* URL,deeptutor/api/routers/partners.py,1
+C114,1,avatar must be a png jpeg or webp image,"Avatar must be a PNG, JPEG or WebP image.",deeptutor/api/routers/auth.py,1
+C115,1,avatar too large resize the image before uploading,Avatar too large — resize the image before uploading,deeptutor/api/routers/partners.py,1
+C116,1,avatar upload is not available in pocketbase mode,Avatar upload is not available in PocketBase mode.,deeptutor/api/routers/auth.py,1
+C117,1,base_url is required for this provider,base_url is required for this provider.,deeptutor/api/routers/settings.py,1
+C118,1,block not found or not editable,Block not found or not editable,deeptutor/api/routers/book.py,1
+C119,1,book creation is not allowed,Book creation is not allowed,deeptutor/api/routers/book.py,1
+C120,1,book or page not found,Book or page not found,deeptutor/api/routers/book.py,1
+C121,1,bookmark not found,Bookmark not found,deeptutor/api/routers/reading.py,1
+C122,1,both name and agent_kind are required,Both name and agent_kind are required.,deeptutor/api/routers/subagents.py,1
+C123,1,both name and folder_path are required,Both name and folder_path are required.,deeptutor/api/routers/knowledge.py,1
+C124,1,both name and server_url are required,Both name and server_url are required.,deeptutor/api/routers/knowledge.py,1
+C125,1,both name and vault_path are required,Both name and vault_path are required.,deeptutor/api/routers/knowledge.py,1
+C126,1,both server_url and knowledge_base_id are required,Both server_url and knowledge_base_id are required.,deeptutor/api/routers/knowledge.py,1
+C127,1,branch needs a different session key,Branch needs a different session key,deeptutor/api/routers/partners.py,1
+C128,1,busy,busy,tests/api/test_knowledge_router.py,1
+C129,1,cancel the active run before resetting this doc,cancel the active run before resetting this doc,deeptutor/api/routers/memory.py,1
+C130,1,cannot delete a message while its turn is running or waiting for input,Cannot delete a message while its turn is running or waiting for input,deeptutor/api/routers/sessions.py,1
+C131,1,cannot move a folder into itself,Cannot move a folder into itself,deeptutor/api/routers/knowledge.py,1
+C132,1,cannot store an avatar for this account,Cannot store an avatar for this account.,deeptutor/api/routers/auth.py,1
+C133,1,change a knowledge base s embedding model through re indexing,Change a knowledge base's embedding model through re-indexing.,deeptutor/api/routers/knowledge.py,1
+C134,1,channel config saved but failed to restart listeners _x_ try stopping and starting the partner,Channel config saved but failed to restart listeners ({}); try stopping and starting the partner.,deeptutor/api/routers/partners.py,1
+C135,1,channels saved but failed to restart listeners _x_ try stopping and starting the partner,Channels saved but failed to restart listeners ({}); try stopping and starting the partner.,deeptutor/api/routers/partners.py,1
+C136,1,client id and api key are required,Client ID and API key are required.,deeptutor/api/routers/knowledge.py,1
+C137,1,conversation not found,Conversation not found.,deeptutor/api/routers/task_board.py,1
+C138,1,conversation origin_ref must match session_id,conversation origin_ref must match session_id,deeptutor/api/routers/question_notebook.py,1
+C139,1,could not connect the ima knowledge base,Could not connect the IMA knowledge base.,deeptutor/api/routers/knowledge.py,1
+C140,1,could not list github copilot models run deeptutor provider login github copilot for this account in the server s deeptutor home then retry if already logged in check copilot access and connectivity,"Could not list GitHub Copilot models. Run: deeptutor provider login github-copilot for this account in the server's DeepTutor home, then retry. If already logged in, check Copilot access and connectivity.",deeptutor/api/routers/settings.py,1
+C141,1,could not reach tencent ima,Could not reach Tencent IMA.,deeptutor/api/routers/knowledge.py,1
+C142,1,course resource not found,Course resource not found,deeptutor/api/routers/courses.py,1
+C143,1,csv header must be exactly username password preset,"CSV header must be exactly: username,password,preset",deeptutor/api/routers/auth.py,1
+C144,1,data migration and export are managed by the guardian for this learning account,Data migration and export are managed by the guardian for this learning account.,deeptutor/api/routers/workspace.py,1
+C145,1,day must be yyyy mm dd,day must be YYYY-MM-DD,deeptutor/api/routers/memory.py,1
+C146,1,device credential not found,Device credential not found,deeptutor/api/routers/auth.py,1
+C147,1,device credentials are not supported in pocketbase mode,Device credentials are not supported in PocketBase mode.,deeptutor/api/routers/auth.py,1
+C148,1,device session is no longer active,Device session is no longer active,deeptutor/api/routers/auth.py,1
+C149,1,dict detail or _x_,dict(detail or {}),deeptutor/services/courses_state.py,1
+C150,1,duplicate filename after sanitization _x_ rename one of the files and try again,Duplicate filename after sanitization: '{}'. Rename one of the files and try again.,deeptutor/api/routers/knowledge.py,1
+C151,1,duplicate partner lifecycle command,Duplicate Partner lifecycle command,deeptutor/api/routers/partners.py,1
+C152,1,empty audio upload,Empty audio upload.,deeptutor/api/routers/voice.py,1
+C153,1,empty lightrag knowledge bases follow defaults configure models in settings,Empty LightRAG knowledge bases follow defaults. Configure models in Settings.,deeptutor/api/routers/knowledge.py,1
+C154,1,enable the source and automatic synchronization before retrying,Enable the source and automatic synchronization before retrying,deeptutor/api/routers/knowledge.py,1
+C155,1,enter a valid https public origin,Enter a valid HTTPS public origin,deeptutor/api/routers/auth.py,1
+C156,1,entry not found in any l2 doc,entry not found in any L2 doc,deeptutor/api/routers/memory.py,1
+C157,1,epub pairing not found,EPUB pairing not found,deeptutor/api/routers/reading.py,1
+C158,1,error,error,deeptutor/api/routers/mcp_settings.py,1
+C159,1,error_detail,error_detail,deeptutor/api/routers/knowledge.py,1
+C160,1,extra headers must contain text values,Extra headers must contain text values.,deeptutor/api/routers/settings.py,1
+C161,1,failed to add to category,Failed to add to category,deeptutor/api/routers/question_notebook.py,1
+C162,1,failed to create user username may already be taken,Failed to create user — username may already be taken.,deeptutor/api/routers/auth.py,1
+C163,1,failed to delete knowledge base,Failed to delete knowledge base,deeptutor/api/routers/knowledge.py,1
+C164,1,failed to list knowledge bases _x_,Failed to list knowledge bases: {},deeptutor/api/routers/knowledge.py,1
+C165,1,failed to save focus check evidence,Failed to save Focus-Check evidence,deeptutor/api/routers/book.py,1
+C166,1,failed to start partner,Failed to start partner,deeptutor/api/routers/partners.py,1
+C167,1,file _x_ exceeds maximum size limit of _x_,File '{}' exceeds maximum size limit of {},deeptutor/api/routers/knowledge.py,1
+C168,1,finish the active conversation before updating deeptutor,Finish the active conversation before updating DeepTutor.,deeptutor/api/routers/system.py,1
+C169,1,folder _x_ not found,Folder '{}' not found,deeptutor/api/routers/knowledge.py,1
+C170,1,folder name is required,Folder name is required,deeptutor/api/routers/knowledge.py,1
+C171,1,folder_path is required,folder_path is required.,deeptutor/api/routers/knowledge.py,1
+C172,1,formatted_error,formatted_error,deeptutor/api/routers/knowledge.py,1
+C173,1,graphrag compatibility could not be tested because of an internal error,GraphRAG compatibility could not be tested because of an internal error.,deeptutor/api/routers/knowledge.py,1
+C174,1,graphrag is not installed run pip install deeptutor graphrag on the server before creating a graphrag knowledge base,GraphRAG is not installed. Run `pip install 'deeptutor[graphrag]'` on the server before creating a GraphRAG knowledge base.,deeptutor/api/routers/knowledge.py,1
+C175,1,graphrag preflight failed _x_,GraphRAG preflight failed: {},deeptutor/api/routers/knowledge.py,1
+C176,1,guardian authorization required,Guardian authorization required,deeptutor/api/routers/multi_user.py,1
+C177,1,guardian credential reset requires built in local authentication,Guardian credential reset requires built-in local authentication.,deeptutor/api/routers/multi_user.py,1
+C178,1,guardian relationship not found,Guardian relationship not found,deeptutor/api/routers/multi_user.py,1
+C179,1,handoff request has no valid frontend host,Handoff request has no valid frontend host,deeptutor/api/routers/auth.py,1
+C180,1,handoff ticket is invalid expired or already used,"Handoff ticket is invalid, expired, or already used",deeptutor/api/routers/auth.py,1
+C181,1,holder error,holder['error'],deeptutor/api/routers/partners.py,1
+C182,1,ima rate limit reached try again shortly,IMA rate limit reached. Try again shortly.,deeptutor/api/routers/knowledge.py,1
+C183,1,ima rejected the supplied credentials,IMA rejected the supplied credentials.,deeptutor/api/routers/knowledge.py,1
+C184,1,ima returned an invalid response,IMA returned an invalid response.,deeptutor/api/routers/knowledge.py,1
+C185,1,incorrect device credentials,Incorrect device credentials,deeptutor/api/routers/auth.py,1
+C186,1,incorrect email or password,Incorrect email or password,deeptutor/api/routers/auth.py,1
+C187,1,incorrect username or password,Incorrect username or password,deeptutor/api/routers/auth.py,1
+C188,1,installation reason or this installation cannot update itself safely,installation.reason or 'This installation cannot update itself safely.',deeptutor/api/routers/system.py,1
+C189,1,invalid attachment data for _x_,Invalid attachment data for {},deeptutor/api/routers/partners.py,1
+C190,1,invalid book_id,Invalid book_id,deeptutor/api/routers/mastery_path.py,1
+C191,1,invalid capture status _x_,Invalid capture status: {},deeptutor/api/routers/book.py,1
+C192,1,invalid extra headers json,Invalid extra headers JSON.,deeptutor/api/routers/settings.py,1
+C193,1,invalid folder path,Invalid folder path,deeptutor/api/routers/knowledge.py,1
+C194,1,invalid key,invalid key,tests/services/embedding/test_extract_embeddings.py,1
+C195,1,invalid knowledge resource reference,Invalid knowledge resource reference,deeptutor/services/workspace/knowledge.py,1
+C196,1,invalid knowledge_point data in modules _x_ _x_,Invalid knowledge_point data in modules[{}]: {},deeptutor/api/routers/mastery_path.py,1
+C197,1,invalid mode _x_ for _x_ choose one of _x_,Invalid mode '{}' for {}. Choose one of: {}.,deeptutor/api/routers/knowledge.py,1
+C198,1,invalid module data in modules _x_ _x_,Invalid module data in modules[{}]: {},deeptutor/api/routers/mastery_path.py,1
+C199,1,invalid or expired token,Invalid or expired token,deeptutor/api/routers/auth.py,1
+C200,1,invalid preview source,Invalid preview source,deeptutor/api/routers/file_preview.py,1
+C201,1,invalid proposal _x_,Invalid proposal: {},deeptutor/api/routers/book.py,1
+C202,1,invalid search mode _x_ for _x_ choose one of _x_,Invalid search mode '{}' for {}. Choose one of: {}.,deeptutor/api/routers/knowledge.py,1
+C203,1,invalid spine _x_,Invalid spine: {},deeptutor/api/routers/book.py,1
+C204,1,invalid state transition _x_ _x_,Invalid state transition: {} -> {},deeptutor/api/routers/book.py,1
+C205,1,invalid timezone,Invalid timezone,deeptutor/api/routers/settings.py,1
+C206,1,kiwix knowledge base not found,Kiwix knowledge base not found.,deeptutor/api/routers/knowledge.py,1
+C207,1,knowledge base _x_ already exists,Knowledge base '{}' already exists,deeptutor/api/routers/knowledge.py,1
+C208,1,knowledge base _x_ already has a ready _x_ index provider changes require an explicit re index migration instead of a silent config edit,Knowledge base '{}' already has a ready {} index. Provider changes require an explicit re-index/migration instead of a silent config edit.,deeptutor/api/routers/knowledge.py,1
+C209,1,knowledge base _x_ is connected to an external resource and has no local files,Knowledge base '{}' is connected to an external resource and has no local files.,deeptutor/api/routers/knowledge.py,1
+C210,1,knowledge base _x_ is connected to an external resource and is read only local file operations and re indexing are not available for it,Knowledge base '{}' is connected to an external resource and is read-only. Local file operations and re-indexing are not available for it.,deeptutor/api/routers/knowledge.py,1
+C211,1,knowledge base _x_ is not in an error state use re index when you want to rebuild a healthy knowledge base,Knowledge base '{}' is not in an error state. Use re-index when you want to rebuild a healthy knowledge base.,deeptutor/api/routers/knowledge.py,1
+C212,1,knowledge base _x_ uses legacy index format and needs reindex before accepting incremental uploads,Knowledge base '{}' uses legacy index format and needs reindex before accepting incremental uploads.,deeptutor/api/routers/knowledge.py,1
+C213,1,knowledge base is not assigned to this workspace,Knowledge base is not assigned to this workspace,deeptutor/services/workspace/knowledge.py,1
+C214,1,knowledge base name is required,Knowledge base name is required.,deeptutor/api/routers/knowledge.py,1
+C215,1,knowledge resource workspace is unavailable,Knowledge resource workspace is unavailable,deeptutor/services/workspace/knowledge.py,1
+C216,1,knowledge source operation failed,Knowledge source operation failed,deeptutor/api/routers/knowledge.py,1
+C217,1,layer must be l2 or l3,layer must be L2 or L3,deeptutor/api/routers/memory.py,1
+C218,1,learner grant could not be saved,Learner grant could not be saved,deeptutor/api/routers/multi_user.py,1
+C219,1,learner preset update failed a later grant change was preserved,Learner preset update failed; a later grant change was preserved,deeptutor/api/routers/multi_user.py,1
+C220,1,learner preset update failed and the prior grant could not be restored,Learner preset update failed and the prior grant could not be restored,deeptutor/api/routers/multi_user.py,1
+C221,1,learner preset update failed the prior grant was restored,Learner preset update failed; the prior grant was restored,deeptutor/api/routers/multi_user.py,1
+C222,1,learning capture not found,Learning capture not found,deeptutor/api/routers/book.py,1
+C223,1,learning journal could not be read its original file has been preserved,Learning journal could not be read. Its original file has been preserved.,deeptutor/api/routers/learning_journal.py,1
+C224,1,learning policy dependency called,learning policy dependency called,tests/video_learning/test_router.py,1
+C225,1,legacy doc files are not supported yet please save the document as docx and try again,Legacy .doc files are not supported yet. Please save the document as .docx and try again.,deeptutor/api/routers/co_writer.py,1
+C226,1,lightrag is not installed run pip install deeptutor rag lightrag on the server before creating a lightrag knowledge base,LightRAG is not installed. Run `pip install 'deeptutor[rag-lightrag]'` on the server before creating a LightRAG knowledge base.,deeptutor/api/routers/knowledge.py,1
+C227,1,lightrag model selection requires both profile_id and model_id,LightRAG model selection requires both profile_id and model_id.,deeptutor/api/routers/knowledge.py,1
+C228,1,link not found,Link not found,deeptutor/api/routers/question_notebook.py,1
+C229,1,linked folder _x_ not found,Linked folder '{}' not found,deeptutor/api/routers/knowledge.py,1
+C230,1,llm returned invalid json,LLM returned invalid JSON,deeptutor/api/routers/mastery_path.py,1
+C231,1,llm returned invalid structure modules is not a list,LLM returned invalid structure: modules is not a list,deeptutor/api/routers/mastery_path.py,1
+C232,1,low,low,tests/services/llm/test_image_replay.py,1
+C233,1,mastery path changed activity while the operation was starting active session _x_,Mastery path changed activity while the operation was starting; active session: {},deeptutor/api/routers/mastery_path.py,1
+C234,1,mastery progress not found,Mastery progress not found,deeptutor/api/routers/mastery_path.py,1
+C235,1,material _x_ not found,material {} not found,deeptutor/api/routers/reading.py,1
+C236,1,message,message,deeptutor/api/routers/multi_user.py,1
+C237,1,message enabled channels require at least one allowed sender join empty_allow_lists channels empty_allow_lists,"{'message': 'Enabled channels require at least one allowed sender: ' + ', '.join(empty_allow_lists), 'channels': empty_allow_lists}",deeptutor/api/routers/partners.py,1
+C238,1,message f delivery flags are configured per channel remove top level channel keys join legacy_keys,"{'message': f""Delivery flags are configured per channel; remove top-level channel keys: {', '.join(legacy_keys)}""}",deeptutor/api/routers/partners.py,1
+C239,1,message str exc active_session_key exc active_session_key,"{'message': str(exc), 'active_session_key': exc.active_session_key}",deeptutor/api/routers/partners.py,1
+C240,1,message t api invalid_channels_config errors exc errors,"{'message': t('api.invalid_channels_config'), 'errors': exc.errors()}",deeptutor/api/routers/partners.py,1
+C241,1,message t api invalid_channels_config errors nested_errors,"{'message': t('api.invalid_channels_config'), 'errors': nested_errors}",deeptutor/api/routers/partners.py,1
+C242,1,method not allowed,Method not allowed,deeptutor/api/routers/plugins.py,1
+C243,1,mode must be one of _x_,mode must be one of: {},deeptutor/api/routers/mastery_path.py,1
+C244,1,model configuration is managed by an administrator,Model configuration is managed by an administrator.,deeptutor/api/routers/settings.py,1
+C245,1,module _x_ must contain at least one knowledge point,Module {} must contain at least one knowledge point,deeptutor/api/routers/mastery_path.py,1
+C246,1,move the conversation separately from other organization changes,Move the conversation separately from other organization changes.,deeptutor/api/routers/sessions.py,1
+C247,1,move the parent conversation instead,Move the parent conversation instead.,deeptutor/api/routers/sessions.py,1
+C248,1,name is required,name is required.,deeptutor/api/routers/knowledge.py,1
+C249,1,name server_url and knowledge_base_id are required,"name, server_url, and knowledge_base_id are required.",deeptutor/api/routers/knowledge.py,1
+C250,1,no _x_ models configured,No '{}' models configured.,deeptutor/api/routers/knowledge.py,1
+C251,1,no active llm model is configured,No active LLM model is configured.,tests/cli/test_doctor_cli.py,1
+C252,1,no embedding model is configured set up the embedding profile in settings before re indexing,No embedding model is configured. Set up the embedding profile in Settings before re-indexing.,deeptutor/api/routers/knowledge.py,1
+C253,1,no newer deeptutor release is available,No newer DeepTutor release is available,deeptutor/api/routers/system.py,1
+C254,1,no records provided,No records provided,deeptutor/api/routers/mastery_path.py,1
+C255,1,no retrieval modes for engine _x_,No retrieval modes for engine '{}'.,deeptutor/api/routers/knowledge.py,1
+C256,1,no sessions to import,No sessions to import,deeptutor/api/routers/imports.py,1
+C257,1,no such image in this material,No such image in this material.,deeptutor/api/routers/reading.py,1
+C258,1,no such linked account,No such linked account,deeptutor/api/routers/partners.py,1
+C259,1,no trace for that day,no trace for that day,deeptutor/api/routers/memory.py,1
+C260,1,not a valid entry id,not a valid entry id,deeptutor/api/routers/memory.py,1
+C261,1,not active,not active,deeptutor/api/routers/memory.py,1
+C262,1,not authenticated,Not authenticated,deeptutor/api/routers/auth.py,1
+C263,1,nothing to branch source is empty,Nothing to branch (source is empty),deeptutor/api/routers/partners.py,1
+C264,1,nothing to undo,nothing to undo,deeptutor/api/routers/memory.py,1
+C265,1,objective not found,Objective not found,deeptutor/api/routers/mastery_path.py,1
+C266,1,only a single byte range is supported,Only a single byte range is supported.,deeptutor/api/routers/video_learning.py,1
+C267,1,only docx files can be imported,Only .docx files can be imported.,deeptutor/api/routers/co_writer.py,1
+C268,1,only non admin users can be provisioned by this endpoint,Only non-admin users can be provisioned by this endpoint.,deeptutor/api/routers/auth.py,1
+C269,1,only the standard preset is available in pocketbase mode,Only the standard preset is available in PocketBase mode.,deeptutor/api/routers/auth.py,1
+C270,1,operation not found,Operation not found,deeptutor/api/routers/co_writer.py,1
+C271,1,page or chapter not found,Page or chapter not found,deeptutor/api/routers/book.py,1
+C272,1,pageindex api key is not configured add it under knowledge rag pipeline settings before creating a pageindex knowledge base,PageIndex API key is not configured. Add it under Knowledge → RAG pipeline settings before creating a PageIndex knowledge base.,deeptutor/api/routers/knowledge.py,1
+C273,1,pageindex knowledge bases accept _x_ unsupported _x_,PageIndex knowledge bases accept: {}. Unsupported: {}.,deeptutor/api/routers/knowledge.py,1
+C274,1,pageindex oss mode must be flash standard or omitted,"PageIndex OSS mode must be 'flash', 'standard', or omitted.",deeptutor/api/routers/knowledge.py,1
+C275,1,pageindex oss preflight failed _x_,PageIndex OSS preflight failed: {},deeptutor/api/routers/knowledge.py,1
+C276,1,pairing code is invalid expired or already used,"Pairing code is invalid, expired, or already used",deeptutor/api/routers/auth.py,1
+C277,1,pairing request has no valid frontend host,Pairing request has no valid frontend host,deeptutor/api/routers/auth.py,1
+C278,1,parent page not found,Parent page not found,deeptutor/api/routers/book.py,1
+C279,1,parent session not found,Parent session not found,deeptutor/api/routers/sessions.py,1
+C280,1,partner group not found,Partner Group not found,deeptutor/api/routers/partner_groups.py,1
+C281,1,partner group session not found,Partner Group session not found,deeptutor/api/routers/partner_groups.py,1
+C282,1,partner is not assigned to you,Partner is not assigned to you,deeptutor/multi_user/partner_access.py,1
+C283,1,partner leader did not process the command,Partner leader did not process the command,deeptutor/api/routers/partners.py,1
+C284,1,plugin request body is too large,Plugin request body is too large,deeptutor/api/routers/plugins.py,1
+C285,1,plugin route failed,Plugin route failed,deeptutor/api/routers/plugins.py,1
+C286,1,plugin route not found,Plugin route not found,deeptutor/api/routers/plugins.py,1
+C287,1,preview source must be a local file url,Preview source must be a local file URL,deeptutor/api/routers/file_preview.py,1
+C288,1,preview_failure_message exc,preview_failure_message(exc),deeptutor/api/routers/settings.py,1
+C289,1,provider request failed _x_,Provider request failed: {},deeptutor/api/routers/settings.py,1
+C290,1,quiz results are required,Quiz results are required,deeptutor/api/routers/sessions.py,1
+C291,1,r detail,r.detail,deeptutor/api/routers/memory.py,1
+C292,1,reading extension action not found,Reading extension action not found.,deeptutor/api/routers/reading_extensions.py,1
+C293,1,reading session not found,Reading session not found.,deeptutor/api/routers/reading_extensions.py,1
+C294,1,rebuild configuration changed review the updated configuration and confirm again,Rebuild configuration changed. Review the updated configuration and confirm again.,deeptutor/api/routers/knowledge.py,1
+C295,1,rebuild configuration is only for lightrag,Rebuild configuration is only for LightRAG.,deeptutor/api/routers/knowledge.py,1
+C296,1,refusal,refusal,deeptutor/api/routers/mastery_path.py,1
+C297,1,registration failed username or email may already be taken,Registration failed — username or email may already be taken.,deeptutor/api/routers/auth.py,1
+C298,1,rejected archive _x_ _x_,Rejected archive '{}': {},deeptutor/api/routers/knowledge.py,1
+C299,1,request body must be json,Request body must be JSON,deeptutor/api/routers/plugins.py,1
+C300,1,requested provider _x_ does not match kb provider _x_ a knowledge base is locked to the engine it was created with,Requested provider '{}' does not match KB provider '{}'. A knowledge base is locked to the engine it was created with.,deeptutor/api/routers/knowledge.py,1
+C301,1,required before this engine can parse locally several gb,Required before this engine can parse locally. Several GB.,deeptutor/capabilities/setup/jobs.py,1
+C302,1,required for local mineru parsing several gb,Required for local MinerU parsing. Several GB.,deeptutor/capabilities/setup/jobs.py,1
+C303,1,reset failed _x_,reset failed: {},deeptutor/api/routers/memory.py,1
+C304,1,result error or could not connect to the ima knowledge base,result.error or 'Could not connect to the IMA knowledge base.',deeptutor/api/routers/knowledge.py,1
+C305,1,result error or could not connect to the lightrag server,result.error or 'Could not connect to the LightRAG server.',deeptutor/api/routers/knowledge.py,1
+C306,1,result error or could not connect to the weknora knowledge base,result.error or 'Could not connect to the WeKnora knowledge base.',deeptutor/api/routers/knowledge.py,1
+C307,1,result error or folder is not linkable,result.error or 'Folder is not linkable.',deeptutor/api/routers/knowledge.py,1
+C308,1,result get answer or kiwix search failed,result.get('answer') or 'Kiwix search failed.',deeptutor/api/routers/knowledge.py,1
+C309,1,retry ended without a result,Retry ended without a result,deeptutor/api/routers/partner_groups.py,1
+C310,1,review current defaults in index versions and confirm the lightrag rebuild,Review current defaults in Index versions and confirm the LightRAG rebuild.,deeptutor/api/routers/knowledge.py,1
+C311,1,review the current rebuild configuration and confirm before rebuilding,Review the current rebuild configuration and confirm before rebuilding.,deeptutor/api/routers/knowledge.py,1
+C312,1,role models cannot be cleared,Role models cannot be cleared.,deeptutor/api/routers/knowledge.py,1
+C313,1,round summary ended without a result,Round summary ended without a result,deeptutor/api/routers/partner_groups.py,1
+C314,1,runtimeerror intentional test failure,RuntimeError: intentional test failure,tests/api/test_main_exception_handler.py,1
+C315,1,saved credentials were not found enter the key again,Saved credentials were not found. Enter the key again.,deeptutor/api/routers/settings.py,1
+C316,1,search query cannot be empty,Search query cannot be empty,deeptutor/api/routers/sessions.py,1
+C317,1,select text from the visible unit first,Select text from the visible unit first.,deeptutor/api/routers/reading_extensions.py,1
+C318,1,selected answer is outside the choices,Selected answer is outside the choices.,deeptutor/api/routers/reading_extensions.py,1
+C319,1,self probe detail,self.probe.detail,deeptutor/capabilities/setup/apply.py,1
+C320,1,server_url is required,server_url is required.,deeptutor/api/routers/knowledge.py,1
+C321,1,session handoff requires authentication and configured private login hosts,Session handoff requires authentication and configured private login hosts.,deeptutor/api/routers/auth.py,1
+C322,1,session_id or origin_ref is required,session_id or origin_ref is required,deeptutor/api/routers/question_notebook.py,1
+C323,1,sign in is only available from a private deeptutor origin,Sign-in is only available from a private DeepTutor origin,deeptutor/api/routers/auth.py,1
+C324,1,snapshot image is invalid,Snapshot image is invalid.,deeptutor/api/routers/reading.py,1
+C325,1,snapshot image not found,Snapshot image not found.,deeptutor/api/routers/reading.py,1
+C326,1,source not found,Source not found,deeptutor/api/routers/knowledge.py,1
+C327,1,source path is required,Source path is required,deeptutor/api/routers/knowledge.py,1
+C328,1,source_text is required,source_text is required,deeptutor/api/routers/book.py,1
+C329,1,spine not found,Spine not found,deeptutor/api/routers/book.py,1
+C330,1,str engine get description or,str(engine.get('description') or ''),deeptutor/capabilities/setup/jobs.py,1
+C331,1,str event get payload or _x_ get detail or 8192,str((event.get('payload') or {}).get('detail') or '')[:8192],deeptutor/api/utils/task_log_stream.py,1
+C332,1,str failure get content or retry failed,str(failure.get('content') or 'Retry failed'),deeptutor/api/routers/partner_groups.py,1
+C333,1,str failure get content or round summary failed,str(failure.get('content') or 'Round summary failed'),deeptutor/api/routers/partner_groups.py,1
+C334,1,syllabus unit not found,Syllabus unit not found,deeptutor/api/routers/courses.py,1
+C335,1,synchronization job cannot be cancelled,Synchronization job cannot be cancelled,deeptutor/api/routers/knowledge.py,1
+C336,1,synchronization job not found,Synchronization job not found,deeptutor/api/routers/knowledge.py,1
+C337,1,systemd_update_reason,SYSTEMD_UPDATE_REASON,deeptutor/api/routers/system.py,1
+C338,1,t api partner_already_exists name partner_id,"t('api.partner_already_exists', name=partner_id)",deeptutor/api/routers/partners.py,1
+C339,1,t api partner_not_found_or_not_running,t('api.partner_not_found_or_not_running'),deeptutor/api/routers/partners.py,1
+C340,1,t api partner_not_running,t('api.partner_not_running'),deeptutor/api/routers/partners.py,1
+C341,1,t api persona_already_exists name payload name,"t('api.persona_already_exists', name=payload.name)",deeptutor/api/routers/personas.py,1
+C342,1,t api persona_name_required,t('api.persona_name_required'),deeptutor/api/routers/partners.py,1
+C343,1,t api soul_already_exists name soul_id,"t('api.soul_already_exists', name=soul_id)",deeptutor/api/routers/partners.py,1
+C344,1,t api soul_content_empty,t('api.soul_content_empty'),deeptutor/api/routers/partners.py,1
+C345,1,t api soul_library_not_found name str soul id,"t('api.soul_library_not_found', name=str(soul.id))",deeptutor/api/routers/partners.py,1
+C346,1,t cli_apps not_in_catalog id app_id,"t('cli_apps.not_in_catalog', id=app_id)",deeptutor/api/routers/space_cli_apps.py,1
+C347,1,t cli_apps not_installed app app_id,"t('cli_apps.not_installed', app=app_id)",deeptutor/api/routers/space_cli_apps.py,1
+C348,1,t mcp catalog_entry_missing id entry_id,"t('mcp.catalog_entry_missing', id=entry_id)",deeptutor/api/routers/space_mcp.py,1
+C349,1,t mcp configure_before_testing,t('mcp.configure_before_testing'),deeptutor/api/routers/mcp_settings.py,1
+C350,1,t mcp configure_command_or_url name name,"t('mcp.configure_command_or_url', name=name)",deeptutor/api/routers/mcp_settings.py,1
+C351,1,t mcp server_error name name error error,"t('mcp.server_error', name=name, error=error)",deeptutor/api/routers/mcp_settings.py,1
+C352,1,t mcp server_missing name name,"t('mcp.server_missing', name=name)",deeptutor/api/routers/space_mcp.py,1
+C353,1,task card not found,Task card not found.,deeptutor/api/routers/task_board.py,1
+C354,1,task not found or archived,Task not found or archived.,deeptutor/api/routers/task_board.py,1
+C355,1,test secret,test-secret,tests/services/test_settings_service_preview.py,1
+C356,1,the bound embedding model is unavailable or changed check the model settings or select a model to re index this knowledge base,The bound embedding model is unavailable or changed. Check the model settings or select a model to re-index this knowledge base.,deeptutor/api/routers/knowledge.py,1
+C357,1,the installation changed during the update check,The installation changed during the update check,deeptutor/api/routers/system.py,1
+C358,1,the learner preset could not be initialized,The learner preset could not be initialized.,deeptutor/api/routers/auth.py,1
+C359,1,the legacy video could not be opened in reading the original conversation is preserved,The legacy video could not be opened in Reading. The original conversation is preserved.,deeptutor/api/routers/sessions.py,1
+C360,1,the reader could not complete that request,The reader could not complete that request.,deeptutor/api/routers/reading.py,1
+C361,1,the referenced source changed or is missing select its current version explicitly,The referenced source changed or is missing. Select its current version explicitly.,deeptutor/api/routers/knowledge.py,1
+C362,1,the speech provider is unavailable browser speech will be used instead,The speech provider is unavailable. Browser speech will be used instead.,deeptutor/api/routers/reading_extensions.py,1
+C363,1,this indexing run is no longer active,This indexing run is no longer active.,deeptutor/api/routers/knowledge.py,1
+C364,1,this knowledge engine does not use a local embedding model,This knowledge engine does not use a local embedding model.,deeptutor/api/routers/knowledge.py,1
+C365,1,this partner uses shared workspace resources add resources to that workspace,This partner uses shared workspace resources. Add resources to that workspace.,deeptutor/api/routers/partners.py,1
+C366,1,this reading quiz has an invalid answer key,This reading quiz has an invalid answer key.,deeptutor/api/routers/reading_extensions.py,1
+C367,1,this reading quiz has expired,This reading quiz has expired.,deeptutor/api/routers/reading_extensions.py,1
+C368,1,this reading unit is too large for the extension protocol,This reading unit is too large for the extension protocol.,deeptutor/api/routers/reading_extensions.py,1
+C369,1,this session does not use a device credential,This session does not use a device credential.,deeptutor/api/routers/auth.py,1
+C370,1,title course text secret_full_detail x 5000,"{'title': 'Course text', 'secret_full_detail': 'x' * 5000}",tests/capabilities/test_course_study.py,1
+C371,1,title week 4 reading last_position page 42 last_read_at 20 0,"{'title': 'Week 4 reading', 'last_position': 'page 42', 'last_read_at': 20.0}",tests/capabilities/test_course_study.py,1
+C372,1,too many sessions in one request max _x_,Too many sessions in one request (max {}),deeptutor/api/routers/imports.py,1
+C373,1,tool call not found,Tool call not found,deeptutor/api/routers/co_writer.py,1
+C374,1,unable to delete conversation,Unable to delete conversation,deeptutor/api/routers/sessions.py,1
+C375,1,unknown approved book id _x_,Unknown approved book id: {},deeptutor/api/routers/multi_user.py,1
+C376,1,unknown block type _x_,Unknown block type: {},deeptutor/api/routers/book.py,1
+C377,1,unknown book id _x_,Unknown book id: {},deeptutor/api/routers/multi_user.py,1
+C378,1,unknown content type _x_,Unknown content type: {},deeptutor/api/routers/book.py,1
+C379,1,unknown l3 slot _x_,unknown L3 slot {},deeptutor/api/routers/memory.py,1
+C380,1,unknown learning library,Unknown learning library,deeptutor/api/routers/dashboard.py,1
+C381,1,unknown mode _x_,unknown mode {},deeptutor/api/routers/memory.py,1
+C382,1,unknown model for this profile,Unknown model for this profile.,deeptutor/api/routers/knowledge.py,1
+C383,1,unknown profile for this kind,Unknown profile for this kind.,deeptutor/api/routers/knowledge.py,1
+C384,1,unknown reading extensions _x_,Unknown reading extensions: {},deeptutor/api/routers/multi_user.py,1
+C385,1,unknown resource kind,Unknown resource kind,deeptutor/api/routers/courses.py,1
+C386,1,unsupported model kind _x_ choose one of _x_,Unsupported model kind '{}'. Choose one of: {}.,deeptutor/api/routers/knowledge.py,1
+C387,1,unsupported preview source url,Unsupported preview source URL,deeptutor/api/routers/file_preview.py,1
+C388,1,upsert failed,Upsert failed,deeptutor/api/routers/question_notebook.py,1
+C389,1,upstream video stream failed,Upstream video stream failed.,deeptutor/api/routers/video_learning.py,1
+C390,1,upstream video stream returned an invalid status,Upstream video stream returned an invalid status.,deeptutor/api/routers/video_learning.py,1
+C391,1,use the shared workspace resources or copy private assets not both,"Use the shared workspace resources or copy private assets, not both.",deeptutor/api/routers/partners.py,1
+C392,1,user import cannot exceed _x_ rows,User import cannot exceed {} rows.,deeptutor/api/routers/auth.py,1
+C393,1,user import file contains no user rows,User import file contains no user rows.,deeptutor/api/routers/auth.py,1
+C394,1,user import file exceeds 2 mb,User import file exceeds 2 MB.,deeptutor/api/routers/auth.py,1
+C395,1,user import must be a utf 8 csv file,User import must be a UTF-8 CSV file.,deeptutor/api/routers/auth.py,1
+C396,1,user_intent is required,user_intent is required,deeptutor/api/routers/book.py,1
+C397,1,version checks are disabled,Version checks are disabled,deeptutor/api/routers/system.py,1
+C398,1,video learning could not complete the request,Video learning could not complete the request.,deeptutor/api/routers/video_learning.py,1
+C399,1,visual asset not found,Visual asset not found,deeptutor/api/routers/knowledge.py,1
+C400,1,visual coverage is unreadable original evidence files have been preserved,Visual coverage is unreadable; original evidence files have been preserved.,deeptutor/api/routers/knowledge.py,1
+C401,1,visualizer package exceeds 25 mb,visualizer package exceeds 25 MB,deeptutor/api/routers/visualizers.py,1
+C402,1,visualizer package must be a zip file,visualizer package must be a zip file,deeptutor/api/routers/visualizers.py,1
+C403,1,wait for the active turn before moving this conversation,Wait for the active turn before moving this conversation.,deeptutor/api/routers/sessions.py,1
+C404,1,web updates require deeptutor to be running under deeptutor start,Web updates require DeepTutor to be running under `deeptutor start`.,deeptutor/api/routers/system.py,1
+C405,1,whiteboard pin not found,Whiteboard pin not found,deeptutor/api/routers/partner_groups.py,1
+C406,1,you cannot change your own role,You cannot change your own role,deeptutor/api/routers/auth.py,1
+C407,1,you cannot manage this partner,You cannot manage this partner,deeptutor/multi_user/partner_access.py,1
