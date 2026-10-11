@@ -36,6 +36,10 @@
 #     "next_public_api_base_external": "http://203.0.113.10:8001"
 #   Without this, the browser will try to reach localhost:8001 on the USER'S laptop
 #   (not the server), and all API calls will fail.
+#   The published ports default to loopback, so also widen the bind explicitly:
+#     export DEEPTUTOR_DOCKER_BIND_ADDR=0.0.0.0
+#   before `python scripts/docker_compose.py -f docker-compose.ghcr.yml up -d`
+#   (or use an overlay), and restrict access with your own firewall/reverse proxy.
 # ============================================
 
 services:
@@ -62,8 +66,12 @@ services:
     container_name: deeptutor
     restart: unless-stopped
     ports:
-      - "${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
-      - "${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
+      # Host-side bindings default to loopback so the app is only reachable
+      # from this machine. To publish on all interfaces (LAN/remote access),
+      # export DEEPTUTOR_DOCKER_BIND_ADDR=0.0.0.0 before starting, or use an
+      # overlay with your own ports: entries — see .env.example.
+      - "${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
+      - "${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
 
     volumes:
       # Persist every workspace and deployment secret across recreation.

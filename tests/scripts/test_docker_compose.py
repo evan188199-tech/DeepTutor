@@ -95,6 +95,28 @@ def test_compose_files_do_not_consume_legacy_env_names() -> None:
         assert "DEEPTUTOR_DOCKER_BACKEND_PORT" in content
 
 
+def _published_ports(root: Path, name: str) -> list[str]:
+    content = yaml.safe_load((root / name).read_text(encoding="utf-8"))
+    ports: list[str] = []
+    for service in content["services"].values():
+        ports.extend(str(port) for port in service.get("ports", []))
+    return ports
+
+
+def test_base_compose_files_publish_on_loopback_by_default() -> None:
+    """Every host-side publish in the base files binds loopback unless the
+    operator explicitly opts into a wider DEEPTUTOR_DOCKER_BIND_ADDR."""
+    root = Path(__file__).resolve().parents[2]
+    for name in ("docker-compose.yml", "docker-compose.ghcr.yml"):
+        ports = _published_ports(root, name)
+        assert ports, name
+        for port in ports:
+            assert port.startswith("${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:"), (
+                name,
+                port,
+            )
+
+
 def _compose_service(root: Path, name: str) -> dict:
     content = yaml.safe_load((root / name).read_text(encoding="utf-8"))
     return content["services"]["deeptutor"]

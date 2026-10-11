@@ -52,7 +52,9 @@ services:
     container_name: pocketbase
     restart: unless-stopped
     ports:
-      - "${DEEPTUTOR_DOCKER_POCKETBASE_PORT:-8090}:8090"
+      # Host-side bindings default to loopback; to publish on all interfaces,
+      # export DEEPTUTOR_DOCKER_BIND_ADDR=0.0.0.0 (see .env.example).
+      - "${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:${DEEPTUTOR_DOCKER_POCKETBASE_PORT:-8090}:8090"
     volumes:
       # The upstream pocketbase image's entrypoint uses absolute paths
       # (no /pb/ prefix): --dir=/pb_data --publicDir=/pb_public
@@ -82,8 +84,12 @@ services:
     container_name: deeptutor
     restart: unless-stopped
     ports:
-      - "${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
-      - "${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
+      # Host-side bindings default to loopback so the app is only reachable
+      # from this machine. To publish on all interfaces (LAN/remote access),
+      # export DEEPTUTOR_DOCKER_BIND_ADDR=0.0.0.0 before starting, or use an
+      # overlay with your own ports: entries — see .env.example.
+      - "${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}:${DEEPTUTOR_DOCKER_BACKEND_PORT:-8001}"
+      - "${DEEPTUTOR_DOCKER_BIND_ADDR:-127.0.0.1}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}:${DEEPTUTOR_DOCKER_FRONTEND_PORT:-3782}"
 
     volumes:
       # Everything DeepTutor persists lives under ./data — one tree to mount
