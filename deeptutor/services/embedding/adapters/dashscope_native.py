@@ -22,13 +22,14 @@ from __future__ import annotations
 import asyncio
 from http import HTTPStatus
 import logging
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 
 from deeptutor.services.config.embedding_endpoint import (
     is_dashscope_multimodal_embedding_model,
 )
 
 from .base import BaseEmbeddingAdapter, EmbeddingRequest, EmbeddingResponse
+from .retry import retry_after_from_headers, run_with_bounded_retry
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +93,36 @@ class DashScopeMultiModalEmbeddingAdapter(BaseEmbeddingAdapter):
             params["dimension"] = dim_value
         return params
 
+    async def _call_sdk(
+        self,
+        sdk_call: Callable[..., Any],
+        *,
+        surface: str,
+        model_name: str,
+        input: Any,  # noqa: A002 - mirrors the SDK keyword
+        parameters: Dict[str, Any],
+    ) -> Any:
+        """One SDK call in a worker thread under the shared bounded retry policy.
+
+        The DashScope SDK returns throttling/server failures as response
+        objects (``status_code`` 429/5xx) instead of raising, so the status is
+        extracted duck-typed; a ``Retry-After`` header is honored (capped)
+        when the SDK exposes one. Retry logs carry the status only — never the
+        provider payload.
+        """
+        return await run_with_bounded_retry(
+            lambda: asyncio.to_thread(
+                sdk_call,
+                api_key=self.api_key,
+                model=model_name,
+                input=input,
+                **parameters,
+            ),
+            provider=f"DashScope {surface}",
+            status_of=lambda resp: getattr(resp, "status_code", None),
+            retry_after_of=lambda resp: retry_after_from_headers(getattr(resp, "headers", None)),
+        )
+
     async def embed(self, request: EmbeddingRequest) -> EmbeddingResponse:
         model_name = request.model or self.model
         if is_dashscope_multimodal_embedding_model(model_name):
@@ -123,12 +154,12 @@ class DashScopeMultiModalEmbeddingAdapter(BaseEmbeddingAdapter):
         # ``{"contents": [...]}`` before POSTing to the REST endpoint. Do NOT
         # pass ``{"contents": contents}`` here — that produces a double-wrap
         # and the API responds with HTTP 400 ("Input should be a valid list").
-        resp = await asyncio.to_thread(
+        resp = await self._call_sdk(
             MultiModalEmbedding.call,
-            api_key=self.api_key,
-            model=model_name,
+            surface="MultiModalEmbedding",
+            model_name=model_name,
             input=contents,
-            **parameters,
+            parameters=parameters,
         )
 
         self._raise_on_error(resp, model_name)
@@ -154,12 +185,12 @@ class DashScopeMultiModalEmbeddingAdapter(BaseEmbeddingAdapter):
         # TextEmbedding.call POSTs to the DashScope text-embedding endpoint and
         # accepts a flat list of strings for `input`. Response/usage/error shape
         # matches MultiModalEmbedding, so we reuse the shared parsers below.
-        resp = await asyncio.to_thread(
+        resp = await self._call_sdk(
             TextEmbedding.call,
-            api_key=self.api_key,
-            model=model_name,
+            surface="TextEmbedding",
+            model_name=model_name,
             input=inputs,
-            **parameters,
+            parameters=parameters,
         )
 
         self._raise_on_error(resp, model_name)

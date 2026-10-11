@@ -9,6 +9,7 @@ from deeptutor.services.embedding.request_options import should_send_embedding_d
 from deeptutor.services.llm.openai_http_client import disable_ssl_verify_enabled
 
 from .base import BaseEmbeddingAdapter, EmbeddingRequest, EmbeddingResponse
+from .retry import retry_after_from_headers, run_with_bounded_retry
 
 logger = logging.getLogger(__name__)
 
@@ -113,16 +114,26 @@ class JinaEmbeddingAdapter(BaseEmbeddingAdapter):
 
         logger.debug(f"Sending embedding request to {url} with {len(request.texts)} texts")
 
-        async with httpx.AsyncClient(
-            timeout=self.request_timeout, verify=not disable_ssl_verify_enabled()
-        ) as client:
-            response = await client.post(url, json=payload, headers=headers)
+        async def _post_once() -> httpx.Response:
+            async with httpx.AsyncClient(
+                timeout=self.request_timeout, verify=not disable_ssl_verify_enabled()
+            ) as client:
+                return await client.post(url, json=payload, headers=headers)
 
-            if response.status_code >= 400:
-                logger.error(f"HTTP {response.status_code} response body: {response.text}")
+        response = await run_with_bounded_retry(
+            _post_once,
+            provider="Jina",
+            status_of=lambda r: r.status_code,
+            retry_after_of=lambda r: retry_after_from_headers(r.headers),
+        )
 
+        if response.status_code >= 400:
+            # Redaction baseline (gemini `_redacted_body`): provider error
+            # bodies can echo the embedded texts (KB chunks) into logs, so only
+            # the status is recorded.
+            logger.error(f"Jina embedding HTTP {response.status_code} from {url}")
             response.raise_for_status()
-            data = response.json()
+        data = response.json()
 
         embeddings = [item["embedding"] for item in data["data"]]
         actual_dims = len(embeddings[0]) if embeddings else 0

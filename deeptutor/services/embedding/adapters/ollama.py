@@ -9,6 +9,7 @@ import httpx
 from deeptutor.services.llm.openai_http_client import disable_ssl_verify_enabled
 
 from .base import BaseEmbeddingAdapter, EmbeddingRequest, EmbeddingResponse
+from .retry import retry_after_from_headers, run_with_bounded_retry
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +60,20 @@ class OllamaEmbeddingAdapter(BaseEmbeddingAdapter):
 
         logger.debug(f"Sending embedding request to {url} with {len(request.texts)} texts")
 
-        try:
+        # Local servers juggle model loads under memory pressure: a fast
+        # connect timeout surfaces a dead server quickly while a long read
+        # timeout rides out cold model loading (aligned with
+        # ``openai_compatible``).
+        timeout = httpx.Timeout(
+            connect=10.0,
+            read=max(self.request_timeout, 60),
+            write=10.0,
+            pool=10.0,
+        )
+
+        async def _post_once() -> httpx.Response:
             async with httpx.AsyncClient(
-                timeout=self.request_timeout, verify=not disable_ssl_verify_enabled()
+                timeout=timeout, verify=not disable_ssl_verify_enabled()
             ) as client:
                 response = await client.post(
                     url,
@@ -88,9 +100,19 @@ class OllamaEmbeddingAdapter(BaseEmbeddingAdapter):
                         f"Model '{payload['model']}' not found. "
                         f"Download it with: ollama pull {payload['model']}"
                     )
+                return response
 
+        try:
+            response = await run_with_bounded_retry(
+                _post_once,
+                provider="Ollama",
+                status_of=lambda r: r.status_code,
+                retry_after_of=lambda r: retry_after_from_headers(r.headers),
+            )
+
+            if response.status_code >= 400:
                 response.raise_for_status()
-                data = response.json()
+            data = response.json()
 
         except httpx.ConnectError as e:
             raise ConnectionError(
@@ -100,7 +122,8 @@ class OllamaEmbeddingAdapter(BaseEmbeddingAdapter):
 
         except httpx.TimeoutException as e:
             raise TimeoutError(
-                f"Request to Ollama timed out after {self.request_timeout}s. "
+                f"Request to Ollama timed out "
+                f"(connect={timeout.connect:.0f}s, read={timeout.read:.0f}s). "
                 f"The model might be too large or the server is overloaded."
             ) from e
 
