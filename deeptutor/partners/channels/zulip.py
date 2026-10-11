@@ -21,6 +21,7 @@ from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import split_message
+from deeptutor.utils.error_utils import exc_type_name
 
 _UPLOAD_LINK_RE = re.compile(
     r"\[([^\]]*)\]\((/user_uploads/[^)\s]+)\)"
@@ -123,7 +124,7 @@ class ZulipChannel(BaseChannel):
                 site=self.config.site,
             )
         except Exception as e:
-            logger.error("Failed to create Zulip client: {}", e)
+            logger.error("Failed to create Zulip client: {}", exc_type_name(e))
             self._running = False
             self.set_setup_state(
                 "error",
@@ -223,12 +224,16 @@ class ZulipChannel(BaseChannel):
                     logger.warning(
                         "Zulip API call failed (attempt {}): {}, retrying in {}s",
                         attempt + 1,
-                        e,
+                        exc_type_name(e),
                         delay,
                     )
                     time.sleep(delay)
                 else:
-                    logger.error("Zulip API call failed after {} retries: {}", max_retries, e)
+                    logger.error(
+                        "Zulip API call failed after {} retries: {}",
+                        max_retries,
+                        exc_type_name(e),
+                    )
                     raise
 
     def _run_listener(self) -> None:
@@ -247,7 +252,7 @@ class ZulipChannel(BaseChannel):
                             last_event_id=self._last_event_id,
                         )
                     except Exception as e:
-                        logger.warning("Zulip get_events error: {}", e)
+                        logger.warning("Zulip get_events error: {}", exc_type_name(e))
                         time.sleep(2)
                         break
 
@@ -277,7 +282,7 @@ class ZulipChannel(BaseChannel):
                             self._on_message(event.get("message", {}))
 
             except Exception as e:
-                logger.error("Zulip listener error: {}", e)
+                logger.error("Zulip listener error: {}", exc_type_name(e))
                 time.sleep(5)
 
         logger.info("Zulip listener stopped")
@@ -294,7 +299,7 @@ class ZulipChannel(BaseChannel):
         try:
             result = self._call_with_retry(self._client.add_subscriptions, streams=subscriptions)
         except Exception as e:
-            logger.error("Zulip auto-subscribe failed: {}", e)
+            logger.error("Zulip auto-subscribe failed: {}", exc_type_name(e))
             return
 
         self._log_subscription_result(result, set(stream_names))
@@ -310,7 +315,7 @@ class ZulipChannel(BaseChannel):
         try:
             result = self._call_with_retry(self._client.get_streams, include_all=True)
         except Exception as e:
-            logger.error("Zulip get_streams failed during auto-subscribe: {}", e)
+            logger.error("Zulip get_streams failed during auto-subscribe: {}", exc_type_name(e))
             return None
 
         if result.get("result") != "success":
@@ -391,7 +396,7 @@ class ZulipChannel(BaseChannel):
                 logger.error("Zulip register failed: {}", result.get("msg", "unknown"))
                 self._queue_id = None
         except Exception as e:
-            logger.error("Zulip register exception: {}", e)
+            logger.error("Zulip register exception: {}", exc_type_name(e))
             self._queue_id = None
 
     def _is_own_message(self, message: dict) -> bool:
@@ -672,7 +677,7 @@ class ZulipChannel(BaseChannel):
             logger.warning(
                 "Failed to download Zulip attachment {}: {}",
                 filename or path_id,
-                e,
+                exc_type_name(e),
             )
             return None
 
@@ -842,7 +847,7 @@ class ZulipChannel(BaseChannel):
                         }
                     )
                 except Exception as e:
-                    logger.debug("Zulip typing status error: {}", e)
+                    logger.debug("Zulip typing status error: {}", exc_type_name(e))
                 await asyncio.sleep(4)
         except asyncio.CancelledError:
             pass

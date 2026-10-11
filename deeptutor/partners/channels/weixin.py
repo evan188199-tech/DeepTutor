@@ -34,6 +34,7 @@ from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.channels.weixin_qr import ILINK_APP_ID
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import safe_filename, split_message
+from deeptutor.utils.error_utils import exc_type_name, redacted_error_summary
 
 # ---------------------------------------------------------------------------
 # Protocol constants (from openclaw-weixin types.ts)
@@ -228,8 +229,8 @@ class WeixinChannel(BaseChannel):
             if base_url and not self.config.token:
                 self.config.base_url = base_url
             return bool(self._token)
-        except Exception:
-            self.logger.error("Failed to load Weixin account state", exc_info=True)
+        except Exception as e:
+            self.logger.error("Failed to load Weixin account state: {}", exc_type_name(e))
             return False
 
     def _save_state(self) -> None:
@@ -372,10 +373,12 @@ class WeixinChannel(BaseChannel):
             except httpx.TimeoutException:
                 # Normal for long-poll, just retry
                 continue
-            except Exception:
+            except Exception as e:
                 if not self._running:
                     break
-                self.logger.exception("WeChat poll loop error")
+                # Redacted short summary: the poll error is swallowed here, so
+                # this line is the only trace of why the loop retried.
+                self.logger.error("WeChat poll loop error: {}", redacted_error_summary(e))
                 self.set_setup_state(
                     "error",
                     message="Channel connection failed; the listener will retry.",
@@ -479,8 +482,8 @@ class WeixinChannel(BaseChannel):
         for msg in msgs:
             try:
                 await self._process_message(msg)
-            except Exception:
-                self.logger.exception("Failed to process WeChat message")
+            except Exception as e:
+                self.logger.error("Failed to process WeChat message: {}", exc_type_name(e))
 
     # ------------------------------------------------------------------
     # Inbound message processing  (matches inbound.ts + process-message.ts)
@@ -751,7 +754,7 @@ class WeixinChannel(BaseChannel):
                         self.logger.warning(
                             "media download failed via full_url, falling back to encrypt_query_param: type={} err={}",
                             media_type,
-                            e,
+                            exc_type_name(e),
                         )
                         continue
                     raise
@@ -776,8 +779,8 @@ class WeixinChannel(BaseChannel):
             file_path.write_bytes(data)
             return str(file_path)
 
-        except Exception:
-            self.logger.exception("Error downloading media")
+        except Exception as e:
+            self.logger.error("Error downloading media: {}", exc_type_name(e))
             return None
 
     # ------------------------------------------------------------------
@@ -857,7 +860,7 @@ class WeixinChannel(BaseChannel):
         try:
             data = await self._api_post("ilink/bot/getconfig", body)
         except Exception as e:
-            self.logger.warning("WeChat getconfig failed for {}: {}", chat_id, e)
+            self.logger.warning("WeChat getconfig failed for {}: {}", chat_id, exc_type_name(e))
             return context_token
 
         if data.get("ret", 0) != 0:
@@ -912,8 +915,10 @@ class WeixinChannel(BaseChannel):
 
         try:
             await self._send_text(chat_id, "\n\n".join(hints), ctx_token)
-        except Exception:
-            self.logger.exception("Failed to flush buffered tool hints for {}", chat_id)
+        except Exception as e:
+            self.logger.error(
+                "Failed to flush buffered tool hints for {}: {}", chat_id, exc_type_name(e)
+            )
 
     async def _send_typing(self, user_id: str, typing_ticket: str, status: int) -> None:
         """Best-effort sendtyping wrapper."""
@@ -1010,13 +1015,14 @@ class WeixinChannel(BaseChannel):
             for media_path in msg.media or []:
                 try:
                     await self._send_media_file(msg.chat_id, media_path, ctx_token)
-                except (httpx.TimeoutException, httpx.TransportError):
+                except httpx.TimeoutException as e:
                     # Network/transport errors: do NOT fall back to text —
                     # the text send would also likely fail, and the outer
                     # except will re-raise so ChannelManager retries properly.
-                    self.logger.opt(exception=True).warning(
-                        "Network error sending media {}",
+                    self.logger.warning(
+                        "Network error sending media {}: {}",
                         media_path,
+                        exc_type_name(e),
                     )
                     raise
                 except httpx.HTTPStatusError as http_err:
@@ -1025,28 +1031,31 @@ class WeixinChannel(BaseChannel):
                     )
                     if status_code >= 500:
                         # Server-side / retryable HTTP error — same as network.
-                        self.logger.exception(
-                            "Server error ({} {}) sending media {}",
+                        self.logger.error(
+                            "Server error ({} {}) sending media {}: {}",
                             status_code,
                             http_err.response.reason_phrase
                             if http_err.response is not None
                             else "",
                             media_path,
+                            exc_type_name(http_err),
                         )
                         raise
                     # 4xx client errors are NOT retryable — fall back to text.
                     filename = Path(media_path).name
-                    self.logger.exception("Failed to send media {}", media_path)
+                    self.logger.error(
+                        "Failed to send media {}: {}", media_path, exc_type_name(http_err)
+                    )
                     await self._send_text(
                         msg.chat_id,
                         f"[Failed to send: {filename}]",
                         ctx_token,
                     )
-                except Exception:
+                except Exception as e:
                     # Non-network errors (format, file-not-found, etc.):
                     # notify the user via text fallback.
                     filename = Path(media_path).name
-                    self.logger.exception("Failed to send media {}", media_path)
+                    self.logger.error("Failed to send media {}: {}", media_path, exc_type_name(e))
                     # Notify user about failure via text
                     await self._send_text(
                         msg.chat_id,
@@ -1061,8 +1070,8 @@ class WeixinChannel(BaseChannel):
             chunks = split_message(content, WEIXIN_MAX_MESSAGE_LEN)
             for chunk in chunks:
                 await self._send_text(msg.chat_id, chunk, ctx_token)
-        except Exception:
-            self.logger.exception("Error sending message")
+        except Exception as e:
+            self.logger.error("Error sending message: {}", exc_type_name(e))
             raise
         finally:
             if typing_keepalive_task:
@@ -1098,7 +1107,7 @@ class WeixinChannel(BaseChannel):
                 return
             await self._send_typing(chat_id, ticket, TYPING_STATUS_TYPING)
         except Exception as e:
-            self.logger.debug("typing indicator start failed for {}: {}", chat_id, e)
+            self.logger.debug("typing indicator start failed for {}: {}", chat_id, exc_type_name(e))
             return
 
         stop_event = asyncio.Event()
@@ -1137,7 +1146,7 @@ class WeixinChannel(BaseChannel):
         try:
             await self._send_typing(chat_id, ticket, TYPING_STATUS_CANCEL)
         except Exception as e:
-            self.logger.debug("typing clear failed for {}: {}", chat_id, e)
+            self.logger.debug("typing clear failed for {}: {}", chat_id, exc_type_name(e))
 
     async def _send_text(
         self,
@@ -1360,8 +1369,11 @@ def _encrypt_aes_ecb(data: bytes, aes_key_b64: str) -> bytes:
     """Encrypt data with AES-128-ECB and PKCS7 padding for CDN upload."""
     try:
         key = _parse_aes_key(aes_key_b64)
-    except Exception as e:
-        logger.warning("Failed to parse AES key for encryption, sending raw: {}", e)
+    except Exception:
+        # Fixed reason only: this path sits next to key material handling.
+        logger.warning(
+            "AES key parse failed before encryption (reason=invalid_encoding); sending raw"
+        )
         return data
 
     # PKCS7 padding
@@ -1394,8 +1406,11 @@ def _decrypt_aes_ecb(data: bytes, aes_key_b64: str) -> bytes:
     """
     try:
         key = _parse_aes_key(aes_key_b64)
-    except Exception as e:
-        logger.warning("Failed to parse AES key, returning raw data: {}", e)
+    except Exception:
+        # Fixed reason only: this path sits next to key material handling.
+        logger.warning(
+            "AES key parse failed before decryption (reason=invalid_encoding); returning raw"
+        )
         return data
 
     decrypted: bytes | None = None

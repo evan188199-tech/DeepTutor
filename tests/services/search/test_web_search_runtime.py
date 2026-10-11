@@ -227,7 +227,9 @@ def test_web_search_runtime_failure_falls_through_the_chain(monkeypatch) -> None
     fallback = result["search_fallback"]
     assert fallback["requested"] == "serper"
     assert fallback["used"] == "tavily"
-    assert "202 Ratelimit" in fallback["failures"][0]
+    # Failures keep provider + exception type names only; raw provider
+    # messages can echo queries or response bodies.
+    assert fallback["failures"] == ["serper: RuntimeError"]
     # The fallback provider runs on its own credentials, never the failed
     # provider's key.
     assert seen[1][1]["api_key"] == "tavily-key"
@@ -282,7 +284,7 @@ def test_web_search_raises_when_every_candidate_fails(monkeypatch) -> None:
         "deeptutor.services.search.get_provider",
         lambda name, **kwargs: _FailingProvider(name),
     )
-    with pytest.raises(Exception, match="brave: 202 Ratelimit; duckduckgo: 202 Ratelimit"):
+    with pytest.raises(Exception, match="brave: RuntimeError; duckduckgo: RuntimeError"):
         web_search("hello")
 
 

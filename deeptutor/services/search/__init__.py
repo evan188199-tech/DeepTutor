@@ -23,6 +23,7 @@ from deeptutor.services.config import (
     search_provider_spec,
     supported_search_providers_hint,
 )
+from deeptutor.utils.error_utils import exc_type_name
 
 from .base import SEARCH_API_KEY_ENV, BaseSearchProvider
 from .consolidation import PROVIDER_TEMPLATES, AnswerConsolidator
@@ -45,7 +46,7 @@ def _get_web_search_config() -> dict[str, Any]:
         config = load_config_with_main("main.yaml", PROJECT_ROOT)
         return config.get("tools", {}).get("web_search", {})
     except Exception as exc:
-        _logger.debug(f"Could not load config: {exc}")
+        _logger.debug(f"Could not load config: {exc_type_name(exc)}")
     return {}
 
 
@@ -54,7 +55,7 @@ def _get_source_filter_settings() -> dict[str, Any]:
     try:
         system = load_system_settings()
     except Exception as exc:
-        _logger.warning("Could not load web-search source policy: %s", exc)
+        _logger.warning("Could not load web-search source policy: %s", exc_type_name(exc))
         system = {}
     raw = system.get("web_search_source_filtering", {})
     return settings_from_config({"source_filtering": raw})
@@ -211,8 +212,11 @@ def web_search(
         try:
             response, supports_answer = _run_provider(candidate, query, candidate_kwargs)
         except Exception as exc:
-            _logger.error(f"[{candidate}] Search failed: {exc}")
-            failures.append(f"{candidate}: {exc}")
+            # Keep provider names + exception type names only: raw messages can
+            # carry the query, request URLs, or response bodies, and this list
+            # feeds both the raised error and the result metadata.
+            _logger.error(f"[{candidate}] Search failed: {exc_type_name(exc)}")
+            failures.append(f"{candidate}: {exc_type_name(exc)}")
             continue
         if candidate != provider_name:
             _logger.warning(f"Search fell back from {provider_name} to {candidate}.")

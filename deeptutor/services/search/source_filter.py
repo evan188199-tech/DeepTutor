@@ -14,6 +14,8 @@ from typing import Any
 from urllib.parse import quote, urlparse
 import urllib.request
 
+from deeptutor.utils.error_utils import exc_type_name
+
 from .types import Citation, SearchResult, WebSearchResponse
 
 _logger = logging.getLogger(__name__)
@@ -233,7 +235,8 @@ def _moderation_rejections(
         if not isinstance(flagged, (list, tuple)) or len(flagged) != len(payloads):
             raise ValueError("Moderation returned an unexpected result count")
     except Exception as exc:  # noqa: BLE001 — network / JSON / provider quirks
-        _logger.warning("OpenAI Moderation skipped after error: %s", exc)
+        # Type name only: the provider error can echo the submitted text.
+        _logger.warning("OpenAI Moderation skipped after error: %s", exc_type_name(exc))
         return {}
     return {text: bool(decision) for text, decision in zip(payloads, flagged, strict=True)}
 
@@ -322,7 +325,7 @@ def _lookup_web_risk(requester: Any, url: str, api_key: str) -> bool | None:
     try:
         return bool(requester(url, api_key=api_key))
     except Exception as exc:  # noqa: BLE001 — network / JSON / quota quirks
-        _logger.warning("Web Risk lookup skipped after error: %s", exc)
+        _logger.warning("Web Risk lookup skipped after error: %s", exc_type_name(exc))
         return None
 
 

@@ -25,6 +25,7 @@ from deeptutor.partners.bus.queue import MessageBus
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_markdown_table_row
+from deeptutor.utils.error_utils import exc_type_name, redacted_error_summary
 
 FEISHU_AVAILABLE = importlib.util.find_spec("lark_oapi") is not None
 
@@ -66,8 +67,12 @@ def _card_aware_ws_client(base_client: type[Any], ws_module: Any) -> type[Any]:
                     response.data = base64.b64encode(
                         ws_module.JSON.marshal(result).encode(ws_module.UTF_8)
                     )
-            except Exception:
-                logger.exception("Feishu card callback failed (message_id={})", message_id)
+            except Exception as e:
+                logger.error(
+                    "Feishu card callback failed (message_id={}, error={})",
+                    message_id,
+                    exc_type_name(e),
+                )
                 response = ws_module.Response(code=HTTPStatus.INTERNAL_SERVER_ERROR)
 
             frame.payload = ws_module.JSON.marshal(response).encode(ws_module.UTF_8)
@@ -305,7 +310,7 @@ async def _shutdown_ws_client(client: Any, ws_loop: asyncio.AbstractEventLoop) -
     try:
         await conn.close()
     except Exception as e:  # noqa: BLE001 - teardown is best effort
-        logger.debug("Error closing Feishu WebSocket connection: {}", e)
+        logger.debug("Error closing Feishu WebSocket connection: {}", exc_type_name(e))
 
 
 class FeishuConfig(DeliveryOverrides, StreamingSupport):
@@ -589,7 +594,9 @@ class FeishuChannel(BaseChannel):
                     except asyncio.CancelledError:
                         break
                     except Exception as e:
-                        logger.warning("Feishu WebSocket error: {}", e)
+                        # Redacted short summary: this error is swallowed here,
+                        # so the log line is the only trace of why reconnects happen.
+                        logger.warning("Feishu WebSocket error: {}", redacted_error_summary(e))
                         self.set_setup_state(
                             "error",
                             message="Channel connection failed; the listener will retry.",
@@ -603,7 +610,7 @@ class FeishuChannel(BaseChannel):
                 try:
                     ws_loop.run_until_complete(_shutdown_ws_client(ws_client, ws_loop))
                 except Exception as e:  # noqa: BLE001 - teardown is best effort
-                    logger.debug("Error shutting down Feishu WebSocket: {}", e)
+                    logger.debug("Error shutting down Feishu WebSocket: {}", exc_type_name(e))
                 self._ws_loop = None
                 ws_loop.close()
 
@@ -728,7 +735,7 @@ class FeishuChannel(BaseChannel):
                 reaction_id = getattr(getattr(response, "data", None), "reaction_id", None)
                 return reaction_id if isinstance(reaction_id, str) and reaction_id else None
         except Exception as e:
-            logger.warning("Error adding reaction: {}", e)
+            logger.warning("Error adding reaction: {}", exc_type_name(e))
         return None
 
     def _prune_working_reactions(self) -> list[tuple[str, tuple[str, float]]]:
@@ -768,7 +775,7 @@ class FeishuChannel(BaseChannel):
                 response.msg,
             )
         except Exception as e:
-            logger.warning("Error removing Feishu working reaction: {}", e)
+            logger.warning("Error removing Feishu working reaction: {}", exc_type_name(e))
         return False
 
     async def _delete_reaction(self, message_id: str, reaction_id: str) -> bool:
@@ -1124,7 +1131,7 @@ class FeishuChannel(BaseChannel):
                     )
                     return None
         except Exception as e:
-            logger.error("Error uploading image {}: {}", file_path, e)
+            logger.error("Error uploading image {}: {}", file_path, exc_type_name(e))
             return None
 
     def _upload_file_sync(self, file_path: str) -> str | None:
@@ -1158,7 +1165,7 @@ class FeishuChannel(BaseChannel):
                     )
                     return None
         except Exception as e:
-            logger.error("Error uploading file {}: {}", file_path, e)
+            logger.error("Error uploading file {}: {}", file_path, exc_type_name(e))
             return None
 
     def _download_image_sync(
@@ -1188,7 +1195,7 @@ class FeishuChannel(BaseChannel):
                 )
                 return None, None
         except Exception as e:
-            logger.error("Error downloading image {}: {}", image_key, e)
+            logger.error("Error downloading image {}: {}", image_key, exc_type_name(e))
             return None, None
 
     def _download_file_sync(
@@ -1224,8 +1231,8 @@ class FeishuChannel(BaseChannel):
                     response.msg,
                 )
                 return None, None
-        except Exception:
-            logger.exception("Error downloading {} {}", resource_type, file_key)
+        except Exception as e:
+            logger.error("Error downloading {} {}: {}", resource_type, file_key, exc_type_name(e))
             return None, None
 
     async def _download_and_save_media(
@@ -1314,7 +1321,7 @@ class FeishuChannel(BaseChannel):
             message_id = getattr(getattr(response, "data", None), "message_id", None)
             return message_id if isinstance(message_id, str) and message_id else "posted"
         except Exception as e:
-            logger.debug("Error posting Feishu thinking notice: {}", e)
+            logger.debug("Error posting Feishu thinking notice: {}", exc_type_name(e))
             return None
 
     def _delete_message_sync(self, message_id: str) -> bool:
@@ -1332,7 +1339,7 @@ class FeishuChannel(BaseChannel):
                 response.msg,
             )
         except Exception as e:
-            logger.debug("Error retracting Feishu notice {}: {}", message_id, e)
+            logger.debug("Error retracting Feishu notice {}: {}", message_id, exc_type_name(e))
         return False
 
     def _remember_thinking_notice(self, chat_id: str, message_id: str) -> None:
@@ -1442,7 +1449,7 @@ class FeishuChannel(BaseChannel):
             logger.debug("Feishu {} message sent to {}", msg_type, receive_id)
             return True
         except Exception as e:
-            logger.error("Error sending Feishu {} message: {}", msg_type, e)
+            logger.error("Error sending Feishu {} message: {}", msg_type, exc_type_name(e))
             return False
 
     # ── CardKit streaming (send_delta) ───────────────────────────────
@@ -1538,7 +1545,7 @@ class FeishuChannel(BaseChannel):
                 )
             return None
         except Exception as e:
-            logger.warning("Error creating Feishu streaming card: {}", e)
+            logger.warning("Error creating Feishu streaming card: {}", exc_type_name(e))
             return None
 
     def _stream_update_text_sync(self, card_id: str, content: str, sequence: int) -> bool:
@@ -1572,7 +1579,7 @@ class FeishuChannel(BaseChannel):
                 return False
             return True
         except Exception as e:
-            logger.warning("Error stream-updating Feishu card {}: {}", card_id, e)
+            logger.warning("Error stream-updating Feishu card {}: {}", card_id, exc_type_name(e))
             return False
 
     def _close_streaming_mode_sync(self, card_id: str, sequence: int) -> bool:
@@ -1609,7 +1616,9 @@ class FeishuChannel(BaseChannel):
                 return False
             return True
         except Exception as e:
-            logger.warning("Error closing streaming on Feishu card {}: {}", card_id, e)
+            logger.warning(
+                "Error closing streaming on Feishu card {}: {}", card_id, exc_type_name(e)
+            )
             return False
 
     async def send_delta(
@@ -1960,7 +1969,9 @@ class FeishuChannel(BaseChannel):
                 response.msg,
             )
         except Exception as exc:
-            logger.warning("Error patching Feishu model picker {}: {}", message_id, exc)
+            logger.warning(
+                "Error patching Feishu model picker {}: {}", message_id, exc_type_name(exc)
+            )
         return False
 
     async def _queue_model_choice(
@@ -2320,7 +2331,7 @@ class FeishuChannel(BaseChannel):
                 await self._finish_reaction(origin_message_id)
 
         except Exception as e:
-            logger.error("Error sending Feishu message: {}", e)
+            logger.error("Error sending Feishu message: {}", exc_type_name(e))
 
     def _on_message_sync(self, data: Any) -> None:
         """
@@ -2443,7 +2454,7 @@ class FeishuChannel(BaseChannel):
             )
 
         except Exception as e:
-            logger.error("Error processing Feishu message: {}", e)
+            logger.error("Error processing Feishu message: {}", exc_type_name(e))
 
     def _on_reaction_created(self, data: Any) -> None:
         """Ignore reaction events so they do not generate SDK noise."""
