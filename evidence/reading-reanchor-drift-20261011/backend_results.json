@@ -1,0 +1,851 @@
+[
+  {
+    "scenario": "control_unchanged",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_title": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Alpha Theory",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_title": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "Alpha Theory",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "whitespace_reflow",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick  brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "title_edited",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_title": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Alpha Theory",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_title": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "Alpha Theory",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": true
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "paragraph_inserted_before",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "paragraph_deleted",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_end": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "energy budgets in cells",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_end": {
+            "resolution": "unresolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "energy budgets in cells",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": false,
+            "position_matches_quote": false,
+            "partial_word_anchor": null,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": true
+          },
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "word_replaced",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "unresolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": false,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "word_extended",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": true,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "duplicate_same_unit",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_ctx": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_noctx": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_ctx": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_noctx": {
+            "resolution": "ambiguous",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "duplicate_across_units",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_u2": {
+            "resolution": "resolved",
+            "locator": 2,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "The summary section repeats key claims for revision.",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_u2": {
+            "resolution": "ambiguous",
+            "locator": 2,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "The summary section repeats key claims for revision.",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "sentence_moved_across_units",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_u2": {
+            "resolution": "resolved",
+            "locator": 2,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Mitochondria convert glucose into ATP via oxidative phosphorylation.",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_u2": {
+            "resolution": "resolved",
+            "locator": 3,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "Mitochondria convert glucose into ATP via oxidative phosphorylation.",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "unit_removed",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_gamma": {
+            "resolution": "resolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          },
+          "a_legacy_u3": {
+            "resolution": "resolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": false,
+            "has_position_selector": false
+          },
+          "a_posonly_u3": {
+            "resolution": "resolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": false,
+            "has_position_selector": true
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 2,
+        "annotations": {
+          "a_gamma": {
+            "resolution": "unresolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": false,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": true,
+            "has_position_selector": true
+          },
+          "a_legacy_u3": {
+            "resolution": "unresolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": false,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": false,
+            "has_position_selector": false
+          },
+          "a_posonly_u3": {
+            "resolution": "unresolved",
+            "locator": 3,
+            "material_revision": 1,
+            "locator_in_range": false,
+            "quote": "Final remarks collect the threads",
+            "has_quote_selector": false,
+            "has_position_selector": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "legacy_quote_only_survives",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_legacy": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": false,
+            "has_position_selector": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_legacy": {
+            "resolution": "unresolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": false,
+            "has_position_selector": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "stale_context_compound",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-2",
+        "revision": 3,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "ambiguous",
+            "locator": 1,
+            "material_revision": 2,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": true,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "case_change",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_mid": {
+            "resolution": "unresolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "quick brown fox",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": false,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "scenario": "unicode_nfd_drift",
+    "states": [
+      {
+        "step": "base",
+        "revision": 1,
+        "unit_count": 3,
+        "annotations": {
+          "a_nfc": {
+            "resolution": "resolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "café résumé",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": true,
+            "partial_word_anchor": false,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": false
+          }
+        }
+      },
+      {
+        "step": "drift-1",
+        "revision": 2,
+        "unit_count": 3,
+        "annotations": {
+          "a_nfc": {
+            "resolution": "unresolved",
+            "locator": 1,
+            "material_revision": 1,
+            "locator_in_range": true,
+            "quote": "café résumé",
+            "has_quote_selector": true,
+            "has_position_selector": true,
+            "position_in_range": true,
+            "position_matches_quote": false,
+            "partial_word_anchor": true,
+            "stored_prefix_stale": false,
+            "stored_suffix_stale": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "scenario": "stale_position_unique_quote",
+    "note": "",
+    "anchored": true,
+    "quote": "portable quote",
+    "position": {
+      "start": 20,
+      "end": 34
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  },
+  {
+    "scenario": "duplicate_no_context",
+    "note": "",
+    "anchored": false,
+    "quote": null,
+    "position": null,
+    "position_matches_quote": null,
+    "partial_word_anchor": null
+  },
+  {
+    "scenario": "duplicate_context_distinguishes",
+    "note": "",
+    "anchored": true,
+    "quote": "portable quote",
+    "position": {
+      "start": 32,
+      "end": 46
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  },
+  {
+    "scenario": "stale_context_duplicate",
+    "note": "stored prefix no longer touches either copy",
+    "anchored": false,
+    "quote": null,
+    "position": null,
+    "position_matches_quote": null,
+    "partial_word_anchor": null
+  },
+  {
+    "scenario": "stale_position_whitespace_variant_accepted",
+    "note": "position slice normalise-equals the quote, so it wins by design",
+    "anchored": true,
+    "quote": "portable\n\nquote",
+    "position": {
+      "start": 6,
+      "end": 21
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  },
+  {
+    "scenario": "word_extended_partial_word",
+    "note": "",
+    "anchored": true,
+    "quote": "quick brown fox",
+    "position": {
+      "start": 4,
+      "end": 19
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": true
+  },
+  {
+    "scenario": "case_change",
+    "note": "",
+    "anchored": false,
+    "quote": null,
+    "position": null,
+    "position_matches_quote": null,
+    "partial_word_anchor": null
+  },
+  {
+    "scenario": "regex_metacharacters",
+    "note": "",
+    "anchored": true,
+    "quote": "1.5 (±0.2) [update]",
+    "position": {
+      "start": 8,
+      "end": 27
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  },
+  {
+    "scenario": "legacy_quote_only_unique",
+    "note": "frontend anchors legacy rows the backend revision migration marks unresolved",
+    "anchored": true,
+    "quote": "quick brown fox",
+    "position": {
+      "start": 13,
+      "end": 28
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  },
+  {
+    "scenario": "legacy_quote_only_duplicate",
+    "note": "",
+    "anchored": false,
+    "quote": null,
+    "position": null,
+    "position_matches_quote": null,
+    "partial_word_anchor": null
+  },
+  {
+    "scenario": "moved_quote_stale_context_unique",
+    "note": "",
+    "anchored": true,
+    "quote": "quick brown fox",
+    "position": {
+      "start": 36,
+      "end": 51
+    },
+    "position_matches_quote": true,
+    "partial_word_anchor": false
+  }
+]
