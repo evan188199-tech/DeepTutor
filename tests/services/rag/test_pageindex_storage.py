@@ -54,9 +54,7 @@ def test_read_manifest_repairs_non_dict_docs(tmp_path: Path) -> None:
 
 def test_read_manifest_provider_precedence(tmp_path: Path) -> None:
     path = storage.manifest_path(tmp_path)
-    path.write_text(
-        json.dumps({"provider": storage.OSS_PROVIDER, "docs": {}}), encoding="utf-8"
-    )
+    path.write_text(json.dumps({"provider": storage.OSS_PROVIDER, "docs": {}}), encoding="utf-8")
     assert (
         storage.read_manifest(tmp_path, provider=storage.CLOUD_PROVIDER)["provider"]
         == storage.OSS_PROVIDER

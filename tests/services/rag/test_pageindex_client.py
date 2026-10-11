@@ -37,9 +37,7 @@ def _runtime_config(**overrides: Any) -> SimpleNamespace:
 
 
 def _patch_runtime_config(monkeypatch: pytest.MonkeyPatch, cfg: SimpleNamespace) -> None:
-    monkeypatch.setattr(
-        "deeptutor.services.config.resolve_llm_runtime_config", lambda *a, **k: cfg
-    )
+    monkeypatch.setattr("deeptutor.services.config.resolve_llm_runtime_config", lambda *a, **k: cfg)
 
 
 def test_resolve_requires_an_active_model(monkeypatch: pytest.MonkeyPatch) -> None:

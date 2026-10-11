@@ -68,9 +68,7 @@ def _patch_llm(monkeypatch: pytest.MonkeyPatch, llm: SimpleNamespace) -> None:
     monkeypatch.setattr(reasoning_mod, "can_use_native_tool_calling", lambda **_kw: True)
 
 
-def _patch_tool_context(
-    monkeypatch: pytest.MonkeyPatch, context: SimpleNamespace | None
-) -> None:
+def _patch_tool_context(monkeypatch: pytest.MonkeyPatch, context: SimpleNamespace | None) -> None:
     monkeypatch.setattr(reasoning_mod, "get_tool_registry", lambda: object())
 
     async def _build(kb_name: str, *, base_registry: Any):
@@ -146,9 +144,7 @@ def test_loop_contract_and_result_parsing(monkeypatch: pytest.MonkeyPatch) -> No
 
     async def _loop(**kwargs: Any):
         captured.update(kwargs)
-        return SimpleNamespace(
-            final_text="  grounded answer \n", sources=[{"type": "pageindex"}]
-        )
+        return SimpleNamespace(final_text="  grounded answer \n", sources=[{"type": "pageindex"}])
 
     monkeypatch.setattr(reasoning_mod, "run_agentic_loop", _loop)
     client = object()
@@ -206,9 +202,7 @@ def test_empty_kb_lists_placeholder_and_returns_blank(monkeypatch: pytest.Monkey
 def test_finishing_round_flows_through_the_real_loop(monkeypatch: pytest.MonkeyPatch) -> None:
     _patch_llm(monkeypatch, _llm())
     _patch_tool_context(monkeypatch, _tool_context())
-    scripted = _ScriptedClient(
-        [[_content_chunk("``FINISH``\nGrounded: page 3 says hello.")]]
-    )
+    scripted = _ScriptedClient([[_content_chunk("``FINISH``\nGrounded: page 3 says hello.")]])
     monkeypatch.setattr(reasoning_mod, "build_openai_client", lambda _config: scripted)
     stream = StreamBus()
 
@@ -241,9 +235,7 @@ def test_force_finalize_appends_budget_message(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(reasoning_mod, "run_labeled_step", _step)
     messages: list[dict[str, Any]] = [{"role": "system", "content": "s"}]
 
-    text, finished, extra = asyncio.run(
-        host.force_finalize(messages=messages, start_iteration=5)
-    )
+    text, finished, extra = asyncio.run(host.force_finalize(messages=messages, start_iteration=5))
 
     assert (text, finished, extra) == ("best effort", True, 1)
     assert messages[-1]["role"] == "user"

@@ -92,9 +92,7 @@ def test_blank_pages_and_duplicate_blocks_are_deduped() -> None:
 
 
 def test_optional_fields_are_omitted_when_absent() -> None:
-    rows = pageindex_sources_from_text(
-        _page_response([{"page": 2}]), provider=OSS_PROVIDER
-    )
+    rows = pageindex_sources_from_text(_page_response([{"page": 2}]), provider=OSS_PROVIDER)
 
     assert rows == [
         {
