@@ -9,7 +9,10 @@ import httpx
 import pytest
 
 from deeptutor.services.codex_auth.client_version import latest_client_version
-from deeptutor.services.codex_auth.constants import CODEX_MAX_VERSION_BYTES
+from deeptutor.services.codex_auth.constants import (
+    CODEX_MAX_VERSION_BYTES,
+    CODEX_VERSION_TIMEOUT_SECONDS,
+)
 
 
 @pytest.mark.asyncio
@@ -168,3 +171,27 @@ async def test_stream_is_closed_at_size_limit_or_total_deadline(stall: bool) -> 
     ) as http:
         assert await latest_client_version(http) is None
     assert stream.closed
+
+
+@pytest.mark.asyncio
+async def test_argumentless_call_builds_bounded_default_client(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Discovery without an injected client applies the module deadline itself."""
+
+    undecorated_client = httpx.AsyncClient
+    observed_timeouts: list[float | None] = []
+
+    def bounded_client(*, timeout: float | None = None) -> httpx.AsyncClient:
+        observed_timeouts.append(timeout)
+        return undecorated_client(
+            transport=httpx.MockTransport(
+                lambda _: httpx.Response(200, json={"name": "@openai/codex", "version": "1.2.3"})
+            )
+        )
+
+    monkeypatch.setattr(
+        "deeptutor.services.codex_auth.client_version.httpx.AsyncClient", bounded_client
+    )
+    assert await latest_client_version() == "1.2.3"
+    assert observed_timeouts == [CODEX_VERSION_TIMEOUT_SECONDS]
