@@ -9,6 +9,7 @@ import pytest
 
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 from deeptutor.services.web_source.repository import (
+    WEB_SYNC_MAX_ATTEMPTS,
     SQLiteWebSourceSyncRepository,
     WebSourceSyncJob,
 )
@@ -196,6 +197,190 @@ async def test_failed_owner_enumeration_does_not_delete_persisted_job(
     await scheduler._synchronize_sources()
     assert repository.get(key) is not None
     assert scheduler._sources == {}
+
+
+def _fail_sync_attempts(
+    repository: SQLiteWebSourceSyncRepository,
+    key: tuple[str, str, str],
+    attempts: int,
+) -> None:
+    """Record ``attempts`` failed runs for a job through claim/mark_failure."""
+    lease_until_ms = int(time.time() * 1000) + 3_600_000
+    for _ in range(attempts):
+        job = repository.get(key)
+        assert job is not None
+        claimed = repository.claim(job, runner_id="runner", lease_until_ms=lease_until_ms)
+        assert claimed is not None
+        repository.mark_failure(claimed, error="boom", next_run_at_ms=0)
+
+
+def test_repository_stops_rescheduling_exhausted_error_job(tmp_path: Path) -> None:
+    repository = SQLiteWebSourceSyncRepository(tmp_path / "jobs.sqlite")
+    key = ("local-admin", "kb", "abc")
+    repository.reconcile_sources({key})
+
+    _fail_sync_attempts(repository, key, WEB_SYNC_MAX_ATTEMPTS - 1)
+    retrying = repository.get(key)
+    assert retrying is not None
+    assert retrying.state == "error"
+    assert retrying.attempt == WEB_SYNC_MAX_ATTEMPTS - 1
+    # Below the cap the failed job stays scheduled for its next backoff run.
+    assert [repository.key(job) for job in repository.due_jobs(now_ms=10**15)] == [key]
+
+    _fail_sync_attempts(repository, key, 1)
+    exhausted = repository.get(key)
+    assert exhausted is not None
+    assert exhausted.state == "error"
+    assert exhausted.attempt == WEB_SYNC_MAX_ATTEMPTS
+    # At the cap the job is never due again, whatever the next-run stamp is...
+    assert repository.due_jobs(now_ms=10**15) == []
+    # ...and it cannot be re-claimed, so a runner holding a stale due-jobs
+    # snapshot cannot bypass the cap either.
+    assert repository.claim(exhausted, runner_id="other", lease_until_ms=10**16) is None
+
+
+def test_repository_manual_retry_and_edit_reset_exhausted_error_job(
+    tmp_path: Path,
+) -> None:
+    repository = SQLiteWebSourceSyncRepository(tmp_path / "jobs.sqlite")
+    key = ("local-admin", "kb", "abc")
+    repository.reconcile_sources({key})
+
+    _fail_sync_attempts(repository, key, WEB_SYNC_MAX_ATTEMPTS)
+    assert repository.due_jobs(now_ms=10**15) == []
+
+    # Manual retry() revives the job with a clean attempt counter.
+    retried = repository.retry(key)
+    assert retried is not None
+    assert retried.state == "pending"
+    assert retried.attempt == 0
+    assert [repository.key(job) for job in repository.due_jobs(now_ms=10**15)] == [key]
+
+    # Editing the schedule (PUT .../schedule -> ensure_source) also revives
+    # an exhausted job.
+    _fail_sync_attempts(repository, key, WEB_SYNC_MAX_ATTEMPTS)
+    repository.ensure_source(key)
+    revived = repository.get(key)
+    assert revived is not None
+    assert revived.state == "pending"
+    assert revived.attempt == 0
+    assert revived.error is None
+    assert [repository.key(job) for job in repository.due_jobs(now_ms=10**15)] == [key]
+
+
+@pytest.mark.asyncio
+async def test_scheduler_stops_rescheduling_after_max_consecutive_failures(
+    tmp_path: Path,
+) -> None:
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
+    (manager.base_dir / "kb").mkdir()
+    (manager.base_dir / "kb" / "metadata.json").write_text("{}", encoding="utf-8")
+    manager.register_knowledge_base("kb")
+    manager.add_web_source("kb", "https://example.com/docs/")
+
+    repository = SQLiteWebSourceSyncRepository(tmp_path / "jobs.sqlite")
+    scheduler = WebSourceSyncScheduler(
+        repository=repository,
+        manager_factory=lambda: manager,
+    )
+    await scheduler._synchronize_sources()
+    job = repository.list_jobs("local-admin", "kb")[0]
+    key = repository.key(job)
+
+    failing = AsyncMock(return_value=WebSyncResult(ok=False, error="boom"))
+    with patch("deeptutor.services.web_source.sync.sync_source", failing):
+        for _ in range(WEB_SYNC_MAX_ATTEMPTS):
+            await scheduler._run_job(job)
+
+    persisted = repository.get(key)
+    assert persisted is not None
+    assert persisted.state == "error"
+    assert persisted.attempt == WEB_SYNC_MAX_ATTEMPTS
+    assert failing.await_count == WEB_SYNC_MAX_ATTEMPTS
+    assert repository.due_jobs(now_ms=10**15) == []
+
+
+@pytest.mark.asyncio
+async def test_scheduler_revives_exhausted_source_after_manual_retry(
+    tmp_path: Path,
+) -> None:
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
+    (manager.base_dir / "kb").mkdir()
+    (manager.base_dir / "kb" / "metadata.json").write_text("{}", encoding="utf-8")
+    manager.register_knowledge_base("kb")
+    manager.add_web_source("kb", "https://example.com/docs/")
+
+    repository = SQLiteWebSourceSyncRepository(tmp_path / "jobs.sqlite")
+    scheduler = WebSourceSyncScheduler(
+        repository=repository,
+        manager_factory=lambda: manager,
+    )
+    await scheduler._synchronize_sources()
+    job = repository.list_jobs("local-admin", "kb")[0]
+    key = repository.key(job)
+
+    failing = AsyncMock(return_value=WebSyncResult(ok=False, error="boom"))
+    with patch("deeptutor.services.web_source.sync.sync_source", failing):
+        for _ in range(WEB_SYNC_MAX_ATTEMPTS):
+            await scheduler._run_job(job)
+    assert repository.due_jobs(now_ms=10**15) == []
+
+    # A manual retry clears the failure history and schedules a fresh run.
+    assert await scheduler.retry(*key) is True
+    revived = repository.get(key)
+    assert revived is not None
+    assert revived.state == "pending"
+    assert revived.attempt == 0
+    assert [repository.key(item) for item in repository.due_jobs()] == [key]
+
+    # The revived source syncs normally again.
+    succeeding = AsyncMock(return_value=WebSyncResult(ok=True))
+    with patch("deeptutor.services.web_source.sync.sync_source", succeeding):
+        await scheduler._run_job(job)
+    recovered = repository.get(key)
+    assert recovered is not None
+    assert recovered.state == "pending"
+    assert recovered.attempt == 0
+    assert repository.due_jobs() == []  # next run only at the synced interval
+    assert [
+        repository.key(item) for item in repository.due_jobs(now_ms=recovered.next_run_at_ms)
+    ] == [key]
+
+
+@pytest.mark.asyncio
+async def test_scheduler_failure_backoff_below_threshold_unchanged(
+    tmp_path: Path,
+) -> None:
+    manager = KnowledgeBaseManager(base_dir=str(tmp_path / "kbs"))
+    (manager.base_dir / "kb").mkdir()
+    (manager.base_dir / "kb" / "metadata.json").write_text("{}", encoding="utf-8")
+    manager.register_knowledge_base("kb")
+    manager.add_web_source("kb", "https://example.com/docs/")
+
+    repository = SQLiteWebSourceSyncRepository(tmp_path / "jobs.sqlite")
+    scheduler = WebSourceSyncScheduler(
+        repository=repository,
+        manager_factory=lambda: manager,
+    )
+    await scheduler._synchronize_sources()
+    job = repository.list_jobs("local-admin", "kb")[0]
+    key = repository.key(job)
+
+    failing = AsyncMock(return_value=WebSyncResult(ok=False, error="boom"))
+    with patch("deeptutor.services.web_source.sync.sync_source", failing):
+        for expected_attempt, expected_backoff_hours in ((1, 1), (2, 2)):
+            await scheduler._run_job(job)
+            persisted = repository.get(key)
+            assert persisted is not None
+            assert persisted.state == "error"
+            assert persisted.attempt == expected_attempt
+            assert persisted.error == "boom"
+            assert persisted.last_run_at_ms is not None
+            backoff_ms = persisted.next_run_at_ms - persisted.last_run_at_ms
+            assert round(backoff_ms / 3_600_000) == expected_backoff_hours
+
+    # Below the attempt cap the job is still auto-rescheduled after backoff.
+    assert [repository.key(item) for item in repository.due_jobs(now_ms=10**15)] == [key]
 
 
 @pytest.mark.asyncio

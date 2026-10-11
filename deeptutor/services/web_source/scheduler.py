@@ -10,6 +10,7 @@ from typing import Any
 import uuid
 
 from deeptutor.services.web_source.repository import (
+    WEB_SYNC_MAX_ATTEMPTS,
     SQLiteWebSourceSyncRepository,
     WebSourceSyncJob,
 )
@@ -285,7 +286,18 @@ class WebSourceSyncScheduler:
         error: str,
     ) -> None:
         interval = normalize_sync_interval(source.get("sync_interval_hours"))
-        backoff = min(interval, WEB_SYNC_MIN_INTERVAL_HOURS * max(1, job.attempt + 1))
+        attempts = job.attempt + 1
+        if attempts >= WEB_SYNC_MAX_ATTEMPTS:
+            # The job stays in the explicit 'error' state and the repository
+            # stops scheduling it; only a manual retry() or a schedule edit
+            # (ensure_source) revives it.
+            logger.warning(
+                "Web source sync for %s failed %d consecutive attempts; "
+                "automatic rescheduling stopped until a manual retry or schedule edit",
+                source.get("url"),
+                attempts,
+            )
+        backoff = min(interval, WEB_SYNC_MIN_INTERVAL_HOURS * max(1, attempts))
         self.repo.mark_failure(
             job,
             error=error,

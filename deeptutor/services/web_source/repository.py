@@ -8,6 +8,14 @@ import sqlite3
 import time
 from typing import Any
 
+# A web source whose sync failed this many times in a row (without an
+# intervening success) is left in the explicit 'error' state and is no longer
+# rescheduled automatically; only a manual retry() or a schedule edit
+# (ensure_source) resets the attempt counter. With the default 24h interval
+# and the capped backoff (1h per failure), five attempts span roughly ten
+# hours before a bad source stops occupying the scheduler.
+WEB_SYNC_MAX_ATTEMPTS = 5
+
 
 @dataclass(slots=True)
 class WebSourceSyncJob:
@@ -232,7 +240,12 @@ class SQLiteWebSourceSyncRepository:
                 raise
 
     def ensure_source(self, source_key: tuple[str, str, str]) -> WebSourceSyncJob:
-        """Create a due job for one source without touching unrelated rows."""
+        """Create a due job for one source without touching unrelated rows.
+
+        Editing the schedule (or re-enabling auto-sync) also revives a job
+        that exhausted its retry attempts: the edit is an explicit request to
+        synchronize the source again.
+        """
         now = self._now_ms()
         with self._connect() as connection:
             connection.execute(
@@ -243,6 +256,17 @@ class SQLiteWebSourceSyncRepository:
                 VALUES (?, ?, ?, 'pending', ?, ?)
                 """,
                 (*source_key, now, now),
+            )
+            connection.execute(
+                """
+                UPDATE web_source_sync_jobs
+                   SET state='pending', next_run_at_ms=?, attempt=0, error=NULL,
+                       cancel_requested=0, runner_id='', lease_until_ms=NULL,
+                       updated_at_ms=?
+                 WHERE owner_id=? AND kb_name=? AND source_id=?
+                   AND state='error' AND attempt>=?
+                """,
+                (now, now, *source_key, WEB_SYNC_MAX_ATTEMPTS),
             )
         job = self.get(source_key)
         if job is None:
@@ -281,6 +305,11 @@ class SQLiteWebSourceSyncRepository:
         return [WebSourceSyncJob.from_row(row) for row in rows]
 
     def due_jobs(self, now_ms: int | None = None) -> list[WebSourceSyncJob]:
+        """Return jobs to auto-schedule, skipping exhausted error jobs.
+
+        An 'error' job that already failed ``WEB_SYNC_MAX_ATTEMPTS`` times
+        stays parked until retry() or ensure_source() resets it.
+        """
         now = self._now_ms() if now_ms is None else now_ms
         with self._connect() as connection:
             rows = connection.execute(
@@ -288,9 +317,10 @@ class SQLiteWebSourceSyncRepository:
                 SELECT * FROM web_source_sync_jobs
                  WHERE state IN ('pending', 'interrupted', 'error')
                    AND next_run_at_ms<=?
+                   AND (state<>'error' OR attempt<?)
                  ORDER BY next_run_at_ms, owner_id, kb_name, source_id
-                """,
-                (now,),
+                 """,
+                (now, WEB_SYNC_MAX_ATTEMPTS),
             ).fetchall()
         return [WebSourceSyncJob.from_row(row) for row in rows]
 
@@ -318,6 +348,11 @@ class SQLiteWebSourceSyncRepository:
                     return None
                 current = WebSourceSyncJob.from_row(row)
                 runnable = current.state in {"pending", "interrupted", "cancelled", "error"}
+                if current.state == "error" and current.attempt >= WEB_SYNC_MAX_ATTEMPTS:
+                    # Exhausted error jobs only run again after retry() or
+                    # ensure_source() resets them; also guards runners holding
+                    # a stale due-jobs snapshot.
+                    runnable = False
                 lease_expired = (
                     current.state == "running"
                     and current.lease_until_ms is not None
