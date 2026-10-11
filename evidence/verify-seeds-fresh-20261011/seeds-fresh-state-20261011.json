@@ -1,0 +1,667 @@
+{
+ "date": "2026-10-11",
+ "main_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "board_issues": 1795,
+ "results": [
+  {
+   "seed_id": "FZ92",
+   "path": "deeptutor/__version__.py",
+   "module": "__version__",
+   "kind": "zero",
+   "annotated": true,
+   "on_main": true,
+   "loc": 11,
+   "fanin": 3,
+   "touched_static": 0,
+   "touched_tests": [],
+   "baseline": {
+    "loc": 11,
+    "fanin": 2,
+    "touched": 0,
+    "cover_tests": []
+   },
+   "drift": {
+    "loc": false,
+    "fanin": true,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [
+    "AGEN-1716"
+   ],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {
+    "AGEN-1716": "verify 级（=基线 note 的 citation-version-parity 卡），done，不去重"
+   },
+   "card_reread": null,
+   "threshold": 1,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FZ96",
+   "path": "deeptutor/services/llm/provider_registry.py",
+   "module": "services.llm.provider_registry",
+   "kind": "zero",
+   "annotated": true,
+   "on_main": true,
+   "loc": 3,
+   "fanin": 0,
+   "touched_static": 0,
+   "touched_tests": [],
+   "baseline": {
+    "loc": 3,
+    "fanin": 0,
+    "touched": 0,
+    "cover_tests": []
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [
+    "AGEN-1265"
+   ],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {
+    "AGEN-1265": "guide 级，done，不去重（基线同判）"
+   },
+   "card_reread": null,
+   "threshold": 1,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FT35",
+   "path": "deeptutor/video_learning/invidious_account_storage.py",
+   "module": "video_learning.invidious_account_storage",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 177,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/video_learning/test_invidious_account.py"
+   ],
+   "baseline": {
+    "loc": 177,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/video_learning/test_invidious_account.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {},
+   "card_reread": "AGEN-806 卡面重读：范围 invidious_account.py(360行)+client(85行)，不含 storage.py（177行）",
+   "threshold": 2,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FT50",
+   "path": "deeptutor/services/imagegen/adapters/openai_compat.py",
+   "module": "services.imagegen.adapters.openai_compat",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 98,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/services/test_media_gen.py"
+   ],
+   "baseline": {
+    "loc": 98,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/services/test_media_gen.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1768",
+    "AGEN-1693",
+    "AGEN-1056"
+   ],
+   "genuine_claims": [
+    "AGEN-1768"
+   ],
+   "board_related": [
+    "AGEN-1709"
+   ],
+   "manual_fp": {
+    "AGEN-1693": "embedding openai_compatible 异包（词干 FP）",
+    "AGEN-1056": "voice openai_compat 异包（词干 FP）"
+   },
+   "manual_claim": {
+    "AGEN-1768": "test 级，标题点名 FT50"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT75",
+   "path": "deeptutor/textbook_struct/page_headers.py",
+   "module": "textbook_struct.page_headers",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 100,
+   "fanin": 2,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/textbook_struct/test_page_headers.py"
+   ],
+   "baseline": {
+    "loc": 100,
+    "fanin": 2,
+    "touched": 1,
+    "cover_tests": [
+     "tests/textbook_struct/test_page_headers.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1770"
+   ],
+   "genuine_claims": [
+    "AGEN-1770"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1770": "test 级，标题点名 FT75"
+   },
+   "manual_related": {
+    "AGEN-791": "test 级但焦点为 chapter_rebuild/列黑名单（卡面描述核对，不含 page_headers 补测）",
+    "AGEN-1315": "scan 级 tail23 焦点清单，done"
+   },
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT116",
+   "path": "deeptutor/services/config/settings_presets.py",
+   "module": "services.config.settings_presets",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 135,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/services/config/test_settings_presets.py"
+   ],
+   "baseline": {
+    "loc": 135,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/services/config/test_settings_presets.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1773"
+   ],
+   "genuine_claims": [
+    "AGEN-1773"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1773": "test 级，标题点名 FT116"
+   },
+   "manual_related": {},
+   "card_reread": "AGEN-1240 标题：web 草稿/预设/浮动菜单 lib，非后端 services/config/settings_presets",
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT120",
+   "path": "deeptutor/agents/visualize/agents/code_generator_agent.py",
+   "module": "agents.visualize.agents.code_generator_agent",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 117,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/agents/visualize/test_agent_llm_calls.py"
+   ],
+   "baseline": {
+    "loc": 117,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/agents/visualize/test_agent_llm_calls.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1689",
+    "AGEN-1671",
+    "AGEN-1344"
+   ],
+   "genuine_claims": [
+    "AGEN-1689",
+    "AGEN-1671"
+   ],
+   "board_related": [
+    "AGEN-1706",
+    "AGEN-1687",
+    "AGEN-1532"
+   ],
+   "manual_fp": {
+    "AGEN-1344": "math_animator 同名代理异包（基线已判不去重）"
+   },
+   "manual_claim": {
+    "AGEN-1671": "test 级，标题点名 visualize/code_generator_agent 路径",
+    "AGEN-1689": "AGEN-1671 的 rework 卡，同范围"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT129",
+   "path": "deeptutor/services/codex_auth/client_version.py",
+   "module": "services.codex_auth.client_version",
+   "kind": "weak",
+   "annotated": true,
+   "on_main": true,
+   "loc": 55,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/services/codex_auth/test_client_version.py"
+   ],
+   "baseline": {
+    "loc": 55,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/services/codex_auth/test_client_version.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1776"
+   ],
+   "genuine_claims": [
+    "AGEN-1776"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1776": "test 级，标题点名 FT129"
+   },
+   "manual_related": {},
+   "card_reread": "AGEN-1009 卡面重读：文件清单 oauth/service/storage/catalog，不含 client_version.py",
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FZ51",
+   "path": "deeptutor/capabilities/reading/_tool_base.py",
+   "module": "capabilities.reading._tool_base",
+   "kind": "zero",
+   "annotated": false,
+   "on_main": true,
+   "loc": 86,
+   "fanin": 2,
+   "touched_static": 0,
+   "touched_tests": [],
+   "baseline": {
+    "loc": 86,
+    "fanin": 2,
+    "touched": 0,
+    "cover_tests": []
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 1,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FZ94",
+   "path": "deeptutor/book/errors.py",
+   "module": "book.errors",
+   "kind": "zero",
+   "annotated": false,
+   "on_main": true,
+   "loc": 8,
+   "fanin": 2,
+   "touched_static": 0,
+   "touched_tests": [],
+   "baseline": {
+    "loc": 8,
+    "fanin": 2,
+    "touched": 0,
+    "cover_tests": []
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 1,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FZ95",
+   "path": "deeptutor/__main__.py",
+   "module": "__main__",
+   "kind": "zero",
+   "annotated": false,
+   "on_main": true,
+   "loc": 6,
+   "fanin": 0,
+   "touched_static": 0,
+   "touched_tests": [],
+   "baseline": {
+    "loc": 6,
+    "fanin": 0,
+    "touched": 0,
+    "cover_tests": []
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1780"
+   ],
+   "genuine_claims": [
+    "AGEN-1780"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1780": "test 级，标题点名 FZ95"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 1,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT46",
+   "path": "deeptutor/book/overview_copy.py",
+   "module": "book.overview_copy",
+   "kind": "weak",
+   "annotated": false,
+   "on_main": true,
+   "loc": 104,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/book/test_overview_copy.py"
+   ],
+   "baseline": {
+    "loc": 104,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/book/test_overview_copy.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1767"
+   ],
+   "genuine_claims": [
+    "AGEN-1767"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1767": "test 级，标题点名 FT46"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT115",
+   "path": "deeptutor/services/session/attachment_parsing.py",
+   "module": "services.session.attachment_parsing",
+   "kind": "weak",
+   "annotated": false,
+   "on_main": true,
+   "loc": 158,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/services/session/test_attachment_parsing.py"
+   ],
+   "baseline": {
+    "loc": 158,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/services/session/test_attachment_parsing.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [],
+   "genuine_claims": [],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {},
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "仍可领取"
+  },
+  {
+   "seed_id": "FT122",
+   "path": "deeptutor/agents/research/utils/json_utils.py",
+   "module": "agents.research.utils.json_utils",
+   "kind": "weak",
+   "annotated": false,
+   "on_main": true,
+   "loc": 94,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/agents/research/test_extract_json_adjacent.py"
+   ],
+   "baseline": {
+    "loc": 94,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/agents/research/test_extract_json_adjacent.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1774"
+   ],
+   "genuine_claims": [
+    "AGEN-1774"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1774": "test 级，标题点名 FT122"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT133",
+   "path": "deeptutor/services/session/turns/resource_reuse.py",
+   "module": "services.session.turns.resource_reuse",
+   "kind": "weak",
+   "annotated": false,
+   "on_main": true,
+   "loc": 18,
+   "fanin": 1,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/services/session/test_resource_reuse.py"
+   ],
+   "baseline": {
+    "loc": 18,
+    "fanin": 1,
+    "touched": 1,
+    "cover_tests": [
+     "tests/services/session/test_resource_reuse.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1778"
+   ],
+   "genuine_claims": [
+    "AGEN-1778"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1778": "test 级，标题点名 FT133"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  },
+  {
+   "seed_id": "FT139",
+   "path": "deeptutor/reading/study_guidance.py",
+   "module": "reading.study_guidance",
+   "kind": "weak",
+   "annotated": false,
+   "on_main": true,
+   "loc": 103,
+   "fanin": 0,
+   "touched_static": 1,
+   "touched_tests": [
+    "tests/reading/test_study_guidance.py"
+   ],
+   "baseline": {
+    "loc": 103,
+    "fanin": 0,
+    "touched": 1,
+    "cover_tests": [
+     "tests/reading/test_study_guidance.py"
+    ]
+   },
+   "drift": {
+    "loc": false,
+    "fanin": false,
+    "touched": false
+   },
+   "board_claims": [
+    "AGEN-1779"
+   ],
+   "genuine_claims": [
+    "AGEN-1779"
+   ],
+   "board_related": [],
+   "manual_fp": {},
+   "manual_claim": {
+    "AGEN-1779": "test 级，标题点名 FT139"
+   },
+   "manual_related": {},
+   "card_reread": null,
+   "threshold": 2,
+   "verdict": "已建卡"
+  }
+ ],
+ "e14": {
+  "seed_id": "E14",
+  "topic": "E14 NO-CODE 系统性 code 信封（~597 处纯文本 detail）",
+  "kind": "error-axis",
+  "annotated": true,
+  "note": "no single module; verdict from board state of subset cards",
+  "subset_cards": {
+   "AGEN-1364": "in_review",
+   "AGEN-880": "in_review"
+  },
+  "stem_hit_claims_sessions_py": [
+   "AGEN-1364",
+   "AGEN-814"
+  ],
+  "verdict": "仍可领取"
+ }
+}
