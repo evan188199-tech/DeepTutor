@@ -29,6 +29,10 @@ class LLMSelection(BaseModel):
 
     profile_id: str
     model_id: str
+    # Per-conversation reasoning-effort override (#641). ``None``/omitted
+    # keeps the profile/model default; the vocabulary is validated when the
+    # selection is normalized in ``services/model_selection/llm.py``.
+    reasoning_effort: str | None = None
 
 
 class OutgoingAttachment(BaseModel):

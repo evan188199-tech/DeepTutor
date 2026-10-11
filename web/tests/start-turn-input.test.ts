@@ -151,3 +151,26 @@ test("consultation selections travel as runtime fields, not capability config", 
     assert.throws(() => buildStartTurnInput({ content: "hi", capabilityConfig: { [key]: "id" } }), /must use its typed turn property/);
   }
 });
+
+test("a per-conversation reasoning-effort override rides the llm selection (#641)", () => {
+  const overridden = buildStartTurnInput({
+    content: "think harder",
+    llmSelection: {
+      profile_id: "p1",
+      model_id: "m1",
+      reasoning_effort: "high",
+    },
+  });
+  assert.deepEqual(overridden.llm_selection, {
+    profile_id: "p1",
+    model_id: "m1",
+    reasoning_effort: "high",
+  });
+  // Auto / a bare model pick must not attach the field: the profile default
+  // applies unchanged and unsupported models never send a parameter.
+  const auto = buildStartTurnInput({
+    content: "hi",
+    llmSelection: { profile_id: "p1", model_id: "m1" },
+  });
+  assert.deepEqual(auto.llm_selection, { profile_id: "p1", model_id: "m1" });
+});

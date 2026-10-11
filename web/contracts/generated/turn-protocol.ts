@@ -42,6 +42,7 @@ export type KnowledgeBases = string[];
 export type Language = string | null;
 export type ModelId = string;
 export type ProfileId = string;
+export type ReasoningEffort = string | null;
 export type QuestionId = string;
 export type Text = string;
 export type MasteryPathId = string | null;
@@ -356,6 +357,7 @@ export interface Config {
 export interface LLMSelection {
   model_id: ModelId;
   profile_id: ProfileId;
+  reasoning_effort?: ReasoningEffort;
 }
 /**
  * An answer submitted from a mastery question card.

@@ -126,3 +126,35 @@ def test_llm_selection_to_dict_round_trips_reasoning_effort():
 def test_llm_selection_to_dict_omits_reasoning_effort_when_unset():
     selection = LLMSelection(profile_id="p1", model_id="m1")
     assert "reasoning_effort" not in selection.to_dict()
+
+
+def test_turn_request_wire_model_carries_reasoning_effort():
+    """The chat turn wire contract accepts the per-conversation override (#641)."""
+    from deeptutor.core.turn_request import TurnRequest
+
+    request = TurnRequest.model_validate(
+        {
+            "content": "hi",
+            "llm_selection": {
+                "profile_id": "p1",
+                "model_id": "m1",
+                "reasoning_effort": "high",
+            },
+        }
+    )
+    assert request.llm_selection.reasoning_effort == "high"
+    payload = request.to_payload()["llm_selection"]
+    assert payload == {"profile_id": "p1", "model_id": "m1", "reasoning_effort": "high"}
+    # The normalization the turn preparer runs keeps the override.
+    from deeptutor.services.session._turn_runtime_shared import _llm_selection_dict
+
+    assert _llm_selection_dict(payload) == payload
+
+
+def test_turn_request_wire_model_omits_unset_reasoning_effort():
+    from deeptutor.core.turn_request import TurnRequest
+
+    payload = TurnRequest.model_validate(
+        {"content": "hi", "llm_selection": {"profile_id": "p1", "model_id": "m1"}}
+    ).to_payload()["llm_selection"]
+    assert "reasoning_effort" not in payload

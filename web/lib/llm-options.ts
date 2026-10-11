@@ -15,6 +15,8 @@ export interface LLMOption extends LLMSelection {
   context_window?: number;
   reasoning_effort?: string;
   supported_reasoning_efforts?: string[];
+  /** Whether the model's Settings entry explicitly declares reasoning. */
+  declared_reasoning?: boolean;
   supports_vision?: boolean;
   is_active_default: boolean;
 }
@@ -34,6 +36,44 @@ export function sameLLMSelection(
   b: LLMSelection | null | undefined,
 ) {
   return llmSelectionKey(a) === llmSelectionKey(b);
+}
+
+/** Restore a selection from a stored payload, keeping any effort override (#641). */
+export function parseLLMSelection(value: unknown): LLMSelection | null {
+  const record =
+    value && typeof value === "object" && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : null;
+  const profileId =
+    typeof record?.profile_id === "string" ? record.profile_id.trim() : "";
+  const modelId =
+    typeof record?.model_id === "string" ? record.model_id.trim() : "";
+  if (!profileId || !modelId) return null;
+  const reasoningEffort =
+    typeof record?.reasoning_effort === "string"
+      ? record.reasoning_effort.trim().toLowerCase()
+      : "";
+  // `none` is a meaningful override; only the empty value means "Auto" and
+  // must stay omitted so the profile/model default applies unchanged.
+  return reasoningEffort
+    ? { profile_id: profileId, model_id: modelId, reasoning_effort: reasoningEffort }
+    : { profile_id: profileId, model_id: modelId };
+}
+
+/** Merge a per-conversation reasoning-effort choice into a selection (#641). */
+export function llmSelectionWithReasoningEffort(
+  base: LLMSelection | null | undefined,
+  effort: string,
+): LLMSelection | null {
+  if (!base?.profile_id || !base.model_id) return null;
+  const normalized = effort.trim();
+  return normalized
+    ? {
+        profile_id: base.profile_id,
+        model_id: base.model_id,
+        reasoning_effort: normalized,
+      }
+    : { profile_id: base.profile_id, model_id: base.model_id };
 }
 
 /** List the configured model profiles.
