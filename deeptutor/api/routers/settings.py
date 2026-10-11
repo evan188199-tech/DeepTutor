@@ -13,6 +13,7 @@ import contextlib
 from copy import deepcopy
 import json
 import logging
+import os
 import time
 from typing import Any, List, Literal, Optional
 
@@ -2312,6 +2313,20 @@ async def start_service_test(service: str, payload: CatalogPayload | None = None
     return {"run_id": run.id}
 
 
+def _service_test_stream_interval() -> float:
+    """SSE heartbeat/poll interval for config-test event streams (env-tunable).
+
+    Keeps the historical 0.35s cadence by default; operators can lower the
+    wakeup frequency (e.g. 1-5s) without redeploying.
+    """
+    raw = os.environ.get("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", "")
+    try:
+        value = float(raw)
+    except ValueError:
+        return 0.35
+    return value if value > 0 else 0.35
+
+
 @router.get("/tests/{service}/{run_id}/events")
 async def stream_service_test_events(service: str, run_id: str, request: Request):
     _require_settings_admin()
@@ -2320,6 +2335,7 @@ async def stream_service_test_events(service: str, run_id: str, request: Request
 
     async def event_stream():
         sent = 0
+        interval = _service_test_stream_interval()
         while True:
             if await request.is_disconnected():
                 return
@@ -2332,7 +2348,7 @@ async def stream_service_test_events(service: str, run_id: str, request: Request
                     return
             else:
                 yield "event: heartbeat\ndata: {}\n\n"
-            await asyncio.sleep(0.35)
+            await asyncio.sleep(interval)
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 

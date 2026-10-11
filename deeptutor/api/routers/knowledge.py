@@ -4425,6 +4425,29 @@ def _progress_age_seconds(timestamp: object) -> float | None:
         return None
 
 
+def _progress_close_drain_seconds() -> float:
+    """Bounded drain window after the final progress frame (env-tunable)."""
+    raw = os.environ.get("DEEPTUTOR_KNOWLEDGE_PROGRESS_DRAIN_S", "")
+    try:
+        value = float(raw)
+    except ValueError:
+        return 3.0
+    return value if value >= 0 else 3.0
+
+
+async def _drain_before_close(websocket: WebSocket, drain_seconds: float) -> None:
+    """Wait out the delivery drain window, but return early on client activity.
+
+    The fixed sleep used to park every completed stream for the full window.
+    Waiting on the client instead keeps the same upper bound while a client
+    that ACKs (any inbound frame) or disconnects releases the stream at once.
+    """
+    try:
+        await asyncio.wait_for(websocket.receive_text(), timeout=drain_seconds)
+    except (asyncio.TimeoutError, WebSocketDisconnect, RuntimeError):
+        pass
+
+
 @ws_router.websocket("/knowledge-bases/{kb_name}/progress")
 async def websocket_progress(websocket: WebSocket, kb_name: str):
     """WebSocket endpoint for real-time progress updates"""
@@ -4641,7 +4664,9 @@ async def websocket_progress(websocket: WebSocket, kb_name: str):
                             last_timestamp = current_timestamp
 
                             if current_progress.get("stage") in ["completed", "error"]:
-                                await asyncio.sleep(3)
+                                await _drain_before_close(
+                                    websocket, _progress_close_drain_seconds()
+                                )
                                 break
                     if expected_task_id:
                         task_metadata = task_manager.get_task_metadata(expected_task_id)

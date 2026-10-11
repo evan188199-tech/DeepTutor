@@ -3830,3 +3830,79 @@ async def test_image_fallback_strips_all_canonical_copies_after_wire_deduplicati
     assert not has_image_parts(messages)
     assert context.extension("source_visual_evidence")["image_hashes"] == []
     assert "Repeated image" not in str(messages)
+
+
+def test_reasoning_progress_interval_env_tuning(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", raising=False)
+    assert agent_loop_mod._reasoning_progress_interval() == 15.0
+    monkeypatch.setenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "0.05")
+    assert agent_loop_mod._reasoning_progress_interval() == 0.05
+    monkeypatch.setenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "not-a-number")
+    assert agent_loop_mod._reasoning_progress_interval() == 15.0
+    monkeypatch.setenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "0")
+    assert agent_loop_mod._reasoning_progress_interval() == 15.0
+    monkeypatch.setenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "-3")
+    assert agent_loop_mod._reasoning_progress_interval() == 15.0
+
+
+@pytest.mark.asyncio
+async def test_reasoning_progress_heartbeat_runs_while_provider_is_silent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The background heartbeat, not just chunk arrival, emits progress markers.
+
+    The scripted client pauses between reasoning chunks far longer than the
+    (env-shrunk) heartbeat interval, so repeated markers can only come from
+    the wait-based heartbeat loop.
+    """
+    monkeypatch.setenv("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "0.03")
+    pause = 0.12
+
+    async def _slow_stream(chunks: list[SimpleNamespace]):
+        for chunk in chunks:
+            await asyncio.sleep(pause)
+            yield chunk
+
+    class _SlowChatClient:
+        def __init__(self, scripted: list[list[SimpleNamespace]]) -> None:
+            self._script = list(scripted)
+            self.call_count = 0
+            parent = self
+
+            class _Completions:
+                async def create(self, **_kwargs):
+                    parent.call_count += 1
+                    if not parent._script:
+                        raise RuntimeError("Scripted client exhausted")
+                    return _slow_stream(parent._script.pop(0))
+
+            class _Chat:
+                def __init__(self) -> None:
+                    self.completions = _Completions()
+
+            self.chat = _Chat()
+
+    client = _SlowChatClient(
+        [
+            [_llm_chunk(reasoning_content=f"thinking {i} ") for i in range(4)],
+            [_llm_chunk(content="Done.")],
+        ]
+    )
+    pipeline = AgenticChatPipeline(language="en")
+    pipeline.registry = _Registry()
+    monkeypatch.setattr(pipeline, "_compose_enabled_tools", lambda _context: [])
+    monkeypatch.setattr(pipeline, "_build_openai_client", lambda: client)
+
+    events = await _run(pipeline, UnifiedContext(session_id="s1", user_message="Do it"))
+
+    progress = [
+        event
+        for event in events
+        if event.type == StreamEventType.PROGRESS
+        and event.metadata.get("trace_kind") == "reasoning_progress"
+    ]
+    # 4 pauses x (0.12s / 0.03s interval) leaves room for ~16 markers; the
+    # chunk path alone could emit at most 4 (one per chunk).
+    assert len(progress) >= 8
+    assert all("thinking" not in event.content for event in progress)
+    assert _answer_text(events) == "Done."

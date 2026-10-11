@@ -18,6 +18,7 @@ import requests
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.backoff import ReconnectBackoff, backoff_delay
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
 from deeptutor.partners.helpers import split_message
@@ -219,9 +220,9 @@ class ZulipChannel(BaseChannel):
                 return fn(*args, **kwargs)
             except Exception as e:
                 if attempt < max_retries - 1:
-                    delay = 2**attempt
+                    delay = backoff_delay(attempt, base=1.0, cap=2.0)
                     logger.warning(
-                        "Zulip API call failed (attempt {}): {}, retrying in {}s",
+                        "Zulip API call failed (attempt {}): {}, retrying in {:.2f}s",
                         attempt + 1,
                         e,
                         delay,
@@ -232,12 +233,19 @@ class ZulipChannel(BaseChannel):
                     raise
 
     def _run_listener(self) -> None:
+        # One ladder across register/get_events failures: retry storms escalate
+        # (2s → 4s → … capped) with jitter instead of same-beat fixed sleeps.
+        reconnect = ReconnectBackoff(base=2.0, cap=30.0)
         while self._running:
             try:
                 self._register_queue()
                 if not self._queue_id:
-                    logger.error("Failed to register Zulip event queue, retrying in 10s...")
-                    time.sleep(10)
+                    delay = reconnect.delay()
+                    logger.error(
+                        "Failed to register Zulip event queue, retrying in {:.0f}s...",
+                        delay,
+                    )
+                    time.sleep(delay)
                     continue
 
                 while self._running:
@@ -248,12 +256,12 @@ class ZulipChannel(BaseChannel):
                         )
                     except Exception as e:
                         logger.warning("Zulip get_events error: {}", e)
-                        time.sleep(2)
+                        time.sleep(reconnect.delay())
                         break
 
                     if result.get("result") == "http-error":
                         logger.warning("Zulip HTTP error, retrying...")
-                        time.sleep(2)
+                        time.sleep(reconnect.delay())
                         break
 
                     if result.get("code") == "BAD_EVENT_QUEUE_ID":
@@ -266,9 +274,10 @@ class ZulipChannel(BaseChannel):
                             "Zulip get_events unexpected result: {}",
                             result.get("msg", result.get("result")),
                         )
-                        time.sleep(2)
+                        time.sleep(reconnect.delay())
                         continue
 
+                    reconnect.reset()
                     for event in result.get("events", []):
                         self._last_event_id = max(
                             self._last_event_id, event.get("id", self._last_event_id)
@@ -278,7 +287,7 @@ class ZulipChannel(BaseChannel):
 
             except Exception as e:
                 logger.error("Zulip listener error: {}", e)
-                time.sleep(5)
+                time.sleep(reconnect.delay())
 
         logger.info("Zulip listener stopped")
 

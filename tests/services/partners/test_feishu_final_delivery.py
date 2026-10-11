@@ -107,8 +107,10 @@ async def test_abandoned_turn_reaction_expires_without_another_message() -> None
     channel._remove_reaction_sync = MagicMock(return_value=True)
 
     await channel._add_reaction("om_user")
-    expiry = channel._reaction_expiry_tasks["om_user"]
-    await asyncio.wait_for(expiry, timeout=1)
+    # Expiry now runs on the single reaper task; give it a moment to fire.
+    reaper = channel._reaction_reaper_task
+    assert reaper is not None and not reaper.done()
+    await asyncio.sleep(0.1)
 
     channel._remove_reaction_sync.assert_called_once_with("om_user", "reaction-1")
     assert "om_user" not in channel._working_reactions

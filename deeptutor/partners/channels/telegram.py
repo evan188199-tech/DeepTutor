@@ -309,6 +309,7 @@ class TelegramChannel(BaseChannel):
         self._stream_bufs: dict[str, _StreamBuf] = {}  # chat_id -> streaming state
         self._bot_user_id: int | None = None
         self._bot_username: str | None = None
+        self._stop_event: asyncio.Event | None = None
 
     def is_allowed(self, sender_id: str) -> bool:
         """Preserve Telegram's legacy id|username allowlist matching."""
@@ -416,13 +417,21 @@ class TelegramChannel(BaseChannel):
             drop_pending_updates=True,  # Ignore old messages on startup
         )
 
-        # Keep running until stopped
-        while self._running:
-            await asyncio.sleep(1)
+        # Park on a stop event instead of waking every second to poll a flag.
+        stop_event = asyncio.Event()
+        self._stop_event = stop_event
+        try:
+            if self._running:
+                await stop_event.wait()
+        finally:
+            self._stop_event = None
 
     async def stop(self) -> None:
         """Stop the Telegram bot."""
         self._running = False
+        stop_event = self._stop_event
+        if stop_event is not None:
+            stop_event.set()
 
         # Cancel all typing indicators
         for chat_id in list(self._typing_tasks):

@@ -5,6 +5,7 @@ import json
 import logging
 from pathlib import Path
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -271,3 +272,65 @@ def test_client_disconnect_is_not_reported_as_error(monkeypatch, tmp_path: Path,
     assert frame["data"]["stage"] == "completed"
     noisy = [record.getMessage() for record in caplog.records]
     assert not noisy, f"disconnect path produced warning-level logs: {noisy}"
+
+
+class _AckingWebsocket:
+    """Client that answers the drain with an inbound frame after a delay."""
+
+    def __init__(self, delay: float = 0.0) -> None:
+        self._delay = delay
+        self.received = False
+
+    async def receive_text(self) -> str:
+        await asyncio.sleep(self._delay)
+        self.received = True
+        return "ack"
+
+
+class _SilentWebsocket:
+    async def receive_text(self) -> str:
+        await asyncio.sleep(5)
+        return "never"
+
+
+class _VanishedWebsocket:
+    async def receive_text(self) -> str:
+        raise knowledge_router.WebSocketDisconnect()
+
+
+@pytest.mark.asyncio
+async def test_drain_before_close_returns_promptly_on_client_ack() -> None:
+    websocket = _AckingWebsocket(delay=0.05)
+    loop = asyncio.get_running_loop()
+    started_at = loop.time()
+    await knowledge_router._drain_before_close(websocket, drain_seconds=3.0)
+    # The ACK released the drain far below the full window.
+    assert loop.time() - started_at < 1.0
+    assert websocket.received
+
+
+@pytest.mark.asyncio
+async def test_drain_before_close_waits_at_most_the_window() -> None:
+    loop = asyncio.get_running_loop()
+    started_at = loop.time()
+    await knowledge_router._drain_before_close(_SilentWebsocket(), drain_seconds=0.1)
+    elapsed = loop.time() - started_at
+    assert 0.08 <= elapsed < 1.0
+
+
+@pytest.mark.asyncio
+async def test_drain_before_close_swallows_disconnect() -> None:
+    loop = asyncio.get_running_loop()
+    started_at = loop.time()
+    await knowledge_router._drain_before_close(_VanishedWebsocket(), drain_seconds=3.0)
+    assert loop.time() - started_at < 1.0
+
+
+def test_progress_close_drain_seconds_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert knowledge_router._progress_close_drain_seconds() == 3.0
+    monkeypatch.setenv("DEEPTUTOR_KNOWLEDGE_PROGRESS_DRAIN_S", "0.5")
+    assert knowledge_router._progress_close_drain_seconds() == 0.5
+    monkeypatch.setenv("DEEPTUTOR_KNOWLEDGE_PROGRESS_DRAIN_S", "not-a-number")
+    assert knowledge_router._progress_close_drain_seconds() == 3.0
+    monkeypatch.setenv("DEEPTUTOR_KNOWLEDGE_PROGRESS_DRAIN_S", "-1")
+    assert knowledge_router._progress_close_drain_seconds() == 3.0

@@ -4,9 +4,11 @@ import asyncio
 import base64
 from collections import OrderedDict
 from dataclasses import dataclass, field
+import heapq
 from http import HTTPStatus
 import importlib.util
 import inspect
+import itertools
 import json
 import os
 import re
@@ -22,6 +24,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.backoff import ReconnectBackoff
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_markdown_table_row
@@ -444,12 +447,18 @@ class FeishuChannel(BaseChannel):
         self._confirmed_streams: OrderedDict[str, None] = OrderedDict()
         self._working_reactions: OrderedDict[str, tuple[str, float]] = OrderedDict()
         self._reaction_cleanup_tasks: dict[tuple[str, str], asyncio.Task[None]] = {}
-        self._reaction_expiry_tasks: dict[str, asyncio.Task[None]] = {}
+        # One reaper handles every working-reaction TTL instead of one
+        # long-lived sleeping task per message (see _reaction_expiry_reaper).
+        self._reaction_expiry_heap: list[tuple[float, int, str, tuple[str, float]]] = []
+        self._reaction_expiry_seq = itertools.count()
+        self._reaction_expiry_wakeup: asyncio.Event = asyncio.Event()
+        self._reaction_reaper_task: asyncio.Task[None] | None = None
         self._model_pickers: OrderedDict[str, _ModelPicker] = OrderedDict()
         # chat_id → message id of the "thinking…" notice awaiting an answer.
         self._thinking_notices: OrderedDict[str, str] = OrderedDict()
         self._model_picker_lock = Lock()
         self._loop: asyncio.AbstractEventLoop | None = None
+        self._stop_event: asyncio.Event | None = None
 
     @staticmethod
     def _stream_key(chat_id: str, metadata: dict[str, Any] | None = None) -> str:
@@ -581,8 +590,12 @@ class FeishuChannel(BaseChannel):
             # Patch the module-level loop used by lark's ws Client.start()
             _lark_ws_client.loop = ws_loop
             ws_client = self._ws_client
+            # Jittered, escalating retry delay (reset after a stable session)
+            # replaces the fixed 5s so reconnect storms do not run in lockstep.
+            reconnect = ReconnectBackoff(base=5.0, cap=60.0)
             try:
                 while self._running:
+                    session_started_at = time.monotonic()
                     try:
                         self.set_setup_state("connecting")
                         ws_client.start()
@@ -595,7 +608,9 @@ class FeishuChannel(BaseChannel):
                             message="Channel connection failed; the listener will retry.",
                         )
                     if self._running:
-                        time.sleep(5)
+                        if time.monotonic() - session_started_at >= 30.0:
+                            reconnect.reset()
+                        time.sleep(reconnect.delay())
             finally:
                 # ``start()`` leaves ping/receive tasks pending; close them and
                 # the socket before the loop dies so Feishu sees this listener
@@ -614,9 +629,14 @@ class FeishuChannel(BaseChannel):
         logger.info("No public IP required - using WebSocket to receive events")
         self.set_setup_state("running")
 
-        # Keep running until stopped
-        while self._running:
-            await asyncio.sleep(1)
+        # Park on a stop event instead of waking every second to poll a flag.
+        stop_event = asyncio.Event()
+        self._stop_event = stop_event
+        try:
+            if self._running:
+                await stop_event.wait()
+        finally:
+            self._stop_event = None
 
     def _request_ws_shutdown(self) -> None:
         """Ask the listener thread's WebSocket client to drop its connection.
@@ -646,6 +666,9 @@ class FeishuChannel(BaseChannel):
         Reference: https://github.com/larksuite/oapi-sdk-python/blob/v2_main/lark_oapi/ws/client.py#L86
         """
         self._running = False
+        stop_event = self._stop_event
+        if stop_event is not None:
+            stop_event.set()
         self._request_ws_shutdown()
         thread = self._ws_thread
         if thread is not None and thread.is_alive():
@@ -659,16 +682,17 @@ class FeishuChannel(BaseChannel):
         self._ws_thread = None
         self._ws_client = None
         self._confirmed_streams.clear()
-        cleanup_tasks = [
-            *self._reaction_cleanup_tasks.values(),
-            *self._reaction_expiry_tasks.values(),
-        ]
+        cleanup_tasks = list(self._reaction_cleanup_tasks.values())
+        reaper = self._reaction_reaper_task
+        self._reaction_reaper_task = None
+        if reaper is not None:
+            cleanup_tasks.append(reaper)
         for task in cleanup_tasks:
             task.cancel()
         if cleanup_tasks:
             await asyncio.gather(*cleanup_tasks, return_exceptions=True)
         self._reaction_cleanup_tasks.clear()
-        self._reaction_expiry_tasks.clear()
+        self._reaction_expiry_heap.clear()
         self._working_reactions.clear()
         with self._model_picker_lock:
             self._model_pickers.clear()
@@ -743,9 +767,6 @@ class FeishuChannel(BaseChannel):
             ):
                 break
             message_id, receipt = self._working_reactions.popitem(last=False)
-            expiry_task = self._reaction_expiry_tasks.pop(message_id, None)
-            if expiry_task:
-                expiry_task.cancel()
             expired.append((message_id, receipt))
         return expired
 
@@ -778,22 +799,47 @@ class FeishuChannel(BaseChannel):
     def _clear_reaction_receipt(self, message_id: str, receipt: tuple[str, float]) -> None:
         if self._working_reactions.get(message_id) != receipt:
             return
+        # Any queued reaper entry for this receipt becomes stale; the reaper
+        # re-validates against _working_reactions before finishing.
         self._working_reactions.pop(message_id, None)
-        expiry_task = self._reaction_expiry_tasks.pop(message_id, None)
-        if expiry_task and expiry_task is not asyncio.current_task():
-            expiry_task.cancel()
 
     def _schedule_reaction_expiry(self, message_id: str, receipt: tuple[str, float]) -> None:
-        async def expire() -> None:
-            try:
-                await asyncio.sleep(self._WORKING_REACTION_TTL)
+        expiry_at = receipt[1] + self._WORKING_REACTION_TTL
+        heapq.heappush(
+            self._reaction_expiry_heap,
+            (expiry_at, next(self._reaction_expiry_seq), message_id, receipt),
+        )
+        reaper = self._reaction_reaper_task
+        if reaper is None or reaper.done():
+            self._reaction_reaper_task = asyncio.create_task(self._reaction_expiry_reaper())
+        self._reaction_expiry_wakeup.set()
+
+    async def _reaction_expiry_reaper(self) -> None:
+        """Expire working reactions from one task instead of one sleeper each.
+
+        Wakes exactly when the next receipt is due (or when a new earlier
+        deadline is scheduled), so N in-flight messages no longer pin N
+        hour-long sleeping tasks.
+        """
+        while True:
+            heap = self._reaction_expiry_heap
+            now = time.monotonic()
+            while heap and heap[0][0] <= now:
+                _, _, message_id, receipt = heapq.heappop(heap)
                 if self._working_reactions.get(message_id) == receipt:
                     await self._finish_reaction(message_id)
-            finally:
-                if self._reaction_expiry_tasks.get(message_id) is asyncio.current_task():
-                    self._reaction_expiry_tasks.pop(message_id, None)
-
-        self._reaction_expiry_tasks[message_id] = asyncio.create_task(expire())
+            delay: float | None = None
+            if heap:
+                delay = max(0.0, heap[0][0] - time.monotonic())
+            if delay:
+                try:
+                    await asyncio.wait_for(self._reaction_expiry_wakeup.wait(), timeout=delay)
+                except asyncio.TimeoutError:
+                    pass
+                self._reaction_expiry_wakeup.clear()
+            else:
+                await self._reaction_expiry_wakeup.wait()
+                self._reaction_expiry_wakeup.clear()
 
     def _schedule_reaction_cleanup(self, message_id: str, receipt: tuple[str, float]) -> None:
         key = (message_id, receipt[0])
@@ -844,9 +890,6 @@ class FeishuChannel(BaseChannel):
         if reaction_id:
             previous = self._working_reactions.get(message_id)
             if previous:
-                previous_expiry = self._reaction_expiry_tasks.pop(message_id, None)
-                if previous_expiry:
-                    previous_expiry.cancel()
                 self._schedule_reaction_cleanup(message_id, previous)
             receipt = (reaction_id, time.monotonic())
             self._working_reactions[message_id] = receipt

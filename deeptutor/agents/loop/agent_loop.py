@@ -36,6 +36,7 @@ from contextlib import suppress
 from dataclasses import dataclass, field
 import json
 import logging
+import os
 from time import monotonic
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
@@ -109,6 +110,21 @@ MAX_REASONING_ONLY_RECOVERIES = 2
 # duplicate prose or tool calls.
 _PROVIDER_RETRY_DELAYS = (0.5, 1.5)
 _STREAM_IDLE_TIMEOUT_SECONDS = 90.0
+# How often the reasoning-progress heartbeat may speak up while a provider
+# stays silent. Overridable for tests/ops via env; default keeps the
+# historical 15-second cadence.
+_REASONING_PROGRESS_INTERVAL_DEFAULT_SECONDS = 15.0
+
+
+def _reasoning_progress_interval() -> float:
+    raw = os.environ.get("DEEPTUTOR_REASONING_PROGRESS_INTERVAL_S", "")
+    try:
+        value = float(raw)
+    except ValueError:
+        return _REASONING_PROGRESS_INTERVAL_DEFAULT_SECONDS
+    if value <= 0:
+        return _REASONING_PROGRESS_INTERVAL_DEFAULT_SECONDS
+    return value
 
 
 async def _bounded_stream_chunks(stream: Any):
@@ -1168,6 +1184,7 @@ class AgentLoop:
             action_started = False
             finish_reason = ""
             reasoning_progress_task: asyncio.Task[None] | None = None
+            reasoning_progress_done = asyncio.Event()
             think_filter = InlineThinkFilter()
             # DeepSeek's Anthropic-compatible endpoint can interleave
             # user-facing prose and DSML calls in one content stream.
@@ -1212,7 +1229,7 @@ class AgentLoop:
                 if action_started or reasoning_chars <= 0:
                     return
                 now = monotonic()
-                if now - last_reasoning_progress_at < 15.0:
+                if now - last_reasoning_progress_at < _reasoning_progress_interval():
                     return
                 last_reasoning_progress_at = now
                 await self.stream.progress(
@@ -1237,8 +1254,14 @@ class AgentLoop:
 
             async def _reasoning_progress_loop() -> None:
                 """Keep progress visible while a provider is between chunks."""
-                while True:
-                    await asyncio.sleep(15.0)
+                interval = _reasoning_progress_interval()
+                while not reasoning_progress_done.is_set():
+                    # Wake on the done condition instead of a blind timer, so
+                    # a finished stream ends this heartbeat promptly.
+                    try:
+                        await asyncio.wait_for(reasoning_progress_done.wait(), timeout=interval)
+                    except asyncio.TimeoutError:
+                        pass
                     if action_started or reasoning_chars <= 0:
                         return
                     await _maybe_emit_reasoning_progress()
@@ -1254,6 +1277,9 @@ class AgentLoop:
                 reasoning_progress_task = None
                 if task is None or task.done():
                     return
+                # Wake the heartbeat through its done condition first; cancel
+                # only covers a task stuck inside the progress emit itself.
+                reasoning_progress_done.set()
                 task.cancel()
                 with suppress(asyncio.CancelledError):
                     await task

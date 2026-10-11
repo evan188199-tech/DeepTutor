@@ -15,6 +15,7 @@ from pydantic import Field
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.backoff import ReconnectBackoff
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides
 
@@ -187,8 +188,12 @@ class DingTalkChannel(BaseChannel):
 
             logger.info("DingTalk bot started with Stream Mode")
 
-            # Reconnect loop: restart stream if SDK exits or crashes
+            # Reconnect loop: restart stream if SDK exits or crashes. The
+            # delay escalates with jitter (reset after a stable session)
+            # instead of a fixed 5s, so stream storms do not retry in lockstep.
+            reconnect = ReconnectBackoff(base=5.0, cap=60.0)
             while self._running:
+                session_started_at = time.monotonic()
                 try:
                     self.set_setup_state("running")
                     await self._client.start()
@@ -199,8 +204,11 @@ class DingTalkChannel(BaseChannel):
                         message="Channel connection failed; the listener will retry.",
                     )
                 if self._running:
-                    logger.info("Reconnecting DingTalk stream in 5 seconds...")
-                    await asyncio.sleep(5)
+                    if time.monotonic() - session_started_at >= 30.0:
+                        reconnect.reset()
+                    delay = reconnect.delay()
+                    logger.info("Reconnecting DingTalk stream in {:.0f}s...", delay)
+                    await asyncio.sleep(delay)
 
         except Exception as e:
             logger.exception("Failed to start DingTalk channel: {}", e)

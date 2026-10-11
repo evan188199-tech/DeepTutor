@@ -14,6 +14,7 @@ import websockets
 
 from deeptutor.partners.bus.events import OutboundMessage
 from deeptutor.partners.bus.queue import MessageBus
+from deeptutor.partners.channels.backoff import ReconnectBackoff
 from deeptutor.partners.channels.base import BaseChannel
 from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_message
@@ -22,6 +23,9 @@ DISCORD_API_BASE = "https://discord.com/api/v10"
 MAX_ATTACHMENT_BYTES = 20 * 1024 * 1024  # 20MB
 MAX_MESSAGE_LEN = 2000  # Discord message character limit
 _STREAM_EDIT_INTERVAL = 0.8  # min seconds between message edits
+# A gateway session that lived at least this long counts as stable, so the
+# reconnect ladder restarts from its base delay instead of staying escalated.
+_STABLE_SESSION_SECONDS = 30.0
 
 
 @dataclass
@@ -84,7 +88,11 @@ class DiscordChannel(BaseChannel):
         self._running = True
         self._http = httpx.AsyncClient(timeout=30.0)
 
+        # Escalating, jittered reconnect delay (reset after a stable session)
+        # replaces the fixed 5s so gateway storms do not retry in lockstep.
+        reconnect = ReconnectBackoff(base=5.0, cap=60.0)
         while self._running:
+            session_started_at = time.monotonic()
             try:
                 self.set_setup_state("connecting")
                 logger.info("Connecting to Discord gateway...")
@@ -100,8 +108,11 @@ class DiscordChannel(BaseChannel):
                     message="Channel connection failed; the listener will retry.",
                 )
                 if self._running:
-                    logger.info("Reconnecting to Discord gateway in 5 seconds...")
-                    await asyncio.sleep(5)
+                    if time.monotonic() - session_started_at >= _STABLE_SESSION_SECONDS:
+                        reconnect.reset()
+                    delay = reconnect.delay()
+                    logger.info("Reconnecting to Discord gateway in {:.0f}s...", delay)
+                    await asyncio.sleep(delay)
 
     async def stop(self) -> None:
         """Stop the Discord channel."""

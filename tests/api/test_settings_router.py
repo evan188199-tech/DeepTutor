@@ -1913,3 +1913,17 @@ def test_llm_provider_choices_include_opper() -> None:
 
     assert llm["opper"]["label"] == "Opper"
     assert llm["opper"]["base_url"] == "https://api.opper.ai/v3/compat"
+
+
+def test_service_test_stream_interval_env_tuning(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The config-test SSE cadence defaults to 0.35s and follows its env knob."""
+    monkeypatch.delenv("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", raising=False)
+    assert settings_router._service_test_stream_interval() == 0.35
+    monkeypatch.setenv("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", "2.5")
+    assert settings_router._service_test_stream_interval() == 2.5
+    monkeypatch.setenv("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", "junk")
+    assert settings_router._service_test_stream_interval() == 0.35
+    monkeypatch.setenv("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", "0")
+    assert settings_router._service_test_stream_interval() == 0.35
+    monkeypatch.setenv("DEEPTUTOR_CONFIG_TEST_STREAM_INTERVAL_S", "-1")
+    assert settings_router._service_test_stream_interval() == 0.35
