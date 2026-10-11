@@ -31,8 +31,6 @@ from deeptutor.agents.research.utils.citation_manager import CitationManager
 from deeptutor.core.context import UnifiedContext
 from deeptutor.runtime.stream_bus import StreamBus
 
-pytestmark = pytest.mark.asyncio
-
 
 class _FakeLLM:
     binding = "openai"
@@ -79,6 +77,7 @@ def _events_of_type(stream: StreamBus, type_value: str):
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_run_prepares_tools_and_delegates_to_inner() -> None:
     pipeline = _make_pipeline()
     inner_calls: list[dict] = []
@@ -111,6 +110,7 @@ async def test_run_prepares_tools_and_delegates_to_inner() -> None:
     assert inner_calls[0]["confirmed_outline"] is None
 
 
+@pytest.mark.asyncio
 async def test_run_failure_emits_visible_error_and_reraises() -> None:
     pipeline = _make_pipeline()
     stream = StreamBus()
@@ -141,6 +141,7 @@ async def test_run_failure_emits_visible_error_and_reraises() -> None:
     assert contents[-1].content.endswith("provider exploded")
 
 
+@pytest.mark.asyncio
 async def test_emit_visible_failure_maps_incomplete_report_to_reporting_stage() -> None:
     pipeline = _make_pipeline()
     stream = StreamBus()
@@ -156,6 +157,7 @@ async def test_emit_visible_failure_maps_incomplete_report_to_reporting_stage() 
     assert "report stopped" in contents[-1].content
 
 
+@pytest.mark.asyncio
 async def test_emit_visible_failure_generic_error_stays_on_researching_stage() -> None:
     pipeline = _make_pipeline()
     stream = StreamBus()
@@ -172,6 +174,7 @@ async def test_emit_visible_failure_generic_error_stays_on_researching_stage() -
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_unconfirmed_outline_runs_rephrase_then_decompose_and_previews() -> None:
     pipeline = _make_pipeline()
     stream = StreamBus()
@@ -209,6 +212,7 @@ async def test_unconfirmed_outline_runs_rephrase_then_decompose_and_previews() -
     assert not _events_of_type(stream, "result")
 
 
+@pytest.mark.asyncio
 async def test_rephrase_disabled_skips_phase_one() -> None:
     pipeline = _make_pipeline(runtime_config={"planning": {"rephrase": {"enabled": False}}})
     stream = StreamBus()
@@ -244,6 +248,7 @@ async def test_rephrase_disabled_skips_phase_one() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.asyncio
 async def test_rephrase_returns_raw_topic_when_ask_user_missing() -> None:
     pipeline = _make_pipeline()
 
@@ -261,10 +266,11 @@ async def test_rephrase_returns_raw_topic_when_ask_user_missing() -> None:
     assert refined == "raw"
 
 
+@pytest.mark.asyncio
 async def test_rephrase_loop_failure_falls_back_to_raw_topic() -> None:
     pipeline = _make_pipeline()
 
-    async def fake_registry_get(name):
+    def fake_registry_get(name):
         return object() if name == "ask_user" else None
 
     pipeline.registry.get = fake_registry_get
@@ -283,10 +289,11 @@ async def test_rephrase_loop_failure_falls_back_to_raw_topic() -> None:
     assert refined == "raw topic"
 
 
+@pytest.mark.asyncio
 async def test_rephrase_empty_finish_text_falls_back_to_raw_topic() -> None:
     pipeline = _make_pipeline()
 
-    async def fake_registry_get(name):
+    def fake_registry_get(name):
         return object() if name == "ask_user" else None
 
     pipeline.registry.get = fake_registry_get
@@ -323,12 +330,14 @@ async def _decompose_with_payload(pipeline: ResearchPipeline, data) -> list[SubT
         )
 
 
+@pytest.mark.asyncio
 async def test_decompose_unusable_payload_degrades_to_single_topic() -> None:
     pipeline = _make_pipeline()
     outline = await _decompose_with_payload(pipeline, None)
     assert outline == [SubTopicItem(title="topic", overview="")]
 
 
+@pytest.mark.asyncio
 async def test_parse_outline_accepts_arrays_dicts_and_strings_with_cap() -> None:
     pipeline = _make_pipeline(runtime_config={"planning": {"decompose": {"initial_subtopics": 2}}})
     outline = pipeline._parse_outline(
@@ -398,6 +407,7 @@ async def _drive(
     )
 
 
+@pytest.mark.asyncio
 async def test_queue_runs_series_blocks_one_at_a_time(tmp_path) -> None:
     pipeline = _make_pipeline(runtime_config={"researching": {"execution_mode": "series"}})
     recorder: list[tuple[str, str]] = []
@@ -414,6 +424,7 @@ async def test_queue_runs_series_blocks_one_at_a_time(tmp_path) -> None:
     assert [rb.knowledge for rb in researched] == ["knowledge block_1", "knowledge block_2"]
 
 
+@pytest.mark.asyncio
 async def test_queue_parallel_batch_runs_blocks_concurrently(tmp_path) -> None:
     pipeline = _make_pipeline(
         runtime_config={"researching": {"execution_mode": "parallel", "max_parallel_topics": 3}}
@@ -434,6 +445,7 @@ async def test_queue_parallel_batch_runs_blocks_concurrently(tmp_path) -> None:
     assert in_flight["max"] == 2
 
 
+@pytest.mark.asyncio
 async def test_queue_picks_up_appended_child_after_parent(tmp_path) -> None:
     pipeline = _make_pipeline(runtime_config={"researching": {"execution_mode": "series"}})
     recorder: list[tuple[str, str]] = []
@@ -452,6 +464,7 @@ async def test_queue_picks_up_appended_child_after_parent(tmp_path) -> None:
     assert researched[-1].knowledge == "knowledge block_2"
 
 
+@pytest.mark.asyncio
 async def test_queue_backfills_empty_knowledge_when_block_raises(tmp_path) -> None:
     pipeline = _make_pipeline(runtime_config={"researching": {"execution_mode": "series"}})
     queue = DynamicTopicQueue("orch-q2", max_length=8)
@@ -551,6 +564,7 @@ def _client_raising():
     return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
 
 
+@pytest.mark.asyncio
 async def test_summarise_tool_result_empty_answer_short_circuits() -> None:
     pipeline = _make_pipeline()
     client = _client_returning([SimpleNamespace(message=SimpleNamespace(content="boom"))])
@@ -561,6 +575,7 @@ async def test_summarise_tool_result_empty_answer_short_circuits() -> None:
     assert result == ""
 
 
+@pytest.mark.asyncio
 async def test_summarise_tool_result_falls_back_to_raw_slice_on_error() -> None:
     pipeline = _make_pipeline()
     raw = "x" * 800
@@ -571,6 +586,7 @@ async def test_summarise_tool_result_falls_back_to_raw_slice_on_error() -> None:
     assert result == raw[:600]
 
 
+@pytest.mark.asyncio
 async def test_summarise_tool_result_strips_finish_label() -> None:
     pipeline = _make_pipeline()
     client = _client_returning(
@@ -583,6 +599,7 @@ async def test_summarise_tool_result_strips_finish_label() -> None:
     assert result == "Clean summary."
 
 
+@pytest.mark.asyncio
 async def test_summarise_tool_result_empty_content_uses_raw_slice() -> None:
     pipeline = _make_pipeline()
     client = _client_returning([])

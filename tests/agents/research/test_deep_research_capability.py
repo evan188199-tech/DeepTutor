@@ -69,7 +69,7 @@ def _install(monkeypatch: pytest.MonkeyPatch, result: dict[str, Any]) -> None:
     monkeypatch.setattr(capability_module, "load_config_with_main", lambda _name: {})
 
 
-async def _events_of_type(stream: StreamBus, type_value: str):
+def _events_of_type(stream: StreamBus, type_value: str):
     return [event for event in stream._history if event.type.value == type_value]
 
 
@@ -110,7 +110,7 @@ async def test_first_call_emits_outline_preview_with_research_config(
     assert fake.run_calls[0]["topic"] == "original question"
     assert fake.run_calls[0]["confirmed_outline"] is None
 
-    results = await _events_of_type(stream, "result")
+    results = _events_of_type(stream, "result")
     assert len(results) == 1
     payload = results[0].metadata
     assert payload["outline_preview"] is True
@@ -152,7 +152,7 @@ async def test_confirmed_outline_is_converted_to_sub_topic_items(
     assert [item.title for item in confirmed] == ["A", "B"]
     assert [item.overview for item in confirmed] == ["", "b overview"]
 
-    results = await _events_of_type(stream, "result")
+    results = _events_of_type(stream, "result")
     assert results == []
 
 
@@ -178,7 +178,7 @@ async def test_first_call_forwards_manual_knobs_in_research_config(
 
     await capability.run(context, stream)
 
-    results = await _events_of_type(stream, "result")
+    results = _events_of_type(stream, "result")
     assert results[0].metadata["research_config"] == {
         "mode": "comparison",
         "depth": "manual",
@@ -219,4 +219,4 @@ async def test_invalid_request_config_raises_before_pipeline(
         await capability.run(context, stream)
 
     assert _FakePipeline.instances == []
-    assert await _events_of_type(stream, "result") == []
+    assert _events_of_type(stream, "result") == []
