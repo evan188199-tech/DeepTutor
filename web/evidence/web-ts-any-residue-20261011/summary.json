@@ -1,0 +1,49 @@
+{
+ "primary_total": 137,
+ "by_family": {
+  "annot-any": 115,
+  "as-any": 21,
+  "ts-expect-error": 1
+ },
+ "by_cause": {
+  "third-party-integration": 100,
+  "boundary": 36,
+  "app-bypass": 1
+ },
+ "by_dir": {
+  "app": {
+   "annot-any": 1
+  },
+  "components": {
+   "annot-any": 99,
+   "as-any": 1
+  },
+  "tests": {
+   "as-any": 20,
+   "annot-any": 15,
+   "ts-expect-error": 1
+  }
+ },
+ "by_file": {
+  "components/common/RichMarkdownRenderer.tsx": 51,
+  "components/common/SimpleMarkdownRenderer.tsx": 46,
+  "tests/settings-context-ui-sync.test.ts": 8,
+  "tests/e2e/settings-navigation.audit.ts": 7,
+  "tests/settings-context-boolean-hydration.test.ts": 7,
+  "tests/app-shell-storage-code-block.test.ts": 4,
+  "tests/code-block-themes.test.ts": 4,
+  "components/common/RichInlineMarkdown.tsx": 3,
+  "tests/model-settings-workflow.spec.tsx": 3,
+  "app/(workspace)/learning/books/components/LearningCapturePanel.tsx": 1,
+  "tests/settings/settings-store.test.ts": 1,
+  "tests/settings-unified-draft.spec.tsx": 1,
+  "tests/subagent-settings-apply.spec.tsx": 1
+ },
+ "aux_total": 8,
+ "aux_by_file": {
+  "components/common/RichMarkdownRenderer.tsx": 4,
+  "components/common/SimpleMarkdownRenderer.tsx": 2,
+  "shared/api/client.ts": 1,
+  "tests/settings-unified-draft.spec.tsx": 1
+ }
+}

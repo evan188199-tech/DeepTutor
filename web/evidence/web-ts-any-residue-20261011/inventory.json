@@ -1,0 +1,1328 @@
+{
+ "generated_by": "scan_ts_any_residue.py",
+ "families": [
+  "annot-any",
+  "as-any",
+  "ts-ignore",
+  "ts-expect-error",
+  "aux-any-pos"
+ ],
+ "dropped_prose_matches": 2,
+ "notes": [
+  "primary families: annot-any (`: any`), as-any (`as any`),",
+  "ts-ignore, ts-expect-error; aux-any-pos = other explicit any",
+  "positions (generics/defaults), secondary signal only.",
+  "prose filter drops `any` followed by a letter (English text).",
+  "cause labels are heuristic; per-entry reason documents the rule."
+ ],
+ "primary": [
+  {
+   "file": "app/(workspace)/learning/books/components/LearningCapturePanel.tsx",
+   "line": 25,
+   "family": "annot-any",
+   "cause": "app-bypass",
+   "reason": "app-code suppression, no boundary/third-party marker",
+   "scope": "tsconfig",
+   "snippet": "t: (key: string, values?: any) => string,"
+  },
+  {
+   "file": "components/common/RichInlineMarkdown.tsx",
+   "line": 70,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const remarkPlugins: any[] = [remarkGfm];"
+  },
+  {
+   "file": "components/common/RichInlineMarkdown.tsx",
+   "line": 72,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const rehypePlugins: any[] = plugins.rehypeKatex ? [plugins.rehypeKatex] : [];"
+  },
+  {
+   "file": "components/common/RichInlineMarkdown.tsx",
+   "line": 78,
+   "family": "as-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "components={COMPONENTS as any}"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 68,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "function sourceLineAttr(node: any): { \"data-source-line\"?: number } {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 187,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "p: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 190,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h1: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 193,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h2: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 196,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h3: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 199,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h4: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 202,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h5: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 205,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h6: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 208,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "strong: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 213,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "em: ({ node, children }: any) => <em className=\"italic\">{children}</em>,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 214,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "a: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 217,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "blockquote: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 222,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "pre: ({ children }: any) => <>{children}</>,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 223,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "code: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 230,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ul: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 233,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ol: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 236,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "li: ({ node, ...props }: any) => <li className=\"my-0.5 pl-0\" {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 237,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "table: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 245,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "thead: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 248,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "th: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 254,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tbody: ({ node, ...props }: any) => <tbody {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 255,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "td: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 261,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tr: ({ node, ...props }: any) => <tr {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 262,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "input: ({ node, type, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 277,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "details: ({ node, children }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 279,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "summary: ({ node, children }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 283,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const lineAttr = (node: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 287,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h1: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 302,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h2: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 317,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h3: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 332,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h4: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 347,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h5: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 362,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h6: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 381,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "p: ({ node, ...props }: any) => <p {...lineAttr(node)} {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 382,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ul: ({ node, ...props }: any) => <ul {...lineAttr(node)} {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 383,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ol: ({ node, ...props }: any) => <ol {...lineAttr(node)} {...props} />,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 384,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "table: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 398,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "thead: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 401,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "th: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 407,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tbody: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 413,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "td: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 419,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tr: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 422,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "pre: ({ children }: any) => <>{children}</>,"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 423,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "code: ({ node, className: blockClassName, children, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 525,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "a: ({ node, href, children, title, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 603,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "img: ({ node, src, alt, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 627,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "blockquote: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 634,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "hr: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 641,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "input: ({ node, type, checked, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 657,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "details: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 666,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "summary: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 49,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "p: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 52,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h1: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 55,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h2: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 58,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h3: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 61,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h4: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 64,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h5: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 67,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h6: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 70,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "strong: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 75,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "em: ({ node, children }: any) => <em className=\"italic\">{children}</em>,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 76,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "a: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 79,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "blockquote: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 84,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "pre: ({ children }: any) => <>{children}</>,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 85,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "code: ({ node, children }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 92,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ul: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 95,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "ol: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 98,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "li: ({ node, ...props }: any) => <li className=\"my-0.5 pl-0\" {...props} />,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 99,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "table: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 107,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "thead: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 110,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "th: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 116,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tbody: ({ node, ...props }: any) => <tbody {...props} />,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 117,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "td: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 123,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tr: ({ node, ...props }: any) => <tr {...props} />,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 124,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "input: ({ node, type, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 139,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "details: ({ node, children }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 141,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "summary: ({ node, children }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 146,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h1: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 160,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h2: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 174,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h3: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 188,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h4: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 202,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h5: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 216,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "h6: ({ node, children, className: headingClassName, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 234,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "table: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 247,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "thead: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 250,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "th: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 256,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tbody: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 262,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "td: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 268,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "tr: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 271,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "pre: ({ children }: any) => <>{children}</>,"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 272,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "code: ({ node, children, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 302,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "a: ({ node, href, children, title, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 380,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "img: ({ node, src, alt, ...props }: any) => {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 402,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "blockquote: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 408,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "hr: ({ node, ...props }: any) => ("
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 411,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "input: ({ node, type, checked, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 427,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "details: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 436,
+   "family": "annot-any",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "summary: ({ node, children, ...props }: any) =>"
+  },
+  {
+   "file": "tests/app-shell-storage-code-block.test.ts",
+   "line": 31,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "} as any;"
+  },
+  {
+   "file": "tests/app-shell-storage-code-block.test.ts",
+   "line": 133,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let dispatchedEvents: Array<{ type: string; detail: any }> = [];"
+  },
+  {
+   "file": "tests/app-shell-storage-code-block.test.ts",
+   "line": 135,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any).dispatchEvent = (event: any) => {"
+  },
+  {
+   "file": "tests/app-shell-storage-code-block.test.ts",
+   "line": 135,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any).dispatchEvent = (event: any) => {"
+  },
+  {
+   "file": "tests/code-block-themes.test.ts",
+   "line": 60,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const undefinedStyle = getCodeBlockTheme(undefined as any);"
+  },
+  {
+   "file": "tests/code-block-themes.test.ts",
+   "line": 77,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const minimalStyle = {} as any;"
+  },
+  {
+   "file": "tests/code-block-themes.test.ts",
+   "line": 87,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "} as any;"
+  },
+  {
+   "file": "tests/code-block-themes.test.ts",
+   "line": 103,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "} as any;"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 74,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let parked: any = options.savedDraft"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 85,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const writes: { path: string; body: any }[] = [];"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 105,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let json: any;"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 435,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let diagnosticCatalog: any;"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 503,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const probes: any[] = [];"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 570,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "expect(state.draft().catalog.services.llm.profiles.every((profile: any) => !profile.discovery)).toBe(true);"
+  },
+  {
+   "file": "tests/e2e/settings-navigation.audit.ts",
+   "line": 598,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const probes: any[] = [];"
+  },
+  {
+   "file": "tests/model-settings-workflow.spec.tsx",
+   "line": 16,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const mocks = vi.hoisted(() => ({ settings: {} as any, fetch: vi.fn() }));"
+  },
+  {
+   "file": "tests/model-settings-workflow.spec.tsx",
+   "line": 26,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "t: (key: string, args?: any) =>"
+  },
+  {
+   "file": "tests/model-settings-workflow.spec.tsx",
+   "line": 192,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "mutateCatalog: (edit: any) => edit(draft),"
+  },
+  {
+   "file": "tests/settings/settings-store.test.ts",
+   "line": 423,
+   "family": "ts-expect-error",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "// @ts-expect-error -- simulating server-side rendering"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 29,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any).localStorage._storage[key] ?? null,"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 31,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any).localStorage._storage[key] = value;"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 34,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "delete (global.window as any).localStorage._storage[key];"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 38,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "} as any;"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 39,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any).localStorage._storage = {};"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 55,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any) = undefined as any;"
+  },
+  {
+   "file": "tests/settings-context-boolean-hydration.test.ts",
+   "line": 64,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "test global/external stub",
+   "scope": "tsconfig",
+   "snippet": "(global.window as any) = undefined as any;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 8,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let dispatchedEvents: Array<{ type: string; detail: any }> = [];"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 31,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "dispatchEvent: (event: any) => {"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 37,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "} as any;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 66,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const sync = (settingsContext as any).syncLoadedCodeBlockSettingsToAppShell;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 95,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const persist = (settingsContext as any).persistUiSettingsPatch;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 121,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const persist = (settingsContext as any).persistUiSettingsPatch;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 143,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const sync = (settingsContext as any).syncLoadedCodeBlockSettingsToAppShell;"
+  },
+  {
+   "file": "tests/settings-context-ui-sync.test.ts",
+   "line": 176,
+   "family": "as-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "const sync = (settingsContext as any).syncLoadedCodeBlockSettingsToAppShell;"
+  },
+  {
+   "file": "tests/settings-unified-draft.spec.tsx",
+   "line": 49,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let stored: any;"
+  },
+  {
+   "file": "tests/subagent-settings-apply.spec.tsx",
+   "line": 37,
+   "family": "annot-any",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let stored: any;"
+  }
+ ],
+ "aux": [
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 186,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const traceComponents: Record<string, React.ComponentType<any>> = {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 379,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const normalComponents: Record<string, React.ComponentType<any>> = {"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 704,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const p: Array<any> = [remarkGfm];"
+  },
+  {
+   "file": "components/common/RichMarkdownRenderer.tsx",
+   "line": 711,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const p: Array<any> = [];"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 48,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const traceComponents: Record<string, React.ComponentType<any>> = {"
+  },
+  {
+   "file": "components/common/SimpleMarkdownRenderer.tsx",
+   "line": 232,
+   "family": "aux-any-pos",
+   "cause": "third-party-integration",
+   "reason": "react-markdown components/plugin map",
+   "scope": "tsconfig",
+   "snippet": "const normalComponents: Record<string, React.ComponentType<any>> = {"
+  },
+  {
+   "file": "shared/api/client.ts",
+   "line": 212,
+   "family": "aux-any-pos",
+   "cause": "boundary",
+   "reason": "line touches IO/event/parse boundary",
+   "scope": "tsconfig",
+   "snippet": "export async function asJsonOrThrow(response: Response): Promise<any> {"
+  },
+  {
+   "file": "tests/settings-unified-draft.spec.tsx",
+   "line": 50,
+   "family": "aux-any-pos",
+   "cause": "boundary",
+   "reason": "tests/scripts/contracts/proxy boundary layer",
+   "scope": "tsconfig",
+   "snippet": "let resources: Record<string, any>;"
+  }
+ ],
+ "tree_head": "6cf793bd868ba5ecbe64722936d4be8fab5a01df"
+}
