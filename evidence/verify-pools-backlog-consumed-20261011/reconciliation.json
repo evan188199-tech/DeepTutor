@@ -1,0 +1,184 @@
+{
+  "reserve_dir": "/Users/xzh/services/ai-development/multica-board-agent/glm-reserve/reserve",
+  "pool": [
+    {
+      "key": "deeptour",
+      "target": 8,
+      "agents": {
+        "GLM 5.3": "f238b3e9-6266-4e28-bfa8-e9bcf3e1bac0",
+        "GLM 5.3 Flash": "660c2488-9d24-4370-a1b7-aeb2968b9708"
+      },
+      "capacity": {
+        "GLM 5.3": 2,
+        "GLM 5.3 Flash": 3
+      },
+      "harvest_executor": "GLM 5.3 Flash",
+      "queue_depth": 2
+    }
+  ],
+  "backlog_dir_inventory": {
+    "files": [
+      "deeptour.0priority.jsonl",
+      "deeptour.auto.jsonl",
+      "deeptour.consumed",
+      "deeptour.jsonl"
+    ],
+    "invisible_to_loader": []
+  },
+  "per_file": {
+    "deeptour.0priority.jsonl": {
+      "physical_lines": 11,
+      "blank": 0,
+      "data_lines": 11,
+      "accepted_unique": 11,
+      "duplicate_lines": 0,
+      "invalid_lines": 0
+    },
+    "deeptour.auto.jsonl": {
+      "physical_lines": 1112,
+      "blank": 0,
+      "data_lines": 1112,
+      "accepted_unique": 1112,
+      "duplicate_lines": 0,
+      "invalid_lines": 0
+    },
+    "deeptour.jsonl": {
+      "physical_lines": 13,
+      "blank": 0,
+      "data_lines": 13,
+      "accepted_unique": 13,
+      "duplicate_lines": 0,
+      "invalid_lines": 0
+    }
+  },
+  "totals": {
+    "data_lines": 1136,
+    "unique_backlog_keys": 1136,
+    "duplicate_lines": 0,
+    "invalid_lines": 0,
+    "conservation_ok": true,
+    "consumed_lines_nonblank": 10,
+    "consumed_unique": 10,
+    "consumed_duplicates": 0,
+    "live_keys": 1131,
+    "shadowed_by_consumed": 5,
+    "dangling_consumed": 5
+  },
+  "sets": {
+    "shadowed_by_consumed": [
+      "guide-mastery",
+      "guide-reading",
+      "up-1646",
+      "up-1647",
+      "up-1678"
+    ],
+    "dangling_consumed": [
+      "bundle-logging-runtime",
+      "bundle-logging-storage",
+      "bundle-tests-backend",
+      "bundle-tests-frontend",
+      "rework-AGEN-136"
+    ]
+  },
+  "consumed_duplicates": [],
+  "duplicate_detail": [],
+  "error_lines": [],
+  "bad_executor": [],
+  "after_issues": [],
+  "pool_issues": [],
+  "claims_info": {
+    "at": "2026-10-11T21:50:33.196772+00:00",
+    "up_keys_held_among_live": [
+      "up-1109",
+      "up-1176",
+      "up-1220",
+      "up-1222",
+      "up-1223",
+      "up-1228",
+      "up-1254",
+      "up-1256",
+      "up-1296",
+      "up-1303",
+      "up-1307",
+      "up-1326",
+      "up-1329",
+      "up-1336",
+      "up-1359",
+      "up-1389",
+      "up-1390",
+      "up-1405",
+      "up-1407",
+      "up-1410",
+      "up-1419",
+      "up-1421",
+      "up-1447",
+      "up-1476",
+      "up-1478",
+      "up-1481",
+      "up-1610",
+      "up-1611",
+      "up-1613",
+      "up-1614",
+      "up-1623",
+      "up-1624",
+      "up-1629",
+      "up-1630",
+      "up-1641",
+      "up-1646",
+      "up-1647",
+      "up-1648",
+      "up-1673",
+      "up-1676",
+      "up-1678",
+      "up-1691",
+      "up-1696",
+      "up-1779",
+      "up-1781",
+      "up-1782",
+      "up-1784",
+      "up-1792",
+      "up-1793",
+      "up-1795",
+      "up-1909",
+      "up-1912",
+      "up-431",
+      "up-971"
+    ],
+    "up_keys_not_checked": [],
+    "residual_notes": [
+      {
+        "key": "up-1646",
+        "claims": [
+          "issue closed",
+          "merged PR #1685"
+        ]
+      },
+      {
+        "key": "up-1647",
+        "claims": [
+          "issue closed",
+          "merged PR #1666",
+          "claimed by evan188199-tech in a comment on 2026-09-29"
+        ]
+      },
+      {
+        "key": "up-1678",
+        "claims": [
+          "issue closed",
+          "merged PR #1683"
+        ]
+      }
+    ]
+  },
+  "live_executor_distribution": {
+    "GLM 5.3": 295,
+    "GLM 5.3 Flash": 836
+  },
+  "inputs_sha256": {
+    "pools.json": "fc77b9ec224f833a8c0f739b422bd2408df4c98ec5e262ec099280c1485e0c3f",
+    "backlog/deeptour.jsonl": "743fcf0330de8056e0f5aa9b4860b956ae4d4f4ad3616e5344fa9423d090ee92",
+    "backlog/deeptour.0priority.jsonl": "f8dfbeb0a17209cb28fab1dcb38177fb5dccd7d9fbc98a84239f5eef67eda0a9",
+    "backlog/deeptour.auto.jsonl": "e1174e7f3386ed32842ab9cfcc8a2232d3fb5c96b980fc59b241addc20c80aac",
+    "backlog/deeptour.consumed": "b076356a2c8b813e7b3552d49ff1480fad3dfecdbdfcbc36607acbd974b7f26e"
+  }
+}
