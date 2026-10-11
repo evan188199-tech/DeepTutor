@@ -1,0 +1,191 @@
+{
+  "schema_facts": {
+    "journal_mode": "wal",
+    "auto_vacuum": 0,
+    "page_count": 51,
+    "freelist_count": 0,
+    "page_size": 4096,
+    "wal_autocheckpoint": 1000,
+    "turn_submissions_columns": [
+      "client_submission_id",
+      "workspace_id",
+      "request_digest",
+      "session_id",
+      "turn_id"
+    ]
+  },
+  "resend_fail_loop": {
+    "turn_rows_after_each_failed_resend": {
+      "attempt_1": 1,
+      "attempt_2": 2,
+      "attempt_3": 3,
+      "attempt_4": 4,
+      "attempt_5": 5
+    },
+    "turn_event_rows_after_each_failed_resend": {
+      "attempt_1": 1,
+      "attempt_2": 2,
+      "attempt_3": 3,
+      "attempt_4": 4,
+      "attempt_5": 5
+    },
+    "turn_submissions_rows_stable": 1,
+    "store_paths": [
+      "sqlite_store.py:1359-1458 (begin_turn inserts new turn per resend)",
+      "sqlite_store.py:1432-1436 (submission re-pointed to newest turn)"
+    ]
+  },
+  "regenerate_supersede": {
+    "old_assistant_message_deleted": true,
+    "turn_rows": {
+      "sessions": 1,
+      "messages": 2,
+      "turns": 2,
+      "turn_events": 1,
+      "turn_submissions": 0,
+      "notebook_entries": 0,
+      "assessment_attempts": 0
+    },
+    "dangling_turn_assistant_links": 1,
+    "note": "t1 row retained; t1.assistant_message_id points at deleted message; t1 turn_events retained (never trimmed)",
+    "store_paths": [
+      "sqlite_store.py:2236-2240 (bare DELETE, no child splice, no turn cleanup)",
+      "request_preparer.py:877-884 (regenerate deletes only the assistant row)"
+    ]
+  },
+  "delete_message_dangling_parent": {
+    "dangling_parent_rows": 1,
+    "message_path_from_surviving_leaf": [
+      "q2",
+      "a2"
+    ],
+    "context_rows_lost": 2,
+    "store_paths": [
+      "sqlite_store.py:2236-2240",
+      "sqlite_store.py:2643-2658 (walk breaks on missing parent)"
+    ]
+  },
+  "branch_delete_paired": {
+    "delete_result_turn_id_resolved": true,
+    "turns_before": 3,
+    "turns_after": 2,
+    "messages_after": 2,
+    "orphan_turn_rows_left": 1,
+    "note": "delete resolves exactly one turn (metadata stamp -> legacy fallback, sqlite_store.py:2304-2336); regenerated sibling turns survive",
+    "store_paths": [
+      "sqlite_store.py:2245-2427"
+    ]
+  },
+  "hard_delete_residuals": {
+    "rows_before_delete": {
+      "sessions": 1,
+      "messages": 2,
+      "turns": 1,
+      "turn_events": 1,
+      "turn_submissions": 1,
+      "notebook_entries": 1,
+      "assessment_attempts": 0
+    },
+    "rows_after_hard_delete": {
+      "sessions": 0,
+      "messages": 0,
+      "turns": 0,
+      "turn_events": 0,
+      "turn_submissions": 0,
+      "notebook_entries": 1,
+      "assessment_attempts": 0
+    },
+    "notebook_rows_surviving_with_session_id_null": 1,
+    "notebook_rows_referencing_deleted_turns": 1,
+    "turn_submissions_cascaded_away": true,
+    "store_paths": [
+      "sqlite_store.py:377 (notebook session_id ON DELETE SET NULL)",
+      "sqlite_store.py:424 (assessment session_id ON DELETE SET NULL)",
+      "sqlite_store.py:354-355 (turn_submissions CASCADE / SET NULL)",
+      "sqlite_store.py:1970-1977 (hard delete)"
+    ]
+  },
+  "soft_delete_forever": {
+    "rows_retained": {
+      "sessions": 3,
+      "messages": 3,
+      "turns": 0,
+      "turn_events": 0,
+      "turn_submissions": 0,
+      "notebook_entries": 0,
+      "assessment_attempts": 0
+    },
+    "listed_in_recycle_bin": 3,
+    "store_paths": [
+      "sqlite_store.py:1945-1952 (soft delete = UPDATE deleted_at only)"
+    ]
+  },
+  "no_vacuum_after_mass_delete": {
+    "pragma_before_deletes": {
+      "journal_mode": "wal",
+      "auto_vacuum": 0,
+      "page_count": 109,
+      "freelist_count": 0,
+      "page_size": 4096,
+      "wal_autocheckpoint": 1000
+    },
+    "pragma_after_deletes": {
+      "journal_mode": "wal",
+      "auto_vacuum": 0,
+      "page_count": 109,
+      "freelist_count": 58,
+      "page_size": 4096,
+      "wal_autocheckpoint": 1000
+    },
+    "file_bytes_after_deletes": 446464,
+    "wal_bytes_after_deletes": 0,
+    "note": "page_count stays (freelist); file never shrinks without manual VACUUM",
+    "store_paths": [
+      "sqlite_store.py:287 (WAL on, no auto_vacuum/vacuum anywhere)"
+    ]
+  },
+  "placeholder_sessions": {
+    "placeholder_sessions": 3,
+    "listed_as_regular_sessions": 3,
+    "rows": {
+      "sessions": 3,
+      "messages": 0,
+      "turns": 0,
+      "turn_events": 0,
+      "turn_submissions": 0,
+      "notebook_entries": 0,
+      "assessment_attempts": 0
+    },
+    "store_paths": [
+      "sqlite_store.py:1241-1266"
+    ]
+  },
+  "turn_event_volume_per_turn": {
+    "deltas_streamed": 200,
+    "turn_event_rows": 200,
+    "turn_events_payload_bytes": 102800,
+    "rows_surviving_after_completion": 200,
+    "note": "lifecycle.py:655-691 buffers every non-DONE event; flush persists all (lifecycle.py:693-765); read-side caps (event_preview.py:14-15) do not bound storage",
+    "store_paths": [
+      "executor.py:1017-1049",
+      "lifecycle.py:679-691",
+      "sqlite_store.py:1677-1755"
+    ]
+  },
+  "submission_row_after_turn_delete": {
+    "submission_turn_id_after_turn_delete": null,
+    "resend_created_new_turn": true,
+    "columns": [
+      "client_submission_id",
+      "workspace_id",
+      "request_digest",
+      "session_id",
+      "turn_id"
+    ],
+    "note": "no created_at column -> no retention/aging possible on turn_submissions",
+    "store_paths": [
+      "sqlite_store.py:350-356",
+      "sqlite_store.py:1179-1223"
+    ]
+  }
+}

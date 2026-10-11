@@ -1,0 +1,40 @@
+{
+  "card": "AGEN-1801",
+  "target": "deeptutor/services/session/sqlite_store.py",
+  "base": "origin/main 6cf793bd8 (v1.6.14, includes #1793 fix d15e35a37)",
+  "type": "scan/evidence-only",
+  "growth_paths": [
+    {"id": "W1", "path": "sqlite_store.py:1997-2064", "what": "messages rows (content/events/attachments/metadata)", "bound": "unbounded"},
+    {"id": "W2", "path": "sqlite_store.py:1359-1458", "what": "turns rows incl. one per failed resend", "bound": "unbounded"},
+    {"id": "W3", "path": "sqlite_store.py:1677-1755 + turns/lifecycle.py:655-765 + turns/executor.py:1017-1049", "what": "turn_events: every streamed delta persisted, never trimmed post-completion", "bound": "unbounded per turn"},
+    {"id": "W4", "path": "sqlite_store.py:1179-1223, 350-356", "what": "turn_submissions rows, no timestamp column", "bound": "unbounded until session hard delete"},
+    {"id": "W5", "path": "sqlite_store.py:3185+, 3342+, 3607+", "what": "notebook/assessment/reading-quiz rows; regenerate mints new turn_id UNIQUE slots", "bound": "O(saved questions x attempts)"},
+    {"id": "W6", "path": "sqlite_store.py:1241-1266", "what": "zero-message placeholder sessions", "bound": "unbounded, no cleanup"},
+    {"id": "W7", "path": "sqlite_store.py:287, 63", "what": "WAL mode + -wal/-shm/.migrate.lock sidecars", "bound": "bounded by wal_autocheckpoint=1000 (short-lived connections)"}
+  ],
+  "risks": [
+    {"id": "R1", "severity": "medium", "path": "sqlite_store.py:1380-1397,1414-1436; request_preparer.py:769-779,861-863", "risk": "failed-resend loop adds one turn + its events per retry; superseded failed turns never deleted", "trigger": "N retries of a failing submission (provider-outage loop)"},
+    {"id": "R2", "severity": "medium", "path": "request_preparer.py:877-884; sqlite_store.py:2236-2240,341", "risk": "regenerate deletes only the assistant message; superseded turn row + events retained with dangling assistant_message_id (no FK)", "trigger": "every regenerate / resend-with-replace"},
+    {"id": "R3", "severity": "medium", "path": "sqlite_store.py:2236-2240, 2630-2660", "risk": "bare delete_message leaves dangling parent_message_id; get_message_path silently truncates LLM context at the hole (measured 4->2 rows)", "trigger": "regenerate replace path or channel deletion of a row with children"},
+    {"id": "R4", "severity": "low", "path": "sqlite_store.py:2290-2336, 2376-2378", "risk": "paired branch delete resolves exactly one turn; regenerated sibling turns survive (measured 3->2)", "trigger": "deleting the user message of a regenerated exchange"},
+    {"id": "R5", "severity": "medium", "path": "sqlite_store.py:350-356, 1179-1223", "risk": "turn_submissions has no created_at; rows live until session hard delete; NULL-turn rows after turn deletion are dead weight", "trigger": "any long-lived conversation"},
+    {"id": "R6", "severity": "low", "path": "sqlite_store.py:377-378, 421-424", "risk": "notebook/assessment rows survive hard delete (SET NULL) with turn_id strings referencing deleted turns (no FK)", "trigger": "hard delete of a session that saved notebook/assessment rows"},
+    {"id": "R7", "severity": "low", "path": "sqlite_store.py:1241-1266, 2848-2851", "risk": "placeholder sessions list as regular conversations; no cleanup path", "trigger": "notebook/partner sources without chat rows"},
+    {"id": "R8", "severity": "low", "path": "sqlite_store.py:1945-1952; api/routers/sessions.py:637-647", "risk": "recycle-bin retention forever; no TTL sweep; hard delete only via explicit API", "trigger": "users delete conversations without emptying the bin"},
+    {"id": "R9", "severity": "medium", "path": "sqlite_store.py:283-292; workspace/data_migration.py:875-886", "risk": "auto_vacuum=0, no scheduled VACUUM; file never shrinks after mass delete (measured page_count 109->109, freelist 0->58)", "trigger": "sustained delete+create churn"},
+    {"id": "R10", "severity": "info", "path": "sqlite_store.py:287, 1119-1134", "risk": "WAL bounded by short-lived connections + default autocheckpoint; long-lived external read would stall checkpointing", "trigger": "backups/analytics holding read transactions"},
+    {"id": "R11", "severity": "info", "path": "executor.py:1017-1049; lifecycle.py:679-691; sqlite_store.py:1677-1755; event_preview.py:14-15", "risk": "answer text stored twice (messages.content + turn_events deltas); read caps do not bound storage (measured 102,800 payload bytes per 200-delta turn)", "trigger": "every streaming turn"},
+    {"id": "R12", "severity": "edge", "path": "app/service.py:460-494; sqlite_store.py:1545-1560", "risk": "crash-reaped turns become failed rows and join the R1 debris pool", "trigger": "worker crash mid-turn then recovery pass"}
+  ],
+  "recommendations": [
+    "recycle-bin TTL sweep reusing hard_delete cascade (R8)",
+    "delete superseded failed turns on successful resend, or startup sweep for old failed turns without assistant rows (R1/R12)",
+    "give delete_message the #912 parent splice and null dangling turns.assistant_message_id (R2/R3)",
+    "resolve all sibling turns when deleting a user message pair (R4)",
+    "add created_at to turn_submissions and expire stale/NULL-turn rows inside the #1793 reservation window (R5)",
+    "stop persisting pure CONTENT deltas or trim turn_events to the trace-preview cap post-completion, keeping result/done/usage events (R11)",
+    "enable auto_vacuum=INCREMENTAL + periodic incremental_vacuum, or offline VACUUM in the migration-window precedent (R9)",
+    "optional backfill of dead notebook turn_id refs (R6)"
+  ],
+  "dedup": "selection axis -> scan-persistence; query-plan axis -> scan-sql-query-plans; neither covered here"
+}
