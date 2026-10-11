@@ -1,0 +1,549 @@
+branch	verdict	head	date	own_files	prod_absorbed/total	prod_partial	prod_absent	meta_not_absorbed	cherry_plus	diff_shortstat_vs_base	subject
+agen-1296-web-preview-tests	missing	28c0c86f6	2026-10-09	1	0/1	0	1	0	1	1 file changed, 426 insertions(+)	test(web): cover file preview fallback renderers
+agen-1562-ima-evidence-status-tests	missing	81a3db603	2026-10-11	1	0/1	1	0	0	1	1 file changed, 106 insertions(+)	test(ima): lock retrieval status reporting for empty, failed, and partial evidence (#1500)
+agen1084-skill-frontmatter-tests	missing	7c2d1db82	2026-10-07	1	0/1	0	1	0	1	1 file changed, 262 insertions(+)	test(skill): pin frontmatter parsing contract for fences and field backfill
+agen1304-math-animator-reqcfg-tests	missing	f5b834a53	2026-10-09	1	0/1	0	1	0	1	1 file changed, 104 insertions(+)	test(math-animator): cover request config validation branches
+agen1384-data-volume-tests	missing	fae7a04e3	2026-10-10	1	0/1	0	1	0	1	1 file changed, 245 insertions(+)	test(setup): cover data_volume parse boundaries, ownership diagnostics and error contract
+agen1552-migjournal-tests	missing	877751419	2026-10-10	1	0/1	1	0	0	1	1 file changed, 81 insertions(+)	test(workspace): lock unreadable migration journal blocking and surfacing
+agen1624-zotero-search-tests	missing	25e8b6e29	2026-10-11	1	0/1	0	1	0	1	1 file changed, 290 insertions(+)	test: cover ZoteroSearchClient query construction and failure branches
+agent/agen1031-llm-clients-guide	missing	8a2c56031	2026-10-07	1	0/1	0	1	0	1	1 file changed, 115 insertions(+)	docs(llm): add non-provider_core client-surface quick guide
+agent/agen1109-verify-todo-high	no-op	57c3c72ae	2026-10-07	3	0/0	0	0	3	1	3 files changed, 135 insertions(+)	evidence: verify DT-22 18 HIGH silent handlers against origin/main v1.6.13 (read-only re-check)
+agent/agen1189-memory-graph-panel-tests	missing	53d7c2f66	2026-10-09	3	0/3	0	3	0	2	3 files changed, 802 insertions(+)	chore(web): add evidence notes for memory panel test supplement
+agent/agen350-1359-verify	missing	872c782c1	2026-10-05	1	0/1	0	1	0	1	1 file changed, 224 insertions(+)	test(app): verify ask_user queue-loss recovery end to end (#1359 chain)
+agent/agen370-broad-except-scan	no-op	2521759e9	2026-10-04	9	0/0	0	0	9	1	9 files changed, 24109 insertions(+)	evidence: broad-except three-way classification scan (AGEN-370)
+agent/agen412-docx-converter-edge-tests	missing	c2b413fa6	2026-10-04	3	0/2	0	2	1	1	3 files changed, 397 insertions(+)	test(co-writer): characterize silent error-swallow branches in docx_converter
+agent/agen421-ts-catch-scan	no-op	261f4cd2d	2026-10-04	5	0/0	0	0	5	1	5 files changed, 1277 insertions(+)	evidence: TS empty-catch / no-op .catch three-type scan (AGEN-421)
+agent/agen453-async-task-scan	no-op	7eaa855d3	2026-10-04	5	0/0	0	0	5	2	5 files changed, 1510 insertions(+)	evidence: fix SHA256SUMS repro path in AGEN-453 report
+agent/agen539-upload-residue-cleanup	missing	453069f40	2026-10-04	2	0/2	1	1	0	1	2 files changed, 161 insertions(+), 11 deletions(-)	fix(knowledge): surface leftover files when upload cleanup fails
+agent/agen548-deadcode-scan	no-op	5fc16824c	2026-10-04	7	0/0	0	0	7	1	7 files changed, 16069 insertions(+)	evidence: dead code & unused export scan (AGEN-548)
+agent/agen663-cli-surface	no-op	358bd50c3	2026-10-05	2	0/0	0	0	2	1	2 files changed, 128 insertions(+)	docs(evidence): cli surface consistency scan report (read-only audit)
+agent/agen666-dt22-drift-scan	no-op	574254286	2026-10-05	5	0/0	0	0	5	1	5 files changed, 8517 insertions(+)	chore(evidence): AGEN-666 DT-22 scan drift review vs main f07029cf
+agent/agen720-docx-style-run-fallback	missing	83c17e4cf	2026-10-05	2	0/2	2	0	0	1	2 files changed, 72 insertions(+), 4 deletions(-)	fix(co-writer): log debug fallbacks when DOCX style or strikethrough reads fail
+agent/agen724-reading-ref-failures	missing	5e136344d	2026-10-05	2	0/2	2	0	0	1	2 files changed, 150 insertions(+), 8 deletions(-)	fix(reading): report unreadable reference sources instead of dropping them
+agent/agen728-dt22-skill-read-error	missing	d72619d98	2026-10-05	2	0/2	2	0	0	1	2 files changed, 63 insertions(+), 1 deletion(-)	fix(tools): report unreadable listed skills explicitly in read_skill
+agent/agen909-broadexcept-narrow	missing	9cc4d3b7c	2026-10-06	14	0/14	14	0	0	1	14 files changed, 276 insertions(+), 20 deletions(-)	fix: narrow eleven silent broad excepts to concrete failure surfaces
+agent/agen922-file-library-delete-fix	missing	e80d9e442	2026-10-06	2	0/2	2	0	0	1	2 files changed, 159 insertions(+), 21 deletions(-)	fix(storage): surface file-library disk deletion failures
+agent/agen926-codebuddy-close	missing	1521a8adc	2026-10-06	2	0/2	2	0	0	1	2 files changed, 196 insertions(+), 7 deletions(-)	fix(llm): log CodeBuddy session close failures instead of swallowing
+agent/agen928-swallow-log-batch	missing	a93c5982d	2026-10-06	6	0/6	5	1	0	1	6 files changed, 203 insertions(+), 7 deletions(-)	fix(services): log swallowed v1.6.13 LOW failures instead of passing silently
+agent/agen931-codebuddy-auth-cancel	missing	3c7e154d7	2026-10-06	2	0/2	2	0	0	1	2 files changed, 88 insertions(+), 6 deletions(-)	fix(services): surface CodeBuddy login cancel and logout flow failures
+agent/book-engine-stage-tests	landed	6d1c39366	2026-10-03	1	1/1	0	0	0	1	1 file changed, 495 insertions(+)	test(book): cover engine stage transitions
+agent/book-engine-stage-tests-pr	landed	8f911c7e7	2026-10-03	2	1/1	0	0	1	2	2 files changed, 529 insertions(+)	docs: add PR evidence for book engine stage transition tests
+agent/dt22-file-library-deletion-tests	missing	4ef736562	2026-10-04	3	0/1	0	1	2	1	3 files changed, 247 insertions(+)	test(storage): lock file library disk-deletion failure paths
+agent/dt22-file-library-deletion-tests-v2	landed	ab21cb190	2026-10-04	1	1/1	0	0	0	0	1 file changed, 152 insertions(+)	test(storage): lock file library disk-deletion failure paths
+agent/dt419-snapshot-iso-tests	missing	7fd496adc	2026-10-04	2	0/1	0	1	1	1	2 files changed, 341 insertions(+)	test(memory): lock in _iso timestamp parse-failure behavior and downstream effects
+agent/dt605-turn-cancel-tests	missing	b19f80a48	2026-10-05	3	0/1	0	1	2	1	3 files changed, 527 insertions(+)	test(session): pin cancel_turn terminal-state contract
+agent/dt605-turn-cancel-tests-v2	missing	bc5e20fb1	2026-10-05	2	0/2	1	1	0	2	2 files changed, 428 insertions(+)	fix(session): confirm terminal row and clear execution in cancel_turn
+codex/test/mastery-study-contexts	missing	cb86565b1	2026-09-01	1	0/1	0	1	0	1	1 file changed, 35 insertions(+)	test(mastery): cover study context providers (#1161)
+codex/test/multiworker-reply-subscription	landed	4341ee9af	2026-09-11	1	1/1	0	0	0	0	1 file changed, 23 insertions(+), 5 deletions(-)	test(app): stabilize multiworker reply subscription
+codex/test/partners-auth-isolation	landed	5256305e0	2026-09-11	1	1/1	0	0	0	0	1 file changed, 4 insertions(+)	test(api): isolate partners router auth state
+codex/test/subagent-settings-draft	no-op	fc8ef2f36	2026-09-28	0	0/0	0	0	0	0	empty	test(settings): persist restored subagent drafts
+fix/tz-stable-runtime-context-tests	missing	568c522f0	2026-10-03	1	0/1	1	0	0	1	1 file changed, 16 insertions(+), 1 deletion(-)	test: pin TZ in runtime_context date assertions for cross-timezone stability
+fix/tz-stable-runtime-context-tests-v2	landed	b8e9a3ed8	2026-10-04	1	1/1	0	0	0	2	1 file changed, 7 insertions(+), 2 deletions(-)	test: freeze naive FIXED_NOW for cross-platform TZ stability
+myfork/test/chat-state-adapter-streaming-20261003	missing	1866d6e7d	2026-10-03	2	0/1	0	1	1	1	2 files changed, 820 insertions(+)	test(chat): lock ChatStateAdapter streaming state transitions
+myfork/test/chat-workspace-smoke-20261003	missing	b71ac324a	2026-10-03	1	0/1	1	0	0	1	1 file changed, 462 insertions(+)	test(web): smoke ChatWorkspace empty home, streaming turn, failure banner
+myfork/test/chat-workspace-smoke-20261003-pr	missing	05f2d13be	2026-10-03	2	0/1	1	0	1	2	2 files changed, 500 insertions(+)	docs(evidence): add PR draft for ChatWorkspace smoke tests
+myfork/test/citation-manager-payloads-20261003	missing	3a1f25c32	2026-10-03	1	0/1	0	1	0	1	1 file changed, 205 insertions(+)	test(research): cover citation_manager payload fault tolerance
+myfork/test/citation-manager-payloads-20261003-pr	missing	ed0156ece	2026-10-03	2	0/1	0	1	1	2	2 files changed, 239 insertions(+)	docs: add PR evidence for citation_manager payload fault-tolerance tests
+myfork/test/co-writer-contract-20261003	landed	a777204c2	2026-10-03	4	2/2	0	0	2	1	4 files changed, 740 insertions(+)	test(co-writer): lock router contract for CRUD, 4xx payloads, export failures
+myfork/test/feishu-message-parsing-20261003	missing	c568ad26a	2026-10-03	3	0/1	0	1	2	1	3 files changed, 592 insertions(+)	test(partners): add failing feishu message parsing/routing contract suite
+myfork/test/kb-manager-crud-edges-20261003	missing	9bafb4749	2026-10-03	2	0/1	0	1	1	1	2 files changed, 419 insertions(+)	test(knowledge): cover KnowledgeBaseManager CRUD edge cases
+myfork/test/launcher-lifecycle-20261003	missing	32327a011	2026-10-05	4	0/1	1	0	3	2	4 files changed, 540 insertions(+)	style(tests): sort imports in test_launcher_lifecycle to satisfy ruff I001
+myfork/test/memory-graph-20261003	landed	284209be6	2026-10-03	2	1/1	0	0	1	1	2 files changed, 472 insertions(+)	test(web): cover memory-graph pure functions (parseDoc/splitRef/buildGraph)
+myfork/test/memory-graph-20261003-pr	landed	e05c8d49b	2026-10-03	2	1/1	0	0	1	2	2 files changed, 469 insertions(+)	docs: add PR evidence for memory-graph pure-function coverage
+myfork/test/memory-router-contract-20261003	landed	e5475b89f	2026-10-05	1	1/1	0	0	0	2	1 file changed, 571 insertions(+)	style(tests): ruff-format memory router contract test
+myfork/test/memory-router-contract-20261003-pr	landed	6b4af6164	2026-10-03	2	1/1	0	0	1	3	2 files changed, 609 insertions(+)	docs: add PR evidence for memory router contract tests
+myfork/test/pocketbase-store-fallbacks-20261003	landed	f80c33f10	2026-10-03	5	1/1	0	0	4	1	5 files changed, 628 insertions(+)	test(session): cover pocketbase_store failure branches and pagination edges
+myfork/test/pocketbase-store-fallbacks-20261003-pr	landed	21ca2b1d4	2026-10-03	2	1/1	0	0	1	2	2 files changed, 585 insertions(+)	docs: add PR evidence for pocketbase_store fallback coverage
+myfork/test/question-pipeline-contract	missing	a1523da90	2026-10-03	2	0/1	0	1	1	1	2 files changed, 697 insertions(+)	test(question): lock quiz pipeline output contract
+myfork/test/quiz-judge-unit-20261003	drift	8aaf28d9f	2026-10-03	2	1/2	1	0	0	1	2 files changed, 897 insertions(+)	test: unit-cover the quiz-judge WebSocket router
+myfork/test/quiz-judge-unit-20261003-pr	drift	6d972d608	2026-10-03	3	1/2	1	0	1	2	3 files changed, 937 insertions(+)	docs: add PR evidence for quiz_judge unit coverage
+myfork/test/quiz-viewer-smoke-20261003	landed	4b864e1b8	2026-10-03	3	1/1	0	0	2	0	3 files changed, 433 insertions(+)	test(quiz): add QuizViewer smoke and grading interaction coverage
+myfork/test/reading-regression-20261003	missing	76e2ede8a	2026-10-03	5	0/4	0	4	1	1	5 files changed, 233 insertions(+)	test(reading): regression fixtures for #1641 markdown pagination
+myfork/test/settings-store-20261003	landed	7e1312554	2026-10-03	2	1/1	0	0	1	1	2 files changed, 721 insertions(+)	test(web): cover settings store persistence and normalization (gap 12)
+myfork/test/telegram-message-parsing-20261003	drift	7b5274279	2026-10-04	2	1/2	1	0	0	3	2 files changed, 701 insertions(+), 4 deletions(-)	test(partners): telegram suite lint polish; drop internal evidence dir
+refactor/relocate-product-tree-tests-20261007	missing	6a7f417b3	2026-10-07	51	0/51	2	49	0	1	27 files changed, 50 insertions(+), 3 deletions(-)	refactor(learning): relocate embedded test modules out of the product tree
+scan/flaky-tests-20261006	no-op	b4f54774d	2026-10-06	4	0/0	0	0	4	1	4 files changed, 263 insertions(+)	test: inventory timing-sensitive tests with reproducible scanner and TZ repro
+scan/orphan-tests-20261010	no-op	9a5ffb002	2026-10-10	6	0/0	0	0	6	1	6 files changed, 1492 insertions(+)	docs(evidence): orphan-test three-state inventory vs v1.6.14 (780 valid / 0 drift / 0 broken)
+test-turn-context-assembler	missing	ec9d64a46	2026-10-07	2	0/2	0	2	0	1	2 files changed, 107 insertions(+)	test(session): cover TurnContextAssembler store binding and lazy seam
+test-visualize-review-agent	missing	f9dccaa23	2026-10-07	1	0/1	0	1	0	1	1 file changed, 254 insertions(+)	test(visualize): pin review agent envelope contract
+test/admin-user-batches-boundaries-20261005	missing	ff65b1d05	2026-10-05	1	0/1	1	0	0	1	1 file changed, 180 insertions(+)	test(users): lock admin batch import and deletion boundary validation
+test/agen1285-coordination-protocol	missing	2b5b30ced	2026-10-09	1	0/1	0	1	0	1	1 file changed, 211 insertions(+)	test(runtime): add RuntimeCoordinator port contract and assembly failure tests
+test/agen1679-request-config	missing	2a2f6acea	2026-10-11	1	0/1	0	1	0	1	1 file changed, 140 insertions(+)	test(question): pin request_config defaults, tolerance and assembly contract
+test/agentic-labels-parsing-20261010	missing	3d5266f1e	2026-10-10	1	0/1	1	0	0	1	1 file changed, 192 insertions(+)	test(agentic): cover protocol-label parsing contracts, boundaries and repair assembly
+test/agents-notebook-text-helper-20261011	missing	9ce3733ea	2026-10-11	1	0/1	0	1	0	1	1 file changed, 57 insertions(+)	test(notebook): cover clip_text text shaping boundaries
+test/agents-research-orchestration-20261011	missing	9605117b8	2026-10-11	2	0/2	0	2	0	1	2 files changed, 820 insertions(+)	test(research): cover agents-layer orchestration entry and degrade paths
+test/agents-research-orchestration-20261011-v2	missing	dcc3793d6	2026-10-11	2	0/2	0	2	0	2	2 files changed, 837 insertions(+)	test(research): fix async mocks and module-level asyncio mark in orchestration tests
+test/agents-shared-runtime-20261006	missing	6356c8cef	2026-10-06	2	0/2	0	2	0	1	2 files changed, 561 insertions(+)	test: cover agents/_shared tool_runtime and capability_result contracts
+test/antigravity-backend-20261009	missing	be8511a04	2026-10-09	1	0/1	0	1	0	1	1 file changed, 394 insertions(+)	test: cover antigravity backend detect, stream failure and degradation branches
+test/api-router-gaps-20261005	missing	213652728	2026-10-05	2	0/2	0	2	0	1	2 files changed, 262 insertions(+)	test: pin agent-config and capabilities settings route contracts
+test/app-facade-init-dispatch	missing	e79003600	2026-10-10	1	0/1	0	1	0	1	1 file changed, 633 insertions(+)	test(app): cover facade init, dispatch, degradation and exit-code paths
+test/app-update-version-parsing-20261005	missing	e4d57df98	2026-10-05	1	0/1	0	1	0	1	1 file changed, 357 insertions(+)	test: pin app_update version comparison and release parsing behavior
+test/archive-extractor-edge-cases-20261010	missing	b50ee3229	2026-10-10	1	0/1	1	0	0	1	1 file changed, 156 insertions(+)	test(utils): cover archive extractor edge and fault branches
+test/ask-questions-loop-20261005	missing	93e796787	2026-10-05	1	0/1	0	1	0	1	1 file changed, 248 insertions(+)	test: contract tests for ask_questions loop capability
+test/ask-user-drafts-lifecycle-20261011	missing	2f8e4c6bd	2026-10-11	1	0/1	0	1	0	1	1 file changed, 242 insertions(+)	test(agents): cover ask_user draft emitter throttle and degrade branches
+test/ask-user-trace-20261006	missing	8ba28ebf4	2026-10-06	1	0/1	0	1	0	1	1 file changed, 363 insertions(+)	test(session): recover ask_user exchanges from persisted traces
+test/async-delay-sweep-20261006	missing	9f1aea13e	2026-10-06	5	0/1	1	0	4	1	5 files changed, 650 insertions(+), 2 deletions(-)	test: replace web-source scheduler fixed delay with bounded polling
+test/atomic-write-contract-20261006	missing	01c0b0476	2026-10-06	2	0/2	0	2	0	1	2 files changed, 479 insertions(+)	test(contracts): pin atomic-write persistence contract across modules
+test/attachment-store-contract-20261005	missing	ef3b3b9aa	2026-10-05	4	0/2	0	2	2	1	4 files changed, 343 insertions(+)	test(storage): add attachment store write/cleanup/read-back contract tests
+test/attachment-store-contract-20261005-v2	missing	af8d12746	2026-10-05	2	0/2	0	2	0	2	2 files changed, 270 insertions(+)	test(storage): fix import order and formatting, drop workspace artifacts
+test/attachments-router-contract	missing	9c331dc5a	2026-10-09	1	0/1	0	1	0	1	1 file changed, 141 insertions(+)	test(api): cover attachments download endpoint contract and failure branches
+test/audio-overview-pipeline-20261007	missing	1f91ecb83	2026-10-07	1	0/1	0	1	0	1	1 file changed, 382 insertions(+)	test: cover audio_overview pipeline pure-logic gates
+test/audio-overview-request-config-20261010	missing	b52cbd3ff	2026-10-09	1	0/1	0	1	0	1	1 file changed, 134 insertions(+)	test: add audio overview request config contract tests
+test/auth-matrix-20261004	missing	d2559cce6	2026-10-04	2	0/1	0	1	1	1	2 files changed, 400 insertions(+)	test(api): add auth-dependency matrix for settings, knowledge, sessions and partners routers
+test/background-leader-clock-20261006	missing	a9aabc60b	2026-10-06	1	0/1	1	0	0	1	1 file changed, 107 insertions(+), 56 deletions(-)	test: stabilize background leader lease races with amplified timings and convergence polling
+test/base-sync-20261004	missing	eba0fcb78	2026-10-04	1	0/1	0	1	0	1	1 file changed, 251 insertions(+)	test(services): cover base_sync freshness window and lifecycle
+test/bibtex-converter-table-20261009	missing	1dc34f770	2026-10-09	1	0/1	1	0	0	1	1 file changed, 301 insertions(+)	test: add table-driven regression suite for bibtex converter
+test/book-access-20261006	missing	07f036242	2026-10-06	1	0/1	0	1	0	1	1 file changed, 355 insertions(+)	test(multi_user): cover book_access resolver boundaries and default policy branches
+test/book-agents-orchestration-20261007	missing	6e7da6d34	2026-10-07	2	0/2	0	2	0	1	2 files changed, 421 insertions(+)	test(book): cover spine agent and section architect orchestration fallbacks
+test/book-animation-block-20261010	missing	091247862	2026-10-10	1	0/1	0	1	0	1	1 file changed, 468 insertions(+)	test(book): cover AnimationGenerator render contract and degradation branches
+test/book-blocks-language	missing	aaf94226c	2026-10-07	1	0/1	0	1	0	1	1 file changed, 160 insertions(+)	test: cover book blocks language re-export rules and fallbacks
+test/book-blocks-six-20261011	missing	218e57ac8	2026-10-11	1	0/1	0	1	0	1	1 file changed, 444 insertions(+)	test(book): cover six low-coverage block generators
+test/book-blocks-units-20261006	missing	88666e086	2026-10-06	2	0/2	0	2	0	1	2 files changed, 783 insertions(+)	test: cover book/blocks small-module generators and llm_writer degrade paths
+test/book-estimate-20261007	missing	a0fc0779c	2026-10-07	1	0/1	0	1	0	1	1 file changed, 145 insertions(+)	test(book): cover estimate chapter_basis depth scaling and defaults
+test/book-figure-block-20261010	missing	4b670e80e	2026-10-09	1	0/1	0	1	0	1	1 file changed, 364 insertions(+)	test(book): cover FigureGenerator contract and degradation branches
+test/book-rag-helpers-20261007	missing	3bad7024b	2026-10-07	1	0/1	0	1	0	1	1 file changed, 367 insertions(+)	test(book): cover RAG lookup helper contract
+test/book-section-blocks-20261005	missing	3c1d50660	2026-10-05	1	0/1	0	1	0	1	1 file changed, 483 insertions(+)	test: add section block structure tests for book/blocks/section.py
+test/cancel-paragons-20261007	missing	e2faf2411	2026-10-07	3	0/3	3	0	0	1	3 files changed, 267 insertions(+)	test: pin correct cancellation semantics for mcp calls, partner consults, isolated workers
+test/capability-catalog-20261007	missing	961f3df2b	2026-10-07	1	0/1	0	1	0	1	1 file changed, 259 insertions(+)	test: cover runtime capability catalog registration and lookup behavior
+test/capability-routing-20261009	missing	4f428728f	2026-10-09	1	0/1	0	1	0	1	1 file changed, 160 insertions(+)	test: cover capability routing contract and gate boundaries
+test/chat-hints-behavior-20261007	missing	d2defffaa	2026-10-07	1	0/1	1	0	0	1	1 file changed, 388 insertions(+)	test(chat): pin chat ask-hint collection, prompt assembly and sanitizer boundaries
+test/chat-history-search-20261004	missing	84c876aae	2026-10-04	4	0/1	0	1	3	1	4 files changed, 305 insertions(+)	test(session): guard chat-history search chain against #1678 regression
+test/chat-import-claude-code-20261008	missing	9dec0488d	2026-10-09	1	0/1	0	1	0	1	1 file changed, 430 insertions(+)	test(chat-import): cover the claude-code import adapter
+test/chat-message-list-smoke-20261005	missing	dc1c02f3b	2026-10-05	1	0/1	0	1	0	1	1 file changed, 307 insertions(+)	test(web): cover ChatMessageList rendering branches with smoke specs
+test/circuit-breaker-state-machine-20261011	missing	23dbc4aea	2026-10-11	1	0/1	0	1	0	1	1 file changed, 210 insertions(+)	test: cover circuit breaker probe contract and boundary transitions
+test/cli-apps-contract-20261006	missing	1b886f24c	2026-10-06	1	0/1	0	1	0	1	1 file changed, 256 insertions(+)	test: lock cli-apps router contract branches left open (install success, tolerant uninstall, localized errors, validation, pagination)
+test/cli-book-commands-20261010	missing	455c86835	2026-10-10	1	0/1	0	1	0	1	1 file changed, 151 insertions(+)	test: cover deeptutor book CLI list/health/refresh-fingerprints commands
+test/cli-build-snapshot-contract-20261007	missing	e71baf953	2026-10-07	1	0/1	0	1	0	1	1 file changed, 148 insertions(+)	test: cover the cli_apps snapshot builder contract
+test/cli-memory-commands-20261010	missing	67db84f43	2026-10-10	1	0/1	0	1	0	1	1 file changed, 215 insertions(+)	test(cli): cover memory show and clear command branches
+test/cli-notebook-commands-20261010	missing	f38d78b0d	2026-10-10	1	0/1	0	1	0	1	1 file changed, 308 insertions(+)	test(cli): cover notebook list/create/show/remove-record commands
+test/cli-session-cmd	missing	21376b5cd	2026-10-10	1	0/1	0	1	0	1	1 file changed, 181 insertions(+)	test(cli): cover session list/show/open/delete/rename commands
+test/cli-tool-result-buffer-20261010	missing	014de60c3	2026-10-10	1	0/1	0	1	0	1	1 file changed, 207 insertions(+)	test(cli): cover tool-result truncation and buffer boundaries
+test/clock-bound-behavior-20261006	missing	778b7fda2	2026-10-06	3	0/3	3	0	0	1	3 files changed, 19 insertions(+), 11 deletions(-)	test: deflake wall-clock upper bounds in search/RAG runtime tests
+test/cloud-local-providers-20261006	missing	2bbd38096	2026-10-06	2	0/2	2	0	0	1	2 files changed, 261 insertions(+), 2 deletions(-)	test(llm): cover cloud/local provider discovery failure paths and shim contracts
+test/codebuddy-http-provider-contract	missing	9ac5bb76c	2026-10-09	1	0/1	0	1	0	1	1 file changed, 390 insertions(+)	test(codebuddy): cover http provider key, auth-retry, timeout and dispatch contracts
+test/codebuddy-models-parsing-20261007	missing	15aa4ccb9	2026-10-07	1	0/1	0	1	0	1	1 file changed, 139 insertions(+)	test(codebuddy): cover model catalog wrapper parsing and fallbacks
+test/codex-auth-lifecycle-20261007	missing	3babc7a16	2026-10-07	3	0/3	0	3	0	1	3 files changed, 657 insertions(+)	test(codex-auth): pin token expiry, refresh, storage, and cold-init contracts
+test/concept-graph-render-20261009	missing	aebc4024d	2026-10-09	1	0/1	0	1	0	1	1 file changed, 334 insertions(+)	test(book): cover concept-graph render and generator payload branches
+test/config-lightrag-roles-20261009	missing	b102fef8a	2026-10-09	1	0/1	0	1	0	1	1 file changed, 268 insertions(+)	test: cover LightRAG role config contracts (config/lightrag_roles)
+test/config-manager-atomic-20261005	missing	d1a82dfff	2026-10-05	3	0/1	1	0	2	1	3 files changed, 189 insertions(+)	test(core): cover config_manager atomic write, corrupted load and concurrent merge
+test/config-origins-image-desc-20261007	missing	1904eab3a	2026-10-07	1	0/1	0	1	0	1	1 file changed, 209 insertions(+)	test: cover config origins normalization and image description selection
+test/config-readiness-branches-20261005	missing	0f2809dc6	2026-10-05	1	0/1	0	1	0	1	1 file changed, 741 insertions(+)	test(config): cover readiness failure, degradation and aggregation branches
+test/consolidator-chunker-boundary-20261009	missing	437d3169d	2026-10-09	1	0/1	0	1	0	1	1 file changed, 215 insertions(+)	test: pin boundary branches of consolidator chunker
+test/consolidator-dedup-mode	missing	b1710da15	2026-10-09	1	0/1	0	1	0	1	1 file changed, 570 insertions(+)	test(memory): cover dedup mode contract and degradation branches
+test/consolidator-line-doc-20261008	missing	21868b476	2026-10-08	1	0/1	0	1	0	1	1 file changed, 430 insertions(+)	test(memory): line-level view & edit op failure-path coverage for consolidator line_doc
+test/consolidator-merge-mode-20261009	missing	614a91571	2026-10-09	1	0/1	0	1	0	1	1 file changed, 323 insertions(+)	test: merge mode contract and degradation branches
+test/consolidator-meta-20261009	missing	183d9f3a3	2026-10-09	1	0/1	0	1	0	1	1 file changed, 233 insertions(+)	test(memory): cover consolidator meta sidecar contract
+test/consolidator-modes-20261005	missing	144753a7c	2026-10-05	1	0/1	0	1	0	1	1 file changed, 854 insertions(+)	test(memory): table-driven behavior tests for audit/dedup/_runtime modes
+test/consolidator-runs-20261010	missing	0fdd59127	2026-10-10	1	0/1	0	1	0	1	1 file changed, 591 insertions(+)	test(memory): cover consolidator run registry contracts and undo recovery
+test/consolidator-runtime-internal-20261010	missing	cbdc7347e	2026-10-10	1	0/1	0	1	0	1	1 file changed, 504 insertions(+)	test(memory): cover consolidator modes runtime plumbing
+test/consolidator-shims-20261007	missing	ab6c671f9	2026-10-07	1	0/1	0	1	0	1	1 file changed, 235 insertions(+)	test(memory): pin consolidator _shims legacy-API contract
+test/consolidator-waiters-20261005	missing	bf6acf60d	2026-10-05	2	0/1	0	1	1	1	2 files changed, 333 insertions(+)	test(memory): lock consolidator wait-wake contract with waiter registry regression net
+test/context-budget-20261007	missing	282e52cb0	2026-10-07	1	0/1	1	0	0	1	1 file changed, 318 insertions(+)	test: cover context budget trimming, fallback and boundary behavior
+test/context-reftree-chip-20261007	missing	8649d3377	2026-10-07	2	0/2	0	2	0	1	2 files changed, 479 insertions(+)	test(web): cover ContextReferenceTree and ContextBudgetChip render branches
+test/contract-drift-gate-20261006	missing	f8c4b6cc4	2026-10-06	2	0/2	1	1	0	1	2 files changed, 32 insertions(+)	test(api): gate frontend contract drift (app to schema) in backend CI
+test/coord-journal-contract-20261009	missing	7d3df31e7	2026-10-09	1	0/1	0	1	0	1	1 file changed, 349 insertions(+)	test: cover TurnEventJournal publish, batching, and replay contracts
+test/coord-types-contract-smoke-20261010	missing	de46b74b9	2026-10-10	1	0/1	0	1	0	1	1 file changed, 213 insertions(+)	test(runtime): pin coordination types export, round-trip and immutability contracts
+test/copilot-provider-contract-20261005	missing	11b4570cd	2026-10-05	1	0/1	1	0	0	1	1 file changed, 544 insertions(+)	test: add offline contract tests for GitHubCopilotProvider
+test/core-assessment-contract-20261010	missing	c0e4d1166	2026-10-10	1	0/1	0	1	0	1	1 file changed, 94 insertions(+)	test: pin core/assessment shared vocabulary contracts
+test/core-assessment-contract-20261010-v2	missing	147285f7e	2026-10-10	1	0/1	0	1	0	2	1 file changed, 90 insertions(+)	test: apply ruff format to assessment contract tests
+test/core-errors-contract-20261011	missing	deee978df	2026-10-11	1	0/1	0	1	0	1	1 file changed, 136 insertions(+)	test(core): lock error envelope contract for core errors
+test/courses-state-20261005	missing	e7c0b0f68	2026-10-05	1	0/1	0	1	0	1	1 file changed, 444 insertions(+)	test: courses_state aggregation and persistence boundary tests
+test/cron-logic-20261005	missing	8ee743c9f	2026-10-05	1	0/1	0	1	0	1	1 file changed, 436 insertions(+)	test(cron): pure-logic coverage for schedule parsing, next-trigger math and due pickup
+test/cron-repo-lock-order-20261006	missing	3f610fb89	2026-10-06	1	0/1	1	0	0	1	1 file changed, 39 insertions(+), 13 deletions(-)	test(cron): replace wall-clock lock lower bound with ordering assertions
+test/cron-tool-contract	missing	a51e78f5b	2026-10-10	1	0/1	0	1	0	1	1 file changed, 204 insertions(+)	test(cron): cover schedule parsing boundaries and input rejection for the cron tool
+test/dingtalk-channel-20261005	missing	48082869f	2026-10-05	1	0/1	0	1	0	1	1 file changed, 372 insertions(+)	test(partners): cover dingtalk message parsing, routing and lifecycle
+test/discord-channel-contract-20261006	missing	a0b405283	2026-10-06	1	0/1	0	1	0	1	1 file changed, 378 insertions(+)	test(partners): cover discord inbound parsing, stream keying, send failure visibility
+test/docling-formats-contract-20261010	missing	df9b85eaf	2026-10-09	1	0/1	0	1	0	1	1 file changed, 249 insertions(+)	test(parsing): cover docling formats contract and version floor checks
+test/docling-local-worker-20261006	missing	e509242cd	2026-10-06	1	0/1	0	1	0	1	1 file changed, 380 insertions(+)	test: cover docling local worker startup, progress and failure contracts
+test/doctor-diagnostics-20261006	missing	ee09232e9	2026-10-06	2	0/2	0	2	0	1	2 files changed, 718 insertions(+)	test(doctor): cover diagnostics pass/fail/degraded branches and CLI entry
+test/document-validator-boundary-20261009	missing	b459d41a3	2026-10-09	1	0/1	0	1	0	1	1 file changed, 233 insertions(+)	test(utils): cover document_validator boundary and malformed-input branches
+test/dsml-stream-tool-calls-20261011	missing	070d21741	2026-10-11	1	0/1	0	1	0	1	1 file changed, 215 insertions(+)	test: cover DSML stream segmentation, malformed tags and truncation
+test/edit-agent-behavior-20261005	missing	a6dcd502c	2026-10-05	1	0/1	0	1	0	1	1 file changed, 468 insertions(+)	test(co-writer): lock EditAgent behavior contract for edit operations and context degradation
+test/elapsed-misc-bounds-20261006	missing	78962d956	2026-10-06	4	0/4	4	0	0	1	4 files changed, 86 insertions(+), 21 deletions(-)	test: deflake real-clock upper bounds in mcp/skill/cli_apps/suggestions
+test/email-channel-20261005	missing	b7973c87c	2026-10-05	4	0/1	0	1	3	1	4 files changed, 627 insertions(+)	test(partners): cover email channel fetch/parse, logout swallow and start/stop lifecycle
+test/embedding-adapters-fail-20261006	missing	ced800f4d	2026-10-06	2	0/2	0	2	0	1	2 files changed, 567 insertions(+)	test(embedding): cover gemini/dashscope failure branches and response parsing
+test/embedding-binding-20261005	missing	2af8d22c1	2026-10-05	1	0/1	0	1	0	1	1 file changed, 397 insertions(+)	test: cover embedding binding version and failure branches
+test/embedding-local-keyless-20261010	missing	12a679ad8	2026-10-10	3	0/3	3	0	0	1	3 files changed, 222 insertions(+)	test(embedding): pin local keyless resolution, qwen3-Instruct thinking guard, and spacing pacing
+test/embedding-request-options-20261007	missing	80b835d7f	2026-10-07	1	0/1	0	1	0	1	1 file changed, 224 insertions(+)	test: cover embedding request_options decision logic
+test/embedding-validation-contract	missing	54d5e931c	2026-10-09	1	0/1	0	1	0	1	1 file changed, 244 insertions(+)	test: add contract tests for embedding validation helpers
+test/epub-bilingual-unit-20261004	landed	9433e16d8	2026-10-05	1	1/1	0	0	0	2	1 file changed, 512 insertions(+)	style(reading): apply ruff format to bilingual EPUB unit tests
+test/event-bus-20261004	missing	42f5adc3f	2026-10-04	2	0/2	0	2	0	1	2 files changed, 392 insertions(+)	test(events): add direct unit tests for the event bus
+test/events-broadcast-20261007	missing	6412e8218	2026-10-07	3	0/2	0	2	1	1	3 files changed, 577 insertions(+)	test: cover api event bus and progress broadcaster delivery contract
+test/exercise-lookup-20261010	missing	407508a55	2026-10-10	1	0/1	0	1	0	1	1 file changed, 379 insertions(+)	test: cover exercise lookup degradation and trimming contracts
+test/explore-context-explorer-20261005	missing	96d8484ec	2026-10-05	1	0/1	0	1	0	1	1 file changed, 575 insertions(+)	test(capabilities): pin explore-context explorer trimming, aggregation and degradation paths
+test/figure-view-capability-20261010	missing	9332cfad7	2026-10-10	1	0/1	0	1	0	1	1 file changed, 246 insertions(+)	test(reading): cover view_figure validation and degradation branches
+test/file-library-router-contract-20261009	missing	22a1584c8	2026-10-09	1	0/1	0	1	0	1	1 file changed, 252 insertions(+)	test(api): cover file library router validation, auth and download branches
+test/file-preview-contract-20261005	missing	5e7abd0b5	2026-10-05	1	0/1	0	1	0	1	1 file changed, 157 insertions(+)	test(api): cover file-preview router contract edge cases
+test/file-tools-paths-failures-20261010	missing	52925fd9e	2026-10-10	1	0/1	1	0	0	1	1 file changed, 320 insertions(+)	test(tools): cover workspace file tool path resolution and failure branches
+test/generation-http-contract-20261007	missing	2639c9c89	2026-10-07	1	0/1	0	1	0	1	1 file changed, 644 insertions(+)	test: lock generation HTTP timeout, error-mapping and materialization contracts
+test/ggb-validator-20261007	missing	c0c42b2b2	2026-10-07	1	0/1	1	0	0	1	1 file changed, 253 insertions(+)	test: expand ggb_validator coverage for fixes, arg parsing, boundaries
+test/github-query-branches-20261010	missing	1b3c735e4	2026-10-10	1	0/1	1	0	0	1	1 file changed, 227 insertions(+)	test(tools): cover github_query timeout, error parsing, and default runner branches
+test/graphrag-completion-adapter	missing	86d5d55c5	2026-10-10	1	0/1	0	1	0	1	1 file changed, 541 insertions(+)	test(graphrag): add completion adapter contract tests with fake transports
+test/graphrag-pandas-compat-20261011	missing	b253da084	2026-10-11	1	0/1	0	1	0	1	1 file changed, 194 insertions(+)	test: cover graphrag pandas compat fallback branches
+test/guardians-authorization-boundary-20261007	missing	4bea4cb33	2026-10-07	1	0/1	0	1	0	1	1 file changed, 385 insertions(+)	test: pin guardian authorization boundaries in multi_user store
+test/hermes-remote-client	missing	7c2c5ddbd	2026-10-09	1	0/1	0	1	0	1	1 file changed, 367 insertions(+)	test: add unit coverage for hermes_remote_client contract and error branches
+test/hermes-remote-events-20261006	missing	fe764d9b8	2026-10-06	1	0/1	0	1	0	2	1 file changed, 294 insertions(+)	test: drop client stream coverage already owned by hermes_remote_client tests
+test/http-headers-content-disposition	missing	8ceeeaf93	2026-10-09	1	0/1	0	1	0	1	1 file changed, 94 insertions(+)	test(api): cover the shared Content-Disposition header builder contract
+test/i18n-metadata-status-20261006	missing	cfdddb55c	2026-10-06	2	0/2	0	2	0	1	2 files changed, 403 insertions(+)	test(i18n): behavioral coverage for metadata_i18n and StatusI18n
+test/ideation-agent-contract-20261009	missing	7626466d6	2026-10-09	1	0/1	0	1	0	1	1 file changed, 320 insertions(+)	test: cover IdeationAgent input/output contract
+test/ima-transport-20261006	missing	f280216e4	2026-10-06	1	0/1	0	1	0	1	1 file changed, 204 insertions(+)	test: cover IMA transport wire mechanics, failure branches and transport gating
+test/image-caption-batch-gaps-20261011	missing	da6a15090	2026-10-11	1	0/1	0	1	0	1	1 file changed, 93 insertions(+)	test(llm): cover batch response-shape edges and single-image degrade path
+test/image-caption-cache-20261006	missing	33deca2cf	2026-10-06	1	0/1	0	1	0	1	1 file changed, 99 insertions(+)	test(llm): cover batch caption cache expiry and write-failure paths
+test/import-cycle-guard-20261006	missing	9f0c3fa56	2026-10-06	4	0/4	2	2	0	1	4 files changed, 563 insertions(+), 199 deletions(-)	test(architecture): guard import-graph SCCs and decouple learning.models from learning.pending
+test/invidious-account-20261005	missing	6b00e2fef	2026-10-05	1	0/1	0	1	0	1	1 file changed, 354 insertions(+)	test(video-learning): cover invidious account store persistence and parsing
+test/journal-recovery-flush-20261006	missing	a1f7bbd07	2026-10-06	1	0/1	1	0	0	1	1 file changed, 49 insertions(+), 7 deletions(-)	test(runtime): make journal recovery lease-loss and flush branches deterministic
+test/json-extractors-20261005	missing	6e35aa615	2026-10-05	6	0/2	0	2	4	2	6 files changed, 333 insertions(+)	test(agents): add evidence for JSON extractor boundary suite
+test/json-parser-boundary-20261009	missing	f0240d0fb	2026-10-09	1	0/1	0	1	0	1	1 file changed, 124 insertions(+)	test: add json_parser truncation and fallback boundary coverage
+test/kb-client-contract-20261003	missing	df9cf440e	2026-10-03	1	0/1	0	1	0	1	1 file changed, 242 insertions(+)	test(knowledge): pin KB client request contract and cache invalidation
+test/kb-client-contract-20261003-pr	missing	3cefc609d	2026-10-03	2	0/1	0	1	1	2	2 files changed, 281 insertions(+)	docs(evidence): add PR draft for KB client contract tests
+test/kb-move-consistency-20261007	missing	862aa294b	2026-10-07	1	0/1	0	1	0	1	1 file changed, 398 insertions(+)	test: cover kb_move consistency, conflicts, and interrupted-move residue
+test/keypool-unit-20261005	missing	d9dfdea2f	2026-10-05	1	0/1	0	1	0	1	1 file changed, 199 insertions(+)	test: cover keypool cooldown boundaries, strike recovery, and concurrency
+test/knowledge-frontier-20261005	missing	da62c3634	2026-10-05	1	0/1	0	1	0	1	1 file changed, 497 insertions(+)	test: cover knowledge_frontier query parsing, KB aggregation and fallbacks
+test/knowledge-naming-contract-20261010	missing	20e720588	2026-10-10	1	0/1	0	1	0	1	1 file changed, 99 insertions(+)	test(knowledge): lock KB name validation boundaries and message copy
+test/knowledge-progress-events-contract	missing	dc3645501	2026-10-07	1	0/1	0	1	0	1	1 file changed, 192 insertions(+)	test(knowledge): add contract tests for progress_events ports
+test/knowledge-upload-guards-20261003	missing	4eb5695cf	2026-10-03	1	0/1	1	0	0	2	1 file changed, 388 insertions(+)	test(api): apply ruff format to upload-guard tests
+test/knowledge-upload-guards-20261003-pr	missing	31a055044	2026-10-03	2	0/1	1	0	1	3	2 files changed, 421 insertions(+)	docs: add PR evidence for KB upload guard contract tests
+test/learner-profile-contract	missing	441d4dd56	2026-10-09	1	0/1	0	1	0	1	1 file changed, 115 insertions(+)	test: pin learner_profile normalize and prompt_block contract boundaries
+test/learning-adapter-contract-20261005	missing	86e458c51	2026-10-05	1	0/1	0	1	0	1	1 file changed, 625 insertions(+)	test: cover learning turn adapter contract
+test/learning-assessment-20261007	missing	b3b4b3bc8	2026-10-07	1	0/1	0	1	0	1	1 file changed, 546 insertions(+)	test(learning): add contract tests for the assessment adapter
+test/learning-event-hub-20261010	missing	1e0bb6d4d	2026-10-10	1	0/1	1	0	0	1	1 file changed, 237 insertions(+), 1 deletion(-)	test: cover mastery topic event hub contracts and degrade paths
+test/learning-grading-20261007	missing	92efbc88f	2026-10-07	2	0/1	0	1	1	1	2 files changed, 188 insertions(+)	test(learning): add validation and boundary tests for grading module
+test/learning-navigation-20261009	missing	00b1e4a4b	2026-10-09	2	0/2	0	2	0	1	2 files changed, 395 insertions(+)	test(learning): cover navigation atlas boundaries and malformed inputs
+test/learning-objective-relations	missing	403aab4e3	2026-10-08	1	0/1	0	1	0	1	1 file changed, 169 insertions(+)	test(learning): cover objective relation failure paths and ref mapping
+test/learning-overlay-20261006	missing	5c88d5c49	2026-10-06	1	0/1	0	1	0	1	1 file changed, 238 insertions(+)	test: cover book learning overlay assembly, empty-state and upsert semantics
+test/learning-pending-identity-20261005	missing	3bcc511ab	2026-10-05	2	0/2	0	2	0	1	2 files changed, 362 insertions(+)	test(learning): cover pending option translation and identity resolution
+test/learning-records-access-20261004	landed	bea9795c2	2026-10-05	2	2/2	0	0	0	2	2 files changed, 276 insertions(+)	test(api): fix ruff import order and formatting in learning-records tests
+test/learning-records-access-20261004-v2	missing	cd4af4773	2026-10-04	1	0/1	0	1	0	2	1 file changed, 276 insertions(+)	test(api): fix lint/format and flatten learning-records test path
+test/learning-topic-generation-20261008	missing	a3153ecff	2026-10-08	2	0/2	0	2	0	1	2 files changed, 341 insertions(+)	test(learning): bound and quota checks for mixed-source route generation
+test/learning-topic-naming	missing	4ff75e7c7	2026-10-08	1	0/1	1	0	0	1	1 file changed, 157 insertions(+)	test: cover topic naming derivation, language fallback and timeout paths
+test/lightrag-block-policy-1307	missing	7ab5f7fb0	2026-10-09	1	0/1	0	1	0	1	1 file changed, 251 insertions(+)	test: cover LightRAG block policy decision and ledger edge branches
+test/lightrag-cache-reuse-20261005	missing	d527b95e0	2026-10-05	3	0/1	1	0	2	2	3 files changed, 119 insertions(+)	chore(evidence): record lightrag cache-reuse test run for 2026-10-05
+test/lightrag-parser-branches-20261010	missing	b1d73fc29	2026-10-10	1	0/1	0	1	0	1	1 file changed, 556 insertions(+)	test(rag): cover lightrag parser input branches and sidecar contract
+test/lightrag-sidecar-lifecycle-20261005	missing	3bf188584	2026-10-05	1	0/1	0	1	0	1	1 file changed, 385 insertions(+)	test(lightrag): cover sidecar block-to-IR mapping and rejection branches
+test/lightrag-worker-loop-20261005	missing	50b79ad31	2026-10-05	2	0/1	0	1	1	1	2 files changed, 252 insertions(+)	test(lightrag): lock worker-loop exception visibility contract
+test/lightrag-worker-loop-20261005-v2	missing	6ee03161a	2026-10-05	2	0/2	1	1	0	1	2 files changed, 173 insertions(+), 2 deletions(-)	fix(lightrag): report worker failures racing owner cancellation
+test/linked-kb-probe-contracts	missing	79b0a2c02	2026-10-10	1	0/1	1	0	0	1	1 file changed, 280 insertions(+)	test: cover linked-KB probe contracts and boundary paths
+test/list-notebook-fallback	missing	aac86a8bb	2026-10-10	1	0/1	1	0	0	1	1 file changed, 139 insertions(+)	test(tools): cover list_notebook filter/malformed/degraded paths
+test/liteparse-formats-version-floor-20261010	missing	0af2639cc	2026-10-10	1	0/1	0	1	0	1	1 file changed, 164 insertions(+)	test(parsing): cover liteparse version floor boundaries and format table
+test/liteparse-formats-version-floor-20261010-v2	missing	678d6d490	2026-10-10	1	0/1	0	1	0	2	1 file changed, 163 insertions(+)	test(parsing): drop env-dependent none-version case from malformed degrade set
+test/llamaindex-rerank-20261010	missing	4fd7e7cf7	2026-10-10	1	0/1	1	0	0	1	1 file changed, 258 insertions(+), 1 deletion(-)	test(rag): cover rerank request assembly, parsing stability, and degrade paths
+test/llamaindex-retrievers-20261006	missing	2a9bc50d8	2026-10-06	1	0/1	0	1	0	1	1 file changed, 395 insertions(+)	test: cover llamaindex retriever composition edge cases
+test/llm-error-mapping-20261007	missing	06c0e012d	2026-10-07	2	0/1	1	0	1	1	2 files changed, 237 insertions(+)	test(llm): cover all error mapping branches in test_error_mapping
+test/llm-stats-aggregation-concurrency-20261010	missing	0271d068e	2026-10-10	1	0/1	1	0	0	1	1 file changed, 208 insertions(+), 1 deletion(-)	test(logging): cover LLMStats aggregation, concurrency and summary branches
+test/llm-structured-retry-20261009	missing	c102d3878	2026-10-09	2	0/2	1	1	0	1	2 files changed, 310 insertions(+)	test(llm): pin structured-retry degradation branches and LLM response model contracts
+test/logging-configure-bridge-20261011	missing	1a57fabb9	2026-10-11	1	0/1	0	1	0	1	1 file changed, 262 insertions(+)	test(logging): cover configure assembly idempotency and loguru bridge contract
+test/logging-formatters-contract-20261010	missing	5243b6b60	2026-10-10	1	0/1	0	1	0	1	1 file changed, 278 insertions(+)	test(logging): cover JSONL contract, missing-context behavior, and console snapshot for formatters
+test/logging-formatters-contract-20261010-v2	missing	4a4afbab0	2026-10-10	1	0/1	0	1	0	2	1 file changed, 267 insertions(+)	style(logging): sort imports and apply ruff format to formatters contract tests
+test/login-rate-limit-20261007	drift	d76bc66e3	2026-10-07	139	1/135	81	53	4	135	139 files changed, 25160 insertions(+), 6382 deletions(-)	test(auth): cover login rate limiter window, lockout and clock semantics
+test/loop-capability-20261007	missing	c20f603be	2026-10-07	1	0/1	0	1	0	1	1 file changed, 220 insertions(+)	test: cover visualization loop capability decisions
+test/marginnote4-bridge-contract-20261004	missing	c6d1bf6f0	2026-10-04	5	0/1	0	1	4	1	5 files changed, 435 insertions(+)	test(api): pin MarginNote4 bridge route contract against #1242 path drift
+test/markdown-display-security-v2-pr	missing	2270372ee	2026-10-03	3	0/2	1	1	1	2	3 files changed, 268 insertions(+), 3 deletions(-)	docs: add PR description for markdown-display security fix (evidence)
+test/markitdown-formats-probe-20261005	missing	cce7be0c3	2026-10-05	2	0/1	0	1	1	1	2 files changed, 247 insertions(+)	test(parsing): lock markitdown converter-format probe contract
+test/mastery-choices-shape	missing	a4d3cec1a	2026-10-09	1	0/1	0	1	0	1	1 file changed, 138 insertions(+)	test(mastery): pin remaining branch gaps in the choice-question contract
+test/mastery-hints-20261004	missing	b8dfefe57	2026-10-04	1	0/1	0	1	0	1	1 file changed, 523 insertions(+)	test: unit tests for mastery_hints ask-hint assembly
+test/mastery-hints-20261004-v2	missing	01a2d8e13	2026-10-04	1	0/1	0	1	0	2	1 file changed, 526 insertions(+)	test: fix ruff formatting in mastery_hints tests
+test/mastery-nav-decision-20261007	missing	4eedcfa0f	2026-10-07	1	0/1	0	1	0	1	1 file changed, 234 insertions(+)	test(tools): pin mastery nav decision paths for normalization, loops and empty data
+test/mastery-path-router-contract-20261005	missing	ee97b29c4	2026-10-05	1	0/1	0	1	0	1	1 file changed, 488 insertions(+)	test: contract coverage for mastery_path router non-stream branches
+test/mastery-review-trail-scroll-cap	no-op	71265554b	2026-09-28	0	0/0	0	0	0	0	empty	test(mastery): guard the review trail scroll cap (#1566)
+test/mastery-tool-compat-contract	missing	65840c4cb	2026-10-08	1	0/1	0	1	0	1	1 file changed, 110 insertions(+)	test: pin the mastery_tool compat export contract
+test/math-animator-agents-batch3-20261011	missing	e45298d17	2026-10-11	1	0/1	0	1	0	1	1 file changed, 396 insertions(+)	test(math-animator): cover small agent output parsing and degradation branches
+test/math-animator-codegen-degrade-20261010	missing	580824c9c	2026-10-10	1	0/1	0	1	0	1	1 file changed, 335 insertions(+)	test: cover code generator prompt assembly and degradation branches
+test/math-animator-retry-duration-utils-20261011	missing	7b87392fd	2026-10-11	2	0/2	0	2	0	1	2 files changed, 287 insertions(+)	test(math-animator): cover retry manager give-up paths and duration parse edges
+test/math-visual-review-20261006	missing	d503f08ca	2026-10-06	2	0/2	0	2	0	1	2 files changed, 694 insertions(+)	test(math-animator): cover visual review service and agent envelope
+test/matrix-channel-20261005	missing	f6b206de5	2026-10-05	1	0/1	0	1	0	1	1 file changed, 846 insertions(+)	test(matrix): cover inbound parsing, thread mapping, and sync lifecycle
+test/matrix-channel-rework-20261011	missing	d1ddf32ba	2026-10-11	1	0/1	0	1	0	1	1 file changed, 846 insertions(+)	test(matrix): cover inbound parsing, thread mapping, and sync lifecycle
+test/mcp-authorize-permissions	missing	2a4a19bf6	2026-10-09	1	0/1	0	1	0	1	1 file changed, 105 insertions(+)	test: cover remaining authorize_mcp_tools gate combinations
+test/mcp-network-transport-20261011	missing	0bcabea56	2026-10-11	1	0/1	0	1	0	1	1 file changed, 351 insertions(+)	test(mcp): cover the private-origin network guard directly
+test/mcp-session-state-20261007	missing	f082dbdea	2026-10-07	1	0/1	0	1	0	1	1 file changed, 106 insertions(+)	test(mcp): cover per-session deferred-tool state register/lookup/reset
+test/mcp-settings-contract-20261006	missing	6dd4d1c21	2026-10-06	1	0/1	0	1	0	1	1 file changed, 268 insertions(+)	test(api): contract coverage for the mcp settings router
+test/md-reading-1641-e2e	missing	191955841	2026-10-03	1	0/1	1	0	0	1	1 file changed, 83 insertions(+)	test(reading): guard full readability of fenced markdown uploads (#1641)
+test/media-gen-tool-20261007	missing	35e950755	2026-10-07	1	0/1	0	1	0	1	1 file changed, 436 insertions(+)	test(tools): cover media_gen_tool validation, dispatch and failure paths
+test/memory-modes-20261005	missing	77a9a2f3a	2026-10-05	1	0/1	0	1	0	1	1 file changed, 372 insertions(+)	test(memory): pure-logic coverage for consolidator modes runtime/shims/audit/dedup helpers
+test/memory-snapshot-diff-20261007	missing	bc4053d67	2026-10-07	1	0/1	0	1	0	1	1 file changed, 171 insertions(+)	test: pin snapshot diff contract across add/remove/modify/no-op states
+test/mineru-checkpoints-20261010	missing	d1a103e57	2026-10-10	1	0/1	0	1	0	1	1 file changed, 314 insertions(+)	test: add unit coverage for mineru slice checkpoint store
+test/mineru-cloud-dirty-state-20261010	missing	7352779d7	2026-10-10	1	0/1	1	0	0	1	1 file changed, 63 insertions(+)	test(settings): lock MinerU cloud draft dirty-state consistency (#1798)
+test/mineru-formats-contract-20261009	missing	89285a73b	2026-10-09	1	0/1	0	1	0	1	1 file changed, 103 insertions(+)	test: pin MinerU version floor and format routing contract
+test/mineru-probe-20261004	missing	9512a70ff	2026-10-05	2	0/1	0	1	1	1	2 files changed, 316 insertions(+)	test: lock local MinerU CLI probe contract
+test/mineru-probe-20261004-v2	missing	3f608ab43	2026-10-05	2	0/2	1	1	0	2	2 files changed, 253 insertions(+), 30 deletions(-)	fix(parsing): prevent probe crash on sibling OSError and report broken CLI as installed (#1612)
+test/mochat-channel-20261005	missing	a47de7561	2026-10-05	1	0/1	0	1	0	1	1 file changed, 591 insertions(+)	test: cover mochat channel parsing, routing and lifecycle
+test/model-access-20261005	missing	1267a305f	2026-10-05	1	0/1	0	1	0	1	1 file changed, 275 insertions(+)	test(multi_user): cover model_access grant resolution and selection gate
+test/model-selection-fallback-20261007	missing	c041f65db	2026-10-07	4	0/4	0	4	0	1	4 files changed, 725 insertions(+)	test: model_selection task binding, fallback order and config edge cases
+test/model-selection-unit-tests	missing	236fbb982	2026-10-07	5	0/4	0	4	1	1	5 files changed, 610 insertions(+)	test(model_selection): cover candidate selection, fallback order and input rejection
+test/msteams-assertions-20261005	missing	27c432496	2026-10-05	1	0/1	1	0	0	1	1 file changed, 200 insertions(+), 4 deletions(-)	test(msteams): strengthen message semantics and error-path assertions
+test/msteams-assertions-20261005-v2	missing	16e13f275	2026-10-05	1	0/1	1	0	0	2	1 file changed, 205 insertions(+), 4 deletions(-)	style(msteams): apply ruff format to test file
+test/multiuser-audit-20261006	missing	9a48471e9	2026-10-06	1	0/1	0	1	0	1	1 file changed, 270 insertions(+)	test: multi-user audit log write/query unit tests
+test/multiuser-tool-skill-access-20261010	missing	4f03f65f3	2026-10-09	2	0/2	0	2	0	1	2 files changed, 279 insertions(+)	test: cover multi_user tool/skill access guard default policies
+test/mypy-narrow-question-20261006	missing	befb3f768	2026-10-06	3	0/3	3	0	0	1	3 files changed, 23 insertions(+), 11 deletions(-)	test(mypy): narrow tools override to check question tools, fix exposed errors
+test/napcat-msteams-asserts-20261006	missing	15714b136	2026-10-06	2	0/2	2	0	0	1	2 files changed, 792 insertions(+), 20 deletions(-)	test: strengthen napcat/msteams channel assertion semantics
+test/napcat-semantics-20261005	missing	8a48de304	2026-10-05	1	0/1	1	0	0	1	1 file changed, 108 insertions(+), 5 deletions(-)	test(napcat): strengthen frame semantics, self-id and error-path assertions
+test/notebook-analysis-agent-20261006	missing	bb696398e	2026-10-06	1	0/1	0	1	0	1	1 file changed, 454 insertions(+)	test(notebook): cover analysis agent stages, selection and failure paths
+test/notebook-api-contract-20261003	missing	e3f9b1683	2026-10-03	2	0/1	1	0	1	1	2 files changed, 348 insertions(+)	test(notebook): pin Question Notebook API source/dedup/concurrency contract
+test/notebook-api-contract-20261003-pr	landed	395f74495	2026-10-03	2	1/1	0	0	1	3	2 files changed, 312 insertions(+)	docs(evidence): add PR draft for notebook API contract tests
+test/notebook-summarize-agent-20261011	missing	48a4cf3eb	2026-10-11	1	0/1	0	1	0	1	1 file changed, 291 insertions(+)	test(notebook): cover summarize agent prompting, parsing and degradation
+test/obsidian-vault-20261005	missing	4ae5344dd	2026-10-05	1	0/1	0	1	0	1	1 file changed, 174 insertions(+)	test(obsidian): lock vault path normalization, frontmatter and write-guard contracts
+test/office-preview-unit-20261005	missing	42acb504d	2026-10-05	1	0/1	0	1	0	1	1 file changed, 260 insertions(+)	test(office-preview): cover detection, failure, timeout and cache contracts
+test/opencode-family-shared-behavior	missing	5ed0c47d6	2026-10-10	2	0/2	0	2	0	1	2 files changed, 494 insertions(+)	test: cover opencode_family consult flow, failures, and helpers
+test/opencode-server-20261006	missing	bae559ce2	2026-10-06	1	0/1	0	1	0	1	1 file changed, 345 insertions(+)	test(subagent): cover opencode server lifecycle, readiness and failure paths
+test/opper-provider-contract-20261010	missing	b459ccc53	2026-10-10	2	0/2	1	1	0	1	2 files changed, 318 insertions(+)	test(opper): lock chat wire shape and embedding error/timeout paths
+test/paper-search-parsing-20261004	missing	a98d4a322	2026-10-04	1	0/1	0	1	0	1	1 file changed, 538 insertions(+)	test: cover paper_search_tool parsing, error paths, and output contract
+test/parent-chain-defaults-20261006	missing	9aaac9b31	2026-10-06	1	0/1	0	1	0	1	1 file changed, 353 insertions(+)	test(session): pin parent-chain default asymmetry across backends (D3)
+test/parsing-formats-dispatch-20261007	missing	058882fae	2026-10-07	1	0/1	0	1	0	1	1 file changed, 152 insertions(+)	test(parsing): cover aggregate format dispatch and unknown suffix defaults
+test/parsing-install-branches-20261006	missing	a035ef7c5	2026-10-06	1	0/1	0	1	0	1	1 file changed, 349 insertions(+)	test(parsing): cover engine install job launch, pump and cancel branches
+test/parsing-versions-formats-20261007	missing	d09038662	2026-10-07	1	0/1	0	1	0	1	1 file changed, 103 insertions(+)	test(parsing): cover version negotiation and aggregate format boundaries
+test/partner-access-20261006	missing	694e0af01	2026-10-06	1	0/1	1	0	0	1	1 file changed, 110 insertions(+)	test: pin partner_access identity-override and default-policy branches
+test/partner-channel-state-migration-20261011	missing	012563f23	2026-10-11	1	0/1	0	1	0	1	1 file changed, 283 insertions(+)	test(partners): cover legacy channel-state rehoming edges
+test/partner-cli-commands-20261010	missing	be9210eb7	2026-10-10	1	0/1	0	1	0	1	1 file changed, 263 insertions(+)	test(cli): cover partner list/start/stop/create commands
+test/partner-groups-contract-20261005	missing	182f301d3	2026-10-05	1	0/1	0	1	0	1	1 file changed, 338 insertions(+)	test: partner-groups router boundary contract gaps
+test/partner-memory-split-boundary	missing	ec590e108	2026-10-08	1	0/1	0	1	0	1	1 file changed, 333 insertions(+)	test(partners): cover split-memory boundary edges of partner memory tools
+test/partner-workspace-binding-unit	missing	c70978611	2026-10-10	1	0/1	0	1	0	1	1 file changed, 281 insertions(+)	test(partners): unit contracts for workspace binding validation
+test/partners-bus-20261011	missing	7a104f1df	2026-10-11	1	0/1	0	1	0	1	1 file changed, 281 insertions(+)	test(partners): cover message bus event and queue semantics
+test/partners-model-runtime-20261007	missing	31a115284	2026-10-07	1	0/1	0	1	0	1	1 file changed, 235 insertions(+)	test: partner LLM selection normalization and default fallback
+test/partners-network-20261006	missing	653478bfd	2026-10-06	1	0/1	0	1	0	1	1 file changed, 188 insertions(+)	test(partners): lock validate_url_target semantics (scheme gating, DNS failure/timeout, blocked-address matrix)
+test/partners-runtime-status-store-20261010	missing	028f40821	2026-10-10	1	0/1	0	1	0	1	1 file changed, 208 insertions(+)	test: partners runtime status repository idempotency and WAL concurrency
+test/partners-transcription-20261007	missing	73e8f6040	2026-10-07	1	0/1	0	1	0	1	1 file changed, 239 insertions(+)	test: cover Groq transcription provider edge cases
+test/path-service-boundary-20261007	missing	9af673e7f	2026-10-07	1	0/1	1	0	0	1	1 file changed, 227 insertions(+)	test(path-service): cover workspace scoping, separators, normalization and root containment boundaries
+test/perm-matrix-20261004	missing	54d35eecc	2026-10-04	2	0/1	0	1	1	1	2 files changed, 656 insertions(+)	test(api): add multi-user permission matrix for courses, chat and knowledge
+test/perm-matrix-20261004-v2	missing	aa748e862	2026-10-04	2	0/2	1	1	0	2	2 files changed, 572 insertions(+), 3 deletions(-)	fix(knowledge): require admin for global engine configuration
+test/persona-preset-20261007	missing	ec777b613	2026-10-07	1	0/1	0	1	0	1	1 file changed, 320 insertions(+)	test(persona): cover preset seeding, fallback chain and soul-clone seam
+test/persona-store-unit-20261007	missing	32407e174	2026-10-07	2	0/1	0	1	1	1	2 files changed, 271 insertions(+)	test(persona): cover store round trips, default fallbacks, and corrupted-file tolerance
+test/personal-models-contract-20261010	missing	6f7fd885c	2026-10-09	1	0/1	0	1	0	1	1 file changed, 374 insertions(+)	test(multi-user): pin personal_models contract and account boundaries
+test/plugin-lifecycle-runtime-gates-20261010	missing	06d25ea59	2026-10-10	1	0/1	0	1	0	1	1 file changed, 216 insertions(+)	test(plugins): cover managed review lifecycle and revocable runtime gates
+test/plugins-entrypoint-loader-20261004	missing	9490e1aac	2026-10-05	3	0/1	1	0	2	2	3 files changed, 436 insertions(+)	style(plugins): format test_entrypoint_loader to satisfy ruff format
+test/pocketbase-client-contract-20261005	missing	db9dafd02	2026-10-05	1	0/1	0	1	0	1	1 file changed, 358 insertions(+)	test: cover pocketbase_client contracts with stubbed SDK and HTTP
+test/practice-analytics-20261010	missing	8db88e80c	2026-10-10	1	0/1	0	1	0	1	1 file changed, 211 insertions(+)	test(practice): pin analytics aggregation edges over a mocked store
+test/practice-answers-scoring	missing	075f98248	2026-10-10	1	0/1	0	1	0	1	1 file changed, 150 insertions(+)	test: cover practice objective grading boundaries in check_answer
+test/practice-answers-scoring-v2	missing	6f4bfea70	2026-10-10	1	0/1	0	1	0	2	1 file changed, 173 insertions(+)	test: apply ruff format to practice answers tests
+test/practice-services-unit-20261005	missing	700bf154b	2026-10-05	3	0/3	0	3	0	1	3 files changed, 523 insertions(+)	test(practice): unit-cover scheduler intervals, import boundaries and analytics aggregation
+test/process-stream-logging-20261006	missing	c980a84dd	2026-10-06	1	0/1	0	1	0	1	1 file changed, 319 insertions(+)	test(logging): cover process stream chunking, tolerance, and teardown
+test/progress-broadcaster-20261007	missing	36ef4d246	2026-10-07	1	0/1	0	1	0	1	1 file changed, 201 insertions(+)	test(api): pin progress broadcaster subscription lifecycle contract
+test/progress-tracker-degrade-20261005	missing	da7dbc5d4	2026-10-05	3	0/1	0	1	2	1	3 files changed, 325 insertions(+)	test(knowledge): cover ProgressTracker notify degradation and snapshot robustness
+test/prompt-lookup-contract-20261009	missing	79fd982a4	2026-10-09	1	0/1	0	1	0	1	1 file changed, 98 insertions(+)	test(prompt): cover the prompt_text lookup contract
+test/prompt-template-rendering-20261004	missing	29dfc14b9	2026-10-04	5	0/4	0	4	1	1	5 files changed, 418 insertions(+)	test(prompt): cover template rendering failure branches
+test/pymupdf4llm-formats-version-floor-20261009	missing	9acc004dc	2026-10-09	1	0/1	0	1	0	1	1 file changed, 98 insertions(+)	test: cover pymupdf4llm version floor resolution contract
+test/qq-lark-http-parsing-20261005	missing	db0003a3e	2026-10-05	2	0/2	1	1	0	1	2 files changed, 300 insertions(+)	test(partners): cover qq channel parsing/send contract and lark keep-alive missing-SDK path
+test/question-bank-20261007	missing	38c320ecd	2026-10-07	1	0/1	1	0	0	1	1 file changed, 354 insertions(+)	test: cover question_bank dedup, sorting, and malformed-input tolerance
+test/question-card-contract-20261007	missing	ecb833e33	2026-10-07	1	0/1	0	1	0	1	1 file changed, 188 insertions(+)	test(learning): pin question card contract, defaults, and degraded grading
+test/question-coordinator-orchestration-20261011	missing	06d244af6	2026-10-11	1	0/1	0	1	0	1	1 file changed, 538 insertions(+)	test: cover legacy question coordinator orchestration and fallbacks
+test/question-exam-mimic-entry-20261007	missing	08618205c	2026-10-08	1	0/1	0	1	0	1	1 file changed, 247 insertions(+)	test: cover exam_mimic thin entry parameter passthrough and contract
+test/question-extractor-boundary-20261005	missing	8a4245972	2026-10-05	1	0/1	1	0	0	1	1 file changed, 576 insertions(+)	test(question): add boundary tests for question_extractor
+test/question-followup-agent-20261010	missing	7f97e3eba	2026-10-10	1	0/1	0	1	0	1	1 file changed, 319 insertions(+)	test(question): cover followup agent prompt assembly and stream contract
+test/question-mimic-ws-error-paths-20261004	landed	f5b9a384d	2026-10-05	1	1/1	0	0	0	2	1 file changed, 268 insertions(+)	style(tests): reformat question router mimic websocket test for ruff format
+test/question-notebook-router-contract-20261006	missing	fb56f29f1	2026-10-06	1	0/1	0	1	0	1	1 file changed, 933 insertions(+)	test: question_notebook router CRUD and 4xx contract coverage
+test/question-tee-stdout-write-20261003	drift	b27d2b686	2026-10-04	3	1/2	0	1	1	1	3 files changed, 353 insertions(+)	test: lock question stdout tee forwarding behavior (AGEN-433)
+test/question-tee-stdout-write-20261003-v2	missing	0850a27e4	2026-10-04	1	0/1	0	1	0	1	1 file changed, 290 insertions(+)	test: add regression tests for question stdout tee forwarding
+test/quiz-followup-tab-composer	missing	d81bae314	2026-10-10	2	0/2	0	2	0	1	2 files changed, 684 insertions(+)	test(web): cover QuizFollowupTabBody and FollowupChatComposer component layer
+test/rag-degrade-20261004	missing	afacd0eec	2026-10-04	3	0/1	0	1	2	1	3 files changed, 320 insertions(+)	test(rag): pin search failure-degradation branches
+test/rag-eval-dataset-matching-20261006	missing	d522798a8	2026-10-06	2	0/2	2	0	0	1	2 files changed, 173 insertions(+)	test(rag): strengthen eval dataset and matching branch coverage
+test/rag-fallback-chain-20261007	missing	f3d68c736	2026-10-07	2	0/1	0	1	1	1	2 files changed, 399 insertions(+)	test(rag): cover top-level retrieval fallback chain
+test/rag-index-probe-versioning-20261011	missing	c7eb18ca2	2026-10-11	2	0/2	2	0	0	1	2 files changed, 501 insertions(+)	test(rag): cover index probe and versioning failure branches
+test/rag-manifest-figure-publish-1802	missing	3fb382717	2026-10-10	1	0/1	1	0	0	1	1 file changed, 135 insertions(+)	test(rag): pin manifest-cap removal and pre-index figure publication (#1802)
+test/rag-mode-kb-paths-20261009	missing	37912479e	2026-10-09	2	0/2	0	2	0	1	2 files changed, 240 insertions(+)	test(rag): cover KB mode and storage-dir resolution seams
+test/rag-pageindex-pipeline-20261011	missing	b12a7e257	2026-10-11	4	0/4	0	4	0	1	4 files changed, 765 insertions(+)	test(rag): cover pageindex client, config, reasoning and storage contracts
+test/rag-pageindex-pipeline-20261011-v2	missing	ec2036da4	2026-10-11	4	0/4	0	4	0	2	4 files changed, 751 insertions(+)	style(rag): apply ruff format to pageindex tests
+test/rag-provider-binding-20261006	missing	c22e8ebaf	2026-10-06	1	0/1	0	1	0	1	1 file changed, 107 insertions(+)	test(rag): cover provider binding resolution fallbacks
+test/rag-provider-binding-rework-20261011	missing	c65809d81	2026-10-11	1	0/1	0	1	0	1	1 file changed, 107 insertions(+)	test(rag): cover provider binding resolution fallbacks
+test/rag-weknora-fake-transport-20261011	missing	344716223	2026-10-11	1	0/1	1	0	0	1	1 file changed, 214 insertions(+), 1 deletion(-)	test(rag): cover weknora parse, error, timeout, and probe branches
+test/reading-extensions-router-20261005	missing	594c4214e	2026-10-05	1	0/1	0	1	0	1	1 file changed, 456 insertions(+)	test(reading): pin reading_extensions router contract and failure visibility
+test/reading-grounding-20261009	missing	e50ab0bd7	2026-10-09	1	0/1	0	1	0	1	1 file changed, 256 insertions(+)	test: cover reading grounding text-window helpers
+test/reading-hints-20261005	missing	59470c643	2026-10-05	4	0/1	1	0	3	1	4 files changed, 430 insertions(+)	test(reading): cover ask-hint prompt assembly and degradation paths
+test/reading-knowledge-capture-notebook	missing	e46cf05ee	2026-10-10	1	0/1	0	1	0	1	1 file changed, 391 insertions(+)	test(reading): cover knowledge capture grouping, bounds and failure paths
+test/reading-media-notes-render-20261009	missing	289f024e2	2026-10-09	1	0/1	0	1	0	1	1 file changed, 197 insertions(+)	test: cover render_media_note branches in media_notes module
+test/reading-mobile-pagination-regression	missing	47ba027d3	2026-10-10	1	0/1	1	0	0	1	1 file changed, 38 insertions(+)	test(reading): lock narrow-panel pagination visibility (#1641)
+test/reading-progress-api-contract	landed	f189390c7	2026-10-03	6	2/2	0	0	4	1	6 files changed, 367 insertions(+)	test(reading): pin progress API durability contract
+test/reading-progress-api-contract-pr	landed	de01e09f8	2026-10-03	3	2/2	0	0	1	2	3 files changed, 280 insertions(+)	docs(evidence): add upstream PR body for reading progress contract tests
+test/reading-references-degrade-20261005	missing	a161a5122	2026-10-05	4	0/1	0	1	3	1	4 files changed, 385 insertions(+)	test(reading): lock resolve_reading_sources degradation semantics
+test/reading-tool-base-20261007	missing	b081b5556	2026-10-07	1	0/1	0	1	0	1	1 file changed, 273 insertions(+)	test(reading): cover the shared tool base contract
+test/reason-brainstorm-tools-20261006	missing	3ca70b6b1	2026-10-06	1	0/1	0	1	0	1	1 file changed, 414 insertions(+)	test(tools): cover reason, brainstorm and solve_tool wrapper contracts
+test/reason-tools-rework-20261011	missing	6fc02ff14	2026-10-11	1	0/1	0	1	0	1	1 file changed, 414 insertions(+)	test(tools): cover reason, brainstorm and solve_tool wrapper contracts
+test/reasoning-params-mapping-20261005	missing	e7876788e	2026-10-05	1	0/1	0	1	0	1	1 file changed, 413 insertions(+)	test(llm): table-drive provider reasoning parameter mapping coverage
+test/reconnect-policy-timing	missing	07272b48f	2026-10-04	4	0/1	0	1	3	1	4 files changed, 390 insertions(+)	test(web): pin reconnect ladder vs submit-gate timing contract (AGEN-384)
+test/request-preparer-contract-20261005	missing	ef5bc73fa	2026-10-05	1	0/1	0	1	0	1	1 file changed, 535 insertions(+)	test: cover TurnRequestPreparer.start_turn admission contract
+test/research-mode-strategy-20261006	missing	151cd5e9d	2026-10-07	1	0/1	0	1	0	1	1 file changed, 226 insertions(+)	test(research): pin mode strategy registry, depth fallbacks and output validation
+test/research-pipeline-stage-contract	missing	b791e9a03	2026-10-03	2	0/1	0	1	1	1	2 files changed, 421 insertions(+)	test(research): lock deep_research four-phase orchestration contract
+test/research-pipeline-stage-contract-pr	missing	cf6d05dd0	2026-10-03	2	0/1	0	1	1	4	2 files changed, 405 insertions(+)	docs: add PR evidence for research pipeline stage contract tests
+test/research-token-tracker-usage	missing	8db34ff09	2026-10-10	1	0/1	0	1	0	1	1 file changed, 314 insertions(+)	test(research): cover token tracker usage aggregation and pricing tolerance
+test/response-languages-negotiation-20261007	missing	e22f3f8fe	2026-10-07	2	0/2	0	2	0	1	2 files changed, 269 insertions(+)	test(response-languages): pin negotiation ladder, fallback branches and caller contract
+test/run-server-assembly-20261007	missing	4ac2df0ea	2026-10-07	1	0/1	0	1	0	1	1 file changed, 243 insertions(+)	test(api): cover run_server startup assembly
+test/runner-sigterm-20261007	missing	aa8ebc85e	2026-10-07	2	0/1	0	1	1	1	2 files changed, 219 insertions(+)	test(sandbox): pin runner server SIGTERM/SIGINT shutdown behaviour
+test/runtime-agentic-stream-prims-20261009	missing	773ad86fb	2026-10-09	4	0/4	0	4	0	1	4 files changed, 391 insertions(+)	test(agentic): cross-chunk label sharding and malformed delta/schema coverage
+test/search-consolidation-20261007	missing	b1d54baf0	2026-10-07	1	0/1	0	1	0	1	1 file changed, 386 insertions(+)	test(search): cover consolidation merge, ordering and degraded-output contracts
+test/search-provider-firecrawl-20261010	missing	84c8c7433	2026-10-10	1	0/1	0	1	0	1	1 file changed, 286 insertions(+)	test(search): pin firecrawl provider request and parsing contract
+test/search-providers-batch2-20261011	missing	8f3c23c41	2026-10-11	1	0/1	0	1	0	1	1 file changed, 434 insertions(+)	test(search): cover error and malformed-response branches for serply, aliyun_iqs, qianfan and bocha
+test/search-providers-batch3-20261011	missing	c016bb030	2026-10-11	1	0/1	0	1	0	1	1 file changed, 407 insertions(+)	test(search): cover request, parsing and error branches for tavily, brave and perplexity
+test/search-providers-contract-20261005	missing	e3c1d9907	2026-10-05	1	0/1	0	1	0	1	1 file changed, 499 insertions(+)	test(search): cover request, parsing and error contracts for zhipu, firecrawl, duckduckgo and searxng providers
+test/search-providers-keyless-20261011	missing	eee944fd2	2026-10-11	1	0/1	0	1	0	1	1 file changed, 386 insertions(+)	test(search): cover keyless SearXNG and DuckDuckGo provider contracts
+test/search-source-filter-20261007	missing	b053f3f13	2026-10-07	1	0/1	0	1	0	1	1 file changed, 288 insertions(+)	test(search): cover source_filter domain policy, malformed inputs and empty-result behavior
+test/secret-files-helpers-20261009	missing	d39359c7e	2026-10-09	1	0/1	0	1	0	1	1 file changed, 112 insertions(+)	test: cover secret_files private helper contracts and boundaries
+test/serper-provider-contract-20261009	missing	6fdbf4334	2026-10-09	1	0/1	0	1	0	1	1 file changed, 327 insertions(+)	test(search): pin serper provider request and parsing contract
+test/session-event-preview-20261010	missing	485112209	2026-10-10	1	0/1	0	1	0	1	1 file changed, 194 insertions(+)	test: cover session event preview boundary paths
+test/session-event-preview-20261010-v2	missing	c33d46566	2026-10-10	1	0/1	0	1	0	2	1 file changed, 190 insertions(+)	test: satisfy ruff import order and format in event preview tests
+test/session-handoff-lifecycle-20261007	missing	5d92de06f	2026-10-07	1	0/1	0	1	0	1	1 file changed, 277 insertions(+)	test(session): pin session handoff lifecycle, concurrency and isolation behavior
+test/session-legacy-migration-20261010	missing	e53942598	2026-10-10	1	0/1	1	0	0	1	1 file changed, 349 insertions(+)	test: broaden legacy chat migration coverage for defaults, ledger recovery and dry runs
+test/session-organization-integrity-20261009	missing	1b45ddc05	2026-10-09	1	0/1	0	1	0	1	1 file changed, 240 insertions(+)	test: cover session organization integrity helpers
+test/session-status-writeback-20261006	missing	7a075806b	2026-10-06	1	0/1	0	1	0	1	1 file changed, 348 insertions(+)	test(session): pin cross-backend session status/capability reads
+test/session-transfer-20261006	missing	08c9a86a6	2026-10-06	1	0/1	0	1	0	1	1 file changed, 251 insertions(+)	test(workspace): cover session_transfer integrity, validation and atomicity
+test/settings-apply-token-race-20261010	missing	a5ab27c76	2026-10-10	1	0/1	0	1	0	1	1 file changed, 219 insertions(+)	test(settings): lock token clear and edit retention across a pending Apply
+test/settings-docstring-field-parity-20261006	missing	e475ecc08	2026-10-06	1	0/1	0	1	0	1	1 file changed, 273 insertions(+)	test(config): guard settings docstring defaults against Field drift
+test/settings-edit-batch-20261011	missing	e20bf343d	2026-10-11	1	0/1	0	1	0	1	1 file changed, 486 insertions(+)	test(settings): cover registry/provider edit validation and default merging
+test/settings-read-fallbacks-20261004	missing	f4e79e6ef	2026-10-04	3	0/1	0	1	2	1	3 files changed, 261 insertions(+)	test(settings): pin read-fallback contract for load_ui_settings and tour_status
+test/settings-services-20261007	missing	27e233af9	2026-10-07	4	0/2	0	2	2	1	4 files changed, 520 insertions(+)	test(settings): cover interface settings round-trip, edit merge validation and atomic concurrent writes
+test/settings-store-20261003-pr	landed	b1f4c0965	2026-10-03	2	1/1	0	0	1	2	2 files changed, 692 insertions(+)	docs: add PR evidence for settings store tests
+test/setup-apply-idempotency-20261010	missing	6e9b20589	2026-10-10	1	0/1	0	1	0	1	1 file changed, 377 insertions(+)	test(setup): pin apply step order, idempotent no-op and rollback paths
+test/setup-binding-swallow-20261004	missing	d930358b1	2026-10-04	3	0/2	0	2	1	2	3 files changed, 339 insertions(+)	docs(setup): test notes for binding swallow edges
+test/setup-binding-swallow-20261004-v2	missing	ef223cc91	2026-10-04	3	0/3	1	2	0	2	3 files changed, 314 insertions(+), 2 deletions(-)	fix(setup): log swallowed gap-report and intro-marker failures
+test/setup-jobs-lifecycle-20261010	missing	0247d62bf	2026-10-10	1	0/1	0	1	0	1	1 file changed, 533 insertions(+)	test: cover setup job runner lifecycle and duplicate triggers
+test/shared-json-output-noise-fence-20261011	missing	b09548258	2026-10-11	1	0/1	0	1	0	1	1 file changed, 142 insertions(+)	test: cover extract_json_object noise, fence, and parser consistency contracts
+test/singleflight-cache-20261005	missing	034eba499	2026-10-05	1	0/1	1	0	0	1	1 file changed, 132 insertions(+)	test(services): pin singleflight cache concurrency semantics
+test/skill-taxonomy-20261005	missing	5e10fd023	2026-10-05	1	0/1	0	1	0	1	1 file changed, 162 insertions(+)	test(skill): table-driven coverage for taxonomy tables and lookup helpers
+test/skills-builtin-registry-20261007	missing	bc5aa3204	2026-10-07	1	0/1	0	1	0	1	1 file changed, 242 insertions(+)	test: builtin skill registry vs shipped tree consistency
+test/skills-router-20261009	missing	f999109b4	2026-10-09	1	0/1	0	1	0	1	1 file changed, 743 insertions(+)	test(api): cover skills router CRUD, install and service resolution contracts
+test/small-routers-contract-20261005	missing	5a4a9a4e0	2026-10-05	2	0/2	2	0	0	1	2 files changed, 213 insertions(+), 1 deletion(-)	test: cover mcp-settings read/write/probe routes and output download guards
+test/space-mcp-router-contract-20261005	missing	97697d291	2026-10-05	1	0/1	0	1	0	1	1 file changed, 395 insertions(+)	test: contract coverage for the per-user MCP router
+test/sqlite-store-init-20261005	missing	8ddd1fd39	2026-10-05	3	0/1	0	1	2	1	3 files changed, 358 insertions(+)	test(session): cover sqlite_store init, upgrade and swallowed-DDL fallback paths
+test/standalone-composer-smoke-20261004	landed	94e845b1a	2026-10-04	4	1/1	0	0	3	0	4 files changed, 242 insertions(+)	test(web): smoke coverage for StandaloneComposer send gating
+test/standalone-composer-smoke-20261004-v2	missing	cbe812498	2026-10-04	1	0/1	1	0	0	1	1 file changed, 224 insertions(+)	test(web): smoke coverage for StandaloneComposer send gating
+test/starter-settings-20261010	missing	82e87b33b	2026-10-10	2	0/2	0	2	0	1	2 files changed, 236 insertions(+)	test(settings): cover starter settings file contract
+test/startup-import-budget-20261007	missing	004e1a43b	2026-10-07	1	0/1	0	1	0	1	1 file changed, 191 insertions(+)	test: gate CLI and API startup import surface
+test/subagent-claude-code-stream-parse	missing	4dd16b2c5	2026-10-08	1	0/1	0	1	0	1	1 file changed, 468 insertions(+)	test(subagent): cover claude_code stream-json consumption paths
+test/subagent-deepseek-harness-20261008	missing	bd094eecd	2026-10-08	1	0/1	0	1	0	1	1 file changed, 515 insertions(+)	test(subagent): cover deepseek harness dual-channel fallback paths
+test/subagent-harness-batch-20261009	missing	a320a0304	2026-10-09	5	0/5	0	5	0	1	5 files changed, 901 insertions(+)	test(subagent): cover kimi/grok/antigravity transports and claude model sync
+test/subagent-openclaw-contract-20261011	missing	fbc7b2c13	2026-10-11	2	0/2	0	2	0	1	2 files changed, 342 insertions(+)	test(subagent): cover openclaw backend config, detect and consult contract
+test/subagent-partner-group-20261011	missing	c1e607117	2026-10-11	1	0/1	0	1	0	1	1 file changed, 359 insertions(+)	test: cover PartnerGroupBackend consult orchestration and degradation
+test/subagent-settings-apply-1630	landed	a9e9cd7dd	2026-10-04	2	2/2	0	0	0	0	2 files changed, 269 insertions(+), 2 deletions(-)	test(settings): cover CLI-app model persistence end to end (#1630)
+test/subagents-router-contract	missing	879fbc830	2026-10-09	1	0/1	0	1	0	1	1 file changed, 300 insertions(+)	test: pin subagents router request contracts and failure branches
+test/subprocess-high-timeout-paths-20261006	missing	febde6aed	2026-10-06	1	0/1	0	1	0	1	1 file changed, 320 insertions(+)	test: baseline timeout teardown paths for docling and mineru parsers
+test/suggestions-service-20261007	missing	e6b70aa11	2026-10-07	1	0/1	1	0	0	1	1 file changed, 291 insertions(+)	test(suggestions): pin config fallbacks, degradation edges and output bounds
+test/task-board-router-20261010	missing	f1ce4ea95	2026-10-10	1	0/1	0	1	0	1	1 file changed, 182 insertions(+)	test: pin task board router contracts and error mapping
+test/task-log-stream-errors-20261007	missing	3cfeac167	2026-10-07	1	0/1	1	0	0	1	1 file changed, 236 insertions(+)	test: cover task_log_stream error paths
+test/telegram-message-parsing-20261003-v2	drift	7b5274279	2026-10-04	2	1/2	1	0	0	3	2 files changed, 701 insertions(+), 4 deletions(-)	test(partners): telegram suite lint polish; drop internal evidence dir
+test/tex-tools-20261004	landed	7f15b5c4a	2026-10-05	5	1/1	0	0	4	2	5 files changed, 600 insertions(+)	test: fix ruff import order and formatting in tex tools tests
+test/tex-tools-20261004-v2	landed	6dbd03373	2026-10-04	1	1/1	0	0	0	0	1 file changed, 529 insertions(+)	test: add tex_downloader/tex_chunker toolchain tests
+test/text-display-decode-20261010	missing	cac74ba89	2026-10-10	1	0/1	0	1	0	1	1 file changed, 69 insertions(+)	test(utils): cover decode_escaped_unicode_for_display boundary cases
+test/textbook-struct-20261005	missing	44c1b8039	2026-10-05	2	0/2	0	2	0	1	2 files changed, 345 insertions(+)	test(textbook_struct): cover chapter rebuild boundaries and column blacklist
+test/think-stream-20261006	missing	115254ac7	2026-10-06	1	0/1	0	1	0	1	1 file changed, 201 insertions(+)	test: cover inline think stream splitter paths
+test/tika-formats-version-routing-20261010	missing	bac09d37f	2026-10-10	1	0/1	0	1	0	1	1 file changed, 135 insertions(+)	test(parsing): cover tika version floor boundaries and format routing hints
+test/title-service-20261006	missing	c7f868e62	2026-10-06	1	0/1	0	1	0	1	1 file changed, 354 insertions(+)	test: cover session title service guards, fallbacks and events
+test/tools-mastery-nav-coord-20261005	missing	3cceaf9b5	2026-10-05	2	0/2	0	2	0	1	2 files changed, 533 insertions(+)	test(tools): cover mastery navigation hand-offs and coordinate transforms
+test/topic-materials-exposure-chain-20261008	missing	37bbe6859	2026-10-09	1	0/1	0	1	0	1	1 file changed, 497 insertions(+)	Merge remote-tracking branch 'origin/main' into test/topic-materials-exposure-chain-20261008
+test/turn-engine-coord-types-20261007	missing	22b7027b5	2026-10-07	2	0/2	0	2	0	1	2 files changed, 392 insertions(+)	test(runtime): pin turn engine delegation and coordination type contracts
+test/turn-executor-20261005	missing	2f2f4f493	2026-10-05	1	0/1	0	1	0	1	1 file changed, 691 insertions(+)	test: cover turn executor mainline state transitions and error paths
+test/turn-protocol-contract-20261008	missing	2d3b117c3	2026-10-08	1	0/1	0	1	0	1	1 file changed, 369 insertions(+)	test(api): lock turn protocol v2 wire model contracts
+test/turn-subscribe-polling-20261006	missing	5ddc2a11c	2026-10-06	1	0/1	1	0	0	1	1 file changed, 14 insertions(+), 1 deletion(-)	test: wait for remote turn subscription via bounded reconcile poll
+test/upload-bounds-20261004	missing	9dd8660e1	2026-10-04	3	0/2	1	1	1	1	3 files changed, 382 insertions(+)	test(api): lock KB upload entry boundary behavior
+test/upload-bounds-20261004-v2	drift	cd7a18e63	2026-10-04	7	6/7	1	0	0	6	7 files changed, 2528 insertions(+), 4 deletions(-)	test(api): fold KB upload boundary cases into the guards suite
+test/usage-ledger-20261006	missing	6a0da02f7	2026-10-06	1	0/1	1	0	0	1	1 file changed, 151 insertions(+)	test: cover usage ledger tolerance and write concurrency
+test/usage-recovery-20261006	missing	6e3e49404	2026-10-06	1	0/1	0	1	0	1	1 file changed, 333 insertions(+)	test: cover session usage recovery attribution, idempotency and corrupted records
+test/utils-helpers-unit-20261007	missing	d8b0aefa3	2026-10-07	4	0/3	2	1	1	1	4 files changed, 200 insertions(+)	test(utils): cover error_utils and extend config/text-display boundary tests
+test/video-learning-router-contract-20261005	missing	e2110ab4c	2026-10-05	1	0/1	0	1	0	1	1 file changed, 551 insertions(+)	test: pin video_learning router contract surface
+test/videogen-contract-20261007	missing	98ce765c4	2026-10-07	2	0/2	0	2	0	1	2 files changed, 576 insertions(+)	test(videogen): cover adapter registry, task status transitions and config fallback
+test/vision-block-parser-20261006	missing	3dbc808e5	2026-10-06	1	0/1	0	1	0	1	1 file changed, 354 insertions(+)	test: add table-driven unit tests for vision block_parser
+test/vision-coord-transform-20261005	missing	7bbba59d6	2026-10-05	1	0/1	0	1	0	1	1 file changed, 310 insertions(+)	test(vision): table-driven edge cases for coord_transform
+test/vision-image-utils-20261004	missing	99c019058	2026-10-04	1	0/1	0	1	0	1	1 file changed, 409 insertions(+)	test(vision): cover image_utils URL/base64/mime edges and fetch paths
+test/vision-solver-agent-20261010	missing	b82c191a5	2026-10-10	1	0/1	0	1	0	1	1 file changed, 476 insertions(+)	test(vision_solver): cover process contract, param passthrough, failure paths
+test/visual-page-grounding-20261010	missing	24ef9a94b	2026-10-10	3	0/3	1	2	0	1	3 files changed, 239 insertions(+)	test: lock page citations, loop image delivery and lazy coverage
+test/visualization-viewer-20261004	landed	aae65bf7b	2026-10-04	4	1/1	0	0	3	0	4 files changed, 708 insertions(+)	test(web): cover VisualizationViewer render branches (mermaid/svg/chartjs/html/plugin/manim)
+test/visualize-codegen-contract-20261011	missing	c0b4ef48b	2026-10-11	1	0/1	0	1	0	1	1 file changed, 256 insertions(+)	test(visualize): cover code generator prompt assembly, parsing contract and degradation
+test/visualizers-router-error-branches-20261009	missing	e576654a3	2026-10-09	1	0/1	0	1	0	1	1 file changed, 188 insertions(+)	test(api): cover visualizer router error branches
+test/voice-openai-compat-contract	missing	8caa5032d	2026-10-07	1	0/1	0	1	0	1	1 file changed, 625 insertions(+)	test(voice): cover openai_compat adapter failure and fallback branches
+test/voice-speech-text-20261005	missing	4dfa1b85f	2026-10-05	1	0/1	0	1	0	1	1 file changed, 185 insertions(+)	test(voice): cover speech_text LaTeX verbalizer edge cases
+test/volcengine-voice-adapter-20261006	missing	a2531f038	2026-10-06	1	0/1	1	0	0	1	1 file changed, 196 insertions(+), 8 deletions(-)	test(voice): cover volcengine tts/stt validation, failure and parsing branches
+test/watching-migration-review-20261010	drift	2d619dc8c	2026-10-10	66	16/66	31	19	0	2	66 files changed, 1587 insertions(+), 3251 deletions(-)	test(video-learning): lock legacy watching migration fallback and timestamp contract
+test/web-403-empty-state-regression-20261006	missing	62479ae10	2026-10-06	3	0/3	0	3	0	1	3 files changed, 96 insertions(+)	test(web): pin 403-must-not-render-as-empty-state for partners, memory, agents
+test/web-403-remaining-empty-state-20261006	missing	4b8f3a72e	2026-10-06	2	0/2	0	2	0	1	2 files changed, 103 insertions(+)	test(web): pin 403-must-not-render-as-empty-state for space dashboard and chat starters
+test/web-activity-components-20261010	missing	5e8b635b1	2026-10-10	3	0/3	0	3	0	1	3 files changed, 314 insertions(+)	test(web): cover activity row, mark and header components
+test/web-app-update-lib-20261011	missing	b098a7a96	2026-10-11	1	0/1	1	0	0	1	1 file changed, 228 insertions(+)	test(web): cover app update degradation paths and backend contract
+test/web-attachment-limits-20261010	missing	c5bfdf841	2026-10-09	3	0/3	1	2	0	1	3 files changed, 396 insertions(+), 1 deletion(-)	test(web): cover chat attachment limits and file attachment helpers
+test/web-capabilities-tools-sections-20261009	missing	f9e946904	2026-10-09	4	0/4	0	4	0	1	4 files changed, 617 insertions(+)	test(web): cover capabilities and tools settings sections
+test/web-chat-autoscroll-stream-20261009	missing	23a6bfdc0	2026-10-09	2	0/2	0	2	0	1	2 files changed, 537 insertions(+)	test(web): cover chat autoscroll and smooth stream text hooks
+test/web-chat-idle-launch-20261009	missing	da970705f	2026-10-09	2	0/2	2	0	0	1	2 files changed, 88 insertions(+)	test(chat): cover idle-recovery window edges and launch-intent param defaults
+test/web-code-languages	missing	f76a53c9b	2026-10-09	1	0/1	0	1	0	1	1 file changed, 154 insertions(+)	test(web): add table-driven unit tests for code-languages mapping
+test/web-connections-editor-20261009	missing	b88c46119	2026-10-09	2	0/2	0	2	0	1	2 files changed, 831 insertions(+)	test(web): cover connections editor component paths
+test/web-courses-components-20261010	missing	38475ed9a	2026-10-10	3	0/3	0	3	0	1	3 files changed, 609 insertions(+)	test(courses): cover dialog form, syllabus rendering and resources operations
+test/web-epub-reader-nav	missing	eac84140f	2026-10-09	2	0/2	2	0	0	1	2 files changed, 105 insertions(+)	test(reading): cover epub page-turn boundaries and reader navigation edges
+test/web-hooks-unit-20261007	missing	0d76702db	2026-10-07	10	0/10	0	10	0	1	10 files changed, 1448 insertions(+)	test(web): add unit specs for core hooks
+test/web-ime-composing	missing	8097320d4	2026-10-09	1	0/1	0	1	0	1	1 file changed, 83 insertions(+)	test(web): cover useImeComposing composition guard state transitions
+test/web-kb-doclist-20261009	missing	9cefc3040	2026-10-09	1	0/1	0	1	0	1	1 file changed, 320 insertions(+)	test: cover KbDocumentList rendering branches with mocked API
+test/web-kb-files-tab-20261011	missing	a2fd99197	2026-10-11	1	0/1	0	1	0	1	1 file changed, 245 insertions(+)	test(web): cover KbFilesTab master-detail wiring
+test/web-knowledge-history-progress-20261009	missing	6acd8e099	2026-10-09	2	0/2	0	2	0	1	2 files changed, 556 insertions(+)	test(web): cover knowledge history and progress hooks
+test/web-latex-commands	missing	554e1e2fe	2026-10-09	1	0/1	0	1	0	1	1 file changed, 120 insertions(+)	test(web): cover latex command table queries, trigger filtering and malformed fallbacks
+test/web-llm-embedding-hooks-20261010	missing	758b5af63	2026-10-09	2	0/2	0	2	0	1	2 files changed, 265 insertions(+)	test(web): cover useLLMOptions and useEmbeddingModels hook contracts
+test/web-markdown-anchors	missing	9dca87906	2026-10-09	1	0/1	0	1	0	1	1 file changed, 138 insertions(+)	test(web): unit tests for citation anchor resolution helper
+test/web-mastery-hooks-20261009	missing	cfd64f022	2026-10-09	2	0/2	0	2	0	1	2 files changed, 701 insertions(+)	test: cover mastery path activity and study session hooks
+test/web-mastery-study-components	missing	f402bee2a	2026-10-11	3	0/3	0	3	0	1	3 files changed, 1163 insertions(+)	test(mastery): cover the study screen, objective detail and route edit dialog
+test/web-mcp-catalog-browser-20261009	missing	ef6461d94	2026-10-09	2	0/1	0	1	1	1	2 files changed, 562 insertions(+)	test: cover McpCatalogBrowser catalog browsing and install branches
+test/web-md-renderer-types	missing	37270ba57	2026-10-09	1	0/1	0	1	0	1	1 file changed, 205 insertions(+)	test(web): cover markdown renderer child guards and prop contract
+test/web-memory-section-smoke-20261009	missing	17acc1f18	2026-10-09	2	0/2	0	2	0	1	2 files changed, 732 insertions(+)	test(web): cover memory section and workbench component paths
+test/web-model-cards-settings	missing	f2df10760	2026-10-10	2	0/2	0	2	0	1	2 files changed, 433 insertions(+)	test(settings): cover model cards and capability fields interactions
+test/web-multiuser-api-20261009	missing	73163767d	2026-10-09	1	0/1	0	1	0	1	1 file changed, 309 insertions(+)	test: cover web multi-user api client request, envelope, and network paths
+test/web-my-agents-zero-20261009	missing	2357fcba4	2026-10-09	2	0/2	0	2	0	1	2 files changed, 771 insertions(+)	test(web): smoke coverage for MyAgents section and picker
+test/web-personas-section-20261010	missing	620973d17	2026-10-10	1	0/1	0	1	0	1	1 file changed, 288 insertions(+)	test(web): cover PersonasSection list, editor, viewer and delete flows
+test/web-preview-hooks-20261009	missing	68e04d4ca	2026-10-09	1	0/1	0	1	0	1	1 file changed, 314 insertions(+)	test(web): cover chat preview useTextSource/useBinarySource hooks
+test/web-provider-icon-contract-20261011	missing	641bc0b49	2026-10-11	1	0/1	0	1	0	1	1 file changed, 157 insertions(+)	test(web): contract tests for ProviderIcon icon mapping
+test/web-quiz-config-panel-20261009	missing	29bc74f8f	2026-10-09	2	0/2	0	2	0	1	2 files changed, 472 insertions(+)	test(web): add QuizConfigPanel config panel smoke coverage
+test/web-quiz-followup-context-20261008	missing	6c777346a	2026-10-09	1	0/1	0	1	0	1	1 file changed, 559 insertions(+)	test(quiz): cover QuizFollowupContext provider lifecycle
+test/web-reading-library-smoke-20261009	missing	0b95767fd	2026-10-09	2	0/2	0	2	0	2	2 files changed, 1170 insertions(+)	docs(web): record reading library zero-coverage test evidence
+test/web-reference-pickers	missing	48f6f5957	2026-10-10	2	0/2	0	2	0	1	2 files changed, 433 insertions(+)	test(web): cover chat book and reading reference pickers
+test/web-research-types-20261009	missing	a4a2039ea	2026-10-09	1	0/1	0	1	0	1	1 file changed, 318 insertions(+)	test(web): cover research config helpers with table-driven unit tests
+test/web-sched-recovery-1148	missing	de64269fc	2026-10-08	1	0/1	0	1	0	1	1 file changed, 423 insertions(+)	test(web-source): cover scheduler persistence, cancel and recovery
+test/web-session-unread-20261009	missing	ff8f8b50c	2026-10-09	1	0/1	0	1	0	1	1 file changed, 232 insertions(+)	test(web): cover session-unread reconcile and unread-store behavior
+test/web-settings-memory-network	missing	71f43aaeb	2026-10-10	2	0/2	0	2	0	1	2 files changed, 619 insertions(+)	test(web): cover memory and network settings sections
+test/web-setup-sync-device-hooks	missing	d5b21eb5e	2026-10-09	2	0/2	0	2	0	1	2 files changed, 305 insertions(+)	test(web): cover useSetupSync preference sync and useDevice viewport classes
+test/web-shared-ui-primitives	missing	e10322c4a	2026-10-09	4	0/4	0	4	0	1	4 files changed, 255 insertions(+)	test(web): add rendering behavior specs for shared/ui primitives
+test/web-sidebar-activity-20261009	missing	9bbe4f52c	2026-10-09	4	0/4	0	4	0	1	4 files changed, 746 insertions(+)	test(web): cover sidebar nav arrangement and session activity panel
+test/web-skills-cli-sections-20261009	missing	9ec7509a4	2026-10-09	4	0/4	0	4	0	1	4 files changed, 934 insertions(+)	test(web): smoke SkillsSection and CliAppsSection render branches
+test/web-source-sync-20261004	missing	2b34151a3	2026-10-04	2	0/1	0	1	1	1	2 files changed, 517 insertions(+)	test(web-source): cover sync lifecycle added/updated/failed/recovered states offline
+test/web-space-import-20261009	missing	32b5fc3b9	2026-10-09	2	0/2	0	2	0	1	2 files changed, 747 insertions(+)	test(web): smoke coverage for space import wizard and EduHub modal
+test/web-time-utils-spec	missing	bdf8fbb35	2026-10-09	1	0/1	0	1	0	1	1 file changed, 214 insertions(+)	test(web): add unit tests for time util libs
+test/web-use-drag-sort-20261008	missing	45cb63344	2026-10-09	1	0/1	0	1	0	1	1 file changed, 552 insertions(+)	test(web): cover useDragSort pointer, touch, and keyboard reordering
+test/web-use-group-session-20261009	missing	c9209ff92	2026-10-09	2	0/2	0	2	0	1	2 files changed, 1104 insertions(+)	test(web): cover useGroupSession hook state machine
+test/web-use-mcp-servers-20261009	missing	0a7a35c9a	2026-10-09	1	0/1	0	1	0	1	1 file changed, 487 insertions(+)	test(web): cover useMcpServers hook lifecycle and guard branches
+test/web-use-memory-run-20261009	missing	e2f697df3	2026-10-09	1	0/1	0	1	0	1	1 file changed, 484 insertions(+)	test(memory): cover useMemoryRun hook state machine transitions
+test/web-visualizers-api-viewer-20261009	missing	2b1fa198e	2026-10-09	2	0/2	0	2	0	1	2 files changed, 463 insertions(+)	test(web): cover visualizers api and viewer render branches
+test/web-viz-config-panel	missing	7bbc2b167	2026-10-09	1	0/1	0	1	0	1	1 file changed, 324 insertions(+)	test(web): cover VisualizeConfigPanel readback, fallbacks and change callbacks
+test/web-youtube-iframe-api	missing	4d303688f	2026-10-09	1	0/1	0	1	0	1	1 file changed, 217 insertions(+)	test(web): cover youtube-iframe-api loader lifecycle
+test/websocket-progress-error-paths-20261004	missing	6c6fe3a6b	2026-10-04	1	0/1	1	0	0	1	1 file changed, 238 insertions(+), 2 deletions(-)	test(knowledge): pin websocket_progress error-path degradation contracts
+test/websource-navigation-20261010	missing	9ad93db13	2026-10-10	1	0/1	0	1	0	1	1 file changed, 260 insertions(+)	test: cover web_source navigation tree assembly and manifest contract
+test/wecom-channel-20261007	missing	7b6e9a2cd	2026-10-07	1	0/1	1	0	0	1	1 file changed, 721 insertions(+), 1 deletion(-)	test(partners): strengthen WeCom channel contract coverage
+test/weixin-onboarding-20261005	missing	e6e0a0339	2026-10-05	1	0/1	1	0	0	1	1 file changed, 221 insertions(+)	test(partners): cover weixin onboarding expiry, cleanup and failure branches
+test/weixin-qr-parsing-20261009	missing	784ce2818	2026-10-09	1	0/1	0	1	0	1	1 file changed, 267 insertions(+)	test: pin the weixin QR exchange parsing contract
+test/whatsapp-channel-contract	missing	632682dc1	2026-10-10	1	0/1	1	0	0	1	1 file changed, 469 insertions(+), 6 deletions(-)	test: cover whatsapp channel parsing, dedup, streaming and bridge lifecycle
+test/worker-tasks-registry-20261007	missing	c902f5338	2026-10-07	1	0/1	0	1	0	1	1 file changed, 227 insertions(+)	test(runtime): pin isolated worker task registry contract
+test/workspace-dependencies-20261008	missing	d19417974	2026-10-08	1	0/1	0	1	0	1	1 file changed, 275 insertions(+)	test(workspace): cover dependency closure failure reporting
+test/workspace-navigation-20261010	missing	3deec8bb7	2026-10-10	1	0/1	0	1	0	1	1 file changed, 363 insertions(+)	test: cover workspace navigation index contracts with mocked storage
+test/workspace-preferences-upgrade-20261010	missing	eabfa7a6b	2026-10-10	1	0/1	0	1	0	1	1 file changed, 187 insertions(+)	test: pin workspace preference legacy upgrade contract
+test/workspace-prompt-contract-20261007	missing	bd57af355	2026-10-07	1	0/1	0	1	0	1	1 file changed, 152 insertions(+)	test(agents): cover shared workspace prompt assembly contract
+test/workspace-resources-contract-20261009	missing	c37005701	2026-10-09	1	0/1	0	1	0	1	1 file changed, 246 insertions(+)	test: cover workspace resource selection contract boundaries
+test/workspace-session-move-c89	missing	2fc9d6d22	2026-10-11	1	0/1	0	1	0	1	1 file changed, 220 insertions(+)	test(workspace): cover session_move contracts and legacy adoption retries
+test/write-note-failure-paths	missing	09192c044	2026-10-07	1	0/1	0	1	0	1	1 file changed, 470 insertions(+)	test(tools): cover write_note invalid-input, storage-failure and concurrency paths
+test/y-api-gateway-regression	missing	0c4d652df	2026-10-10	2	0/2	1	1	0	1	2 files changed, 201 insertions(+), 1 deletion(-)	test(providers): lock Y-API gateway base/key, parse, and error-envelope behavior
+test/zero-mods-batch3-20261006	missing	c3d0355f1	2026-10-06	4	0/4	0	4	0	1	4 files changed, 233 insertions(+)	test: add focused tests for four zero-coverage modules
+test/zero-mods-batch4-20261007	missing	8df310c90	2026-10-07	6	0/6	0	6	0	1	6 files changed, 280 insertions(+)	test: cover six zero-coverage micro modules
+test/zero-mods-batch5-20261010	missing	60a50b076	2026-10-10	2	0/2	0	2	0	1	2 files changed, 409 insertions(+)	test: cover capabilities settings router and web search tool wrapper
+test/zero-routers-batch2-20261005	missing	a091dc87a	2026-10-05	5	0/5	0	5	0	1	5 files changed, 772 insertions(+)	test(api): contract-cover attachments, visualizers, personas, dashboard and skills routers
+test/zhipu-search-provider-20261010	missing	6c12b2843	2026-10-10	1	0/1	0	1	0	1	1 file changed, 338 insertions(+)	test(search): pin zhipu provider request and parsing contract
+test/zulip-channel-polling-20261006	missing	bd60450c0	2026-10-06	1	0/1	1	0	0	1	1 file changed, 26 insertions(+), 9 deletions(-)	test: replace fixed delays with bounded polling in zulip channel tests
+tests/runtime/isolated-worker-memory-reclaim	missing	8aa95549b	2026-10-09	2	0/2	0	2	0	1	2 files changed, 284 insertions(+)	test: cover isolated worker failure paths and memory reclaim boundaries
+tests/spine-synthesizer-20261003	missing	ec9e82ac7	2026-10-03	1	0/1	1	0	0	1	1 file changed, 622 insertions(+)	test(book): cover SpineSynthesizer materialise, revise loop and fallback paths
+tests/spine-synthesizer-20261003-pr	landed	8e6dd4952	2026-10-03	2	1/1	0	0	1	3	2 files changed, 657 insertions(+)	docs: add PR evidence for spine_synthesizer coverage
+web/tests/chat-home-selectors-20261010	missing	15fcff10c	2026-10-10	3	0/3	0	3	0	1	3 files changed, 440 insertions(+)	test(web): cover chat home model/persona/knowledge selectors
+web/tests/guardian/structure-20261009	missing	77b964c9a	2026-10-09	3	0/3	0	3	0	1	3 files changed, 975 insertions(+)	test(web): add behavioral specs for guardian api and relationship editors
+web/tests/hooks/card-submission-setup-sync-20261009	missing	bf30d559b	2026-10-09	2	0/2	0	2	0	1	2 files changed, 366 insertions(+)	test(web): cover card submission and setup sync hooks
+web/tests/i18n/i18n-provider.spec.tsx	missing	f2731c3f6	2026-10-09	1	0/1	0	1	0	1	1 file changed, 186 insertions(+)	test(web): add I18nProvider behavior unit tests
+web/tests/learning-practice-review-20261010	missing	b3cfbc06f	2026-10-10	2	0/2	0	2	0	1	2 files changed, 421 insertions(+)	test(learning): cover PracticePage dispatch and ReviewHome stats loading
+web/tests/lib/book-refs-errors	missing	934ef0443	2026-10-09	2	0/2	0	2	0	1	2 files changed, 173 insertions(+)	test(web): cover book reference normalization and book error message fallback
+web/tests/lib/session-handoff-uuid	missing	8b538566d	2026-10-09	2	0/2	0	2	0	1	2 files changed, 307 insertions(+)	test(web): cover session handoff API contract and randomUuid fallbacks
+web/tests/lib/tool-event-settings	missing	1503ef29b	2026-10-09	2	0/2	0	2	0	1	2 files changed, 250 insertions(+)	test(web): cover tool event unwrap and tools settings cache
+web/tests/lib/workspace-drafts-presets-20261009	missing	25d355f9f	2026-10-09	3	0/3	0	3	0	1	3 files changed, 463 insertions(+)	test(web): cover workspace draft storage, settings presets and floating menu placement
+web/tests/misc-hooks-textarea-selection	missing	d56424b7b	2026-10-09	2	0/2	0	2	0	1	2 files changed, 239 insertions(+)	test(web): cover useAutoSizedTextarea and notebook selection type helpers
+web/tests/notebook-selection-knowledge-history-20261009	missing	d7c3e06ce	2026-10-09	2	0/2	0	2	0	1	2 files changed, 485 insertions(+)	test(web): cover useNotebookSelection and useKnowledgeHistory hooks
+web/tests/partner-pickers-20261010	missing	850cae0d4	2026-10-10	3	0/3	0	3	0	1	3 files changed, 632 insertions(+)	test(web): cover partner soul/tool/model pickers
+web/tests/partners-schema-form-20261009	missing	53f8802ab	2026-10-09	1	0/1	0	1	0	1	1 file changed, 462 insertions(+)	test: cover partners schema-form rendering, validation, payload assembly
+web/tests/reading/workspace-hooks-20261009	missing	98715ae15	2026-10-09	3	0/3	0	3	0	1	3 files changed, 399 insertions(+)	test(reading): cover learning-mode hook, workspace menu dispatch, and reading-actions context
+web/tests/research-outline-mdcore-20261009	missing	d6c4cb9b0	2026-10-09	2	0/2	0	2	0	1	2 files changed, 370 insertions(+)	test(web): cover research outline continuation and markdown renderer core
+web/tests/settings/usage-components	missing	45c3d5dba	2026-10-09	1	0/1	0	1	0	1	1 file changed, 236 insertions(+)	test(web): cover usage settings panel loading, empty, error and retry branches
+web/tests/sidebar-resize-hooks-20261009	missing	2033d68a1	2026-10-09	3	0/3	0	3	0	1	3 files changed, 621 insertions(+)	test(web): cover sidebar resize, linger expand and collapsible panel hooks
+web/tests/topic-source-library-20261009	missing	0e1de477f	2026-10-09	1	0/1	0	1	0	1	1 file changed, 449 insertions(+)	test(web): cover useTopicSourceLibrary loading, dedupe and invalidation
+web/tests/use-consultation-reference-20261009	missing	4494a0910	2026-10-09	1	0/1	0	1	0	1	1 file changed, 263 insertions(+)	test(web): cover useConsultationReference selection and cleanup semantics
+web/tests/use-runtime-status-split-pane-20261009	missing	931de9518	2026-10-09	2	0/2	0	2	0	1	2 files changed, 468 insertions(+)	test(web): cover useRuntimeStatus polling and useSplitPane drag clamping
+web/tests/voice/hooks-20261009	missing	0f2f72a59	2026-10-09	2	0/2	0	2	0	1	2 files changed, 449 insertions(+)	test(web): cover useVoiceRecorder and useVoiceMathSpeak hooks
+web/tests/watching-marks-panel-20261010	missing	486471f26	2026-10-10	1	0/1	0	1	0	1	1 file changed, 323 insertions(+)	test(web): cover WatchingMarksPanel rendering, callbacks and empty state
