@@ -1,0 +1,42 @@
+{
+  "declared_pools": [
+    "deeptour"
+  ],
+  "backlog_files": [
+    "deeptour.0priority.jsonl",
+    "deeptour.auto.jsonl",
+    "deeptour.consumed",
+    "deeptour.jsonl"
+  ],
+  "total_data_lines": 1076,
+  "unique_keys": 1076,
+  "duplicate_keys": 0,
+  "duplicate_extra_occurrences": 0,
+  "invalid_lines": 0,
+  "orphan_files": [],
+  "undeclared_executors": {},
+  "missing_declarations": [],
+  "consumed_overlap": {
+    "deeptour.consumed": 5
+  },
+  "dangling_after_deps": [],
+  "per_file": {
+    "deeptour.jsonl": {
+      "lines_total": 13,
+      "candidates": 13
+    },
+    "deeptour.0priority.jsonl": {
+      "lines_total": 11,
+      "candidates": 11
+    },
+    "deeptour.auto.jsonl": {
+      "lines_total": 1052,
+      "candidates": 1052
+    }
+  },
+  "executor_counts": {
+    "GLM 5.3": 289,
+    "GLM 5.3 Flash": 787
+  },
+  "conservation_ok": true
+}
