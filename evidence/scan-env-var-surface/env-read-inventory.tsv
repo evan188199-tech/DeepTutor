@@ -1,0 +1,183 @@
+# 变量名	读取位置	读取方式	入settings体系	env_keys/registry声明	三态结论	备注
+DEEPTUTOR_VERSION_CHECK_ENABLED	deeptutor/services/config/runtime_settings.py:842	process-override读侧	是	否	纳管	render_environment:706 导出
+BACKEND_PORT	deeptutor/services/config/runtime_settings.py:844	process-override读侧	是	否	纳管	render_environment:707 导出；launch_settings.py:91 直读同值
+BACKEND_PORT	deeptutor/services/config/launch_settings.py:91	os.getenv直读	是	否	纳管	launch 期与 settings 同源
+FRONTEND_PORT	deeptutor/services/config/runtime_settings.py:846	process-override读侧	是	否	纳管	render_environment:708 导出
+FRONTEND_PORT	deeptutor/services/config/launch_settings.py:92	os.getenv直读	是	否	纳管	同上
+NEXT_PUBLIC_API_BASE_EXTERNAL	deeptutor/services/config/runtime_settings.py:848	process-override读侧	是	否	纳管	render_environment:709 导出
+PUBLIC_API_BASE	deeptutor/services/config/runtime_settings.py:850	process-override读侧	是	否	疑似弃用	仅读侧遗留别名；导出侧只产 NEXT_PUBLIC_API_BASE_EXTERNAL
+NEXT_PUBLIC_API_BASE	deeptutor/services/config/runtime_settings.py:852	process-override读侧	是	否	纳管	render_environment:710 导出
+CORS_ORIGIN	deeptutor/services/config/runtime_settings.py:854	process-override读侧	是	否	纳管	render_environment:712 导出
+CORS_ORIGINS	deeptutor/services/config/runtime_settings.py:856	process-override读侧	是	否	纳管	render_environment:713 导出
+DISABLE_SSL_VERIFY	deeptutor/services/config/runtime_settings.py:858	process-override读侧	是	否	纳管	render_environment:715 导出
+CHAT_ATTACHMENT_DIR	deeptutor/services/config/runtime_settings.py:860	process-override读侧	是	否	纳管	render_environment:717 导出
+DEEPTUTOR_BACKEND_WORKERS	deeptutor/services/config/runtime_settings.py:863	process-override读侧	是	否	纳管	读侧首选名；导出侧用 BACKEND_WORKERS（命名漂移对）
+BACKEND_WORKERS	deeptutor/services/config/runtime_settings.py:864	process-override读侧	是	否	纳管	render_environment:717 导出旧名；建议统一 DEEPTUTOR_ 前缀
+DEEPTUTOR_SANDBOX_ALLOW_SUBPROCESS	deeptutor/services/config/runtime_settings.py:867	process-override读侧	是	否	纳管	render_environment:718 导出；sandbox/config.py:59 直读同值
+DEEPTUTOR_CAPABILITY_ROUTING_ENABLED	deeptutor/services/config/runtime_settings.py:869	process-override读侧	是	否	纳管	仅读侧
+CHAT_ATTACHMENT_MAX_FILE_MB	deeptutor/services/config/runtime_settings.py:871	process-override读侧	是	否	纳管	仅读侧
+CHAT_ATTACHMENT_MAX_TOTAL_MB	deeptutor/services/config/runtime_settings.py:873	process-override读侧	是	否	纳管	仅读侧
+CHAT_ATTACHMENT_MAX_CHARS_PER_DOC	deeptutor/services/config/runtime_settings.py:875	process-override读侧	是	否	纳管	仅读侧
+CHAT_ATTACHMENT_MAX_CHARS_TOTAL	deeptutor/services/config/runtime_settings.py:877	process-override读侧	是	否	纳管	仅读侧
+CHAT_PRIOR_IMAGE_REINJECT_MAX	deeptutor/services/config/runtime_settings.py:879	process-override读侧	是	否	纳管	仅读侧
+AUTH_ENABLED	deeptutor/services/config/runtime_settings.py:886	process-override读侧	是	否	纳管	render_environment:720 导出
+NEXT_PUBLIC_AUTH_ENABLED	deeptutor/services/config/runtime_settings.py:887	process-override读侧	是	否	纳管	render_environment:729 导出
+AUTH_USERNAME	deeptutor/services/config/runtime_settings.py:890	process-override读侧	是	否	纳管	render_environment:721 导出
+AUTH_PASSWORD_HASH	deeptutor/services/config/runtime_settings.py:892	process-override读侧	是	否	纳管	render_environment:722 导出
+AUTH_TOKEN_EXPIRE_HOURS	deeptutor/services/config/runtime_settings.py:894	process-override读侧	是	否	纳管	render_environment:723 导出
+AUTH_COOKIE_SECURE	deeptutor/services/config/runtime_settings.py:896	process-override读侧	是	否	纳管	render_environment:724 导出
+AUTH_PRIVATE_LOGIN_HOSTS	deeptutor/services/config/runtime_settings.py:898	process-override读侧	是	否	纳管	render_environment:725 导出
+POCKETBASE_URL	deeptutor/services/config/runtime_settings.py:904	process-override读侧	是	否	纳管	render_environment:730 导出
+POCKETBASE_PORT	deeptutor/services/config/runtime_settings.py:906	process-override读侧	是	否	纳管	render_environment:731 导出
+POCKETBASE_EXTERNAL_URL	deeptutor/services/config/runtime_settings.py:908	process-override读侧	是	否	纳管	render_environment:732 导出
+POCKETBASE_ADMIN_EMAIL	deeptutor/services/config/runtime_settings.py:910	process-override读侧	是	否	纳管	render_environment:733 导出
+POCKETBASE_ADMIN_PASSWORD	deeptutor/services/config/runtime_settings.py:912	process-override读侧	是	否	纳管	render_environment:734 导出
+DEEPTUTOR_TURN_COORDINATION_BACKEND	deeptutor/services/config/runtime_settings.py:915	process-override读侧	是	否	纳管	仅读侧
+DEEPTUTOR_REDIS_URL	deeptutor/services/config/runtime_settings.py:917	process-override读侧	是	否	纳管	仅读侧
+DEEPTUTOR_REDIS_KEY_PREFIX	deeptutor/services/config/runtime_settings.py:919	process-override读侧	是	否	纳管	仅读侧
+MINERU_MODE	deeptutor/services/config/runtime_settings.py:926	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_API_BASE_URL	deeptutor/services/config/runtime_settings.py:928	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_API_TOKEN	deeptutor/services/config/runtime_settings.py:930	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_LOCAL_CLI_PATH	deeptutor/services/config/runtime_settings.py:932	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_MODEL_SOURCE	deeptutor/services/config/runtime_settings.py:934	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_MODEL_DOWNLOAD_ENDPOINT	deeptutor/services/config/runtime_settings.py:936	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_MODEL_VERSION	deeptutor/services/config/runtime_settings.py:938	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_LANGUAGE	deeptutor/services/config/runtime_settings.py:940	process-override读侧	是	否	纳管	mineru settings 映射
+MINERU_ALLOW_LOCAL_MODEL_DOWNLOAD	deeptutor/services/config/runtime_settings.py:942	process-override读侧	是	否	纳管	mineru settings 映射
+PAGEINDEX_API_KEY	deeptutor/services/config/runtime_settings.py:948	process-override读侧	是	否	纳管	pageindex settings 映射
+IMA_CLIENT_ID	deeptutor/services/config/runtime_settings.py:960	process-override读侧	是	否	纳管	ima settings 映射
+IMA_API_KEY	deeptutor/services/config/runtime_settings.py:962	process-override读侧	是	否	纳管	ima settings 映射
+DEEPTUTOR_RAG_RETRIEVAL_PROFILE	deeptutor/services/config/runtime_settings.py:978	process-override读侧	是	否	纳管	主名；rag/pipelines/llamaindex/config.py:95 直读
+RAG_RETRIEVAL_PROFILE	deeptutor/services/config/runtime_settings.py:979	process-override读侧	是	否	疑似弃用	遗留别名；rag/pipelines/llamaindex/config.py:95 同读
+RAG_RETRIEVAL_PROFILE	deeptutor/services/rag/pipelines/llamaindex/config.py:95	os.getenv直读	是	否	疑似弃用	与 DEEPTUTOR_ 主名并存（命名漂移）
+DOCLING_MODE	deeptutor/services/config/runtime_settings.py:1195	process-override读侧	是	否	纳管	docling settings 映射
+DOCLING_API_BASE_URL	deeptutor/services/config/runtime_settings.py:1197	process-override读侧	是	否	纳管	docling settings 映射
+DOCLING_API_TOKEN	deeptutor/services/config/runtime_settings.py:1199	process-override读侧	是	否	纳管	docling settings 映射
+TIKA_SERVER_URL	deeptutor/services/config/runtime_settings.py:1211	process-override读侧	是	否	纳管	tika settings 映射
+LLM_RETRY__MAX_RETRIES	deeptutor/config/settings.py:43-50	pydantic BaseSettings	是	否	纳管	env_prefix=LLM_ + __ 嵌套分隔符
+LLM_RETRY__BASE_DELAY	deeptutor/config/settings.py:43-50	pydantic BaseSettings	是	否	纳管	同上
+LLM_RETRY__EXPONENTIAL_BACKOFF	deeptutor/config/settings.py:43-50	pydantic BaseSettings	是	否	纳管	同上
+BRAVE_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:147)	纳管	引导写入 settings 文件
+TAVILY_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:154)	纳管	同上
+JINA_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:161)	纳管	同上
+SERPER_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:168)	纳管	同上
+SERPLY_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:175)	纳管	同上
+PERPLEXITY_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:182)	纳管	同上
+FIRECRAWL_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:189)	纳管	同上
+ARK_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:199)	纳管	主名
+DOUBAO_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:199)	纳管	ARK_API_KEY 兼容别名（漂移）
+BOCHA_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:206)	纳管	独立主名
+ZHIPU_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:213)	纳管	主名
+ZHIPUAI_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:213)	纳管	兼容别名（漂移）；另见 provider_registry.py:478 env_extras 写入同名
+QIANFAN_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:220)	纳管	主名；另见 provider_registry.py env_key
+BAIDU_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:220)	纳管	QIANFAN_API_KEY 兼容别名（漂移）
+ALIYUN_IQS_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:227)	纳管	主名
+IQS_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (init_wizard.py:227)	纳管	ALIYUN_IQS_API_KEY 兼容别名（漂移）
+SEARCH_API_KEY	deeptutor_cli/init_wizard.py:566	env_keys自动探测	是(env_keys)	是 (全部搜索provider回退)	纳管	共享通用回退名（漂移：一个名字对应多 provider）
+(provider api_key_env 动态名)	deeptutor_cli/setup_config.py:83	os.environ.get动态	是(配置文件驱动)	否	纳管	变量名来自 settings 配置文件的 api_key_env 字段
+OPENROUTER_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:223)	纳管	litellm 读取（库内，不在仓内）
+EDENAI_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:235)	纳管	同上
+OPENAI_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:245,256,357,368,379,391,417)	纳管	多 provider 复用；llm/config.py:79、client.py:116 亦写入
+NOVITA_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:266)	纳管	litellm 读取
+ATLASCLOUD_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:276)	纳管	litellm 读取
+UNIFICALLY_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:286)	纳管	litellm 读取
+CHEAPER_INFERENCE_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:296)	纳管	litellm 读取
+API_ROUTE_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:306)	纳管	litellm 读取
+REQUESTY_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:316)	纳管	litellm 读取
+FUTUREINFRA_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:326)	纳管	litellm 读取
+OPPER_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:336)	纳管	litellm 读取
+Y_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:346)	纳管	litellm 读取
+ANTHROPIC_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:403)	纳管	litellm 读取
+DEEPSEEK_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:456)	纳管	litellm 读取
+GEMINI_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:467)	纳管	litellm 读取
+ZAI_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:475)	纳管	env_extras 另写 ZHIPUAI_API_KEY（registry.py:478）
+DASHSCOPE_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py:484)	纳管	litellm 读取
+HOSTED_VLLM_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+LEMONADE_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+LM_STUDIO_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+MINIMAX_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+MISTRAL_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+MOONSHOT_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+NVIDIA_NIM_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+OLLAMA_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+QIANFAN_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	与 init_wizard env_keys 双通道
+STEPFUN_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+XIAOMIMIMO_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	litellm 读取
+GROQ_API_KEY	deeptutor/services/llm/provider_core/openai_compat_provider.py:258-266	_setup_env写入(registry)	是(registry)	是 (provider_registry.py(env_key))	纳管	另见下方旁路直读
+GROQ_API_KEY	deeptutor/partners/transcription.py:18	os.environ.get直读	是(registry)	是 (provider_registry.py(env_key))	纳管	transcription 旁路直读 registry 同名变量（隐式耦合）
+CODEBUDDY_API_KEY	deeptutor/services/llm/provider_core/codebuddy_provider.py:784-792	os.environ读+写	是(registry)	是 (provider_registry.py:446)	纳管	codebuddy_http_provider.py:208 同读
+CODEBUDDY_API_KEY	deeptutor/services/llm/provider_core/codebuddy_http_provider.py:208	os.environ.get直读	是(registry)	是 (provider_registry.py:446)	纳管	同上
+LEARNING_DEBUG	deeptutor/learning/scheduler.py:130	os.environ.get直读	否	否	未纳管	调试开关，未入 settings
+DEEPTUTOR_HOME	deeptutor/runtime/home.py:40	os.getenv直读	否	否	未纳管	运行时家目录覆盖（基础设施定位，有意绕过 settings）
+DEEPTUTOR_HOME	deeptutor/runtime/launcher.py:1426	os.environ写	否	否	未纳管	写侧；deeptutor_cli/setup_config.py:71 同写
+DEEPTUTOR_MODE	deeptutor/runtime/mode.py:22	os.environ.get直读	否	否	未纳管	mode.py:39 同名写（进程内状态）
+DEEPTUTOR_BACKEND_READY_TIMEOUT	deeptutor/runtime/launcher.py:51,61	os.environ.get直读	否	否	未纳管	部署调优（#1435）
+DEEPTUTOR_FRONTEND_READY_TIMEOUT	deeptutor/runtime/launcher.py:51,62	os.environ.get直读	否	否	未纳管	同上
+DEEPTUTOR_DETACHED_TOKEN	deeptutor/runtime/launcher.py:1420	os.getenv直读	否	否	未纳管	父子进程内部协议变量
+DEEPTUTOR_DETACHED_WORKER	deeptutor/runtime/launcher.py:1421	os.getenv直读	否	否	未纳管	同上
+DEEPTUTOR_SUPERVISOR_PID	deeptutor/runtime/memory_probe.py:100	os.environ.get直读	否	否	未纳管	进程内部协议变量
+DEEPTUTOR_ISOLATED_WORKERS	deeptutor/runtime/isolated_worker.py:29	os.environ.get直读	否	否	未纳管	worker 并发数，未入 settings
+DEEPTUTOR_DEV_RELOAD	deeptutor/api/run_server.py:68	os.environ.get直读	否	否	未纳管	开发模式开关
+AUTH_TRUSTED_FRONTEND_PROXY_IPS	deeptutor/api/routers/auth.py:117	os.environ.get直读	否	否	未纳管	与 settings 导出的 AUTH_PRIVATE_LOGIN_HOSTS 并行存在（漂移）
+LOCALAPPDATA	deeptutor/services/codebuddy_credentials.py:89	os.environ.get直读	否	否	未纳管	Windows OS 标准变量
+XDG_DATA_HOME	deeptutor/services/codebuddy_credentials.py:96	os.environ.get直读	否	否	未纳管	XDG 标准变量
+DEEPTUTOR_CODEBUDDY_AUTH_FILE	deeptutor/services/codebuddy_credentials.py:104	os.environ.get直读	否	否	未纳管	凭据文件覆盖
+CODEBUDDY_BASE_URL	deeptutor/services/codebuddy_credentials.py:166	os.environ.get直读	否	否	未纳管	端点覆盖，未入 settings
+CODEBUDDY_INTERNET_ENVIRONMENT	deeptutor/services/codebuddy_credentials.py:171	os.environ.get直读	否	否	未纳管	环境选择，未入 settings
+DEEPTUTOR_CODEBUDDY_BACKEND	deeptutor/services/llm/provider_core/codebuddy_http_provider.py:229	os.environ.get直读	否	否	未纳管	后端选择，未入 settings
+ENVIRONMENT	deeptutor/services/llm/openai_http_client.py:36	os.getenv直读	否	否	未纳管	prod 探测；通用名，跨栈碰撞风险
+SSL_CERT_FILE	deeptutor/services/llm/openai_http_client.py:55-71	os.environ.get直读	否	否	未纳管	Python/OS 标准 CA 变量；多处 keep 列表引用
+SSL_CERT_DIR	deeptutor/services/llm/openai_http_client.py:55-71	os.environ.get直读	否	否	未纳管	同上
+LLM_TREAT_PRIVATE_AS_LOCAL	deeptutor/services/llm/utils.py:73	os.environ.get直读	否	否	未纳管	LLM 隐私判定开关，未入 settings
+UI_LANGUAGE	deeptutor/services/config/launch_settings.py:94	os.getenv直读	否	否	未纳管	launch 期 UI 语言主名
+LANGUAGE	deeptutor/services/config/launch_settings.py:95	os.getenv直读	否	否	未纳管	UI_LANGUAGE 回退（POSIX 惯例，漂移对）
+DEEPTUTOR_WORKSPACE_ROOT	deeptutor/services/workspace/service.py:98	os.environ.get直读	否	否	未纳管	compose.yaml 引用；未入 settings
+DEEPTUTOR_WORKSPACE_ALLOWED_ROOTS	deeptutor/services/workspace/service.py:102	os.environ.get直读	否	否	未纳管	compose.yaml 引用；未入 settings
+LANG	deeptutor/services/workspace/execution.py:96	os.environ.get直读	否	否	未纳管	子进程默认 locale（OS 标准）
+PUID	deeptutor/services/setup/data_volume.py:149	os.environ.get直读	否	否	未纳管	容器惯例主名
+DEEPTUTOR_PUID	deeptutor/services/setup/data_volume.py:149	os.environ.get直读	否	否	未纳管	PUID 别名（漂移）
+PGID	deeptutor/services/setup/data_volume.py:150	os.environ.get直读	否	否	未纳管	容器惯例主名
+DEEPTUTOR_PGID	deeptutor/services/setup/data_volume.py:150	os.environ.get直读	否	否	未纳管	PGID 别名（漂移）
+PATH	deeptutor/services/cli_apps/runner.py:135	os.environ.get直读	否	否	未纳管	OS 标准；多处子进程白名单引用
+DEEPTUTOR_CLI_APP_INSTALL_TIMEOUT_S	deeptutor/services/cli_apps/installer.py:60	os.environ.get直读	否	否	未纳管	安装超时，未入 settings
+DEEPTUTOR_PUBLIC_URL	deeptutor/services/mcp/oauth.py:230	os.environ.get直读	否	否	未纳管	外部可达地址；video_learning/invidious_account.py:47 同读（两处一致）
+DEEPTUTOR_PUBLIC_URL	deeptutor/video_learning/invidious_account.py:47	os.environ.get直读	否	否	未纳管	同上
+RAG_PROVIDER	deeptutor/services/rag/service.py:350	os.getenv直读	否	否	未纳管	RAG 后端选择，未入 settings
+DEEPTUTOR_LINKED_FOLDER_ROOTS	deeptutor/services/rag/linked_kb.py:77	os.environ.get直读	否	否	未纳管	链接文件夹根，未入 settings
+OPENAI_API_KEY	deeptutor/services/search/source_filter.py:537	os.environ.get直读	是(registry)	是 (provider_registry.py:245)	纳管	moderation 旁路直读 registry 同名变量
+DEEPTUTOR_OPENAI_API_KEY	deeptutor/services/search/source_filter.py:537	os.environ.get直读	否	否	疑似弃用	OPENAI_API_KEY 别名（漂移），registry/env_keys 均无声明
+GOOGLE_WEB_RISK_API_KEY	deeptutor/services/search/source_filter.py:546	os.environ.get直读	否	否	未纳管	Web Risk 主名
+WEB_RISK_API_KEY	deeptutor/services/search/source_filter.py:546	os.environ.get直读	否	否	疑似弃用	GOOGLE_WEB_RISK_API_KEY 别名（漂移）
+DEEPTUTOR_SANDBOX_RUNNER_URL	deeptutor/services/sandbox/config.py:58	os.environ.get直读	否	否	未纳管	compose.yaml 引用；settings 读侧无
+DEEPTUTOR_SANDBOX_MAX_CONCURRENT	deeptutor/services/sandbox/config.py:37,53	os.environ.get直读	否	否	未纳管	常量 MAX_CONCURRENT_ENV
+DEEPTUTOR_SANDBOX_MAX_PER_MINUTE	deeptutor/services/sandbox/config.py:38,53	os.environ.get直读	否	否	未纳管	常量 MAX_PER_MINUTE_ENV
+DEEPTUTOR_RUNNER_ALLOWED_WORKDIRS	deeptutor/services/sandbox/runner/server.py:159	os.environ.get直读	否	否	未纳管	Dockerfile.runner/compose 引用
+RUNNER_PORT	deeptutor/services/sandbox/runner/server.py:359	os.environ.get直读	否	否	未纳管	sandbox runner 端口
+GITHUB_TOKEN	deeptutor/services/github_source/client.py:55	os.environ.get直读	否	否	未纳管	GitHub 标准名
+DEEPTUTOR_GITHUB_COPILOT_CLIENT_ID	deeptutor/services/github_copilot_auth.py:66	os.environ.get直读	否	否	未纳管	OAuth 端点覆盖组
+DEEPTUTOR_GITHUB_DEVICE_CODE_URL	deeptutor/services/github_copilot_auth.py:67	os.environ.get直读	否	否	未纳管	同上
+DEEPTUTOR_GITHUB_ACCESS_TOKEN_URL	deeptutor/services/github_copilot_auth.py:68-70	os.environ.get直读	否	否	未纳管	同上
+DEEPTUTOR_GITHUB_USER_URL	deeptutor/services/github_copilot_auth.py:71	os.environ.get直读	否	否	未纳管	同上
+DEEPTUTOR_COPILOT_TOKEN_URL	deeptutor/services/github_copilot_auth.py:175	os.environ.get直读	否	否	未纳管	同上
+DEEPTUTOR_COPILOT_BASE_URL	deeptutor/services/github_copilot_auth.py:191	os.environ.get直读	否	否	未纳管	同上
+DOCLING_CACHE_DIR	deeptutor/services/parsing/engines/docling/engine.py:45	os.environ.get直读	否	否	未纳管	docling 库惯例变量
+DOCLING_ARTIFACTS_PATH	deeptutor/services/parsing/engines/docling/engine.py:52	os.environ.get直读	否	否	未纳管	同上
+HF_HOME	deeptutor/services/parsing/engines/docling/engine.py:59	os.environ.get直读	否	否	未纳管	HuggingFace 标准变量；mineru/readiness.py:35 同读
+HF_HOME	deeptutor/services/parsing/engines/mineru/readiness.py:35	os.environ.get直读	否	否	未纳管	同上
+MODELSCOPE_CACHE	deeptutor/services/parsing/engines/mineru/readiness.py:41	os.environ.get直读	否	否	未纳管	ModelScope 标准变量
+DEEPTUTOR_CONTAINER	deeptutor/services/app_update.py:155	os.getenv直读	否	否	未纳管	部署形态探测（非配置）
+INVOCATION_ID	deeptutor/services/app_update.py:208,216	os.getenv直读	否	否	未纳管	systemd 环境探测（平台检测，非配置）
+DEEPTUTOR_LAUNCHER_PID	deeptutor/services/app_update.py:615	os.getenv直读	否	否	未纳管	进程内部协议变量
+CODEX_HOME	deeptutor/services/subagent/models.py:139	os.environ.get直读	否	否	未纳管	Codex CLI 标准家目录变量
+DEEPTUTOR_HERMES_REMOTE_API_KEY	deeptutor/services/subagent/hermes_remote.py:77	os.environ.get直读	否	否	未纳管	config.api_key_env 默认名（subagent/config.py:81，可按远程配置改）
+DSH_HOME	deeptutor/services/subagent/deepseek_harness.py:254	os.environ.get直读	否	否	未纳管	DSH 家目录覆盖
+DEEPTUTOR_HUB_TOKEN	deeptutor_cli/skill.py:34	os.environ.get直读	否	否	未纳管	hub token 主名
+EDUHUB_TOKEN	deeptutor_cli/skill.py:35	os.environ.get直读	否	否	疑似弃用	DEEPTUTOR_HUB_TOKEN 别名（漂移）
+(技能清单动态名)	deeptutor/services/skill/service.py:387	os.environ.get动态	否	否	未纳管	变量名来自技能定义 requires.env
+DEEPTUTOR_WORKSPACE_HOST	scripts/docker_compose.py:88	os.environ.get直读	否	否	未纳管	开发脚本工具
+DISCORD_BOT_TOKEN	scripts/export_discord_history.py:605	os.getenv直读	否	否	未纳管	运维脚本（常量 TOKEN_ENV_VAR）
+PYTHONUNBUFFERED	deeptutor/api/run_server.py:23	os.environ写	否	否	未纳管	写侧（进程卫生）
+TERM	deeptutor/services/subagent/claude_models.py:162	os.environ写	否	否	未纳管	写侧（子进程终端控制）
+COLUMNS	deeptutor/services/subagent/claude_models.py:163	os.environ写	否	否	未纳管	写侧
+LINES	deeptutor/services/subagent/claude_models.py:164	os.environ写	否	否	未纳管	写侧
+OPENAI_BASE_URL	deeptutor/services/llm/config.py:86	os.environ写	是(registry)	否	纳管	client.py:123 同写；litellm 读取（库内）
