@@ -83,6 +83,7 @@ from deeptutor.services.llm import get_llm_config, prepare_multimodal_messages
 from deeptutor.services.llm.reasoning_params import RETRY_REASONING_EFFORT
 from deeptutor.services.prompt import get_prompt_manager
 from deeptutor.services.prompt.language import append_language_directive
+from deeptutor.services.references.rule_filter import filter_sources_for_display
 from deeptutor.services.sandbox import exec_capability_available
 from deeptutor.utils.json_parser import parse_json_response
 
@@ -2091,7 +2092,9 @@ class _BaseLoopHost:
             source for source in outcome.sources if source.get("type") == "pageindex"
         ]
         if pageindex_sources:
-            await self._stream.sources(pageindex_sources, source=SOURCE, stage=self._stage)
+            await self._stream.sources(
+                filter_sources_for_display(pageindex_sources), source=SOURCE, stage=self._stage
+            )
         return outcome
 
     async def resolve_pause(self, dispatch: DispatchOutcome) -> bool:

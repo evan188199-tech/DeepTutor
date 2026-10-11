@@ -81,6 +81,7 @@ from deeptutor.services.llm.request_compat import (
 )
 from deeptutor.services.llm.usage_frame import usage_breakdown
 from deeptutor.services.llm.utils import unreachable_endpoint_hint
+from deeptutor.services.references.rule_filter import filter_sources_for_display
 from deeptutor.services.session.provider_response_state import (
     normalize_provider_response_state,
 )
@@ -369,7 +370,7 @@ class AgentLoop:
 
         if state.sources:
             await self.stream.sources(
-                state.sources,
+                filter_sources_for_display(state.sources),
                 source=self.source,
                 stage=self.stage,
                 metadata={"trace_kind": "sources"},

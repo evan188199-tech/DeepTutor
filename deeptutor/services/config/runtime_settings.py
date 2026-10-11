@@ -50,6 +50,17 @@ DEFAULT_SYSTEM_SETTINGS: dict[str, Any] = {
         "use_educational_trusted_domains": False,
         "use_moderation": False,
     },
+    # Local rule policy applied to reference rows right before they are
+    # surfaced to users (#375): domain blacklist/whitelist plus keyword
+    # rules, no external API. Disabled by default so the emitted references
+    # stay byte-identical until an operator opts in. Consumed by
+    # ``deeptutor.services.references.rule_filter``.
+    "reference_output_filtering": {
+        "enabled": False,
+        "blocked_domains": [],
+        "trusted_domains": [],
+        "blocked_keywords": [],
+    },
     # Chat attachment policy. Size caps gate what the composer accepts and
     # what the turn runtime / partner upload endpoints extract; the char
     # budgets bound how much extracted text is inlined into the LLM context
@@ -1249,6 +1260,8 @@ class RuntimeSettingsService:
         )
         raw_source_filter = settings.get("web_search_source_filtering")
         source_filter = raw_source_filter if isinstance(raw_source_filter, dict) else {}
+        raw_reference_filter = settings.get("reference_output_filtering")
+        reference_filter = raw_reference_filter if isinstance(raw_reference_filter, dict) else {}
         max_file_mb = _coerce_clamped_int(
             settings.get("chat_attachment_max_file_mb"),
             DEFAULT_SYSTEM_SETTINGS["chat_attachment_max_file_mb"],
@@ -1288,6 +1301,12 @@ class RuntimeSettingsService:
                     source_filter.get("use_educational_trusted_domains"), False
                 ),
                 "use_moderation": _coerce_bool(source_filter.get("use_moderation"), False),
+            },
+            "reference_output_filtering": {
+                "enabled": _coerce_bool(reference_filter.get("enabled"), False),
+                "blocked_domains": _string_or_list(reference_filter.get("blocked_domains")),
+                "trusted_domains": _string_or_list(reference_filter.get("trusted_domains")),
+                "blocked_keywords": _string_or_list(reference_filter.get("blocked_keywords")),
             },
             "chat_attachment_max_file_mb": max_file_mb,
             "chat_attachment_max_total_mb": max_total_mb,
