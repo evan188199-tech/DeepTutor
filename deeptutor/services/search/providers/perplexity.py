@@ -1,7 +1,8 @@
 """
 Perplexity AI Search Provider
 
-API: Uses perplexity Python package
+API: Uses the official Perplexity SDK (PyPI package `perplexityai`,
+imported as `perplexity`)
 Model: sonar (default)
 
 Features:
@@ -23,7 +24,7 @@ class PerplexityProvider(BaseSearchProvider):
     """Perplexity AI search provider"""
 
     description = "AI-powered search with answers"
-    BASE_URL = "https://api.perplexity.ai"  # Used by the perplexity package internally
+    BASE_URL = "https://api.perplexity.ai"  # Used internally by the perplexityai SDK
 
     def __init__(self, api_key: str | None = None, **kwargs: Any) -> None:
         super().__init__(api_key, **kwargs)
@@ -37,8 +38,8 @@ class PerplexityProvider(BaseSearchProvider):
                 from perplexity import Perplexity
             except ImportError as e:
                 raise ImportError(
-                    "perplexityai module is not installed. To use Perplexity search, please install: "
-                    "pip install perplexityai"
+                    "The 'perplexity' module isn't installed. Perplexity search needs "
+                    "the official Perplexity SDK, installed with: pip install perplexityai"
                 ) from e
             self._client = Perplexity(api_key=self.api_key)
         return self._client

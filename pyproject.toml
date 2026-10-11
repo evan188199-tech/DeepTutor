@@ -51,7 +51,10 @@ dependencies = [
     # Full app dependencies included by default for `pip install deeptutor`.
     "anthropic>=0.30.0",
     "dashscope>=1.14.0",
-    "perplexityai>=0.1.0",
+    # Official Perplexity SDK: the PyPI distribution is `perplexityai` but the
+    # module it installs is `perplexity` (what the search provider imports).
+    # 0.7.0 is the first release shipping the `chat.completions` API it calls.
+    "perplexityai>=0.7.0",
     "oauth-cli-kit>=0.1.1",
     "llama-index>=0.14.12",
     # The current BM25 integration pins PyStemmer <3, whose 2.x line has no
@@ -113,7 +116,7 @@ cli = [
     # LLM provider SDKs
     "anthropic>=0.30.0",
     "dashscope>=1.14.0",
-    "perplexityai>=0.1.0",
+    "perplexityai>=0.7.0",
     "oauth-cli-kit>=0.1.1",
     "pageindex>=0.2.10,<0.3.0",
     # RAG (LlamaIndex)

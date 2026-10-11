@@ -19,7 +19,7 @@ tiktoken>=0.5.0
 # --- LLM provider SDKs ---
 anthropic>=0.30.0
 dashscope>=1.14.0
-perplexityai>=0.1.0
+perplexityai>=0.7.0
 oauth-cli-kit>=0.1.1; python_version >= "3.11"
 
 # --- HTTP clients ---

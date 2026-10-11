@@ -43,7 +43,7 @@ dependencies = [
     "qrcode>=7.4.0,<9.0.0",
     "anthropic>=0.30.0",
     "dashscope>=1.14.0",
-    "perplexityai>=0.1.0",
+    "perplexityai>=0.7.0",
     "oauth-cli-kit>=0.1.1",
     "llama-index>=0.14.12",
     # PyStemmer 2.x has no Python 3.14 wheel; the runtime falls back to vector
