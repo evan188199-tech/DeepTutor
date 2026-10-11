@@ -2,16 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
 
-function listCodeFiles(dir) {
-  const out = [];
-  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (ent.name === "node_modules" || ent.name === ".next") continue;
-    const full = path.join(dir, ent.name);
-    if (ent.isDirectory()) out.push(...listCodeFiles(full));
-    else if (ent.isFile() && /\.tsx?$/.test(ent.name)) out.push(full);
-  }
-  return out;
-}
+import {
+  AUDIT_SOURCE_DIRS,
+  collectUsedKeys,
+  listCodeFiles,
+  literalKeys,
+  missingUsedKeys,
+  translationKeys,
+} from "./i18n_audit_lib.mjs";
 
 function toRel(p, root) {
   return path.relative(root, p).replaceAll("\\", "/");
@@ -50,7 +48,7 @@ function auditFile(content, file) {
 }
 
 const webRoot = path.resolve(process.cwd());
-const targets = ["app", "components", "features", "hooks", "lib", "shared"]
+const targets = AUDIT_SOURCE_DIRS
   .map((dir) => path.join(webRoot, dir))
   .filter((dir) => fs.existsSync(dir));
 
@@ -60,37 +58,6 @@ const fileFilter =
   fileFilterIdx >= 0 ? String(process.argv[fileFilterIdx + 1] || "").trim() : "";
 const showAll = process.argv.includes("--show-all");
 
-/** Parse literal keys without mistaking comments, escapes or plural keys for gaps. */
-function literalKeys(expression) {
-  if (!expression) return [];
-  if (ts.isStringLiteral(expression) || ts.isNoSubstitutionTemplateLiteral(expression)) {
-    return [expression.text];
-  }
-  if (ts.isConditionalExpression(expression)) {
-    return [...literalKeys(expression.whenTrue), ...literalKeys(expression.whenFalse)];
-  }
-  return [];
-}
-
-function translationKeys(file, content) {
-  const source = ts.createSourceFile(file, content, ts.ScriptTarget.Latest, true);
-  const keys = new Set();
-  function visit(node) {
-    if (ts.isCallExpression(node)) {
-      const callee = node.expression;
-      const isTranslation =
-        (ts.isIdentifier(callee) && callee.text === "t") ||
-        (ts.isPropertyAccessExpression(callee) && callee.name.text === "t");
-      if (isTranslation) {
-        for (const key of literalKeys(node.arguments[0])) keys.add(key);
-      }
-    }
-    ts.forEachChild(node, visit);
-  }
-  visit(source);
-  return keys;
-}
-
 const REQUIRED_LOCALES = ["en", "zh", "fr", "de", "uk"];
 // French and Ukrainian are deliberately partial. i18next falls back to the
 // English resource per key; these floors make a coverage regression visible.
@@ -98,11 +65,6 @@ const MIN_USED_COVERAGE = new Map([
   ["fr", 0.65],
   ["uk", 0.75],
 ]);
-
-function hasTranslation(entries, pluralForms, key) {
-  if (Object.hasOwn(entries, key)) return true;
-  return pluralForms.every((form) => Object.hasOwn(entries, `${key}_${form}`));
-}
 
 function placeholders(value) {
   if (typeof value !== "string") return new Set();
@@ -149,23 +111,11 @@ function reportUntranslatedKeys() {
   const english = known.get("en");
   if (!english) return;
 
-  const usedKeys = new Set();
-  const roots = ["app", "components", "features", "hooks", "lib", "shared"]
-    .map((dir) => path.join(webRoot, dir))
-    .filter((dir) => fs.existsSync(dir));
-  for (const dir of roots) {
-    for (const file of listCodeFiles(dir)) {
-      const content = fs.readFileSync(file, "utf8");
-      for (const key of translationKeys(file, content)) {
-        if (key) usedKeys.add(key);
-      }
-    }
-  }
+  const usedKeys = collectUsedKeys(webRoot);
 
   const englishKeys = new Set(Object.keys(english));
   for (const [locale, entries] of known) {
-    const pluralForms = new Intl.PluralRules(locale).resolvedOptions().pluralCategories;
-    const missing = [...usedKeys].filter((key) => !hasTranslation(entries, pluralForms, key));
+    const missing = missingUsedKeys(entries, usedKeys, locale);
     const translated = usedKeys.size - missing.length;
     const usedCoverage = usedKeys.size ? translated / usedKeys.size : 1;
     const catalogTranslated = [...englishKeys].filter((key) => Object.hasOwn(entries, key)).length;
