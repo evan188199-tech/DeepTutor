@@ -1,0 +1,3544 @@
+{
+ "date": "2026-10-11",
+ "ledger": "myfork:evidence/seed-ledger-20261010 (131 claimable)",
+ "main_commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+ "board_snapshot": {
+  "issues": 1686,
+  "date": "2026-10-11"
+ },
+ "reserve_pool": {
+  "cards": 1056,
+  "dir": "/Users/xzh/services/ai-development/multica-board-agent/glm-reserve/reserve/backlog"
+ },
+ "totals": {
+  "carded": 114,
+  "topic_covered": 0,
+  "still_claimable": 17
+ },
+ "per_axis_still_claimable": {
+  "E": 1,
+  "F": 16
+ },
+ "manual_additions": {
+  "C41": [
+   [
+    "AGEN-1305",
+    "desc 点名 CodeBuddy HTTP provider 离线契约补测（done）"
+   ]
+  ],
+  "C47": [
+   [
+    "AGEN-596",
+    "desc 点名 markitdown 支持格式探测回归（done）"
+   ],
+   [
+    "AGEN-729",
+    "同模块吞错修复（in_review）"
+   ]
+  ],
+  "C78": [
+   [
+    "AGEN-1306",
+    "desc 点名 LlamaIndex 向量库选择 faiss 路径"
+   ]
+  ],
+  "D1": [
+   [
+    "AGEN-1447",
+    "desc=通道契约卡 A：feishu send 抛错、恢复 manager 重试"
+   ]
+  ],
+  "D2": [
+   [
+    "AGEN-1449",
+    "desc=通道契约卡 B：mochat send 抛错并修订锁死测试"
+   ]
+  ],
+  "D3": [
+   [
+    "AGEN-1451",
+    "desc=通道契约卡 C：dingtalk 抛错+超时+StreamClient 关闭"
+   ]
+  ],
+  "D7": [
+   [
+    "AGEN-1452",
+    "desc=通道契约卡 G：stop 资源关闭与取消 await"
+   ]
+  ],
+  "D9": [
+   [
+    "AGEN-1453",
+    "desc=通道契约卡 I：zulip/msteams/weixin 事件循环阻塞"
+   ]
+  ],
+  "D10": [
+   [
+    "AGEN-1497",
+    "desc 点名 seed-ledger D10：入站幂等补齐四通道"
+   ]
+  ],
+  "D11": [
+   [
+    "AGEN-1498",
+    "desc=qq 路由缓存兜底 + wecom frame 静默丢"
+   ]
+  ],
+  "D12": [
+   [
+    "AGEN-1499",
+    "desc 点名 seed-ledger D12：六通道发送超时归一"
+   ]
+  ],
+  "D13": [
+   [
+    "AGEN-1504",
+    "desc 点名 seed-ledger D13：not-running 契约 16 通道"
+   ]
+  ],
+  "E13": [
+   [
+    "AGEN-1509",
+    "desc 点名 LANG-MIX 残留主项：后端 routers 接入 t()"
+   ]
+  ],
+  "E15": [
+   [
+    "AGEN-1506",
+    "desc=后端 routers not_found 15+ 写法统一模板（done）"
+   ]
+  ],
+  "FZ20": [
+   [
+    "AGEN-736",
+    "desc 点名 qq 通道解析契约补测"
+   ]
+  ],
+  "FZ27": [
+   [
+    "AGEN-1058",
+    "title 点名 book blocks RAG helpers 契约补测"
+   ]
+  ],
+  "FZ49": [
+   [
+    "AGEN-851",
+    "desc 点名 agents/visual_review_agent.py（100 LOC=FZ49）"
+   ]
+  ],
+  "FZ53": [
+   [
+    "AGEN-1067",
+    "desc 点名 visualize/agents/review_agent.py（75 行=FZ53）"
+   ]
+  ],
+  "FZ70": [
+   [
+    "AGEN-1055",
+    "title 点名 MCP session state 状态机补测"
+   ]
+  ],
+  "FZ73": [
+   [
+    "AGEN-1061",
+    "title 点名 runtime worker tasks 任务注册补测"
+   ]
+  ],
+  "FZ77": [
+   [
+    "AGEN-1062",
+    "title 空格形式 knowledge progress events（匹配器不可见）"
+   ]
+  ],
+  "FZ84": [
+   [
+    "AGEN-967",
+    "desc 点名 engines/formats.py（29 行）格式注册边界"
+   ]
+  ],
+  "FZ85": [
+   [
+    "AGEN-996",
+    "desc 点名 core/response_languages.py 与 response_languages 包"
+   ],
+   [
+    "AGEN-906",
+    "desc 点名同两文件批量补测"
+   ]
+  ],
+  "FZ88": [
+   [
+    "AGEN-1068",
+    "desc 点名 turns/context_assembler.py（20 行）"
+   ]
+  ],
+  "FZ93": [
+   [
+    "AGEN-996",
+    "desc 点名 response_languages 包"
+   ],
+   [
+    "AGEN-906",
+    "desc 点名同文件批量补测"
+   ]
+  ],
+  "FT1": [
+   [
+    "AGEN-1376",
+    "title 点名 liteparse formats 版本边界（+rework AGEN-1431）"
+   ]
+  ],
+  "FT39": [
+   [
+    "AGEN-638",
+    "desc 点名 lightrag/cache_reuse.py 继承缓存解析"
+   ]
+  ],
+  "FT53": [
+   [
+    "AGEN-806",
+    "desc 点名 invidious_account_client.py（85 行）一并覆盖"
+   ]
+  ],
+  "FT64": [
+   [
+    "AGEN-791",
+    "desc 点名 textbook_struct/chapter_rebuild.py"
+   ]
+  ],
+  "FT104": [
+   [
+    "AGEN-1344",
+    "desc 点名 math_animator/agents/code_generator_agent.py（FT120 同名异包不受影响）"
+   ]
+  ],
+  "FT110": [
+   [
+    "AGEN-670",
+    "desc 点名 services/cron/（executor/service/repository）"
+   ]
+  ],
+  "FT113": [
+   [
+    "AGEN-1017",
+    "desc 范围含 videogen adapters/ 与任务状态流转（=async_task）"
+   ]
+  ],
+  "FT121": [
+   [
+    "AGEN-1644",
+    "desc 点名 claimable FT121 concept_analysis_agent"
+   ]
+  ],
+  "FT124": [
+   [
+    "AGEN-1644",
+    "desc 点名 claimable FT124 summary_agent"
+   ]
+  ],
+  "FT127": [
+   [
+    "AGEN-1644",
+    "desc 点名 claimable FT127 concept_design_agent"
+   ]
+  ]
+ },
+ "results": [
+  {
+   "seed_id": "C19",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1442",
+     "title": "test: runtime/agentic/labels 流式协议标签解析补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1466",
+     "title": "review(AI): 审核 AGEN-1442 test: runtime/agentic/labels 流式协议标签解析补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-agentic-labels",
+     "title": "test: runtime/agentic/labels 流式协议标签解析补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1466"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C25",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1444",
+     "title": "test: session/workspace_preferences 升级与降级路径补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1455",
+     "title": "review(AI): 审核 AGEN-1444 test: session/workspace_preferences 升级与降级路径补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-workspace-preferences",
+     "title": "test: session/workspace_preferences 升级与降级路径补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1455"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C41",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1305",
+     "title": "test: CodeBuddy HTTP provider 离线契约补测",
+     "status": "done",
+     "why": "desc 点名 CodeBuddy HTTP provider 离线契约补测（done）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1305）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C44",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1448",
+     "title": "test: parsing/engines/tika/formats 版本与格式路由补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1456",
+     "title": "review(AI): 审核 AGEN-1448 test: parsing/engines/tika/formats 版本与格式路由补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-tika-formats",
+     "title": "test: parsing/engines/tika/formats 版本与格式路由补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1456"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C46",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1450",
+     "title": "test: learning/event_hub 主题信号事件枢纽补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1464",
+     "title": "review(AI): 审核 AGEN-1450 test: learning/event_hub 主题信号事件枢纽补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-learning-event-hub",
+     "title": "test: learning/event_hub 主题信号事件枢纽补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1464"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C47",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-596",
+     "title": "test: markitdown 支持格式探测回归",
+     "status": "done",
+     "why": "desc 点名 markitdown 支持格式探测回归（done）",
+     "manual": true
+    },
+    {
+     "id": "AGEN-729",
+     "title": "fix(reserve): markitdown 格式支持探测吞错，上传放行集合失真（DT-22）",
+     "status": "in_review",
+     "why": "同模块吞错修复（in_review）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-596）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C49",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1489",
+     "title": "test: services/workspace/navigation 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1524",
+     "title": "review(AI): 审核 AGEN-1489 test: services/workspace/navigation 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-workspace-navigation",
+     "title": "test: services/workspace/navigation 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1524"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C62",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1458",
+     "title": "test: memory/consolidator/runs 运行记录与检查点补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1461",
+     "title": "review(AI): 审核 AGEN-1458 test: memory/consolidator/runs 运行记录与检查点补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-consolidator-runs",
+     "title": "test: memory/consolidator/runs 运行记录与检查点补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1461"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C78",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1306",
+     "title": "test: LlamaIndex 向量库选择补测（faiss 路径）",
+     "status": "in_review",
+     "why": "desc 点名 LlamaIndex 向量库选择 faiss 路径",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C80",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1446",
+     "title": "test: api/routers/task_board 路由层契约补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1457",
+     "title": "review(AI): 审核 AGEN-1446 test: api/routers/task_board 路由层契约补测",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-859",
+     "title": "docs: 任务板功能导读（task_board 后端 + web 看板）",
+     "status": "done"
+    },
+    {
+     "id": "guide-task-board",
+     "title": "docs: 任务板功能导读（task_board 后端 + web 看板）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-task-board-router",
+     "title": "test: api/routers/task_board 路由层契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1457,AGEN-859,guide-task-board(储备)"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C82",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1475",
+     "title": "test: rag/linked_kb 外部目录挂载探测补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1480",
+     "title": "review(AI): 审核 AGEN-1475 test: rag/linked_kb 外部目录挂载探测补测",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-941",
+     "title": "guide: 出站目标校验层导读（partners.network/mcp.network/linked_kb）",
+     "status": "done"
+    },
+    {
+     "id": "guide-network-validation",
+     "title": "guide: 出站目标校验层导读（partners.network/mcp.network/linked_kb）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-rag-linked-kb",
+     "title": "test: rag/linked_kb 外部目录挂载探测补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1480,AGEN-941,guide-network-validation(储备)"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "C89",
+   "axis": "C:weak-triage-20261008",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1599",
+     "title": "test(workspace): session_move 迁移契约补测（C89）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-workspace-session-move",
+     "title": "test(workspace): session_move 迁移契约补测（C89）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "D1",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1447",
+     "title": "fix(channels): feishu send 投递失败改为抛错，恢复 manager 重试有效性",
+     "status": "in_review",
+     "why": "desc=通道契约卡 A：feishu send 抛错、恢复 manager 重试",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D2",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1449",
+     "title": "fix(channels): mochat send 投递失败改为抛错并修订锁死现状的测试",
+     "status": "in_review",
+     "why": "desc=通道契约卡 B：mochat send 抛错并修订锁死测试",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D3",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1451",
+     "title": "fix(channels): dingtalk 投递失败抛错、HTTP 超时与 SDK StreamClient 关闭",
+     "status": "in_review",
+     "why": "desc=通道契约卡 C：dingtalk 抛错+超时+StreamClient 关闭",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D7",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1452",
+     "title": "fix(channels): stop 清理补全——资源关闭与任务取消 await",
+     "status": "in_review",
+     "why": "desc=通道契约卡 G：stop 资源关闭与取消 await",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D9",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1453",
+     "title": "fix(channels): zulip/msteams/weixin 事件循环阻塞治理",
+     "status": "in_review",
+     "why": "desc=通道契约卡 I：zulip/msteams/weixin 事件循环阻塞",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D10",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1497",
+     "title": "fix: 渠道入站幂等补齐（msteams/discord/slack/dingtalk 去重缺口）",
+     "status": "in_review",
+     "why": "desc 点名 seed-ledger D10：入站幂等补齐四通道",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D11",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1498",
+     "title": "fix: qq/wecom 易失状态缺陷（qq 路由缓存未命中兜底、wecom frame 缺失静默丢）",
+     "status": "in_review",
+     "why": "desc=qq 路由缓存兜底 + wecom frame 静默丢",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D12",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1499",
+     "title": "fix: 渠道发送路径超时归一（slack/wecom/qq/whatsapp/feishu/dingtalk）",
+     "status": "in_review",
+     "why": "desc 点名 seed-ledger D12：六通道发送超时归一",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "D13",
+   "axis": "D:channel-contracts-20261005",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1504",
+     "title": "fix: 渠道 not-running send 契约文档化并统一（base.py + 16 通道）",
+     "status": "in_review",
+     "why": "desc 点名 seed-ledger D13：not-running 契约 16 通道",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "E13",
+   "axis": "E:error-messages-20261004",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1509",
+     "title": "fix: 后端 api/routers 用户可见文案接入 t()（LANG-MIX 残留主项）",
+     "status": "in_review",
+     "why": "desc 点名 LANG-MIX 残留主项：后端 routers 接入 t()",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": []
+  },
+  {
+   "seed_id": "E14",
+   "axis": "E:error-messages-20261004",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "子集卡在案（AGEN-1364 sessions.py、AGEN-880 web 解析层）；主项系统性 code 信封仍无卡"
+   ]
+  },
+  {
+   "seed_id": "E15",
+   "axis": "E:error-messages-20261004",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1506",
+     "title": "fix: 后端 routers not_found 15+ 种写法统一模板",
+     "status": "done",
+     "why": "desc=后端 routers not_found 15+ 写法统一模板（done）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1506）"
+   ]
+  },
+  {
+   "seed_id": "FZ14",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1459",
+     "title": "test: consolidator/modes/_runtime 运行时内部补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1463",
+     "title": "review(AI): 审核 AGEN-1459 test: consolidator/modes/_runtime 运行时内部补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-consolidator-modes-runtime",
+     "title": "test: consolidator/modes/_runtime 运行时内部补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1463"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ20",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-736",
+     "title": "test: qq 与 lark_http 通道解析契约补测",
+     "status": "in_review",
+     "why": "desc 点名 qq 通道解析契约补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ27",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1058",
+     "title": "test: book blocks RAG helpers 契约补测",
+     "status": "in_review",
+     "why": "title 点名 book blocks RAG helpers 契约补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ28",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1476",
+     "title": "test: search/providers/zhipu 适配器补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1482",
+     "title": "review(AI): 审核 AGEN-1476 test: search/providers/zhipu 适配器补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-provider-zhipu",
+     "title": "test: search/providers/zhipu 适配器补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1482"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ30",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1477",
+     "title": "test: search/providers/firecrawl 适配器补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1479",
+     "title": "review(AI): 审核 AGEN-1477 test: search/providers/firecrawl 适配器补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-provider-firecrawl",
+     "title": "test: search/providers/firecrawl 适配器补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1479"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ33",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1485",
+     "title": "test: book/blocks/animation 块渲染补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1526",
+     "title": "review(AI): 审核 AGEN-1485 test: book/blocks/animation 块渲染补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-book-block-animation",
+     "title": "test: book/blocks/animation 块渲染补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1526"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ41",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ45",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1655",
+     "title": "test: 免密钥搜索 provider 补测（searxng/duckduckgo）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-keyless",
+     "title": "test: 免密钥搜索 provider 补测（searxng/duckduckgo）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ49",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-851",
+     "title": "test: 数学动画视觉复核补测（math_animator/visual_review）",
+     "status": "in_review",
+     "why": "desc 点名 agents/visual_review_agent.py（100 LOC=FZ49）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ51",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ53",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1067",
+     "title": "test: visualize review agent 信封契约补测",
+     "status": "in_review",
+     "why": "desc 点名 visualize/agents/review_agent.py（75 行=FZ53）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ54",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ56",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ59",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1486",
+     "title": "test: practice/analytics 统计聚合补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1525",
+     "title": "review(AI): 审核 AGEN-1486 test: practice/analytics 统计聚合补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-practice-analytics",
+     "title": "test: practice/analytics 统计聚合补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1525"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ60",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ64",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1655",
+     "title": "test: 免密钥搜索 provider 补测（searxng/duckduckgo）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-keyless",
+     "title": "test: 免密钥搜索 provider 补测（searxng/duckduckgo）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ65",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ70",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1055",
+     "title": "test: MCP session state 状态机补测",
+     "status": "in_review",
+     "why": "title 点名 MCP session state 状态机补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ72",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1503",
+     "title": "test: rag/pipelines/llamaindex/errors 补测",
+     "status": "in_progress"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-llamaindex-errors",
+     "title": "test: rag/pipelines/llamaindex/errors 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ73",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1061",
+     "title": "test: runtime worker tasks 任务注册补测",
+     "status": "in_review",
+     "why": "title 点名 runtime worker tasks 任务注册补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ77",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1062",
+     "title": "test: knowledge progress events 事件契约补测",
+     "status": "in_review",
+     "why": "title 空格形式 knowledge progress events（匹配器不可见）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-knowledge-initializer",
+     "title": "test: knowledge 初始化与进度事件补测（initializer/progress_events）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ84",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-967",
+     "title": "test: parsing engines 版本协商与格式注册补测",
+     "status": "in_review",
+     "why": "desc 点名 engines/formats.py（29 行）格式注册边界",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ85",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-996",
+     "title": "test: response_languages 语言协商回归补测",
+     "status": "in_review",
+     "why": "desc 点名 core/response_languages.py 与 response_languages 包",
+     "manual": true
+    },
+    {
+     "id": "AGEN-906",
+     "title": "test: 剩余小零测试模块打包补测（column_blacklist/_versions/response_languages）",
+     "status": "in_review",
+     "why": "desc 点名同两文件批量补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ86",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1653",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-book-blocks-batch2",
+     "title": "test: book.blocks 六小块批量补测（flash_cards/deep_dive/timeline/callout/interactive/user_note）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ88",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1068",
+     "title": "test: turns context assembler 组装契约补测",
+     "status": "in_review",
+     "why": "desc 点名 turns/context_assembler.py（20 行）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ91",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1600",
+     "title": "test(notebook): agents/notebook/_text 文本整形 helper 补测（FZ91）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-notebook-text-helper",
+     "title": "test(notebook): agents/notebook/_text 文本整形 helper 补测（FZ91）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ92",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [
+    {
+     "id": "verify-citation-version-parity",
+     "title": "verify: 发布元数据版本一致性复核（CITATION.cff/__version__/pyproject/release）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "reserve_claims": [],
+   "notes": [
+    "仅相关卡（不构成领取去重）：verify-citation-version-parity(储备)"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ93",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-996",
+     "title": "test: response_languages 语言协商回归补测",
+     "status": "in_review",
+     "why": "desc 点名 response_languages 包",
+     "manual": true
+    },
+    {
+     "id": "AGEN-906",
+     "title": "test: 剩余小零测试模块打包补测（column_blacklist/_versions/response_languages）",
+     "status": "in_review",
+     "why": "desc 点名同文件批量补测",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ94",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ95",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FZ96",
+   "axis": "F:coverage-gaps-zero",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [
+    {
+     "id": "AGEN-1265",
+     "title": "guide: provider 注册表导读（services/provider_registry）",
+     "status": "done"
+    },
+    {
+     "id": "guide-provider-registry",
+     "title": "guide: provider 注册表导读（services/provider_registry）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "reserve_claims": [],
+   "notes": [
+    "仅相关卡（不构成领取去重）：AGEN-1265,guide-provider-registry(储备)"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT1",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1376",
+     "title": "test: liteparse formats 版本边界与格式声明补测",
+     "status": "in_review",
+     "why": "title 点名 liteparse formats 版本边界（+rework AGEN-1431）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT13",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1490",
+     "title": "test: rag/pipelines/llamaindex/exercise_lookup 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1521",
+     "title": "review(AI): 审核 AGEN-1490 test: rag/pipelines/llamaindex/exercise_lookup 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-exercise-lookup",
+     "title": "test: rag/pipelines/llamaindex/exercise_lookup 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1521"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT20",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1491",
+     "title": "test: capabilities/setup/jobs 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1523",
+     "title": "review(AI): 审核 AGEN-1491 test: capabilities/setup/jobs 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-setup-jobs",
+     "title": "test: capabilities/setup/jobs 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1523"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT24",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1377",
+     "title": "test: knowledge/naming 命名校验边界与文案契约补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1427",
+     "title": "review(AI): 审核 AGEN-1377 test: knowledge/naming 命名校验边界与文案契约补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-knowledge-naming",
+     "title": "test: knowledge/naming 命名校验边界与文案契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1427"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT33",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1623",
+     "title": "test: subagent/openclaw 后端契约补测（zero-coverage 197 LOC）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1645",
+     "title": "review(AI): 审核 AGEN-1623 test: subagent/openclaw 后端契约补测（zero-coverage 197 LOC）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-subagent-openclaw",
+     "title": "test: subagent/openclaw 后端契约补测（zero-coverage 197 LOC）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1645"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT34",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1492",
+     "title": "test: capabilities/reading/figure_view 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1520",
+     "title": "review(AI): 审核 AGEN-1492 test: capabilities/reading/figure_view 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-figure-view",
+     "title": "test: capabilities/reading/figure_view 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1520"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT35",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-806 覆盖 invidious_account(.py)+client，storage.py 未含"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT37",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1494",
+     "title": "test: tools/cron_tool 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1574",
+     "title": "guide: 定时任务面导读（services/cron 与 cron_tool）",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-1510",
+     "title": "review(AI): 审核 AGEN-1494 test: tools/cron_tool 补测",
+     "status": "done"
+    },
+    {
+     "id": "guide-cron-scheduling",
+     "title": "guide: 定时任务面导读（services/cron 与 cron_tool）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-cron-tool",
+     "title": "test: tools/cron_tool 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1574,AGEN-1510,guide-cron-scheduling(储备)"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT39",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-638",
+     "title": "test: LightRAG 索引缓存继承版本解析补测",
+     "status": "in_review",
+     "why": "desc 点名 lightrag/cache_reuse.py 继承缓存解析",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT40",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1624",
+     "title": "test: tools/zotero_search 查询构造与响应解析补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-zotero-search-tool",
+     "title": "test: tools/zotero_search 查询构造与响应解析补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT41",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1625",
+     "title": "test: llm/image_caption_batch 批量描述调度补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1647",
+     "title": "review(AI): 审核 AGEN-1625 test: llm/image_caption_batch 批量描述调度补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-image-caption-batch",
+     "title": "test: llm/image_caption_batch 批量描述调度补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1647"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT42",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1502",
+     "title": "test: rag/pipelines/llamaindex/rerank 补测",
+     "status": "in_review"
+    },
+    {
+     "id": "AGEN-1515",
+     "title": "fix: rerank 分数多于候选数时 IndexError 逃逸未降级",
+     "status": "backlog"
+    },
+    {
+     "id": "AGEN-1514",
+     "title": "fix: rerank 全非有限分数时应回退一阶段排序而非返回空",
+     "status": "backlog"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1518",
+     "title": "review(AI): 审核 AGEN-1502 test: rag/pipelines/llamaindex/rerank 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-llamaindex-rerank",
+     "title": "test: rag/pipelines/llamaindex/rerank 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1518"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT44",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1628",
+     "title": "test: subagent/partner_group 会话编排解析补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-subagent-partner-group",
+     "title": "test: subagent/partner_group 会话编排解析补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT46",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT50",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-1046 为 scan 级，不去重"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT51",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1496",
+     "title": "test: parsing/engines/mineru/checkpoints 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1516",
+     "title": "review(AI): 审核 AGEN-1496 test: parsing/engines/mineru/checkpoints 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-mineru-checkpoints",
+     "title": "test: parsing/engines/mineru/checkpoints 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1516"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT52",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1638",
+     "title": "test: voice/adapters/minimax 适配器契约补测",
+     "status": "done"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-voice-adapter-minimax",
+     "title": "test: voice/adapters/minimax 适配器契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1638）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT53",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-806",
+     "title": "test: invidious_account 绑定存储与容错补测",
+     "status": "in_review",
+     "why": "desc 点名 invidious_account_client.py（85 行）一并覆盖",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT54",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1508",
+     "title": "test: rag/smart_retriever 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1511",
+     "title": "review(AI): 审核 AGEN-1508 test: rag/smart_retriever 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-rag-smart-retriever",
+     "title": "test: rag/smart_retriever 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1511"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT56",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1667",
+     "title": "test: llm/request_cache 请求缓存契约补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1673",
+     "title": "review(AI): 审核 AGEN-1667 test: llm/request_cache 请求缓存契约补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-llm-request-cache",
+     "title": "test: llm/request_cache 请求缓存契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1673"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT57",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1636",
+     "title": "test: rag/pipelines/graphrag/pandas_compat 兼容层补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-graphrag-pandas-compat",
+     "title": "test: rag/pipelines/graphrag/pandas_compat 兼容层补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT64",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-791",
+     "title": "test: textbook_struct 章节重建与列黑名单补测",
+     "status": "in_review",
+     "why": "desc 点名 textbook_struct/chapter_rebuild.py",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT65",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1620",
+     "title": "test: llm 用量小模块批量补测（usage_estimation + telemetry）",
+     "status": "done"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-llm-usage-batch",
+     "title": "test: llm 用量小模块批量补测（usage_estimation + telemetry）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1620）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT67",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1383",
+     "title": "test: vision_solver_agent 图片转 GeoGebra 生成代理补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1389",
+     "title": "review(AI): 审核 AGEN-1383 test: vision_solver_agent 图片转 GeoGebra 生成代理补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-vision-solver-agent",
+     "title": "test: vision_solver_agent 图片转 GeoGebra 生成代理补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1389"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT69",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1384",
+     "title": "test: setup/data_volume 数据卷探测与属主诊断补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1437",
+     "title": "review(AI): 审核 AGEN-1384 test: setup/data_volume 数据卷探测与属主诊断补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-setup-data-volume",
+     "title": "test: setup/data_volume 数据卷探测与属主诊断补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1437"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT70",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1385",
+     "title": "test: reading/knowledge_capture 标注转 Notebook/Mastery 补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1469",
+     "title": "review(AI): 审核 AGEN-1385 test: reading/knowledge_capture 标注转 Notebook/Mastery 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-knowledge-capture",
+     "title": "test: reading/knowledge_capture 标注转 Notebook/Mastery 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1469"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT71",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1428",
+     "title": "rework: 按审核意见修改 AGEN-1391 test: session/event_preview 有界事件预览补测",
+     "status": "in_review"
+    },
+    {
+     "id": "AGEN-1391",
+     "title": "test: session/event_preview 有界事件预览补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1430",
+     "title": "review(AI): 审核 AGEN-1428 rework: 按审核意见修改 AGEN-1391 test: session/event_preview 有界事件预览补测",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-1426",
+     "title": "review(AI): 审核 AGEN-1391 test: session/event_preview 有界事件预览补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-event-preview",
+     "title": "test: session/event_preview 有界事件预览补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1430,AGEN-1426"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT73",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1392",
+     "title": "test: partners/runtime_status 共享仓储补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1400",
+     "title": "review(AI): 审核 AGEN-1392 test: partners/runtime_status 共享仓储补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-partner-runtime-status",
+     "title": "test: partners/runtime_status 共享仓储补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1400"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT75",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-791 称 page_headers 现有测试；领取前 fresh 复扫确认触达数"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT78",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1394",
+     "title": "test: settings/starter_settings 起始建议读写补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1425",
+     "title": "review(AI): 审核 AGEN-1394 test: settings/starter_settings 起始建议读写补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-starter-settings",
+     "title": "test: settings/starter_settings 起始建议读写补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1425"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT79",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1680",
+     "title": "test: agents/_shared/json_output 结构化输出解析补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-json-output-shared",
+     "title": "test: agents/_shared/json_output 结构化输出解析补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT81",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1396",
+     "title": "test: web_source/navigation 导航树构建补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1413",
+     "title": "review(AI): 审核 AGEN-1396 test: web_source/navigation 导航树构建补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-websource-navigation",
+     "title": "test: web_source/navigation 导航树构建补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1413"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT82",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1417",
+     "title": "rework: 按审核意见修改 AGEN-1398 test: logging/formatters JSONL/Console 格式化器补测",
+     "status": "in_review"
+    },
+    {
+     "id": "AGEN-1398",
+     "title": "test: logging/formatters JSONL/Console 格式化器补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1420",
+     "title": "review(AI): 审核 AGEN-1417 rework: 按审核意见修改 AGEN-1398 test: logging/formatters JSONL/Console 格式化器补测",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-1408",
+     "title": "review(AI): 审核 AGEN-1398 test: logging/formatters JSONL/Console 格式化器补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-logging-formatters",
+     "title": "test: logging/formatters JSONL/Console 格式化器补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1420,AGEN-1408"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT86",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1401",
+     "title": "test: partners/workspace_binding 绑定校验补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1405",
+     "title": "review(AI): 审核 AGEN-1401 test: partners/workspace_binding 绑定校验补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-partner-workspace-binding",
+     "title": "test: partners/workspace_binding 绑定校验补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1405"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT87",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1418",
+     "title": "rework: 按审核意见修改 AGEN-1403 test: practice/answers 客观题判分补测",
+     "status": "in_review"
+    },
+    {
+     "id": "AGEN-1403",
+     "title": "test: practice/answers 客观题判分补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1421",
+     "title": "review(AI): 审核 AGEN-1418 rework: 按审核意见修改 AGEN-1403 test: practice/answers 客观题判分补测",
+     "status": "done"
+    },
+    {
+     "id": "AGEN-1406",
+     "title": "review(AI): 审核 AGEN-1403 test: practice/answers 客观题判分补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-practice-answers",
+     "title": "test: practice/answers 客观题判分补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1421,AGEN-1406"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT88",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1404",
+     "title": "test: utils/text_display 双重转义解码补测",
+     "status": "done"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-text-display-decode",
+     "title": "test: utils/text_display 双重转义解码补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1404）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT91",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1621",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1641",
+     "title": "review(AI): 审核 AGEN-1621 test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch2",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1641"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT92",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1621",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1641",
+     "title": "review(AI): 审核 AGEN-1621 test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch2",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1641"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT93",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1622",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch3",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT94",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1622",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch3",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT95",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1621",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1641",
+     "title": "review(AI): 审核 AGEN-1621 test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch2",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1641"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT96",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1621",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1641",
+     "title": "review(AI): 审核 AGEN-1621 test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch2",
+     "title": "test: 四个搜索 provider 契约补测第二批（serply/aliyun_iqs/qianfan/bocha）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1641"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT99",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1505",
+     "title": "test: rag/pipelines/lightrag/parser 补测",
+     "status": "in_review"
+    },
+    {
+     "id": "AGEN-1512",
+     "title": "fix: lightrag parser 对缺失 markdown 记录的 bundle 未降级为 IngressError",
+     "status": "backlog"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1513",
+     "title": "review(AI): 审核 AGEN-1505 test: rag/pipelines/lightrag/parser 补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-lightrag-parser",
+     "title": "test: rag/pipelines/lightrag/parser 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1513"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT100",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1622",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-search-providers-batch3",
+     "title": "test: 三个搜索 provider 契约补测第三批（tavily/brave/perplexity）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT101",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1668",
+     "title": "test: loop/dsml_tool_calls 流式工具调用解析补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1675",
+     "title": "review(AI): 审核 AGEN-1668 test: loop/dsml_tool_calls 流式工具调用解析补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-dsml-tool-calls",
+     "title": "test: loop/dsml_tool_calls 流式工具调用解析补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1675"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT104",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1344",
+     "title": "test: math_animator code_generator_agent 降级分支补测",
+     "status": "in_review",
+     "why": "desc 点名 math_animator/agents/code_generator_agent.py（FT120 同名异包不受影响）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT105",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1620",
+     "title": "test: llm 用量小模块批量补测（usage_estimation + telemetry）",
+     "status": "done"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-llm-usage-batch",
+     "title": "test: llm 用量小模块批量补测（usage_estimation + telemetry）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1620）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT107",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1656",
+     "title": "test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1662",
+     "title": "review(AI): 审核 AGEN-1656 test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-settings-edit-batch",
+     "title": "test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1662"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT108",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1669",
+     "title": "test: practice/importing 导入契约补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-practice-importing",
+     "title": "test: practice/importing 导入契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT110",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-670",
+     "title": "test: cron 调度解析/触发计算/任务拾取纯逻辑单测",
+     "status": "in_review",
+     "why": "desc 点名 services/cron/（executor/service/repository）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT112",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1629",
+     "title": "test: agents/loop/ask_user_drafts 草稿生命周期补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1649",
+     "title": "review(AI): 审核 AGEN-1629 test: agents/loop/ask_user_drafts 草稿生命周期补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-ask-user-drafts",
+     "title": "test: agents/loop/ask_user_drafts 草稿生命周期补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1649"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT113",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1017",
+     "title": "test: videogen 适配器契约与任务状态流转测试",
+     "status": "in_review",
+     "why": "desc 范围含 videogen adapters/ 与任务状态流转（=async_task）",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT114",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1658",
+     "title": "test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1672",
+     "title": "review(AI): 审核 AGEN-1658 test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-math-animator-helpers-batch",
+     "title": "test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1672"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT115",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT116",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-1240 为 web lib settings-presets，非本后端模块"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT117",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1670",
+     "title": "test: partners/channel_state_migration 迁移契约补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-channel-state-migration",
+     "title": "test: partners/channel_state_migration 迁移契约补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT118",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1639",
+     "title": "test: notebook/summarize_agent 摘要代理补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1657",
+     "title": "review(AI): 审核 AGEN-1639 test: notebook/summarize_agent 摘要代理补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-notebook-summarize-agent",
+     "title": "test: notebook/summarize_agent 摘要代理补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1657"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT119",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1540",
+     "title": "test: question/agents/followup_agent 补测",
+     "status": "done"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-question-followup-agent",
+     "title": "test: question/agents/followup_agent 补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1540）"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT120",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-1344 仅 math_animator 同名代理，visualize 侧无卡"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT121",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1644",
+     "title": "test: math_animator 三小代理批量补测（concept_analysis/concept_design/summary）",
+     "status": "in_review",
+     "why": "desc 点名 claimable FT121 concept_analysis_agent",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT122",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT123",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1659",
+     "title": "test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1677",
+     "title": "review(AI): 审核 AGEN-1659 test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-logging-config-batch",
+     "title": "test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1677"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT124",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1644",
+     "title": "test: math_animator 三小代理批量补测（concept_analysis/concept_design/summary）",
+     "status": "in_review",
+     "why": "desc 点名 claimable FT124 summary_agent",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT125",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1630",
+     "title": "test: services/sandbox/quota 配额判定补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1642",
+     "title": "review(AI): 审核 AGEN-1630 test: services/sandbox/quota 配额判定补测",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-sandbox-quota",
+     "title": "test: services/sandbox/quota 配额判定补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1642"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT126",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1679",
+     "title": "test: question/request_config 出题请求配置补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-question-request-config",
+     "title": "test: question/request_config 出题请求配置补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT127",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1644",
+     "title": "test: math_animator 三小代理批量补测（concept_analysis/concept_design/summary）",
+     "status": "in_review",
+     "why": "desc 点名 claimable FT127 concept_design_agent",
+     "manual": true
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT128",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1656",
+     "title": "test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1662",
+     "title": "review(AI): 审核 AGEN-1656 test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-settings-edit-batch",
+     "title": "test: settings 编辑面批量补测（registry_edit/provider_edit）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1662"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT129",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [
+    "AGEN-1009 文件清单（oauth/service/storage/catalog）不含 client_version.py"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT131",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1658",
+     "title": "test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1672",
+     "title": "review(AI): 审核 AGEN-1658 test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-math-animator-helpers-batch",
+     "title": "test: math_animator 辅助件批量补测（retry_manager/duration_utils）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1672"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT132",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1659",
+     "title": "test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1677",
+     "title": "review(AI): 审核 AGEN-1659 test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-logging-config-batch",
+     "title": "test: logging 装配层批量补测（configure/loguru_bridge）",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "相关卡：AGEN-1677"
+   ],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT133",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT135",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1634",
+     "title": "test: agents/question/coordinator 编排决策补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-question-coordinator",
+     "title": "test: agents/question/coordinator 编排决策补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT138",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1643",
+     "title": "test: reading/vocabulary 词汇扩展纯逻辑补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-reading-vocabulary",
+     "title": "test: reading/vocabulary 词汇扩展纯逻辑补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT139",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "仍可领取",
+   "board_claims": [],
+   "board_related": [],
+   "reserve_claims": [],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT140",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1631",
+     "title": "test: utils/network/circuit_breaker 断路器状态机补测",
+     "status": "in_review"
+    }
+   ],
+   "board_related": [],
+   "reserve_claims": [
+    {
+     "id": "test-network-circuit-breaker",
+     "title": "test: utils/network/circuit_breaker 断路器状态机补测",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [],
+   "module_on_main": true
+  },
+  {
+   "seed_id": "FT141",
+   "axis": "F:coverage-gaps-weak-tail",
+   "ledger_state": "仍可建卡",
+   "verdict": "已建卡",
+   "board_claims": [
+    {
+     "id": "AGEN-1633",
+     "title": "test: core/errors 错误值对象契约冒烟",
+     "status": "done"
+    }
+   ],
+   "board_related": [
+    {
+     "id": "AGEN-1640",
+     "title": "review(AI): 审核 AGEN-1633 test: core/errors 错误值对象契约冒烟",
+     "status": "done"
+    }
+   ],
+   "reserve_claims": [
+    {
+     "id": "test-core-errors",
+     "title": "test: core/errors 错误值对象契约冒烟",
+     "status": "reserve",
+     "src": "deeptour.auto.jsonl"
+    }
+   ],
+   "notes": [
+    "卡已 done；main 未前移（仍 6cf793bd8），产出未合入 main，续卡前先核验原卡产出（AGEN-1633）",
+    "相关卡：AGEN-1640"
+   ],
+   "module_on_main": true
+  }
+ ]
+}
