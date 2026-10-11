@@ -23,6 +23,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from deeptutor.api.routers.auth import require_admin
+from deeptutor.api.utils.error_responses import error_message, structured_error
 from deeptutor.app.container import get_application_container
 from deeptutor.multi_user.context import get_current_user
 from deeptutor.multi_user.partner_access import (
@@ -91,7 +92,7 @@ ws_router = APIRouter()
 def usable_partner(partner_id: str) -> str:
     """Path dependency: the partner exists and the caller may talk to it."""
     if not get_partner_manager().partner_exists(partner_id) or not can_use_partner(partner_id):
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     return partner_id
 
 
@@ -154,7 +155,9 @@ async def _request_partner_control(
         {"partner_id": partner_id, **payload},
     )
     if command is None:
-        raise HTTPException(status_code=409, detail="Duplicate Partner lifecycle command")
+        raise structured_error(
+            409, "Duplicate Partner lifecycle command", code="partner.lifecycle_duplicate_command"
+        )
 
     deadline = asyncio.get_running_loop().time() + 20.0
     repository = get_partner_runtime_status_repository()
@@ -171,13 +174,16 @@ async def _request_partner_control(
                 "reload_failed",
             }:
                 if state == "reload_failed":
-                    raise HTTPException(
-                        status_code=500,
-                        detail=f"Failed to reload channels: {status.get('last_reload_error')}",
+                    raise structured_error(
+                        500,
+                        f"Failed to reload channels: {status.get('last_reload_error')}",
+                        code="partner.channels_reload_failed",
                     )
                 return status
         await asyncio.sleep(0.05)
-    raise HTTPException(status_code=503, detail="Partner leader did not process the command")
+    raise structured_error(
+        503, "Partner leader did not process the command", code="partner.leader_unresponsive"
+    )
 
 
 async def _ensure_running_partner(
@@ -192,9 +198,11 @@ async def _ensure_running_partner(
 
     config = mgr.load_config(partner_id)
     if config is None:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     if not allow_stopped and not mgr.auto_start_enabled(partner_id, default=False):
-        raise HTTPException(status_code=409, detail=t("api.partner_stopped_start_required"))
+        raise structured_error(
+            409, t("api.partner_stopped_start_required"), code="partner.stopped_start_required"
+        )
 
     lock = await _get_start_lock(partner_id)
     async with lock:
@@ -202,14 +210,18 @@ async def _ensure_running_partner(
         if instance and instance.running:
             return instance
         if not allow_stopped and not mgr.auto_start_enabled(partner_id, default=False):
-            raise HTTPException(status_code=409, detail=t("api.partner_stopped_start_required"))
+            raise structured_error(
+                409, t("api.partner_stopped_start_required"), code="partner.stopped_start_required"
+            )
         try:
             return await mgr.start_partner(partner_id, config)
         except RuntimeError as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from None
+            raise structured_error(500, str(exc), code="partner.start_failed") from None
         except Exception as exc:
             logger.exception("Failed to auto-start partner '%s'", partner_id)
-            raise HTTPException(status_code=500, detail="Failed to start partner") from exc
+            raise structured_error(
+                500, "Failed to start partner", code="partner.start_failed"
+            ) from exc
 
 
 # ── Request models ─────────────────────────────────────────────
@@ -350,27 +362,29 @@ def _validate_channels_payload(channels: dict) -> None:
 
     legacy_keys = sorted(k for k in channels if k in LEGACY_GLOBAL_DELIVERY_KEYS)
     if legacy_keys:
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "message": (
-                    "Delivery flags are configured per channel; remove top-level "
-                    f"channel keys: {', '.join(legacy_keys)}"
-                )
-            },
+        raise structured_error(
+            422,
+            (
+                "Delivery flags are configured per channel; remove top-level "
+                f"channel keys: {', '.join(legacy_keys)}"
+            ),
+            code="partner.channels_legacy_delivery_keys",
         )
 
     try:
         ChannelsConfig(**channels)
     except ValidationError as exc:
-        raise HTTPException(
-            status_code=422,
-            detail={"message": t("api.invalid_channels_config"), "errors": exc.errors()},
+        raise structured_error(
+            422,
+            t("api.invalid_channels_config"),
+            code="partner.channels_invalid",
+            errors=exc.errors(),
         ) from None
     except TypeError as exc:
-        raise HTTPException(
-            status_code=422,
-            detail=f"{t('api.invalid_channels_config')}: {exc}",
+        raise structured_error(
+            422,
+            f"{t('api.invalid_channels_config')}: {exc}",
+            code="partner.channels_invalid",
         ) from None
 
     from deeptutor.api.routers._partners_channel_schema import resolve_config_model
@@ -400,12 +414,11 @@ def _validate_channels_payload(channels: dict) -> None:
                 )
 
     if nested_errors:
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "message": t("api.invalid_channels_config"),
-                "errors": nested_errors,
-            },
+        raise structured_error(
+            422,
+            t("api.invalid_channels_config"),
+            code="partner.channels_invalid",
+            errors=nested_errors,
         )
 
     empty_allow_lists = sorted(
@@ -416,15 +429,14 @@ def _validate_channels_payload(channels: dict) -> None:
         and section.get("allow_from", section.get("allowFrom")) == []
     )
     if empty_allow_lists:
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "message": (
-                    "Enabled channels require at least one allowed sender: "
-                    + ", ".join(empty_allow_lists)
-                ),
-                "channels": empty_allow_lists,
-            },
+        raise structured_error(
+            422,
+            (
+                "Enabled channels require at least one allowed sender: "
+                + ", ".join(empty_allow_lists)
+            ),
+            code="partner.channels_allow_from_required",
+            channels=empty_allow_lists,
         )
 
 
@@ -438,11 +450,14 @@ def _validate_avatar_payload(value: str | None) -> str:
     if not avatar:
         return ""
     if not avatar.startswith("data:image/"):
-        raise HTTPException(status_code=422, detail="Avatar must be a data:image/* URL")
+        raise structured_error(
+            422, "Avatar must be a data:image/* URL", code="partner.avatar_invalid"
+        )
     if len(avatar) > _AVATAR_MAX_CHARS:
-        raise HTTPException(
-            status_code=422,
-            detail="Avatar too large — resize the image before uploading",
+        raise structured_error(
+            422,
+            "Avatar too large — resize the image before uploading",
+            code="partner.avatar_too_large",
         )
     return avatar
 
@@ -465,7 +480,7 @@ def _validate_llm_selection_payload(
         # are no longer visible, so the check has to land here.
         return apply_allowed_llm_selection(selection)
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from None
+        raise structured_error(422, str(exc), code="partner.llm_selection_invalid") from None
 
 
 def _caller_tool_reach() -> tuple[set[str] | None, set[str] | None]:
@@ -512,15 +527,18 @@ def _resolve_soul_content(soul: SoulSpec | None) -> tuple[str, dict[str, str]]:
     if soul.source == "custom":
         content = (soul.content or "").strip()
         if not content:
-            raise HTTPException(status_code=422, detail=t("api.soul_content_empty"))
+            raise structured_error(
+                422, t("api.soul_content_empty"), code="partner.soul_content_empty"
+            )
         return content, {"type": "custom", "id": ""}
 
     if soul.source == "library":
         entry = get_partner_manager().get_soul(str(soul.id or ""))
         if not entry:
-            raise HTTPException(
-                status_code=404,
-                detail=t("api.soul_library_not_found", name=str(soul.id)),
+            raise structured_error(
+                404,
+                t("api.soul_library_not_found", name=str(soul.id)),
+                code="partner.soul_library_not_found",
             )
         return str(entry.get("content") or ""), {"type": "library", "id": str(soul.id)}
 
@@ -529,10 +547,14 @@ def _resolve_soul_content(soul: SoulSpec | None) -> tuple[str, dict[str, str]]:
     # presets, mirroring chat's resolution).
     name = str(soul.id or "").strip()
     if not name:
-        raise HTTPException(status_code=422, detail=t("api.persona_name_required"))
+        raise structured_error(
+            422, t("api.persona_name_required"), code="partner.persona_name_required"
+        )
     content = _load_persona_markdown(name)
     if not content:
-        raise HTTPException(status_code=404, detail=t("api.persona_not_found", name=name))
+        raise structured_error(
+            404, t("api.persona_not_found", name=name), code="partner.persona_not_found"
+        )
     return content, {"type": "persona", "id": name}
 
 
@@ -571,7 +593,9 @@ async def create_soul(payload: SoulCreateRequest):
     # unreachable or mis-routed. The client uses the returned ``id``.
     soul_id = slugify_soul_id(payload.id or payload.name)
     if mgr.get_soul(soul_id):
-        raise HTTPException(status_code=409, detail=t("api.soul_already_exists", name=soul_id))
+        raise structured_error(
+            409, t("api.soul_already_exists", name=soul_id), code="partner.soul_already_exists"
+        )
     return mgr.create_soul(soul_id, payload.name, payload.content)
 
 
@@ -579,7 +603,7 @@ async def create_soul(payload: SoulCreateRequest):
 async def get_soul(soul_id: str):
     soul = get_partner_manager().get_soul(soul_id)
     if not soul:
-        raise HTTPException(status_code=404, detail=t("api.soul_not_found"))
+        raise structured_error(404, t("api.soul_not_found"), code="partner.soul_not_found")
     return soul
 
 
@@ -587,14 +611,14 @@ async def get_soul(soul_id: str):
 async def update_soul(soul_id: str, payload: SoulTemplateUpdateRequest):
     result = get_partner_manager().update_soul(soul_id, payload.name, payload.content)
     if not result:
-        raise HTTPException(status_code=404, detail=t("api.soul_not_found"))
+        raise structured_error(404, t("api.soul_not_found"), code="partner.soul_not_found")
     return result
 
 
 @router.delete("/souls/{soul_id}", dependencies=[Depends(require_admin)])
 async def delete_soul(soul_id: str):
     if not get_partner_manager().delete_soul(soul_id):
-        raise HTTPException(status_code=404, detail=t("api.soul_not_found"))
+        raise structured_error(404, t("api.soul_not_found"), code="partner.soul_not_found")
     return {"id": soul_id, "deleted": True}
 
 
@@ -693,7 +717,7 @@ async def start_weixin_qr(partner_id: str):
         return await weixin_onboarding.start_login(partner_id)
     except Exception as exc:
         logger.warning("weixin QR start failed for %s", partner_id, exc_info=True)
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+        raise structured_error(502, str(exc), code="partner.weixin_qr_start_failed") from exc
 
 
 @router.get("/{partner_id}/channels/weixin/qr/{session_id}", dependencies=_MANAGEABLE)
@@ -757,9 +781,10 @@ async def _create_partner(payload: CreatePartnerRequest) -> dict[str, Any]:
     mgr = get_partner_manager()
     partner_id = slugify_partner_id(payload.partner_id or payload.name)
     if mgr.partner_exists(partner_id):
-        raise HTTPException(
-            status_code=409,
-            detail=t("api.partner_already_exists", name=partner_id),
+        raise structured_error(
+            409,
+            t("api.partner_already_exists", name=partner_id),
+            code="partner.already_exists",
         )
 
     if payload.channels is not None:
@@ -770,9 +795,10 @@ async def _create_partner(payload: CreatePartnerRequest) -> dict[str, Any]:
 
     workspace_id = _validate_workspace(payload.workspace_id, get_current_user().id)
     if workspace_id and payload.assets and any(payload.assets.model_dump().values()):
-        raise HTTPException(
-            status_code=400,
-            detail="Use the shared workspace resources or copy private assets, not both.",
+        raise structured_error(
+            400,
+            "Use the shared workspace resources or copy private assets, not both.",
+            code="partner.assets_and_workspace_exclusive",
         )
 
     config = PartnerConfig(
@@ -836,7 +862,7 @@ async def get_partner_draft(draft_id: str):
     except ValueError:
         draft = None
     if draft is None:
-        raise HTTPException(status_code=404, detail="Partner draft not found")
+        raise structured_error(404, "Partner draft not found", code="partner.draft_not_found")
     return draft.to_dict()
 
 
@@ -861,7 +887,7 @@ async def _confirm_partner_draft(
     except ValueError:
         draft = None
     if draft is None:
-        raise HTTPException(status_code=404, detail="Partner draft not found")
+        raise structured_error(404, "Partner draft not found", code="partner.draft_not_found")
 
     if draft.status == "created" and draft.created_partner_id:
         cfg = get_partner_manager().load_config(draft.created_partner_id)
@@ -976,7 +1002,7 @@ async def get_partner(
     else:
         cfg = mgr.load_config(partner_id)
         if cfg is None:
-            raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+            raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
         full = _stopped_partner_dict(partner_id, cfg, include_secrets=include_secrets)
     if not manageable:
         return {**identity_card(full), "can_manage": False}
@@ -990,7 +1016,7 @@ def _validate_workspace(workspace_id: str, owner_id: str) -> str:
     try:
         return validate_partner_workspace(workspace_id, owner_id)
     except WorkspaceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise structured_error(400, str(exc), code="partner.workspace_invalid") from exc
 
 
 def _apply_update(cfg: PartnerConfig, payload: UpdatePartnerRequest) -> None:
@@ -1039,12 +1065,13 @@ async def update_partner(partner_id: str, payload: UpdatePartnerRequest):
                 await mgr.reload_channels(partner_id)
             except Exception as exc:
                 logger.exception("reload_channels failed for partner '%s'", partner_id)
-                raise HTTPException(
-                    status_code=500,
-                    detail=(
+                raise structured_error(
+                    500,
+                    (
                         "Channels saved but failed to restart listeners "
                         f"({type(exc).__name__}); try stopping and starting the partner."
                     ),
+                    code="partner.channels_reload_failed",
                 ) from None
         # LLM / tool changes need no reload: the runner resolves
         # llm_selection and tool config per turn from this same config object.
@@ -1052,7 +1079,7 @@ async def update_partner(partner_id: str, payload: UpdatePartnerRequest):
 
     cfg = mgr.load_config(partner_id)
     if not cfg:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     _apply_update(cfg, payload)
     mgr.save_config(partner_id, cfg)
     status = get_partner_runtime_status_repository().get(partner_id) or {}
@@ -1074,7 +1101,7 @@ async def start_partner(partner_id: str):
     if remote is not None:
         cfg = get_partner_manager().load_config(partner_id)
         if cfg is None:
-            raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+            raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
         return _stopped_partner_dict(partner_id, cfg)
     instance = await _ensure_running_partner(partner_id, allow_stopped=True)
     # An explicit start is a persisted "run on boot" intent — so the partner
@@ -1095,7 +1122,9 @@ async def stop_partner(partner_id: str):
         return {"partner_id": partner_id, "stopped": True}
     stopped = await get_partner_manager().stop_partner(partner_id)
     if not stopped:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found_or_not_running"))
+        raise structured_error(
+            404, t("api.partner_not_found_or_not_running"), code="partner.not_found_or_not_running"
+        )
     return {"partner_id": partner_id, "stopped": True}
 
 
@@ -1108,7 +1137,7 @@ async def destroy_partner(partner_id: str):
     )
     destroyed = await get_partner_manager().destroy_partner(partner_id)
     if not destroyed:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     return {"partner_id": partner_id, "destroyed": True}
 
 
@@ -1124,13 +1153,14 @@ async def reload_partner_channels(partner_id: str):
         )
         return {"partner_id": partner_id, "reloaded": True}
     if not instance or not instance.running:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_running"))
+        raise structured_error(404, t("api.partner_not_running"), code="partner.not_running")
     try:
         await mgr.reload_channels(partner_id)
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to reload channels: {type(exc).__name__}",
+        raise structured_error(
+            500,
+            f"Failed to reload channels: {type(exc).__name__}",
+            code="partner.channels_reload_failed",
         ) from None
     return {"partner_id": partner_id, "reloaded": True}
 
@@ -1142,7 +1172,7 @@ async def get_partner_channel_status(partner_id: str):
     instance = mgr.get_partner(partner_id)
     config = instance.config if instance else mgr.load_config(partner_id)
     if config is None:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     source = config.channels if isinstance(config.channels, dict) else {}
     channels = {
         name: {
@@ -1178,7 +1208,7 @@ async def get_partner_channel_status(partner_id: str):
 def _onboarding_manager_and_partner(partner_id: str):
     mgr = get_partner_manager()
     if not mgr.partner_exists(partner_id):
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     return get_channel_onboarding_manager(), mgr
 
 
@@ -1188,12 +1218,15 @@ async def start_partner_channel_onboarding(partner_id: str, payload: ChannelOnbo
     try:
         return await onboarding.start(partner_id, payload.channel)
     except ChannelOnboardingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None
+        raise structured_error(
+            exc.status_code, str(exc), code="partner.channel_onboarding_failed"
+        ) from None
     except Exception as exc:
         logger.exception("Failed to start channel onboarding for '%s'", partner_id)
-        raise HTTPException(
-            status_code=502,
-            detail=f"Channel onboarding provider request failed ({type(exc).__name__})",
+        raise structured_error(
+            502,
+            f"Channel onboarding provider request failed ({type(exc).__name__})",
+            code="partner.channel_onboarding_provider_failed",
         ) from exc
 
 
@@ -1203,12 +1236,15 @@ async def get_partner_channel_onboarding(partner_id: str, session_id: str):
     try:
         return await onboarding.status(partner_id, session_id)
     except ChannelOnboardingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None
+        raise structured_error(
+            exc.status_code, str(exc), code="partner.channel_onboarding_failed"
+        ) from None
     except Exception as exc:
         logger.exception("Failed to poll channel onboarding for '%s'", partner_id)
-        raise HTTPException(
-            status_code=502,
-            detail=f"Channel onboarding provider request failed ({type(exc).__name__})",
+        raise structured_error(
+            502,
+            f"Channel onboarding provider request failed ({type(exc).__name__})",
+            code="partner.channel_onboarding_provider_failed",
         ) from exc
 
 
@@ -1218,7 +1254,9 @@ async def cancel_partner_channel_onboarding(partner_id: str, session_id: str):
     try:
         return await onboarding.cancel(partner_id, session_id)
     except ChannelOnboardingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None
+        raise structured_error(
+            exc.status_code, str(exc), code="partner.channel_onboarding_failed"
+        ) from None
 
 
 @router.post("/{partner_id}/channel-onboarding/{session_id}/apply", dependencies=_MANAGEABLE)
@@ -1227,15 +1265,18 @@ async def apply_partner_channel_onboarding(partner_id: str, session_id: str):
     try:
         return await onboarding.apply(partner_id, session_id, mgr)
     except ChannelOnboardingError as exc:
-        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from None
+        raise structured_error(
+            exc.status_code, str(exc), code="partner.channel_onboarding_failed"
+        ) from None
     except Exception as exc:
         logger.exception("Failed to apply channel onboarding for '%s'", partner_id)
-        raise HTTPException(
-            status_code=500,
-            detail=(
+        raise structured_error(
+            500,
+            (
                 "Channel config saved but failed to restart listeners "
                 f"({type(exc).__name__}); try stopping and starting the partner."
             ),
+            code="partner.channels_reload_failed",
         ) from exc
 
 
@@ -1266,12 +1307,12 @@ async def get_partner_workspaces(partner_id: str):
 
     config = get_partner_manager().load_config(partner_id)
     if config is None:
-        raise HTTPException(status_code=404, detail=t("api.partner_not_found"))
+        raise structured_error(404, t("api.partner_not_found"), code="partner.not_found")
     try:
         with user_context(workspace_owner(config.owner_id)), workspace_context(""):
             return {"workspaces": get_content_workspace_service().list_workspaces()}
     except WorkspaceError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise structured_error(400, str(exc), code="partner.workspace_invalid") from exc
 
 
 @router.get("/{partner_id}/assets", dependencies=_MANAGEABLE)
@@ -1283,9 +1324,10 @@ async def get_partner_assets(partner_id: str):
 async def add_partner_assets(partner_id: str, payload: AssetAddRequest):
     config = get_partner_manager().load_config(partner_id)
     if config and config.workspace_id:
-        raise HTTPException(
-            status_code=400,
-            detail="This partner uses shared workspace resources. Add resources to that workspace.",
+        raise structured_error(
+            400,
+            "This partner uses shared workspace resources. Add resources to that workspace.",
+            code="partner.assets_workspace_shared",
         )
     report = provision_assets(
         partner_id,
@@ -1301,9 +1343,9 @@ async def delete_partner_asset(partner_id: str, asset_type: str, name: str):
     try:
         removed = remove_asset(partner_id, asset_type, name)
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from None
+        raise structured_error(422, str(exc), code="partner.asset_invalid") from None
     if not removed:
-        raise HTTPException(status_code=404, detail="Asset not found")
+        raise structured_error(404, "Asset not found", code="partner.asset_not_found")
     return {"partner_id": partner_id, "removed": True, "assets": list_assets(partner_id)}
 
 
@@ -1342,7 +1384,7 @@ async def delete_partner_link(partner_id: str, key: str):
     from deeptutor.services.partners.links import remove_link
 
     if not remove_link(partner_id, get_current_user().id, key):
-        raise HTTPException(status_code=404, detail="No such linked account")
+        raise structured_error(404, "No such linked account", code="partner.link_not_found")
     return {"partner_id": partner_id, "removed": True, "key": key}
 
 
@@ -1404,9 +1446,9 @@ async def put_partner_web_continuity(partner_id: str, payload: WebContinuityBody
             idle_lock=lambda key: mgr.web_session_idle_lock(partner_id, key),
         )
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from None
+        raise structured_error(422, str(exc), code="partner.web_continuity_invalid") from None
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
 
 
 @router.get("/{partner_id}/sessions", dependencies=_USABLE)
@@ -1422,7 +1464,7 @@ async def archive_partner_session(partner_id: str, payload: SessionKeyBody):
     try:
         with mgr.web_session_idle_lock(partner_id, payload.session_key):
             if not mgr.archive_session(partner_id, payload.session_key):
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise structured_error(404, "Session not found", code="partner.session_not_found")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,
@@ -1430,7 +1472,7 @@ async def archive_partner_session(partner_id: str, payload: SessionKeyBody):
                 new_session_key=fresh_web_session_key(),
             )
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
     return {
         "partner_id": partner_id,
         "archived": True,
@@ -1446,12 +1488,12 @@ async def resume_partner_session(partner_id: str, payload: SessionKeyBody):
     try:
         session_key = validate_session_key(payload.session_key)
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from None
+        raise structured_error(422, str(exc), code="partner.session_key_invalid") from None
     try:
         with mgr.web_session_idle_lock(partner_id, session_key):
             summary = mgr.resume_session(partner_id, session_key)
             if summary is None:
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise structured_error(404, "Session not found", code="partner.session_not_found")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,
@@ -1461,7 +1503,7 @@ async def resume_partner_session(partner_id: str, payload: SessionKeyBody):
                 idle_lock=lambda key: mgr.web_session_idle_lock(partner_id, key),
             )
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
     return {
         "partner_id": partner_id,
         "resumed": True,
@@ -1477,7 +1519,7 @@ async def delete_partner_session(partner_id: str, payload: SessionKeyBody):
         with mgr.web_session_idle_lock(partner_id, payload.session_key):
             removed = mgr.delete_session(partner_id, payload.session_key)
             if not removed:
-                raise HTTPException(status_code=404, detail="Session not found")
+                raise structured_error(404, "Session not found", code="partner.session_not_found")
             active_key = move_active_web_session(
                 partner_id,
                 get_current_user().id,
@@ -1485,7 +1527,7 @@ async def delete_partner_session(partner_id: str, payload: SessionKeyBody):
                 new_session_key=fresh_web_session_key(),
             )
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
     return {
         "partner_id": partner_id,
         "deleted": True,
@@ -1501,16 +1543,20 @@ async def branch_partner_session(partner_id: str, payload: SessionBranchBody):
     try:
         target_key = validate_session_key(payload.new_key)
     except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from None
+        raise structured_error(422, str(exc), code="partner.session_key_invalid") from None
     if mgr.session_store(partner_id)._stem(payload.source_key) == target_key:
-        raise HTTPException(status_code=400, detail="Branch needs a different session key")
+        raise structured_error(
+            400, "Branch needs a different session key", code="partner.branch_same_key"
+        )
     try:
         with mgr.web_session_idle_lock(partner_id, payload.source_key):
             with mgr.web_session_idle_lock(partner_id, target_key):
                 summary = mgr.branch_session(partner_id, payload.source_key, target_key)
                 if summary is None:
-                    raise HTTPException(
-                        status_code=400, detail="Nothing to branch (source is empty)"
+                    raise structured_error(
+                        400,
+                        "Nothing to branch (source is empty)",
+                        code="partner.branch_source_empty",
                     )
                 active_key = move_active_web_session(
                     partner_id,
@@ -1519,7 +1565,7 @@ async def branch_partner_session(partner_id: str, payload: SessionBranchBody):
                     new_session_key=target_key,
                 )
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
     return {
         "partner_id": partner_id,
         "branched": True,
@@ -1610,17 +1656,21 @@ def _materialize_partner_attachments(
         try:
             data = base64.b64decode(raw_b64, validate=False)
         except (binascii.Error, ValueError) as exc:
-            raise HTTPException(
-                status_code=422,
-                detail=f"Invalid attachment data for {item.filename or 'file'}",
+            raise structured_error(
+                422,
+                f"Invalid attachment data for {item.filename or 'file'}",
+                code="partner.attachment_invalid_data",
             ) from exc
         if len(data) > max_file_bytes:
-            raise HTTPException(
-                status_code=413,
-                detail=f"Attachment too large: {item.filename or 'file'}",
+            raise structured_error(
+                413,
+                f"Attachment too large: {item.filename or 'file'}",
+                code="partner.attachment_too_large",
             )
         if total_bytes + len(data) > max_total_bytes:
-            raise HTTPException(status_code=413, detail="Attachment batch too large")
+            raise structured_error(
+                413, "Attachment batch too large", code="partner.attachment_batch_too_large"
+            )
         total_bytes += len(data)
 
         filename = safe_filename(item.filename or "attachment") or "attachment"
@@ -1635,7 +1685,7 @@ async def partner_chat_http(partner_id: str, payload: ChatMessageRequest) -> dic
     """Send one HTTP message to a partner with persistent session context."""
     content = payload.content.strip()
     if not content and not payload.attachments:
-        raise HTTPException(status_code=400, detail=t("api.content_required"))
+        raise structured_error(400, t("api.content_required"), code="partner.content_required")
     # Web chat is a first-class entry point. Start the partner runtime on
     # demand even when external channel listeners are not configured for boot;
     # ``auto_start`` controls restart persistence, not chat access.
@@ -1663,14 +1713,16 @@ async def partner_chat_http(partner_id: str, payload: ChatMessageRequest) -> dic
                 session_key=payload.session_key,
             )
     except PartnerStaleSessionError as exc:
-        raise HTTPException(
-            status_code=409,
-            detail={"message": str(exc), "active_session_key": exc.active_session_key},
+        raise structured_error(
+            409,
+            str(exc),
+            code="partner.stale_session",
+            active_session_key=exc.active_session_key,
         ) from None
     except PartnerTurnBusyError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
+        raise structured_error(409, str(exc), code="partner.turn_busy") from None
     except RuntimeError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from None
+        raise structured_error(400, str(exc), code="partner.chat_send_failed") from None
     return {
         "partner_id": partner_id,
         "session_id": session_id,
@@ -1752,7 +1804,7 @@ async def _partner_chat_stream(
 async def partner_chat_http_stream(partner_id: str, payload: ChatMessageRequest):
     """Stream one HTTP message to a partner as server-sent events."""
     if not payload.content.strip() and not payload.attachments:
-        raise HTTPException(status_code=400, detail=t("api.content_required"))
+        raise structured_error(400, t("api.content_required"), code="partner.content_required")
     await _ensure_running_partner(partner_id, allow_stopped=True)
     return StreamingResponse(
         _partner_chat_stream(partner_id, payload, get_current_user().id),
@@ -1810,7 +1862,7 @@ async def partner_chat_ws(ws: WebSocket, partner_id: str):
     try:
         instance = await _ensure_running_partner(partner_id, allow_stopped=True)
     except HTTPException as exc:
-        message = str(exc.detail)
+        message = error_message(exc.detail)
         await _safe_send({"type": "error", "content": message})
         code = 4004 if exc.status_code == 404 else 4003
         await ws.close(code=code, reason=message[:120])
@@ -1918,7 +1970,7 @@ async def partner_chat_ws(ws: WebSocket, partner_id: str):
             try:
                 media_paths = _materialize_partner_attachments(partner_id, attachments)
             except HTTPException as exc:
-                if not await _safe_send({"type": "error", "content": str(exc.detail)}):
+                if not await _safe_send({"type": "error", "content": error_message(exc.detail)}):
                     break
                 continue
             if not content and media_paths:
