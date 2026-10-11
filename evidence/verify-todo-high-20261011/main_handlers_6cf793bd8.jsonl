@@ -1,0 +1,43 @@
+{"file": "deeptutor/api/routers/knowledge.py", "line": 3105, "exc": ["OSError"], "body": "continue", "func": "list_kb_raw_files", "try_first": "stat = entry.stat()"}
+{"file": "deeptutor/api/routers/knowledge.py", "line": 541, "exc": ["OSError"], "body": "pass", "func": "_save_uploaded_files", "try_first": "os.unlink(written_path)"}
+{"file": "deeptutor/api/routers/knowledge.py", "line": 1200, "exc": ["OSError"], "body": "pass", "func": "run_upload_processing_task", "try_first": "source_mtimes[source_path] = datetime.fromtimestamp("}
+{"file": "deeptutor/api/routers/knowledge.py", "line": 530, "exc": ["OSError"], "body": "pass", "func": "_save_uploaded_files", "try_first": "os.unlink(file_path)"}
+{"file": "deeptutor/api/routers/question.py", "line": 345, "exc": ["Exception"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "while not log_queue.empty():"}
+{"file": "deeptutor/api/routers/question.py", "line": 351, "exc": ["Exception"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "await websocket.close()"}
+{"file": "deeptutor/api/routers/question.py", "line": 336, "exc": ["asyncio.CancelledError"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "pusher_task.cancel()"}
+{"file": "deeptutor/api/routers/question.py", "line": 338, "exc": ["Exception"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "pusher_task.cancel()"}
+{"file": "deeptutor/api/routers/question.py", "line": 357, "exc": ["Exception"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "reset_current_user(user_token)"}
+{"file": "deeptutor/api/routers/question.py", "line": 387, "exc": ["RuntimeError", "WebSocketDisconnect"], "body": "pass", "func": "websocket_question_generate", "try_first": "await websocket.send_json({\"type\": \"error\", \"content\": \"Requirement is required\"})"}
+{"file": "deeptutor/api/routers/question.py", "line": 440, "exc": ["Exception"], "body": "pass", "func": "ws_callback", "try_first": "await log_queue.put(data)"}
+{"file": "deeptutor/api/routers/question.py", "line": 566, "exc": ["asyncio.CancelledError"], "body": "pass", "func": "websocket_question_generate", "try_first": "await pusher_task"}
+{"file": "deeptutor/api/routers/question.py", "line": 579, "exc": ["Exception"], "body": "pass", "func": "websocket_question_generate", "try_first": "reset_current_user(user_token)"}
+{"file": "deeptutor/api/routers/question.py", "line": 131, "exc": ["Exception"], "body": "pass", "func": "write", "try_first": "self.original_stdout.write(message)"}
+{"file": "deeptutor/api/routers/question.py", "line": 306, "exc": ["RuntimeError", "WebSocketDisconnect"], "body": "pass", "func": "websocket_mimic_generate", "try_first": "await websocket.send_json({\"type\": \"error\", \"content\": error_msg})"}
+{"file": "deeptutor/api/routers/question.py", "line": 146, "exc": ["asyncio.QueueFull", "RuntimeError"], "body": "pass", "func": "write", "try_first": "event = ProcessLogEvent("}
+{"file": "deeptutor/api/routers/question.py", "line": 153, "exc": ["Exception"], "body": "pass", "func": "flush", "try_first": "self.original_stdout.flush()"}
+{"file": "deeptutor/api/routers/question.py", "line": 507, "exc": ["RuntimeError", "WebSocketDisconnect"], "body": "pass", "func": "websocket_question_generate", "try_first": "await websocket.send_json("}
+{"file": "deeptutor/knowledge/manager.py", "line": 1356, "exc": ["Exception"], "body": "pass", "func": "get_default", "try_first": "from deeptutor.services.config import get_kb_config_service"}
+{"file": "deeptutor/knowledge/manager.py", "line": 1710, "exc": ["Exception"], "body": "pass", "func": "_get_info", "try_first": "raw_count = sum(1 for _ in iter_kb_documents(raw_dir)) if raw_dir else 0"}
+{"file": "deeptutor/knowledge/manager.py", "line": 1717, "exc": ["Exception"], "body": "pass", "func": "_get_info", "try_first": "images_count = ("}
+{"file": "deeptutor/knowledge/manager.py", "line": 1724, "exc": ["Exception"], "body": "pass", "func": "_get_info", "try_first": "content_lists_count = ("}
+{"file": "deeptutor/knowledge/manager.py", "line": 221, "exc": ["ValueError"], "body": "pass", "func": "_reconcile_embedding_flags", "try_first": "published = bound_graph_storage_root(kb_dir, provider, published)"}
+{"file": "deeptutor/runtime/launcher.py", "line": 1143, "exc": ["OSError"], "body": "pass", "func": "_stop_unhealthy_source_frontend", "try_first": "frontend.lock_path.unlink(missing_ok=True)"}
+{"file": "deeptutor/runtime/launcher.py", "line": 309, "exc": ["ValueError", "OSError"], "body": "continue", "func": "_relax_console_encoding", "try_first": "reconfigure(errors=\"replace\")"}
+{"file": "deeptutor/runtime/launcher.py", "line": 380, "exc": ["ValueError"], "body": "continue", "func": "_port_listeners", "try_first": "pid = int(line[1:])"}
+{"file": "deeptutor/runtime/launcher.py", "line": 412, "exc": ["ValueError"], "body": "continue", "func": "_port_listeners_windows", "try_first": "pid = int(parts[4])"}
+{"file": "deeptutor/runtime/launcher.py", "line": 758, "exc": ["Exception"], "body": "pass", "func": "_copy_packaged_web_if_needed", "try_first": "if json.loads(marker.read_text(encoding=\"utf-8\")) == marker_payload:"}
+{"file": "deeptutor/runtime/launcher.py", "line": 907, "exc": ["Exception"], "body": "pass", "func": "_ensure_source_production_build", "try_first": "if json.loads(marker.read_text(encoding=\"utf-8\")) == payload:"}
+{"file": "deeptutor/runtime/launcher.py", "line": 1063, "exc": ["Exception"], "body": "continue", "func": "_detect_existing_source_frontend", "try_first": "payload = json.loads(lock_path.read_text(encoding=\"utf-8\"))"}
+{"file": "deeptutor/runtime/launcher.py", "line": 1118, "exc": ["OSError"], "body": "pass", "func": "_stop_unhealthy_source_frontend", "try_first": "frontend.lock_path.unlink(missing_ok=True)"}
+{"file": "deeptutor/runtime/launcher.py", "line": 1163, "exc": ["OSError", "ValueError"], "body": "pass", "func": "_install_signal_handlers", "try_first": "signal.signal(signal.SIGINT, signal.SIG_IGN)"}
+{"file": "deeptutor/runtime/launcher.py", "line": 1182, "exc": ["OSError", "ValueError"], "body": "continue", "func": "_install_signal_handlers", "try_first": "signal.signal(sig, _handler)"}
+{"file": "deeptutor/runtime/launcher.py", "line": 791, "exc": ["UnicodeDecodeError"], "body": "continue", "func": "_patch_packaged_web_placeholders", "try_first": "text = path.read_text(encoding=\"utf-8\")"}
+{"file": "deeptutor/runtime/update_worker.py", "line": 171, "exc": ["Exception"], "body": "pass", "func": "run_update_worker", "try_first": "if current.status not in {\"succeeded\", \"failed\"}:"}
+{"file": "deeptutor/services/embedding/client.py", "line": 226, "exc": ["Exception"], "body": "pass", "func": "supports_multimodal_contents", "try_first": "info = self.adapter.get_model_info()"}
+{"file": "deeptutor/services/memory/snapshot/adapters.py", "line": 56, "exc": ["Exception"], "body": "pass", "func": "_iso", "try_first": "datetime.fromisoformat(ts.replace(\"Z\", \"+00:00\"))"}
+{"file": "deeptutor/services/memory/snapshot/adapters.py", "line": 61, "exc": ["Exception"], "body": "pass", "func": "_iso", "try_first": "return datetime.fromtimestamp(float(ts), tz=timezone.utc).isoformat()"}
+{"file": "deeptutor/services/memory/snapshot/adapters.py", "line": 308, "exc": ["json.JSONDecodeError"], "body": "continue", "func": "_partner_session_entity", "try_first": "obj = json.loads(raw)"}
+{"file": "deeptutor/services/rag/pipelines/graphrag/provider.py", "line": 119, "exc": ["Exception"], "body": "pass", "func": "resolve_persisted_completion_provider", "try_first": "from deeptutor.services.config import ("}
+{"file": "deeptutor/services/rag/pipelines/llamaindex/document_loader.py", "line": 493, "exc": ["Exception"], "body": "pass", "func": "_describe_group", "try_first": "image_progress_callback(completed, total)"}
+{"file": "deeptutor/services/storage/file_library.py", "line": 205, "exc": ["Exception"], "body": "pass", "func": "_delete_file", "try_first": "for parent in target.parents:"}
+{"file": "deeptutor/services/storage/file_library.py", "line": 188, "exc": ["OSError"], "body": "pass", "func": "_write_file", "try_first": "tmp.unlink()"}
