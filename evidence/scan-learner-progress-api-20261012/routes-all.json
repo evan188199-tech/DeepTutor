@@ -1,0 +1,5098 @@
+[
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/agent_config.py",
+  "line": 35,
+  "method": "GET",
+  "route": "/agents",
+  "handler": "get_agent_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/agent_config.py",
+  "line": 46,
+  "method": "GET",
+  "route": "/agents/{agent_type}",
+  "handler": "get_single_agent_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/attachments.py",
+  "line": 40,
+  "method": "GET",
+  "route": "/{session_id}/{attachment_id}/{filename:path}",
+  "handler": "get_attachment"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 743,
+  "method": "GET",
+  "route": "/openai-codex/callback",
+  "handler": "receive_codex_oauth_callback"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 772,
+  "method": "GET",
+  "route": "/status",
+  "handler": "auth_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 827,
+  "method": "POST",
+  "route": "/login",
+  "handler": "login"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 890,
+  "method": "POST",
+  "route": "/device-login",
+  "handler": "device_login"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 921,
+  "method": "POST",
+  "route": "/session-handoff",
+  "handler": "create_session_handoff"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 998,
+  "method": "POST",
+  "route": "/session-handoff/exchange",
+  "handler": "exchange_session_handoff"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1032,
+  "method": "POST",
+  "route": "/session-handoff/complete",
+  "handler": "complete_session_handoff"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1093,
+  "method": "POST",
+  "route": "/device/heartbeat",
+  "handler": "device_heartbeat"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1125,
+  "method": "POST",
+  "route": "/logout",
+  "handler": "logout"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1136,
+  "method": "POST",
+  "route": "/register",
+  "handler": "register"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1213,
+  "method": "GET",
+  "route": "/is_first_user",
+  "handler": "check_is_first_user"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1254,
+  "method": "GET",
+  "route": "/profile",
+  "handler": "get_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1273,
+  "method": "PUT",
+  "route": "/profile",
+  "handler": "update_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1294,
+  "method": "PUT",
+  "route": "/profile/avatar",
+  "handler": "upload_avatar"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1352,
+  "method": "DELETE",
+  "route": "/profile/avatar",
+  "handler": "remove_avatar"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1366,
+  "method": "GET",
+  "route": "/avatar/{user_id}",
+  "handler": "get_avatar_image"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1397,
+  "method": "GET",
+  "route": "/devices",
+  "handler": "list_devices"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1415,
+  "method": "POST",
+  "route": "/devices",
+  "handler": "issue_device"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1455,
+  "method": "DELETE",
+  "route": "/devices/{device_credential_id}",
+  "handler": "revoke_device"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1478,
+  "method": "GET",
+  "route": "/users",
+  "handler": "get_users"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1501,
+  "method": "GET",
+  "route": "/profile/learner-profile",
+  "handler": "get_current_learner_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1509,
+  "method": "PUT",
+  "route": "/profile/learner-profile",
+  "handler": "put_current_learner_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1534,
+  "method": "GET",
+  "route": "/users/{username}/learner-profile",
+  "handler": "get_learner_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1549,
+  "method": "PUT",
+  "route": "/users/{username}/learner-profile",
+  "handler": "put_learner_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1678,
+  "method": "POST",
+  "route": "/users",
+  "handler": "admin_create_user"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1692,
+  "method": "POST",
+  "route": "/users/import",
+  "handler": "admin_import_users"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1835,
+  "method": "DELETE",
+  "route": "/users/{username}",
+  "handler": "remove_user"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1847,
+  "method": "POST",
+  "route": "/users/batch-delete",
+  "handler": "batch_remove_users"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/auth.py",
+  "line": 1874,
+  "method": "PUT",
+  "route": "/users/{username}/role",
+  "handler": "update_user_role"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 557,
+  "method": "GET",
+  "route": "/books/health",
+  "handler": "health_check"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 562,
+  "method": "GET",
+  "route": "/books/estimate-basis",
+  "handler": "estimate_basis"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 576,
+  "method": "GET",
+  "route": "/books/block-types",
+  "handler": "block_types"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 594,
+  "method": "GET",
+  "route": "/books",
+  "handler": "list_books"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 614,
+  "method": "GET",
+  "route": "/books/{book_id}/learning-captures",
+  "handler": "list_learning_captures"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 627,
+  "method": "POST",
+  "route": "/books/{book_id}/learning-captures",
+  "handler": "create_learning_capture"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 684,
+  "method": "PATCH",
+  "route": "/books/{book_id}/learning-captures/{capture_id}",
+  "handler": "update_learning_capture"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 742,
+  "method": "GET",
+  "route": "/books/{book_id}",
+  "handler": "get_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 776,
+  "method": "GET",
+  "route": "/books/{book_id}/spine",
+  "handler": "get_spine"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 785,
+  "method": "GET",
+  "route": "/books/{book_id}/pages/{page_id}",
+  "handler": "get_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 794,
+  "method": "DELETE",
+  "route": "/books/{book_id}",
+  "handler": "delete_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 810,
+  "method": "POST",
+  "route": "/books",
+  "handler": "create_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 841,
+  "method": "POST",
+  "route": "/books/confirm-proposal",
+  "handler": "confirm_proposal"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 872,
+  "method": "POST",
+  "route": "/books/confirm-spine",
+  "handler": "confirm_spine"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 904,
+  "method": "POST",
+  "route": "/books/compile-page",
+  "handler": "compile_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 930,
+  "method": "POST",
+  "route": "/books/regenerate-block",
+  "handler": "regenerate_block"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 972,
+  "method": "POST",
+  "route": "/books/insert-block",
+  "handler": "insert_block"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1003,
+  "method": "POST",
+  "route": "/books/delete-block",
+  "handler": "delete_block"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1020,
+  "method": "POST",
+  "route": "/books/move-block",
+  "handler": "move_block"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1042,
+  "method": "POST",
+  "route": "/books/change-block-type",
+  "handler": "change_block_type"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1072,
+  "method": "POST",
+  "route": "/books/deep-dive",
+  "handler": "deep_dive"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1102,
+  "method": "POST",
+  "route": "/books/quiz-attempt",
+  "handler": "quiz_attempt"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1221,
+  "method": "POST",
+  "route": "/books/update-block",
+  "handler": "update_block"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1250,
+  "method": "POST",
+  "route": "/books/progress/visit",
+  "handler": "mark_visited"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1260,
+  "method": "POST",
+  "route": "/books/progress/bookmark",
+  "handler": "toggle_bookmark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1269,
+  "method": "GET",
+  "route": "/books/{book_id}/export",
+  "handler": "export_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1290,
+  "method": "GET",
+  "route": "/books/{book_id}/health",
+  "handler": "book_health"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1316,
+  "method": "POST",
+  "route": "/books/{book_id}/refresh-fingerprints",
+  "handler": "refresh_fingerprints"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1346,
+  "method": "POST",
+  "route": "/books/supplement",
+  "handler": "supplement"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1373,
+  "method": "POST",
+  "route": "/books/page-chat-session",
+  "handler": "set_page_chat_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1397,
+  "method": "POST",
+  "route": "/books/resume",
+  "handler": "resume_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1419,
+  "method": "POST",
+  "route": "/books/pause",
+  "handler": "pause_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/book.py",
+  "line": 1441,
+  "method": "POST",
+  "route": "/books/rebuild",
+  "handler": "rebuild_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/capabilities.py",
+  "line": 24,
+  "method": "GET",
+  "route": "/registered",
+  "handler": "list_registered_capabilities"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/capabilities_settings.py",
+  "line": 27,
+  "method": "GET",
+  "route": "/settings",
+  "handler": "get_capabilities_settings_endpoint"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/capabilities_settings.py",
+  "line": 34,
+  "method": "PUT",
+  "route": "/settings",
+  "handler": "put_capabilities_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 521,
+  "method": "POST",
+  "route": "/documents/actions/edit",
+  "handler": "edit_text"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 549,
+  "method": "POST",
+  "route": "/documents/actions/edit-react",
+  "handler": "edit_text_react"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 564,
+  "method": "POST",
+  "route": "/documents/actions/edit-react/stream",
+  "handler": "edit_text_react_stream"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 578,
+  "method": "POST",
+  "route": "/documents/actions/automark",
+  "handler": "auto_mark_text"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 600,
+  "method": "GET",
+  "route": "/documents/history",
+  "handler": "get_history"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 612,
+  "method": "GET",
+  "route": "/documents/history/{operation_id}",
+  "handler": "get_operation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 629,
+  "method": "GET",
+  "route": "/documents/tool-calls/{operation_id}",
+  "handler": "get_tool_call"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 707,
+  "method": "GET",
+  "route": "/documents",
+  "handler": "list_documents"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 719,
+  "method": "POST",
+  "route": "/documents",
+  "handler": "create_document"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 758,
+  "method": "POST",
+  "route": "/documents/import/docx",
+  "handler": "import_docx"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 809,
+  "method": "POST",
+  "route": "/documents/export/docx",
+  "handler": "export_docx"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 826,
+  "method": "GET",
+  "route": "/documents/{doc_id}",
+  "handler": "get_document"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 842,
+  "method": "PUT",
+  "route": "/documents/{doc_id}",
+  "handler": "update_document"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/co_writer.py",
+  "line": 860,
+  "method": "DELETE",
+  "route": "/documents/{doc_id}",
+  "handler": "delete_document"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 69,
+  "method": "GET",
+  "route": "",
+  "handler": "list_courses"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 77,
+  "method": "POST",
+  "route": "",
+  "handler": "create_course"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 91,
+  "method": "GET",
+  "route": "/resource-candidates",
+  "handler": "list_resource_candidates"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 96,
+  "method": "PATCH",
+  "route": "/{course_id}",
+  "handler": "update_course"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 123,
+  "method": "PUT",
+  "route": "/{course_id}/syllabus",
+  "handler": "set_course_syllabus"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 145,
+  "method": "PATCH",
+  "route": "/{course_id}/syllabus/{unit_id}",
+  "handler": "update_syllabus_unit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 162,
+  "method": "POST",
+  "route": "/{course_id}/resources",
+  "handler": "attach_course_resource"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 178,
+  "method": "DELETE",
+  "route": "/{course_id}/resources/{resource_id}",
+  "handler": "detach_course_resource"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 189,
+  "method": "GET",
+  "route": "/{course_id}/state",
+  "handler": "get_course_state"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/courses.py",
+  "line": 197,
+  "method": "DELETE",
+  "route": "/{course_id}",
+  "handler": "delete_course"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 20,
+  "method": "GET",
+  "route": "/recent",
+  "handler": "get_recent_activities"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 49,
+  "method": "GET",
+  "route": "/suggestions",
+  "handler": "get_starter_suggestions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 66,
+  "method": "POST",
+  "route": "/suggestions/refresh",
+  "handler": "refresh_starter_suggestions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 79,
+  "method": "GET",
+  "route": "/learning-index",
+  "handler": "get_learning_index"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 120,
+  "method": "GET",
+  "route": "/source-library/{kind}",
+  "handler": "get_source_library"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 160,
+  "method": "GET",
+  "route": "/learning-library/{kind}",
+  "handler": "get_learning_library"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/dashboard.py",
+  "line": 220,
+  "method": "GET",
+  "route": "/{entry_id}",
+  "handler": "get_activity_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 54,
+  "method": "GET",
+  "route": "/",
+  "handler": "list_library_files"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 64,
+  "method": "POST",
+  "route": "/",
+  "handler": "add_library_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 85,
+  "method": "GET",
+  "route": "/search",
+  "handler": "search_library_files"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 94,
+  "method": "GET",
+  "route": "/{file_id}",
+  "handler": "get_library_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 106,
+  "method": "GET",
+  "route": "/{file_id}/download",
+  "handler": "download_library_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 148,
+  "method": "DELETE",
+  "route": "/{file_id}",
+  "handler": "delete_library_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_library.py",
+  "line": 160,
+  "method": "POST",
+  "route": "/{file_id}/restore",
+  "handler": "restore_library_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_preview.py",
+  "line": 186,
+  "method": "GET",
+  "route": "/pdf",
+  "handler": "preview_office_source"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/file_preview.py",
+  "line": 194,
+  "method": "POST",
+  "route": "/pdf",
+  "handler": "preview_office_upload"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/imports.py",
+  "line": 74,
+  "method": "POST",
+  "route": "/chat-history",
+  "handler": "import_chat_history"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/imports.py",
+  "line": 139,
+  "method": "GET",
+  "route": "/chat-history",
+  "handler": "list_imported_chat_history"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1384,
+  "method": "GET",
+  "route": "/knowledge-bases/health",
+  "handler": "health_check"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1413,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-providers",
+  "handler": "get_rag_providers"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1443,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-providers/{provider}/mode",
+  "handler": "set_rag_provider_mode"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1486,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/pageindex/config",
+  "handler": "get_pageindex_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1496,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/pageindex/config",
+  "handler": "update_pageindex_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1539,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/ima/config",
+  "handler": "get_ima_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1549,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/ima/config",
+  "handler": "update_ima_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1593,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/llamaindex/config",
+  "handler": "get_llamaindex_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1619,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/llamaindex/config",
+  "handler": "update_llamaindex_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1647,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/graphrag/config",
+  "handler": "get_graphrag_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1659,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/graphrag/config",
+  "handler": "update_graphrag_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1710,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/lightrag/config",
+  "handler": "get_lightrag_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1722,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/lightrag/model-options",
+  "handler": "get_lightrag_model_options"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1730,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/lightrag/config",
+  "handler": "update_lightrag_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1795,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/lightrag-server/config",
+  "handler": "get_lightrag_server_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1805,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/lightrag-server/config",
+  "handler": "update_lightrag_server_pipeline_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1827,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/{provider}/preflight",
+  "handler": "get_rag_pipeline_preflight"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1890,
+  "method": "GET",
+  "route": "/knowledge-bases/rag-pipelines/model-options",
+  "handler": "get_rag_model_options"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1903,
+  "method": "GET",
+  "route": "/knowledge-bases/embedding-usage",
+  "handler": "get_embedding_usage"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1964,
+  "method": "POST",
+  "route": "/knowledge-bases/rag-pipelines/graphrag/model-compatibility",
+  "handler": "test_graphrag_model_compatibility"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 1987,
+  "method": "PUT",
+  "route": "/knowledge-bases/rag-pipelines/active-model",
+  "handler": "set_rag_active_model"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2025,
+  "method": "GET",
+  "route": "/knowledge-bases/supported-file-types",
+  "handler": "get_supported_file_types"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2048,
+  "method": "GET",
+  "route": "/knowledge-bases/configs",
+  "handler": "get_all_kb_configs"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2061,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/config",
+  "handler": "get_kb_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2075,
+  "method": "PUT",
+  "route": "/knowledge-bases/{kb_name}/config",
+  "handler": "update_kb_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2137,
+  "method": "POST",
+  "route": "/knowledge-bases/configs/sync",
+  "handler": "sync_configs_from_metadata"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2151,
+  "method": "GET",
+  "route": "/knowledge-bases/default",
+  "handler": "get_default_kb"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2163,
+  "method": "PUT",
+  "route": "/knowledge-bases/default/{kb_name}",
+  "handler": "set_default_kb"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2187,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-obsidian",
+  "handler": "connect_obsidian_vault"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2220,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-marginnote4",
+  "handler": "connect_marginnote4"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2260,
+  "method": "POST",
+  "route": "/knowledge-bases/probe-folder",
+  "handler": "probe_linked_folder_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2279,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-folder",
+  "handler": "connect_linked_folder_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2356,
+  "method": "POST",
+  "route": "/knowledge-bases/probe-lightrag-server",
+  "handler": "probe_lightrag_server_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2380,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-lightrag-server",
+  "handler": "connect_lightrag_server_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2439,
+  "method": "POST",
+  "route": "/knowledge-bases/probe-weknora",
+  "handler": "probe_weknora_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2459,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-weknora",
+  "handler": "connect_weknora_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2545,
+  "method": "POST",
+  "route": "/knowledge-bases/list-ima",
+  "handler": "list_ima_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2597,
+  "method": "GET",
+  "route": "/knowledge-bases/kiwix-catalog",
+  "handler": "list_kiwix_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2614,
+  "method": "POST",
+  "route": "/knowledge-bases/probe-kiwix",
+  "handler": "probe_kiwix_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2627,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-kiwix",
+  "handler": "connect_kiwix_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2653,
+  "method": "GET",
+  "route": "/knowledge-bases/kiwix-articles",
+  "handler": "search_kiwix_articles"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2681,
+  "method": "POST",
+  "route": "/knowledge-bases/probe-ima",
+  "handler": "probe_ima_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2700,
+  "method": "POST",
+  "route": "/knowledge-bases/connect-ima",
+  "handler": "connect_ima_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2797,
+  "method": "GET",
+  "route": "/knowledge-bases",
+  "handler": "list_knowledge_bases"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2984,
+  "method": "GET",
+  "route": "/knowledge-bases/list",
+  "handler": "list_knowledge_bases_proxy_alias"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 2999,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}",
+  "handler": "get_knowledge_base_details"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3079,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/files",
+  "handler": "list_kb_raw_files"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3129,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/folders",
+  "handler": "create_kb_folder"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3143,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/files/move",
+  "handler": "move_kb_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3183,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/file-preview-text/{filename:path}",
+  "handler": "serve_kb_raw_file_text_preview"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3205,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/files/{filename:path}",
+  "handler": "serve_kb_raw_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3222,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/visual-assets/{asset_id}",
+  "handler": "serve_kb_visual_asset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3245,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/visual-coverage",
+  "handler": "kb_visual_coverage"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3267,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/source-page",
+  "handler": "kb_source_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3297,
+  "method": "DELETE",
+  "route": "/knowledge-bases/{kb_name}/files/{filename:path}",
+  "handler": "delete_kb_file"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3354,
+  "method": "POST",
+  "route": "/knowledge-bases/delete",
+  "handler": "delete_knowledge_base_by_name"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3373,
+  "method": "DELETE",
+  "route": "/knowledge-bases/{kb_name}",
+  "handler": "delete_knowledge_base"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3379,
+  "method": "GET",
+  "route": "/knowledge-bases/tasks/{task_id}/stream",
+  "handler": "stream_task_logs"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3391,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/upload",
+  "handler": "upload_files"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 3507,
+  "method": "POST",
+  "route": "/knowledge-bases",
+  "handler": "create_knowledge_base"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4082,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/reindex-config",
+  "handler": "get_reindex_config"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4098,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/reindex",
+  "handler": "reindex_knowledge_base"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4277,
+  "method": "PUT",
+  "route": "/knowledge-bases/{kb_name}/indexing-policy",
+  "handler": "update_pending_indexing_policy"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4291,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/retry",
+  "handler": "retry_knowledge_base"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4326,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/indexing-run",
+  "handler": "get_indexing_run"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4335,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/indexing-run/{task_id}/cancel",
+  "handler": "cancel_indexing_run"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4348,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/indexing-readiness",
+  "handler": "get_indexing_readiness"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4379,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/progress",
+  "handler": "get_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4397,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/progress/clear",
+  "handler": "clear_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4712,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/link-folder",
+  "handler": "link_folder"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4742,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/linked-folders",
+  "handler": "get_linked_folders"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4758,
+  "method": "DELETE",
+  "route": "/knowledge-bases/{kb_name}/linked-folders/{folder_id}",
+  "handler": "unlink_folder"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4777,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/sync-folder/{folder_id}",
+  "handler": "sync_folder"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4968,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/github-source",
+  "handler": "add_github_source"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4978,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/github-sources",
+  "handler": "get_github_sources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4985,
+  "method": "DELETE",
+  "route": "/knowledge-bases/{kb_name}/github-source/{source_id}",
+  "handler": "remove_github_source"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 4994,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/sync-github",
+  "handler": "sync_github_sources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5023,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/web-source",
+  "handler": "add_web_source"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5035,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/web-sources",
+  "handler": "get_web_sources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5042,
+  "method": "DELETE",
+  "route": "/knowledge-bases/{kb_name}/web-source/{source_id}",
+  "handler": "remove_web_source"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5057,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/web-source-sync",
+  "handler": "get_web_source_sync_jobs"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5069,
+  "method": "GET",
+  "route": "/knowledge-bases/{kb_name}/web-source/{source_id}/pairings",
+  "handler": "get_web_source_pairings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5096,
+  "method": "PUT",
+  "route": "/knowledge-bases/{kb_name}/web-source/{source_id}/schedule",
+  "handler": "update_web_source_schedule"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5123,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/web-source/{source_id}/cancel",
+  "handler": "cancel_web_source_sync"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5139,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/web-source/{source_id}/retry",
+  "handler": "retry_web_source_sync"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/knowledge.py",
+  "line": 5168,
+  "method": "POST",
+  "route": "/knowledge-bases/{kb_name}/sync-web",
+  "handler": "sync_web_sources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/learning_journal.py",
+  "line": 10,
+  "method": "GET",
+  "route": "",
+  "handler": "overview"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 149,
+  "method": "POST",
+  "route": "/pair",
+  "handler": "pair_device"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 177,
+  "method": "GET",
+  "route": "/devices",
+  "handler": "list_devices"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 194,
+  "method": "DELETE",
+  "route": "/devices/{device_id}",
+  "handler": "revoke_device"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 203,
+  "method": "GET",
+  "route": "/status",
+  "handler": "status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 217,
+  "method": "POST",
+  "route": "/sync",
+  "handler": "sync_objects"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/marginnote4.py",
+  "line": 267,
+  "method": "POST",
+  "route": "/heartbeat",
+  "handler": "heartbeat"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 456,
+  "method": "GET",
+  "route": "/topics",
+  "handler": "list_topics"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 468,
+  "method": "GET",
+  "route": "/topics/index",
+  "handler": "list_topic_index"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 498,
+  "method": "GET",
+  "route": "/reading/records",
+  "handler": "list_reading_learning_records"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 506,
+  "method": "POST",
+  "route": "/topics/draft",
+  "handler": "generate_topic_route"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 543,
+  "method": "POST",
+  "route": "/topics",
+  "handler": "create_topic"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 602,
+  "method": "GET",
+  "route": "/topics/{path_id}",
+  "handler": "get_topic"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 608,
+  "method": "GET",
+  "route": "/topics/{path_id}/review-settings",
+  "handler": "get_review_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 617,
+  "method": "PUT",
+  "route": "/topics/{path_id}/review-settings",
+  "handler": "update_review_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 647,
+  "method": "PUT",
+  "route": "/topics/{path_id}/map",
+  "handler": "edit_topic_map"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 691,
+  "method": "POST",
+  "route": "/topics/{path_id}/objectives/{kp_id}/override",
+  "handler": "set_learner_override"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 720,
+  "method": "GET",
+  "route": "/topics/{path_id}/sessions",
+  "handler": "list_topic_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 741,
+  "method": "PUT",
+  "route": "/topics/{path_id}/sessions/{session_id}/mode",
+  "handler": "set_session_mode"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 778,
+  "method": "GET",
+  "route": "/topics/{path_id}/ask-hint",
+  "handler": "get_topic_ask_hint"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 906,
+  "method": "GET",
+  "route": "/progress",
+  "handler": "list_all_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 912,
+  "method": "GET",
+  "route": "/progress/{book_id}",
+  "handler": "get_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 927,
+  "method": "GET",
+  "route": "/progress/{book_id}/map",
+  "handler": "get_progress_map"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 946,
+  "method": "GET",
+  "route": "/progress/{book_id}/board",
+  "handler": "get_progress_board"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 999,
+  "method": "GET",
+  "route": "/progress/{book_id}/objectives/{kp_id}",
+  "handler": "get_objective_report"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1034,
+  "method": "GET",
+  "route": "/progress/{book_id}/events",
+  "handler": "get_progress_events"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1053,
+  "method": "GET",
+  "route": "/progress/{book_id}/sessions",
+  "handler": "get_progress_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1064,
+  "method": "POST",
+  "route": "/progress/{book_id}/init-modules",
+  "handler": "init_modules"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1079,
+  "method": "POST",
+  "route": "/progress/{book_id}/import-from-book",
+  "handler": "import_from_book"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1113,
+  "method": "PATCH",
+  "route": "/progress/{book_id}",
+  "handler": "rename_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1134,
+  "method": "DELETE",
+  "route": "/progress/{book_id}",
+  "handler": "delete_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1145,
+  "method": "POST",
+  "route": "/progress/{book_id}/skip-question",
+  "handler": "skip_pending_question"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1163,
+  "method": "POST",
+  "route": "/progress/{book_id}/redo",
+  "handler": "redo_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1191,
+  "method": "POST",
+  "route": "/progress/{book_id}/generate-from-notebook",
+  "handler": "generate_from_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mastery_path.py",
+  "line": 1268,
+  "method": "POST",
+  "route": "/progress/{book_id}/generate-from-reading",
+  "handler": "generate_from_reading"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mcp_settings.py",
+  "line": 57,
+  "method": "GET",
+  "route": "",
+  "handler": "get_mcp_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mcp_settings.py",
+  "line": 68,
+  "method": "PUT",
+  "route": "",
+  "handler": "update_mcp_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mcp_settings.py",
+  "line": 81,
+  "method": "PUT",
+  "route": "/servers/{name}",
+  "handler": "upsert_mcp_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mcp_settings.py",
+  "line": 107,
+  "method": "DELETE",
+  "route": "/servers/{name}",
+  "handler": "delete_mcp_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/mcp_settings.py",
+  "line": 121,
+  "method": "POST",
+  "route": "/test",
+  "handler": "test_mcp_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 84,
+  "method": "GET",
+  "route": "/overview",
+  "handler": "get_overview"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 95,
+  "method": "GET",
+  "route": "/resolve_entry/{entry_id}",
+  "handler": "resolve_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 124,
+  "method": "GET",
+  "route": "/backup",
+  "handler": "list_backups"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 140,
+  "method": "GET",
+  "route": "/doc/{layer}/{key}",
+  "handler": "get_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 151,
+  "method": "PUT",
+  "route": "/doc/{layer}/{key}",
+  "handler": "put_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 159,
+  "method": "DELETE",
+  "route": "/doc/{layer}/{key}/entry/{entry_id}",
+  "handler": "delete_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 169,
+  "method": "POST",
+  "route": "/doc/{layer}/{key}/reset",
+  "handler": "reset_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 308,
+  "method": "POST",
+  "route": "/runs/start",
+  "handler": "start_run"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 353,
+  "method": "GET",
+  "route": "/runs/{run_id}",
+  "handler": "get_run"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 363,
+  "method": "POST",
+  "route": "/runs/{run_id}/cancel",
+  "handler": "cancel_run"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 373,
+  "method": "POST",
+  "route": "/runs/{run_id}/undo",
+  "handler": "undo_run_edit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 398,
+  "method": "GET",
+  "route": "/runs",
+  "handler": "list_runs"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 409,
+  "method": "GET",
+  "route": "/runs/{run_id}/events",
+  "handler": "stream_run_events"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 529,
+  "method": "POST",
+  "route": "/doc/{layer}/{key}/update",
+  "handler": "update_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 544,
+  "method": "POST",
+  "route": "/doc/{layer}/{key}/audit",
+  "handler": "audit_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 559,
+  "method": "POST",
+  "route": "/doc/{layer}/{key}/dedup",
+  "handler": "dedup_doc"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 574,
+  "method": "GET",
+  "route": "/doc/{layer}/{key}/lines",
+  "handler": "get_doc_lines"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 614,
+  "method": "GET",
+  "route": "/settings",
+  "handler": "get_memory_settings_endpoint"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 622,
+  "method": "PUT",
+  "route": "/settings",
+  "handler": "put_memory_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 649,
+  "method": "POST",
+  "route": "/doc/{layer}/{key}/apply",
+  "handler": "apply_doc_ops"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 680,
+  "method": "GET",
+  "route": "/trace/{surface}",
+  "handler": "get_trace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 695,
+  "method": "DELETE",
+  "route": "/trace/{surface}",
+  "handler": "clear_trace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 708,
+  "method": "DELETE",
+  "route": "/trace/{surface}/day/{day}",
+  "handler": "clear_trace_day"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 728,
+  "method": "GET",
+  "route": "/snapshot/{surface}",
+  "handler": "get_snapshot"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 750,
+  "method": "POST",
+  "route": "/snapshot/{surface}/refresh",
+  "handler": "refresh_snapshot"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 765,
+  "method": "GET",
+  "route": "/snapshot/{surface}/changes",
+  "handler": "get_changes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/memory.py",
+  "line": 779,
+  "method": "DELETE",
+  "route": "/snapshot/{surface}/changes",
+  "handler": "clear_snapshot_changes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 354,
+  "method": "GET",
+  "route": "/admin/resources",
+  "handler": "admin_resources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 375,
+  "method": "GET",
+  "route": "/admin/books",
+  "handler": "admin_books"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 382,
+  "method": "GET",
+  "route": "/guardians",
+  "handler": "list_guardian_relationships"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 395,
+  "method": "POST",
+  "route": "/guardians",
+  "handler": "authorize_guardian_relationship"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 427,
+  "method": "DELETE",
+  "route": "/guardians/{relationship_id}",
+  "handler": "revoke_guardian_relationship"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 450,
+  "method": "GET",
+  "route": "/me/guardianships",
+  "handler": "my_guardianships"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 464,
+  "method": "DELETE",
+  "route": "/me/guardianships/{relationship_id}",
+  "handler": "revoke_my_guardianship"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 489,
+  "method": "GET",
+  "route": "/learners/{learner_user_id}/guardian-report",
+  "handler": "guardian_report"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 535,
+  "method": "GET",
+  "route": "/learners/{learner_user_id}/materials",
+  "handler": "guardian_material_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 565,
+  "method": "PUT",
+  "route": "/learners/{learner_user_id}/materials",
+  "handler": "assign_guardian_materials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 633,
+  "method": "GET",
+  "route": "/learners/{learner_user_id}/restrictions",
+  "handler": "get_guardian_restrictions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 656,
+  "method": "PUT",
+  "route": "/learners/{learner_user_id}/restrictions",
+  "handler": "put_guardian_restrictions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 740,
+  "method": "POST",
+  "route": "/learners/{learner_user_id}/credentials/reset",
+  "handler": "reset_learner_credentials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 773,
+  "method": "GET",
+  "route": "/users/{user_id}/grants",
+  "handler": "get_user_grants"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 779,
+  "method": "PUT",
+  "route": "/users/{user_id}/grants",
+  "handler": "put_user_grants"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 818,
+  "method": "GET",
+  "route": "/users/{user_id}/book-permission",
+  "handler": "get_user_book_permission"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 836,
+  "method": "PUT",
+  "route": "/users/{user_id}/book-permission",
+  "handler": "put_user_book_permission"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 869,
+  "method": "POST",
+  "route": "/admin/skills/install",
+  "handler": "admin_install_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/multi_user.py",
+  "line": 926,
+  "method": "GET",
+  "route": "/users",
+  "handler": "multi_user_list_users"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 186,
+  "method": "GET",
+  "route": "/notebooks/health",
+  "handler": "health_check"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 192,
+  "method": "GET",
+  "route": "/notebooks",
+  "handler": "list_notebooks"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 209,
+  "method": "GET",
+  "route": "/notebooks/statistics",
+  "handler": "get_statistics"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 226,
+  "method": "POST",
+  "route": "/notebooks",
+  "handler": "create_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 251,
+  "method": "GET",
+  "route": "/notebooks/{notebook_id}",
+  "handler": "get_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 275,
+  "method": "PUT",
+  "route": "/notebooks/{notebook_id}",
+  "handler": "update_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 306,
+  "method": "DELETE",
+  "route": "/notebooks/{notebook_id}",
+  "handler": "delete_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 330,
+  "method": "POST",
+  "route": "/notebooks/actions/add-record",
+  "handler": "add_record"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 365,
+  "method": "POST",
+  "route": "/notebooks/actions/add-record-with-summary",
+  "handler": "add_record_with_summary"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 375,
+  "method": "DELETE",
+  "route": "/notebooks/{notebook_id}/records/{record_id}",
+  "handler": "remove_record"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 400,
+  "method": "PUT",
+  "route": "/notebooks/{notebook_id}/records/{record_id}",
+  "handler": "update_record"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 428,
+  "method": "POST",
+  "route": "/notebooks/{notebook_id}/records/{record_id}/actions/copy",
+  "handler": "copy_record"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 444,
+  "method": "POST",
+  "route": "/notebooks/{notebook_id}/records/{record_id}/actions/move",
+  "handler": "move_record"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/notebook.py",
+  "line": 460,
+  "method": "GET",
+  "route": "/notebooks/{notebook_id}/export",
+  "handler": "export_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/outputs.py",
+  "line": 75,
+  "method": "GET",
+  "route": "/{output_path:path}",
+  "handler": "read_output"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 80,
+  "method": "GET",
+  "route": "",
+  "handler": "list_partner_groups"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 85,
+  "method": "GET",
+  "route": "/discussion-modes",
+  "handler": "list_discussion_modes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 90,
+  "method": "GET",
+  "route": "/shared-memory-types",
+  "handler": "list_shared_memory_types"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 95,
+  "method": "POST",
+  "route": "",
+  "handler": "create_partner_group"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 104,
+  "method": "GET",
+  "route": "/{group_id}",
+  "handler": "get_partner_group"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 110,
+  "method": "PATCH",
+  "route": "/{group_id}",
+  "handler": "update_partner_group"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 122,
+  "method": "DELETE",
+  "route": "/{group_id}",
+  "handler": "delete_partner_group"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 129,
+  "method": "GET",
+  "route": "/{group_id}/history",
+  "handler": "partner_group_history"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 139,
+  "method": "GET",
+  "route": "/{group_id}/sessions",
+  "handler": "list_partner_group_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 145,
+  "method": "POST",
+  "route": "/{group_id}/sessions",
+  "handler": "create_partner_group_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 151,
+  "method": "DELETE",
+  "route": "/{group_id}/sessions/{session_key}",
+  "handler": "delete_partner_group_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 163,
+  "method": "GET",
+  "route": "/{group_id}/whiteboard",
+  "handler": "partner_group_whiteboard"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 172,
+  "method": "POST",
+  "route": "/{group_id}/whiteboard/pins",
+  "handler": "pin_partner_group_whiteboard"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 183,
+  "method": "DELETE",
+  "route": "/{group_id}/whiteboard/pins/{event_id}",
+  "handler": "unpin_partner_group_whiteboard"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 191,
+  "method": "GET",
+  "route": "/{group_id}/invocations",
+  "handler": "partner_group_invocations"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 201,
+  "method": "POST",
+  "route": "/{group_id}/invocations",
+  "handler": "create_partner_invocation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 220,
+  "method": "POST",
+  "route": "/{group_id}/messages",
+  "handler": "send_partner_group_message"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 235,
+  "method": "POST",
+  "route": "/{group_id}/turns/{turn_id}/partners/{partner_id}/retry",
+  "handler": "retry_partner_group_seat"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 265,
+  "method": "POST",
+  "route": "/{group_id}/rounds/{turn_id}/summary",
+  "handler": "summarize_partner_group_round"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 298,
+  "method": "POST",
+  "route": "/{group_id}/invocations/{invocation_id}/approve",
+  "handler": "approve_partner_invocation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partner_groups.py",
+  "line": 318,
+  "method": "POST",
+  "route": "/{group_id}/invocations/{invocation_id}/reject",
+  "handler": "reject_partner_invocation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 561,
+  "method": "GET",
+  "route": "/souls",
+  "handler": "list_souls"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 566,
+  "method": "POST",
+  "route": "/souls",
+  "handler": "create_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 578,
+  "method": "GET",
+  "route": "/souls/{soul_id}",
+  "handler": "get_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 586,
+  "method": "PUT",
+  "route": "/souls/{soul_id}",
+  "handler": "update_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 594,
+  "method": "DELETE",
+  "route": "/souls/{soul_id}",
+  "handler": "delete_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 601,
+  "method": "GET",
+  "route": "/soul-sources",
+  "handler": "soul_sources"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 641,
+  "method": "GET",
+  "route": "",
+  "handler": "list_partners"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 647,
+  "method": "GET",
+  "route": "/consultation-session",
+  "handler": "get_partner_consultation_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 664,
+  "method": "GET",
+  "route": "/recent",
+  "handler": "recent_partners"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 670,
+  "method": "GET",
+  "route": "/channels/schema",
+  "handler": "list_channel_schemas"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 687,
+  "method": "POST",
+  "route": "/{partner_id}/channels/weixin/qr",
+  "handler": "start_weixin_qr"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 699,
+  "method": "GET",
+  "route": "/{partner_id}/channels/weixin/qr/{session_id}",
+  "handler": "poll_weixin_qr"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 707,
+  "method": "GET",
+  "route": "/tool-options",
+  "handler": "tool_options"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 744,
+  "method": "POST",
+  "route": "",
+  "handler": "create_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 831,
+  "method": "GET",
+  "route": "/drafts/{draft_id}",
+  "handler": "get_partner_draft"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 843,
+  "method": "POST",
+  "route": "/drafts/{draft_id}/confirm",
+  "handler": "confirm_partner_draft"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 951,
+  "method": "GET",
+  "route": "/{partner_id}",
+  "handler": "get_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1027,
+  "method": "PATCH",
+  "route": "/{partner_id}",
+  "handler": "update_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1067,
+  "method": "POST",
+  "route": "/{partner_id}/start",
+  "handler": "start_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1087,
+  "method": "POST",
+  "route": "/{partner_id}/stop",
+  "handler": "stop_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1102,
+  "method": "DELETE",
+  "route": "/{partner_id}",
+  "handler": "destroy_partner"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1115,
+  "method": "POST",
+  "route": "/{partner_id}/channels/reload",
+  "handler": "reload_partner_channels"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1138,
+  "method": "GET",
+  "route": "/{partner_id}/channels/status",
+  "handler": "get_partner_channel_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1185,
+  "method": "POST",
+  "route": "/{partner_id}/channel-onboarding/start",
+  "handler": "start_partner_channel_onboarding"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1200,
+  "method": "GET",
+  "route": "/{partner_id}/channel-onboarding/{session_id}",
+  "handler": "get_partner_channel_onboarding"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1215,
+  "method": "DELETE",
+  "route": "/{partner_id}/channel-onboarding/{session_id}",
+  "handler": "cancel_partner_channel_onboarding"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1224,
+  "method": "POST",
+  "route": "/{partner_id}/channel-onboarding/{session_id}/apply",
+  "handler": "apply_partner_channel_onboarding"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1245,
+  "method": "GET",
+  "route": "/{partner_id}/soul",
+  "handler": "get_partner_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1250,
+  "method": "PUT",
+  "route": "/{partner_id}/soul",
+  "handler": "put_partner_soul"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1259,
+  "method": "GET",
+  "route": "/{partner_id}/workspaces",
+  "handler": "get_partner_workspaces"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1277,
+  "method": "GET",
+  "route": "/{partner_id}/assets",
+  "handler": "get_partner_assets"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1282,
+  "method": "POST",
+  "route": "/{partner_id}/assets",
+  "handler": "add_partner_assets"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1299,
+  "method": "DELETE",
+  "route": "/{partner_id}/assets/{asset_type}/{name}",
+  "handler": "delete_partner_asset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1313,
+  "method": "POST",
+  "route": "/{partner_id}/links/code",
+  "handler": "create_partner_link_code"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1331,
+  "method": "GET",
+  "route": "/{partner_id}/links",
+  "handler": "list_partner_links"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1339,
+  "method": "DELETE",
+  "route": "/{partner_id}/links/{key:path}",
+  "handler": "delete_partner_link"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1352,
+  "method": "GET",
+  "route": "/{partner_id}/history",
+  "handler": "get_partner_history"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1375,
+  "method": "GET",
+  "route": "/{partner_id}/history/page",
+  "handler": "get_partner_history_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1390,
+  "method": "GET",
+  "route": "/{partner_id}/web-continuity",
+  "handler": "get_partner_web_continuity"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1395,
+  "method": "PUT",
+  "route": "/{partner_id}/web-continuity",
+  "handler": "put_partner_web_continuity"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1412,
+  "method": "GET",
+  "route": "/{partner_id}/sessions",
+  "handler": "get_partner_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1418,
+  "method": "POST",
+  "route": "/{partner_id}/sessions/archive",
+  "handler": "archive_partner_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1442,
+  "method": "POST",
+  "route": "/{partner_id}/sessions/resume",
+  "handler": "resume_partner_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1473,
+  "method": "POST",
+  "route": "/{partner_id}/sessions/delete",
+  "handler": "delete_partner_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1497,
+  "method": "POST",
+  "route": "/{partner_id}/sessions/branch",
+  "handler": "branch_partner_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1531,
+  "method": "GET",
+  "route": "/commands/palette",
+  "handler": "partner_command_palette"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1633,
+  "method": "POST",
+  "route": "/{partner_id}/chat",
+  "handler": "partner_chat_http"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/partners.py",
+  "line": 1751,
+  "method": "POST",
+  "route": "/{partner_id}/chat/execute-stream",
+  "handler": "partner_chat_http_stream"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/personas.py",
+  "line": 68,
+  "method": "GET",
+  "route": "/personas",
+  "handler": "list_personas"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/personas.py",
+  "line": 86,
+  "method": "GET",
+  "route": "/personas/{name}",
+  "handler": "get_persona"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/personas.py",
+  "line": 107,
+  "method": "POST",
+  "route": "/personas",
+  "handler": "create_persona"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/personas.py",
+  "line": 126,
+  "method": "PUT",
+  "route": "/personas/{name}",
+  "handler": "update_persona"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/personas.py",
+  "line": 145,
+  "method": "DELETE",
+  "route": "/personas/{name}",
+  "handler": "delete_persona"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 168,
+  "method": "GET",
+  "route": "/extensions",
+  "handler": "list_extensions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 173,
+  "method": "GET",
+  "route": "/{plugin_id}/pages/{extension_id}",
+  "handler": "redirect_plugin_frontend_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 184,
+  "method": "GET",
+  "route": "/{plugin_id}/pages/{extension_id}/",
+  "handler": "get_plugin_frontend_page"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 209,
+  "method": "GET",
+  "route": "/{plugin_id}/pages/{extension_id}/assets/{asset_path:path}",
+  "handler": "get_plugin_frontend_asset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 299,
+  "method": "GET",
+  "route": "/catalog",
+  "handler": "plugin_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 304,
+  "method": "GET",
+  "route": "/state",
+  "handler": "plugin_state"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 309,
+  "method": "GET",
+  "route": "/{plugin_id}/info",
+  "handler": "plugin_info"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 317,
+  "method": "POST",
+  "route": "/{plugin_id}/approve",
+  "handler": "approve_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 329,
+  "method": "POST",
+  "route": "/{plugin_id}/enable",
+  "handler": "enable_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 337,
+  "method": "POST",
+  "route": "/{plugin_id}/disable",
+  "handler": "disable_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 345,
+  "method": "POST",
+  "route": "/{plugin_id}/install",
+  "handler": "install_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 361,
+  "method": "POST",
+  "route": "/{plugin_id}/rollback",
+  "handler": "rollback_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/plugins.py",
+  "line": 370,
+  "method": "DELETE",
+  "route": "/{plugin_id}/installation",
+  "handler": "uninstall_plugin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 103,
+  "method": "GET",
+  "route": "/summary",
+  "handler": "summary"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 135,
+  "method": "GET",
+  "route": "/queue",
+  "handler": "queue"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 184,
+  "method": "GET",
+  "route": "/analytics",
+  "handler": "practice_analytics"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 228,
+  "method": "GET",
+  "route": "/questions/{entry_id}",
+  "handler": "practice_question"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 237,
+  "method": "POST",
+  "route": "/questions/{entry_id}/check",
+  "handler": "check"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 243,
+  "method": "POST",
+  "route": "/questions/{entry_id}/review",
+  "handler": "review"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 263,
+  "method": "GET",
+  "route": "/import/template",
+  "handler": "import_template"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 327,
+  "method": "POST",
+  "route": "/import/preview",
+  "handler": "import_preview"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/practice.py",
+  "line": 359,
+  "method": "POST",
+  "route": "/import/commit",
+  "handler": "import_commit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 275,
+  "method": "POST",
+  "route": "/entries/upsert",
+  "handler": "upsert_single_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 351,
+  "method": "GET",
+  "route": "/entries",
+  "handler": "list_entries"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 406,
+  "method": "GET",
+  "route": "/entries/lookup/by-question",
+  "handler": "lookup_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 442,
+  "method": "GET",
+  "route": "/entries/{entry_id}",
+  "handler": "get_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 451,
+  "method": "PATCH",
+  "route": "/entries/{entry_id}",
+  "handler": "update_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 463,
+  "method": "DELETE",
+  "route": "/entries/{entry_id}",
+  "handler": "delete_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 488,
+  "method": "POST",
+  "route": "/entries/categories/bulk",
+  "handler": "bulk_link_entries"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 502,
+  "method": "POST",
+  "route": "/entries/{entry_id}/categories",
+  "handler": "add_entry_to_category"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 514,
+  "method": "DELETE",
+  "route": "/entries/{entry_id}/categories/{category_id}",
+  "handler": "remove_entry_from_category"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 526,
+  "method": "GET",
+  "route": "/stats",
+  "handler": "question_bank_stats"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 540,
+  "method": "GET",
+  "route": "/materials",
+  "handler": "list_question_bank_materials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 556,
+  "method": "GET",
+  "route": "/categories",
+  "handler": "list_categories"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 568,
+  "method": "POST",
+  "route": "/categories",
+  "handler": "create_category"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 577,
+  "method": "PATCH",
+  "route": "/categories/{category_id}",
+  "handler": "rename_category"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/question_notebook.py",
+  "line": 589,
+  "method": "DELETE",
+  "route": "/categories/{category_id}",
+  "handler": "delete_category"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 432,
+  "method": "GET",
+  "route": "/library/materials",
+  "handler": "list_library_materials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 485,
+  "method": "POST",
+  "route": "/library/duplicate-check",
+  "handler": "duplicate_check"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 543,
+  "method": "POST",
+  "route": "/library/import-urls",
+  "handler": "import_urls"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 578,
+  "method": "POST",
+  "route": "/library/import-zim-article",
+  "handler": "import_zim_article"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 662,
+  "method": "POST",
+  "route": "/materials/{material_id}/retry",
+  "handler": "retry_import"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 677,
+  "method": "GET",
+  "route": "/workspaces",
+  "handler": "list_workspaces"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 688,
+  "method": "GET",
+  "route": "/workspaces/index",
+  "handler": "list_workspace_index"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 711,
+  "method": "POST",
+  "route": "/workspaces",
+  "handler": "create_workspace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 726,
+  "method": "GET",
+  "route": "/workspaces/{workspace_id}",
+  "handler": "get_workspace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 741,
+  "method": "GET",
+  "route": "/workspaces/{workspace_id}/ask-hint",
+  "handler": "get_workspace_ask_hint"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 754,
+  "method": "PATCH",
+  "route": "/workspaces/{workspace_id}",
+  "handler": "update_workspace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 768,
+  "method": "DELETE",
+  "route": "/workspaces/{workspace_id}",
+  "handler": "delete_workspace"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 785,
+  "method": "POST",
+  "route": "/workspaces/{workspace_id}/materials",
+  "handler": "add_workspace_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 799,
+  "method": "PUT",
+  "route": "/workspaces/{workspace_id}/materials/order",
+  "handler": "reorder_workspace_materials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 811,
+  "method": "PUT",
+  "route": "/workspaces/{workspace_id}/materials/{material_id}/active",
+  "handler": "activate_workspace_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 821,
+  "method": "DELETE",
+  "route": "/workspaces/{workspace_id}/materials/{material_id}",
+  "handler": "remove_workspace_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 831,
+  "method": "GET",
+  "route": "/workspaces/{workspace_id}/sessions",
+  "handler": "list_reading_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 870,
+  "method": "POST",
+  "route": "/workspaces/{workspace_id}/sessions",
+  "handler": "create_reading_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 911,
+  "method": "PATCH",
+  "route": "/workspaces/{workspace_id}/sessions/{session_id}",
+  "handler": "rename_reading_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 926,
+  "method": "DELETE",
+  "route": "/workspaces/{workspace_id}/sessions/{session_id}",
+  "handler": "delete_reading_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 940,
+  "method": "POST",
+  "route": "/workspaces/{workspace_id}/sessions/{session_id}/links",
+  "handler": "link_reading_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 955,
+  "method": "DELETE",
+  "route": "/workspaces/{workspace_id}/sessions/{session_id}/links/{target_session_id}",
+  "handler": "unlink_reading_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 970,
+  "method": "POST",
+  "route": "/workspaces/{workspace_id}/notes/organize",
+  "handler": "organize_reading_notes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 989,
+  "method": "POST",
+  "route": "/workspaces/{workspace_id}/notebook",
+  "handler": "capture_reading_to_notebook"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1011,
+  "method": "GET",
+  "route": "/supported-formats",
+  "handler": "supported_formats"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1024,
+  "method": "GET",
+  "route": "/materials",
+  "handler": "list_materials"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1037,
+  "method": "POST",
+  "route": "/materials",
+  "handler": "upload_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1117,
+  "method": "GET",
+  "route": "/materials/{material_id}",
+  "handler": "get_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1127,
+  "method": "GET",
+  "route": "/materials/{material_id}/epub-pairing-candidates",
+  "handler": "epub_pairing_candidates"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1138,
+  "method": "GET",
+  "route": "/epub-pairings",
+  "handler": "epub_pairings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1145,
+  "method": "POST",
+  "route": "/epub-pairings",
+  "handler": "create_epub_pairing"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1162,
+  "method": "DELETE",
+  "route": "/epub-pairings/{pairing_id}",
+  "handler": "remove_epub_pairing"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1175,
+  "method": "DELETE",
+  "route": "/materials/{material_id}",
+  "handler": "delete_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1206,
+  "method": "GET",
+  "route": "/materials/{material_id}/transcript",
+  "handler": "get_transcript"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1247,
+  "method": "GET",
+  "route": "/materials/{material_id}/units/{locator}",
+  "handler": "get_unit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1263,
+  "method": "GET",
+  "route": "/materials/{material_id}/revisions",
+  "handler": "list_material_revisions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1273,
+  "method": "GET",
+  "route": "/materials/{material_id}/revisions/{revision}/units/{locator}",
+  "handler": "get_revision_unit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1295,
+  "method": "GET",
+  "route": "/materials/{material_id}/raw",
+  "handler": "get_raw"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1301,
+  "method": "GET",
+  "route": "/materials/{material_id}/render",
+  "handler": "get_render"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1328,
+  "method": "GET",
+  "route": "/materials/{material_id}/assets/{asset_name}",
+  "handler": "get_snapshot_asset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1357,
+  "method": "GET",
+  "route": "/materials/{material_id}/media",
+  "handler": "list_material_media"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1367,
+  "method": "GET",
+  "route": "/materials/{material_id}/media/{name}",
+  "handler": "get_material_media"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1389,
+  "method": "GET",
+  "route": "/materials/{material_id}/annotations",
+  "handler": "list_annotations"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1399,
+  "method": "GET",
+  "route": "/materials/{material_id}/position",
+  "handler": "get_position"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1410,
+  "method": "PUT",
+  "route": "/materials/{material_id}/position",
+  "handler": "save_position"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1442,
+  "method": "GET",
+  "route": "/materials/{material_id}/bookmarks",
+  "handler": "list_bookmarks"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1454,
+  "method": "POST",
+  "route": "/materials/{material_id}/bookmarks",
+  "handler": "add_bookmark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1471,
+  "method": "DELETE",
+  "route": "/materials/{material_id}/bookmarks/{bookmark_id}",
+  "handler": "delete_bookmark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1484,
+  "method": "PUT",
+  "route": "/materials/{material_id}/annotations",
+  "handler": "save_annotation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1496,
+  "method": "DELETE",
+  "route": "/materials/{material_id}/annotations/{annotation_id}",
+  "handler": "delete_annotation"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading.py",
+  "line": 1509,
+  "method": "GET",
+  "route": "/materials/{material_id}/export",
+  "handler": "export"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading_extensions.py",
+  "line": 141,
+  "method": "GET",
+  "route": "/extensions",
+  "handler": "list_extensions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading_extensions.py",
+  "line": 151,
+  "method": "POST",
+  "route": "/materials/{material_id}/read-aloud",
+  "handler": "read_material_aloud"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading_extensions.py",
+  "line": 195,
+  "method": "POST",
+  "route": "/materials/{material_id}/extensions/{extension_id}/actions/{action}",
+  "handler": "run_extension_action"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading_extensions.py",
+  "line": 363,
+  "method": "POST",
+  "route": "/materials/{material_id}/extensions/quiz/answers",
+  "handler": "submit_quiz_answers"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/reading_extensions.py",
+  "line": 484,
+  "method": "GET",
+  "route": "/materials/{material_id}/quiz/rewards",
+  "handler": "list_quiz_rewards"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 208,
+  "method": "GET",
+  "route": "",
+  "handler": "list_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 228,
+  "method": "GET",
+  "route": "/search",
+  "handler": "search_sessions"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 373,
+  "method": "GET",
+  "route": "/recycle-bin",
+  "handler": "list_recycle_bin"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 383,
+  "method": "POST",
+  "route": "/{session_id}/migrate-watching",
+  "handler": "migrate_watching_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 408,
+  "method": "GET",
+  "route": "/{session_id}",
+  "handler": "get_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 422,
+  "method": "GET",
+  "route": "/{session_id}/messages/{message_id}/events",
+  "handler": "get_message_events"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 436,
+  "method": "GET",
+  "route": "/{session_id}/ask-hint",
+  "handler": "get_session_ask_hint"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 444,
+  "method": "PATCH",
+  "route": "/{session_id}",
+  "handler": "rename_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 460,
+  "method": "PATCH",
+  "route": "/{session_id}/reply-language",
+  "handler": "update_session_reply_language"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 475,
+  "method": "PATCH",
+  "route": "/{session_id}/organization",
+  "handler": "update_session_organization"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 581,
+  "method": "DELETE",
+  "route": "/{session_id}",
+  "handler": "delete_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 634,
+  "method": "POST",
+  "route": "/{session_id}/restore",
+  "handler": "restore_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 644,
+  "method": "DELETE",
+  "route": "/{session_id}/purge",
+  "handler": "purge_session"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 662,
+  "method": "PUT",
+  "route": "/{session_id}/branch-selection",
+  "handler": "update_branch_selection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 676,
+  "method": "DELETE",
+  "route": "/{session_id}/messages/{message_id}",
+  "handler": "delete_turn_by_message"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/sessions.py",
+  "line": 696,
+  "method": "POST",
+  "route": "/{session_id}/quiz-results",
+  "handler": "record_quiz_results"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 907,
+  "method": "GET",
+  "route": "",
+  "handler": "get_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 928,
+  "method": "POST",
+  "route": "/providers/openai-codex/oauth/start",
+  "handler": "start_openai_codex_oauth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 937,
+  "method": "GET",
+  "route": "/providers/openai-codex/oauth/status",
+  "handler": "get_openai_codex_oauth_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 950,
+  "method": "POST",
+  "route": "/providers/openai-codex/oauth/complete",
+  "handler": "complete_openai_codex_oauth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 970,
+  "method": "POST",
+  "route": "/providers/openai-codex/oauth/cancel",
+  "handler": "cancel_openai_codex_oauth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 979,
+  "method": "POST",
+  "route": "/providers/openai-codex/oauth/logout",
+  "handler": "logout_openai_codex_oauth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 988,
+  "method": "POST",
+  "route": "/providers/openai-codex/models/refresh",
+  "handler": "refresh_openai_codex_models"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 997,
+  "method": "GET",
+  "route": "/providers/codebuddy/auth/status",
+  "handler": "get_codebuddy_auth_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1003,
+  "method": "POST",
+  "route": "/providers/codebuddy/auth/start",
+  "handler": "start_codebuddy_auth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1009,
+  "method": "POST",
+  "route": "/providers/codebuddy/auth/cancel",
+  "handler": "cancel_codebuddy_auth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1015,
+  "method": "POST",
+  "route": "/providers/codebuddy/auth/logout",
+  "handler": "logout_codebuddy_auth"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1021,
+  "method": "POST",
+  "route": "/providers/openai-codex/models/reasoning-effort",
+  "handler": "update_openai_codex_reasoning_effort"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1040,
+  "method": "GET",
+  "route": "/catalog",
+  "handler": "get_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1046,
+  "method": "GET",
+  "route": "/network",
+  "handler": "get_network_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1052,
+  "method": "PUT",
+  "route": "/network",
+  "handler": "update_network_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1101,
+  "method": "GET",
+  "route": "/chat-attachments",
+  "handler": "get_chat_attachment_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1108,
+  "method": "GET",
+  "route": "/chat-starters",
+  "handler": "get_chat_starter_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1124,
+  "method": "PUT",
+  "route": "/chat-starters",
+  "handler": "update_chat_starter_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1135,
+  "method": "PUT",
+  "route": "/chat-attachments",
+  "handler": "update_chat_attachment_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1233,
+  "method": "GET",
+  "route": "/mineru",
+  "handler": "get_mineru_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1239,
+  "method": "PUT",
+  "route": "/mineru",
+  "handler": "update_mineru_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1273,
+  "method": "GET",
+  "route": "/document-parsing",
+  "handler": "get_document_parsing_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1279,
+  "method": "GET",
+  "route": "/readiness",
+  "handler": "get_settings_readiness"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1289,
+  "method": "GET",
+  "route": "/profile",
+  "handler": "get_settings_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1297,
+  "method": "POST",
+  "route": "/profile/diff",
+  "handler": "diff_settings_profile"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1308,
+  "method": "GET",
+  "route": "/presets",
+  "handler": "get_settings_presets"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1355,
+  "method": "POST",
+  "route": "/presets/{preset_id}/draft",
+  "handler": "stage_settings_preset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1366,
+  "method": "PUT",
+  "route": "/document-parsing",
+  "handler": "update_document_parsing_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1415,
+  "method": "POST",
+  "route": "/document-parsing/test",
+  "handler": "test_document_parsing"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1445,
+  "method": "POST",
+  "route": "/document-parsing/docling/test",
+  "handler": "test_docling_remote_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1473,
+  "method": "POST",
+  "route": "/document-parsing/tika/test",
+  "handler": "test_tika_remote_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1491,
+  "method": "POST",
+  "route": "/document-parsing/install",
+  "handler": "start_document_parsing_install"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1511,
+  "method": "POST",
+  "route": "/document-parsing/models/download",
+  "handler": "start_document_parsing_model_download"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1541,
+  "method": "GET",
+  "route": "/document-parsing/job/status",
+  "handler": "document_parsing_job_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1549,
+  "method": "POST",
+  "route": "/document-parsing/job/cancel",
+  "handler": "cancel_document_parsing_job"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1557,
+  "method": "POST",
+  "route": "/mineru/models/download",
+  "handler": "start_mineru_models_download"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1594,
+  "method": "GET",
+  "route": "/mineru/models/download/status",
+  "handler": "mineru_models_download_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1602,
+  "method": "POST",
+  "route": "/mineru/models/download/cancel",
+  "handler": "cancel_mineru_models_download"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1610,
+  "method": "POST",
+  "route": "/mineru/test",
+  "handler": "test_mineru_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1699,
+  "method": "GET",
+  "route": "/llm-options",
+  "handler": "get_llm_options"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1706,
+  "method": "PUT",
+  "route": "/catalog",
+  "handler": "update_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1718,
+  "method": "POST",
+  "route": "/apply/registry",
+  "handler": "apply_registry_edit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1750,
+  "method": "POST",
+  "route": "/apply/provider",
+  "handler": "apply_provider_edit"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1811,
+  "method": "POST",
+  "route": "/apply/service",
+  "handler": "apply_catalog_service"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1868,
+  "method": "GET",
+  "route": "/draft",
+  "handler": "get_settings_draft"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1882,
+  "method": "PUT",
+  "route": "/draft",
+  "handler": "update_settings_draft"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1900,
+  "method": "DELETE",
+  "route": "/draft",
+  "handler": "discard_settings_draft"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1906,
+  "method": "POST",
+  "route": "/apply",
+  "handler": "apply_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1940,
+  "method": "POST",
+  "route": "/test-provider",
+  "handler": "test_provider_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 1988,
+  "method": "POST",
+  "route": "/fetch-models",
+  "handler": "fetch_models_from_provider"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2048,
+  "method": "POST",
+  "route": "/model-capabilities",
+  "handler": "resolve_model_capabilities"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2067,
+  "method": "PUT",
+  "route": "/theme",
+  "handler": "update_theme"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2073,
+  "method": "PUT",
+  "route": "/language",
+  "handler": "update_language"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2079,
+  "method": "PUT",
+  "route": "/voice-autoplay",
+  "handler": "update_voice_autoplay"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2090,
+  "method": "PUT",
+  "route": "/voice-math-speak",
+  "handler": "update_voice_math_speak"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2102,
+  "method": "PUT",
+  "route": "/chat-response-timeout",
+  "handler": "update_chat_response_timeout"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2138,
+  "method": "PUT",
+  "route": "/ui",
+  "handler": "update_ui_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2154,
+  "method": "POST",
+  "route": "/reset",
+  "handler": "reset_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2160,
+  "method": "GET",
+  "route": "/themes",
+  "handler": "get_themes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2172,
+  "method": "GET",
+  "route": "/sidebar",
+  "handler": "get_sidebar_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2183,
+  "method": "PUT",
+  "route": "/sidebar/description",
+  "handler": "update_sidebar_description"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2189,
+  "method": "PUT",
+  "route": "/sidebar/nav-order",
+  "handler": "update_sidebar_nav_order"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2195,
+  "method": "PUT",
+  "route": "/enabled-tools",
+  "handler": "update_enabled_tools"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2202,
+  "method": "POST",
+  "route": "/voice/voices",
+  "handler": "list_voice_choices"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2222,
+  "method": "POST",
+  "route": "/voice/preview",
+  "handler": "preview_voice"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2257,
+  "method": "POST",
+  "route": "/services/{service}/preview",
+  "handler": "preview_service"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2296,
+  "method": "POST",
+  "route": "/tests/{service}/start",
+  "handler": "start_service_test"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2315,
+  "method": "GET",
+  "route": "/tests/{service}/{run_id}/events",
+  "handler": "stream_service_test_events"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2340,
+  "method": "POST",
+  "route": "/tests/{service}/{run_id}/cancel",
+  "handler": "cancel_service_test"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2347,
+  "method": "GET",
+  "route": "/tour/status",
+  "handler": "tour_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2369,
+  "method": "POST",
+  "route": "/tour/complete",
+  "handler": "complete_tour"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2407,
+  "method": "POST",
+  "route": "/tour/reopen",
+  "handler": "reopen_tour"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/settings.py",
+  "line": 2415,
+  "method": "GET",
+  "route": "/usage",
+  "handler": "get_usage_statistics"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 85,
+  "method": "GET",
+  "route": "/tags/list",
+  "handler": "list_tags"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 91,
+  "method": "POST",
+  "route": "/tags/create",
+  "handler": "create_tag"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 103,
+  "method": "PUT",
+  "route": "/tags/{tag}",
+  "handler": "rename_tag"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 117,
+  "method": "DELETE",
+  "route": "/tags/{tag}",
+  "handler": "delete_tag"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 132,
+  "method": "GET",
+  "route": "/list",
+  "handler": "list_skills"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 153,
+  "method": "GET",
+  "route": "/hub/catalog",
+  "handler": "hub_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 179,
+  "method": "GET",
+  "route": "/hub/detail",
+  "handler": "hub_detail"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 200,
+  "method": "GET",
+  "route": "/{name}",
+  "handler": "get_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 224,
+  "method": "POST",
+  "route": "/create",
+  "handler": "create_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 243,
+  "method": "POST",
+  "route": "/install",
+  "handler": "install_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 280,
+  "method": "PUT",
+  "route": "/{name}",
+  "handler": "update_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/skills.py",
+  "line": 304,
+  "method": "DELETE",
+  "route": "/{name}",
+  "handler": "delete_skill"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_cli_apps.py",
+  "line": 61,
+  "method": "GET",
+  "route": "/apps",
+  "handler": "list_apps"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_cli_apps.py",
+  "line": 87,
+  "method": "PUT",
+  "route": "/apps/{app_id}/enabled",
+  "handler": "set_enabled"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_cli_apps.py",
+  "line": 109,
+  "method": "GET",
+  "route": "/catalog",
+  "handler": "get_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_cli_apps.py",
+  "line": 135,
+  "method": "POST",
+  "route": "/catalog/{app_id}/install",
+  "handler": "install"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_cli_apps.py",
+  "line": 162,
+  "method": "DELETE",
+  "route": "/apps/{app_id}",
+  "handler": "uninstall"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 92,
+  "method": "GET",
+  "route": "/servers",
+  "handler": "list_servers"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 138,
+  "method": "PUT",
+  "route": "/servers/{name}",
+  "handler": "upsert_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 157,
+  "method": "DELETE",
+  "route": "/servers/{name}",
+  "handler": "remove_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 169,
+  "method": "POST",
+  "route": "/servers/{name}/authorize",
+  "handler": "authorize_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 208,
+  "method": "GET",
+  "route": "/oauth/callback",
+  "handler": "oauth_callback"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 255,
+  "method": "POST",
+  "route": "/servers/{name}/test",
+  "handler": "test_server"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 287,
+  "method": "GET",
+  "route": "/catalog",
+  "handler": "get_catalog"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/space_mcp.py",
+  "line": 319,
+  "method": "POST",
+  "route": "/catalog/{entry_id}/install",
+  "handler": "install_catalog_entry"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 57,
+  "method": "GET",
+  "route": "/detect",
+  "handler": "detect_subagents"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 64,
+  "method": "GET",
+  "route": "/backends/options",
+  "handler": "backend_options"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 73,
+  "method": "POST",
+  "route": "/backends/{kind}/sync",
+  "handler": "sync_backend"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 91,
+  "method": "GET",
+  "route": "/connections",
+  "handler": "list_connections"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 116,
+  "method": "POST",
+  "route": "/connections",
+  "handler": "create_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 155,
+  "method": "DELETE",
+  "route": "/connections/{name}",
+  "handler": "delete_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 178,
+  "method": "POST",
+  "route": "/connections/{name}/message",
+  "handler": "message_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 264,
+  "method": "GET",
+  "route": "/settings",
+  "handler": "get_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/subagents.py",
+  "line": 270,
+  "method": "PUT",
+  "route": "/settings",
+  "handler": "update_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 116,
+  "method": "GET",
+  "route": "/runtime",
+  "handler": "get_runtime_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 236,
+  "method": "GET",
+  "route": "/update",
+  "handler": "get_update_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 243,
+  "method": "POST",
+  "route": "/update/check",
+  "handler": "check_for_update"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 250,
+  "method": "PUT",
+  "route": "/update/settings",
+  "handler": "update_check_settings"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 258,
+  "method": "GET",
+  "route": "/update/job",
+  "handler": "get_update_job"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 263,
+  "method": "POST",
+  "route": "/update",
+  "handler": "request_managed_update"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 318,
+  "method": "GET",
+  "route": "/status",
+  "handler": "get_system_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 405,
+  "method": "GET",
+  "route": "/memory",
+  "handler": "get_memory_usage"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 459,
+  "method": "POST",
+  "route": "/test/llm",
+  "handler": "test_llm_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 527,
+  "method": "POST",
+  "route": "/test/embeddings",
+  "handler": "test_embeddings_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/system.py",
+  "line": 584,
+  "method": "POST",
+  "route": "/test/search",
+  "handler": "test_search_connection"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 25,
+  "method": "GET",
+  "route": "",
+  "handler": "get_board"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 30,
+  "method": "GET",
+  "route": "/events",
+  "handler": "board_events"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 61,
+  "method": "POST",
+  "route": "/cards",
+  "handler": "create_card"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 66,
+  "method": "PATCH",
+  "route": "/cards/{card_id}",
+  "handler": "update_card"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 81,
+  "method": "PUT",
+  "route": "/colors",
+  "handler": "update_colors"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 100,
+  "method": "PUT",
+  "route": "/sessions/{session_id}",
+  "handler": "link_tasks"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/task_board.py",
+  "line": 109,
+  "method": "PATCH",
+  "route": "/sessions/{session_id}/status",
+  "handler": "link_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/tools.py",
+  "line": 215,
+  "method": "GET",
+  "route": "",
+  "handler": "list_builtin_tools"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 149,
+  "method": "POST",
+  "route": "/invidious/account/authorize",
+  "handler": "authorize_invidious_account"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 161,
+  "method": "GET",
+  "route": "/invidious/account/callback",
+  "handler": "invidious_account_callback"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 179,
+  "method": "GET",
+  "route": "/invidious/browse/{kind}",
+  "handler": "browse_invidious"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 199,
+  "method": "GET",
+  "route": "/invidious/account/status",
+  "handler": "get_invidious_account_status"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 204,
+  "method": "POST",
+  "route": "/invidious/account/disconnect",
+  "handler": "disconnect_invidious_account"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 212,
+  "method": "POST",
+  "route": "/materials/resolve",
+  "handler": "resolve_video"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 226,
+  "method": "GET",
+  "route": "/materials/{material_id}",
+  "handler": "get_video_material"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 234,
+  "method": "POST",
+  "route": "/materials/{material_id}/transcript/refresh",
+  "handler": "refresh_video_transcript"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 242,
+  "method": "PUT",
+  "route": "/materials/{material_id}/progress",
+  "handler": "save_video_progress"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 260,
+  "method": "GET",
+  "route": "/materials/{material_id}/notes",
+  "handler": "list_video_notes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 268,
+  "method": "GET",
+  "route": "/materials/{material_id}/notes.md",
+  "handler": "export_video_notes"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 284,
+  "method": "POST",
+  "route": "/materials/{material_id}/notes",
+  "handler": "create_video_note"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 297,
+  "method": "PUT",
+  "route": "/materials/{material_id}/notes/{note_id}",
+  "handler": "update_video_note"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 309,
+  "method": "DELETE",
+  "route": "/materials/{material_id}/notes/{note_id}",
+  "handler": "delete_video_note"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 318,
+  "method": "GET",
+  "route": "/materials/{material_id}/marks",
+  "handler": "list_video_marks"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 327,
+  "method": "GET",
+  "route": "/materials/{material_id}/marks/{mark_id}",
+  "handler": "get_video_mark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 336,
+  "method": "POST",
+  "route": "/materials/{material_id}/marks",
+  "handler": "create_video_mark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 349,
+  "method": "PATCH",
+  "route": "/materials/{material_id}/marks/{mark_id}",
+  "handler": "update_video_mark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 365,
+  "method": "DELETE",
+  "route": "/materials/{material_id}/marks/{mark_id}",
+  "handler": "delete_video_mark"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 378,
+  "method": "POST",
+  "route": "/materials/{material_id}/mark-suggestions",
+  "handler": "suggest_video_marks"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 396,
+  "method": "GET",
+  "route": "/materials/{material_id}/subtitles.vtt",
+  "handler": "get_video_subtitles"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/video_learning.py",
+  "line": 518,
+  "method": "GET",
+  "route": "/materials/{material_id}/stream/{format_id}",
+  "handler": "stream_video"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 39,
+  "method": "GET",
+  "route": "/list",
+  "handler": "list_visualizers"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 48,
+  "method": "POST",
+  "route": "/bundled/{visualizer_id}/install",
+  "handler": "install_bundled"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 59,
+  "method": "POST",
+  "route": "/{visualizer_id}/enable",
+  "handler": "enable_visualizer"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 69,
+  "method": "POST",
+  "route": "/{visualizer_id}/disable",
+  "handler": "disable_visualizer"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 79,
+  "method": "DELETE",
+  "route": "/{visualizer_id}",
+  "handler": "uninstall_visualizer"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 89,
+  "method": "POST",
+  "route": "/import",
+  "handler": "import_visualizer"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/visualizers.py",
+  "line": 129,
+  "method": "GET",
+  "route": "/{visualizer_id}/assets/{asset_path:path}",
+  "handler": "get_visualizer_asset"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/voice.py",
+  "line": 40,
+  "method": "POST",
+  "route": "/tts",
+  "handler": "text_to_speech"
+ },
+ {
+  "prefix": "",
+  "file": "deeptutor/api/routers/voice.py",
+  "line": 68,
+  "method": "POST",
+  "route": "/stt",
+  "handler": "speech_to_text"
+ }
+]
