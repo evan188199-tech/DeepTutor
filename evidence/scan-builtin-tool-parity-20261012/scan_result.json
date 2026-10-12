@@ -1,0 +1,93 @@
+{
+  "repo": "/Users/xzh/services/ai-development/multica-pilot/workspaces/agents-plan-5fede2af789a/agen-1835-0dc3425b60b2/workdir/dt-agen1835-wt",
+  "probe_python": "/Users/Shared/DeepTutor/.venv/bin/python",
+  "total_specs": 100,
+  "probes_total": 100,
+  "probes_ok": 100,
+  "probes_failed": {},
+  "registry_dynamic": {
+    "ok": true,
+    "list_len": 100,
+    "missing": [],
+    "bad_alias": [],
+    "def_count": 100
+  },
+  "counts": {
+    "user_toggleable": 8,
+    "configurable": 25,
+    "always_on": 7,
+    "conditional_mounts": 18,
+    "workspace_baseline": 4,
+    "kb_coexisting": 3,
+    "aliases": 4,
+    "coming_soon": 0
+  },
+  "findings": [
+    {
+      "severity": "INFO",
+      "title": "Spec class_path points at a re-export",
+      "detail": "deeptutor.capabilities.reading.tools:ViewFigureTool is imported into deeptutor/capabilities/reading/tools.py but defined in deeptutor/capabilities/reading/figure_view.py; import resolution works, but the catalog indirection is one hop deeper than it looks",
+      "evidence": [
+        "deeptutor/tools/builtin_specs.py:186",
+        "deeptutor/capabilities/reading/figure_view.py:1"
+      ],
+      "suggestion": "consider pointing the spec at the defining module"
+    },
+    {
+      "severity": "WARN",
+      "title": "Orphan BaseTool subclass not declared in the catalog",
+      "detail": "class EditFileTool (name='edit_file') inherits BaseTool but has no BUILTIN_TOOL_SPECS entry; its module is imported nowhere in deeptutor/ runtime code (tests only), so the registry can never serve it",
+      "evidence": [
+        "deeptutor/tools/file_tools.py:134"
+      ],
+      "suggestion": "declare it in builtin_specs.py or remove the dead implementation (+ its test)"
+    },
+    {
+      "severity": "WARN",
+      "title": "Orphan BaseTool subclass not declared in the catalog",
+      "detail": "class ListDirTool (name='list_dir') inherits BaseTool but has no BUILTIN_TOOL_SPECS entry; its module is imported nowhere in deeptutor/ runtime code (tests only), so the registry can never serve it",
+      "evidence": [
+        "deeptutor/tools/file_tools.py:189"
+      ],
+      "suggestion": "declare it in builtin_specs.py or remove the dead implementation (+ its test)"
+    },
+    {
+      "severity": "WARN",
+      "title": "Orphan BaseTool subclass not declared in the catalog",
+      "detail": "class ReadFileTool (name='read_file') inherits BaseTool but has no BUILTIN_TOOL_SPECS entry; its module is imported nowhere in deeptutor/ runtime code (tests only), so the registry can never serve it",
+      "evidence": [
+        "deeptutor/tools/file_tools.py:41"
+      ],
+      "suggestion": "declare it in builtin_specs.py or remove the dead implementation (+ its test)"
+    },
+    {
+      "severity": "WARN",
+      "title": "Orphan BaseTool subclass not declared in the catalog",
+      "detail": "class WriteFileTool (name='write_file') inherits BaseTool but has no BUILTIN_TOOL_SPECS entry; its module is imported nowhere in deeptutor/ runtime code (tests only), so the registry can never serve it",
+      "evidence": [
+        "deeptutor/tools/file_tools.py:109"
+      ],
+      "suggestion": "declare it in builtin_specs.py or remove the dead implementation (+ its test)"
+    },
+    {
+      "severity": "INFO",
+      "title": "PARTNER_BUILTIN_TOOL_NAMES duplicated but currently in sync",
+      "detail": "two hand-maintained copies match today; a future edit on one side would silently diverge",
+      "evidence": [
+        "deeptutor/tools/builtin_specs.py:224",
+        "deeptutor/tools/partner_memory.py:26"
+      ],
+      "suggestion": "single-source the tuple (one module defines it, the other imports)"
+    },
+    {
+      "severity": "WARN",
+      "title": "AGENTS.md toggle table missing a user-toggleable tool",
+      "detail": "USER_TOGGLEABLE_TOOL_NAMES lists 'zotero_search' but the AGENTS.md Level 1 table omits it",
+      "evidence": [
+        "deeptutor/tools/builtin/__init__.py:1984",
+        "AGENTS.md:41"
+      ],
+      "suggestion": "update the doc table (or the tuple if the doc is right)"
+    }
+  ]
+}
