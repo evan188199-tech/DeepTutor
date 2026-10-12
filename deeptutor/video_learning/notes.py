@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 from typing import Any
 
@@ -19,6 +20,9 @@ from deeptutor.video_learning.service import (
 
 NOTEBOOK_NAME = "Video Learning"
 MAX_QUOTE_CHARS = 280
+MATERIAL_STATUS_AVAILABLE = "available"
+MATERIAL_STATUS_MISSING = "missing"
+_TITLE_TIME_SUFFIX_RE = re.compile(r"\s+-\s+\d+:[0-5]\d(?::[0-5]\d)?$")
 
 
 def _format_time(seconds: float) -> str:
@@ -66,10 +70,11 @@ def _is_material_note(record: dict[str, Any], material_id: str) -> bool:
 def _matching_records(
     manager: NotebookManager, material_id: str, note_id: str | None = None
 ) -> list[tuple[str, dict[str, Any]]]:
-    for notebook in manager.list_notebooks():
-        if notebook.get("unreadable"):
-            manager.get_notebook(str(notebook.get("id") or ""))
+    """Collect this material's records across every notebook.
 
+    A damaged notebook is skipped instead of failing the whole scan, so one
+    unreadable file cannot make the remaining notes unreachable.
+    """
     matches: list[tuple[str, dict[str, Any]]] = []
     for notebook in manager.list_notebooks():
         if notebook.get("unreadable"):
@@ -88,13 +93,16 @@ def _matching_records(
     return matches
 
 
-def _note(notebook_id: str, record: dict[str, Any]) -> dict[str, Any]:
+def _note(
+    notebook_id: str, record: dict[str, Any], material_status: str = MATERIAL_STATUS_AVAILABLE
+) -> dict[str, Any]:
     metadata = record.get("metadata") if isinstance(record.get("metadata"), dict) else {}
     updated_at = float(metadata.get("updated_at") or record.get("created_at") or 0)
     return {
         "notebook_id": notebook_id,
         "note_id": str(record.get("id") or ""),
         "material_id": str(metadata.get("material_id") or ""),
+        "material_status": material_status,
         "body": str(record.get("output") or ""),
         "time_seconds": float(metadata.get("time_seconds") or 0),
         "locator": int(metadata.get("locator") or 0),
@@ -104,24 +112,65 @@ def _note(notebook_id: str, record: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def list_notes(manager: NotebookManager, material_id: str) -> list[dict[str, Any]]:
-    get_timed_media_store().get(material_id)
+def _material_state(material_id: str) -> tuple[dict[str, Any] | None, str]:
+    """Load the material, degrading to ``missing`` instead of raising."""
+    try:
+        return get_timed_media_store().get(material_id), MATERIAL_STATUS_AVAILABLE
+    except TimedMediaNotFound:
+        return None, MATERIAL_STATUS_MISSING
+
+
+def _unique_records(manager: NotebookManager, material_id: str) -> list[tuple[str, dict[str, Any]]]:
     unique: dict[str, tuple[str, dict[str, Any]]] = {}
     for notebook_id, record in _matching_records(manager, material_id):
         unique.setdefault(str(record.get("id") or ""), (notebook_id, record))
-    notes = [_note(notebook_id, record) for notebook_id, record in unique.values()]
+    return list(unique.values())
+
+
+def _sorted_notes(
+    pairs: list[tuple[str, dict[str, Any]]], material_status: str
+) -> list[dict[str, Any]]:
+    notes = [_note(notebook_id, record, material_status) for notebook_id, record in pairs]
     notes.sort(key=lambda row: (row["time_seconds"], row["created_at"], row["note_id"]))
     return notes
 
 
+def _stored_material_title(pairs: list[tuple[str, dict[str, Any]]]) -> str:
+    """Recover the material title a note was captured with, for orphaned notes."""
+    for _, record in pairs:
+        raw = _TITLE_TIME_SUFFIX_RE.sub("", str(record.get("title") or "").strip()).strip()
+        if raw:
+            return raw
+    return ""
+
+
+def list_notes(manager: NotebookManager, material_id: str) -> list[dict[str, Any]]:
+    _, material_status = _material_state(material_id)
+    notes = _sorted_notes(_unique_records(manager, material_id), material_status)
+    if not notes and material_status == MATERIAL_STATUS_MISSING:
+        raise TimedMediaNotFound("Timed media material was not found.")
+    return notes
+
+
 def export_notes(manager: NotebookManager, material_id: str) -> str:
-    material = get_timed_media_store().get(material_id)
-    notes = list_notes(manager, material_id)
-    title = _clip_text(
-        str(material.get("metadata", {}).get("title") or "Timed media").strip() or "Timed media",
-        140,
-    )
+    material, material_status = _material_state(material_id)
+    pairs = _unique_records(manager, material_id)
+    notes = _sorted_notes(pairs, material_status)
+    if not notes and material_status == MATERIAL_STATUS_MISSING:
+        raise TimedMediaNotFound("Timed media material was not found.")
+    if material is not None:
+        title = _clip_text(
+            str(material.get("metadata", {}).get("title") or "Timed media").strip()
+            or "Timed media",
+            140,
+        )
+    else:
+        title = _clip_text(_stored_material_title(pairs) or "Timed media", 140)
     lines = [f"# Video notes: {title}"]
+    if material_status == MATERIAL_STATUS_MISSING:
+        lines.extend(
+            ["", "_The source material is no longer available; notes are kept as recorded._"]
+        )
     if not notes:
         lines.extend(["", "_No timestamped notes captured yet._"])
         return "\n".join(lines).strip() + "\n"
@@ -223,6 +272,8 @@ def delete_note(manager: NotebookManager, material_id: str, note_id: str) -> boo
 
 
 __all__ = [
+    "MATERIAL_STATUS_AVAILABLE",
+    "MATERIAL_STATUS_MISSING",
     "NOTEBOOK_NAME",
     "create_note",
     "delete_note",

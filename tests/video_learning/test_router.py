@@ -249,6 +249,103 @@ def test_video_notes_export_markdown_and_stay_account_scoped(
     assert client.get("/api/video-learning/materials/0123456789abcdef/notes.md").status_code == 404
 
 
+def test_video_notes_survive_material_deletion(
+    client: TestClient,
+    notebook_manager: NotebookManager,
+    tmp_path: Path,
+) -> None:
+    material = _material()
+    material["metadata"]["title"] = "Orphaned lesson"
+    service.get_timed_media_store().save(material)
+    material_id = str(material["material_id"])
+    notes_url = f"/api/video-learning/materials/{material_id}/notes"
+    export_url = f"{notes_url}.md"
+
+    created = [
+        client.post(notes_url, json=payload)
+        for payload in (
+            {"body": "First orphan note", "time_seconds": 2},
+            {"body": "Second orphan note", "time_seconds": 66},
+        )
+    ]
+    assert all(response.status_code == 200 for response in created)
+    notebook_file = notebook_manager.base_dir / f"{created[0].json()['notebook_id']}.json"
+    persisted_bytes = notebook_file.read_bytes()
+
+    (tmp_path / "timed_media" / f"{material_id}.json").unlink()
+
+    listed = client.get(notes_url)
+    assert listed.status_code == 200
+    assert [(row["body"], row["material_status"]) for row in listed.json()] == [
+        ("First orphan note", "missing"),
+        ("Second orphan note", "missing"),
+    ]
+
+    exported = client.get(export_url)
+    assert exported.status_code == 200
+    assert exported.text.startswith(
+        "# Video notes: Orphaned lesson\n\n"
+        "_The source material is no longer available; notes are kept as recorded._\n"
+    )
+    assert "First orphan note" in exported.text
+    assert "Second orphan note" in exported.text
+
+    # Degraded reads must not rewrite the persisted notebook data.
+    assert notebook_file.read_bytes() == persisted_bytes
+
+    # A missing material without orphaned records keeps the 404 contract.
+    assert client.get("/api/video-learning/materials/0123456789abcdef/notes").status_code == 404
+    assert client.get("/api/video-learning/materials/0123456789abcdef/notes.md").status_code == 404
+
+
+def test_video_notes_listing_ignores_a_damaged_notebook(
+    client: TestClient,
+    notebook_manager: NotebookManager,
+) -> None:
+    material = _material()
+    service.get_timed_media_store().save(material)
+    material_id = str(material["material_id"])
+    notes_url = f"/api/video-learning/materials/{material_id}/notes"
+
+    assert (
+        client.post(notes_url, json={"body": "Healthy note", "time_seconds": 2}).status_code == 200
+    )
+    damaged = notebook_manager.base_dir / "broken01.json"
+    damaged.write_text("{ not json", encoding="utf-8")
+
+    listed = client.get(notes_url)
+    assert listed.status_code == 200
+    assert [(row["body"], row["material_status"]) for row in listed.json()] == [
+        ("Healthy note", "available")
+    ]
+
+    exported = client.get(f"{notes_url}.md")
+    assert exported.status_code == 200
+    assert "Healthy note" in exported.text
+
+    # The damaged file is left untouched on disk.
+    assert damaged.read_text(encoding="utf-8") == "{ not json"
+
+
+def test_video_notes_listing_skips_records_of_a_damaged_notebook(
+    client: TestClient,
+    notebook_manager: NotebookManager,
+) -> None:
+    material = _material()
+    service.get_timed_media_store().save(material)
+    material_id = str(material["material_id"])
+    notes_url = f"/api/video-learning/materials/{material_id}/notes"
+
+    created = client.post(notes_url, json={"body": "Doomed note", "time_seconds": 2})
+    assert created.status_code == 200
+    notebook_file = notebook_manager.base_dir / f"{created.json()['notebook_id']}.json"
+    notebook_file.write_text("{ not json", encoding="utf-8")
+
+    listed = client.get(notes_url)
+    assert listed.status_code == 200
+    assert listed.json() == []
+
+
 def test_progress_does_not_replace_known_duration_with_client_value(client: TestClient) -> None:
     material = _material(duration=100)
     service.get_timed_media_store().save(material)
