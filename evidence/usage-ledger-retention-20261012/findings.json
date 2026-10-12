@@ -1,0 +1,74 @@
+{
+  "audit": "llm-usage-ledger-growth-retention",
+  "date": "2026-10-12",
+  "base": {
+    "ref": "origin/main",
+    "commit": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+    "version": "v1.6.14"
+  },
+  "scope_files": [
+    "deeptutor/services/llm/metrics.py",
+    "deeptutor/services/llm/usage_ledger.py",
+    "deeptutor/services/llm/provider_core/base.py",
+    "deeptutor/runtime/agentic/client.py",
+    "deeptutor/runtime/orchestrator.py",
+    "deeptutor/api/routers/settings.py",
+    "deeptutor/services/session/usage_statistics.py",
+    "deeptutor/multi_user/identity.py",
+    "deeptutor/services/path_service.py"
+  ],
+  "measurements": {
+    "env": "Apple Silicon, APFS, repo venv, offline temp DBs, synthetic numeric records",
+    "row_bytes_real_path_5000": 650,
+    "row_bytes_bulk_100k": 648,
+    "db_bytes_5000_rows": 3248128,
+    "db_bytes_100k_rows": 64790528,
+    "usage_json_bytes_avg": 440,
+    "writes_per_second_real_path": 1902,
+    "ms_per_write_real_path": 0.53,
+    "wal_sidecars_after_close": false,
+    "duplicate_call_id_replay_rows_delta": 0,
+    "empty_session_row_accepted": true,
+    "read_5k_rows_seconds": 0.052,
+    "read_100k_rows_seconds": 1.059,
+    "read_100k_rows_peak_rss_mb": 432,
+    "extrapolation_mb_per_year_at_1000_calls_per_day": 237
+  },
+  "structure": [
+    {"id": "S1", "aspect": "location", "detail": "one sqlite db per owner account at <user_data_dir>/usage.sqlite3", "evidence": "deeptutor/services/llm/usage_ledger.py:37-40; deeptutor/services/path_service.py:118-119"},
+    {"id": "S2", "aspect": "schema", "detail": "llm_calls(call_id PK, started_at, session_id, turn_id, source, usage_json) + started_at index; no workspace column", "evidence": "deeptutor/services/llm/usage_ledger.py:58-62"},
+    {"id": "S3", "aspect": "write trigger", "detail": "one row per provider attempt including failed/interrupted/estimated; retry loop wraps every attempt", "evidence": "deeptutor/services/llm/metrics.py:144-180; deeptutor/services/llm/provider_core/base.py:358-383"},
+    {"id": "S4", "aspect": "streaming", "detail": "measured streams and instrumented clients record on close, incl. interrupted", "evidence": "deeptutor/services/llm/metrics.py:183-249,258-279"},
+    {"id": "S5", "aspect": "idempotency", "detail": "INSERT OR IGNORE on call_id primary key", "evidence": "deeptutor/services/llm/usage_ledger.py:58-64"},
+    {"id": "S6", "aspect": "read path", "detail": "year-window full materialization, per-row TurnUsage summaries with call_details", "evidence": "deeptutor/services/llm/usage_ledger.py:76-107; deeptutor/api/routers/settings.py:2415-2453; deeptutor/services/session/usage_statistics.py:160+"},
+    {"id": "S7", "aspect": "journal", "detail": "WAL enabled per write; per-call close checkpoints and removes sidecars", "evidence": "deeptutor/services/llm/usage_ledger.py:55-57"}
+  ],
+  "recovery": [
+    {"id": "R-A", "mechanism": "sqlite WAL replay after crash", "evidence": "deeptutor/services/llm/usage_ledger.py:57"},
+    {"id": "R-B", "mechanism": "duplicate insert ignored via primary key", "evidence": "deeptutor/services/llm/usage_ledger.py:64", "verified": true},
+    {"id": "R-C", "mechanism": "history snapshots compensate lost ledger writes; merge_records dedups by call_id in 500-id batches", "evidence": "deeptutor/services/llm/metrics.py:179-180; deeptutor/services/llm/usage_ledger.py:110-138,141-172"},
+    {"id": "R-D", "mechanism": "missing or corrupt table tolerated on read via mode=ro", "evidence": "deeptutor/services/llm/usage_ledger.py:80-86,159-161"}
+  ],
+  "orphans": [
+    {"id": "O1", "severity": "medium", "issue": "rows with empty session_id/turn_id/source for provider calls outside a turn binding", "evidence": "deeptutor/services/llm/metrics.py:165-178; schema deeptutor/services/llm/usage_ledger.py:58-61"},
+    {"id": "O2", "severity": "high", "issue": "session deletion never removes llm_calls rows; no cascade or fk", "evidence": "usage.sqlite3 referenced only at deeptutor/services/llm/usage_ledger.py:40"},
+    {"id": "O3", "severity": "high", "issue": "delete_user never removes user_data_dir, orphaning the whole ledger db", "evidence": "deeptutor/multi_user/identity.py:367-390; deeptutor/services/path_service.py:107-119"},
+    {"id": "O4", "severity": "low", "issue": "ledger_path or record_call failure drops the durable record permanently for unbound calls", "evidence": "deeptutor/services/llm/metrics.py:81-87,179-180; lock timeout deeptutor/services/llm/usage_ledger.py:55"},
+    {"id": "O5", "severity": "low", "issue": "no workspace dimension; owner-global rows cannot be scoped for prune or attribution", "evidence": "deeptutor/services/llm/usage_ledger.py:58-61; deeptutor/api/routers/settings.py:2439-2452"}
+  ],
+  "retention_gap": "no DELETE, VACUUM or prune on llm_calls anywhere in deeptutor/; only other-store retention exists (redis streams stream_retention_seconds, session snapshot prune in workspace/data_migration.py:873-885)",
+  "recommendations": [
+    {"id": "R1", "action": "daily time-window prune with incremental vacuum; 2 rolling years cap ~474MB at 1000 calls/day", "priority": "high"},
+    {"id": "R2", "action": "aggregate-then-prune into llm_calls_daily rollups; >45x row reduction and removes 1.06s/432MB year read", "priority": "high"},
+    {"id": "R3", "action": "cascade delete llm_calls by session_id on session hard-delete; remove user_data_dir in delete_user", "priority": "high"},
+    {"id": "R4", "action": "paginate month-wise over idx_llm_calls_time or stream rows into aggregate_usage", "priority": "medium"},
+    {"id": "R5", "action": "persist workspace_id at write time for scoped prune and exact attribution", "priority": "medium"}
+  ],
+  "dedup": {
+    "guide-usage-ledger": "user guide only, no growth/retention analysis",
+    "test-usage-ledger": "functional write/merge tests, merged in da856ad67 (v1.6.9)",
+    "test-usage-recovery": "session-store recovery tests, different store",
+    "scan-session-store-retention": "chat_history.db growth scan, different db"
+  },
+  "constraints": "offline static analysis + throwaway temp dbs only; no service started; no source changes outside evidence/"
+}
