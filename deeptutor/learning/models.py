@@ -528,6 +528,19 @@ class ReadingActivityRecord(BaseModel):
     created_at: float = Field(default_factory=time.time)
 
 
+class ReadingWordEntry(BaseModel):
+    """One vocabulary-extension word collection, anchored to its source unit."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    entry_id: str
+    material_id: str
+    locator: int = Field(ge=1)
+    source_anchor: str = Field(min_length=1, max_length=2048)
+    word: str = Field(min_length=1, max_length=80)
+    created_at: float = Field(default_factory=time.time)
+
+
 class ReadingLearningRecords(BaseModel):
     """Account-scoped Reading summary for reporting surfaces."""
 

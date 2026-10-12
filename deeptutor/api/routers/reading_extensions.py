@@ -344,6 +344,76 @@ def _assert_quiz_extension_allowed() -> None:
         raise HTTPException(status_code=403, detail="This reading extension is not allowed.")
 
 
+def _assert_vocabulary_extension_allowed() -> None:
+    allowed = allowed_reading_extensions()
+    if allowed is not None and "vocabulary" not in allowed:
+        raise HTTPException(status_code=403, detail="This reading extension is not allowed.")
+
+
+class WordCollectionPayload(BaseModel):
+    locator: int = Field(ge=1)
+    selection: str = Field(default="", max_length=10_000)
+
+
+@router.post("/materials/{material_id}/extensions/vocabulary/words")
+async def collect_vocabulary_word(
+    material_id: str, payload: WordCollectionPayload
+) -> dict[str, Any]:
+    """Collect one verified word into the account's reading word list.
+
+    The write is grounded the same way extension contexts are: the word must
+    occur verbatim in the stored unit and the anchor comes from the server's
+    saved position, never from the browser.
+    """
+
+    try:
+        assert_learning_material(material_id)
+        _assert_vocabulary_extension_allowed()
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+    store = ReadingStore()
+    try:
+        unit_text = store.unit_text(material_id, payload.locator)
+        position = store.position(material_id)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    word = _verified_selection(payload.selection, unit_text)
+    if not word:
+        raise HTTPException(status_code=400, detail="Select the word from the visible unit first.")
+    if len(word) > 80:
+        raise HTTPException(status_code=400, detail="Collected words are limited to 80 characters.")
+    source_anchor = position.source_anchor if position.locator == payload.locator else ""
+    if not source_anchor:
+        raise HTTPException(
+            status_code=400,
+            detail="A source anchor is required to collect a word. Open this unit from a saved reading position first.",
+        )
+    try:
+        record = await asyncio.to_thread(
+            LearningStore().record_reading_word,
+            material_id,
+            locator=payload.locator,
+            source_anchor=source_anchor,
+            word=word,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return record.model_dump()
+
+
+@router.get("/materials/{material_id}/extensions/vocabulary/words")
+async def list_vocabulary_words(material_id: str) -> dict[str, Any]:
+    try:
+        assert_learning_material(material_id)
+        _assert_vocabulary_extension_allowed()
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+    entries = await asyncio.to_thread(LearningStore().list_reading_words, material_id)
+    return {"words": [entry.model_dump() for entry in entries]}
+
+
 async def _persist_reading_quiz_pending(
     material_id: str, locator: int, payload: dict[str, Any]
 ) -> None:

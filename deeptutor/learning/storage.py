@@ -39,6 +39,7 @@ from deeptutor.learning.models import (
     ReadingActivityRecord,
     ReadingLearningRecords,
     ReadingProgressRecord,
+    ReadingWordEntry,
     TopicMetadata,
     TopicSource,
 )
@@ -534,6 +535,18 @@ class LearningStore:
                     );
                     CREATE INDEX IF NOT EXISTS idx_reading_activities_recent
                         ON reading_activities(created_at DESC, activity_id DESC);
+
+                    CREATE TABLE IF NOT EXISTS reading_word_entries (
+                        entry_id TEXT PRIMARY KEY,
+                        material_id TEXT NOT NULL,
+                        locator INTEGER NOT NULL,
+                        source_anchor TEXT NOT NULL,
+                        word TEXT NOT NULL,
+                        created_at REAL NOT NULL,
+                        UNIQUE(material_id, word)
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_reading_word_entries_recent
+                        ON reading_word_entries(created_at DESC, entry_id DESC);
                     """
                 )
                 self._converge_single_membership(conn)
@@ -1439,6 +1452,100 @@ class LearningStore:
             progress=[self._reading_progress_from_row(row) for row in progress_rows],
             activities=[self._reading_activity_from_row(row) for row in activity_rows],
         )
+
+    # ---- vocabulary-extension word collection ---------------------------
+
+    @staticmethod
+    def _reading_word_from_row(row: sqlite3.Row) -> ReadingWordEntry:
+        return ReadingWordEntry(
+            entry_id=str(row["entry_id"]),
+            material_id=str(row["material_id"]),
+            locator=int(row["locator"]),
+            source_anchor=str(row["source_anchor"]),
+            word=str(row["word"]),
+            created_at=float(row["created_at"]),
+        )
+
+    def record_reading_word(
+        self,
+        material_id: str,
+        *,
+        locator: int,
+        source_anchor: str,
+        word: str,
+    ) -> ReadingWordEntry:
+        """Persist one collected vocabulary word with its source anchor.
+
+        A word without a grounded source anchor is rejected: the entry would
+        be impossible to trace back to the passage the learner read.
+        """
+
+        material_id = self._validate_id(material_id)
+        anchor = str(source_anchor or "").strip()
+        word_value = " ".join(str(word or "").split())
+        if not anchor:
+            raise ValueError("source_anchor is required to collect a reading word")
+        if len(anchor) > 2048:
+            raise ValueError("source_anchor must be at most 2048 characters")
+        if not word_value or len(word_value) > 80:
+            raise ValueError("word must contain 1 to 80 characters")
+        record = ReadingWordEntry(
+            entry_id=f"rword_{uuid.uuid4().hex}",
+            material_id=material_id,
+            locator=int(locator),
+            source_anchor=anchor,
+            word=word_value,
+        )
+        record.created_at = time.time()
+        with self._connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                row = conn.execute(
+                    """
+                    SELECT * FROM reading_word_entries
+                    WHERE material_id = ? AND word = ?
+                    """,
+                    (material_id, record.word),
+                ).fetchone()
+                if row is not None:
+                    conn.rollback()
+                    return self._reading_word_from_row(row)
+                conn.execute(
+                    """
+                    INSERT INTO reading_word_entries (
+                        entry_id, material_id, locator, source_anchor, word, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        record.entry_id,
+                        record.material_id,
+                        record.locator,
+                        record.source_anchor,
+                        record.word,
+                        record.created_at,
+                    ),
+                )
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+        return record
+
+    def list_reading_words(
+        self, material_id: str | None = None, *, limit: int = 500
+    ) -> list[ReadingWordEntry]:
+        """Return collected words, newest first, optionally for one material."""
+
+        limit = max(1, min(int(limit), 1000))
+        query = "SELECT * FROM reading_word_entries"
+        params: tuple[Any, ...] = ()
+        if material_id is not None:
+            query += " WHERE material_id = ?"
+            params = (self._validate_id(material_id),)
+        query += " ORDER BY created_at DESC, entry_id DESC LIMIT ?"
+        with self._connect() as conn:
+            rows = conn.execute(query, (*params, limit)).fetchall()
+        return [self._reading_word_from_row(row) for row in rows]
 
     # ---- product topic metadata -----------------------------------------
 
