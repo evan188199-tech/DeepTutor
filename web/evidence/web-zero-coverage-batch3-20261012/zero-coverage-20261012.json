@@ -1,0 +1,324 @@
+{
+ "baseline": "origin/main 6cf793bd868ba5ecbe64722936d4be8fab5a01df (v1.6.14)",
+ "pool_total": 162,
+ "excluded_batch1": [
+  "components/chat/home/MasteryHandoffCard.tsx",
+  "components/chat/space/ChatSpaceMenu.tsx",
+  "components/notebook/NotebookSelector.tsx",
+  "components/tasks/TaskColorPicker.tsx"
+ ],
+ "under_150": [
+  {
+   "path": "components/common/MotionProvider.tsx",
+   "loc": 10
+  },
+  {
+   "path": "components/agents/AgentsHub.tsx",
+   "loc": 18
+  },
+  {
+   "path": "components/access/CapabilityGate.tsx",
+   "loc": 24
+  },
+  {
+   "path": "components/settings/SettingsRuntimePage.tsx",
+   "loc": 24
+  },
+  {
+   "path": "components/chat/preview/previewers/SvgPreview.tsx",
+   "loc": 25
+  },
+  {
+   "path": "components/reading/workspace/LegacyWatchingSession.tsx",
+   "loc": 26
+  },
+  {
+   "path": "components/mcp/McpToolList.tsx",
+   "loc": 30
+  },
+  {
+   "path": "components/knowledge/LightRagEmbeddingWarning.tsx",
+   "loc": 32
+  },
+  {
+   "path": "components/settings/SettingsReturnTracker.tsx",
+   "loc": 32
+  },
+  {
+   "path": "components/chat/home/ChatViewerBridges.tsx",
+   "loc": 34
+  },
+  {
+   "path": "components/chat/home/ComposerRail.tsx",
+   "loc": 36
+  },
+  {
+   "path": "components/chat/preview/previewers/MarkdownPreview.tsx",
+   "loc": 38
+  },
+  {
+   "path": "components/chat/preview/previewers/VideoPreview.tsx",
+   "loc": 43
+  },
+  {
+   "path": "components/chat/home/ToolbarLabel.tsx",
+   "loc": 46
+  },
+  {
+   "path": "components/common/ProviderIcon.tsx",
+   "loc": 46
+  },
+  {
+   "path": "components/mcp/McpStatusBadge.tsx",
+   "loc": 47
+  },
+  {
+   "path": "components/settings/SettingsStatusPanel.tsx",
+   "loc": 51
+  },
+  {
+   "path": "components/space/learning/TopicMapCard.tsx",
+   "loc": 52
+  },
+  {
+   "path": "components/chat/preview/previewers/FallbackPreview.tsx",
+   "loc": 55
+  },
+  {
+   "path": "components/auth/AdminLink.tsx",
+   "loc": 56
+  },
+  {
+   "path": "components/space/SpaceMain.tsx",
+   "loc": 57
+  },
+  {
+   "path": "components/activity/StatusDot.tsx",
+   "loc": 58
+  },
+  {
+   "path": "components/access/RequireCapability.tsx",
+   "loc": 59
+  },
+  {
+   "path": "components/chat/home/SetupCredentialCard.tsx",
+   "loc": 59
+  },
+  {
+   "path": "components/activity/ActivityFold.tsx",
+   "loc": 62
+  },
+  {
+   "path": "components/chat/preview/previewers/ImagePreview.tsx",
+   "loc": 62
+  },
+  {
+   "path": "components/chat/preview/previewers/OfficeTextPreview.tsx",
+   "loc": 63
+  },
+  {
+   "path": "components/knowledge/KnowledgeEngineIcon.tsx",
+   "loc": 63
+  },
+  {
+   "path": "components/knowledge/KbStatusBadge.tsx",
+   "loc": 64
+  },
+  {
+   "path": "components/mcp/McpDeploymentList.tsx",
+   "loc": 65
+  },
+  {
+   "path": "components/settings/SettingsLoadStatusBanner.tsx",
+   "loc": 66
+  },
+  {
+   "path": "components/space/SkillLibraryScope.tsx",
+   "loc": 66
+  },
+  {
+   "path": "components/learning/LearningCard.tsx",
+   "loc": 67
+  },
+  {
+   "path": "components/activity/ActivityStack.tsx",
+   "loc": 70
+  },
+  {
+   "path": "components/knowledge/EmbeddingModelSelector.tsx",
+   "loc": 70
+  },
+  {
+   "path": "components/chat/home/PartnerGroupSelector.tsx",
+   "loc": 73
+  },
+  {
+   "path": "components/knowledge/KbTaskLogs.tsx",
+   "loc": 73
+  },
+  {
+   "path": "components/chat/home/composer-field.tsx",
+   "loc": 74
+  },
+  {
+   "path": "components/partners/group/GroupEmptyState.tsx",
+   "loc": 75
+  },
+  {
+   "path": "components/partners/group/RoundSummaryAction.tsx",
+   "loc": 75
+  },
+  {
+   "path": "components/auth/ProfileLink.tsx",
+   "loc": 76
+  },
+  {
+   "path": "components/common/ToastViewport.tsx",
+   "loc": 80
+  },
+  {
+   "path": "components/reading/library/FolderGlyph.tsx",
+   "loc": 82
+  },
+  {
+   "path": "components/common/GeogebraOpenCTA.tsx",
+   "loc": 83
+  },
+  {
+   "path": "components/common/RichInlineMarkdown.tsx",
+   "loc": 83
+  },
+  {
+   "path": "components/space/learning/ProgressRing.tsx",
+   "loc": 88
+  },
+  {
+   "path": "components/knowledge/KbKiwixArticlesSection.tsx",
+   "loc": 90
+  },
+  {
+   "path": "components/space/learning/CoverageNotice.tsx",
+   "loc": 90
+  },
+  {
+   "path": "components/activity/ActivityDetailGrid.tsx",
+   "loc": 94
+  },
+  {
+   "path": "components/partners/group/InvocationCard.tsx",
+   "loc": 98
+  },
+  {
+   "path": "components/memory/MemoryArchivedBanner.tsx",
+   "loc": 99
+  },
+  {
+   "path": "components/settings/TaskModelsEditor.tsx",
+   "loc": 100
+  },
+  {
+   "path": "components/chat/home/SessionLoadingView.tsx",
+   "loc": 101
+  },
+  {
+   "path": "components/partners/SoulEditor.tsx",
+   "loc": 101
+  },
+  {
+   "path": "components/reading/workspace/BilibiliReadingPlayer.tsx",
+   "loc": 101
+  },
+  {
+   "path": "components/common/ModelThinkingCard.tsx",
+   "loc": 102
+  },
+  {
+   "path": "components/activity/ActivityHeader.tsx",
+   "loc": 105
+  },
+  {
+   "path": "components/activity/ActivityOrb.tsx",
+   "loc": 110
+  },
+  {
+   "path": "components/courses/CourseConventions.tsx",
+   "loc": 110
+  },
+  {
+   "path": "components/common/BrandIcon.tsx",
+   "loc": 120
+  },
+  {
+   "path": "components/learning/LearningShell.tsx",
+   "loc": 125
+  },
+  {
+   "path": "components/space/question-bank/BankScopeRail.tsx",
+   "loc": 125
+  },
+  {
+   "path": "components/common/McpToolGroups.tsx",
+   "loc": 126
+  },
+  {
+   "path": "components/mcp/McpServerList.tsx",
+   "loc": 127
+  },
+  {
+   "path": "components/chat/home/SelectedResources.tsx",
+   "loc": 132
+  },
+  {
+   "path": "components/chat/preview/previewers/DocxPreview.tsx",
+   "loc": 134
+  },
+  {
+   "path": "components/reading/library/LibraryShell.tsx",
+   "loc": 136
+  },
+  {
+   "path": "components/settings/ChatResponseTimeoutSection.tsx",
+   "loc": 136
+  },
+  {
+   "path": "components/settings/ModelCapabilityFields.tsx",
+   "loc": 138
+  },
+  {
+   "path": "components/knowledge/LinkFolderModal.tsx",
+   "loc": 139
+  },
+  {
+   "path": "components/settings/ProviderServices.tsx",
+   "loc": 140
+  },
+  {
+   "path": "components/courses/CourseScope.tsx",
+   "loc": 142
+  },
+  {
+   "path": "components/activity/ActivityMark.tsx",
+   "loc": 143
+  },
+  {
+   "path": "components/chat/home/CourseHandoffCard.tsx",
+   "loc": 144
+  },
+  {
+   "path": "components/space/learning/EditTopicRouteDialog.tsx",
+   "loc": 144
+  },
+  {
+   "path": "components/partners/PartnerModelPicker.tsx",
+   "loc": 149
+  },
+  {
+   "path": "components/mcp/McpAdminRegistry.tsx",
+   "loc": 150
+  },
+  {
+   "path": "components/space/learning/TopicAtlas.tsx",
+   "loc": 150
+  }
+ ]
+}
