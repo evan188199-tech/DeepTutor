@@ -1,0 +1,2 @@
+surface	key	lang	missing_vs_ref	extra_vs_ref	duplicate_count_diff	format_spec_diff	placeholders	ref_placeholders	ref_loc	lang_loc
+web.locales.app	“{{title}}” and its reading conversations will be deleted. The {{count}} materials in it stay in your library._one	zh		count			"{""count"": """", ""title"": """"}"	"{""title"": """"}"	web/locales/en/app.json:3582	web/locales/zh/app.json:3582
