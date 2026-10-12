@@ -1,0 +1,93 @@
+OK   deeptutor/runtime/agentic/think_stream.py:33  THINK_OPEN_RE
+OK   deeptutor/runtime/agentic/think_stream.py:36  _TAG_HOLDBACK_CHARS = 24
+OK   deeptutor/runtime/agentic/think_stream.py:39  class InlineThinkFilter
+OK   deeptutor/runtime/agentic/think_stream.py:86  def split_inline_think
+OK   deeptutor/agents/loop/agent_loop.py:1171  think_filter = InlineThinkFilter()
+OK   deeptutor/agents/loop/agent_loop.py:1178  def _emit_segments
+OK   deeptutor/agents/loop/agent_loop.py:1385  content = getattr(delta, "content", None)
+OK   deeptutor/agents/loop/agent_loop.py:1392  dsml_filter.feed(content)
+OK   deeptutor/agents/loop/agent_loop.py:1394  think_filter.feed(visible_content)
+OK   deeptutor/agents/loop/agent_loop.py:1523  dsml_filter.flush()
+OK   deeptutor/agents/loop/agent_loop.py:1526  think_filter.flush()
+OK   deeptutor/agents/loop/agent_loop.py:1369  reasoning_text = getattr(delta, "reasoning_content"
+OK   deeptutor/agents/loop/agent_loop.py:1315  thinking_blocks
+OK   deeptutor/agents/loop/agent_loop.py:1210  _maybe_emit_reasoning_progress
+OK   deeptutor/agents/loop/agent_loop.py:105  MAX_REASONING_ONLY_RECOVERIES = 2
+OK   deeptutor/agents/loop/agent_loop.py:398  def _clean
+OK   deeptutor/agents/loop/agent_loop.py:126  def _reasoning_budget_exhausted
+OK   deeptutor/agents/loop/agent_loop.py:568  if not final_text:
+OK   deeptutor/agents/loop/agent_loop.py:574  reasoning_only_recoveries += 1
+OK   deeptutor/agents/loop/agent_loop.py:1601  reasoning_budget_exhausted = bool(
+OK   deeptutor/runtime/agentic/labeled_step.py:215  post_label_think = InlineThinkFilter()
+OK   deeptutor/runtime/stream_bus.py:173  async def thinking
+OK   deeptutor/runtime/stream_bus.py:156  async def content
+OK   deeptutor/agents/loop/dsml_tool_calls.py:34  DSML_SIGNAL_RE
+OK   deeptutor/agents/loop/dsml_tool_calls.py:39  _INVOKE_RE
+OK   deeptutor/agents/loop/dsml_tool_calls.py:60  _MAX_PARTIAL_TAG_CHARS = 512
+OK   deeptutor/agents/loop/dsml_tool_calls.py:63  class DSMLStreamFilter
+OK   deeptutor/agents/loop/dsml_tool_calls.py:173  def _coerce_param_value
+OK   deeptutor/agents/loop/dsml_tool_calls.py:151  def _schema_types
+OK   deeptutor/agents/loop/dsml_tool_calls.py:207  def has_dsml_tool_calls
+OK   deeptutor/agents/loop/dsml_tool_calls.py:235  def extract_dsml_tool_calls
+OK   deeptutor/agents/loop/dsml_tool_calls.py:277  if not tool_calls:
+OK   deeptutor/agents/loop/agent_loop.py:296  self._tool_schema_catalog = tool_schemas
+OK   deeptutor/agents/loop/agent_loop.py:1174  dsml_filter = DSMLStreamFilter()
+OK   deeptutor/agents/loop/agent_loop.py:1548  extract_dsml_tool_calls(text, self._tool_schema_catalog)
+OK   deeptutor/agents/loop/agent_loop.py:1550  if not tool_calls:
+OK   deeptutor/agents/loop/agent_loop.py:1680  fallback_dsml = DSMLStreamFilter()
+OK   deeptutor/agents/loop/agent_loop.py:1554  forced_tool_choice and tool_choice == "ask_user"
+OK   deeptutor/agents/loop/agent_loop.py:670  if _finish_was_truncated(result.finish_reason):
+OK   deeptutor/runtime/agentic/tool_call_stream.py:35  class ToolCallAccumulator
+OK   deeptutor/agents/loop/context_budget.py:37  _BLOCK_SEGMENTS
+OK   deeptutor/agents/loop/context_budget.py:57  @dataclass(slots=True)
+OK   deeptutor/agents/loop/context_budget.py:58  class LLMRequestSnapshot
+OK   deeptutor/agents/loop/context_budget.py:77  def resolve_window_info
+OK   deeptutor/agents/loop/context_budget.py:108  def detect_counter_name
+OK   deeptutor/agents/loop/context_budget.py:124  def count_conversation_tokens
+OK   deeptutor/agents/loop/context_budget.py:141  def build_context_budget
+OK   deeptutor/agents/loop/context_budget.py:173  def _build
+OK   deeptutor/agents/loop/context_budget.py:211  # Rank once
+OK   deeptutor/agents/loop/context_budget.py:230  "free_tokens": max(0, window.window - used)
+OK   deeptutor/agents/loop/context_budget.py:241  def _prompt_block_tokens
+OK   deeptutor/agents/loop/context_budget.py:256  def _render_overhead
+OK   deeptutor/agents/loop/context_budget.py:281  def _tool_schema_tokens
+OK   deeptutor/agents/loop/context_budget.py:296  def _message_tokens
+OK   deeptutor/agents/loop/context_budget.py:331  def _default_counter
+OK   deeptutor/agents/loop/pipeline.py:267  self._last_prompt_blocks: list[PromptBlock] = []
+OK   deeptutor/agents/loop/pipeline.py:436  def _build_system_prompt
+OK   deeptutor/agents/loop/pipeline.py:446  self._last_prompt_blocks = self._prompt_assembler.blocks(
+OK   deeptutor/agents/loop/pipeline.py:466  def _build_loop_messages
+OK   deeptutor/agents/loop/pipeline.py:1623  def _guard_context_window
+OK   deeptutor/agents/loop/pipeline.py:1660  def measure_context_budget
+OK   deeptutor/agents/loop/pipeline.py:1667  return build_context_budget(
+OK   deeptutor/agents/loop/pipeline.py:1677  def _unloaded_deferred_tool_count
+OK   deeptutor/agents/loop/agent_loop.py:297  self._last_request: LLMRequestSnapshot | None = None
+OK   deeptutor/agents/loop/agent_loop.py:1132  self._last_request = LLMRequestSnapshot(
+OK   deeptutor/agents/loop/agent_loop.py:385  if self._last_request is not None:
+OK   deeptutor/agents/loop/agent_loop.py:386  budget = self.pipeline.measure_context_budget
+OK   deeptutor/agents/loop/agent_loop.py:388  payload["metadata"] = {"context_budget": budget}
+OK   deeptutor/services/llm/context_window.py:9  MAX_EFFECTIVE_CONTEXT_WINDOW = 1_000_000
+OK   deeptutor/services/llm/context_window.py:188  def resolve_effective_context_window
+OK   deeptutor/services/session/context_builder.py:49  def count_tokens
+OK   deeptutor/agents/loop/prompt_blocks.py:27  RUNTIME_BLOCK_NAMES
+OK   deeptutor/agents/loop/prompt_blocks.py:81  def render
+OK   deeptutor/agents/loop/prompt_blocks.py:99  def split_for_replay
+OK   deeptutor/agents/loop/prompt_blocks.py:119  def blocks
+OK   deeptutor/agents/loop/prompt_blocks.py:323  ChatPromptAssembler = LoopPromptAssembler
+OK   deeptutor/agents/chat/agentic_pipeline.py:36  class AgenticChatPipeline
+OK   deeptutor/agents/chat/capability.py:25  async def run
+OK   deeptutor/services/session/usage_recovery.py:36  budget = scope.get("context_budget") or {}
+OK   web/hooks/useContextBudget.ts:35  const budget = meta?.context_budget as ContextBudget | undefined;
+OK   deeptutor/agents/loop/agent_loop.py:1037  async def _call_llm
+OK   deeptutor/agents/loop/agent_loop.py:110  _PROVIDER_RETRY_DELAYS = (0.5, 1.5)
+OK   deeptutor/agents/loop/agent_loop.py:100  MAX_SETTLEMENT_ROUNDS = 3
+OK   deeptutor/agents/loop/agent_loop.py:837  async def _forced_finish
+OK   deeptutor/agents/loop/agent_loop.py:480  if not result.tool_calls:
+OK   deeptutor/agents/loop/agent_loop.py:719  dispatch = await self.pipeline._dispatch_tool_calls(
+OK   deeptutor/agents/loop/agent_loop.py:731  if dispatch.pause:
+OK   deeptutor/agents/loop/agent_loop.py:801  def _fold_context_checkpoint
+OK   deeptutor/agents/loop/agent_loop.py:309  async def run(self)
+OK   deeptutor/agents/loop/agent_loop.py:403  async def _run_loop
+OK   deeptutor/agents/loop/agent_loop.py:1290  async for chunk in _bounded_stream_chunks
+
+91 passed, 0 failed

@@ -1,0 +1,33 @@
+# test-run.txt — guide-chat-loop-2026-10-12
+
+- worktree: /Users/Shared/DeepTutor/dt-agen1851-chatloop-wt
+- baseline: origin/main @ 6cf793bd868ba5ecbe64722936d4be8fab5a01df (release: v1.6.14)
+- interpreter: /Users/Shared/DeepTutor/.venv/bin/python (Python 3.13.13, pytest 9.1.1)
+- runner: pytest -p no:cacheprovider, each command bounded at 900s (perl alarm)
+- environment precondition: fresh DEEPTUTOR_HOME + mkdir <home>/data/user/workspace
+  (normally created by app bootstrap; two full-pipeline tests read the workspace binding)
+
+## Command 1
+$ pytest -p no:cacheprovider tests/agents/chat/test_dsml_tool_calls.py tests/agents/chat/test_context_budget.py
+============================== 35 passed in 1.24s ==============================
+
+## Command 2
+$ pytest -p no:cacheprovider tests/agents/chat/test_agent_loop.py
+======================== 1 failed, 101 passed in 43.19s ========================
+
+Failure detail (single case, deterministic on this host):
+FAILED tests/agents/chat/test_agent_loop.py::test_cold_start_stalled_provider_settles_with_bounded_retries[partial_stream]
+  tests/agents/chat/test_agent_loop.py:2434: assert 0 >= 1
+  - the case wraps pipeline.run in asyncio.wait_for(..., 1) (1s wall clock);
+    the partial_stream path takes >2s on this host, so the transport error
+    never surfaces inside the window.
+  - same single failure reproduces at the earlier pinned checkout
+    9955a4122 (dt-agen1804-wt): "1 failed, 2 passed".
+  - judged pre-existing host-timing limitation (#1421 transport-retry facet);
+    unrelated to the three guide facets (think_stream / dsml_tool_calls /
+    context_budget). All facet-related cases pass.
+
+## Anchor verification
+$ bash evidence/guide-chat-loop-2026-10-12/verify-anchors.sh
+91 passed, 0 failed
+(every path:line cited in guide-agents-chat-loop.md checked against this checkout = origin/main HEAD)
