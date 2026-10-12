@@ -15,7 +15,7 @@ import binascii
 from contextlib import nullcontext
 import json
 import logging
-from typing import Any, AsyncGenerator, Literal
+from typing import Any, AsyncGenerator, Generic, Literal, TypeVar
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
@@ -107,30 +107,60 @@ _MANAGEABLE = [Depends(manageable_partner)]
 
 # Per-partner async locks used to dedupe concurrent WebSocket-driven
 # auto-starts (start_partner short-circuits when running, but that check is
-# not async-safe under concurrent connections).
-_start_locks: dict[str, asyncio.Lock] = {}
-_start_locks_mutex = asyncio.Lock()
-_draft_confirm_locks: dict[tuple[str, str], asyncio.Lock] = {}
-_draft_confirm_locks_mutex = asyncio.Lock()
+# not async-safe under concurrent connections), and per-(user, draft) locks
+# that promote a draft into a real Partner exactly once. Both tables recycle:
+# every caller holds a reference for as long as it may hold or await its
+# lock, and the entry is dropped once the last reference is released, so the
+# tables track live calls instead of growing monotonically with the number
+# of partners and drafts the process has ever served.
+_LockKey = TypeVar("_LockKey")
 
 
-async def _get_start_lock(partner_id: str) -> asyncio.Lock:
-    async with _start_locks_mutex:
-        lock = _start_locks.get(partner_id)
-        if lock is None:
-            lock = asyncio.Lock()
-            _start_locks[partner_id] = lock
-        return lock
+class _RecycledLockTable(Generic[_LockKey]):
+    """Keyed ``asyncio.Lock`` table whose entries are freed with their users.
+
+    ``acquire`` must be paired with ``release`` in a ``try/finally`` around
+    the critical section. A waiter holds a reference to the very lock it
+    waits on, so mutual exclusion is preserved while the table only retains
+    keys with at least one live holder or waiter.
+    """
+
+    def __init__(self) -> None:
+        self._mutex = asyncio.Lock()
+        self._locks: dict[_LockKey, asyncio.Lock] = {}
+        self._refs: dict[_LockKey, int] = {}
+
+    async def acquire(self, key: _LockKey) -> asyncio.Lock:
+        async with self._mutex:
+            lock = self._locks.get(key)
+            if lock is None:
+                lock = asyncio.Lock()
+                self._locks[key] = lock
+                self._refs[key] = 0
+            self._refs[key] += 1
+            return lock
+
+    async def release(self, key: _LockKey) -> None:
+        async with self._mutex:
+            if self._refs.get(key, 0) > 1:
+                self._refs[key] -= 1
+                return
+            self._refs.pop(key, None)
+            self._locks.pop(key, None)
+
+    def clear(self) -> None:
+        self._locks.clear()
+        self._refs.clear()
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._locks
+
+    def __len__(self) -> int:
+        return len(self._locks)
 
 
-async def _get_draft_confirm_lock(draft_id: str) -> asyncio.Lock:
-    key = (get_current_user().id, draft_id)
-    async with _draft_confirm_locks_mutex:
-        lock = _draft_confirm_locks.get(key)
-        if lock is None:
-            lock = asyncio.Lock()
-            _draft_confirm_locks[key] = lock
-        return lock
+_start_locks = _RecycledLockTable[str]()
+_draft_confirm_locks = _RecycledLockTable[tuple[str, str]]()
 
 
 async def _request_partner_control(
@@ -196,20 +226,23 @@ async def _ensure_running_partner(
     if not allow_stopped and not mgr.auto_start_enabled(partner_id, default=False):
         raise HTTPException(status_code=409, detail=t("api.partner_stopped_start_required"))
 
-    lock = await _get_start_lock(partner_id)
-    async with lock:
-        instance = mgr.get_partner(partner_id)
-        if instance and instance.running:
-            return instance
-        if not allow_stopped and not mgr.auto_start_enabled(partner_id, default=False):
-            raise HTTPException(status_code=409, detail=t("api.partner_stopped_start_required"))
-        try:
-            return await mgr.start_partner(partner_id, config)
-        except RuntimeError as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from None
-        except Exception as exc:
-            logger.exception("Failed to auto-start partner '%s'", partner_id)
-            raise HTTPException(status_code=500, detail="Failed to start partner") from exc
+    lock = await _start_locks.acquire(partner_id)
+    try:
+        async with lock:
+            instance = mgr.get_partner(partner_id)
+            if instance and instance.running:
+                return instance
+            if not allow_stopped and not mgr.auto_start_enabled(partner_id, default=False):
+                raise HTTPException(status_code=409, detail=t("api.partner_stopped_start_required"))
+            try:
+                return await mgr.start_partner(partner_id, config)
+            except RuntimeError as exc:
+                raise HTTPException(status_code=500, detail=str(exc)) from None
+            except Exception as exc:
+                logger.exception("Failed to auto-start partner '%s'", partner_id)
+                raise HTTPException(status_code=500, detail="Failed to start partner") from exc
+    finally:
+        await _start_locks.release(partner_id)
 
 
 # ── Request models ─────────────────────────────────────────────
@@ -846,9 +879,13 @@ async def confirm_partner_draft(
     payload: ConfirmPartnerDraftRequest,
 ):
     """Promote a reviewable Chat draft into a real Partner exactly once."""
-    lock = await _get_draft_confirm_lock(draft_id)
-    async with lock:
-        return await _confirm_partner_draft(draft_id, payload)
+    key = (get_current_user().id, draft_id)
+    lock = await _draft_confirm_locks.acquire(key)
+    try:
+        async with lock:
+            return await _confirm_partner_draft(draft_id, payload)
+    finally:
+        await _draft_confirm_locks.release(key)
 
 
 async def _confirm_partner_draft(
