@@ -279,3 +279,79 @@ def test_converter_reports_missing_libreoffice_and_rejects_oversized_input(
                 b"x" * (office_preview.MAX_OFFICE_BYTES + 1), "report.docx", tmp_path
             )
         )
+
+
+def test_preview_http_status_mapping(monkeypatch, tmp_path: Path) -> None:
+    source = tmp_path / "report.docx"
+    source.write_bytes(b"office")
+    missing = tmp_path / "gone.docx"
+    monkeypatch.setattr(file_preview, "_cache_dir", lambda: tmp_path / "cache")
+    app = FastAPI()
+    app.include_router(file_preview.router, prefix="/api/file-preview")
+    client = TestClient(app)
+
+    monkeypatch.setattr(
+        file_preview, "_resolve_authorized_file", lambda _path, _query: (missing, missing.name)
+    )
+    assert (
+        client.get(
+            "/api/file-preview/pdf", params={"source": "/files/outputs/gone.docx"}
+        ).status_code
+        == 404
+    )
+
+    monkeypatch.setattr(
+        file_preview, "_resolve_authorized_file", lambda _path, _query: (source, source.name)
+    )
+    assert (
+        client.post("/api/file-preview/pdf", files={"file": ("notes.txt", b"office")}).status_code
+        == 415
+    )
+    notes = tmp_path / "notes.txt"
+    notes.write_bytes(b"office")
+    monkeypatch.setattr(
+        file_preview, "_resolve_authorized_file", lambda _path, _query: (notes, notes.name)
+    )
+    assert (
+        client.get(
+            "/api/file-preview/pdf", params={"source": "/files/outputs/notes.txt"}
+        ).status_code
+        == 415
+    )
+
+    async def invalid(_data: bytes, _filename: str, _cache_dir: Path) -> bytes:
+        raise office_preview.OfficePreviewInvalid("document is corrupted")
+
+    monkeypatch.setattr(
+        file_preview, "_resolve_authorized_file", lambda _path, _query: (source, source.name)
+    )
+    monkeypatch.setattr(file_preview, "render_office_pdf", invalid)
+    assert (
+        client.get(
+            "/api/file-preview/pdf", params={"source": "/files/outputs/report.docx"}
+        ).status_code
+        == 422
+    )
+
+    async def timed_out(_data: bytes, _filename: str, _cache_dir: Path) -> bytes:
+        raise office_preview.OfficePreviewTimeout("conversion took too long")
+
+    monkeypatch.setattr(file_preview, "render_office_pdf", timed_out)
+    assert (
+        client.post(
+            "/api/file-preview/pdf",
+            files={"file": ("report.docx", b"office", "application/octet-stream")},
+        ).status_code
+        == 504
+    )
+
+    async def failed(_data: bytes, _filename: str, _cache_dir: Path) -> bytes:
+        raise office_preview.OfficePreviewConversionFailed("soffice exited 1")
+
+    monkeypatch.setattr(file_preview, "render_office_pdf", failed)
+    assert (
+        client.get(
+            "/api/file-preview/pdf", params={"source": "/files/outputs/report.docx"}
+        ).status_code
+        == 502
+    )

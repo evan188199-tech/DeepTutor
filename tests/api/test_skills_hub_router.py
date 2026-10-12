@@ -8,6 +8,7 @@ login). The hub provider is mocked over an ``httpx`` transport.
 from __future__ import annotations
 
 import importlib
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -104,3 +105,45 @@ def test_hub_detail_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
     assert data["version"] == "1.0.0"
     assert "# Body" in data["content"]
     assert data["web_url"] == "https://eduhub.deeptutor.info/skills/socratic-tutor"
+
+
+class _BrokenHubProvider(ClawHubProvider):
+    def catalog(self, *, query: str = "", limit: int = 50, sort: str = "createdAt") -> list[dict]:
+        raise hub_module.HubError("catalog unavailable")
+
+    def detail(self, slug: str) -> dict:
+        raise hub_module.HubError("detail unavailable")
+
+
+def test_hub_catalog_unknown_hub_returns_400() -> None:
+    client = TestClient(_build_app())
+    resp = client.get("/api/skills/hub/catalog", params={"hub": "no-such-hub"})
+    assert resp.status_code == 400
+
+
+def test_hub_non_browsing_provider_returns_400(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(hub_module, "get_hub_provider", lambda name: SimpleNamespace(name="cmdhub"))
+    client = TestClient(_build_app())
+    assert client.get("/api/skills/hub/catalog").status_code == 400
+    assert (
+        client.get("/api/skills/hub/detail", params={"slug": "socratic-tutor"}).status_code == 400
+    )
+
+
+def test_hub_provider_failure_returns_502(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        hub_module,
+        "get_hub_provider",
+        lambda name: _BrokenHubProvider("eduhub", base_url="https://eduhub.example"),
+    )
+    client = TestClient(_build_app())
+    assert client.get("/api/skills/hub/catalog").status_code == 502
+    assert (
+        client.get("/api/skills/hub/detail", params={"slug": "socratic-tutor"}).status_code == 502
+    )
+
+
+def test_hub_detail_missing_slug_returns_502(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(hub_module, "get_hub_provider", lambda name: _mock_provider())
+    client = TestClient(_build_app())
+    assert client.get("/api/skills/hub/detail", params={"slug": "ghost"}).status_code == 502

@@ -395,3 +395,61 @@ def test_testing_a_draft_writes_nothing(client: TestClient, tmp_path: Path) -> N
     assert response.status_code == 200
     assert not (tmp_path / "data" / "system" / "user-mcp" / "u_ada.json").exists()
     _ = manager_module
+
+
+def test_authorize_only_starts_for_the_callers_oauth_servers(
+    client: TestClient, owner: dict[str, str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    assert client.post("/api/space/mcp/servers/ghost/authorize").status_code == 404
+
+    assert client.put("/api/space/mcp/servers/plain", json=_remote()).status_code == 200
+    not_oauth = client.post("/api/space/mcp/servers/plain/authorize")
+    assert not_oauth.status_code == 400
+    assert not_oauth.json()["detail"]["code"] == "mcp.not_oauth"
+
+    oauth_server = {
+        "config": {"url": "https://mcp.example.com/mcp", "auth": "oauth"},
+        "secrets": {},
+    }
+    assert client.put("/api/space/mcp/servers/oauthed", json=oauth_server).status_code == 200
+
+    calls: list[dict[str, Any]] = []
+
+    async def recording(**kwargs: Any) -> str:
+        calls.append(kwargs)
+        return "https://idp.example.com/authorize?state=abc"
+
+    monkeypatch.setattr(space_mcp.oauth, "begin_authorization", recording)
+    started = client.post("/api/space/mcp/servers/oauthed/authorize")
+    assert started.status_code == 200
+    assert started.json() == {"authorize_url": "https://idp.example.com/authorize?state=abc"}
+    assert calls[0]["server_name"] == "oauthed"
+    assert calls[0]["owner_id"] == owner["id"]
+    assert calls[0]["server_url"] == "https://mcp.example.com/mcp"
+
+    async def refusing(**kwargs: Any) -> str:
+        raise RuntimeError("registration failed")
+
+    monkeypatch.setattr(space_mcp.oauth, "begin_authorization", refusing)
+    failed = client.post("/api/space/mcp/servers/oauthed/authorize")
+    assert failed.status_code == 400
+    assert failed.json()["detail"]["code"] == "mcp.oauth_start_failed"
+
+
+def test_oauth_callback_answers_with_a_self_closing_page(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    callback = "/api/space/mcp/oauth/callback"
+
+    provider_error = client.get(callback, params={"error": "access_denied"})
+    assert provider_error.status_code == 400
+    assert provider_error.headers["content-type"].startswith("text/html")
+
+    assert client.get(callback).status_code == 400
+    replayed = client.get(callback, params={"code": "c", "state": "unknown"})
+    assert replayed.status_code == 400
+
+    monkeypatch.setattr(space_mcp.oauth, "complete_authorization", lambda state, code: True)
+    done = client.get(callback, params={"code": "c", "state": "known"})
+    assert done.status_code == 200
+    assert done.headers["content-type"].startswith("text/html")

@@ -580,3 +580,64 @@ def test_host_identity_is_established_before_resolving_scoped_plugin_state(
     monkeypatch.setattr(plugins, "_registry_factory", scoped_registry)
     monkeypatch.setattr(plugins, "PluginWorkerHttpRoute", Worker)
     assert client.post("/api/plugins/org.deeptutor.learning_echo/echo", json={}).status_code == 200
+
+
+def _history_entry(tmp_path: Path, version: str = "0.9.0") -> dict[str, Any]:
+    manifest = parse_manifest({**_raw_manifest(), "version": version})
+    artifact = tmp_path / f"learning_echo-{version}.whl"
+    artifact.write_bytes(b"previous-wheel-bytes")
+    venv_path = tmp_path / f"venv-{version}"
+    venv_path.mkdir()
+    return {
+        "version": version,
+        "manifest": manifest.to_dict(),
+        "installation": {
+            "version": version,
+            "artifact_path": str(artifact),
+            "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+            "venv_path": str(venv_path),
+            "python_path": sys.executable,
+            "installed_at": "2026-09-01T00:00:00+00:00",
+        },
+    }
+
+
+def test_rollback_restores_the_recorded_previous_version(client, tmp_path, monkeypatch):
+    from deeptutor.api.routers import plugins
+
+    registry = _registry(tmp_path)
+    _use_registry(monkeypatch, registry)
+    state = registry.state_snapshot()
+    state["plugins"]["org.deeptutor.learning_echo"]["history"] = [_history_entry(tmp_path)]
+    registry.replace_state(state)
+
+    rolled_back = client.post("/api/plugins/org.deeptutor.learning_echo/rollback")
+
+    assert rolled_back.status_code == 200
+    body = rolled_back.json()
+    assert body["id"] == "org.deeptutor.learning_echo"
+    assert body["version"] == "0.9.0"
+    assert body["approval_required"] is True
+    record = registry.get_plugin("org.deeptutor.learning_echo")
+    assert record.installation.version == "0.9.0"
+    assert record.status == "approval-required"
+
+
+def test_rollback_without_a_recorded_version_returns_409(client, tmp_path, monkeypatch):
+    registry = _registry(tmp_path)
+    _use_registry(monkeypatch, registry)
+
+    assert client.post("/api/plugins/org.unknown/rollback").status_code == 409
+    assert client.post("/api/plugins/org.deeptutor.learning_echo/rollback").status_code == 409
+
+
+def test_rollback_rejects_a_tampered_artifact_with_409(client, tmp_path, monkeypatch):
+    registry = _registry(tmp_path)
+    _use_registry(monkeypatch, registry)
+    entry = _history_entry(tmp_path)
+    entry["installation"]["artifact_sha256"] = "f" * 64
+    state = registry.state_snapshot()
+    state["plugins"]["org.deeptutor.learning_echo"]["history"] = [entry]
+    registry.replace_state(state)
+
+    assert client.post("/api/plugins/org.deeptutor.learning_echo/rollback").status_code == 409
