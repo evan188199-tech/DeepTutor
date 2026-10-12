@@ -10,8 +10,23 @@ import pymupdf
 import pytest
 
 from deeptutor.services.parsing.types import ParsedDocument
-from deeptutor.services.rag.source_visuals import page_image, retrieve_visual, source_state
-from deeptutor.services.rag.visual_assets import VisualAssetStore, collect_visual_assets
+from deeptutor.services.rag import source_visuals as source_visuals_module
+from deeptutor.services.rag.source_visuals import (
+    VisualEvidence,
+    figure_labels,
+    figure_references,
+    page_image,
+    retrieve_visual,
+    source_file,
+    source_state,
+    source_url,
+)
+from deeptutor.services.rag.visual_assets import (
+    MAX_MODEL_IMAGES,
+    VisualAssetStore,
+    _sha256_file,
+    collect_visual_assets,
+)
 from deeptutor.services.rag.visual_coverage import coverage_overview, record_coverage
 
 
@@ -331,3 +346,394 @@ def test_coverage_and_page_http_routes_retain_source_guard_and_hash(textbook, mo
         ).status_code
         == 403
     )
+
+
+@pytest.fixture
+def minibook(tmp_path):
+    kb = tmp_path / "kb"
+    raw = kb / "raw"
+    raw.mkdir(parents=True)
+    source = raw / "scan.pdf"
+    pdf = pymupdf.open()
+    page = pdf.new_page()
+    page.insert_text((50, 50), "Figure 9.9 appears here first")
+    page.insert_text((50, 80), "Figure 9.8 unique opening marker")
+    page = pdf.new_page()
+    page.insert_text((50, 50), "Figure 9.9 appears here second")
+    page.insert_text((50, 80), "Figure 9.7 only closing marker")
+    pdf.save(source, deflate=True)
+    pdf.close()
+    return kb, source
+
+
+def test_figure_label_extraction_normalizes_and_classifies():
+    text = "Fig. 1.2 and Figure 3a vs 图4, Table 5.6 表7-1 and FIG. 1.2 again; p. 12"
+    assert figure_labels(text) == ["1.2", "3a", "4", "5.6", "7-1"]
+    assert figure_references(text) == [
+        "figure:1.2",
+        "figure:3a",
+        "figure:4",
+        "table:5.6",
+        "table:7-1",
+    ]
+    assert figure_labels("no references at all") == []
+    assert figure_references("no references at all") == []
+
+
+def test_retrieve_rejects_missing_or_multiple_exact_references(textbook):
+    kb, source, _, _ = textbook
+    assert retrieve_visual(kb, "kb").error == "reference_required"
+    assert retrieve_visual(kb, "kb", query="nothing specific here").error == "reference_required"
+    assert retrieve_visual(kb, "kb", figure="图1.1 图1.2").error == "multiple_references"
+    compared = retrieve_visual(kb, "kb", query="compare 图1.1 with 图1.2")
+    assert compared.error == "multiple_references"
+
+
+def test_page_reference_resolves_unique_source_or_asks_for_disambiguation(textbook):
+    kb, source, parsed, _ = textbook
+    unique = retrieve_visual(kb, "kb", page=1)
+    assert not unique.error
+    assert unique.images[0][0]["kind"] == "source_page"
+    assert unique.images[0][0]["page_number"] == 1
+    other = source.with_name("other.pdf")
+    other.write_bytes(source.read_bytes())
+    VisualAssetStore(kb).publish(collect_visual_assets(parsed, other, kb))
+    ambiguous = retrieve_visual(kb, "kb", page=1)
+    assert ambiguous.error == "ambiguous_source" and not ambiguous.images
+    resolved = retrieve_visual(kb, "kb", page=1, source_path=source.name)
+    assert not resolved.error
+    assert resolved.images[0][0]["source_path"] == source.name
+
+
+def test_label_page_scan_prefers_exact_unique_pages_or_reports_choices(minibook):
+    kb, source = minibook
+    source.with_name("notes.txt").write_text("plain text only", encoding="utf-8")
+    ambiguous = retrieve_visual(kb, "kb", source_path=source.name, figure="图9.9")
+    assert ambiguous.error == "ambiguous_page"
+    assert "pages [1, 2]" in ambiguous.content
+    opening = retrieve_visual(kb, "kb", source_path=source.name, figure="图9.8")
+    assert not opening.error
+    assert opening.images[0][0]["kind"] == "source_page"
+    assert opening.images[0][0]["page_number"] == 1
+    closing = retrieve_visual(kb, "kb", source_path=source.name, figure="Figure 9.7")
+    assert not closing.error
+    assert closing.images[0][0]["page_number"] == 2
+    non_pdf = retrieve_visual(kb, "kb", source_path="notes.txt", figure="图9.9")
+    assert non_pdf.error == "not_found" and not non_pdf.images
+
+
+def test_missing_asset_bytes_fail_instead_of_claiming_pixels(textbook, monkeypatch):
+    kb, source, _, candidates = textbook
+    monkeypatch.setattr(VisualAssetStore, "read", lambda self, asset_id: None)
+    evidence = retrieve_visual(kb, "kb", asset_id=candidates[50].record["asset_id"])
+    assert evidence.error == "pixels_unavailable" and not evidence.images
+
+
+def test_region_zoom_requires_verified_pdf_page(textbook):
+    kb, source, parsed, _ = textbook
+    blocks = [
+        {"type": "image", "img_path": str(parsed.asset_dir / "figure-000.png"), "page_idx": 0}
+    ]
+    plain = ParsedDocument(
+        markdown="",
+        blocks=blocks,
+        asset_dir=parsed.asset_dir,
+        parser_signature="plain",
+        engine="synthetic",
+    )
+    notes = source.parent / "notes.txt"
+    notes.write_text("text only", encoding="utf-8")
+    candidates = collect_visual_assets(plain, notes, kb)
+    assert candidates
+    VisualAssetStore(kb).publish(candidates)
+    asset_id = candidates[0].record["asset_id"]
+    evidence = retrieve_visual(kb, "kb", asset_id=asset_id)
+    assert not evidence.error and evidence.images
+    zoom = retrieve_visual(kb, "kb", asset_id=asset_id, region=[0.0, 0.0, 0.5, 0.5])
+    assert zoom.error == "region_unavailable" and not zoom.images
+
+
+def test_model_message_caps_images_and_urls_stay_workspace_scoped():
+    assert VisualEvidence(content="text").model_message() is None
+    images = [
+        (
+            {
+                "asset_id": f"asset-{n}",
+                "source_path": "book.pdf",
+                "page_number": n + 1,
+                "mime_type": "image/png",
+            },
+            b"px",
+        )
+        for n in range(MAX_MODEL_IMAGES + 1)
+    ]
+    message = VisualEvidence(content="text", images=images).model_message()
+    assert message["role"] == "user"
+    assert len(message["content"]) == 2 * MAX_MODEL_IMAGES
+    assert "asset-2" not in message["content"][0]["text"]
+    with_asset = source_url(
+        "kb",
+        {"asset_id": "a" * 64, "source_path": "book.pdf", "page_number": 1},
+        image=True,
+    )
+    assert f"/api/knowledge-bases/kb/visual-assets/{'a' * 64}" in with_asset
+    region_page = source_url(
+        "kb",
+        {
+            "source_path": "book.pdf",
+            "page_number": 2,
+            "source_document_id": "abc",
+            "region": [0.0, 0.0, 0.5, 0.5],
+        },
+        image=True,
+    )
+    assert "/source-page?" in region_page
+    assert "region=0.0" in region_page
+    assert "page=2" in region_page
+    assert "source_hash=abc" in region_page
+    located = source_url("kb", {"source_path": "book.pdf", "page_number": 3})
+    assert located.endswith("#page=3")
+    unlocated = source_url("kb", {"source_path": "a b.pdf"})
+    assert "files/a%20b.pdf" in unlocated and unlocated.endswith("#page=1")
+
+
+def test_page_extraction_enforces_encryption_size_decoding_and_identity(minibook, monkeypatch):
+    kb, source = minibook
+    raw = source.parent
+    locked = pymupdf.open()
+    locked.new_page().insert_text((50, 50), "sealed page")
+    locked.save(
+        raw / "locked.pdf",
+        encryption=pymupdf.PDF_ENCRYPT_AES_256,
+        owner_pw="secret",
+        user_pw="secret",
+    )
+    locked.close()
+    with pytest.raises(ValueError, match="encrypted"):
+        page_image(kb, "locked.pdf", 1)
+    huge = raw / "huge.pdf"
+    with open(huge, "wb") as handle:
+        handle.write(b"%PDF-1.4\n")
+        handle.truncate(513 * 1024 * 1024)
+    with pytest.raises(ValueError, match="512 MiB"):
+        page_image(kb, "huge.pdf", 1)
+    huge.unlink()
+    (raw / "broken.pdf").write_bytes(b"definitely not a pdf")
+    with pytest.raises(ValueError, match="decoded"):
+        page_image(kb, "broken.pdf", 1)
+    (raw / "notes.txt").write_text("text only", encoding="utf-8")
+    with pytest.raises(ValueError, match="PDF sources"):
+        page_image(kb, "notes.txt", 1)
+    with pytest.raises(ValueError, match="between 1 and"):
+        page_image(kb, source.name, 0)
+    with pytest.raises(ValueError, match="between 1 and"):
+        page_image(kb, source.name, 3)
+    real_sha = source_visuals_module._sha256_file
+    seen = []
+
+    def shifting(path):
+        seen.append(real_sha(path))
+        return seen[0] if len(seen) == 1 else "0" * 64
+
+    monkeypatch.setattr(source_visuals_module, "_sha256_file", shifting)
+    with pytest.raises(ValueError, match="changed during page inspection"):
+        page_image(kb, source.name, 1)
+    discovery = retrieve_visual(kb, "kb", source_path="locked.pdf", figure="图9.8")
+    assert discovery.error == "page_discovery_limit"
+
+
+def test_page_image_byte_budget_falls_back_to_jpeg_then_fails(minibook, tmp_path, monkeypatch):
+    import random
+
+    kb, source = minibook
+    rng = random.Random(7)
+    noisy = Image.new("RGB", (800, 600), "white")
+    pixels = noisy.load()
+    for y in range(600):
+        for x in range(800):
+            pixels[x, y] = (rng.randrange(256), rng.randrange(256), rng.randrange(256))
+    noisy_path = tmp_path / "noisy.png"
+    noisy.save(noisy_path)
+    budget_pdf = source.parent / "budget.pdf"
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_image(pymupdf.Rect(50, 50, 545, 792), filename=str(noisy_path))
+    doc.save(budget_pdf, deflate=False)
+    doc.close()
+    record, png = page_image(kb, budget_pdf.name, 1)
+    assert record["mime_type"] == "image/png"
+    budget = len(png) - 1
+    monkeypatch.setattr(source_visuals_module, "MAX_IMAGE_BYTES", budget)
+    record, jpeg = page_image(kb, budget_pdf.name, 1)
+    assert record["mime_type"] == "image/jpeg"
+    assert len(jpeg) <= budget
+    monkeypatch.setattr(source_visuals_module, "MAX_IMAGE_BYTES", 512)
+    with pytest.raises(ValueError, match="byte budget"):
+        page_image(kb, budget_pdf.name, 1)
+
+
+@pytest.mark.parametrize(
+    "region",
+    [
+        [0.5, 0.0, 0.5, 1.0],
+        [0.0, 0.5, 1.0, 0.5],
+        [-0.01, 0.0, 0.5, 1.0],
+        [0.0, 0.0, 0.5, 1.01],
+        [0.0, 0.0, float("inf"), 1.0],
+    ],
+)
+def test_region_boundaries_outside_unit_square_fail_closed(textbook, region):
+    kb, source, _, _ = textbook
+    evidence = retrieve_visual(kb, "kb", source_path=source.name, page=1, region=region)
+    assert evidence.error == "page_unavailable" and not evidence.images
+
+
+def test_region_boundaries_inside_unit_square_render(minibook):
+    kb, source = minibook
+    full = page_image(kb, source.name, 1, region=[0.0, 0.0, 1.0, 1.0])
+    assert full[0]["region"] == [0.0, 0.0, 1.0, 1.0]
+    assert 2 < full[0]["render_scale"] <= 4
+    assert "Figure 9.9" in full[0]["text"]
+    assert full[1][:4] == b"\x89PNG"
+    edge = page_image(kb, source.name, 1, region=[0.75, 0.75, 1.0, 1.0])
+    assert edge[0]["region"] == [0.75, 0.75, 1.0, 1.0]
+    assert edge[1][:4] == b"\x89PNG"
+
+
+def test_source_state_and_file_guard_reject_unmanaged_and_escapes(minibook, tmp_path):
+    kb, source = minibook
+    assert source_state(kb, {"source_path": source.name}) == "unmanaged"
+    digest = _sha256_file(source)
+    current = {
+        "managed_source": True,
+        "source_path": source.name,
+        "source_document_id": digest,
+    }
+    assert source_state(kb, current) == "current"
+    moved = source.with_name("moved.pdf")
+    source.rename(moved)
+    assert source_state(kb, current) == "missing"
+    moved.rename(source)
+    for bad in ("", str(source), "../scan.pdf", "missing.pdf"):
+        with pytest.raises(ValueError):
+            source_file(kb, bad)
+    (source.parent / "sub").symlink_to(tmp_path / "elsewhere", target_is_directory=True)
+    with pytest.raises(ValueError, match="symbolic link"):
+        source_file(kb, "sub/x.pdf")
+    assert source_file(kb, source.name) == source
+
+
+def test_record_coverage_skips_outside_and_unsafe_locations(textbook, tmp_path):
+    kb, source, parsed, _ = textbook
+    before = {p.name for p in (kb / "visual_assets" / "coverage").iterdir()}
+    outside = tmp_path / "outside.pdf"
+    outside.write_bytes(source.read_bytes())
+    record_coverage(parsed, outside, kb, [])
+    assert {p.name for p in (kb / "visual_assets" / "coverage").iterdir()} == before
+    escapee = tmp_path / "linked-assets"
+    escapee.mkdir()
+    rogue = tmp_path / "rogue"
+    (rogue / "raw").mkdir(parents=True)
+    (rogue / "visual_assets").symlink_to(escapee, target_is_directory=True)
+    rogue_copy = rogue / "raw" / "copy.pdf"
+    rogue_copy.write_bytes(source.read_bytes())
+    with pytest.raises(OSError, match="unsafe"):
+        record_coverage(parsed, rogue_copy, rogue, [])
+    third = tmp_path / "third"
+    (third / "raw").mkdir(parents=True)
+    third_copy = third / "raw" / "copy.pdf"
+    third_copy.write_bytes(source.read_bytes())
+    (third / "visual_assets").mkdir()
+    (third / "visual_assets" / "coverage").symlink_to(escapee, target_is_directory=True)
+    with pytest.raises(OSError, match="unsafe"):
+        record_coverage(parsed, third_copy, third, [])
+
+
+def test_coverage_records_per_asset_extraction_failures(textbook):
+    kb, source, parsed, candidates = textbook
+    assets = parsed.asset_dir
+    (assets / "linked.png").symlink_to(assets / "figure-000.png")
+    (assets / "unreadable.png").write_bytes((assets / "figure-001.png").read_bytes())
+    (assets / "unreadable.png").chmod(0o000)
+    (assets / "folder.png").mkdir()
+    (assets / "ignored.txt").write_text("skip", encoding="utf-8")
+    try:
+        record_coverage(parsed, source, kb, candidates)
+    finally:
+        (assets / "unreadable.png").chmod(0o644)
+    report = coverage_overview(kb, source_path=source.name)["documents"][0]
+    flagged = {issue["asset"]: issue for issue in report["issues"] if issue.get("asset")}
+    assert flagged["linked.png"]["reason"] == "symbolic_link"
+    assert flagged["unreadable.png"]["reason"] == "asset_read_failed"
+    assert flagged["unreadable.png"]["status"] == "failed"
+    assert flagged["folder.png"]["reason"] == "unsupported_or_invalid_pixels"
+    assert "ignored.txt" not in flagged
+
+
+def test_coverage_flags_unretained_references_and_table_verification(textbook):
+    kb, source, parsed, candidates = textbook
+    blocks = [
+        {"type": "table", "page": "7"},
+        {"type": "image", "img_path": str(parsed.asset_dir / "ghost.png")},
+        "not-a-dict",
+    ]
+    custom = ParsedDocument(
+        markdown="",
+        blocks=blocks,
+        asset_dir=parsed.asset_dir,
+        parser_signature="audit",
+        engine="synthetic",
+    )
+    record_coverage(custom, source, kb, [])
+    report = coverage_overview(kb, source_path=source.name)["documents"][0]
+    reasons = {issue["reason"]: issue for issue in report["issues"]}
+    table_issue = reasons["table_structure_requires_source_verification"]
+    assert table_issue["structured_table_available"] is False
+    assert table_issue["page"] == "7"
+    ghost = reasons["referenced_image_not_retained"]
+    assert ghost["page"] is None and ghost["locator"] == "blocks.json#/1"
+    assert len(report["issues"]) == 2
+    assert report["validated_count"] == 0
+
+
+def test_coverage_overview_falls_back_when_report_missing_stale_or_unsafe(textbook):
+    from hashlib import sha256
+
+    kb, source, *_ = textbook
+    stale = source.read_bytes() + b"rewritten after extraction"
+    source.write_bytes(stale)
+    stale_report = coverage_overview(kb, source_path=source.name)["documents"][0]
+    assert stale_report["issues"][0]["reason"] == "extraction_coverage_unknown"
+    assert stale_report["retained_count"] == 0
+    fresh = source.with_name("fresh.pdf")
+    fresh.write_bytes(source.read_bytes())
+    unknown = coverage_overview(kb, source_path="fresh.pdf")["documents"][0]
+    assert unknown["issues"] == [
+        {"status": "unverified", "reason": "extraction_coverage_unknown"}
+    ]
+    assert unknown["page_fallback"] is True
+    notes = source.parent / "notes.txt"
+    notes.write_text("text only", encoding="utf-8")
+    notes_report = coverage_overview(kb, source_path="notes.txt")["documents"][0]
+    assert notes_report["page_fallback"] is False
+    overview = coverage_overview(kb, offset=10_000, limit=10)
+    assert overview["assets"] == []
+    assert overview["total_assets"] == 101
+    report_file = (
+        kb
+        / "visual_assets"
+        / "coverage"
+        / (sha256(b"fresh.pdf").hexdigest() + ".json")
+    )
+    report_file.symlink_to(report_file.with_suffix(".absent"))
+    unsafe = coverage_overview(kb, source_path="fresh.pdf")["documents"][0]
+    assert unsafe["issues"][0]["reason"] == "extraction_coverage_unknown"
+
+
+def test_coverage_overview_refuses_symlinked_raw_directory(textbook):
+    kb, source, *_ = textbook
+    real = kb / "raw-real"
+    (kb / "raw").rename(real)
+    (kb / "raw").symlink_to(real, target_is_directory=True)
+    with pytest.raises(OSError, match="unsafe"):
+        coverage_overview(kb)
