@@ -1,0 +1,341 @@
+doc,anchor,kind,resolved_path,start,end,symbol,status,baseline_status,current_ref,note
+docs/guides/events-and-progress-chain.md,knowledge.py:974,path,deeptutor/api/routers/knowledge.py,974,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:3718,rel,deeptutor/api/routers/knowledge.py,3718,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:3798,claimed content now at line 3798 (was 3718)
+docs/guides/events-and-progress-chain.md,progress_tracker.py:176,path,deeptutor/knowledge/progress_tracker.py,176,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_tracker.py:114,path,deeptutor/knowledge/progress_tracker.py,114,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_events.py:31,path,deeptutor/knowledge/progress_events.py,31,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:36,rel,deeptutor/knowledge/progress_events.py,36,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_broadcaster.py:47,path,deeptutor/api/utils/progress_broadcaster.py,47,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,task_log_stream.py:66,path,deeptutor/api/utils/task_log_stream.py,66,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:4256,path,deeptutor/api/routers/knowledge.py,4256,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4429,claimed content now at line 4429 (was 4256)
+docs/guides/events-and-progress-chain.md,knowledge.py:3299,path,deeptutor/api/routers/knowledge.py,3299,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:3379,claimed content now at line 3379 (was 3299)
+docs/guides/events-and-progress-chain.md,useKnowledgeProgress.ts:69,path,web/hooks/useKnowledgeProgress.ts,69,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:1016,path,deeptutor/api/routers/knowledge.py,1016,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:3795,rel,deeptutor/api/routers/knowledge.py,3795,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:3875,claimed content now at line 3875 (was 3795)
+docs/guides/events-and-progress-chain.md,:31-55,rel,deeptutor/events/event_bus.py,31,55,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:22-28,rel,deeptutor/events/event_bus.py,22,28,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:69-88,rel,deeptutor/events/event_bus.py,69,88,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:101-106,rel,deeptutor/events/event_bus.py,101,106,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:122-136,rel,deeptutor/events/event_bus.py,122,136,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:153-165,rel,deeptutor/events/event_bus.py,153,165,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:167-185,rel,deeptutor/events/event_bus.py,167,185,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,api/main.py:174-181,path,deeptutor/api/main.py,174,181,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,api/main.py:393-396,path,deeptutor/api/main.py,393,396,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/runtime/orchestrator.py:204-219,path,deeptutor/runtime/orchestrator.py,204,219,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/services/partners/manager.py:784-796,path,deeptutor/services/partners/manager.py,784,796,,drifted,ok-at-baseline,deeptutor/services/partners/manager.py:785-797,claimed content now at line 785 (was 784-796; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:176-281,rel,deeptutor/knowledge/progress_tracker.py,176,281,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:212,rel,deeptutor/knowledge/progress_tracker.py,212,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:238-269,rel,deeptutor/knowledge/progress_tracker.py,238,269,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:114-174,rel,deeptutor/knowledge/progress_tracker.py,114,174,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:140,rel,deeptutor/knowledge/progress_tracker.py,140,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:170,rel,deeptutor/knowledge/progress_tracker.py,170,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:273-279,rel,deeptutor/knowledge/progress_tracker.py,273,279,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:92-112,rel,deeptutor/knowledge/progress_tracker.py,92,112,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:108-112,rel,deeptutor/knowledge/progress_tracker.py,108,112,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:24-37,rel,deeptutor/knowledge/progress_tracker.py,24,37,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:50-68,rel,deeptutor/knowledge/progress_tracker.py,50,68,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:283-322,rel,deeptutor/knowledge/progress_tracker.py,283,322,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:21-28,rel,deeptutor/knowledge/progress_events.py,21,28,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,api/main.py:131-134,path,deeptutor/api/main.py,131,134,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,api/main.py:348,path,deeptutor/api/main.py,348,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/api/utils/progress_broadcaster.py:14-73,path,deeptutor/api/utils/progress_broadcaster.py,14,73,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:56-69,rel,deeptutor/api/utils/progress_broadcaster.py,56,69,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:4268-4281,path,deeptutor/api/routers/knowledge.py,4268,4281,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4441-4454,claimed content now at line 4441 (was 4268-4281; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,knowledge.py:4256-4528,path,deeptutor/api/routers/knowledge.py,4256,4528,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4429-4701,claimed content now at line 4429 (was 4256-4528; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4298-4302,rel,deeptutor/api/routers/knowledge.py,4298,4302,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4471-4475,claimed content now at line 4471 (was 4298-4302; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4304-4347,rel,deeptutor/api/routers/knowledge.py,4304,4347,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4477-4520,claimed content now at line 4477 (was 4304-4347; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4349-4376,rel,deeptutor/api/routers/knowledge.py,4349,4376,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4522-4549,claimed content now at line 4522 (was 4349-4376; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4378-4390,rel,deeptutor/api/routers/knowledge.py,4378,4390,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4551-4563,claimed content now at line 4551 (was 4378-4390; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4392-4417,rel,deeptutor/api/routers/knowledge.py,4392,4417,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4566-4591,claimed content now at line 4566 (was 4392-4417; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4419-4442,rel,deeptutor/api/routers/knowledge.py,4419,4442,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4593-4616,claimed content now at line 4593 (was 4419-4442; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4460-4465,rel,deeptutor/api/routers/knowledge.py,4460,4465,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4636-4641,claimed content now at line 4636 (was 4460-4465; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4467-4469,rel,deeptutor/api/routers/knowledge.py,4467,4469,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4643-4645,claimed content now at line 4643 (was 4467-4469; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4470-4504,rel,deeptutor/api/routers/knowledge.py,4470,4504,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4646-4680,claimed content now at line 4646 (was 4470-4504; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4387,rel,deeptutor/api/routers/knowledge.py,4387,0,,dead,ok-at-baseline,,claimed content no longer present in deeptutor/api/routers/knowledge.py
+docs/guides/events-and-progress-chain.md,:4433,rel,deeptutor/api/routers/knowledge.py,4433,0,,dead,ok-at-baseline,,claimed content no longer present in deeptutor/api/routers/knowledge.py
+docs/guides/events-and-progress-chain.md,:4509-4510,rel,deeptutor/api/routers/knowledge.py,4509,4510,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4685-4686,claimed content now at line 4685 (was 4509-4510; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4514-4517,rel,deeptutor/api/routers/knowledge.py,4514,4517,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4690-4693,claimed content now at line 4690 (was 4514-4517; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:4520-4528,rel,deeptutor/api/routers/knowledge.py,4520,4528,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4698-4706,claimed content now at line 4698 (was 4520-4528; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:27-28,rel,deeptutor/api/utils/task_log_stream.py,27,28,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:174-186,rel,deeptutor/api/utils/task_log_stream.py,174,186,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:30-32,rel,deeptutor/api/utils/task_log_stream.py,30,32,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:57-63,rel,deeptutor/api/utils/task_log_stream.py,57,63,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:128-135,rel,deeptutor/api/utils/task_log_stream.py,128,135,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:251-273,rel,deeptutor/api/utils/task_log_stream.py,251,273,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:262-267,rel,deeptutor/api/utils/task_log_stream.py,262,267,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:667,path,deeptutor/api/routers/knowledge.py,667,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,task_log_stream.py:342-358,path,deeptutor/api/utils/task_log_stream.py,342,358,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:317-331,rel,deeptutor/api/utils/task_log_stream.py,317,331,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:1059,path,deeptutor/api/routers/knowledge.py,1059,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:1066,claimed content now at line 1066 (was 1059)
+docs/guides/events-and-progress-chain.md,:1110,rel,deeptutor/api/routers/knowledge.py,1110,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:1117,claimed content now at line 1117 (was 1110)
+docs/guides/events-and-progress-chain.md,:3961,rel,deeptutor/api/routers/knowledge.py,3961,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4042,claimed content now at line 4042 (was 3961)
+docs/guides/events-and-progress-chain.md,:3990,rel,deeptutor/api/routers/knowledge.py,3990,0,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4079,claimed content now at line 4079 (was 3990)
+docs/guides/events-and-progress-chain.md,knowledge.py:3299-3308,path,deeptutor/api/routers/knowledge.py,3299,3308,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:3379-3388,claimed content now at line 3379 (was 3299-3308; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,:148-262,rel,web/hooks/useKnowledgeProgress.ts,148,262,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:169-177,rel,web/hooks/useKnowledgeProgress.ts,169,177,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:196-201,rel,web/hooks/useKnowledgeProgress.ts,196,201,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:246-259,rel,web/hooks/useKnowledgeProgress.ts,246,259,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:205-207,rel,web/hooks/useKnowledgeProgress.ts,205,207,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:464-483,rel,web/hooks/useKnowledgeProgress.ts,464,483,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:273-445,rel,web/hooks/useKnowledgeProgress.ts,273,445,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:296-301,rel,web/hooks/useKnowledgeProgress.ts,296,301,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:306-329,rel,web/hooks/useKnowledgeProgress.ts,306,329,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:331-362,rel,web/hooks/useKnowledgeProgress.ts,331,362,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:364-436,rel,web/hooks/useKnowledgeProgress.ts,364,436,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:438-442,rel,web/hooks/useKnowledgeProgress.ts,438,442,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,web/lib/knowledge-helpers.ts:77,path,web/lib/knowledge-helpers.ts,77,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:509,rel,web/lib/knowledge-helpers.ts,509,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,useKnowledgeProgress.ts:25-29,path,web/hooks/useKnowledgeProgress.ts,25,29,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:235-239,rel,web/hooks/useKnowledgeProgress.ts,235,239,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:91-93,rel,web/hooks/useKnowledgeProgress.ts,91,93,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/runtime/stream_bus.py:31-103,path,deeptutor/runtime/stream_bus.py,31,103,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:44-46,rel,deeptutor/runtime/stream_bus.py,44,46,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,orchestrator.py:185-219,path,deeptutor/runtime/orchestrator.py,185,219,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:140-175,rel,deeptutor/api/routers/unified_ws.py,140,175,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:244-262,rel,deeptutor/api/routers/unified_ws.py,244,262,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/services/session/turns/lifecycle.py:354,path,deeptutor/services/session/turns/lifecycle.py,354,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:119,rel,web/features/chat/transport/TurnRuntimeClient.ts,119,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:327-333,rel,web/features/chat/transport/TurnRuntimeClient.ts,327,333,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:272,rel,web/features/chat/transport/TurnRuntimeClient.ts,272,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:282,rel,web/features/chat/transport/TurnRuntimeClient.ts,282,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/book/event_hub.py:45-71,path,deeptutor/book/event_hub.py,45,71,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:8-28,rel,deeptutor/book/event_hub.py,8,28,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/api/routers/book.py:1519,path,deeptutor/api/routers/book.py,1519,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:1495-1505,rel,deeptutor/api/routers/book.py,1495,1505,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/api/routers/partners.py:1882-1886,path,deeptutor/api/routers/partners.py,1882,1886,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/services/partners/manager.py:781-784,path,deeptutor/services/partners/manager.py,781,784,,drifted,ok-at-baseline,deeptutor/services/partners/manager.py:782-785,claimed content now at line 782 (was 781-784; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,deeptutor/learning/event_hub.py:37-40,path,deeptutor/learning/event_hub.py,37,40,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:1-8,rel,deeptutor/learning/event_hub.py,1,8,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,deeptutor/api/routers/mastery_path.py:771,path,deeptutor/api/routers/mastery_path.py,771,0,,drifted,ok-at-baseline,deeptutor/api/routers/mastery_path.py:774,claimed content now at line 774 (was 771)
+docs/guides/events-and-progress-chain.md,progress_broadcaster.py:50-51,path,deeptutor/api/utils/progress_broadcaster.py,50,51,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:4282-4283,path,deeptutor/api/routers/knowledge.py,4282,4283,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4455-4456,claimed content now at line 4455 (was 4282-4283; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,knowledge.py:4293-4376,path,deeptutor/api/routers/knowledge.py,4293,4376,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4466-4549,claimed content now at line 4466 (was 4293-4376; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,task_log_stream.py:121-138,path,deeptutor/api/utils/task_log_stream.py,121,138,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,:190-202,rel,deeptutor/api/utils/task_log_stream.py,190,202,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,knowledge.py:4453-4465,path,deeptutor/api/routers/knowledge.py,4453,4465,,drifted,ok-at-baseline,deeptutor/api/routers/knowledge.py:4629-4641,claimed content now at line 4629 (was 4453-4465; suggest re-checking span length)
+docs/guides/events-and-progress-chain.md,lifecycle.py:358-363,path,deeptutor/services/session/turns/lifecycle.py,358,363,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_broadcaster.py:56-66,path,deeptutor/api/utils/progress_broadcaster.py,56,66,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,task_log_stream.py:27-32,path,deeptutor/api/utils/task_log_stream.py,27,32,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,task_id_manager.py:85-120,path,deeptutor/api/utils/task_id_manager.py,85,120,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_tracker.py:103-106,path,deeptutor/knowledge/progress_tracker.py,103,106,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,progress_broadcaster.py:59-62,path,deeptutor/api/utils/progress_broadcaster.py,59,62,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/events-and-progress-chain.md,api/main.py:104-181,path,deeptutor/api/main.py,104,181,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/core/tool_protocol.py:220,path,deeptutor/core/tool_protocol.py,220,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/builtin_specs.py:20,path,deeptutor/tools/builtin_specs.py,20,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/runtime/registry/tool_registry.py:26,path,deeptutor/runtime/registry/tool_registry.py,26,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:28,claimed content now at line 28 (was 26)
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:170,path,deeptutor/agents/_shared/tool_composition.py,170,0,,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:174,claimed content now at line 174 (was 170)
+docs/guides/tools-surface.md,ToolParameter:17,symbol,deeptutor/core/tool_protocol.py,17,0,ToolParameter,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,sensitive:43,symbol,deeptutor/core/tool_protocol.py,43,0,sensitive,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,items:36,symbol,deeptutor/core/tool_protocol.py,36,0,items,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ToolDefinition:56,symbol,deeptutor/core/tool_protocol.py,56,0,ToolDefinition,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,raw_parameters:69,symbol,deeptutor/core/tool_protocol.py,69,0,raw_parameters,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ToolResult:130,symbol,deeptutor/core/tool_protocol.py,130,0,ToolResult,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,pause_for_user:164,symbol,deeptutor/core/tool_protocol.py,164,0,pause_for_user,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,model_message:167,symbol,deeptutor/core/tool_protocol.py,167,0,model_message,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,BaseTool:220,symbol,deeptutor/core/tool_protocol.py,220,0,BaseTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deferred:246,symbol,deeptutor/core/tool_protocol.py,246,0,deferred,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ToolLookup:184,symbol,deeptutor/core/tool_protocol.py,184,0,ToolLookup,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:24,rel,deeptutor/tools/builtin_specs.py,24,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:32,rel,deeptutor/tools/builtin_specs.py,32,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,BUILTIN_TOOL_SPECS:46,symbol,deeptutor/tools/builtin_specs.py,46,0,BUILTIN_TOOL_SPECS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,BUILTIN_TOOL_NAMES:207,symbol,deeptutor/tools/builtin_specs.py,207,0,BUILTIN_TOOL_NAMES,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:223,claimed content now at line 223 (was 207)
+docs/guides/tools-surface.md,TOOL_ALIASES:217,symbol,deeptutor/tools/builtin_specs.py,217,0,TOOL_ALIASES,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:233,claimed content now at line 233 (was 217)
+docs/guides/tools-surface.md,LazyBuiltinToolTypes:228,symbol,deeptutor/tools/builtin_specs.py,228,0,LazyBuiltinToolTypes,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:244,claimed content now at line 244 (was 228)
+docs/guides/tools-surface.md,:55,rel,deeptutor/runtime/registry/tool_registry.py,55,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:57,claimed content now at line 57 (was 55)
+docs/guides/tools-surface.md,:96,rel,deeptutor/runtime/registry/tool_registry.py,96,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:119,claimed content now at line 119 (was 96)
+docs/guides/tools-surface.md,:151,rel,deeptutor/runtime/registry/tool_registry.py,151,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:174,claimed content now at line 174 (was 151)
+docs/guides/tools-surface.md,:59,rel,deeptutor/runtime/registry/tool_registry.py,59,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:61,claimed content now at line 61 (was 59)
+docs/guides/tools-surface.md,:75,rel,deeptutor/runtime/registry/tool_registry.py,75,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:98,claimed content now at line 98 (was 75)
+docs/guides/tools-surface.md,:170,rel,deeptutor/runtime/registry/tool_registry.py,170,0,,drifted,ok-at-baseline,deeptutor/runtime/registry/tool_registry.py:194,claimed content now at line 194 (was 170)
+docs/guides/tools-surface.md,deeptutor/runtime/registry/scoped_registry.py:40,path,deeptutor/runtime/registry/scoped_registry.py,40,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:262,path,deeptutor/agents/_shared/tool_composition.py,262,0,,dead,ok-at-baseline,,claimed content no longer present in deeptutor/agents/_shared/tool_composition.py
+docs/guides/tools-surface.md,_finalize:268,symbol,deeptutor/agents/_shared/tool_composition.py,268,0,_finalize,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:280,claimed content now at line 280 (was 268)
+docs/guides/tools-surface.md,AUTO_MOUNTED_TOOLS:40,symbol,deeptutor/agents/_shared/tool_composition.py,40,0,AUTO_MOUNTED_TOOLS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:47,path,deeptutor/agents/_shared/tool_composition.py,47,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,user_has_memory:287,symbol,deeptutor/agents/_shared/tool_composition.py,287,0,user_has_memory,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:299,claimed content now at line 299 (was 287)
+docs/guides/tools-surface.md,user_has_notebooks:307,symbol,deeptutor/agents/_shared/tool_composition.py,307,0,user_has_notebooks,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:319,claimed content now at line 319 (was 307)
+docs/guides/tools-surface.md,user_has_mastery_topics:324,symbol,deeptutor/agents/_shared/tool_composition.py,324,0,user_has_mastery_topics,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:336,claimed content now at line 336 (was 324)
+docs/guides/tools-surface.md,user_has_question_bank:340,symbol,deeptutor/agents/_shared/tool_composition.py,340,0,user_has_question_bank,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:352,claimed content now at line 352 (was 340)
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:726,path,deeptutor/agents/loop/pipeline.py,726,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ToolMountFlags:142,symbol,deeptutor/agents/_shared/tool_composition.py,142,0,ToolMountFlags,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:145,claimed content now at line 145 (was 142)
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:739-742,path,deeptutor/agents/loop/pipeline.py,739,742,,drifted,ok-at-baseline,deeptutor/agents/loop/pipeline.py:744-747,claimed content now at line 744 (was 739-742; suggest re-checking span length)
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_runtime.py:20,path,deeptutor/agents/_shared/tool_runtime.py,20,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:778-781,path,deeptutor/agents/loop/pipeline.py,778,781,,drifted,ok-at-baseline,deeptutor/agents/loop/pipeline.py:783-786,claimed content now at line 783 (was 778-781; suggest re-checking span length)
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:1323,path,deeptutor/agents/loop/pipeline.py,1323,0,,drifted,ok-at-baseline,deeptutor/agents/loop/pipeline.py:1328,claimed content now at line 1328 (was 1323)
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:1366-1395,path,deeptutor/agents/loop/pipeline.py,1366,1395,,drifted,ok-at-baseline,deeptutor/agents/loop/pipeline.py:1374-1403,claimed content now at line 1374 (was 1366-1395; suggest re-checking span length)
+docs/guides/tools-surface.md,deeptutor/tools/prompting/__init__.py:52,path,deeptutor/tools/prompting/__init__.py,52,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,compose_prompt_text:203,symbol,deeptutor/tools/prompting/__init__.py,203,0,compose_prompt_text,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/core/tool_protocol.py:246,path,deeptutor/core/tool_protocol.py,246,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/builtin/__init__.py:1731,path,deeptutor/tools/builtin/__init__.py,1731,0,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1808,claimed content now at line 1808 (was 1731)
+docs/guides/tools-surface.md,deeptutor/runtime/registry/deferred_tools.py:116,path,deeptutor/runtime/registry/deferred_tools.py,116,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_LAZY_EXPORTS:7,symbol,deeptutor/tools/__init__.py,7,0,_LAZY_EXPORTS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_PromptHintsMixin:26,symbol,deeptutor/tools/builtin/__init__.py,26,0,_PromptHintsMixin,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,BrainstormTool:33,symbol,deeptutor/tools/builtin/__init__.py,33,0,BrainstormTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/brainstorm.py:69,path,deeptutor/tools/brainstorm.py,69,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,RAGTool:105,symbol,deeptutor/tools/builtin/__init__.py,105,0,RAGTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_rag_sources:68,symbol,deeptutor/tools/builtin/__init__.py,68,0,_rag_sources,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_rag_visual_model_message:182,symbol,deeptutor/tools/builtin/__init__.py,182,0,_rag_visual_model_message,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:256,claimed content now at line 256 (was 182)
+docs/guides/tools-surface.md,KbFilesTool:227,symbol,deeptutor/tools/builtin/__init__.py,227,0,KbFilesTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:304,claimed content now at line 304 (was 227)
+docs/guides/tools-surface.md,_kb_files_limit:312,symbol,deeptutor/tools/builtin/__init__.py,312,0,_kb_files_limit,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:389,claimed content now at line 389 (was 312)
+docs/guides/tools-surface.md,KnowledgeFrontierTool:323,symbol,deeptutor/tools/builtin/__init__.py,323,0,KnowledgeFrontierTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:400,claimed content now at line 400 (was 323)
+docs/guides/tools-surface.md,WebSearchTool:406,symbol,deeptutor/tools/builtin/__init__.py,406,0,WebSearchTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:483,claimed content now at line 483 (was 406)
+docs/guides/tools-surface.md,deeptutor/tools/builtin/__init__.py:422,path,deeptutor/tools/builtin/__init__.py,422,0,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:499,claimed content now at line 499 (was 422)
+docs/guides/tools-surface.md,ReasonTool:446,symbol,deeptutor/tools/builtin/__init__.py,446,0,ReasonTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:523,claimed content now at line 523 (was 446)
+docs/guides/tools-surface.md,deeptutor/tools/reason.py:42,path,deeptutor/tools/reason.py,42,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/reason.py:81,path,deeptutor/tools/reason.py,81,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,PaperSearchToolWrapper:484,symbol,deeptutor/tools/builtin/__init__.py,484,0,PaperSearchToolWrapper,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:561,claimed content now at line 561 (was 484)
+docs/guides/tools-surface.md,:526-531,rel,deeptutor/tools/builtin/__init__.py,526,531,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:603-608,claimed content now at line 603 (was 526-531; suggest re-checking span length)
+docs/guides/tools-surface.md,ZoteroSearchToolWrapper:564,symbol,deeptutor/tools/builtin/__init__.py,564,0,ZoteroSearchToolWrapper,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:641,claimed content now at line 641 (was 564)
+docs/guides/tools-surface.md,:567-573,rel,deeptutor/tools/builtin/__init__.py,567,573,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:644-650,claimed content now at line 644 (was 567-573; suggest re-checking span length)
+docs/guides/tools-surface.md,ReadSourceTool:821,symbol,deeptutor/tools/builtin/__init__.py,821,0,ReadSourceTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:898,claimed content now at line 898 (was 821)
+docs/guides/tools-surface.md,:872-881,rel,deeptutor/tools/builtin/__init__.py,872,881,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:949-958,claimed content now at line 949 (was 872-881; suggest re-checking span length)
+docs/guides/tools-surface.md,ReadMemoryTool:888,symbol,deeptutor/tools/builtin/__init__.py,888,0,ReadMemoryTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:965,claimed content now at line 965 (was 888)
+docs/guides/tools-surface.md,WriteMemoryTool:918,symbol,deeptutor/tools/builtin/__init__.py,918,0,WriteMemoryTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:995,claimed content now at line 995 (was 918)
+docs/guides/tools-surface.md,:973-980,rel,deeptutor/tools/builtin/__init__.py,973,980,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1050-1057,claimed content now at line 1050 (was 973-980; suggest re-checking span length)
+docs/guides/tools-surface.md,ReadSkillTool:1637,symbol,deeptutor/tools/builtin/__init__.py,1637,0,ReadSkillTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1714,claimed content now at line 1714 (was 1637)
+docs/guides/tools-surface.md,_SKILL_FILE_LIST_LIMIT:309,symbol,deeptutor/tools/builtin/__init__.py,309,0,_SKILL_FILE_LIST_LIMIT,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:386,claimed content now at line 386 (was 309)
+docs/guides/tools-surface.md,LoadToolsTool:1731,symbol,deeptutor/tools/builtin/__init__.py,1731,0,LoadToolsTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1808,claimed content now at line 1808 (was 1731)
+docs/guides/tools-surface.md,:1784,rel,deeptutor/tools/builtin/__init__.py,1784,0,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1861,claimed content now at line 1861 (was 1784)
+docs/guides/tools-surface.md,WebFetchTool:1023,symbol,deeptutor/tools/builtin/__init__.py,1023,0,WebFetchTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1100,claimed content now at line 1100 (was 1023)
+docs/guides/tools-surface.md,ListNotebookTool:1087,symbol,deeptutor/tools/builtin/__init__.py,1087,0,ListNotebookTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1164,claimed content now at line 1164 (was 1087)
+docs/guides/tools-surface.md,WriteNoteTool:1304,symbol,deeptutor/tools/builtin/__init__.py,1304,0,WriteNoteTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1381,claimed content now at line 1381 (was 1304)
+docs/guides/tools-surface.md,QuestionBankTool:1137,symbol,deeptutor/tools/builtin/__init__.py,1137,0,QuestionBankTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1214,claimed content now at line 1214 (was 1137)
+docs/guides/tools-surface.md,GithubTool:1430,symbol,deeptutor/tools/builtin/__init__.py,1430,0,GithubTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1507,claimed content now at line 1507 (was 1430)
+docs/guides/tools-surface.md,AskUserTool:1493,symbol,deeptutor/tools/builtin/__init__.py,1493,0,AskUserTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1570,claimed content now at line 1570 (was 1493)
+docs/guides/tools-surface.md,:1620-1621,rel,deeptutor/tools/builtin/__init__.py,1620,1621,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1697-1698,claimed content now at line 1697 (was 1620-1621; suggest re-checking span length)
+docs/guides/tools-surface.md,CronTool:1789,symbol,deeptutor/tools/builtin/__init__.py,1789,0,CronTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1866,claimed content now at line 1866 (was 1789)
+docs/guides/tools-surface.md,deeptutor/tools/cron_tool.py:59-68,path,deeptutor/tools/cron_tool.py,59,68,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/cron_tool.py:77-82,path,deeptutor/tools/cron_tool.py,77,82,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:107-111,rel,deeptutor/tools/cron_tool.py,107,111,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,GeoGebraAnalysisTool:687,symbol,deeptutor/tools/builtin/__init__.py,687,0,GeoGebraAnalysisTool,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:764,claimed content now at line 764 (was 687)
+docs/guides/tools-surface.md,:739-740,rel,deeptutor/tools/builtin/__init__.py,739,740,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:816-817,claimed content now at line 816 (was 739-740; suggest re-checking span length)
+docs/guides/tools-surface.md,_VISION_ANALYSIS_TIMEOUT_S:693,symbol,deeptutor/tools/builtin/__init__.py,693,0,_VISION_ANALYSIS_TIMEOUT_S,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:770,claimed content now at line 770 (was 693)
+docs/guides/tools-surface.md,:726-727,rel,deeptutor/tools/builtin/__init__.py,726,727,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:803-804,claimed content now at line 803 (was 726-727; suggest re-checking span length)
+docs/guides/tools-surface.md,build_ask_user_payload:102,symbol,deeptutor/tools/ask_user.py,102,0,build_ask_user_payload,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_drop_half_written_options:217,symbol,deeptutor/tools/ask_user.py,217,0,_drop_half_written_options,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,build_ask_user_preview:160,symbol,deeptutor/tools/ask_user.py,160,0,build_ask_user_preview,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,brainstorm:45,symbol,deeptutor/tools/brainstorm.py,45,0,brainstorm,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,reason:42,symbol,deeptutor/tools/reason.py,42,0,reason,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,rag_search:15,symbol,deeptutor/tools/rag_tool.py,15,0,rag_search,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,initialize_rag:54,symbol,deeptutor/tools/rag_tool.py,54,0,initialize_rag,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,delete_rag:66,symbol,deeptutor/tools/rag_tool.py,66,0,delete_rag,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:26-42,rel,deeptutor/tools/web_search.py,26,42,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/services/search/__init__.py:131,path,deeptutor/services/search/__init__.py,131,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,fetch_url_as_markdown:73,symbol,deeptutor/tools/web_fetch.py,73,0,fetch_url_as_markdown,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,FetchOutcome:57,symbol,deeptutor/tools/web_fetch.py,57,0,FetchOutcome,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_is_disallowed_host:177,symbol,deeptutor/tools/web_fetch.py,177,0,_is_disallowed_host,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,MAX_RESPONSE_BYTES:39,symbol,deeptutor/tools/web_fetch.py,39,0,MAX_RESPONSE_BYTES,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_extract_readable:242,symbol,deeptutor/tools/web_fetch.py,242,0,_extract_readable,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ExecTool:36,symbol,deeptutor/tools/exec_tool.py,36,0,ExecTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_execute_shell:192,symbol,deeptutor/tools/exec_tool.py,192,0,_execute_shell,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_DENY_PATTERNS:19,symbol,deeptutor/tools/exec_tool.py,19,0,_DENY_PATTERNS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_execute_source:223,symbol,deeptutor/tools/exec_tool.py,223,0,_execute_source,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_command_for_platform:106,symbol,deeptutor/tools/exec_tool.py,106,0,_command_for_platform,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_render_result:301,symbol,deeptutor/tools/exec_tool.py,301,0,_render_result,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,run_cron_action:76,symbol,deeptutor/tools/cron_tool.py,76,0,run_cron_action,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:86-89,rel,deeptutor/tools/cron_tool.py,86,89,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_build_schedule:59,symbol,deeptutor/tools/cron_tool.py,59,0,_build_schedule,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,run_github_query:66,symbol,deeptutor/tools/github_query.py,66,0,run_github_query,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,GithubOutcome:49,symbol,deeptutor/tools/github_query.py,49,0,GithubOutcome,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_build_argv:152,symbol,deeptutor/tools/github_query.py,152,0,_build_argv,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:192-196,rel,deeptutor/tools/github_query.py,192,196,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,discover_frontier:26,symbol,deeptutor/tools/knowledge_frontier.py,26,0,discover_frontier,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,list_notebooks_or_records:49,symbol,deeptutor/tools/list_notebook.py,49,0,list_notebooks_or_records,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:31-32,rel,deeptutor/tools/list_notebook.py,31,32,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:121-126,rel,deeptutor/tools/list_notebook.py,121,126,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,write_note:61,symbol,deeptutor/tools/write_note.py,61,0,write_note,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:37-39,rel,deeptutor/tools/write_note.py,37,39,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:43-44,rel,deeptutor/tools/write_note.py,43,44,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,run_question_bank:470,symbol,deeptutor/tools/question_bank.py,470,0,run_question_bank,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ACTIONS:45,symbol,deeptutor/tools/question_bank.py,45,0,ACTIONS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_coerce_ids:77,symbol,deeptutor/tools/question_bank.py,77,0,_coerce_ids,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:52-53,rel,deeptutor/tools/question_bank.py,52,53,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_partner_bank_paths:137,symbol,deeptutor/tools/question_bank.py,137,0,_partner_bank_paths,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,MASTERY_NAV_TOOL_NAMES:56,symbol,deeptutor/tools/mastery_nav.py,56,0,MASTERY_NAV_TOOL_NAMES,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,HANDOFF_META_KEY:54,symbol,deeptutor/tools/mastery_nav.py,54,0,HANDOFF_META_KEY,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_topic_or_error:80,symbol,deeptutor/tools/mastery_nav.py,80,0,_topic_or_error,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_handoff_lands_where_we_already_are:94,symbol,deeptutor/tools/mastery_nav.py,94,0,_handoff_lands_where_we_already_are,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ImagegenTool:135,symbol,deeptutor/tools/media_gen_tool.py,135,0,ImagegenTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,VideogenTool:217,symbol,deeptutor/tools/media_gen_tool.py,217,0,VideogenTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,PARTNER_BUILTIN_TOOL_NAMES:26,symbol,deeptutor/tools/partner_memory.py,26,0,PARTNER_BUILTIN_TOOL_NAMES,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:32-33,rel,deeptutor/tools/partner_memory.py,32,33,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_failure:21,symbol,deeptutor/tools/workspace.py,21,0,_failure,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:269-327,rel,deeptutor/tools/workspace.py,269,327,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:73,path,deeptutor/agents/_shared/tool_composition.py,73,0,,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:76,claimed content now at line 76 (was 73)
+docs/guides/tools-surface.md,ArxivSearchTool:24,symbol,deeptutor/tools/paper_search_tool.py,24,0,ArxivSearchTool,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:72,rel,deeptutor/tools/paper_search_tool.py,72,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:116,rel,deeptutor/tools/paper_search_tool.py,116,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:94-107,rel,deeptutor/tools/paper_search_tool.py,94,107,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ZoteroSearchClient:33,symbol,deeptutor/tools/zotero_search.py,33,0,ZoteroSearchClient,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ZoteroSearchError:24,symbol,deeptutor/tools/zotero_search.py,24,0,ZoteroSearchError,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:81-97,rel,deeptutor/tools/zotero_search.py,81,97,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:19,rel,deeptutor/tools/zotero_search.py,19,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_resolve_workspace_path:13,symbol,deeptutor/tools/file_tools.py,13,0,_resolve_workspace_path,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_not_found_message:266,symbol,deeptutor/tools/file_tools.py,266,0,_not_found_message,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,mastery_tool.py:9,path,deeptutor/tools/mastery_tool.py,9,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,solve_tool.py:8,path,deeptutor/tools/solve_tool.py,8,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,TexDownloader:44,symbol,deeptutor/tools/tex_downloader.py,44,0,TexDownloader,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:28,rel,deeptutor/tools/tex_downloader.py,28,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:83,rel,deeptutor/tools/tex_downloader.py,83,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,TexChunker:21,symbol,deeptutor/tools/tex_chunker.py,21,0,TexChunker,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:37-45,rel,deeptutor/tools/tex_chunker.py,37,45,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:62-65,rel,deeptutor/tools/tex_chunker.py,62,65,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/question/question_extractor.py:321,path,deeptutor/tools/question/question_extractor.py,321,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/question/exam_mimic.py:18,path,deeptutor/tools/question/exam_mimic.py,18,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:29-32,rel,deeptutor/tools/question/exam_mimic.py,29,32,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/question/__init__.py:10-16,path,deeptutor/tools/question/__init__.py,10,16,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ToolPromptComposer:89,symbol,deeptutor/tools/prompting/__init__.py,89,0,ToolPromptComposer,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/builtin_specs.py:46-205,path,deeptutor/tools/builtin_specs.py,46,205,,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:46-205,claimed content now at line 46 (was 46-205; suggest re-checking span length)
+docs/guides/tools-surface.md,deeptutor/tools/builtin/__init__.py:1907,path,deeptutor/tools/builtin/__init__.py,1907,0,,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1984,claimed content now at line 1984 (was 1907)
+docs/guides/tools-surface.md,admin_enabled_optional_tools:98,symbol,deeptutor/agents/_shared/tool_composition.py,98,0,admin_enabled_optional_tools,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:101,claimed content now at line 101 (was 98)
+docs/guides/tools-surface.md,CONFIGURABLE_BUILTIN_TOOL_NAMES:1932,symbol,deeptutor/tools/builtin/__init__.py,1932,0,CONFIGURABLE_BUILTIN_TOOL_NAMES,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:2009,claimed content now at line 2009 (was 1932)
+docs/guides/tools-surface.md,PARTNER_BUILTIN_TOOL_NAMES:208,symbol,deeptutor/tools/builtin_specs.py,208,0,PARTNER_BUILTIN_TOOL_NAMES,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:224,claimed content now at line 224 (was 208)
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:219-228,path,deeptutor/agents/_shared/tool_composition.py,219,228,,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:223-232,claimed content now at line 223 (was 219-228; suggest re-checking span length)
+docs/guides/tools-surface.md,compose_enabled_tools:247,symbol,deeptutor/agents/_shared/tool_composition.py,247,0,compose_enabled_tools,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:251,claimed content now at line 251 (was 247)
+docs/guides/tools-surface.md,COMING_SOON_TOOL_TYPES:1896,symbol,deeptutor/tools/builtin/__init__.py,1896,0,COMING_SOON_TOOL_TYPES,drifted,ok-at-baseline,deeptutor/tools/builtin/__init__.py:1973,claimed content now at line 1973 (was 1896)
+docs/guides/tools-surface.md,deeptutor/tools/vision/__init__.py:1-41,path,deeptutor/tools/vision/__init__.py,1,41,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,is_valid_image_url:33,symbol,deeptutor/tools/vision/image_utils.py,33,0,is_valid_image_url,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,is_base64_image:49,symbol,deeptutor/tools/vision/image_utils.py,49,0,is_base64_image,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:21-24,rel,deeptutor/tools/vision/image_utils.py,21,24,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ImageError:27,symbol,deeptutor/tools/vision/image_utils.py,27,0,ImageError,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,GGBCoordSystem:29,symbol,deeptutor/tools/vision/coord_transform.py,29,0,GGBCoordSystem,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ValidationResult:12,symbol,deeptutor/tools/vision/ggb_validator.py,12,0,ValidationResult,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,parse_ggb_blocks:47,symbol,deeptutor/tools/vision/block_parser.py,47,0,parse_ggb_blocks,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,LoopExtension:38,symbol,deeptutor/capabilities/protocol.py,38,0,LoopExtension,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,owned_tools:104,symbol,deeptutor/capabilities/protocol.py,104,0,owned_tools,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/loop/pipeline.py:811-816,path,deeptutor/agents/loop/pipeline.py,811,816,,drifted,ok-at-baseline,deeptutor/agents/loop/pipeline.py:816-821,claimed content now at line 816 (was 811-816; suggest re-checking span length)
+docs/guides/tools-surface.md,pre_loop:53,symbol,deeptutor/capabilities/protocol.py,53,0,pre_loop,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,augment_kwargs:118,symbol,deeptutor/capabilities/protocol.py,118,0,augment_kwargs,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,rebinding_tools:81,symbol,deeptutor/agents/loop/pipeline.py,81,0,rebinding_tools,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,KnowledgeCapability:130,symbol,deeptutor/capabilities/protocol.py,130,0,KnowledgeCapability,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,exclusive_tools:145,symbol,deeptutor/capabilities/protocol.py,145,0,exclusive_tools,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/agents/_shared/tool_composition.py:68,path,deeptutor/agents/_shared/tool_composition.py,68,0,,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:71,claimed content now at line 71 (was 68)
+docs/guides/tools-surface.md,compose_enabled_tools:230-248,symbol,deeptutor/agents/_shared/tool_composition.py,230,248,compose_enabled_tools,drifted,ok-at-baseline,deeptutor/agents/_shared/tool_composition.py:234-252,claimed content now at line 234 (was 230-248; suggest re-checking span length)
+docs/guides/tools-surface.md,deeptutor/capabilities/registry.py:28,path,deeptutor/capabilities/registry.py,28,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,_LegacyLoopCapabilitiesView:107,symbol,deeptutor/capabilities/registry.py,107,0,_LegacyLoopCapabilitiesView,drifted,ok-at-baseline,deeptutor/capabilities/registry.py:103,claimed content now at line 103 (was 107)
+docs/guides/tools-surface.md,deeptutor/tools/builtin_specs.py:96-204,path,deeptutor/tools/builtin_specs.py,96,204,,drifted,ok-at-baseline,deeptutor/tools/builtin_specs.py:111-219,claimed content now at line 111 (was 96-204; suggest re-checking span length)
+docs/guides/tools-surface.md,tests/core/test_builtin_tools.py:616,path,tests/core/test_builtin_tools.py,616,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:584-599,rel,tests/services/test_media_gen.py,584,599,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,:130,rel,deeptutor/core/tool_protocol.py,130,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/tools/builtin_specs.py:46,path,deeptutor/tools/builtin_specs.py,46,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,builtin/__init__.py:105,path,deeptutor/tools/builtin/__init__.py,105,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,ask_user.py:102,path,deeptutor/tools/ask_user.py,102,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,exec_tool.py:36,path,deeptutor/tools/exec_tool.py,36,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,deeptutor/capabilities/protocol.py:38,path,deeptutor/capabilities/protocol.py,38,0,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,MAX_QUESTIONS=4/MAX_OPTIONS=8:30-31,curated,deeptutor/tools/ask_user.py,30,31,MAX_QUESTIONS,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,success=ok and exit_code==0:366,curated,deeptutor/tools/exec_tool.py,366,366,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/guides/tools-surface.md,rag ValueError raise:41,curated,deeptutor/tools/rag_tool.py,41,41,,valid,ok-at-baseline,,claimed line content identical to baseline
+docs/INDEXING_RECOVERY.md,.indexing-run.json,existence,deeptutor/knowledge/indexing_run.py,0,0,.indexing-run.json,valid,n/a,deeptutor/knowledge/indexing_run.py:86,exists in current main
+docs/INDEXING_RECOVERY.md,.progress.json,existence,deeptutor/knowledge/progress_tracker.py,0,0,.progress.json,valid,n/a,deeptutor/knowledge/progress_tracker.py:78,exists in current main
+docs/INDEXING_RECOVERY.md,GET .../indexing-readiness,existence,deeptutor/api/routers/auth.py,0,0,GET .../indexing-readiness,valid,n/a,deeptutor/api/routers/auth.py:613,exists in current main
+docs/INDEXING_RECOVERY.md,MinerU 600s/7200s limits,existence,deeptutor/partners/channels/dingtalk.py,0,0,MinerU 600s/7200s limits,valid,n/a,deeptutor/partners/channels/dingtalk.py:246,exists in current main
+docs/SCIENTIFIC_RESEARCH.md,preprint tool,existence,deeptutor/agents/_shared/tool_composition.py,0,0,preprint tool,valid,n/a,deeptutor/agents/_shared/tool_composition.py:48,exists in current main
+docs/SCIENTIFIC_RESEARCH.md,research_audit tool,existence,deeptutor/agents/_shared/tool_composition.py,0,0,research_audit tool,valid,n/a,deeptutor/agents/_shared/tool_composition.py:49,exists in current main
+docs/SCIENTIFIC_RESEARCH.md,research_lit tool,existence,deeptutor/agents/_shared/tool_composition.py,0,0,research_lit tool,valid,n/a,deeptutor/agents/_shared/tool_composition.py:50,exists in current main
+docs/SCIENTIFIC_RESEARCH.md,allow_private_network flag,existence,deeptutor/services/mcp/config.py,0,0,allow_private_network flag,valid,n/a,deeptutor/services/mcp/config.py:54,exists in current main
+docs/plugin-platform-rfc.md,PluginRegistry,existence,deeptutor/plugins/registry.py,0,0,PluginRegistry,valid,n/a,deeptutor/plugins/registry.py:159,exists in current main
+docs/plugin-platform-rfc.md,PluginLifecycleManager,existence,deeptutor/plugins/lifecycle.py,0,0,PluginLifecycleManager,valid,n/a,deeptutor/plugins/lifecycle.py:49,exists in current main
+docs/plugin-platform-rfc.md,deeptutor.plugin.json,existence,deeptutor/plugins/manifest.py,0,0,deeptutor.plugin.json,valid,n/a,deeptutor/plugins/manifest.py:1,exists in current main
+docs/plugin-platform-rfc.md,settings/plugins.json state file,existence,deeptutor/plugins/lifecycle.py,0,0,settings/plugins.json state file,valid,n/a,deeptutor/plugins/lifecycle.py:66,exists in current main
+docs/plugin-platform-rfc.md,GET /api/plugins/extensions,existence,tests/api/test_plugins_router.py,0,0,GET /api/plugins/extensions,valid,n/a,tests/api/test_plugins_router.py:197,exists in current main
+docs/plugin-platform-rfc.md,learning_echo example,existence,examples/plugins/learning_echo/learning_echo/deeptutor.plugin.json,0,0,learning_echo example,valid,n/a,examples/plugins/learning_echo/learning_echo/deeptutor.plugin.json:3,exists in current main

@@ -1,0 +1,10 @@
+{
+ "worktree_head": "6cf793bd868ba5ecbe64722936d4be8fab5a01df release: v1.6.14",
+ "baseline": "fe003ddce",
+ "total": 340,
+ "status_counts": {
+  "valid": 240,
+  "drifted": 97,
+  "dead": 3
+ }
+}
