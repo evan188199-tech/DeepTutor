@@ -16,6 +16,7 @@ from deeptutor.services.file_io import atomic_write_json
 from deeptutor.services.parsing.types import ParsedDocument
 
 from . import block_policy
+from .config import ingestion_chunk_options_from_settings
 
 PARSER_BRIDGE_SCHEMA = 1
 INGRESS_DIRNAME = "deeptutor_ingress"
@@ -255,10 +256,11 @@ def freeze_document(working_dir: Path, source: Path, parsed: ParsedDocument) -> 
             if kinds & names
         )
         process_options = f"P{modalities}" if frozen_blocks else "F"
+        chunk_overrides = ingestion_chunk_options_from_settings()
         chunk_options = (
-            {"paragraph_semantic": {"chunk_token_size": 1200}}
+            {"paragraph_semantic": {"chunk_token_size": 1200, **chunk_overrides}}
             if frozen_blocks
-            else {"fixed_token": {}}
+            else {"fixed_token": dict(chunk_overrides)}
         )
         manifest = {
             "parser_bridge_schema": PARSER_BRIDGE_SCHEMA,

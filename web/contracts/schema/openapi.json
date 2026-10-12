@@ -4911,6 +4911,28 @@
       "LightRagConfigUpdate": {
         "description": "Partial update for LightRAG query + indexing knobs (omitted fields kept).",
         "properties": {
+          "chunk_token_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Token Size"
+          },
+          "chunk_top_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Top K"
+          },
           "entity_extract_max_gleaning": {
             "anyOf": [
               {

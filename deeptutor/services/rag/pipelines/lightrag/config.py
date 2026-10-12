@@ -157,15 +157,46 @@ def normalize_mode(mode: str | None) -> str:
 
 
 def query_kwargs_from_settings() -> dict:
-    """``QueryParam`` values from runtime settings."""
+    """``QueryParam`` values from runtime settings.
+
+    ``chunk_top_k`` (how many chunks the query feeds into the answer context)
+    is forwarded only when explicitly configured; when unset it stays absent
+    so the pinned lightrag-hku SDK keeps supplying its own default, matching
+    the behavior of deployments that never set it.
+    """
     try:
         from deeptutor.services.config import load_lightrag_settings
 
         settings = load_lightrag_settings()
-        return {
+        kwargs = {
             "top_k": int(settings.get("top_k", 60)),
             "response_type": str(settings.get("response_type") or "Multiple Paragraphs"),
         }
+        chunk_top_k = settings.get("chunk_top_k")
+        if chunk_top_k is not None:
+            kwargs["chunk_top_k"] = int(chunk_top_k)
+        return kwargs
+    except Exception:
+        return {}
+
+
+def ingestion_chunk_options_from_settings() -> dict[str, int]:
+    """Explicit doc-chunk overrides for the frozen ``chunk_options`` payload.
+
+    Returns ``{"chunk_token_size": N}`` only when the operator configured it;
+    an empty dict keeps today's literals — ``1200`` frozen into
+    paragraph-semantic bundles and the SDK default (with its CHUNK_SIZE-family
+    environment overrides) for raw documents. The values ride into each
+    document's frozen bundle at staging time, so they shape documents staged
+    after the change (the next build or re-index), never bundles that are
+    already published.
+    """
+    try:
+        from deeptutor.services.config import load_lightrag_settings
+
+        settings = load_lightrag_settings()
+        value = settings.get("chunk_token_size")
+        return {"chunk_token_size": int(value)} if value is not None else {}
     except Exception:
         return {}
 
@@ -444,6 +475,7 @@ __all__ = [
     "query_kwargs_from_settings",
     "indexing_kwargs_from_settings",
     "constructor_kwargs_from_settings",
+    "ingestion_chunk_options_from_settings",
     "lightrag_llm_selection_from_settings",
     "resolve_lightrag_query_llm_config",
     "build_llm_model_func",

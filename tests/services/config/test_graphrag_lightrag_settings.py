@@ -109,13 +109,47 @@ def test_lightrag_dedicated_llm_selection_round_trip(tmp_path: Path) -> None:
     svc = RuntimeSettingsService(tmp_path, process_env={})
     assert svc.load_lightrag()["llm_profile_id"] == ""
 
-    saved = svc.save_lightrag({"llm_profile_id": " profile-1 ", "llm_model_id": " model-1 "})
+    saved = svc.save_lightrag({"llm_profile_id": " profile-1 ", "llm_model_id": " model-1"})
     assert saved["llm_profile_id"] == "profile-1"
     assert saved["llm_model_id"] == "model-1"
 
     cleared = svc.save_lightrag({"llm_profile_id": "", "llm_model_id": ""})
     assert cleared["llm_profile_id"] == ""
     assert cleared["llm_model_id"] == ""
+
+
+def test_lightrag_passthrough_knobs_stay_unset_until_configured(tmp_path: Path) -> None:
+    """chunk_token_size / chunk_top_k keep today's behavior while unset.
+
+    ``None`` is the "not configured" signal, so legacy files and untouched
+    installs must never grow an implicit override; set values are clamped and
+    malformed values fall back to None instead of inventing a value.
+    """
+    svc = RuntimeSettingsService(tmp_path, process_env={})
+    defaults = svc.load_lightrag()
+    assert defaults["chunk_token_size"] is None
+    assert defaults["chunk_top_k"] is None
+
+    (tmp_path / "lightrag.json").write_text(
+        '{"version": 2, "top_k": 25, "response_type": "Single Paragraph"}',
+        encoding="utf-8",
+    )
+    legacy = RuntimeSettingsService(tmp_path, process_env={}).load_lightrag()
+    assert legacy["top_k"] == 25
+    assert legacy["chunk_token_size"] is None
+    assert legacy["chunk_top_k"] is None
+
+    saved = svc.save_lightrag({"chunk_token_size": 2048, "chunk_top_k": 12})
+    assert saved["chunk_token_size"] == 2048
+    assert saved["chunk_top_k"] == 12
+
+    clamped = svc.save_lightrag({"chunk_token_size": 99999, "chunk_top_k": 0})
+    assert clamped["chunk_token_size"] == 8192
+    assert clamped["chunk_top_k"] == 1
+
+    malformed = svc.save_lightrag({"chunk_token_size": "bogus", "chunk_top_k": "  "})
+    assert malformed["chunk_token_size"] is None
+    assert malformed["chunk_top_k"] is None
 
 
 def test_lightrag_server_defaults_round_trip_without_exposing_shape_drift(

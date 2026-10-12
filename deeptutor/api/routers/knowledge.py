@@ -1681,6 +1681,11 @@ class LightRagConfigUpdate(BaseModel):
     llm_model_max_async: int | None = None
     entity_extract_max_gleaning: int | None = None
     llm_timeout: int | None = None
+    # Optional doc-chunk / query-context overrides, forwarded verbatim to the
+    # pinned lightrag-hku SDK only when set; omitted values keep today's
+    # literals/SDK defaults.
+    chunk_token_size: int | None = None
+    chunk_top_k: int | None = None
     llm_profile_id: str | None = None
     llm_model_id: str | None = None
 
@@ -1731,9 +1736,10 @@ async def get_lightrag_model_options() -> dict[str, Any]:
 async def update_lightrag_pipeline_config(payload: LightRagConfigUpdate):
     """Persist LightRAG's knobs.
 
-    Query knobs (``top_k``, ``response_type``) take effect on the next query;
-    the indexing knobs shape how a KB is built, so they apply to the next
-    build or rebuild.
+    Query knobs (``top_k``, ``response_type``, ``chunk_top_k``) take effect on
+    the next query; the indexing knobs shape how a KB is built, so they apply
+    to the next build or rebuild. ``chunk_token_size`` freezes into documents
+    staged afterwards, so it likewise applies to the next build or re-index.
     """
     try:
         from deeptutor.services.config import get_runtime_settings_service

@@ -368,6 +368,13 @@ DEFAULT_LIGHTRAG_SETTINGS: dict[str, Any] = {
     # Maps to LightRAG's ``default_llm_timeout`` (seconds). LightRAG derives its
     # worker execution cap as 2x this value, so 240 -> a 480s per-call ceiling.
     "llm_timeout": 240,
+    # Optional doc-chunk / query-context overrides, forwarded verbatim to the
+    # pinned lightrag-hku SDK only when set. ``None`` keeps today's behavior:
+    # structured documents freeze ``chunk_token_size=1200`` into their bundle
+    # while raw documents keep the SDK default (and its CHUNK_SIZE-family
+    # environment overrides), and queries keep the SDK's ``chunk_top_k``.
+    "chunk_token_size": None,
+    "chunk_top_k": None,
     "llm_profile_id": "",
     "llm_model_id": "",
 }
@@ -414,6 +421,22 @@ def _coerce_int(value: Any, default: int) -> int:
 
 def _coerce_clamped_int(value: Any, default: int, low: int, high: int) -> int:
     coerced = _coerce_int(value, default)
+    return max(low, min(high, coerced))
+
+
+def _coerce_optional_clamped_int(value: Any, low: int, high: int) -> int | None:
+    """Clamp an optional int knob; unset or malformed values mean ``None``.
+
+    ``None`` is the "not configured" signal for knobs whose effective default
+    must keep coming from the consuming SDK rather than DeepTutor, so a
+    malformed value falls back to the SDK default instead of inventing a cap.
+    """
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None
+    try:
+        coerced = int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
     return max(low, min(high, coerced))
 
 
@@ -1069,6 +1092,13 @@ class RuntimeSettingsService:
                 settings.get("entity_extract_max_gleaning"), 1, 0, 5
             ),
             "llm_timeout": _coerce_clamped_int(settings.get("llm_timeout"), 240, 60, 3600),
+            # None keeps the current literals/SDK defaults (see
+            # DEFAULT_LIGHTRAG_SETTINGS); set values ride verbatim into the
+            # frozen per-document chunk_options and QueryParam.
+            "chunk_token_size": _coerce_optional_clamped_int(
+                settings.get("chunk_token_size"), 128, 8192
+            ),
+            "chunk_top_k": _coerce_optional_clamped_int(settings.get("chunk_top_k"), 1, 200),
             "llm_profile_id": _string(settings.get("llm_profile_id"))[:128],
             "llm_model_id": _string(settings.get("llm_model_id"))[:128],
         }
