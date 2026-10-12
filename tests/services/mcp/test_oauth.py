@@ -11,7 +11,9 @@ import asyncio
 import json
 from pathlib import Path
 import stat
+from typing import Any
 
+import httpx
 import pytest
 
 from deeptutor.services.mcp import oauth
@@ -238,6 +240,172 @@ def test_a_needs_auth_failure_is_not_classified_as_broken() -> None:
 
     assert _needs_authorization(wrapped) is True
     assert _needs_authorization(ExceptionGroup("tg", [RuntimeError("500")])) is False
+
+
+# ── a consent left unanswered ─────────────────────────────────────────────
+
+
+class _ScriptedAuth(httpx.Auth):
+    """A stand-in for the SDK's provider that scripts only the handler contract.
+
+    The protocol stays the SDK's; what this module owns — hand over a redirect
+    URL, then wait for the callback — is the part a reclaim has to survive.
+    Subclasses :class:`httpx.Auth` only because the client refuses anything else;
+    every method it drives is the one the real provider runs.
+    """
+
+    def __init__(
+        self,
+        state: str,
+        redirect: Any,
+        callback: Any,
+        received: list[str],
+    ) -> None:
+        self._state = state
+        self._redirect = redirect
+        self._callback = callback
+        self._received = received
+
+    async def async_auth_flow(self, request: httpx.Request) -> Any:
+        response = yield request  # the unauthenticated probe
+        if not isinstance(response, httpx.Response) or response.status_code != 401:
+            return
+        await self._redirect(f"https://auth.example/authorize?state={self._state}")
+        code, _state = await self._callback()
+        self._received.append(code)
+        request.headers["Authorization"] = f"Bearer {code}"
+        yield request  # the authenticated retry
+
+
+def _script_the_exchange(monkeypatch: pytest.MonkeyPatch, received: list[str]) -> None:
+    """Point the drive task at a scripted provider and an offline transport.
+
+    Every flow it starts gets its own ``state``, as with the real SDK. The
+    transport answers any unauthenticated probe with 401 and any authenticated
+    retry with 200 — the whole choreography the handlers ever see.
+    """
+    issued: list[int] = []
+    real_client = httpx.AsyncClient
+
+    def _transport_handler(request: httpx.Request) -> httpx.Response:
+        authorized = "Authorization" in request.headers
+        return httpx.Response(200) if authorized else httpx.Response(401)
+
+    def _client(*args: Any, **kwargs: Any) -> httpx.AsyncClient:
+        kwargs["transport"] = httpx.MockTransport(_transport_handler)
+        return real_client(*args, **kwargs)
+
+    def _fake_build_auth(**kwargs: Any) -> _ScriptedAuth:
+        issued.append(1)
+        state = f"state-{len(issued)}-{kwargs['server_name']}"
+        return _ScriptedAuth(
+            state, kwargs["redirect_handler"], kwargs["callback_handler"], received
+        )
+
+    monkeypatch.setattr(httpx, "AsyncClient", _client)
+    monkeypatch.setattr(oauth, "build_auth", _fake_build_auth)
+
+
+def test_an_abandoned_flow_times_out_and_frees_itself(
+    roots: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A consent screen nobody returns to must not pin a task and an entry.
+
+    The chain a reaper owes: abandoned → past the deadline → the pending entry
+    dropped, the drive task finished on its own, the future concluded, and a
+    late callback able to complete nothing.
+    """
+    received: list[str] = []
+    _script_the_exchange(monkeypatch, received)
+    monkeypatch.setattr(oauth, "FLOW_TIMEOUT_S", 0.05)
+
+    async def _exercise() -> None:
+        url = await oauth.begin_authorization(
+            server_url="https://mcp.example/mcp",
+            server_name="notion",
+            owner_id="u_ada",
+            redirect_uri="https://app.example/cb",
+        )
+        state = oauth._state_from(url)
+        assert state in oauth._PENDING, "the flow registers itself while consent is open"
+        flow = oauth._PENDING[state]
+
+        await asyncio.wait_for(flow.task, timeout=10)  # ends on its own: no cancel from outside
+
+        assert state not in oauth._PENDING, "an expired flow must not linger across requests"
+        assert flow.result.done(), "the waiter's future concludes rather than hanging"
+        with pytest.raises((TimeoutError, asyncio.CancelledError)):
+            await flow.result
+        assert oauth.complete_authorization(state, "code-late") is False
+        assert received == [], "no code was ever handed over"
+
+    asyncio.run(_exercise())
+
+
+def test_a_flow_completed_before_the_deadline_is_untouched(
+    roots: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The ceiling is only a ceiling: finishing in time keeps today's behaviour."""
+    received: list[str] = []
+    _script_the_exchange(monkeypatch, received)
+
+    async def _exercise() -> None:
+        url = await oauth.begin_authorization(
+            server_url="https://mcp.example/mcp",
+            server_name="notion",
+            owner_id="u_ada",
+            redirect_uri="https://app.example/cb",
+        )
+        state = oauth._state_from(url)
+        flow = oauth._PENDING[state]
+
+        assert oauth.complete_authorization(state, "code-1") is True
+        await asyncio.wait_for(flow.task, timeout=10)
+
+        assert received == ["code-1"], "the callback wait still returns the code"
+        assert state not in oauth._PENDING, "the completion path sweeps as before"
+
+    asyncio.run(_exercise())
+
+
+def test_one_flow_expiring_leaves_a_concurrent_one_alone(
+    roots: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two consents in flight are strangers: one expiring reclaims only itself."""
+    received: list[str] = []
+    _script_the_exchange(monkeypatch, received)
+    monkeypatch.setattr(oauth, "FLOW_TIMEOUT_S", 0.25)
+
+    async def _exercise() -> None:
+        abandoned_url = await oauth.begin_authorization(
+            server_url="https://mcp.example/mcp",
+            server_name="asana",
+            owner_id="u_ada",
+            redirect_uri="https://app.example/cb",
+        )
+        kept_url = await oauth.begin_authorization(
+            server_url="https://mcp.example/mcp",
+            server_name="linear",
+            owner_id="u_ada",
+            redirect_uri="https://app.example/cb",
+        )
+        abandoned_state = oauth._state_from(abandoned_url)
+        kept_state = oauth._state_from(kept_url)
+        assert abandoned_state != kept_state, "each flow carries its own state"
+        abandoned = oauth._PENDING[abandoned_state]
+        kept = oauth._PENDING[kept_state]
+
+        assert oauth.complete_authorization(kept_state, "code-kept") is True
+        await asyncio.wait_for(kept.task, timeout=10)
+        assert kept_state not in oauth._PENDING, "the finished flow swept itself"
+
+        await asyncio.wait_for(abandoned.task, timeout=10)  # its own deadline ends it
+        assert abandoned_state not in oauth._PENDING, "only its own entry went"
+        assert received == ["code-kept"], "the finished flow saw exactly its own code"
+        assert oauth.complete_authorization(abandoned_state, "code-late") is False
+        assert oauth.complete_authorization(kept_state, "code-replay") is False
+
+    asyncio.run(_exercise())
 
 
 # ── the redirect URI ──────────────────────────────────────────────────────

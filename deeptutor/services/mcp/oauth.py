@@ -366,7 +366,12 @@ async def begin_authorization(
             url_ready.set_result(authorize_url)
 
     async def _callback() -> tuple[str, str | None]:
-        return await flow.result
+        # Nobody is obliged to finish a consent they walked away from. The wait
+        # gets the flow timeout as its ceiling so an abandoned screen cannot pin
+        # this task and the pending entry forever: the TimeoutError unwinds the
+        # drive task, whose ``finally`` drops the entry; a late callback then
+        # finds nothing to complete.
+        return await asyncio.wait_for(flow.result, timeout=FLOW_TIMEOUT_S)
 
     async def _drive() -> None:
         # Touching the server is what makes the SDK notice it has no token and
