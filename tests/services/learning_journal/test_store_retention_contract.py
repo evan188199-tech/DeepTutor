@@ -24,7 +24,6 @@ from deeptutor.services.learning_journal.store import (
 )
 from deeptutor.services.path_service import PathService
 
-
 MAX_JOURNAL_BYTES = 64 * 1024
 
 
@@ -47,9 +46,7 @@ def _fill_records(store: LearningJournalStore, count: int, *, offset: int = 0) -
 def test_record_cap_admits_exactly_max_records(journal_store: LearningJournalStore) -> None:
     _fill_records(journal_store, MAX_RECORDS)
     records = journal_store.load().records
-    assert [record.id for record in records] == [
-        f"lr_{n:04d}" for n in range(1, MAX_RECORDS + 1)
-    ]
+    assert [record.id for record in records] == [f"lr_{n:04d}" for n in range(1, MAX_RECORDS + 1)]
 
 
 def test_51st_record_evicts_the_oldest_fifo(journal_store: LearningJournalStore) -> None:
@@ -60,9 +57,7 @@ def test_51st_record_evicts_the_oldest_fifo(journal_store: LearningJournalStore)
 
     records = journal_store.load().records
     assert len(records) == MAX_RECORDS
-    assert [record.id for record in records] == [
-        f"lr_{n:04d}" for n in range(2, MAX_RECORDS + 2)
-    ]
+    assert [record.id for record in records] == [f"lr_{n:04d}" for n in range(2, MAX_RECORDS + 2)]
     assert records[0].title == "title-001"
     assert records[-1].title == "title-51"
     raw = journal_store.journal_path().read_text(encoding="utf-8")
