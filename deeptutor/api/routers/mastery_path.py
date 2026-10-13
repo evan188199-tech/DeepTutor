@@ -770,7 +770,10 @@ async def set_session_mode(path_id: str, session_id: str, body: SetSessionModeRe
 
     session_store = get_session_store()
     if await session_store.get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="Session not found")
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "mastery_session_not_found", "message": "Session not found"},
+        )
     await session_store.update_session_preferences(session_id, {"mastery_session_mode": requested})
     return {"session_id": session_id, "mode": normalize_mode(requested)}
 

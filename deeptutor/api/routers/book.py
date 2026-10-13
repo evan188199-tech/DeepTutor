@@ -62,6 +62,13 @@ def _book_paused_http(exc: BookPausedError) -> HTTPException:
     )
 
 
+def _book_not_found() -> HTTPException:
+    return HTTPException(
+        status_code=404,
+        detail={"code": "book_not_found", "message": "Book not found"},
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Request / response models
 # ─────────────────────────────────────────────────────────────────────────────
@@ -278,13 +285,13 @@ def _resolve_book_or_404(
                 learning=storage,
             )
     if resolved is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     # Denials deliberately use the same 404 as an unknown id so an untrusted
     # caller cannot probe which shared books exist.
     if edit and not resolved.can_edit:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     if delete and not resolved.can_delete:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     return resolved
 
 
@@ -326,7 +333,7 @@ def _claim_content_mutation(
 
     book = resolved.engine.load_book(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     current = max(1, int(book.revision or 1))
     if strict and resolved.is_shared and expected_revision is None:
         raise HTTPException(
@@ -402,7 +409,7 @@ def _persist_requested_block_types(
 
     book = resolved.engine.load_book(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     metadata = dict(book.metadata or {})
     if requested:
         metadata["block_types"] = _normalize_block_types(requested)
@@ -491,7 +498,7 @@ def _derive_capture_title_values(
     engine = resolved.engine
     book = engine.load_book(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     page = engine.load_page(book_id, page_id)
     if page is None:
         raise HTTPException(status_code=404, detail="Page not found")
@@ -745,7 +752,7 @@ async def get_book(book_id: str, include_blocks: bool = True) -> dict[str, Any]:
     engine = resolved.engine
     book = engine.load_book(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
 
     # Opening a book is the correctly-scoped moment to notice that its
     # compilation died with a previous process and pick it back up.
@@ -797,7 +804,7 @@ async def delete_book(book_id: str) -> dict[str, Any]:
     engine = resolved.engine
     ok = engine.delete_book(book_id)
     if not ok:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     if get_current_user().is_admin:
         affected = remove_book_permission_overrides(book_id)
         log_admin_action(
@@ -1272,7 +1279,7 @@ async def export_book(book_id: str) -> Response:
     engine = _resolve_book_or_404(book_id).engine
     book = engine.load_book(book_id)
     if book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     markdown = await asyncio.to_thread(
         lambda: render_book_markdown(book, engine.load_spine(book_id), engine.list_pages(book_id))
     )
@@ -1339,7 +1346,7 @@ async def refresh_fingerprints(
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     if result is None:
-        raise HTTPException(status_code=404, detail="Book not found")
+        raise _book_not_found()
     return {**result, "book_revision": revision}
 
 

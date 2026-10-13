@@ -291,7 +291,7 @@ def test_list_entries_missing_course_returns_404(store: SQLiteSessionStore, cour
         )
 
     assert response.status_code == 404
-    assert response.json()["detail"] == "Course not found"
+    assert response.json()["detail"] == {"code": "course_not_found", "message": "Course not found"}
 
 
 def test_quiz_results_populates_notebook(store: SQLiteSessionStore) -> None:

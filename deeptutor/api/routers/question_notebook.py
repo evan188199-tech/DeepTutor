@@ -338,7 +338,10 @@ async def _course_session_ids(store: Any, course_id: str) -> list[str] | None:
     try:
         get_course_service().get(course_id)
     except CourseNotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Course not found") from exc
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "course_not_found", "message": "Course not found"},
+        ) from exc
 
     sessions = await list_all_sessions_snapshot(store)
     return [
