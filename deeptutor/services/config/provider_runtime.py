@@ -350,6 +350,16 @@ TTS_PROVIDERS: dict[str, VoiceProviderSpec] = {
         default_api_base="https://api.openai.com/v1",
         default_model="gpt-4o-mini-tts",
     ),
+    # Gemini TTS models are absent from the vendor's OpenAI-compatible mount,
+    # so the binding must not fall through to `custom` (issue #1951): a native
+    # generateContent adapter speaks the only protocol that serves them.
+    "gemini": VoiceProviderSpec(
+        label="Gemini",
+        default_api_base="https://generativelanguage.googleapis.com/v1beta",
+        adapter="gemini_tts",
+        default_model="gemini-2.5-flash-preview-tts",
+        default_voice="Kore",
+    ),
     "openrouter": VoiceProviderSpec(
         label="OpenRouter",
         default_api_base="https://openrouter.ai/api/v1",

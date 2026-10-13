@@ -3,7 +3,8 @@
 Adapters are stateless singletons keyed by the ``adapter`` field on the
 resolved config. The OpenAI-compatible pair covers OpenAI, Groq, SiliconFlow,
 OpenRouter, Azure OpenAI and local vLLM/LM Studio; add bespoke providers
-(DashScope native, ElevenLabs, Gemini, Deepgram) by registering new keys here.
+(DashScope native, MiniMax, MiMo, Volcengine Speech, Gemini) by registering
+new keys here.
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ from deeptutor.services.voice.adapters.dashscope import (
     DashScopeSTTAdapter,
     DashScopeTTSAdapter,
 )
+from deeptutor.services.voice.adapters.gemini import GeminiTTSAdapter
 from deeptutor.services.voice.adapters.mimo import MiMoTTSAdapter
 from deeptutor.services.voice.adapters.minimax import MiniMaxTTSAdapter
 from deeptutor.services.voice.adapters.openai_compat import (
@@ -29,6 +31,7 @@ TTS_ADAPTERS: dict[str, BaseTTSAdapter] = {
     "openai_compat": OpenAICompatTTSAdapter(),
     "openrouter_tts": OpenRouterTTSAdapter(),
     "dashscope": DashScopeTTSAdapter(),
+    "gemini_tts": GeminiTTSAdapter(),
 }
 
 STT_ADAPTERS: dict[str, BaseSTTAdapter] = {

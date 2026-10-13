@@ -85,6 +85,13 @@ def _tts_models(provider: str) -> tuple[list[dict], str]:
     ]
     if provider in {"openai", "azure_openai"}:
         return openai, "https://developers.openai.com/api/docs/guides/text-to-speech"
+    if provider == "gemini":
+        # The native generateContent protocol returns PCM16 only; WAV wraps it
+        # for the browser. Newer TTS model IDs can still be entered manually.
+        return [
+            preset(m, formats=["wav", "pcm"], instructions=True)
+            for m in ["gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"]
+        ], "https://ai.google.dev/gemini-api/docs/speech-generation"
     if provider == "openrouter":
         for model in openai:
             model["id"] = model["label"] = "openai/" + model["id"]
@@ -180,6 +187,13 @@ def voice_options(provider: str, service: str) -> dict:
             fallback.pop("configuration_note", None)
         elif provider == "groq":
             fallback = preset("", formats=["wav"])
+        elif provider == "gemini":
+            fallback = preset(
+                "",
+                formats=["wav", "pcm"],
+                instructions=True,
+                language_note="Language follows the text and the selected prebuilt voice.",
+            )
         elif provider == "xiaomi_mimo":
             fallback = preset("", formats=["wav", "pcm16"], instructions=True)
     else:
