@@ -1,0 +1,9 @@
+8cee574ed91419fb076fa5b94b615c01d1ae16f4ae313dc6a68abb3127d15d6f  ./report.md
+f7112f9e92156837d6754dcb2d2b524b23fb3c6cbda0409baea3a77461c5529e  ./snapshots/pkg-README-0.2.0.md
+f6e58a8dc6f06abe1be22f21c791eeedd9f258771a9cd6f9c37337458a1a2b68  ./snapshots/pkg-init-0.2.0.py
+bf3bd7401dcf014568670180482449a2063b65d58c3d45bd02dc8299ee239786  ./snapshots/pkg-pyproject-0.2.0.toml
+03870de2d715dab6ae658ed74b3705bc872491c1b2b6749014502600c76078c3  ./snapshots/residue-PKG-INFO.txt
+02a09790eb2ee401893941f9b40fb1c0f0d57469ad201653f2f7086826d80f84  ./snapshots/residue-build-init-0.1.0.py
+eadabcbc69a47eb02e33bc62a947720ad62b839336ab84b12da7dd5870f7155d  ./snapshots/residue-entry_points.txt
+31c95f287b0d806791ded2850af40397e3e0e5e7aabe07d2a88c1bb9f6eedc88  ./snapshots/residue-file-inventory.txt
+c56a47cfd4c9aca111a6015033a6e58208d40943453a88c3542e01c28088e400  ./snapshots/test-essentials-package-0.2.0.py

@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: deeptutor-reading-essentials
+Version: 0.1.0
+Summary: Optional Learn, Test, Read aloud, Translate and Vocabulary extensions for DeepTutor
+Requires-Python: <3.14,>=3.11
+Requires-Dist: deeptutor

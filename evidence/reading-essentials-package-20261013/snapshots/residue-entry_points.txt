@@ -1,0 +1,6 @@
+[deeptutor.reading_extensions]
+guided_learn = deeptutor_reading_essentials:GuidedLearnExtension
+quiz = deeptutor_reading_essentials:QuizExtension
+read_aloud = deeptutor_reading_essentials:ReadAloudExtension
+translation = deeptutor_reading_essentials:TranslationExtension
+vocabulary = deeptutor_reading_essentials:VocabularyExtension
