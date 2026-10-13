@@ -225,9 +225,7 @@ def test_marks_capped_at_five_hundred_per_material(tmp_path: Path) -> None:
 def test_truncated_material_roundtrips_from_disk(tmp_path: Path) -> None:
     store = service.TimedMediaStore(root=tmp_path / "timed_media")
     material = _material(store, duration=86_400)
-    oversized_rows = [
-        {"start": float(i), "duration": 1.0, "text": "x" * 512} for i in range(6000)
-    ]
+    oversized_rows = [{"start": float(i), "duration": 1.0, "text": "x" * 512} for i in range(6000)]
     cues = service.normalize_cues(oversized_rows)
     material["transcript"]["cues"] = cues
     mark = create_mark(
