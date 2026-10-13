@@ -114,9 +114,7 @@ def test_auth_gate_blocks_anonymous_and_accepts_valid_token(
     anonymous = client.get("/api/notebooks/statistics")
     assert anonymous.status_code == 401
 
-    rejected = client.get(
-        "/api/notebooks/statistics", headers={"Authorization": "Bearer tok-bad"}
-    )
+    rejected = client.get("/api/notebooks/statistics", headers={"Authorization": "Bearer tok-bad"})
     assert rejected.status_code == 401
 
     ok = client.get("/api/notebooks/statistics", headers={"Authorization": "Bearer tok-ok"})

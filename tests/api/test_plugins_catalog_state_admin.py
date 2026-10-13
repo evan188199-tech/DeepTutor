@@ -92,9 +92,7 @@ def test_catalog_requires_authentication(
     assert client.get("/api/plugins/catalog").status_code == 401
 
 
-def test_state_lists_registry_records(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_state_lists_registry_records(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     records = [
         SimpleNamespace(
             to_dict=lambda: {
@@ -129,6 +127,15 @@ def test_state_with_empty_registry_returns_empty_list(
 
     assert res.status_code == 200
     assert res.json() == {"plugins": []}
+
+
+def test_state_requires_authentication(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
+    async def reject(*, authorization=None, dt_token=None, request=None):
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    monkeypatch.setattr(plugins_router, "require_auth", reject)
+
+    assert client.get("/api/plugins/state").status_code == 401
 
 
 def test_install_applies_defaults_and_returns_lifecycle_result(
@@ -190,8 +197,7 @@ def test_install_requires_admin(client: TestClient, monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(plugins_router, "require_admin", reject)
 
     assert (
-        client.post("/api/plugins/org.deeptutor.learning_echo/install", json={}).status_code
-        == 403
+        client.post("/api/plugins/org.deeptutor.learning_echo/install", json={}).status_code == 403
     )
 
 
