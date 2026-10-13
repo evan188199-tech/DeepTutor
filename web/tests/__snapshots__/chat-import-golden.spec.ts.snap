@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`golden chat-import fixtures (source → NormalizedSession) > chatgpt: active branch only, image parts stripped, empty rows dropped 1`] = `
+[
+  {
+    "created_at": 1750800000,
+    "external_id": "conversation-golden-1",
+    "messages": [
+      {
+        "content": "Differentiate x squared for me",
+        "created_at": 1750800001,
+        "role": "user",
+      },
+      {
+        "content": "The derivative is 2x.",
+        "created_at": 1750800004,
+        "role": "assistant",
+      },
+      {
+        "content": "Differentiate again for higher orders.",
+        "created_at": 1750800005,
+        "role": "assistant",
+      },
+    ],
+    "source_cwd": "",
+    "title": "Calculus review",
+    "updated_at": 1750800060,
+  },
+]
+`;
+
+exports[`golden chat-import fixtures (source → NormalizedSession) > claude_code: text turns, image turn tagged, side-branch and empty rows dropped 1`] = `
+{
+  "created_at": 1782381600,
+  "external_id": "session-golden-claude",
+  "messages": [
+    {
+      "content": "Explain the chain rule",
+      "created_at": 1782381600,
+      "metadata": undefined,
+      "role": "user",
+    },
+    {
+      "content": "The chart shows the derivative.",
+      "created_at": 1782381605,
+      "metadata": {
+        "had_images": true,
+      },
+      "role": "assistant",
+    },
+  ],
+  "source_cwd": "/workspace/project",
+  "title": "Explain the chain rule",
+  "updated_at": 1782381605,
+}
+`;
+
+exports[`golden chat-import fixtures (source → NormalizedSession) > codex: text turns kept, image and empty rows silently dropped 1`] = `
+{
+  "created_at": 1782385201,
+  "external_id": "rollout-golden-1",
+  "messages": [
+    {
+      "content": "Explain Fourier transforms",
+      "created_at": 1782385201,
+      "role": "user",
+    },
+    {
+      "content": "A Fourier transform decomposes a signal.",
+      "created_at": 1782385203,
+      "role": "assistant",
+    },
+  ],
+  "source_cwd": "/workspace/project",
+  "title": "Explain Fourier transforms",
+  "updated_at": 1782385203,
+}
+`;

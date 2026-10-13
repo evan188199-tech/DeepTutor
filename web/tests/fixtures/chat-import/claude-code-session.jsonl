@@ -1,0 +1,4 @@
+{"type":"user","timestamp":"2026-06-25T10:00:00Z","cwd":"/workspace/project","message":{"role":"user","content":[{"type":"text","text":"Explain the chain rule"}]}}
+{"type":"assistant","timestamp":"2026-06-25T10:00:05Z","message":{"role":"assistant","content":[{"type":"image","source":{"type":"base64","media_type":"image/png","data":"aGVsbG8="}},{"type":"text","text":"The chart shows the derivative."}]}}
+{"type":"user","timestamp":"2026-06-25T10:00:10Z","isSidechain":true,"message":{"role":"user","content":[{"type":"text","text":"side-branch turn that must be dropped"}]}}
+{"type":"user","timestamp":"2026-06-25T10:00:15Z","message":{"role":"user","content":[{"type":"text","text":"   "}]}}

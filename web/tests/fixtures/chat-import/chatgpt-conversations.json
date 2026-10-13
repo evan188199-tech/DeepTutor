@@ -1,0 +1,84 @@
+[
+  {
+    "id": "conversation-golden-1",
+    "title": "Calculus review",
+    "create_time": 1750800000,
+    "update_time": 1750800060,
+    "current_node": "a2",
+    "mapping": {
+      "root": { "id": "root", "parent": null, "children": ["u1"], "message": null },
+      "u1": {
+        "id": "u1",
+        "parent": "root",
+        "children": ["a-old", "e1"],
+        "message": {
+          "id": "msg-u1",
+          "author": { "role": "user" },
+          "create_time": 1750800001,
+          "content": {
+            "content_type": "text",
+            "parts": [
+              {
+                "content_type": "image_asset_pointer",
+                "asset_pointer": "file-service://image-1.png"
+              },
+              "Differentiate x squared for me"
+            ]
+          },
+          "metadata": {}
+        }
+      },
+      "a-old": {
+        "id": "a-old",
+        "parent": "u1",
+        "children": [],
+        "message": {
+          "id": "msg-a-old",
+          "author": { "role": "assistant" },
+          "create_time": 1750800002,
+          "content": { "content_type": "text", "parts": ["Old branch"] },
+          "metadata": {}
+        }
+      },
+      "e1": {
+        "id": "e1",
+        "parent": "u1",
+        "children": ["a1"],
+        "message": {
+          "id": "msg-e1",
+          "author": { "role": "user" },
+          "create_time": 1750800003,
+          "content": { "content_type": "text", "parts": ["  "] },
+          "metadata": {}
+        }
+      },
+      "a1": {
+        "id": "a1",
+        "parent": "e1",
+        "children": ["a2"],
+        "message": {
+          "id": "msg-a1",
+          "author": { "role": "assistant" },
+          "create_time": 1750800004,
+          "content": { "content_type": "text", "parts": ["The derivative is 2x."] },
+          "metadata": {}
+        }
+      },
+      "a2": {
+        "id": "a2",
+        "parent": "a1",
+        "children": [],
+        "message": {
+          "id": "msg-a2",
+          "author": { "role": "assistant" },
+          "create_time": 1750800005,
+          "content": {
+            "content_type": "text",
+            "parts": ["Differentiate again for higher orders."]
+          },
+          "metadata": {}
+        }
+      }
+    }
+  }
+]

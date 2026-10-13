@@ -1,0 +1,5 @@
+{"timestamp":"2026-06-25T11:00:00Z","type":"session_meta","payload":{"id":"rollout-golden-1","cwd":"/workspace/project","thread_source":"user"}}
+{"timestamp":"2026-06-25T11:00:01Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"Explain Fourier transforms"}]}}
+{"timestamp":"2026-06-25T11:00:02Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_image","image_url":"data:image/png;base64,aGVsbG8="}]}}
+{"timestamp":"2026-06-25T11:00:03Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"A Fourier transform decomposes a signal."}]}}
+{"timestamp":"2026-06-25T11:00:04Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"   "}]}}

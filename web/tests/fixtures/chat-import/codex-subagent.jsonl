@@ -1,0 +1,2 @@
+{"timestamp":"2026-06-25T12:00:00Z","type":"session_meta","payload":{"id":"rollout-golden-2","cwd":"/workspace/project","thread_source":"subagent"}}
+{"timestamp":"2026-06-25T12:00:01Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"subagent turn that must not be imported"}]}}
