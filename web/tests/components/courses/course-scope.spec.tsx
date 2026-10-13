@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { useEffect } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CourseScopeChip, useCourseScope, type CourseScope } from "@/components/courses/CourseScope";
@@ -32,7 +33,9 @@ const captured: { scope: CourseScope | null } = { scope: null };
 
 function Harness() {
   const scope = useCourseScope();
-  captured.scope = scope;
+  useEffect(() => {
+    captured.scope = scope;
+  }, [scope]);
   return scope ? <CourseScopeChip scope={scope} /> : null;
 }
 
