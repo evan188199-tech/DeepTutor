@@ -36,6 +36,8 @@ const confirmed = (partnerId: string): PartnerInfo => ({
   name: "Study Buddy",
   description: "A friendly study companion",
   channels: [],
+  running: false,
+  started_at: null,
 });
 
 const renderCard = (data = draft()) => render(<PartnerDraftCard data={data} />);
