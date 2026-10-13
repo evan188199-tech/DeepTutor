@@ -2,15 +2,34 @@
 
 Only identifiers, timestamps and numeric measurements are stored. Prompts,
 responses, credentials and endpoint URLs never enter this database.
+
+The ledger is append-only by default. An optional :class:`RetentionPolicy`
+bounds its growth by trimming the oldest rows, either inline on the write
+path or through the :func:`enforce_retention` maintenance entry point; both
+stay disabled unless explicitly configured. Read APIs and aggregation
+semantics never change.
 """
 
 from __future__ import annotations
 
 from contextlib import closing
+from dataclasses import dataclass
 import json
+import logging
+import os
 from pathlib import Path
 import sqlite3
+import time
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
+MAX_ROWS_ENV = "DEEPTUTOR_USAGE_LEDGER_MAX_ROWS"
+MAX_AGE_DAYS_ENV = "DEEPTUTOR_USAGE_LEDGER_MAX_AGE_DAYS"
+
+# One retention pass deletes at most this many rows so a large backlog cannot
+# stall a single write or maintenance run; repeated passes keep making progress.
+_RETENTION_MAX_DELETE_PER_RUN = 50_000
 
 _CALL_FIELDS = frozenset(
     {
@@ -40,6 +59,113 @@ def ledger_path() -> Path:
     return get_owner_path_service().get_user_root() / "usage.sqlite3"
 
 
+@dataclass(frozen=True)
+class RetentionPolicy:
+    """Optional ledger growth bound; the default instance disables cleanup.
+
+    ``max_rows`` keeps only the most recent N rows, ``max_age_seconds`` drops
+    rows whose ``started_at`` is older than now minus the age. Unset or
+    non-positive values disable the matching rule, so a configuration typo can
+    never wipe the ledger. :meth:`from_env` reads
+    ``DEEPTUTOR_USAGE_LEDGER_MAX_ROWS`` and ``DEEPTUTOR_USAGE_LEDGER_MAX_AGE_DAYS``.
+    """
+
+    max_rows: int | None = None
+    max_age_seconds: float | None = None
+
+    @property
+    def active(self) -> bool:
+        return (self.max_rows is not None and self.max_rows > 0) or (
+            self.max_age_seconds is not None and self.max_age_seconds > 0
+        )
+
+    @classmethod
+    def from_env(cls) -> "RetentionPolicy":
+        def _positive(name: str, cast: type[int] | type[float]) -> float | int | None:
+            raw = (os.environ.get(name) or "").strip()
+            if not raw:
+                return None
+            try:
+                value = cast(raw)
+            except ValueError:
+                logger.warning("Ignoring invalid %s=%r for usage ledger retention", name, raw)
+                return None
+            return value if 0 < value < float("inf") else None
+
+        max_rows = _positive(MAX_ROWS_ENV, int)
+        max_age_days = _positive(MAX_AGE_DAYS_ENV, float)
+        return cls(
+            max_rows=int(max_rows) if max_rows is not None else None,
+            max_age_seconds=(float(max_age_days) * 86400 if max_age_days is not None else None),
+        )
+
+
+def _delete_oldest(conn: sqlite3.Connection, *, limit: int, cutoff: float | None = None) -> int:
+    query = "DELETE FROM llm_calls WHERE call_id IN (SELECT call_id FROM llm_calls"
+    params: list[Any] = []
+    if cutoff is not None:
+        query += " WHERE started_at < ?"
+        params.append(cutoff)
+    query += " ORDER BY started_at, call_id LIMIT ?)"
+    params.append(limit)
+    return conn.execute(query, params).rowcount
+
+
+def _enforce_retention(
+    conn: sqlite3.Connection, policy: RetentionPolicy, *, path: Path, now: float
+) -> int:
+    deleted = 0
+    capped = False
+    if policy.max_rows is not None and policy.max_rows > 0:
+        total = conn.execute("SELECT count(*) FROM llm_calls").fetchone()[0]
+        excess = total - policy.max_rows
+        if excess > 0:
+            limit = min(excess, _RETENTION_MAX_DELETE_PER_RUN)
+            capped = capped or limit < excess
+            deleted += _delete_oldest(conn, limit=limit)
+    if policy.max_age_seconds is not None and policy.max_age_seconds > 0:
+        cutoff = now - policy.max_age_seconds
+        stale = conn.execute(
+            "SELECT count(*) FROM llm_calls WHERE started_at < ?", (cutoff,)
+        ).fetchone()[0]
+        if stale > 0:
+            limit = min(stale, _RETENTION_MAX_DELETE_PER_RUN)
+            capped = capped or limit < stale
+            deleted += _delete_oldest(conn, limit=limit, cutoff=cutoff)
+    if deleted:
+        remaining = conn.execute("SELECT count(*) FROM llm_calls").fetchone()[0]
+        logger.info(
+            "usage ledger retention removed %d row(s) from %s (remaining=%d, "
+            "max_rows=%s, max_age_seconds=%s%s)",
+            deleted,
+            path,
+            remaining,
+            policy.max_rows,
+            policy.max_age_seconds,
+            "; capped at per-run limit" if capped else "",
+        )
+    return deleted
+
+
+def enforce_retention(
+    path: Path, *, policy: RetentionPolicy | None = None, now: float | None = None
+) -> int:
+    """Trim *path* outside the write path; returns the number of rows removed.
+
+    Maintenance entry point for schedulers or CLI tools. Missing databases and
+    inactive policies are no-ops that never create a file.
+    """
+    resolved = policy if policy is not None else RetentionPolicy.from_env()
+    if not resolved.active or not path.exists():
+        return 0
+    with closing(sqlite3.connect(path, timeout=5)) as conn, conn:
+        if not conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'llm_calls'").fetchone():
+            return 0
+        return _enforce_retention(
+            conn, resolved, path=path, now=time.time() if now is None else now
+        )
+
+
 def record_call(
     path: Path,
     call: dict[str, Any],
@@ -48,10 +174,12 @@ def record_call(
     session_id: str = "",
     turn_id: str = "",
     source: str = "",
+    policy: RetentionPolicy | None = None,
 ) -> None:
     from deeptutor.utils.secret_files import ensure_private_directory, ensure_private_file
 
     ensure_private_directory(path.parent)
+    retention = policy if policy is not None else RetentionPolicy.from_env()
     with closing(sqlite3.connect(path, timeout=5)) as conn, conn:
         ensure_private_file(path)
         conn.execute("PRAGMA journal_mode=WAL")
@@ -71,6 +199,11 @@ def record_call(
                 json.dumps({k: v for k, v in call.items() if k in _CALL_FIELDS}, allow_nan=False),
             ),
         )
+        if retention.active:
+            try:
+                _enforce_retention(conn, retention, path=path, now=time.time())
+            except Exception:
+                logger.warning("Usage ledger retention skipped on %s", path, exc_info=True)
 
 
 def usage_records(
