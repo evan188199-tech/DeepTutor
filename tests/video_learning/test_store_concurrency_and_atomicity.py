@@ -124,9 +124,7 @@ def test_concurrent_locked_saves_keep_every_mark_update(tmp_path: Path) -> None:
             latest["learning"]["marks"] = marks
             store.save(latest)
 
-    threads = [
-        threading.Thread(target=worker, args=(index,)) for index in range(threads_count)
-    ]
+    threads = [threading.Thread(target=worker, args=(index,)) for index in range(threads_count)]
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -273,9 +271,7 @@ def test_legacy_repair_via_lock_held_get_saves_once(tmp_path: Path) -> None:
     ],
     ids=["already_versioned", "no_transcript_dict"],
 )
-def test_get_skips_repair_rewrite_when_gate_is_clean(
-    tmp_path: Path, overrides: dict
-) -> None:
+def test_get_skips_repair_rewrite_when_gate_is_clean(tmp_path: Path, overrides: dict) -> None:
     store = service.TimedMediaStore(tmp_path / "timed_media")
     material_id = service.material_id_for(VIDEO_ID)
     store.save({**_base_material(material_id), **overrides})
