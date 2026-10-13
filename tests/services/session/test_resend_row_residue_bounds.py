@@ -6,7 +6,7 @@ Lost-ack resend of a failing submission (the #1793 binding,
 nothing prunes the superseded failed turns or their ``turn_events`` under the
 current no-vacuum strategy. These tests pin the resulting row-growth upper
 bounds so a future retention design has a measured baseline to relax
-deliberately (session-sqlite-growth audit R1/R5). They document current
+deliberately (storage-growth audit findings R1/R5). They document current
 behaviour; they do not endorse it.
 """
 
