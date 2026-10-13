@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 from typing import Any, Awaitable, Callable, Literal
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
@@ -31,6 +32,10 @@ MAX_SEGMENT_SECONDS = 90
 YOUTUBE_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"}
 VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 MATERIAL_ID_RE = re.compile(r"^[0-9a-f]{16,64}$")
+# Lock files are unlinked when the critical section ends; anything still on
+# disk past this age is a leftover from a crash or a refused unlink and is
+# reclaimed lazily by ``TimedMediaStore._sweep_stale_locks``.
+STALE_LOCK_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 WEBVTT_TIMING_RE = re.compile(
     r"^\s*(?P<start>\d{2}:\d{2}(?::\d{2})?[.,]\d{3})\s+-->\s+"
     r"(?P<end>\d{2}:\d{2}(?::\d{2})?[.,]\d{3})(?:[ \t]+.*)?$"
@@ -377,31 +382,111 @@ class TimedMediaStore:
             raise TimedMediaNotFound("Timed media material was not found.")
         lock_root = self.root / ".locks"
         lock_root.mkdir(parents=True, exist_ok=True)
+        self._sweep_stale_locks(lock_root)
+        lock_path = lock_root / f"{material_id}.lock"
+        handle = self._acquire_lock_handle(lock_path)
+        try:
+            yield
+        finally:
+            self._release_lock_handle(handle, lock_path)
+
+    @staticmethod
+    def _flock_acquire(handle) -> None:
         # Binary + msvcrt on Windows (fcntl is Unix-only). Mirror
         # ``codex_auth.storage`` so importing this module does not break
         # ``deeptutor start`` on Windows (#1140 / #1143).
-        with (lock_root / f"{material_id}.lock").open("a+b") as handle:
+        handle.seek(0)
+        if sys.platform == "win32":
+            import msvcrt
+
+            msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+
+    @staticmethod
+    def _flock_release(handle) -> None:
+        handle.seek(0)
+        if sys.platform == "win32":
+            import msvcrt
+
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+    def _acquire_lock_handle(self, lock_path: Path):
+        while True:
+            handle = lock_path.open("a+b")
             handle.seek(0, os.SEEK_END)
             if handle.tell() == 0:
                 handle.write(b"\0")
                 handle.flush()
-            handle.seek(0)
+            self._flock_acquire(handle)
             if sys.platform == "win32":
-                import msvcrt
-
-                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
-            else:
-                import fcntl
-
-                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+                return handle
+            # Holders unlink the lock file on release, so a waiter can end up
+            # holding an orphaned inode while a fresh file already lives at
+            # ``lock_path``. Revalidate and retry in that case so exclusion
+            # always applies to the live path.
             try:
-                yield
-            finally:
-                handle.seek(0)
-                if sys.platform == "win32":
-                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
-                else:
-                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                live_ino = os.stat(lock_path).st_ino
+            except OSError:
+                live_ino = None
+            if live_ino is not None and live_ino == os.fstat(handle.fileno()).st_ino:
+                return handle
+            self._flock_release(handle)
+            handle.close()
+
+    def _release_lock_handle(self, handle, lock_path: Path) -> None:
+        if sys.platform == "win32":
+            # Windows refuses to unlink a file any contender still holds open,
+            # which is exactly what makes unlink-after-close race free there.
+            self._flock_release(handle)
+            handle.close()
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
+            return
+        try:
+            # Unlink while the flock is still held: waiters left on the
+            # orphaned inode revalidate in ``_acquire_lock_handle`` and retry,
+            # so mutual exclusion survives the cleanup. Failed unlinks (rare)
+            # are reclaimed later by the stale-lock sweep.
+            lock_path.unlink()
+        except OSError:
+            pass
+        finally:
+            self._flock_release(handle)
+            handle.close()
+
+    @staticmethod
+    def _sweep_stale_locks(lock_root: Path) -> int:
+        """Lazily delete this module's abandoned lock files older than the age cap.
+
+        Only ``.locks/<material_id>.lock`` entries are considered; material
+        JSON files and foreign names are never touched.
+        """
+        cutoff = time.time() - STALE_LOCK_MAX_AGE_SECONDS
+        removed = 0
+        try:
+            entries = list(lock_root.iterdir())
+        except OSError:
+            return removed
+        for entry in entries:
+            material_id = entry.name.removesuffix(".lock")
+            if not entry.name.endswith(".lock") or not MATERIAL_ID_RE.fullmatch(material_id):
+                continue
+            try:
+                if entry.is_file() and entry.stat().st_mtime < cutoff:
+                    entry.unlink()
+                    removed += 1
+            except OSError:
+                continue
+        return removed
 
 
 def get_timed_media_store() -> TimedMediaStore:
