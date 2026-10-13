@@ -1,0 +1,47 @@
+match_id,file,line,method,tri_state,subtype,prod_reachable,basis,fix_batch,prior_source,prior_line
+WCE-001,web/app/(workspace)/learning/books/BooksRoute.tsx,184,error,合理保留,错误上报+用户可见反馈,yes,catch 内 notify() toast(tone error 8s)与 console.error 并存；用户可见失败原因,无,AGEN-520 v1.6.13,184
+WCE-002,web/app/(workspace)/learning/books/BooksRoute.tsx,244,error,疑似调试残留,吞错替代(console 为唯一处理),yes,hydratePage 失败仅 console.error；页面停留旧内容无任何用户提示,批次4,AGEN-520 v1.6.13,244
+WCE-003,web/app/(workspace)/learning/books/BooksRoute.tsx,476,error,合理保留,错误上报+用户可见反馈,yes,深链打开失败 notify toast 并回退选中为空；console 仅留痕,无,AGEN-520 v1.6.13,476
+WCE-004,web/app/(workspace)/learning/books/BooksRoute.tsx,663,error,合理保留,错误上报+用户可见反馈,yes,compilePage 失败 notify toast(含 409 重试设计)并重载 detail,无,AGEN-520 v1.6.13,663
+WCE-005,web/app/(workspace)/learning/books/BooksRoute.tsx,785,error,合理保留,错误上报+用户可见反馈,yes,regenerateBlock 失败 notify toast；finally hydratePage 兜底,无,AGEN-520 v1.6.13,785
+WCE-006,web/components/Geogebra.tsx,173,warn,合理保留,边界兜底,yes,evalCommand 返回 false 收集进 failures 并 setCommandErrors 供 UI 展示；warn 为诊断留痕,无,AGEN-520 v1.6.13,173
+WCE-007,web/components/Geogebra.tsx,177,warn,合理保留,边界兜底,yes,evalCommand 抛错同上收集+UI 展示；warn 留痕,无,AGEN-520 v1.6.13,177
+WCE-008,web/components/chat/home/ChatComposer.tsx,565,warn,合理保留,边界兜底(设计内降级),yes,workspace 草稿恢复失败时保留已存草稿不动并置 restoreFailedRef；带明确设计注释与本卡新增(v1.6.13 后),无,无(新增),-
+WCE-009,web/components/notebook/useNotebookSelection.ts,49,error,疑似调试残留,吞错替代+假空态,yes,笔记本列表加载失败 setNotebooks([]) 假空；选择器无法与无笔记本区分,批次2,AGEN-520 v1.6.13,49
+WCE-010,web/components/notebook/useNotebookSelection.ts,79,error,疑似调试残留,吞错替代,yes,记录展开失败仅 console.error；loading 复位后内容区空白无提示,批次2,AGEN-520 v1.6.13,79
+WCE-011,web/components/quiz/QuizViewer.tsx,458,error,疑似调试残留,吞错替代(隐式重试不可见),yes,测验成绩上报失败仅 console.error+重置 signature 隐式重试；用户不知成绩未存,批次5,AGEN-520 v1.6.13,458
+WCE-012,web/components/sidebar/UtilitySidebar.tsx,65,error,疑似调试残留,吞错替代+假空态,yes,会话列表加载失败骨架消失后侧栏假空；与无会话不可区分,批次1,AGEN-520 v1.6.13,65
+WCE-013,web/components/sidebar/WorkspaceSidebar.tsx,78,error,疑似调试残留,吞错替代+假空态,yes,会话列表加载失败仅 console.error；侧栏假空同 WCE-012(同构代码),批次1,AGEN-520 v1.6.13,78
+WCE-014,web/context/GeogebraTabContext.tsx,57,warn,合理保留,边界兜底(设计内 no-op),yes,查看器未挂载时 CTA no-op 而非抛错；带明确设计注释可重试,无,AGEN-520 v1.6.13,57
+WCE-015,web/features/chat/ChatStateAdapter.tsx,2254,error,合理保留,错误上报+用户可见反馈,yes,WS 重连耗尽后 dispatch STREAM_END(status failed)附 i18n 用户可见错误文案,无,AGEN-520 v1.6.13@2261 行漂移,2261
+WCE-016,web/features/chat/ChatStateAdapter.tsx,2405,warn,合理保留,边界兜底(best-effort),yes,消息 trace 加载失败仅影响诊断面板；AbortError 已排除,无,AGEN-520 v1.6.13@2412 行漂移,2412
+WCE-017,web/features/chat/ChatStateAdapter.tsx,3579,warn,合理保留,边界兜底(fire-and-forget 设计),yes,分支选择持久化失败仅留痕；本地 state 为 UI 真相源(明确注释),无,AGEN-520 v1.6.13@3582 行漂移,3582
+WCE-018,web/features/chat/ChatStateAdapter.tsx,3617,error,疑似调试残留,吞错替代,yes,删除 turn 失败仅 console.error；dispatch 仅在成功后执行——表现为点了没反应,批次3,AGEN-520 v1.6.13@3620 行漂移,3620
+WCE-019,web/features/chat/components/ChatWorkspace.tsx,882,error,合理保留,错误上报+用户可见反馈,yes,重命名失败 setSessionTitleError(内联 Rename failed)并重新聚焦输入框,无,AGEN-520 v1.6.13@917 行漂移,917
+WCE-020,web/features/settings/store/SettingsStore.tsx,841,error,合理保留,错误上报+用户可见反馈,yes,设置加载失败 setSettingsError 并解除 loading gate 渲染错误 UI,无,AGEN-520 v1.6.13@832 行漂移,832
+WCE-021,web/features/settings/store/SettingsStore.tsx,854,error,合理保留,错误上报+用户可见反馈,yes,系统状态加载失败条件性 setSettingsError(避免重复报错；带注释),无,AGEN-520 v1.6.13@845 行漂移,845
+WCE-022,web/lib/iframe-html.ts,22,error,误报,字符串字面量内联脚本,n/a(间接),命中落在 KATEX_INIT_SCRIPT 字符串内(沙箱 iframe 内联脚本)；非 TS 源码调用点；脚本自身 try/catch 设计内降级,无,AGEN-520 v1.6.13 console_mention,22
+WCE-023,web/lib/iframe-html.ts,22,warn,误报,字符串字面量内联脚本,n/a(间接),同 WCE-022 同一行；KaTeX 加载超时提示为 iframe 内联脚本设计输出,无,AGEN-520 v1.6.13 console_mention,22
+WCE-024,web/scripts/build-brand-icons.mts,34,error,合理保留,CLI 工具设计输出,no,图标构建脚本失败报告(node 进程 stderr)；仅 package.json build:brand-icons 调用,无,AGEN-520 v1.6.13,34
+WCE-025,web/scripts/build.mjs,124,error,合理保留,CLI 工具设计输出,no,生产构建脚本失败报告；仅 package.json build 调用,无,AGEN-520 v1.6.13,124
+WCE-026,web/scripts/generate-contracts.mjs,78,error,合理保留,CLI 工具设计输出,no,契约陈旧检查报告；仅 package.json contracts:generate/check 调用,无,AGEN-520 v1.6.13,78
+WCE-027,web/scripts/i18n_audit.mjs,130,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 报告(缺 locales 目录)；仅 package.json i18n:audit 调用,无,AGEN-520 v1.6.13,130
+WCE-028,web/scripts/i18n_audit.mjs,143,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 报告(缺 app.json),无,AGEN-520 v1.6.13,143
+WCE-029,web/scripts/i18n_audit.mjs,182,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 报告(t() 字面量缺词条),无,AGEN-520 v1.6.13,182
+WCE-030,web/scripts/i18n_audit.mjs,193,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 报告(覆盖率低于阈值),无,AGEN-520 v1.6.13,193
+WCE-031,web/scripts/i18n_audit.mjs,206,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 报告(插值占位符不匹配),无,AGEN-520 v1.6.13,206
+WCE-032,web/scripts/i18n_audit.mjs,208,error,合理保留,CLI 工具设计输出,no,i18n 审计 CLI 明细输出,无,AGEN-520 v1.6.13,208
+WCE-033,web/scripts/i18n_parity.mjs,39,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 报告(缺 locales 根目录)；仅 package.json i18n:parity 调用,无,AGEN-520 v1.6.13,39
+WCE-034,web/scripts/i18n_parity.mjs,52,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 报告(缺 zh 文件),无,AGEN-520 v1.6.13,52
+WCE-035,web/scripts/i18n_parity.mjs,53,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,53
+WCE-036,web/scripts/i18n_parity.mjs,57,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 报告(多余 zh 文件),无,AGEN-520 v1.6.13,57
+WCE-037,web/scripts/i18n_parity.mjs,58,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,58
+WCE-038,web/scripts/i18n_parity.mjs,75,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 报告(键不匹配),无,AGEN-520 v1.6.13,75
+WCE-039,web/scripts/i18n_parity.mjs,77,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,77
+WCE-040,web/scripts/i18n_parity.mjs,78,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,78
+WCE-041,web/scripts/i18n_parity.mjs,81,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,81
+WCE-042,web/scripts/i18n_parity.mjs,82,error,合理保留,CLI 工具设计输出,no,i18n 对比 CLI 明细输出,无,AGEN-520 v1.6.13,82
+WCE-043,web/scripts/route_budgets.mjs,207,error,合理保留,CLI 工具设计输出,no,路由预算检查脚本失败报告；仅 package.json perf:check 调用,无,AGEN-520 v1.6.13,207
+WCE-044,web/scripts/run-node-tests.mjs,51,error,合理保留,CLI 工具设计输出,no,node 测试 runner 报告(缺编译产物)；仅 package.json test:node 调用,无,AGEN-520 v1.6.13,51
+WCE-045,web/scripts/typecheck.mjs,49,error,合理保留,CLI 工具设计输出,no,typecheck 脚本失败报告；仅 package.json typecheck 调用,无,AGEN-520 v1.6.13,49
+WCE-046,web/tests/setup/rendered.ts,73,error,误报,标识符引用(非调用),no,console.error 作为值传给测试 spy(const originalConsoleError = console.error)无调用括号；测试基建不进产物,无,AGEN-520 v1.6.13 console_reference,73
