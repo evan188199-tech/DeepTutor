@@ -8,11 +8,14 @@ import asyncio
 from datetime import datetime
 import html
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from deeptutor.services.path_service import get_path_service
 from deeptutor.utils.json_parser import parse_json_response
+
+logger = logging.getLogger(__name__)
 
 _RAG_SOURCE_FIELDS = ("chunks", "documents", "sources", "context", "retrieved_docs")
 
@@ -171,7 +174,7 @@ class CitationManager:
                         # Fallback: restore counters from existing citations
                         self._restore_counters_from_citations()
             except Exception as e:
-                print(f"⚠️ Failed to load citation file: {e}")
+                logger.warning("Failed to load citation file: %s", e)
                 self._citations = {}
         else:
             self._citations = {}
@@ -214,7 +217,7 @@ class CitationManager:
             with open(self.citations_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            print(f"⚠️ Failed to save citation file: {e}")
+            logger.warning("Failed to save citation file: %s", e)
 
     def validate_citation_references(self, text: str) -> dict[str, Any]:
         """
@@ -328,7 +331,7 @@ class CitationManager:
                 return True
             return False
         except Exception as e:
-            print(f"⚠️ Failed to add citation (citation_id={citation_id}): {e}")
+            logger.warning("Failed to add citation (citation_id=%s): %s", citation_id, e)
             return False
 
     def _extract_rag_citation(
@@ -378,7 +381,7 @@ class CitationManager:
 
         except Exception as e:
             # If parsing fails, still return basic citation info
-            print(f"⚠️ Failed to parse RAG source info: {e}")
+            logger.warning("Failed to parse RAG source info: %s", e)
 
         return citation_info
 
@@ -527,7 +530,7 @@ class CitationManager:
 
             return citation_info
         except Exception as e:
-            print(f"⚠️ Failed to parse paper citation: {e}")
+            logger.warning("Failed to parse paper citation: %s", e)
             # Still return the basic citation info
             return citation_info
 

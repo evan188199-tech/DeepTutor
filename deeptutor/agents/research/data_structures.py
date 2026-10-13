@@ -9,11 +9,14 @@ from datetime import datetime
 import difflib
 from enum import Enum
 import json
+import logging
 from pathlib import Path
 import re
 from typing import Any
 
 from deeptutor.utils.json_parser import parse_json_response
+
+logger = logging.getLogger(__name__)
 
 # Default fuzzy-match threshold used by :meth:`DynamicTopicQueue.find_similar`.
 # 0.85 reliably catches near-duplicate titles (case / punctuation / one-word
@@ -551,7 +554,7 @@ class DynamicTopicQueue:
             try:
                 self.save_to_json(self.state_file)
             except Exception as exc:
-                print(f"⚠️ Failed to save queue progress: {exc}")
+                logger.warning("Failed to save queue progress: %s", exc)
 
     @classmethod
     def load_from_json(cls, filepath: str) -> "DynamicTopicQueue":

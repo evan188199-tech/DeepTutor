@@ -15,6 +15,7 @@ import argparse
 import asyncio
 from datetime import datetime
 import json
+import logging
 from pathlib import Path
 import sys
 from typing import Any
@@ -24,6 +25,8 @@ from deeptutor.services.llm import complete as llm_complete
 from deeptutor.services.llm.capabilities import supports_response_format
 from deeptutor.services.llm.config import get_llm_config
 from deeptutor.utils.json_parser import parse_json_response
+
+logger = logging.getLogger(__name__)
 
 
 def _find_parsed_content_dir(paper_dir: Path) -> Path:
@@ -67,15 +70,15 @@ def load_parsed_paper(paper_dir: Path) -> tuple[str | None, list[dict] | None, P
     """
     auto_dir = _find_parsed_content_dir(paper_dir)
     if auto_dir != paper_dir:
-        print(f"📂 Using parsed content directory: {auto_dir.relative_to(paper_dir)}")
+        logger.info("📂 Using parsed content directory: %s", auto_dir.relative_to(paper_dir))
 
     md_files = list(auto_dir.glob("*.md"))
     if not md_files:
-        print(f"✗ Error: No markdown file found in {auto_dir}")
+        logger.error("✗ Error: No markdown file found in %s", auto_dir)
         return None, None, auto_dir / "images"
 
     md_file = md_files[0]
-    print(f"📄 Found markdown file: {md_file.name}")
+    logger.info("📄 Found markdown file: %s", md_file.name)
 
     with open(md_file, encoding="utf-8") as f:
         markdown_content = f.read()
@@ -84,18 +87,20 @@ def load_parsed_paper(paper_dir: Path) -> tuple[str | None, list[dict] | None, P
     content_list = None
     if json_files:
         json_file = json_files[0]
-        print(f"📋 Found content_list file: {json_file.name}")
+        logger.info("📋 Found content_list file: %s", json_file.name)
         with open(json_file, encoding="utf-8") as f:
             content_list = json.load(f)
     else:
-        print("⚠️ Warning: content_list.json file not found, will use markdown content only")
+        logger.warning(
+            "⚠️ Warning: content_list.json file not found, will use markdown content only"
+        )
 
     images_dir = auto_dir / "images"
     if images_dir.exists():
         image_count = len(list(images_dir.glob("*")))
-        print(f"🖼️ Found image directory: {image_count} images")
+        logger.info("🖼️ Found image directory: %s images", image_count)
     else:
-        print("⚠️ Warning: images directory not found")
+        logger.warning("⚠️ Warning: images directory not found")
 
     return markdown_content, content_list, images_dir
 
@@ -207,10 +212,10 @@ Available image files:
 Please analyze the above exam paper content, extract all question information, and return in JSON format.
 """
 
-    print("\n🤖 Using LLM to analyze questions...")
-    print(f"📊 Model: {model}")
-    print(f"📝 Document length: {len(markdown_content)} characters")
-    print(f"🖼️ Available images: {len(image_list)}")
+    logger.info("\n🤖 Using LLM to analyze questions...")
+    logger.info("📊 Model: %s", model)
+    logger.info("📝 Document length: %s characters", len(markdown_content))
+    logger.info("🖼️ Available images: %s", len(image_list))
 
     # Get agent parameters from unified config
     agent_params = get_agent_params("question")
@@ -267,15 +272,15 @@ Please analyze the above exam paper content, extract all question information, a
         if result is None:
             raise ValueError("JSON parsing returned None")
     except Exception as e:
-        print(f"✗ JSON parsing error: {e!s}")
-        print(f"LLM response content: {result_text[:500]}...")
+        logger.error("✗ JSON parsing error: %s", e)
+        logger.error("LLM response content: %s...", result_text[:500])
         raise ValueError(
             f"Failed to parse LLM JSON response: {e}. "
             f"Raw response (first 500 chars): {result_text[:500]!r}"
         ) from e
 
     questions = result.get("questions", [])
-    print(f"✓ Successfully extracted {len(questions)} questions")
+    logger.info("✓ Successfully extracted %s questions", len(questions))
 
     return questions
 
@@ -307,13 +312,13 @@ def save_questions_json(questions: list[dict[str, Any]], output_dir: Path, paper
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-    print(f"💾 Question information saved to: {output_file.name}")
+    logger.info("💾 Question information saved to: %s", output_file.name)
 
-    print("\n📋 Question statistics:")
-    print(f"  Total questions: {len(questions)}")
+    logger.info("\n📋 Question statistics:")
+    logger.info("  Total questions: %s", len(questions))
 
     questions_with_images = sum(1 for q in questions if q.get("images"))
-    print(f"  Questions with images: {questions_with_images}")
+    logger.info("  Questions with images: %s", questions_with_images)
 
     return output_file
 
@@ -331,22 +336,22 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
     """
     paper_dir = Path(paper_dir).resolve()
     if not paper_dir.exists():
-        print(f"✗ Error: Directory does not exist: {paper_dir}")
+        logger.error("✗ Error: Directory does not exist: %s", paper_dir)
         return False
 
-    print(f"📁 Paper directory: {paper_dir}")
+    logger.info("📁 Paper directory: %s", paper_dir)
 
     markdown_content, content_list, images_dir = load_parsed_paper(paper_dir)
 
     if not markdown_content:
-        print("✗ Error: Unable to load paper content")
+        logger.error("✗ Error: Unable to load paper content")
         return False
 
     try:
         llm_config = get_llm_config()
     except ValueError as e:
-        print(f"✗ {e!s}")
-        print("Tip: Configure an active LLM profile in Settings > Catalog")
+        logger.error("✗ %s", e)
+        logger.info("Tip: Configure an active LLM profile in Settings > Catalog")
         return False
 
     questions = extract_questions_with_llm(
@@ -361,7 +366,7 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
     )
 
     if not questions:
-        print("⚠️ Warning: No questions extracted")
+        logger.warning("⚠️ Warning: No questions extracted")
         return False
 
     if output_dir is None:
@@ -372,14 +377,24 @@ def extract_questions_from_paper(paper_dir: str, output_dir: str | None = None) 
     paper_name = paper_dir.name
     output_file = save_questions_json(questions, output_dir, paper_name)
 
-    print("\n✓ Question extraction completed!")
-    print(f"📄 View results: {output_file}")
+    logger.info("\n✓ Question extraction completed!")
+    logger.info("📄 View results: %s", output_file)
 
     return True
 
 
+def _configure_cli_logging() -> None:
+    """Route this module's log records to stdout so the CLI keeps its progress output."""
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+
 def main():
     """Main function"""
+    _configure_cli_logging()
+
     parser = argparse.ArgumentParser(
         description="Extract question information from MinerU-parsed exam papers",
         formatter_class=argparse.RawDescriptionHelpFormatter,

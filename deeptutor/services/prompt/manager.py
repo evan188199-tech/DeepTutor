@@ -4,6 +4,7 @@ Unified Prompt Manager - Single source of truth for all prompt loading.
 Supports multi-language, caching, and language fallbacks.
 """
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +12,8 @@ import yaml
 
 from deeptutor.runtime.home import PACKAGE_ROOT
 from deeptutor.services.config import parse_language
+
+logger = logging.getLogger(__name__)
 
 
 class PromptManager:
@@ -118,10 +121,10 @@ class PromptManager:
                         with open(prompt_file, encoding="utf-8") as f:
                             return yaml.safe_load(f) or {}
                     except Exception as e:
-                        print(f"Warning: Failed to load {prompt_file}: {e}")
+                        logger.warning("Failed to load %s: %s", prompt_file, e)
                         continue
 
-        print(f"Warning: No prompt file found for {module_name}/{agent_name}")
+        logger.warning("No prompt file found for %s/%s", module_name, agent_name)
         return {}
 
     def _fallback_chain(self, lang_code: str) -> list[str]:

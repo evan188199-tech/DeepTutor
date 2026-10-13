@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import logging
 from types import SimpleNamespace
 
 from deeptutor.agents.research.utils.citation_manager import CitationManager
+
+_LOGGER_NAME = "deeptutor.agents.research.utils.citation_manager"
 
 
 def _trace() -> SimpleNamespace:
@@ -38,6 +41,48 @@ def test_rag_citation_accepts_top_level_source_list(tmp_path, capsys) -> None:
         "score": "",
     }
     assert "Failed to parse RAG source info" not in capsys.readouterr().out
+
+
+def test_load_failure_logs_warning_instead_of_stdout(tmp_path, caplog, capsys) -> None:
+    (tmp_path / "citations.json").write_text("{not valid json", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_NAME):
+        manager = CitationManager("research-load-fail", cache_dir=tmp_path)
+
+    assert manager.get_all_citations() == {}
+    assert any("Failed to load citation file" in record.getMessage() for record in caplog.records)
+    assert capsys.readouterr().out == ""
+
+
+def test_save_failure_logs_warning_instead_of_stdout(tmp_path, caplog, capsys) -> None:
+    (tmp_path / "citations.json").mkdir()
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_NAME):
+        manager = CitationManager("research-save-fail", cache_dir=tmp_path)
+        manager._save_citations()
+
+    messages = [record.getMessage() for record in caplog.records]
+    assert any("Failed to load citation file" in message for message in messages)
+    assert any("Failed to save citation file" in message for message in messages)
+    assert capsys.readouterr().out == ""
+
+
+def test_add_citation_failure_logs_warning_instead_of_stdout(
+    tmp_path, caplog, capsys, monkeypatch
+) -> None:
+    manager = CitationManager("research-add-fail", cache_dir=tmp_path)
+
+    def _raise_runtime_error(*_args, **_kwargs) -> None:
+        raise RuntimeError("citation extraction exploded")
+
+    monkeypatch.setattr(manager, "_extract_rag_citation", _raise_runtime_error)
+
+    with caplog.at_level(logging.WARNING, logger=_LOGGER_NAME):
+        added = manager.add_citation("CIT-1-01", "rag", _trace(), "raw-answer", None)
+
+    assert added is False
+    assert any("Failed to add citation" in record.getMessage() for record in caplog.records)
+    assert capsys.readouterr().out == ""
 
 
 def test_rag_citation_preserves_object_payload_metadata(tmp_path) -> None:

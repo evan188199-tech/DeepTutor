@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import logging
 from pathlib import Path
 import sys
 import types
+
+_UNDER_TEST = "question_extractor_under_test"
 
 
 def _load_question_extractor_module():
@@ -73,3 +76,89 @@ def test_load_parsed_paper_supports_nested_hybrid_auto_output(tmp_path: Path) ->
     assert markdown_content == "# Exam content"
     assert content_list == [{"type": "text", "text": "Question 1"}]
     assert discovered_images_dir == images_dir
+
+
+def test_load_parsed_paper_progress_goes_to_logger_not_stdout(
+    tmp_path: Path, caplog, capsys
+) -> None:
+    question_extractor = _load_question_extractor_module()
+    parsed_dir = tmp_path / "mimic_exam" / "auto"
+    parsed_dir.mkdir(parents=True)
+    (parsed_dir / "exam.md").write_text("# Exam content", encoding="utf-8")
+
+    with caplog.at_level(logging.INFO, logger=_UNDER_TEST):
+        markdown_content, _content_list, _images_dir = question_extractor.load_parsed_paper(
+            tmp_path / "mimic_exam"
+        )
+
+    assert markdown_content == "# Exam content"
+    messages = [record.getMessage() for record in caplog.records]
+    assert any("Using parsed content directory" in message for message in messages)
+    assert any("Found markdown file" in message for message in messages)
+    assert capsys.readouterr().out == ""
+
+
+def test_extract_questions_from_paper_missing_dir_logs_via_logger(
+    tmp_path: Path, caplog, capsys
+) -> None:
+    question_extractor = _load_question_extractor_module()
+
+    with caplog.at_level(logging.ERROR, logger=_UNDER_TEST):
+        success = question_extractor.extract_questions_from_paper(str(tmp_path / "missing"))
+
+    assert success is False
+    assert any("Directory does not exist" in record.getMessage() for record in caplog.records)
+    assert capsys.readouterr().out == ""
+
+
+def test_extract_questions_from_paper_no_markdown_logs_via_logger(
+    tmp_path: Path, caplog, capsys
+) -> None:
+    question_extractor = _load_question_extractor_module()
+    paper_dir = tmp_path / "empty_paper"
+    paper_dir.mkdir()
+
+    with caplog.at_level(logging.ERROR, logger=_UNDER_TEST):
+        success = question_extractor.extract_questions_from_paper(str(paper_dir))
+
+    assert success is False
+    assert any("Unable to load paper content" in record.getMessage() for record in caplog.records)
+    assert any("No markdown file found" in record.getMessage() for record in caplog.records)
+    assert capsys.readouterr().out == ""
+
+
+def test_extract_questions_from_paper_llm_config_error_logs_via_logger(
+    tmp_path: Path, caplog, capsys, monkeypatch
+) -> None:
+    question_extractor = _load_question_extractor_module()
+    paper_dir = tmp_path / "paper"
+    paper_dir.mkdir()
+    (paper_dir / "exam.md").write_text("# Exam content", encoding="utf-8")
+
+    def _raise_value_error() -> None:
+        raise ValueError("no active LLM profile")
+
+    monkeypatch.setattr(question_extractor, "get_llm_config", _raise_value_error)
+
+    with caplog.at_level(logging.INFO, logger=_UNDER_TEST):
+        success = question_extractor.extract_questions_from_paper(str(paper_dir))
+
+    assert success is False
+    messages = [record.getMessage() for record in caplog.records]
+    assert any("no active LLM profile" in message for message in messages)
+    assert any("Configure an active LLM profile" in message for message in messages)
+    assert capsys.readouterr().out == ""
+
+
+def test_cli_logging_keeps_stdout_output(tmp_path: Path, capsys, monkeypatch) -> None:
+    question_extractor = _load_question_extractor_module()
+    monkeypatch.setattr(sys, "argv", ["question_extractor.py", str(tmp_path / "missing_paper")])
+
+    try:
+        question_extractor.main()
+    except SystemExit as exit_code:
+        assert exit_code.code == 1
+    else:
+        raise AssertionError("main() should exit with status 1 on failure")
+
+    assert "Directory does not exist" in capsys.readouterr().out

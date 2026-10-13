@@ -12,6 +12,8 @@ The new agentic-loop refactor relies on three additions to
 
 from __future__ import annotations
 
+import logging
+
 from deeptutor.agents.research.data_structures import (
     DEFAULT_TOPIC_SIMILARITY_THRESHOLD,
     DynamicTopicQueue,
@@ -21,6 +23,18 @@ from deeptutor.agents.research.data_structures import (
 
 def _queue(max_length: int | None = None) -> DynamicTopicQueue:
     return DynamicTopicQueue("test", max_length=max_length)
+
+
+def test_auto_save_failure_logs_warning_instead_of_stdout(tmp_path, caplog, capsys) -> None:
+    blocker = tmp_path / "blocker"
+    blocker.write_text("regular file", encoding="utf-8")
+    q = _queue()
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.agents.research.data_structures"):
+        q.set_state_file(str(blocker / "state.json"))
+
+    assert any("Failed to save queue progress" in record.getMessage() for record in caplog.records)
+    assert capsys.readouterr().out == ""
 
 
 def test_is_full_returns_false_when_no_cap_configured() -> None:
