@@ -2300,6 +2300,11 @@ class MasteryReviseTool(BaseTool):
         specs, spec_error = _revise_specs(kwargs)
         if spec_error is not None:
             return ToolResult(content=spec_error, success=False)
+        # The payload shape follows the calling form, not the entry count: a
+        # caller that passed modules=[{...}] — one entry or several — has
+        # written batch-shaped handling and must not have it switch to the
+        # flat single-module shape just because N happened to be 1.
+        batch_form = bool(kwargs.get("modules"))
 
         service = _new_service()
         progress = _load_path(service, path_id)
@@ -2397,7 +2402,7 @@ class MasteryReviseTool(BaseTool):
                 ],
             }
 
-        if len(targets) == 1:
+        if not batch_form:
             target = targets[0]
             return _json_result(
                 {

@@ -393,6 +393,44 @@ async def test_single_module_form_keeps_its_contract(path_id):
 
 
 @pytest.mark.asyncio
+async def test_batch_form_with_one_module_keeps_the_batch_shape(path_id):
+    """A modules=[...] request of ONE entry still answers with the modules list.
+
+    The batch contract is settled by how the caller asked, not by how many
+    entries the request holds: N=1 and N>1 must read the same payload shape,
+    so one consuming path handles every batch reply.
+    """
+    built = await _build_three_modules(path_id)
+    base_revision = built["path_revision"]
+
+    revised = await MasteryReviseTool().execute(
+        _mastery_path_id=path_id,
+        modules=[
+            {
+                "module_id": "test_path_m1",
+                "rewrite": [{"knowledge_point_id": "test_path_m1_kp0", "name": "合取、析取与否定"}],
+            }
+        ],
+    )
+
+    assert revised.success, revised.content
+    payload = json.loads(revised.content)
+    # Same keys as any other batch reply — no flat single-module fallback.
+    assert set(payload) == {"status", "path_revision", "modules", "map"}
+    [report] = payload["modules"]
+    assert report["module_id"] == "test_path_m1"
+    assert report["module_name"] == "联结词"
+    assert report["progress_reset"] == ["合取与析取"]
+    assert [kp["name"] for kp in report["knowledge_points"]] == ["合取、析取与否定"]
+
+    progress, store = _stored_state(path_id)
+    assert progress.version == base_revision + 1
+    assert [e.event_type for e in store.list_events(path_id, after_revision=base_revision)] == [
+        "path.module_revised"
+    ]
+
+
+@pytest.mark.asyncio
 async def test_batch_rejects_malformed_requests(path_id):
     """Shape errors are named, and none of them touches stored state."""
     built = await _build_three_modules(path_id)
