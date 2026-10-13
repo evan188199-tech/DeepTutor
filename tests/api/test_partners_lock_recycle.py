@@ -110,9 +110,7 @@ class TestStartLockRecycle:
         monkeypatch.setattr(partners_router_mod, "get_partner_manager", lambda: mgr)
 
         results = await asyncio.wait_for(
-            asyncio.gather(
-                *(_ensure_running_partner("ada", allow_stopped=True) for _ in range(8))
-            ),
+            asyncio.gather(*(_ensure_running_partner("ada", allow_stopped=True) for _ in range(8))),
             timeout=10,
         )
 
@@ -252,9 +250,7 @@ class TestDraftConfirmLockRecycle:
     async def test_confirm_recycles_entry_and_repeat_is_idempotent(self, draft_env, user_context):
         key = (user_context, draft_env.draft.draft_id)
 
-        first = await confirm_partner_draft(
-            draft_env.draft.draft_id, ConfirmPartnerDraftRequest()
-        )
+        first = await confirm_partner_draft(draft_env.draft.draft_id, ConfirmPartnerDraftRequest())
         assert first["already_created"] is False
         assert first["partner_id"] == "draft-ada"
         assert key not in partners_router_mod._draft_confirm_locks
