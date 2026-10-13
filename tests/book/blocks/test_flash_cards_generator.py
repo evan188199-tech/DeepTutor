@@ -167,7 +167,9 @@ async def test_generate_falls_back_to_chapter_fields_and_marks_empty_summary(mon
         {"cards": [{"front": "f"}]},
     ],
 )
-async def test_generate_marks_block_error_when_no_usable_card_survives(monkeypatch, payload) -> None:
+async def test_generate_marks_block_error_when_no_usable_card_survives(
+    monkeypatch, payload
+) -> None:
     async def fake_llm(**kwargs):
         return payload
 

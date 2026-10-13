@@ -54,7 +54,11 @@ async def test_generate_returns_truncated_events_and_ready_block(monkeypatch) ->
     assert block.metadata == {"model": "task-model"}
     assert block.payload["events"] == [
         {"date": "1807", "title": "t" * 160, "description": "d" * 600},
-        {"date": "1" * 80, "title": "Fourier series published", "description": "Analytic theory appears"},
+        {
+            "date": "1" * 80,
+            "title": "Fourier series published",
+            "description": "Analytic theory appears",
+        },
     ]
     assert seen["expected_key"] == "events"
     assert seen["max_tokens"] == 800
@@ -68,8 +72,7 @@ async def test_generate_keeps_at_most_eight_events(monkeypatch) -> None:
     async def fake_llm(**kwargs):
         return {
             "events": [
-                {"date": str(year), "title": f"e{year}", "description": "d"}
-                for year in range(12)
+                {"date": str(year), "title": f"e{year}", "description": "d"} for year in range(12)
             ]
         }
 

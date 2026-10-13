@@ -37,7 +37,7 @@ def test_material_truthiness_follows_waypoint_presence() -> None:
 
 
 def test_sanitize_strips_fences_quotes_and_markdown_debris() -> None:
-    assert _sanitize('```\nWhy does aliasing occur?\n```', "en") == "Why does aliasing occur?"
+    assert _sanitize("```\nWhy does aliasing occur?\n```", "en") == "Why does aliasing occur?"
     assert _sanitize('"Why does aliasing occur?"', "en") == "Why does aliasing occur?"
     assert _sanitize("“为什么会出现混叠？”", "zh") == "为什么会出现混叠？"
     assert _sanitize("「为什么会出现混叠？」", "zh") == "为什么会出现混叠？"
