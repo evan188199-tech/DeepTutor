@@ -314,7 +314,12 @@ async def test_pdf_is_skipped_when_total_text_quota_already_exhausted(
     )
     records, contexts = await parse_chat_pdf_attachments(
         [
-            {"id": "txt", "filename": "notes.txt", "extracted_text": "x" * 100, "extracted_chars": 100},
+            {
+                "id": "txt",
+                "filename": "notes.txt",
+                "extracted_text": "x" * 100,
+                "extracted_chars": 100,
+            },
             {"id": "pdf", "filename": "notes.pdf", "extracted_text": ""},
         ],
         attachment_store=store,
@@ -439,10 +444,7 @@ async def test_image_note_keeps_only_locations_that_fit_the_quota(
     )
     fitting = "x" * 10
     oversized = "y" * 40
-    native = (
-        f"--- Page 1 ---\n[图片 1: {fitting}]"
-        f"\n\n--- Page 2 ---\n[图片 1: {oversized}]"
-    )
+    native = f"--- Page 1 ---\n[图片 1: {fitting}]\n\n--- Page 2 ---\n[图片 1: {oversized}]"
     records, _ = await parse_chat_pdf_attachments(
         [{"id": "pdf", "filename": "notes.pdf", "extracted_text": native}],
         attachment_store=store,
