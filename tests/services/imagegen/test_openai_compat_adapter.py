@@ -157,11 +157,10 @@ async def test_mixed_b64_and_url_items_are_both_materialized(
             ]
         },
     )
-    get_resp = httpx.Response(
-        200, content=b"REMOTE", headers={"content-type": "image/jpeg"}
+    get_resp = httpx.Response(200, content=b"REMOTE", headers={"content-type": "image/jpeg"})
+    captured = _patch_http(
+        monkeypatch, post=lambda url, kwargs: post_resp, get=lambda url, kwargs: get_resp
     )
-    captured = _patch_http(monkeypatch, post=lambda url, kwargs: post_resp,
-                           get=lambda url, kwargs: get_resp)
     images = await OpenAICompatImagegenAdapter().generate("a cat", _config())
 
     assert images == [(b"INLINE", "image/png"), (b"REMOTE", "image/jpeg")]
@@ -176,8 +175,7 @@ async def test_non_image_download_content_type_coerced_to_png(
     get_resp = httpx.Response(
         200, content=b"BYTES", headers={"content-type": "application/octet-stream"}
     )
-    _patch_http(monkeypatch, post=lambda url, kwargs: post_resp,
-                get=lambda url, kwargs: get_resp)
+    _patch_http(monkeypatch, post=lambda url, kwargs: post_resp, get=lambda url, kwargs: get_resp)
     images = await OpenAICompatImagegenAdapter().generate("a cat", _config())
     assert images == [(b"BYTES", "image/png")]
 
@@ -207,18 +205,14 @@ async def test_malformed_response_bodies_are_rejected(
 async def test_non_dict_items_only_yield_no_images_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    _patch_http(
-        monkeypatch, post=lambda url, kwargs: httpx.Response(200, json={"data": ["x", 7]})
-    )
+    _patch_http(monkeypatch, post=lambda url, kwargs: httpx.Response(200, json={"data": ["x", 7]}))
     with pytest.raises(GenerationProviderError, match="returned no images"):
         await OpenAICompatImagegenAdapter().generate("a cat", _config())
 
 
 @pytest.mark.asyncio
 async def test_item_without_b64_or_url_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    _patch_http(
-        monkeypatch, post=lambda url, kwargs: httpx.Response(200, json={"data": [{}]})
-    )
+    _patch_http(monkeypatch, post=lambda url, kwargs: httpx.Response(200, json={"data": [{}]}))
     with pytest.raises(GenerationProviderError, match="neither `b64_json` nor `url`"):
         await OpenAICompatImagegenAdapter().generate("a cat", _config())
 
