@@ -488,7 +488,10 @@ async def crawl_docs_site(
         result.errors.append(f"Disallowed host: {base_host}")
         return result
 
-    base_path_prefix = parsed.path or "/"
+    # Treat sibling pages as in-scope: /intro/home should seed /intro/*, while
+    # an explicit root URL still scopes the whole host. File names are derived
+    # from page paths, so this does not change collision behavior.
+    base_path_prefix = str(Path(parsed.path or "/").parent)
 
     factory = client_factory or (
         lambda: httpx.AsyncClient(

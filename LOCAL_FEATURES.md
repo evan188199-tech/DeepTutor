@@ -122,6 +122,17 @@ Playwright golden paths, and the upstream v1.5.16 gateway test set.
 5. Continue MN4 write-back as a separate Phase 2 chain; do not mix it with a
    release upgrade or read-only bridge fixes.
 
+## Rejected upstream candidates
+
+- Upstream issue #1471, "Adaptive long-term learning engine," is rejected as a
+  contribution candidate. It is inspired by forgetting-curve/FSRS-style memory
+  models, and spaced retrieval has credible qualitative support. The rejected
+  part is turning that into learner/item-specific scheduling without local
+  evidence that the quantitative model fits DeepTutor's learners, assessment
+  quality, and subject mix. Do not reread the issue, claim it, or split PRs
+  from it unless this decision is explicitly reopened with new data or a
+  concrete validation plan.
+
 ## Active upstream watch
 
 Check GitHub notifications once daily. If an item's state is unchanged, take no
@@ -131,7 +142,7 @@ action and leave its discussion thread quiet.
 | --- | --- |
 | [PR #1385](https://github.com/HKUDS/DeepTutor/pull/1385) | As of 2026-09-14, it is open, mergeable, and CI-green. Act only on merge, review feedback, CI failure, closure, or rejection. Once merged, update issue #902's body to mark durable scheduling handled by #1385, then prepare `feat(web-source): add bilingual source pairing (#902)` from the refreshed `origin/dev`. |
 | [Issue #902](https://github.com/HKUDS/DeepTutor/issues/902) | Treat the issue body as the source of current scope and preserve its historical comments. Add a comment only for a new scope declaration, a related PR, a material scope change, or a closing summary. |
-| [PR #1430](https://github.com/HKUDS/DeepTutor/pull/1430) | Track crawler policy separately. After it merges, remove the corresponding remaining-scope bullet from #902 or mark it handled by #1430. |
+| [PR #1430](https://github.com/HKUDS/DeepTutor/pull/1430) | Closed without merge on 2026-09-29. Upstream `c547a5a31` already implements the crawler policy and host pacing; do not reopen or reimplement this scope. |
 
 ## MarginNote 4 v1.5.16 usage
 
@@ -212,3 +223,39 @@ cd web && npm run test:node && npm run lint && npm run build
 launchctl kickstart -k gui/$(id -u)/com.deeptutor.web
 launchctl kickstart -k gui/$(id -u)/com.deeptutor.api
 ```
+
+## Production cutover state (2026-09-15)
+
+Point-in-time record. Refresh it only when the active release changes, and keep
+detailed verification output in the ops logs instead of this ledger.
+
+- **Active release**: `/Users/Shared/DeepTutor-releases/pr24-caption-entities-20260915-184423`
+  (base `tailscale-v1-6-8-20260914-205356`, adds fork
+  [PR #24](https://github.com/evan188199-tech/DeepTutor/pull/24) caption
+  HTML-entity decode + persisted-cue repair). The `com.deeptutor.api` /
+  `com.deeptutor.web` launchd jobs point at it.
+- **Stable env**: `DEEPTUTOR_PUBLIC_URL=https://mac-mini.tail47dc0a.ts.net`,
+  `DEEPTUTOR_HOME=/Users/Shared/DeepTutor`; launchd logs live under
+  `/Users/Shared/DeepTutor/logs/`.
+- **Cutover verification**: release-tree `tests/video_learning/test_service.py`
+  passed; API/Web health checks and the unauthenticated `/watching` redirect
+  behaved as expected. Sample video `PrSf7IOYu-I` was verified end-to-end on
+  the Watching page with entities unescaped.
+- **Rollback**:
+  ```bash
+  /Users/Shared/DeepTutor-ops/rollback-local-release \
+    /Users/Shared/DeepTutor-releases/tailscale-v1-6-8-20260914-205356
+  ```
+  or restore plist backups under
+  `~/Library/LaunchAgents/com.deeptutor.*.plist.pre-tailscale-v1-6-8-*`.
+- **Subtitle recovery (2026-09-15)**: caption fetches failed because the
+  Google-bot-blocked Invidious caption body came back while the subtitle cache
+  volume (`invidious_invidious-subtitles`) was unmounted and the cookie-sync
+  scripts were missing. Fixed by remounting the cache on
+  `local/invidious-video-learning:latest`, restoring
+  `scripts/sync_youtube_cookies.sh` + `prefetch_popular_subtitles.sh`, and
+  reseeding `PrSf7IOYu-I` from the cached VTT through the PR #24 decode.
+- **Residual risk**: uncached videos still need a working YouTube cookie
+  injection (`com.invidious.youtube-cookie-sync`) before the first caption
+  fetch. The flapping test container `deeptutor-invidious-test-invidious-1`
+  is deliberately stopped (`--restart=no`).
