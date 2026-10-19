@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import importlib
-import inspect
 import logging
 import os
 from pathlib import Path
@@ -14,6 +12,7 @@ from typing import Any, Dict, List, Optional
 
 from deeptutor.runtime.home import get_runtime_data_root
 
+from .embedding_binding import with_kb_embedding
 from .factory import DEFAULT_PROVIDER, get_pipeline, list_pipelines, normalize_provider_name
 from .provider_binding import resolve_bound_provider
 
@@ -65,27 +64,72 @@ class RAGService:
             self._pipelines[provider] = get_pipeline(name=provider, kb_base_dir=self.kb_base_dir)
         return self._pipelines[provider]
 
+    @with_kb_embedding
     async def initialize(self, kb_name: str, file_paths: List[str], **kwargs) -> bool:
-        provider = self._resolve_provider(kb_name)
-        self.logger.info(f"Initializing KB '{kb_name}' (provider={provider})")
-        pipeline = self._get_pipeline(provider)
-        return await pipeline.initialize(kb_name=kb_name, file_paths=file_paths, **kwargs)
+        return await self._index(kb_name, file_paths, "initialize", kwargs)
 
+    @with_kb_embedding
     async def add_documents(self, kb_name: str, file_paths: List[str], **kwargs) -> bool:
-        provider = self._resolve_provider(kb_name)
-        self.logger.info(
-            f"Adding {len(file_paths)} document(s) to KB '{kb_name}' (provider={provider})"
-        )
-        pipeline = self._get_pipeline(provider)
-        if not hasattr(pipeline, "add_documents"):
-            return await pipeline.initialize(kb_name=kb_name, file_paths=file_paths, **kwargs)
-        return await pipeline.add_documents(kb_name=kb_name, file_paths=file_paths, **kwargs)
+        return await self._index(kb_name, file_paths, "add_documents", kwargs)
 
+    async def _index(self, kb_name, file_paths, method, kwargs):
+        from deeptutor.knowledge.indexing_run import IndexingRun, current_run
+
+        from .index_probe import latest_ready_provider_version
+        from .kb_paths import resolve_kb_dir
+
+        provider = self._resolve_provider(kb_name)
+        pipeline = self._get_pipeline(provider)
+        operation = getattr(pipeline, method, None) or pipeline.initialize
+        if current_run() is not None:
+            return await operation(kb_name=kb_name, file_paths=file_paths, **kwargs)
+        task_id = kwargs.pop("task_id", "")
+        async with IndexingRun(
+            resolve_kb_dir(self.kb_base_dir, kb_name),
+            file_paths,
+            task_id=task_id,
+            action="upload" if method == "add_documents" else "rebuild",
+            provider=provider,
+        ) as run:
+            receipt_callback = kwargs.get("indexed_file_callback")
+
+            def indexed(paths):
+                for path in paths:
+                    run.document(Path(path), "completed")
+                if receipt_callback:
+                    receipt_callback(paths)
+
+            kwargs["indexed_file_callback"] = indexed
+            callback = kwargs.get("progress_callback")
+
+            def progress(current, total):
+                run.phase("embedding", current=current, total=total)
+                if callback:
+                    callback(current, total)
+
+            kwargs["progress_callback"] = progress
+            success = await operation(kb_name=kb_name, file_paths=file_paths, **kwargs)
+            if not run.data.get("usable_version"):
+                run.check()
+            if not success:
+                return False
+            version = latest_ready_provider_version(run.kb_dir, provider)
+            if version is None:
+                raise RuntimeError("Index output did not pass the provider readiness check.")
+            partial = any(
+                doc.get("status") in {"failed", "unknown", "pending", "parsing"}
+                for doc in run.data["documents"].values()
+            )
+            run.finish("partial" if partial else "completed", version=version.get("version"))
+            return True
+
+    @with_kb_embedding
     async def search(
         self,
         query: str,
         kb_name: str,
         event_sink=None,
+        rewrite: bool | None = None,
         **kwargs,
     ) -> Dict[str, Any]:
         provider = self._resolve_provider(kb_name)
@@ -104,6 +148,26 @@ class RAGService:
                 "provider": provider,
                 "error_type": "reasoning_as_retrieval_required",
             }
+
+        # Query rewrite layer (fail-open). ``maybe_rewrite`` reads runtime
+        # settings when ``rewrite`` is None, honors an explicit True/False
+        # override, and returns ``(original, None)`` when the layer is off, so
+        # provenance is only attached when a rewrite actually ran.
+        from deeptutor.services.rag.query_rewrite import maybe_rewrite
+
+        effective_query, rewrite_outcome = await maybe_rewrite(query, rewrite=rewrite)
+        if rewrite_outcome is not None:
+            await self._emit_tool_event(
+                event_sink,
+                "status",
+                f"Rewritten query: {rewrite_outcome.rewritten}",
+                {
+                    "query": query,
+                    "rewrite_outcome": rewrite_outcome.to_dict(),
+                    "trace_layer": "summary",
+                },
+            )
+
         with self._capture_raw_logs(event_sink):
             await self._emit_tool_event(
                 event_sink,
@@ -122,7 +186,7 @@ class RAGService:
                 {"provider": provider, "trace_layer": "summary"},
             )
 
-            result = await pipeline.search(query=query, kb_name=kb_name, **kwargs)
+            result = await pipeline.search(query=effective_query, kb_name=kb_name, **kwargs)
 
             if "query" not in result:
                 result["query"] = query
@@ -133,6 +197,8 @@ class RAGService:
             # The service is authoritative about which engine ran (resolved from
             # the KB's binding), so it overwrites whatever the pipeline reports.
             result["provider"] = provider
+            if rewrite_outcome is not None:
+                result["query_rewrite"] = rewrite_outcome.to_dict()
 
             if result.get("error_type") or result.get("needs_reindex"):
                 await self._emit_tool_event(
@@ -199,12 +265,7 @@ class RAGService:
             return contextlib.nullcontext()
 
         from deeptutor.logging import ProcessLogEvent, capture_process_logs
-        from deeptutor.logging.formatters import ContextFilter
-
-        try:
-            target_loop = asyncio.get_running_loop()
-        except RuntimeError:
-            target_loop = None
+        from deeptutor.logging.process_stream import ProcessLogHandler
 
         def should_skip_noisy_retrieve_log(event: ProcessLogEvent) -> bool:
             if event.level != "INFO":
@@ -242,26 +303,6 @@ class RAGService:
                 },
             )
 
-        class _NamedRawLogHandler(logging.Handler):
-            def __init__(self) -> None:
-                super().__init__(logging.INFO)
-                self.addFilter(ContextFilter())
-
-            def emit(self, record: logging.LogRecord) -> None:
-                try:
-                    result = emit(ProcessLogEvent.from_record(record))
-                    if not inspect.isawaitable(result):
-                        return
-                    try:
-                        loop = asyncio.get_running_loop()
-                    except RuntimeError:
-                        if target_loop and target_loop.is_running():
-                            asyncio.run_coroutine_threadsafe(result, target_loop)
-                        return
-                    asyncio.ensure_future(result, loop=loop)
-                except Exception:
-                    self.handleError(record)
-
         @contextlib.contextmanager
         def capture_non_propagating_logs():
             handlers: list[tuple[logging.Logger, logging.Handler]] = []
@@ -272,7 +313,7 @@ class RAGService:
                 source_logger = logging.getLogger(logger_name)
                 if source_logger.propagate:
                     continue
-                handler = _NamedRawLogHandler()
+                handler = ProcessLogHandler(emit, min_level=logging.INFO)
                 source_logger.addHandler(handler)
                 handlers.append((source_logger, handler))
             try:

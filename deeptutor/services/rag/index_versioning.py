@@ -152,8 +152,9 @@ def _entry_from_flat_version(version_dir: Path) -> dict[str, Any]:
         (version_dir / "kv_store_doc_status.json").exists()
         or (version_dir / "deeptutor_ingress").exists()
     )
-    published = stored_meta is None or bool(stored_meta.get("published", True))
-    ready = has_provider_output and published and not is_unpublished_lightrag_candidate
+    ready = has_provider_output and not is_unpublished_lightrag_candidate
+    if (version_dir / ".building.json").exists():
+        ready = ready and bool(stored_meta and stored_meta.get("state") == "published")
     if stored_meta is not None and stored_meta.get("provider") == "lightrag":
         adapter_schema = stored_meta.get("lightrag_adapter_schema")
         if adapter_schema is not None:
@@ -323,8 +324,11 @@ def write_version_meta(
         "published": published,
         "created_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
     }
-    with open(target / META_FILENAME, "w", encoding="utf-8") as handle:
-        json.dump(payload, handle, indent=2, ensure_ascii=False)
+    from deeptutor.services.file_io import atomic_write_json
+
+    if (target / ".building.json").exists():
+        payload.update(provider="llamaindex", state="published", readiness_verified=True)
+    atomic_write_json(target / META_FILENAME, payload)
 
 
 def resolve_storage_dir_for_read(
@@ -362,7 +366,9 @@ def resolve_storage_dir_for_write(kb_dir: Path, signature: Optional[EmbeddingSig
     return target
 
 
-def resolve_storage_dir_for_rebuild(kb_dir: Path, signature: Optional[EmbeddingSignature]) -> Path:
+def resolve_storage_dir_for_rebuild(
+    kb_dir: Path, signature: Optional[EmbeddingSignature], *, publication_guard: bool = False
+) -> Path:
     """Return a fresh flat storage dir for a full index rebuild.
 
     Incremental writes reuse a matching flat version, but a full rebuild should
@@ -371,6 +377,16 @@ def resolve_storage_dir_for_rebuild(kb_dir: Path, signature: Optional[EmbeddingS
     rebuild remain diagnosable and avoids stale vector-store files.
     """
     _ = signature
-    target = _next_flat_version_dir(kb_dir)
-    target.mkdir(parents=True, exist_ok=True)
+    kb_dir.mkdir(parents=True, exist_ok=True)
+    while True:
+        target = _next_flat_version_dir(kb_dir)
+        try:
+            target.mkdir()
+            break
+        except FileExistsError:
+            continue
+    from deeptutor.services.file_io import atomic_write_json
+
+    if publication_guard:
+        atomic_write_json(target / ".building.json", {"state": "building"})
     return target

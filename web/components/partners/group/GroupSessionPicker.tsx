@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, MessagesSquare, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/shared/ui/Tooltip";
 
 import {
   deletePartnerGroupSession,
@@ -23,11 +24,13 @@ export default function GroupSessionPicker({
   sessionKey,
   onSelect,
   onCreate,
+  onTitleChange,
 }: {
   groupId: string;
   sessionKey: string;
   onSelect: (key: string) => void;
   onCreate: () => void;
+  onTitleChange?: (title: string) => void;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -65,6 +68,10 @@ export default function GroupSessionPicker({
 
   const current = sessions.find((item) => item.session_key === sessionKey);
   const label = current?.title || t("New discussion");
+
+  useEffect(() => {
+    onTitleChange?.(label);
+  }, [label, onTitleChange]);
 
   const remove = async (key: string) => {
     setBusy(key);
@@ -147,15 +154,17 @@ export default function GroupSessionPicker({
                           </span>
                         </span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => remove(item.session_key)}
-                        disabled={busy === item.session_key}
-                        title={t("Delete")}
-                        className="shrink-0 rounded-md p-1.5 text-[var(--muted-foreground)] transition-opacity hover:text-red-500 focus:opacity-100 sm:opacity-0 sm:group-hover/row:opacity-100 disabled:opacity-40"
-                      >
-                        <Trash2 size={12} />
-                      </button>
+                      <Tooltip label={t("Delete")}>
+                        <button
+                          type="button"
+                          onClick={() => remove(item.session_key)}
+                          disabled={busy === item.session_key}
+                          aria-label={`${t("Delete")}: ${item.title || t("New discussion")}`}
+                          className="shrink-0 rounded-md p-1.5 text-[var(--muted-foreground)] transition-colors hover:text-red-500 disabled:opacity-40"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </Tooltip>
                     </div>
                   );
                 })}

@@ -6,7 +6,7 @@ import path from "node:path";
 const source = fs.readFileSync(
   path.resolve(
     process.cwd(),
-    "app/(workspace)/books/components/PageReader.tsx",
+    "app/(workspace)/learning/books/components/PageReader.tsx",
   ),
   "utf8",
 );
@@ -33,23 +33,17 @@ test("turning backward lands at the end and forward lands at the start", () => {
   assert.ok(
     source
       .slice(previousBranch, nextBranch)
-      .includes(
-        'pendingScrollPlacements.set(scrollPlacementKey(previousPage), "end")',
-      ),
+      .includes('pendingScrollPlacementRef.current = "end"'),
   );
   assert.ok(
     source
-      .slice(0, previousBranch)
-      .includes(
-        "const pendingScrollPlacements = new Map<string, ChapterScrollPlacement>()",
-      ),
+      .slice(previousBranch, nextBranch)
+      .includes("pendingScrollPlacementPageIdRef.current = previousPage.id"),
   );
   assert.ok(
     source
       .slice(nextBranch)
-      .includes(
-        'pendingScrollPlacements.set(scrollPlacementKey(nextPage), "start")',
-      ),
+      .includes('pendingScrollPlacementRef.current = "start"'),
   );
 });
 

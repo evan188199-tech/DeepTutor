@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Tooltip from "@/shared/ui/Tooltip";
 import {
   summarizeVisualizeConfig,
   type VisualizeFormConfig,
@@ -119,6 +120,7 @@ export default memo(function VisualizeConfigPanel({
               <option value="chartjs">{t("Chart.js")}</option>
               <option value="svg">{t("SVG")}</option>
               <option value="mermaid">{t("Mermaid")}</option>
+              <option value="mindmap">{t("Mind map")}</option>
               <option value="html">{t("HTML")}</option>
               <option value="manim_video">{t("Animation")}</option>
               <option value="manim_image">{t("Storyboard")}</option>
@@ -167,20 +169,20 @@ export default memo(function VisualizeConfigPanel({
       <Field label={t("Visualizer Types")} width="min-w-[210px] flex-1">
         <div className="flex min-h-8 flex-wrap items-center gap-1.5">
           {installableTypes.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              disabled={Boolean(busy)}
-              onClick={() =>
-                void mutate(`install:${item.id}`, () =>
-                  installBundledVisualizer(item.id),
-                )
-              }
-              className="rounded-md border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-50"
-              title={item.description}
-            >
-              + {t(item.display_name)}
-            </button>
+            <Tooltip key={item.id} label={t(item.display_name)} description={item.description}>
+              <button
+                type="button"
+                disabled={Boolean(busy)}
+                onClick={() =>
+                  void mutate(`install:${item.id}`, () =>
+                    installBundledVisualizer(item.id),
+                  )
+                }
+                className="rounded-md border border-[var(--border)] px-2 py-1 text-[10px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] disabled:opacity-50"
+              >
+                + {t(item.display_name)}
+              </button>
+            </Tooltip>
           ))}
           {disabledTypes.map((item) => (
             <button

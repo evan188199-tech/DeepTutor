@@ -7,22 +7,23 @@
  */
 
 import { normalizeAtxHeadings } from "./markdown-display";
-
-// A single-dollar math span must be tight at both ends. This mirrors the
-// delimiter rule used by remark-math and avoids treating ordinary prices such
-// as "$5 and $10" as one formula. The body accepts escaped characters so an
-// escaped dollar does not terminate the span.
-const INLINE_MARKDOWN_MATH_RE =
-  /(?:^|[^$\\])\$(?![$\s])(?:\\.|[^$\n])*?(?<!\s)\$(?!\$)/m;
+import {
+  hasBareLatexTrigger,
+  hasInlineMathCandidate,
+  mapMarkdownProse,
+  normalizeMathMarkup,
+} from "./latex-normalize";
 
 /**
  * Detect Markdown/LaTeX math that needs the rich KaTeX renderer.
  *
  * Display-math and backslash delimiters are detected from their opening token
  * so streaming content switches to the rich renderer as early as possible.
- * Single-dollar math waits for a valid closing delimiter because a lone `$`
- * is common in currency. Once a match exists, appending streamed text cannot
- * make it disappear, so the Simple -> Rich transition remains one-way.
+ * Single-dollar math and bare LaTeX are judged by the same predicates
+ * `normalizeMathMarkup` uses, so routing and rendering cannot disagree — a
+ * mismatch here is what made a formula render in one message and print as
+ * source in the next. Once a match exists, appending streamed text cannot make
+ * it disappear, so the Simple -> Rich transition remains one-way.
  */
 export function hasMarkdownMath(content: string): boolean {
   if (!content) return false;
@@ -30,51 +31,27 @@ export function hasMarkdownMath(content: string): boolean {
 
   if (/(^|[^\\])\$\$/.test(value)) return true;
   if (/\\\(|\\\[/.test(value)) return true;
-  return INLINE_MARKDOWN_MATH_RE.test(value);
+  if (hasInlineMathCandidate(value)) return true;
+  return hasBareLatexTrigger(value);
 }
 
 /**
- * Convert LaTeX delimiters from \(...\) and \[...\] to $...$ and $$...$$
- * This makes the content compatible with remark-math for ReactMarkdown rendering.
+ * Normalise a model's maths into the `$...$` / `$$...$$` remark-math parses.
  *
- * @param content - The content containing LaTeX with \(...\) or \[...\] delimiters
- * @returns Content with $...$ and $$...$$ delimiters
+ * Kept as the historical name because it is the published entry point, but the
+ * work now lives in `latex-normalize`: as well as `\(...\)` and `\[...\]` it
+ * unwraps backticked formulas, wraps bare LaTeX, and escapes the dollar signs
+ * that are not delimiters — all of it skipping fenced code and code spans.
+ *
+ * @param content - Raw model output
+ * @returns Content whose maths remark-math will read as the writer meant
  */
 export function convertLatexDelimiters(content: string): string {
   if (!content) return content;
 
-  let result = content;
-
-  // editor.md examples sometimes wrap \( ... \) inside $$ ... $$.
-  // In that case the inner delimiters should be stripped rather than rewrapped.
-  result = result.replace(
-    /\$\$\s*\\\(([\s\S]*?)\\\)\s*\$\$/g,
-    (_match, expr) => {
-      return `\n$$\n${expr}\n$$\n`;
-    },
-  );
-
-  // Convert \[...\] to $$...$$ (block math).
-  // Use a regex that handles multiline content
-  // Note: In JSON strings, \[ becomes \\[ which in JS becomes \[
-  result = result.replace(/\\\[([\s\S]*?)\\\]/g, (_match, expr) => {
-    return `\n$$\n${expr}\n$$\n`;
-  });
-
-  // Convert \(...\) to $...$ (inline math).
-  // Be careful not to match escaped parentheses in other contexts
-  result = result.replace(/\\\(([\s\S]*?)\\\)/g, (_match, expr) => {
-    return ` $${expr}$ `;
-  });
-
-  // Also handle cases where LaTeX is directly in the text without proper delimiters
-  // e.g., standalone \lim, \frac, etc. that should be wrapped
-  // This is a common issue with LLM outputs
-
-  // Clean up multiple consecutive newlines
-  result = result.replace(/\n{3,}/g, "\n\n");
-
-  return result;
+  // Rewrites insert blank lines around promoted display math; collapse the
+  // runs so a formula does not tear its paragraph in half.
+  return normalizeMathMarkup(String(content)).replace(/\n{3,}/g, "\n\n");
 }
 
 const LIKELY_LATEX_BLOCK_RE = /\\[A-Za-z]+|\\\\|[_^&]/;
@@ -88,7 +65,31 @@ function looksLikeLatexBlock(lines: string[]): boolean {
   return block.length > 0 && LIKELY_LATEX_BLOCK_RE.test(block);
 }
 
+function countFences(line: string): number {
+  return line.match(/\$\$/g)?.length ?? 0;
+}
+
+/**
+ * The line that closes a display block opened above `start`: the next line
+ * with a single `$$`, at its end. A blank line or a line that opens another
+ * block first means there is nothing to close.
+ */
+function findDisplayClose(lines: string[], start: number): number {
+  for (let j = start; j < lines.length; j++) {
+    const trimmed = lines[j].trim();
+    if (!trimmed) return -1;
+    const fences = countFences(trimmed);
+    if (fences === 0) continue;
+    return fences === 1 && trimmed.endsWith("$$") ? j : -1;
+  }
+  return -1;
+}
+
 function normalizeEditorMdInlineMath(content: string): string {
+  return mapMarkdownProse(content, normalizeEditorMdInlineMathInProse);
+}
+
+function normalizeEditorMdInlineMathInProse(content: string): string {
   const lines = content.split("\n");
   const result: string[] = [];
 
@@ -110,6 +111,26 @@ function normalizeEditorMdInlineMath(content: string): string {
         for (let j = i + 1; j < endIdx; j++) {
           result.push(lines[j]);
         }
+        result.push("$$");
+        i = endIdx;
+        continue;
+      }
+    }
+
+    // `$$` hugging a formula that spans several lines, e.g.
+    // `$$a = b\\` / `c = d$$` (#1623). remark-math only reads a multi-line
+    // display block with each fence on its own line, so move them there.
+    if (trimmed.startsWith("$$") && countFences(trimmed) === 1) {
+      const endIdx = findDisplayClose(lines, i + 1);
+      const first = trimmed.slice(2).trim();
+      const last = endIdx === -1 ? "" : lines[endIdx].trim().slice(0, -2).trim();
+      if (endIdx !== -1 && (first || last)) {
+        result.push("$$");
+        if (first) result.push(first);
+        for (let j = i + 1; j < endIdx; j++) {
+          result.push(lines[j]);
+        }
+        if (last) result.push(last);
         result.push("$$");
         i = endIdx;
         continue;
@@ -380,8 +401,7 @@ export function processLatexContent(content: string): string {
   // Convert to string if not already
   const str = String(content);
 
-  // Apply delimiter conversion
-  return convertLatexDelimiters(str);
+  return normalizeMathMarkup(str);
 }
 
 export function processMarkdownContent(content: string): string {
@@ -392,7 +412,7 @@ export function processMarkdownContent(content: string): string {
   result = normalizeEditorMdInlineMath(result);
   result = convertEditorMdFences(result);
   result = injectEditorMdTableOfContents(result);
-  result = convertLatexDelimiters(result);
+  result = normalizeMathMarkup(result);
   result = result.replace(/\n{3,}/g, "\n\n");
 
   return result;

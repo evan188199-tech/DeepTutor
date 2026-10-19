@@ -1,3 +1,5 @@
+import { activeWorkspaceId, scopedUrl } from "@/lib/workspace-scope";
+import type { LearningOrigin } from "@/lib/learning-library";
 import { apiFetch, apiUrl } from "@/lib/api";
 
 const BASE = "/api/reading";
@@ -15,7 +17,7 @@ export type ReadingIngestionStatus =
   | "ready"
   | "failed";
 
-export interface ReadingLibraryMaterial {
+export interface ReadingLibraryMaterial extends LearningOrigin {
   material_id: string;
   content_id: string;
   filename: string;
@@ -39,6 +41,8 @@ export interface ReadingLibraryMaterial {
   unit_count?: number;
   /** Every collection holding this material; empty means unassigned. */
   collections?: ReadingMaterialCollection[];
+  /** Server-owned reading-quiz reward total for this material. */
+  quiz_stars?: number;
 }
 
 export interface ReadingMaterialCollection {
@@ -75,10 +79,12 @@ export interface ReadingWorkspaceTab {
   added_at: number;
 }
 
-export interface ReadingWorkspace {
+export interface ReadingWorkspace extends LearningOrigin {
   workspace_id: string;
   title: string;
   description: string;
+  /** Folder tint: a palette key, or "" for the neutral default. */
+  color?: string;
   active_material_id: string | null;
   created_at: number;
   updated_at: number;
@@ -183,9 +189,10 @@ export async function checkReadingDuplicates(payload: {
 
 export async function deleteReadingMaterial(
   materialId: string,
+  contentWorkspaceId = activeWorkspaceId(),
 ): Promise<ReadingMaterialCollection[]> {
   const result = await json<{ removed_from?: ReadingMaterialCollection[] }>(
-    `/materials/${materialId}`,
+    scopedUrl(`/materials/${materialId}`, contentWorkspaceId),
     { method: "DELETE" },
   );
   return result.removed_from ?? [];
@@ -209,24 +216,33 @@ export async function getReadingWorkspace(workspaceId: string): Promise<{
   return json(`/workspaces/${workspaceId}`);
 }
 
-export async function createReadingWorkspace(payload: {
-  title: string;
-  description?: string;
-  material_ids?: string[];
-}): Promise<ReadingWorkspace> {
-  const result = await json<{ workspace: ReadingWorkspace }>("/workspaces", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+/**
+ * `contentWorkspaceId` is where the collection — its files and every
+ * conversation about them — is stored; it defaults to the page's workspace.
+ */
+export async function createReadingWorkspace(
+  payload: {
+    title: string;
+    description?: string;
+    color?: string;
+    material_ids?: string[];
+  },
+  contentWorkspaceId = activeWorkspaceId(),
+): Promise<ReadingWorkspace> {
+  const result = await json<{ workspace: ReadingWorkspace }>(
+    scopedUrl("/workspaces", contentWorkspaceId),
+    { method: "POST", body: JSON.stringify(payload) },
+  );
   return result.workspace;
 }
 
 export async function updateReadingWorkspace(
   workspaceId: string,
-  patch: { title?: string; description?: string },
+  patch: { title?: string; description?: string; color?: string },
+  contentWorkspaceId = activeWorkspaceId(),
 ): Promise<ReadingWorkspace> {
   const result = await json<{ workspace: ReadingWorkspace }>(
-    `/workspaces/${workspaceId}`,
+    scopedUrl(`/workspaces/${workspaceId}`, contentWorkspaceId),
     { method: "PATCH", body: JSON.stringify(patch) },
   );
   return result.workspace;
@@ -234,8 +250,9 @@ export async function updateReadingWorkspace(
 
 export async function deleteReadingWorkspace(
   workspaceId: string,
+  contentWorkspaceId = activeWorkspaceId(),
 ): Promise<void> {
-  await json(`/workspaces/${workspaceId}`, { method: "DELETE" });
+  await json(scopedUrl(`/workspaces/${workspaceId}`, contentWorkspaceId), { method: "DELETE" });
 }
 
 export async function importReadingUrls(payload: {
@@ -255,9 +272,10 @@ export async function importReadingUrls(payload: {
 
 export async function retryReadingMaterial(
   materialId: string,
+  contentWorkspaceId = activeWorkspaceId(),
 ): Promise<ReadingLibraryMaterial> {
   const result = await json<{ material: ReadingLibraryMaterial }>(
-    `/materials/${materialId}/retry`,
+    scopedUrl(`/materials/${materialId}/retry`, contentWorkspaceId),
     { method: "POST" },
   );
   return result.material;
@@ -382,31 +400,6 @@ export async function fetchReadingCollectionIndex(
   }
 }
 
-/**
- * Three things the learner could open this material with.
- *
- * Written against the material itself, so they name a claim it makes or a
- * section it has rather than being true of every document. An empty array
- * means the panel keeps its own generic lines — this is a nicety, and an
- * empty conversation must never be an empty panel.
- */
-export async function fetchReadingOpeners(
-  workspaceId: string,
-  locator?: number,
-  init?: RequestInit,
-): Promise<string[]> {
-  const suffix = locator && locator > 0 ? `?locator=${locator}` : "";
-  try {
-    const result = await json<{ suggestions?: string[] }>(
-      `/workspaces/${workspaceId}/openers${suffix}`,
-      init,
-    );
-    return Array.isArray(result.suggestions) ? result.suggestions : [];
-  } catch {
-    return [];
-  }
-}
-
 export async function listReadingConversations(
   workspaceId: string,
 ): Promise<ReadingConversation[]> {
@@ -417,28 +410,6 @@ export async function listReadingConversations(
       )
     ).sessions ?? []
   );
-}
-
-export async function renameReadingConversation(
-  workspaceId: string,
-  sessionId: string,
-  title: string,
-): Promise<ReadingConversation> {
-  return (
-    await json<{ session: ReadingConversation }>(
-      `/workspaces/${workspaceId}/sessions/${sessionId}`,
-      { method: "PATCH", body: JSON.stringify({ title }) },
-    )
-  ).session;
-}
-
-export async function deleteReadingConversation(
-  workspaceId: string,
-  sessionId: string,
-): Promise<void> {
-  await json(`/workspaces/${workspaceId}/sessions/${sessionId}`, {
-    method: "DELETE",
-  });
 }
 
 export async function linkReadingConversation(
@@ -487,7 +458,7 @@ export async function sendReadingToNotebook(
   notebookIds: string[],
   materialIds: string[] = [],
 ): Promise<Record<string, unknown>> {
-  return json(`/workspaces/${workspaceId}/notebooks`, {
+  return json(`/workspaces/${workspaceId}/notebook`, {
     method: "POST",
     body: JSON.stringify({
       notebook_ids: notebookIds,

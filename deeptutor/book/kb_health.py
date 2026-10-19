@@ -115,6 +115,14 @@ def fingerprint_kb_documents(
     mgr = manager or _current_manager()
     if kb_name not in mgr.list_knowledge_bases():
         return {}
+    entry = mgr.get_metadata(kb_name)
+    if isinstance(entry, dict) and entry.get("type") == "kiwix":
+        # A connected archive has no raw/ directory.  Fingerprint the binding
+        # so Book can detect a changed server/ZIM pointer without hashing or
+        # copying a multi-GB archive.  Content changed behind the same pointer
+        # cannot be detected without a server-provided revision identifier.
+        identity = f"{entry.get('server_url', '')}\0{entry.get('zim_name', '')}"
+        return {"zim-archive": f"sha256:{hashlib.sha256(identity.encode()).hexdigest()}"}
     raw_dir = mgr.base_dir / kb_name / "raw"
     if not raw_dir.exists():
         return {}
@@ -205,9 +213,7 @@ def detect_kb_drift(
     # to the book.
     new_kbs = [k for k in current if k not in stored and k in book.knowledge_bases]
     removed_kbs = [k for k in stored if k not in current and k in book.knowledge_bases]
-    changed_kbs = [
-        k for k, v in current.items() if k in stored and stored[k] and v and stored[k] != v
-    ]
+    changed_kbs = [k for k, v in current.items() if k in stored and stored[k] and stored[k] != v]
 
     has_drift = bool(new_kbs or removed_kbs or changed_kbs)
     changed_documents: dict[str, list[str]] = {}

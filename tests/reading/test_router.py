@@ -6,6 +6,7 @@ boot every other router; the routes themselves are the real ones.
 
 from __future__ import annotations
 
+import asyncio
 import io
 from pathlib import Path
 import zipfile
@@ -15,8 +16,10 @@ from fastapi.testclient import TestClient
 import pytest
 
 from deeptutor.api.routers import reading
+from deeptutor.learning.storage import LearningStore
 from deeptutor.reading import ReadingCatalogStore, ReadingError, ReadingStore
 from deeptutor.services.path_service import PathService
+from deeptutor.services.session import get_sqlite_session_store
 
 pymupdf = pytest.importorskip("pymupdf")
 
@@ -60,16 +63,22 @@ def _upload(client: TestClient, name: str = "attention.pdf", data: bytes | None 
     return response.json()
 
 
-def _epub_bytes(*, language: str = "en", paragraph: str = "Readable EPUB text.") -> bytes:
+def _epub_bytes(
+    *,
+    language: str = "en",
+    paragraph: str = "Readable EPUB text.",
+    finder_package: bool = False,
+) -> bytes:
     stream = io.BytesIO()
+    root = "MyBook/" if finder_package else ""
     with zipfile.ZipFile(stream, "w") as archive:
-        archive.writestr("mimetype", "application/epub+zip")
+        archive.writestr(f"{root}mimetype", "application/epub+zip")
         archive.writestr(
-            "META-INF/container.xml",
+            f"{root}META-INF/container.xml",
             "<container><rootfiles><rootfile full-path='OPS/book.opf'/></rootfiles></container>",
         )
         archive.writestr(
-            "OPS/book.opf",
+            f"{root}OPS/book.opf",
             "<package xmlns:dc='http://purl.org/dc/elements/1.1/'>"
             "<metadata><dc:identifier>urn:uuid:router-bilingual</dc:identifier>"
             "<dc:title>Router book</dc:title>"
@@ -78,9 +87,11 @@ def _epub_bytes(*, language: str = "en", paragraph: str = "Readable EPUB text.")
             "<spine><itemref idref='one'/></spine></package>",
         )
         archive.writestr(
-            "OPS/one.xhtml",
+            f"{root}OPS/one.xhtml",
             f"<html><body><h1>Opening</h1><p>{paragraph}</p></body></html>",
         )
+        if finder_package:
+            archive.writestr("__MACOSX/OPS/._one.xhtml", b"\x00" * 8)
     return stream.getvalue()
 
 
@@ -384,7 +395,86 @@ def test_epub_contract_exposes_source_refs_original_and_position(client: TestCli
     )
     assert saved.status_code == 200
     assert client.get(base).json()["source_anchor"] == "epubcfi(/6/2)"
+    # EPUB can save its CFI while text locations are still being generated.
+    # Missing progress must preserve the last known value, not fabricate 0%.
+    resumed = client.put(base, json={"locator": 1, "source_anchor": "epubcfi(/6/4)"})
+    assert resumed.status_code == 200
+    assert resumed.json()["percentage"] == 0.4
+    assert resumed.json()["source_anchor"] == "epubcfi(/6/4)"
     assert client.put(base, json={"locator": 2, "percentage": 0}).status_code == 400
+
+
+def test_saved_reading_position_updates_account_learning_record(client: TestClient) -> None:
+    material = _upload(client)
+    base = f"/api/reading/materials/{material['material_id']}/position"
+
+    assert client.put(base, json={"locator": 1, "percentage": 0.2}).status_code == 200
+    assert client.put(base, json={"locator": 2, "percentage": 0.7}).status_code == 200
+    assert (
+        client.put(
+            base,
+            json={"locator": 1, "source_anchor": "private-anchor", "percentage": 0.3},
+        ).status_code
+        == 200
+    )
+
+    records = LearningStore().list_reading_records()
+    assert len(records.progress) == 1
+    progress = records.progress[0]
+    assert progress.material_id == material["material_id"]
+    assert progress.latest_locator == 1
+    assert progress.latest_percentage == 0.3
+    assert progress.furthest_locator == 2
+    assert progress.furthest_percentage == 0.7
+    assert "source_anchor" not in progress.model_dump()
+
+
+def test_position_save_succeeds_when_activity_store_fails(client, monkeypatch) -> None:
+    material = _upload(client)
+
+    def fail_activity(*_args, **_kwargs):
+        raise OSError("activity database unavailable")
+
+    monkeypatch.setattr(reading, "_record_reading_position", fail_activity)
+    response = client.put(
+        f"/api/reading/materials/{material['material_id']}/position",
+        json={"locator": 2, "percentage": 0.6},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["locator"] == 2
+    assert ReadingStore().position(material["material_id"]).locator == 2
+
+
+def test_epub_render_response_is_normalized_and_raw_preserves_upload(client: TestClient) -> None:
+    uploaded = _epub_bytes(finder_package=True)
+    material = _upload(
+        client,
+        name="finder-book.epub",
+        data=uploaded,
+    )
+
+    raw = client.get(f"/api/reading/materials/{material['material_id']}/raw")
+    render = client.get(f"/api/reading/materials/{material['material_id']}/render")
+
+    assert raw.status_code == 200
+    assert raw.content == uploaded
+    assert render.status_code == 200
+    with zipfile.ZipFile(io.BytesIO(render.content)) as archive:
+        infos = archive.infolist()
+        assert archive.read("mimetype") == b"application/epub+zip"
+    assert infos[0].filename == "mimetype"
+    assert infos[0].compress_type == zipfile.ZIP_STORED
+    assert "META-INF/container.xml" in {info.filename for info in infos}
+    assert all("__MACOSX" not in info.filename for info in infos)
+
+
+def test_upload_unwraps_a_safari_folder_drag_epub_zip(client: TestClient) -> None:
+    material = _upload(client, name="book.epub.zip", data=_epub_bytes(finder_package=True))
+
+    assert material["render_mode"] == "epub"
+    assert material["unit_count"] >= 1
+    assert material["filename"] == "book.epub"
 
 
 def test_epub_pairing_requires_confirmation_and_preserves_source_materials(
@@ -453,6 +543,36 @@ def test_unit_text_is_addressed_by_locator(client: TestClient) -> None:
     assert body["locator"] == 2
     assert body["unit"] == "page"
     assert "scaled dot-product" in body["text"]
+
+
+@pytest.mark.parametrize("headings", [True, False])
+def test_large_markdown_upload_keeps_every_unit_accessible_through_the_api(client, headings):
+    """#1641: heading/fence fallback must never make the end of a document unreachable."""
+    chunks = ["# Opening\n\n"]
+    for index in range(24):
+        if headings:
+            chunks.append(f"## Section {index}\n\n")
+        chunks.append(f"Document paragraph {index}. " * 100 + "\n\n")
+        if index == 5:
+            chunks.append("````markdown\n```python\n# Code, not an outline heading\n```\n````\n\n")
+    chunks.append("END-OF-DOCUMENT-SENTINEL")
+    source = "".join(chunks)
+    response = client.post(
+        "/api/reading/materials", files={"file": ("long.md", source.encode(), "text/markdown")}
+    )
+    assert response.status_code == 200
+    material = response.json()
+    assert material["unit_count"] > 1
+    detail = client.get(f"/api/reading/materials/{material['material_id']}").json()
+    assert detail["unit_count"] == material["unit_count"]
+    units = []
+    for locator in range(1, material["unit_count"] + 1):
+        unit = client.get(f"/api/reading/materials/{material['material_id']}/units/{locator}")
+        assert unit.status_code == 200
+        units.append(unit.json()["text"])
+    assert "END-OF-DOCUMENT-SENTINEL" in units[-1]
+    # Section boundaries may normalize whitespace, but cannot discard source characters.
+    assert "".join("".join(units).split()) == "".join(source.split())
 
 
 def test_unit_text_out_of_range_is_a_400_with_the_real_range(client: TestClient) -> None:
@@ -760,6 +880,9 @@ def test_library_lists_collection_membership_and_totals(client: TestClient) -> N
         )
         assert created.status_code == 201, created.text
 
+    asyncio.run(get_sqlite_session_store().upsert_reading_quiz_reward(shared["material_id"], 1, 3))
+    asyncio.run(get_sqlite_session_store().upsert_reading_quiz_reward(shared["material_id"], 2, 2))
+
     payload = client.get("/api/reading/library/materials").json()
     rows = {row["material_id"]: row for row in payload["materials"]}
 
@@ -770,6 +893,8 @@ def test_library_lists_collection_membership_and_totals(client: TestClient) -> N
     assert rows[orphan["material_id"]]["collections"] == []
     assert rows[shared["material_id"]]["size_bytes"] > 0
     assert rows[shared["material_id"]]["unit_count"] == len(PAGES)
+    assert rows[shared["material_id"]]["quiz_stars"] == 5
+    assert rows[orphan["material_id"]]["quiz_stars"] == 0
     assert payload["counts"]["all"] == 2
     assert payload["counts"]["unassigned"] == 1
 
@@ -855,3 +980,16 @@ def test_deleting_a_material_reports_where_it_was_used(client: TestClient) -> No
     assert [row["title"] for row in removed["removed_from"]] == ["Close reading"]
     # The sibling still reads the same extracted content, so it survives.
     assert client.get(f"/api/reading/materials/{second_id}/units/1").json()["text"]
+
+
+def test_collection_color_round_trips_through_create_and_patch(client: TestClient) -> None:
+    created = client.post(
+        "/api/reading/workspaces", json={"title": "Close reading", "color": "violet"}
+    ).json()["workspace"]
+    assert created["color"] == "violet"
+
+    patched = client.patch(
+        f"/api/reading/workspaces/{created['workspace_id']}",
+        json={"title": "Slow reading", "color": "green"},
+    ).json()["workspace"]
+    assert (patched["title"], patched["color"]) == ("Slow reading", "green")

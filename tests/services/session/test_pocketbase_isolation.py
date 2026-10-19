@@ -11,11 +11,13 @@ user's sessions.
 from __future__ import annotations
 
 from contextlib import contextmanager
+import json
 from pathlib import Path
 import re
 
 import pytest
 
+from deeptutor.api.routers.sessions import _attach_orphaned_failed_turns
 from deeptutor.multi_user.context import reset_current_user, set_current_user
 from deeptutor.multi_user.models import CurrentUser, UserScope
 from deeptutor.services.session.pocketbase_store import PocketBaseSessionStore
@@ -57,6 +59,26 @@ class _Collection:
 
     def _matches(self, record: _Record, query_params: dict | None) -> bool:
         flt = (query_params or {}).get("filter") or ""
+        workspace = re.search(r'preferences_json\.workspace_id=("(?:\\.|[^"\\])*"|null)', flt)
+        if workspace:
+            expected = json.loads(workspace.group(1)) or ""
+            prefs = getattr(record, "preferences_json", {}) or {}
+            if isinstance(prefs, str):
+                prefs = json.loads(prefs)
+            if (prefs.get("workspace_id") or "") != expected:
+                return False
+            flt = re.sub(r'preferences_json\.workspace_id=("(?:\\.|[^"\\])*"|null)', "", flt)
+        role_pair = '(role="user" || role="assistant")'
+        if role_pair in flt:
+            if str(getattr(record, "role", "")) not in {"user", "assistant"}:
+                return False
+            flt = flt.replace(role_pair, "")
+        contains = re.search(r"content~(\"(?:\\.|[^\"])*\")", flt)
+        if contains is not None:
+            needle = json.loads(contains.group(1))
+            if needle.casefold() not in str(getattr(record, "content", "")).casefold():
+                return False
+            flt = flt.replace(contains.group(0), "")
         for field, expected in _CLAUSE.findall(flt):
             if str(getattr(record, field, "")) != expected:
                 return False
@@ -75,11 +97,14 @@ class _Collection:
         matched = self.get_full_list(query_params)
         sort = str((query_params or {}).get("sort") or "")
         if sort:
-            field = sort.lstrip("-")
-            matched.sort(
-                key=lambda record: getattr(record, field, 0),
-                reverse=sort.startswith("-"),
-            )
+            for part in reversed(sort.split(",")):
+                field = part.lstrip("-")
+                matched.sort(
+                    key=lambda record: getattr(
+                        record, field, record.id if field == "created" else 0
+                    ),
+                    reverse=part.startswith("-"),
+                )
         start = (page - 1) * per_page
         return _Result(matched[start : start + per_page], len(matched))
 
@@ -88,6 +113,9 @@ class _Collection:
         for key, value in data.items():
             setattr(record, key, value)
         return record
+
+    def get_one(self, pb_id: str) -> _Record:
+        return next(row for row in self._rows if row.id == pb_id)
 
     def delete(self, pb_id: str) -> None:
         self._rows = [r for r in self._rows if r.id != pb_id]
@@ -119,6 +147,87 @@ async def test_create_session_stamps_current_user(fake_pb) -> None:
     assert row.session_id == "s_alice"
 
 
+async def test_context_builder_accepts_pocketbase_message_ids(fake_pb) -> None:
+    """The second turn must retain native string-ID history without coercion."""
+    from types import SimpleNamespace
+
+    from deeptutor.services.session.context_builder import ContextBuilder
+
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        session = await store.create_session(session_id="s_context")
+        await store.add_message(session["id"], "user", "first question")
+        await store.add_message(session["id"], "assistant", "first answer")
+        result = await ContextBuilder(store).build(
+            session_id=session["id"],
+            llm_config=SimpleNamespace(
+                max_tokens=4096, model="test-model", context_window=32768, binding=None
+            ),
+        )
+    assert [row["content"] for row in result.conversation_history] == [
+        "first question",
+        "first answer",
+    ]
+
+
+async def test_pocketbase_summary_preserves_native_message_cursor(fake_pb) -> None:
+    """Store native cursors without changing the existing numeric server schema."""
+    from types import SimpleNamespace
+
+    from deeptutor.services.session.context_builder import ContextBuilder
+
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        session = await store.create_session(session_id="s_cursor")
+        await store.add_message(session["id"], "user", "summarized")
+        first = fake_pb.collection("messages").get_full_list()[0]
+        first.id = "zzzzzzzzzzzzzzz"
+        message_id = first.id
+        assert await store.update_summary(session["id"], "summary", message_id)
+        loaded = await store.get_session(session["id"])
+        assert loaded["summary_up_to_msg_id"] == message_id
+        assert loaded["compressed_summary"] == "summary"
+        await store.update_session_preferences(session["id"], {"language": "en"})
+        assert (await store.get_session(session["id"]))["summary_up_to_msg_id"] == message_id
+        await store.add_message(session["id"], "user", "later question")
+        fake_pb.collection("messages").get_full_list()[-1].id = "aaaaaaaaaaaaaaa"
+        result = await ContextBuilder(store).build(
+            session_id=session["id"],
+            llm_config=SimpleNamespace(
+                max_tokens=4096, model="test-model", context_window=32768, binding=None
+            ),
+        )
+        assert [row["content"] for row in result.conversation_history] == [
+            "summary",
+            "later question",
+        ]
+        assert "_summary_message_id" not in loaded["preferences"]
+        assert await store.update_summary(session["id"], "", 0)
+        assert (await store.get_session(session["id"]))["summary_up_to_msg_id"] == 0
+
+
+async def test_source_inventory_accepts_native_parent_ids(fake_pb) -> None:
+    """The lineage walker must retain attachments when native IDs are strings."""
+    from deeptutor.services.session.source_inventory import collect_prior_image_attachments
+
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        session = await store.create_session(session_id="s_lineage")
+        user_id = await store.add_message(
+            session["id"],
+            "user",
+            "image",
+            attachments=[{"id": "image", "mime_type": "image/png", "url": "/image.png"}],
+        )
+        leaf_id = await store.add_message(
+            session["id"], "assistant", "answer", parent_message_id=user_id
+        )
+        images = await collect_prior_image_attachments(
+            store, session_id=session["id"], leaf_message_id=leaf_id, limit=1
+        )
+    assert [row["url"] for row in images] == ["/image.png"]
+
+
 async def test_list_sessions_only_returns_own(fake_pb) -> None:
     store = PocketBaseSessionStore()
     with as_user("alice"):
@@ -133,6 +242,43 @@ async def test_list_sessions_only_returns_own(fake_pb) -> None:
     with as_user("alice"):
         alice_sessions = await store.list_sessions()
     assert {s["session_id"] for s in alice_sessions} == {"s_a1", "s_a2"}
+
+
+async def test_search_sessions_is_owner_scoped_and_preserves_native_visibility(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        own = await store.create_session(title="Own", session_id="s_own")
+        archived = await store.create_session(title="Archive", session_id="s_archived")
+        imported = await store.create_session(title="Import", session_id="imported_codex_hidden")
+        await store.add_message(own["id"], "user", "private Bayes theorem")
+        await store.add_message(archived["id"], "assistant", "archived Bayes theorem")
+        await store.update_session_preferences(archived["id"], {"archived": True})
+        await store.add_message(imported["id"], "user", "imported Bayes theorem")
+    with as_user("bob"):
+        other = await store.create_session(title="Other", session_id="s_other")
+        await store.add_message(other["id"], "user", "other Bayes theorem")
+        bob = await store.search_sessions("bayes")
+    with as_user("alice"):
+        alice = await store.search_sessions("bayes")
+
+    assert [row["session_id"] for row in bob["sessions"]] == ["s_other"]
+    assert {row["session_id"] for row in alice["sessions"]} == {"s_own", "s_archived"}
+    archived_row = next(row for row in alice["sessions"] if row["session_id"] == "s_archived")
+    assert archived_row["preferences"]["archived"] is True
+
+
+async def test_search_sessions_skips_sessions_in_the_recycle_bin(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        kept = await store.create_session(title="Bayes notes", session_id="s_kept")
+        recycled = await store.create_session(title="Bayes draft", session_id="s_recycled")
+        await store.add_message(recycled["id"], "user", "Explain Bayes theorem")
+        await store.soft_delete_session(recycled["id"])
+
+        result = await store.search_sessions("bayes")
+
+    assert result["total"] == 1
+    assert [row["session_id"] for row in result["sessions"]] == [kept["id"]]
 
 
 async def test_legacy_workspace_preferences_are_normalized_at_repository_boundary(
@@ -205,6 +351,83 @@ async def test_get_session_404s_for_other_user(fake_pb) -> None:
     assert own is not None and own["session_id"] == "s_secret"
 
 
+async def test_failed_turn_disappears_after_answered_pocketbase_retry(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        session = await store.create_session(session_id="s_retry")
+        turn = await store.begin_turn(session["id"], capability="chat")
+        user_id = await store.add_message(
+            session["id"], "user", "B", metadata={"turn_id": turn["id"]}
+        )
+        assert await store.transition_turn(
+            turn["id"],
+            "failed",
+            error="Worker lost",
+            failure_code="worker_lost",
+            retryable=True,
+        )
+        detail = await store.get_session_with_messages(session["id"])
+        assert detail is not None
+        _attach_orphaned_failed_turns(
+            detail["messages"], await store.list_orphaned_failed_turns(session["id"])
+        )
+        assert detail["messages"][0]["metadata"]["orphaned_failed_turn"]["turn_id"] == turn["id"]
+
+        answer_id = await store.add_message(
+            session["id"], "assistant", "The answer is B.", parent_message_id=user_id
+        )
+        detail = await store.get_session_with_messages(session["id"])
+        assert detail is not None
+        answer = detail["messages"][1]
+        assert answer["id"] == answer_id
+        assert answer["parent_message_id"] == user_id
+        assert "_parent_message_id" not in answer["metadata"]
+        _attach_orphaned_failed_turns(
+            detail["messages"], await store.list_orphaned_failed_turns(session["id"])
+        )
+        assert "orphaned_failed_turn" not in detail["messages"][0]["metadata"]
+
+
+async def test_legacy_pocketbase_answer_suppresses_only_its_own_failed_user(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        session = await store.create_session(session_id="s_legacy_retry")
+        turn = await store.begin_turn(session["id"], capability="chat")
+        await store.add_message(session["id"], "user", "First", metadata={"turn_id": turn["id"]})
+        assert await store.transition_turn(
+            turn["id"], "failed", error="Worker lost", failure_code="worker_lost"
+        )
+        # Older PocketBase rows have no parent metadata. A reply after the
+        # failed turn and before the next user row is still an answered retry.
+        await store.add_message(session["id"], "assistant", "First answered")
+        detail = await store.get_session_with_messages(session["id"])
+        assert detail is not None
+        _attach_orphaned_failed_turns(
+            detail["messages"], await store.list_orphaned_failed_turns(session["id"])
+        )
+        assert "orphaned_failed_turn" not in detail["messages"][0]["metadata"]
+
+        second = await store.create_session(session_id="s_other_answer")
+        second_turn = await store.begin_turn(second["id"], capability="chat")
+        await store.add_message(
+            second["id"], "user", "Still unanswered", metadata={"turn_id": second_turn["id"]}
+        )
+        assert await store.transition_turn(
+            second_turn["id"], "failed", error="Worker lost", failure_code="worker_lost"
+        )
+        await store.add_message(second["id"], "user", "A different question")
+        await store.add_message(second["id"], "assistant", "Different answer")
+        detail = await store.get_session_with_messages(second["id"])
+        assert detail is not None
+        _attach_orphaned_failed_turns(
+            detail["messages"], await store.list_orphaned_failed_turns(second["id"])
+        )
+        assert (
+            detail["messages"][0]["metadata"]["orphaned_failed_turn"]["turn_id"]
+            == second_turn["id"]
+        )
+
+
 async def test_mutations_are_scoped_to_owner(fake_pb) -> None:
     store = PocketBaseSessionStore()
     with as_user("alice"):
@@ -234,3 +457,47 @@ async def test_create_turn_rejects_foreign_session(fake_pb) -> None:
     with as_user("alice"):
         turn = await store.create_turn("s_t")
     assert turn["session_id"] == "s_t"
+
+
+async def test_permanent_delete_removes_owned_transcript_and_trace(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    for uid in ("alice", "bob"):
+        with as_user(uid):
+            await store.create_session(session_id=f"s_{uid}")
+            await store.add_message(f"s_{uid}", "user", f"{uid} private message")
+            for name in ("turns", "turn_events"):
+                fake_pb.collection(name).create({"session_id": f"s_{uid}"})
+    with as_user("bob"):
+        assert not await store.delete_session("s_alice")
+    with as_user("alice"):
+        assert await store.delete_session("s_alice")
+    for name in ("messages", "turns", "turn_events"):
+        rows = fake_pb.collection(name).get_full_list()
+        assert len(rows) == 1
+        assert rows[0].session_id == "s_bob"
+
+
+async def test_legacy_deleted_archive_migration_is_owner_scoped(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    for uid in ("alice", "bob"):
+        with as_user(uid):
+            await store.create_session(session_id=f"s_{uid}")
+            await store.soft_delete_session(f"s_{uid}")
+    with as_user("alice"):
+        await store.migrate_workspace_preferences()
+        rows = await store.list_sessions()
+        assert rows[0]["preferences"]["archived"] is True
+        assert await store.list_deleted_sessions() == []
+        assert await store.migrate_workspace_preferences() == 0
+    with as_user("bob"):
+        assert len(await store.list_deleted_sessions()) == 1
+
+
+async def test_session_pagination_handles_offsets_between_pages(fake_pb) -> None:
+    store = PocketBaseSessionStore()
+    with as_user("alice"):
+        for i in range(14):
+            await store.ensure_session(f"pagination-{i:02}")
+        full = await store.list_sessions(limit=20)
+        page = await store.list_sessions(limit=5, offset=7)
+        assert [row["session_id"] for row in page] == [row["session_id"] for row in full[7:12]]

@@ -1,0 +1,462 @@
+"""Provider-only probes must be truthful, read-only, and keep credentials private."""
+
+from copy import deepcopy
+from types import SimpleNamespace
+
+import aiohttp
+import pytest
+import requests
+
+from deeptutor.services.settings import provider_probe
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "status,expected",
+    [(403, "json_forbidden"), (429, "rate_limited"), (500, "http_error")],
+)
+async def test_searxng_json_search_errors_are_actionable(monkeypatch, status, expected):
+    """A working HTML homepage does not establish JSON API access."""
+    response = requests.Response()
+    response.status_code = status
+    response._content = b"upstream-secret-do-not-return"
+    calls = []
+
+    def get(url, **kwargs):
+        calls.append((url, kwargs))
+        return response
+
+    monkeypatch.setattr(requests, "get", get)
+    result = await provider_probe.probe_search_provider("searxng", "http://localhost:8888", None)
+    assert result == {"status": expected, "models": [], "http_status": status}
+    assert "secret" not in str(result)
+    assert calls[0][0] == "http://localhost:8888/search"
+    assert calls[0][1]["params"]["format"] == "json"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "error,expected",
+    [
+        (requests.ReadTimeout("secret"), "timeout"),
+        (requests.ConnectionError("secret"), "unreachable"),
+    ],
+)
+async def test_search_transport_failures_keep_their_reason(monkeypatch, error, expected):
+    def get(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(requests, "get", get)
+    assert await provider_probe.probe_search_provider("searxng", "http://localhost:8888", None) == {
+        "status": expected,
+        "models": [],
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("url", ["", "http://[", "ftp://example.test", "http://example.test:bad"])
+async def test_invalid_searxng_addresses_do_not_send_a_request(monkeypatch, url):
+    calls = []
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: calls.append(args))
+    assert await provider_probe.probe_search_provider("searxng", url, None) == {
+        "status": "invalid_url",
+        "models": [],
+    }
+    assert calls == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("body", [b"<html>secret</html>", b'{"error":"secret"}', b"[]"])
+async def test_searxng_invalid_search_payload_is_not_connected(monkeypatch, body):
+    response = requests.Response()
+    response.status_code = 200
+    response._content = body
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: response)
+    assert await provider_probe.probe_search_provider("searxng", "http://localhost:8888", None) == {
+        "status": "invalid_response",
+        "models": [],
+    }
+
+
+@pytest.mark.asyncio
+async def test_empty_search_results_verify_connection_but_warn(monkeypatch):
+    response = requests.Response()
+    response.status_code = 200
+    response._content = b'{"results":[]}'
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: response)
+    result = await provider_probe.probe_search_provider("searxng", "http://localhost:8888", None)
+    assert result["status"] == "connected"
+    assert result["warning"] == "empty_results"
+    # A full model/search test still requires actual results.
+    with pytest.raises(ValueError, match="no answer or results"):
+        provider_probe.test_search_access("searxng", "http://localhost:8888", None)
+
+
+@pytest.mark.asyncio
+async def test_provider_probe_uses_the_form_search_proxy(monkeypatch):
+    from deeptutor.api.routers import settings as router
+
+    monkeypatch.setattr(router, "_require_settings_admin", lambda: None)
+    monkeypatch.setattr(
+        router, "get_model_catalog_service", lambda: SimpleNamespace(load=lambda: {})
+    )
+    monkeypatch.setattr(
+        router, "get_settings_draft_service", lambda: SimpleNamespace(load=lambda: {})
+    )
+    response = requests.Response()
+    response.status_code = 200
+    response._content = b'{"results":[{"title":"OK","url":"https://example.test"}]}'
+    calls = []
+
+    def get(url, **kwargs):
+        calls.append(kwargs)
+        return response
+
+    monkeypatch.setattr(requests, "get", get)
+    result = await router.test_provider_connection(
+        router.ProviderProbePayload(
+            service="search",
+            binding="searxng",
+            base_url="http://searxng:8080",
+            proxy="http://proxy:3128",
+        )
+    )
+    assert result["status"] == "connected"
+    assert calls[0]["proxies"] == {"http": "http://proxy:3128", "https": "http://proxy:3128"}
+
+
+class Response:
+    def __init__(self, status=200, payload=None):
+        self.status, self.payload = status, payload
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *args):
+        pass
+
+    async def json(self):
+        if isinstance(self.payload, Exception):
+            raise self.payload
+        return self.payload
+
+
+class Session:
+    def __init__(self, response):
+        self.response, self.requests = response, []
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *args):
+        pass
+
+    def get(self, url, **kwargs):
+        self.requests.append((url, kwargs))
+        if isinstance(self.response, Exception):
+            raise self.response
+        return self.response
+
+
+def install(monkeypatch, response):
+    session = Session(response)
+    monkeypatch.setattr(provider_probe.aiohttp, "ClientSession", lambda **kw: session)
+    monkeypatch.setattr(provider_probe, "_get_aiohttp_connector", lambda: None)
+    return session
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "status,expected",
+    [
+        (401, "auth_error"),
+        (403, "auth_error"),
+        (404, "unavailable"),
+        (405, "unavailable"),
+        (429, "rate_limited"),
+        (500, "http_error"),
+        (302, "http_error"),
+    ],
+)
+async def test_http_errors_are_not_successful_connections(monkeypatch, status, expected):
+    session = install(monkeypatch, Response(status, {"error": "secret-sk-do-not-return"}))
+    result = await provider_probe.probe_provider("openai", "https://example.test/v1", "secret")
+    assert result == {"status": expected, "models": [], "http_status": status}
+    assert len(session.requests) == 1
+    assert session.requests[0][1]["allow_redirects"] is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        ({"data": []}, "connected"),
+        ({"data": [{"id": "one"}, {"id": "one"}]}, "connected"),
+        ({"error": "no models"}, "unavailable"),
+        ({"data": [{"unexpected": 123}]}, "unavailable"),
+        (ValueError("HTML response"), "unavailable"),
+    ],
+)
+async def test_only_recognized_listing_responses_verify_connection(monkeypatch, payload, expected):
+    install(monkeypatch, Response(payload=payload))
+    result = await provider_probe.probe_provider("openai", "https://example.test/v1", "secret")
+    assert result["status"] == expected
+    if isinstance(payload, dict) and payload.get("data") and expected == "connected":
+        assert result["models"] == [{"id": "one"}]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "binding,base,fmt,url,header",
+    [
+        (
+            "custom",
+            "https://example.test/v1",
+            "anthropic",
+            "https://example.test/v1/models",
+            "x-api-key",
+        ),
+        (
+            "ollama",
+            "http://localhost:11434/v1/",
+            "auto",
+            "http://localhost:11434/api/tags",
+            "Authorization",
+        ),
+        (
+            "azure",
+            "https://example.test/openai",
+            "auto",
+            "https://example.test/openai/models",
+            "api-key",
+        ),
+    ],
+)
+async def test_native_headers_and_local_discovery(monkeypatch, binding, base, fmt, url, header):
+    session = install(monkeypatch, Response(payload={"models": [{"name": "local:latest"}]}))
+    result = await provider_probe.probe_provider(
+        binding, base, "key", fmt, {"X-Gateway": "value"}, "preview"
+    )
+    assert result == {"status": "connected", "models": [{"id": "local:latest"}]}
+    assert session.requests[0][0] == url
+    assert header in session.requests[0][1]["headers"]
+    assert session.requests[0][1]["headers"]["X-Gateway"] == "value"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "error,status",
+    [(TimeoutError("secret"), "timeout"), (aiohttp.ClientError("secret"), "unreachable")],
+)
+async def test_network_errors_do_not_leak_credentials(monkeypatch, error, status):
+    install(monkeypatch, error)
+    assert await provider_probe.probe_provider("openai", "https://example.test", "secret") == {
+        "status": status,
+        "models": [],
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("connection", [False, True])
+async def test_route_resolves_draft_secrets_by_id_without_writes(monkeypatch, connection):
+    from deeptutor.api.routers import settings as router
+
+    entry = {"id": "saved", "api_key": "live-key", "extra_headers": {"X-Key": "live-header"}}
+    live = {"connections": [entry], "services": {"llm": {"profiles": [entry]}}}
+    draft = deepcopy(live)
+    for item in [draft["connections"][0], draft["services"]["llm"]["profiles"][0]]:
+        item["api_key"] = "draft-key"
+        item["extra_headers"]["X-Key"] = "draft-header"
+    original = deepcopy((live, draft))
+    monkeypatch.setattr(router, "_require_settings_admin", lambda: None)
+    monkeypatch.setattr(
+        router, "get_model_catalog_service", lambda: SimpleNamespace(load=lambda: live)
+    )
+    monkeypatch.setattr(
+        router,
+        "get_settings_draft_service",
+        lambda: SimpleNamespace(load=lambda: {"catalog": draft}),
+    )
+    calls = []
+
+    async def probe(*args):
+        calls.append(args)
+        return {"status": "connected", "models": []}
+
+    monkeypatch.setattr(provider_probe, "probe_provider", probe)
+    payload = router.ProviderProbePayload(
+        base_url="https://example.test/v1",
+        api_key="***",
+        extra_headers={"X-Key": "***"},
+        connection_id="saved" if connection else None,
+        profile_id=None if connection else "saved",
+    )
+    assert await router.test_provider_connection(payload) == {"status": "connected", "models": []}
+    assert calls[0][2] == "draft-key"
+    assert calls[0][4] == {"X-Key": "draft-header"}
+    payload.api_key = "just-typed-key"
+    await router.test_provider_connection(payload)
+    assert calls[1][2] == "just-typed-key"
+    assert (live, draft) == original
+
+
+@pytest.mark.asyncio
+async def test_probe_keeps_admin_boundary(monkeypatch):
+    from fastapi import HTTPException
+
+    from deeptutor.api.routers import settings as router
+
+    def denied():
+        raise HTTPException(status_code=403)
+
+    monkeypatch.setattr(router, "_require_settings_admin", denied)
+    with pytest.raises(HTTPException) as exc:
+        await router.test_provider_connection(router.ProviderProbePayload())
+    assert exc.value.status_code == 403
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("suffix", ["/embeddings", "/audio/speech", "/images/generations"])
+async def test_full_service_endpoint_discovers_sibling_models(monkeypatch, suffix):
+    session = install(monkeypatch, Response(payload={"data": []}))
+    await provider_probe.probe_provider("openai", "https://example.test/v1" + suffix, "key")
+    assert session.requests[0][0] == "https://example.test/v1/models"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "url",
+    ["http://[", "https://example.test:wrong", "ftp://example.test", "http://key@example.test"],
+)
+async def test_invalid_addresses_are_actionable_without_network_requests(monkeypatch, url):
+    session = install(monkeypatch, Response(payload={"data": []}))
+    assert await provider_probe.probe_provider("openai", url) == {
+        "status": "invalid_url",
+        "models": [],
+    }
+    assert session.requests == []
+
+
+@pytest.mark.parametrize(
+    "inputs,outputs,expected",
+    [
+        (["image", "video"], ["text"], {"llm"}),
+        (["text"], ["audio"], {"tts", "voice"}),
+        (["audio"], ["text"], {"llm"}),
+        (["text"], ["image"], {"generation", "imagegen"}),
+        (["image"], ["video", "audio"], {"generation", "videogen", "tts", "voice"}),
+        (["IMAGE"], ["TEXT"], {"llm"}),
+    ],
+)
+def test_voice_and_visual_generation_detection_are_independent(inputs, outputs, expected):
+    result = provider_probe.detect_capabilities(
+        [{"architecture": {"input_modalities": inputs, "output_modalities": outputs}}]
+    )
+    assert {item["category"] for item in result} == expected
+
+
+@pytest.mark.asyncio
+async def test_openrouter_requests_all_output_types_without_guessing_model_names(monkeypatch):
+    session = install(
+        monkeypatch,
+        Response(
+            payload={
+                "data": [
+                    {"id": "image-looking-name"},
+                    {"id": "actual-image", "architecture": {"output_modalities": ["image"]}},
+                ]
+            }
+        ),
+    )
+    result = await provider_probe.probe_provider(
+        "openrouter", "https://openrouter.ai/api/v1", "key"
+    )
+    assert session.requests[0][1]["params"] == {"output_modalities": "all"}
+    assert result["models"] == [
+        {"id": "image-looking-name"},
+        {"id": "actual-image", "services": ["imagegen"]},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_aliyun_catalog_paginates_on_configured_region_with_explicit_types(monkeypatch):
+    session = install(monkeypatch, None)
+    pages = [
+        Response(payload={"output": {"total": 2, "page_no": page, "models": [model]}})
+        for page, model in enumerate(
+            [
+                {"model": "speech", "capabilities": ["TTS"]},
+                {
+                    "model": "transcribe",
+                    "capabilities": ["ASR"],
+                    "inference_metadata": {"response_modality": ["Text"]},
+                },
+            ],
+            1,
+        )
+    ]
+
+    def get(url, **kwargs):
+        session.requests.append((url, kwargs))
+        return pages.pop(0)
+
+    session.get = get
+    result = await provider_probe.probe_provider(
+        "dashscope", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1", "key"
+    )
+    assert [request[0] for request in session.requests] == [
+        "https://dashscope-intl.aliyuncs.com/api/v1/models"
+    ] * 2
+    assert [request[1]["params"]["page_no"] for request in session.requests] == [1, 2]
+    assert all(
+        request[1]["headers"]["Authorization"] == "Bearer key" for request in session.requests
+    )
+    assert result["models"] == [
+        {"id": "speech", "services": ["tts"]},
+        {"id": "transcribe", "services": ["stt"]},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_custom_anthropic_catalog_follows_cursors_and_uses_messages_auth(monkeypatch):
+    session = install(monkeypatch, None)
+    pages = [
+        Response(payload={"data": [{"id": "first"}], "has_more": True, "last_id": "first"}),
+        Response(payload={"data": [{"id": "second"}], "has_more": False}),
+    ]
+
+    def get(url, **kwargs):
+        session.requests.append((url, kwargs))
+        return pages.pop(0)
+
+    session.get = get
+    result = await provider_probe.probe_provider(
+        "custom", "https://gateway.test/v1", "key", api_format="anthropic"
+    )
+    assert result["models"] == [{"id": "first"}, {"id": "second"}]
+    assert session.requests[1][1]["params"] == {"after_id": "first"}
+    assert session.requests[0][1]["headers"]["x-api-key"] == "key"
+    assert not session.requests[0][1]["allow_redirects"]
+
+
+@pytest.mark.asyncio
+async def test_broken_pagination_stops_with_partial_warning(monkeypatch):
+    session = install(
+        monkeypatch,
+        Response(payload={"output": {"total": 20, "page_no": 1, "models": [{"model": "one"}]}}),
+    )
+    result = await provider_probe.probe_provider(
+        "dashscope", "https://dashscope.aliyuncs.com/compatible-mode/v1", "key"
+    )
+    assert result["models"] == [{"id": "one"}]
+    assert result["warning"] == "partial_models"
+    assert len(session.requests) == 2
+
+
+def test_malformed_metadata_is_ignored():
+    assert (
+        provider_probe.model_services(
+            {"type": {}, "capabilities": None, "supportedGenerationMethods": [{}]}
+        )
+        == []
+    )

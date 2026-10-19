@@ -45,8 +45,12 @@ AUTO_MOUNTED_TOOLS: frozenset[str] = frozenset(CONFIGURABLE_BUILTIN_TOOL_NAMES)
 # declared built-in is dropped when its gate is unmet — e.g. ``rag`` without a KB).
 # Insertion order fixes the default surface's conditional-tool order.
 _CONDITIONAL_MOUNT_FLAGS: dict[str, str] = {
+    "preprint": "has_scientific_research",
+    "research_audit": "has_scientific_research",
+    "research_lit": "has_scientific_research",
     "rag": "has_kb",
     "kb_files": "has_kb",
+    "knowledge_frontier": "has_kb",
     "read_source": "has_sources",
     "read_memory": "has_memory",
     "list_notebook": "has_notebooks",
@@ -64,7 +68,7 @@ _CONDITIONAL_MOUNT_FLAGS: dict[str, str] = {
 
 # Built-ins that survive an exclusive knowledge capability when other KBs are
 # co-selected: retrieval over them, and enumeration of what they hold.
-_KB_COEXISTING_TOOLS: tuple[str, ...] = ("rag", "kb_files")
+_KB_COEXISTING_TOOLS: tuple[str, ...] = ("rag", "kb_files", "knowledge_frontier")
 
 # The workspace is the user's shared content surface, not a capability or an
 # optional enhancement.  These tools therefore survive exclusive capability
@@ -154,6 +158,7 @@ class ToolMountFlags:
     has_question_bank: bool = False
     has_skills: bool = False
     has_deferred_tools: bool = False
+    has_scientific_research: bool = False
     has_exec: bool = False
     #: The learner has at least one mastery topic to be sent back to.
     has_mastery_nav: bool = False
@@ -189,7 +194,7 @@ def compose_enabled_tools(
        KB is attached, ``read_source`` if a source index exists, …).
     3. Active loop capabilities' *owned* tools (``capability_owned``) — the
        capability's own tools, added on top.
-    4. Always-on auto-mounts (``write_memory`` / ``web_fetch`` / ``github`` /
+    4. Always-on auto-mounts (``write_memory`` / ``learning_status`` / ``learning_update`` / ``web_fetch`` / ``github`` /
        ``ask_user`` / ``cron``).
 
     A loop capability (solve, mastery) reuses the *full* chat surface and only
@@ -258,7 +263,15 @@ def compose_enabled_tools(
         if getattr(mount_flags, flag) and _builtin_allowed(tool_name):
             composed.append(tool_name)
     composed.extend(str(name) for name in capability_owned if str(name).strip())
-    for always_on in ("write_memory", "web_fetch", "github", "ask_user", "cron"):
+    for always_on in (
+        "write_memory",
+        "learning_status",
+        "learning_update",
+        "web_fetch",
+        "github",
+        "ask_user",
+        "cron",
+    ):
         if _builtin_allowed(always_on):
             composed.append(always_on)
     return _finalize([*WORKSPACE_BASELINE_TOOLS, *composed], forced, suppressed)
@@ -352,6 +365,23 @@ def user_has_question_bank() -> bool:
         return False
 
 
+def partner_can_record_questions() -> bool:
+    """Whether this turn runs inside a partner conversation.
+
+    Partner turns mount ``question_bank`` even when the bank is still empty:
+    recording the first wrong question is exactly the point (#1244) — the
+    tool's ``record`` action files the mistake the learner just owned up to
+    into the bank their family reviews. The partner context is read lazily
+    (import-time this would be a cycle through the partners package).
+    """
+    try:
+        from deeptutor.services.partners.interaction import get_partner_turn_context
+
+        return get_partner_turn_context() is not None
+    except Exception:
+        return False
+
+
 __all__ = [
     "AUTO_MOUNTED_TOOLS",
     "ToolMountFlags",
@@ -359,6 +389,7 @@ __all__ = [
     "admin_enabled_optional_tools",
     "compose_enabled_tools",
     "default_optional_tools",
+    "partner_can_record_questions",
     "user_has_mastery_topics",
     "user_has_memory",
     "user_has_notebooks",

@@ -21,6 +21,7 @@ from deeptutor.services.session.workspace_preferences import (
     WORKSPACE_MODE_MASTERY,
     WORKSPACE_MODE_READING,
 )
+from deeptutor.services.workspace.activity import workspace_writer
 
 from .._turn_runtime_shared import (
     _assemble_persisted_answer,
@@ -34,22 +35,22 @@ from .._turn_runtime_shared import (
     _format_selection_tutor_context,
     _mastery_action_context,
     _mastery_path_id,
-    _narration_marker_call_id,
     _partner_group_references,
     _reading_action_context,
     _reading_material_id,
     _reading_material_revision,
     _reading_references,
     _reading_viewport,
+    _reading_viewport_image_attachments,
     _reading_workspace_id,
     _repair_chinese_emphasis_for_persistence,
     _request_snapshot_metadata,
     _resolve_selection_tutor_context,
+    _resolve_turn_failure_metadata,
     _resolve_turn_outcome,
+    _retracted_round_call_id,
     _should_capture_assistant_content,
-    _stamp_ask_user_content_offset,
-    _timed_media_id,
-    _timed_media_viewport,
+    _stamp_content_offset,
     _topic_material_manifest,
     _TurnExecution,
     _workspace_mode,
@@ -72,7 +73,7 @@ class TurnExecutor:
         _executions: dict[str, _TurnExecution]
         _reply_queues: dict[str, asyncio.Queue[dict[str, Any] | None]]
 
-        def _create_context_builder(self) -> Any: ...
+        def _create_context_builder(self, *, tutoring: bool = False) -> Any: ...
 
         async def _publish_live_event(
             self,
@@ -134,6 +135,7 @@ class TurnExecutor:
             ui_language: str,
         ) -> None: ...
 
+    @workspace_writer
     async def _run_turn(self, execution: _TurnExecution) -> None:
         payload = execution.payload
         session_id = execution.session_id
@@ -146,18 +148,20 @@ class TurnExecutor:
         assistant_events: list[dict[str, Any]] = []
         assistant_content = ""
         provider_response_state: dict[str, Any] | None = None
-        # Per-round content segments + narration call_ids: a chat-loop round's
-        # text is captured live but a round that resolves as narration is
-        # dropped from the persisted answer (mirrors the frontend bubble).
+        context: UnifiedContext | None = None
+        # Per-round content segments + retracted call_ids: every chat-loop
+        # round's text is captured live and kept, commentary written before a
+        # tool call included. Only a round a capability retracted is dropped
+        # from the persisted answer (mirrors the frontend bubble).
         content_segments: list[tuple[str | None, str]] = []
-        narration_call_ids: set[str] = set()
+        retracted_call_ids: set[str] = set()
 
         def _persisted_answer() -> str:
             # clean_thinking_tags is a second line of defence: providers that
             # inline <think> in the content channel are split at streaming
             # time by the agent loop, but anything that slips through must
             # never be persisted as the user-facing answer.
-            return _assemble_persisted_answer(content_segments, narration_call_ids)
+            return _assemble_persisted_answer(content_segments, retracted_call_ids)
 
         # Files the model generated this turn (exec artifacts),
         # persisted as assistant-message attachments so the UI shows openable
@@ -210,10 +214,37 @@ class TurnExecutor:
                         )
                     )
 
+        # What this conversation narrowed its reach to. Entered before the turn
+        # body so prompt building, the deferred tool view and ``read_skill``
+        # all resolve against the same selection; ContextVars are task-local,
+        # so a concurrent turn in another conversation is unaffected.
+        # #1920/#1926: context condensation and pre-capability grading are
+        # part of this turn too; the orchestrator inherits this collector.
+        from deeptutor.services.llm.metrics import TurnUsage, current_usage
+        from deeptutor.services.workspace.resources import turn_resource_selection
+
+        usage_token = current_usage.set(
+            TurnUsage(session_id=session_id, turn_id=turn_id, source=capability_name)
+        )
+        resource_scope = contextlib.ExitStack()
+        resource_scope.enter_context(
+            turn_resource_selection(
+                skills=list(payload.get("skills") or []),
+                mcp=list(payload.get("mcp") or []),
+            )
+        )
         try:
+            # A queued turn may start after a learner's material grant changes.
+            # Recheck before prompt construction and reading-tool execution.
+            material_id = _reading_material_id(payload.get("reading_material_id"))
+            if material_id:
+                from deeptutor.multi_user.learning_access import assert_learning_material
+
+                assert_learning_material(material_id)
             from deeptutor.agents.notebook import NotebookAnalysisAgent
             from deeptutor.book.context import build_book_context
             from deeptutor.core.context import Attachment, TurnRuntimeContext, UnifiedContext
+            from deeptutor.services.learning_journal import get_learning_journal_store
             from deeptutor.services.memory import get_memory_store
             from deeptutor.services.model_selection.runtime import (
                 activate_llm_selection,
@@ -222,7 +253,6 @@ class TurnExecutor:
                 reset_llm_selection as reset_active_llm_selection,
             )
             from deeptutor.services.notebook import get_notebook_manager
-            from deeptutor.services.skill import get_skill_service
             from deeptutor.services.workspace import get_content_workspace_service
 
             request_config = dict(payload.get("config", {}) or {})
@@ -296,6 +326,12 @@ class TurnExecutor:
             # but the URL we record here outlives that pruning. Upload errors
             # are non-fatal — extraction still runs from the in-memory base64.
             attachment_store = get_attachment_store()
+            materialize_session = getattr(attachment_store, "materialize_session", None)
+            if callable(materialize_session):
+                try:
+                    await materialize_session(session_id)
+                except OSError as exc:
+                    logger.warning("could not move previous attachments into workspace: %s", exc)
             for record in attachment_records:
                 if record.get("url"):
                     continue  # already hosted (e.g. legacy URL)
@@ -328,7 +364,109 @@ class TurnExecutor:
 
             from deeptutor.utils.document_extractor import extract_documents_from_records
 
+            # Keep the built-in extractor as a graceful fallback, then replace
+            # every PDF's result with the configured parser output. Running the
+            # configured parser regardless of a native text layer is what lets
+            # OCR/layout engines see scanned pages and figures.
             document_texts, attachment_records = extract_documents_from_records(attachment_records)
+            pdf_records = [
+                record
+                for record in attachment_records
+                if str(record.get("filename") or "").lower().endswith(".pdf")
+            ]
+            pdf_names = {
+                str(record.get("id") or ""): str(record.get("filename") or "PDF attachment")
+                for record in pdf_records
+            }
+            from deeptutor.services.session.attachment_parsing import parse_chat_pdf_attachments
+
+            loop = asyncio.get_running_loop()
+
+            def _attachment_progress(attachment_id: str, phase: str, message: str) -> None:
+                loop.call_soon_threadsafe(
+                    lambda: asyncio.create_task(
+                        self._publish_live_event(
+                            execution,
+                            StreamEvent(
+                                type=StreamEventType.PROGRESS,
+                                source="attachment_parsing",
+                                stage=phase,
+                                content=message,
+                                metadata={
+                                    "attachment_id": attachment_id,
+                                    "filename": pdf_names.get(attachment_id, "PDF attachment"),
+                                    "phase": phase,
+                                },
+                            ),
+                        )
+                    )
+                )
+
+            for record in pdf_records:
+                _attachment_progress(
+                    str(record.get("id") or ""),
+                    "received",
+                    "PDF uploaded to DeepTutor",
+                )
+
+            attachment_records, document_texts = await parse_chat_pdf_attachments(
+                attachment_records,
+                attachment_store=attachment_store,
+                session_id=session_id,
+                document_texts=document_texts,
+                on_progress=_attachment_progress,
+            )
+
+            # Immersive reading: the page the user is currently looking at
+            # rides along as image attachments, so a vision model sees what
+            # the question is about. A drawn page (vector diagram — common in
+            # slide-exported PDFs) leads with a full-page render, since its
+            # figures only exist as vectors and the embedded rasters alone
+            # would be meaningless fragments; the page's embedded figures
+            # follow. Total stays within READING_VIEWPORT_MAX_IMAGES (the
+            # render takes one slot). Keyed on the resolved workspace mode —
+            # the web composer sends capability "chat" with workspace_mode
+            # "immersive_reading", and the mode resolver falls back to the
+            # capability name for direct callers, so both shapes land here.
+            if workspace_mode == "immersive_reading":
+                attachment_records.extend(
+                    _reading_viewport_image_attachments(
+                        _reading_material_id(payload.get("reading_material_id")),
+                        _reading_viewport(payload.get("reading_viewport")),
+                    )
+                )
+
+            # Embedded images harvested out of office documents during
+            # extraction arrive with base64 and no URL — host them too so
+            # message previews survive the base64 pruning below and the
+            # reader pane can display them.
+            for record in attachment_records:
+                if record.get("url") or not record.get("base64"):
+                    continue
+                try:
+                    raw_bytes = _b64.b64decode(record["base64"], validate=False)
+                except Exception as exc:
+                    logger.warning(
+                        "skipping embedded-image upload for %r: invalid base64 (%s)",
+                        record.get("filename"),
+                        exc,
+                    )
+                    continue
+                try:
+                    record["url"] = await attachment_store.put(
+                        session_id=session_id,
+                        attachment_id=record.get("id") or _uuid.uuid4().hex[:12],
+                        filename=record.get("filename", "") or "image",
+                        data=raw_bytes,
+                        mime_type=record.get("mime_type", "") or "",
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        "attachment store rejected embedded image %r: %s",
+                        record.get("filename"),
+                        exc,
+                    )
+
             attachments = [
                 Attachment(
                     type=r.get("type", "file"),
@@ -352,6 +490,38 @@ class TurnExecutor:
                 }
                 for r in attachment_records
             ]
+
+            # Images attached in earlier turns of this conversation stay
+            # readable (#1438): re-attach them (URL-only; the multimodal layer
+            # resolves the bytes from the attachment store at request time) so
+            # a vision model keeps seeing an image the learner attached before.
+            # Text attachments are not repeated here — the source inventory's
+            # historical walk already serves them. Selection tutoring is
+            # deliberately isolated from conversation context.
+            if not selection_tutor_context:
+                from deeptutor.services.session.source_inventory import (
+                    collect_prior_image_attachments,
+                )
+
+                prior_images = await collect_prior_image_attachments(
+                    self.store,
+                    session_id=session_id,
+                    leaf_message_id=branch_parent_id,
+                    exclude_urls={
+                        str(r.get("url") or "") for r in attachment_records if r.get("url")
+                    },
+                )
+                attachments.extend(
+                    Attachment(
+                        type="image",
+                        url=rec["url"],
+                        base64="",
+                        filename=rec.get("filename", ""),
+                        mime_type=rec.get("mime_type", ""),
+                        id=rec.get("id", ""),
+                    )
+                    for rec in prior_images
+                )
 
             sidebar_system_context = ""
             if selection_tutor_context:
@@ -380,7 +550,11 @@ class TurnExecutor:
                     )
 
             llm_config, llm_scope_token = activate_llm_selection(payload.get("llm_selection"))
-            builder = self._create_context_builder()
+            builder = (
+                self._create_context_builder(tutoring=True)
+                if workspace_mode == WORKSPACE_MODE_MASTERY
+                else self._create_context_builder()
+            )
 
             async def _emit_context_event(event: StreamEvent) -> None:
                 if event.source in {"context", "context_builder"}:
@@ -397,16 +571,25 @@ class TurnExecutor:
             memory_store = get_memory_store()
             memory_context = memory_store.read_l3_concat() if memory_references else ""
 
+            # One snapshot per turn; selected-text tutoring stays independent
+            # of an unrelated mission from earlier conversations (#1407).
+            learning_journal_context = ""
+            if not selection_tutor_context:
+                try:
+                    learning_journal_context = get_learning_journal_store().injection_markdown()
+                except (OSError, ValueError):
+                    logger.exception("Unable to read the learning journal; preserving its file")
+
             # Persona: at most one behaviour preset per turn, eagerly
             # injected (a persona must shape the voice from the first
-            # token). Resolution: the user's own workspace first; non-admin
-            # users fall back to admin-authored presets (personas carry no
+            # token). Resolution: the user's own workspace first, then
+            # admin-authored presets for every role (personas carry no
             # privileged workflow, so no grant gate applies).
             from deeptutor.multi_user.context import get_current_user
-            from deeptutor.multi_user.paths import get_admin_path_service
-            from deeptutor.multi_user.skill_access import assigned_skill_ids
-            from deeptutor.services.persona import PersonaService, get_persona_service
-            from deeptutor.services.skill.service import SkillService, render_skills_manifest
+            from deeptutor.services.persona import (
+                get_persona_service,
+                load_visible_for_context,
+            )
 
             current_user = get_current_user()
             learner_profile_prompt = ""
@@ -418,41 +601,19 @@ class TurnExecutor:
                 if account and str(account[1].get("preset") or "standard") == "learner":
                     learner_profile_prompt = prompt_block(account[1].get("learner_profile"))
             requested_persona = str(payload.get("persona") or "").strip()
-            persona_context = ""
-            if requested_persona:
-                persona_context = get_persona_service().load_for_context(requested_persona)
-                if not persona_context and not current_user.is_admin:
-                    persona_context = PersonaService(
-                        root=get_admin_path_service().get_workspace_dir() / "personas"
-                    ).load_for_context(requested_persona)
+            persona_context = (
+                load_visible_for_context(
+                    requested_persona,
+                    workspace=get_persona_service(),
+                )
+                if requested_persona
+                else ""
+            )
             active_persona = requested_persona if persona_context else ""
 
-            # Skills: never user-selected per turn. The model sees a
-            # one-line manifest of every skill visible to this user (own +
-            # builtin, plus admin-assigned for non-admin users) and pulls
-            # full content on demand via ``read_skill``. ``always`` skills
-            # are the exception — their bodies are injected eagerly.
-            user_skill_service = get_skill_service()
-            skill_entries = user_skill_service.summary_entries()
-            always_blocks = [user_skill_service.load_always_for_context()]
-            if not current_user.is_admin:
-                assigned_service = SkillService(
-                    root=get_admin_path_service().get_workspace_dir() / "skills",
-                    builtin_root=None,
-                )
-                allowed_skills = assigned_skill_ids(current_user.id)
-                assigned_entries = [
-                    e for e in assigned_service.summary_entries() if e.name in allowed_skills
-                ]
-                skill_entries = skill_entries + assigned_entries
-                always_blocks.append(
-                    assigned_service.load_for_context(
-                        [e.name for e in assigned_entries if e.always and e.available]
-                    )
-                )
-            skills_manifest = "\n\n".join(
-                part for part in (*always_blocks, render_skills_manifest(skill_entries)) if part
-            )
+            from deeptutor.services.skill.runtime import skill_manifest
+
+            skills_manifest = skill_manifest()
 
             # Chat capability uses the lightweight manifest + read_source
             # affordance (no upstream LLM call, no wholesale-dump into the
@@ -720,24 +881,40 @@ class TurnExecutor:
                     content=raw_user_content,
                     capability=capability_name,
                     attachments=persisted_attachment_records,
-                    metadata=_request_snapshot_metadata(
-                        payload=payload,
-                        content=raw_user_content,
-                        capability=capability_name,
-                        config=request_config,
-                        attachments=persisted_attachment_records,
-                        notebook_references=notebook_references,
-                        history_references=history_references,
-                        partner_group_references=partner_group_references,
-                        question_notebook_references=question_notebook_references,
-                        book_references=book_references,
-                        reading_references=reading_references,
-                        persona=active_persona,
-                        memory_references=memory_references,
-                        llm_selection=payload.get("llm_selection"),
-                    ),
+                    metadata={
+                        **_request_snapshot_metadata(
+                            payload=payload,
+                            content=raw_user_content,
+                            capability=capability_name,
+                            config=request_config,
+                            attachments=persisted_attachment_records,
+                            notebook_references=notebook_references,
+                            history_references=history_references,
+                            partner_group_references=partner_group_references,
+                            question_notebook_references=question_notebook_references,
+                            book_references=book_references,
+                            reading_references=reading_references,
+                            persona=active_persona,
+                            memory_references=memory_references,
+                            llm_selection=payload.get("llm_selection"),
+                        ),
+                        # A recovered worker_lost turn may never have an
+                        # assistant row. Keep its exact user-row association.
+                        "turn_id": turn_id,
+                    },
                     **parent_kwargs,
                 )
+
+            if not selection_tutor_context:
+                from deeptutor.services.task_board import get_task_board_store
+                from deeptutor.services.workspace.context import current_workspace_id
+
+                task_context = await asyncio.to_thread(
+                    get_task_board_store(migrate_legacy=False).context_text,
+                    current_workspace_id(),
+                    session_id,
+                )
+                source_manifest_text += task_context
 
             context = UnifiedContext(
                 session_id=session_id,
@@ -753,18 +930,25 @@ class TurnExecutor:
                 config_overrides=request_config,
                 language=payload.get("language", "en"),
                 memory_context=memory_context,
+                learning_journal_context=learning_journal_context,
                 persona_context=persona_context,
                 sidebar_context=sidebar_system_context,
                 skills_manifest=skills_manifest,
                 source_manifest=source_manifest_text,
                 runtime=TurnRuntimeContext(
+                    model_history=getattr(history_result, "model_history", None),
+                    previous_model_turn=getattr(history_result, "previous_model_turn", None),
                     turn_id=turn_id,
                     wait_for_user_reply=_wait_for_user_reply,
                     subagent_consult_budget=payload.get("subagent_consult_budget"),
+                    consult_partner_id=payload.get("consult_partner_id"),
+                    partner_discussion_group_id=payload.get("partner_discussion_group_id"),
                     workspace=get_content_workspace_service().create_runtime_context(
                         capability=capability_name,
                         session_id=session_id,
                         turn_id=turn_id,
+                        workspace_id=payload.get("_content_workspace_id"),
+                        instructions=payload.get("_workspace_instructions"),
                     ),
                 ),
                 metadata={
@@ -772,6 +956,7 @@ class TurnExecutor:
                     "conversation_context_text": conversation_context_text,
                     "history_token_count": history_result.token_count,
                     "history_budget": history_result.budget,
+                    "reply_language_fixed": bool(payload.get("_reply_language_fixed")),
                     "turn_id": turn_id,
                     "question_followup_context": followup_question_context or {},
                     "selection_tutor_context": selection_tutor_context or {},
@@ -796,6 +981,10 @@ class TurnExecutor:
                     "mastery_card_grade": mastery_card_grade or {},
                     # The question this turn opened by dropping, if it did.
                     "mastery_card_skip": mastery_card_skip or {},
+                    # Whether the message is a pick on the open card at all,
+                    # graded or not: "A" is an answer, not something to search.
+                    "mastery_card_answered": workspace_mode == WORKSPACE_MODE_MASTERY
+                    and bool(payload.get("mastery_answer")),
                     "mastery_path_lease_managed": mastery_lease_managed,
                     # Immersive reading: the open material activates the reading
                     # capability and binds its tools; the viewport tells the
@@ -809,10 +998,6 @@ class TurnExecutor:
                     ),
                     "immersive_reading_mode": workspace_mode == WORKSPACE_MODE_READING,
                     "reading_viewport": _reading_viewport(payload.get("reading_viewport")),
-                    "timed_media_id": _timed_media_id(payload.get("timed_media_id")),
-                    "timed_media_viewport": _timed_media_viewport(
-                        payload.get("timed_media_viewport")
-                    ),
                     "book_context": book_context,
                     "book_context_warnings": book_context_result.warnings,
                     "memory_references": memory_references,
@@ -835,7 +1020,10 @@ class TurnExecutor:
                     # ``MasteryLoopCapability.augment_kwargs``). Kept separate
                     # from ``source_index`` so topic materials never trigger
                     # explore_context's forced pre-pass.
-                    "mastery_topic_source_index": mastery_topic_source_index,
+                    "mastery_topic_source_index": {
+                        **mastery_topic_source_index,
+                        **getattr(history_result, "history_sources", {}),
+                    },
                 },
             )
 
@@ -845,6 +1033,8 @@ class TurnExecutor:
                     continue
                 if event.type == StreamEventType.DONE:
                     pending_done_event = event
+                    if event.metadata.get("usage_summary"):
+                        assistant_events.append(event.to_dict())
                     capability_route = payload.get("capability_route")
                     if isinstance(capability_route, dict):
                         pending_done_event.metadata = {
@@ -854,17 +1044,19 @@ class TurnExecutor:
                     continue
                 payload_event = await self._publish_live_event(execution, event)
                 if payload_event.get("type") not in {"done", "session"}:
-                    # A card reply lives inside this assistant row. Persist
-                    # the exact user-facing answer boundary so future context
-                    # can replay assistant -> user -> assistant in order.
-                    _stamp_ask_user_content_offset(payload_event, _persisted_answer())
+                    # Cards and tool calls render between runs of answer
+                    # text. Persist the exact boundary each one sat at so a
+                    # reloaded turn lays the answer out the way it streamed,
+                    # and so future context can replay assistant -> user ->
+                    # assistant in order.
+                    _stamp_content_offset(payload_event, _persisted_answer())
                     assistant_events.append(payload_event)
                 if _should_capture_assistant_content(event):
                     call_id = (event.metadata or {}).get("call_id")
                     content_segments.append((str(call_id) if call_id else None, event.content))
-                narration_call_id = _narration_marker_call_id(event)
-                if narration_call_id:
-                    narration_call_ids.add(narration_call_id)
+                retracted_call_id = _retracted_round_call_id(event)
+                if retracted_call_id:
+                    retracted_call_ids.add(retracted_call_id)
                 for attachment in artifact_attachments(event):
                     if attachment["url"] not in seen_artifact_urls:
                         seen_artifact_urls.add(attachment["url"])
@@ -873,11 +1065,16 @@ class TurnExecutor:
             provider_response_state = normalize_provider_response_state(
                 context.runtime.provider_response_state
             )
-            assistant_provider_metadata = (
-                {"provider_response_state": provider_response_state}
-                if provider_response_state is not None
-                else None
-            )
+            assistant_provider_metadata = {
+                **(
+                    {"provider_response_state": provider_response_state}
+                    if provider_response_state
+                    else {}
+                ),
+                **(
+                    {"model_turn": context.runtime.model_turn} if context.runtime.model_turn else {}
+                ),
+            } or None
 
             # A mastery turn may have changed which path it is on
             # (``mastery_switch`` / ``mastery_leave``). The conversation's
@@ -906,8 +1103,8 @@ class TurnExecutor:
             # already unwinding and must not start new blocking work.
             await fill_preview_text(generated_attachments)
 
-            # The persisted answer is the captured content minus any narration
-            # rounds (their text stayed in the trace, never the answer). Apply
+            # The persisted answer is the captured content minus any round a
+            # capability retracted (that text stayed in the trace). Apply
             # the CJK Markdown repair only after every streamed segment has
             # arrived, so no incomplete response is ever rewritten.
             assistant_content = _repair_chinese_emphasis_for_persistence(
@@ -942,6 +1139,21 @@ class TurnExecutor:
                     parent_message_id=branch_parent_id,
                     metadata=assistant_provider_metadata,
                 )
+            elif is_regenerate and payload.get("regenerated_from_message_id") is not None:
+                # Regenerate reuses the saved user row. PocketBase ids are
+                # strings, so they cannot travel through the SQLite-only
+                # parent_message_id request field, but the assistant still
+                # needs an explicit link to hide an older failed attempt.
+                assistant_message_id = await self.store.add_message(
+                    session_id=session_id,
+                    role="assistant",
+                    content=assistant_content,
+                    capability=capability_name,
+                    events=[],
+                    attachments=generated_attachments or None,
+                    parent_message_id=payload["regenerated_from_message_id"],
+                    metadata=assistant_provider_metadata,
+                )
             else:
                 assistant_message_id = await self.store.add_message(
                     session_id=session_id,
@@ -957,6 +1169,7 @@ class TurnExecutor:
                 assistant_events,
                 pending_done_event,
             )
+            failure_code, retryable = _resolve_turn_failure_metadata(assistant_events)
             if pending_done_event is None:
                 pending_done_event = StreamEvent(
                     type=StreamEventType.DONE,
@@ -968,13 +1181,20 @@ class TurnExecutor:
                     **pending_done_event.metadata,
                     "status": turn_status,
                 }
+            if failure_code:
+                pending_done_event.metadata["error_code"] = failure_code
+            if retryable:
+                pending_done_event.metadata["retryable"] = True
             # Attach the persisted row ids so the frontend can reconcile its
             # optimistic (negative) message ids with a targeted in-place swap
             # instead of refetching and re-rendering the whole session.
+            accepted_user_message_id = new_user_message_id
+            if accepted_user_message_id is None and is_regenerate:
+                accepted_user_message_id = payload.get("regenerated_from_message_id")
             persisted_ids = {
                 key: value
                 for key, value in (
-                    ("user_message_id", new_user_message_id),
+                    ("user_message_id", accepted_user_message_id),
                     ("assistant_message_id", assistant_message_id),
                 )
                 if value
@@ -986,7 +1206,13 @@ class TurnExecutor:
             # synchronously flushed, so a reconnect can never observe a
             # terminal row with a missing durable event prefix.
             await self._flush_buffered_events(execution)
-            transitioned = await self._transition_execution(execution, turn_status, turn_error)
+            transitioned = await self._transition_execution(
+                execution,
+                turn_status,
+                turn_error,
+                failure_code=failure_code,
+                retryable=retryable,
+            )
             if not transitioned:
                 execution.lease_lost = True
                 raise asyncio.CancelledError
@@ -1000,6 +1226,8 @@ class TurnExecutor:
                 # open briefly so the later ``session_meta`` title update can
                 # still arrive.
                 try:
+                    current_usage.reset(usage_token)
+                    usage_token = None
                     await self._maybe_generate_session_title(
                         execution=execution,
                         session_id=session_id,
@@ -1074,9 +1302,19 @@ class TurnExecutor:
                             events=[],
                             attachments=generated_attachments or None,
                             metadata=(
-                                {"provider_response_state": provider_response_state}
-                                if provider_response_state is not None
-                                else None
+                                {
+                                    **(
+                                        {"provider_response_state": provider_response_state}
+                                        if provider_response_state
+                                        else {}
+                                    ),
+                                    **(
+                                        {"model_turn": context.runtime.model_turn}
+                                        if context and context.runtime.model_turn
+                                        else {}
+                                    ),
+                                }
+                                or None
                             ),
                         )
                     )
@@ -1111,6 +1349,11 @@ class TurnExecutor:
                     await self._flush_buffered_events(execution)
             raise
         except Exception as exc:
+            failure_code = str(getattr(exc, "error_code", "") or "")
+            retryable_attr = getattr(exc, "retryable", None)
+            retryable = retryable_attr if isinstance(retryable_attr, bool) else False
+            resolved_failure_code = failure_code or "internal_error"
+            resolved_retryable = retryable if failure_code else True
             if stream_done_sent:
                 logger.error(
                     "Post-stream persistence for turn %s failed: %s",
@@ -1128,8 +1371,8 @@ class TurnExecutor:
                         execution,
                         "failed",
                         str(exc),
-                        failure_code="internal_error",
-                        retryable=True,
+                        failure_code=resolved_failure_code,
+                        retryable=resolved_retryable,
                     )
             else:
                 logger.error("Turn %s failed: %s", turn_id, exc, exc_info=True)
@@ -1139,7 +1382,12 @@ class TurnExecutor:
                         type=StreamEventType.ERROR,
                         source=capability_name,
                         content=str(exc),
-                        metadata={"turn_terminal": True, "status": "failed"},
+                        metadata={
+                            "turn_terminal": True,
+                            "status": "failed",
+                            "error_code": resolved_failure_code,
+                            "retryable": resolved_retryable,
+                        },
                     ),
                 )
                 await self._publish_live_event(
@@ -1147,7 +1395,11 @@ class TurnExecutor:
                     StreamEvent(
                         type=StreamEventType.DONE,
                         source=capability_name,
-                        metadata={"status": "failed"},
+                        metadata={
+                            "status": "failed",
+                            "error_code": resolved_failure_code,
+                            "retryable": resolved_retryable,
+                        },
                     ),
                 )
                 with contextlib.suppress(Exception):
@@ -1156,10 +1408,17 @@ class TurnExecutor:
                     execution,
                     "failed",
                     str(exc),
-                    failure_code="internal_error",
-                    retryable=True,
+                    failure_code=resolved_failure_code,
+                    retryable=resolved_retryable,
                 )
         finally:
+            if usage_token is not None:
+                current_usage.reset(usage_token)
+            if execution.flush_task is not None:
+                execution.flush_task.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await execution.flush_task
+            resource_scope.close()
             if llm_scope_token is not None and reset_active_llm_selection is not None:
                 reset_active_llm_selection(llm_scope_token)
             # Drop the reply queue first — any in-flight ``submit_user_reply``

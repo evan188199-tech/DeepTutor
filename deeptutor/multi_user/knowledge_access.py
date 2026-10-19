@@ -8,6 +8,7 @@ from typing import Any
 
 from fastapi import HTTPException
 
+from deeptutor.knowledge.kb_types import SUBAGENT_KB_TYPE
 from deeptutor.knowledge.manager import KnowledgeBaseManager
 from deeptutor.knowledge.manifest import (
     MANIFEST_NOTE_LIMIT,
@@ -19,7 +20,7 @@ from deeptutor.knowledge.manifest import (
 from .context import get_current_user
 from .grants import load_grant
 from .models import KnowledgeResource
-from .paths import get_admin_path_service, get_current_path_service
+from .paths import get_account_path_service, get_admin_path_service, get_current_path_service
 
 ADMIN_PREFIX = "admin:kb:"
 USER_PREFIX = "user:kb:"
@@ -32,7 +33,12 @@ def _manager_for(base_dir: str) -> KnowledgeBaseManager:
 
 
 def current_kb_base_dir() -> Path:
-    return get_current_path_service().get_knowledge_bases_root()
+    from deeptutor.services.workspace.knowledge import library_request
+
+    from .paths import get_account_path_service
+
+    paths = get_account_path_service() if library_request.get() else get_current_path_service()
+    return paths.get_knowledge_bases_root()
 
 
 def admin_kb_base_dir() -> Path:
@@ -41,6 +47,12 @@ def admin_kb_base_dir() -> Path:
 
 def current_kb_manager() -> KnowledgeBaseManager:
     return _manager_for(str(current_kb_base_dir().resolve()))
+
+
+def account_kb_manager() -> KnowledgeBaseManager:
+    """The account library, even when the request is workspace-scoped."""
+    paths = get_account_path_service()
+    return _manager_for(str(paths.get_knowledge_bases_root().resolve()))
 
 
 def admin_kb_manager() -> KnowledgeBaseManager:
@@ -72,16 +84,43 @@ def _assigned_admin_names() -> set[str]:
 
 
 def resolve_kb(kb_ref: str, *, require_write: bool = False) -> KnowledgeResource:
+    from deeptutor.services.workspace.context import current_workspace_id
+    from deeptutor.services.workspace.knowledge import (
+        canonical_kb_id,
+        learning_source_kbs,
+        library_request,
+        parse_kb_id,
+        qualified_kb_id,
+        resolve_qualified,
+        resolve_selected,
+    )
+    from deeptutor.services.workspace.resources import current_resources
+
+    if not require_write and kb_ref in learning_source_kbs.get():
+        return resolve_qualified(kb_ref)
+    selected = None if library_request.get() else current_resources().knowledge_bases
+    if selected is not None:
+        return resolve_selected(kb_ref, selected, require_write=require_write)
+    if parse_kb_id(kb_ref) is not None or canonical_kb_id(kb_ref) != kb_ref:
+        return resolve_qualified(kb_ref, require_write=require_write)
+    if kb_ref and not kb_ref.startswith((ADMIN_PREFIX, USER_PREFIX)):
+        previous_id = qualified_kb_id(kb_ref, current_workspace_id())
+        if canonical_kb_id(previous_id) != previous_id:
+            return resolve_qualified(previous_id, require_write=require_write)
+    return _resolve_kb(kb_ref, require_write=require_write)
+
+
+def _resolve_kb(kb_ref: str, *, require_write: bool = False) -> KnowledgeResource:
     user = get_current_user()
     requested_source, name = _strip_resource_prefix(kb_ref)
 
     if user.is_admin:
-        manager = admin_kb_manager()
+        manager = current_kb_manager()
         resolved = _resolve_default_or_name(manager, name)
         return KnowledgeResource(
             id=f"admin:kb:{resolved}",
             name=resolved,
-            base_dir=admin_kb_base_dir(),
+            base_dir=current_kb_base_dir(),
             source="admin",
             assigned=False,
             read_only=False,
@@ -174,6 +213,76 @@ def manager_for_resource(resource: KnowledgeResource) -> KnowledgeBaseManager:
 
 
 def list_visible_knowledge_bases() -> list[dict[str, Any]]:
+    from deeptutor.services.workspace.context import current_workspace_id
+    from deeptutor.services.workspace.knowledge import (
+        canonical_kb_id,
+        knowledge_catalog,
+        library_request,
+        move_aliases,
+        parse_kb_id,
+    )
+    from deeptutor.services.workspace.resources import current_resources
+
+    if library_request.get():
+        return knowledge_catalog()
+    selected = current_resources().knowledge_bases
+    if selected is None:
+        own = _list_visible_knowledge_bases()
+        origin = current_workspace_id()
+        moved_refs = {
+            canonical_kb_id(old_id)
+            for old_id in move_aliases()
+            if (parsed := parse_kb_id(old_id)) is not None and parsed[0] == origin
+        }
+        if not moved_refs:
+            return _with_account_subagents(own, origin=origin)
+        catalog = {item["id"]: item for item in knowledge_catalog()}
+        existing = {item["id"] for item in own}
+        return _with_account_subagents(
+            own + [catalog[rid] for rid in sorted(moved_refs - existing) if rid in catalog],
+            origin=origin,
+        )
+    catalog = {item["id"]: item for item in knowledge_catalog()}
+    return [
+        catalog[rid]
+        for rid in dict.fromkeys(canonical_kb_id(ref) for ref in selected)
+        if rid in catalog
+    ]
+
+
+def _with_account_subagents(items: list[dict[str, Any]], *, origin: str) -> list[dict[str, Any]]:
+    """Add account-level agent connectors while preserving KB isolation.
+
+    Connected agents are live delegates rather than document catalogs. They are
+    shared with every workspace in inherit mode, while an explicit workspace KB
+    selection remains authoritative.
+    """
+    if not origin:
+        return items
+    existing = {item["id"] for item in items}
+    result = list(items)
+    manager = account_kb_manager()
+    for name in manager.list_knowledge_bases():
+        meta = manager.get_metadata(name)
+        if not isinstance(meta, dict) or meta.get("type") != SUBAGENT_KB_TYPE:
+            continue
+        rid = f"account:kb:{name}"
+        if rid in existing:
+            continue
+        result.append(
+            {
+                "id": rid,
+                "name": name,
+                "source": "admin" if get_current_user().is_admin else "user",
+                "assigned": False,
+                "read_only": False,
+                "provenance_label": "Account library",
+            }
+        )
+    return result
+
+
+def _list_visible_knowledge_bases() -> list[dict[str, Any]]:
     user = get_current_user()
     manager = current_kb_manager()
     items: list[dict[str, Any]] = []

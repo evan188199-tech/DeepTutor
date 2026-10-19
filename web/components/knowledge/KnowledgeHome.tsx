@@ -1,5 +1,7 @@
 "use client";
 
+import { FeaturePage, PageHeader, pageActionClass, pageGridClass } from '@/components/layout/FeaturePage'
+import { knowledgeBaseRef } from "@/lib/knowledge-helpers";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -38,7 +40,7 @@ interface KnowledgeHomeProps {
   providers: RagProviderSummary[];
   onOpenKb: (name: string) => void;
   onOpenEngine: (id: string) => void;
-  onOpenSource: (id: "obsidian" | "marginnote4") => void;
+  onOpenSource: (id: "obsidian" | "marginnote4" | "kiwix") => void;
   onCreate: () => void;
   activeSection: KnowledgeHomeSection;
   onSectionChange: (section: KnowledgeHomeSection) => void;
@@ -155,6 +157,13 @@ export default function KnowledgeHome({
         action: t("Connect library"),
         count: kbs.filter((kb) => kb.metadata?.type === "marginnote4").length,
       },
+      {
+        id: "kiwix" as const,
+        name: t("Kiwix / ZIM"),
+        description: t("Search an existing ZIM archive through kiwix-serve. Articles stay on the server."),
+        action: t("Connect archive"),
+        count: kbs.filter((kb) => kb.metadata?.type === "kiwix").length,
+      },
     ],
     [kbs, t],
   );
@@ -223,27 +232,21 @@ export default function KnowledgeHome({
   );
 
   return (
-    <div className="min-w-0 flex-1 overflow-y-auto bg-[var(--background)]">
-      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-[19px] font-semibold tracking-tight text-[var(--foreground)]">
-              {t("Knowledge Center")}
-            </h1>
-            <p className="mt-1 text-[12.5px] text-[var(--muted-foreground)]">
-              {t("Manage your knowledge bases and retrieval engines.")}
-            </p>
-          </div>
+    <FeaturePage>
+        <PageHeader
+          title={t("Knowledge Center")}
+          description={t("Manage your knowledge bases and retrieval engines.")}
+          action={
           <button
             type="button"
             onClick={onCreate}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--primary)] px-3.5 py-2 text-[12.5px] font-medium text-[var(--primary-foreground)] transition-opacity hover:opacity-90"
+            className={pageActionClass()}
           >
             <Plus size={14} />
             {t("New knowledge base")}
           </button>
-        </div>
+          }
+        />
 
         <div
           role="tablist"
@@ -352,14 +355,14 @@ export default function KnowledgeHome({
                 {t("No matches")}
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className={pageGridClass(2)}>
                 {filteredKbs.map((kb) => {
                   const docs = kbDocCount(kb);
                   return (
                     <button
-                      key={kb.name}
+                      key={knowledgeBaseRef(kb)}
                       type="button"
-                      onClick={() => onOpenKb(kb.name)}
+                      onClick={() => onOpenKb(knowledgeBaseRef(kb))}
                       className="group flex flex-col gap-2 rounded-2xl border border-[var(--border)] p-4 text-left transition-colors hover:border-[var(--ring)]"
                     >
                       <div className="flex items-start gap-3">
@@ -383,6 +386,7 @@ export default function KnowledgeHome({
                               />
                             )}
                           </div>
+                          {kb.provenance_label && <p className="mt-1 truncate text-xs text-[var(--muted-foreground)]">{kb.provenance_label}</p>}
                           <div className="mt-2 flex items-center gap-2 text-[11px] text-[var(--muted-foreground)]">
                             <span className="rounded-full border border-[var(--border)] px-1.5 py-0.5">
                               {providerName(kbProvider(kb))}
@@ -420,7 +424,7 @@ export default function KnowledgeHome({
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2">
+              <div className={pageGridClass(2)}>
                 {groupedProviders.local.map(renderProvider)}
               </div>
             </section>
@@ -437,7 +441,7 @@ export default function KnowledgeHome({
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2">
+              <div className={pageGridClass(2)}>
                 {groupedProviders.server.map(renderProvider)}
               </div>
             </section>
@@ -454,7 +458,7 @@ export default function KnowledgeHome({
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2">
+              <div className={pageGridClass(2)}>
                 {groupedProviders.cloud.map(renderProvider)}
               </div>
             </section>
@@ -473,13 +477,12 @@ export default function KnowledgeHome({
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2">
+              <div className={pageGridClass(2)}>
                 {externalSources.map(renderExternalSource)}
               </div>
             </section>
           </div>
         )}
-      </div>
-    </div>
+    </FeaturePage>
   );
 }

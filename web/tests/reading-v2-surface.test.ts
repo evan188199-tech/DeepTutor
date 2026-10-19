@@ -93,7 +93,7 @@ test("reading is reachable only through its own workspace", () => {
 });
 
 test("reading reuses the workspace runtime without nesting another provider", () => {
-  const layout = source("app/(workspace)/reading/layout.tsx");
+  const layout = source("app/(workspace)/learning/reading/layout.tsx");
 
   assert.doesNotMatch(layout, /UnifiedChatProvider|ChatRuntimeProvider/);
   assert.match(layout, /QuizFollowupProvider/);
@@ -121,23 +121,32 @@ test("media relies on native player controls and PDF navigation is honest", () =
   assert.match(navigator, /material\?\.render_mode === "pdf"/);
   assert.match(navigator, /synthesised/);
   assert.match(navigator, /Page \{\{page\}\}/);
-  assert.match(navigator, /aria-label=\{t\("Collapse contents"\)\}/);
+  assert.match(
+    page,
+    /navigatorOpen \? t\("Collapse contents"\) : t\("Expand contents"\)/,
+  );
   assert.match(page, /externalJump=\{documentJump\}/);
   assert.match(reader, /requestJump\(externalJump\.locator/);
 });
 
 test("narrow reading workspaces keep the source primary and use dismissible panels", () => {
   const page = source(`${WORKSPACE_DIR}/ReadingWorkspace.tsx`);
+  const navigator = source(`${WORKSPACE_DIR}/SourceNavigator.tsx`);
   const workspace = workspaceSurface();
 
   assert.match(page, /min-width: 1280px/);
   assert.match(page, /xl:grid-cols-/);
-  assert.match(workspace, /mobileOpen/);
+  assert.match(page, /open=\{navigatorOpen\}/);
+  assert.match(navigator, /onClose: \(\) => void/);
   // The companion is its own module now (`ReadingCompanion.tsx`), so these
   // two hold over the surface rather than over the shell — exactly the case
   // `workspaceSurface` exists for.
   assert.match(workspace, /xl:static xl:w-auto xl:shadow-none/);
-  assert.match(workspace, /aria-label=\{t\("Close reading companion"\)\}/);
+  // The companion sheet has no header of its own; it is dismissed by the
+  // scrim over the document or by its switch on the workspace bar, which
+  // stays above the sheet.
+  assert.match(page, /aria-label=\{t\("Close panels"\)\}/);
+  assert.match(page, /toggleCompanion\(!companionOpen\)/);
 });
 
 test("failed imports expose the durable retry endpoint in product UI", () => {
@@ -199,7 +208,7 @@ test("naming the first turn's conversation does not remount the reader", () => {
   const hook = source(`${WORKSPACE_DIR}/useReadingWorkspace.ts`);
   const page = source(`${WORKSPACE_DIR}/ReadingWorkspace.tsx`);
 
-  // `/reading/<ws>` and `/reading/<ws>/sessions/<id>` are different route
+  // `/learning/reading/<ws>` and `/learning/reading/<ws>/sessions/<id>` are different route
   // matches, so putting the new session id in the URL through the router is a
   // navigation: App Router tore the whole workspace down and rebuilt it while
   // the answer was still streaming — the reader's subtree left the DOM,
@@ -218,6 +227,17 @@ test("naming the first turn's conversation does not remount the reader", () => {
   // params do not follow the native history API, only the pathname does.
   assert.match(page, /readingSessionIdFromPath\(usePathname\(\)\)/);
   assert.doesNotMatch(page, /params\.sessionId/);
+});
+
+test("material hydration owns its loading state from the first request tick", () => {
+  const hook = source(`${WORKSPACE_DIR}/useReadingWorkspace.ts`);
+
+  // ReadingContext sets `loading` before it fetches a material. Fetching the
+  // detail in the workspace first creates a paintable gap after the collection
+  // finishes loading: no material, but no material-loading state either. The
+  // reader then flashes its unavailable recovery UI before the document opens.
+  assert.match(hook, /void openMaterial\(active\.material_id\);/);
+  assert.doesNotMatch(hook, /getMaterial\(active\.material_id\)/);
 });
 
 test("a material reopens where the reader left off", () => {

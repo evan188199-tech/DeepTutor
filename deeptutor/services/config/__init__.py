@@ -27,11 +27,13 @@ from .model_catalog import (
 )
 from .runtime_settings import (
     HTTP_KEEP_ALIVE_TIMEOUT,
+    SETTINGS_DERIVED_ENV_KEYS,
     ChatAttachmentLimits,
     RuntimeSettingsService,
     ensure_runtime_settings_files,
     export_runtime_settings_to_env,
     get_chat_attachment_limits,
+    get_prior_image_reinject_limit,
     get_runtime_settings_service,
     get_ws_max_size,
     load_auth_settings,
@@ -41,6 +43,7 @@ from .runtime_settings import (
     load_lightrag_settings,
     load_llamaindex_settings,
     load_mineru_settings,
+    load_query_rewrite_settings,
     load_system_settings,
 )
 
@@ -91,12 +94,14 @@ __all__ = [
     "TestRun",
     "get_config_test_runner",
     "HTTP_KEEP_ALIVE_TIMEOUT",
+    "SETTINGS_DERIVED_ENV_KEYS",
     "ChatAttachmentLimits",
     "RuntimeSettingsService",
     "ensure_runtime_settings_files",
     "export_runtime_settings_to_env",
     "get_chat_attachment_limits",
     "get_runtime_settings_service",
+    "get_prior_image_reinject_limit",
     "get_ws_max_size",
     "load_auth_settings",
     "load_graphrag_settings",
@@ -105,6 +110,7 @@ __all__ = [
     "load_lightrag_server_settings",
     "load_llamaindex_settings",
     "load_mineru_settings",
+    "load_query_rewrite_settings",
     "load_system_settings",
 ]
 

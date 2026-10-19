@@ -5,7 +5,9 @@ from __future__ import annotations
 from typing import Any, Literal
 import warnings
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator, model_validator
+
+from deeptutor.core.response_languages import validate_reply_language_override
 
 _LEGACY_RUNTIME_CONFIG_KEYS: dict[str, str] = {
     "_persist_user_message": "persist_user_message",
@@ -16,6 +18,8 @@ _LEGACY_RUNTIME_CONFIG_KEYS: dict[str, str] = {
     "selection_tutor_context": "selection_tutor_context",
     "_course_id": "course_id",
     "subagent_consult_budget": "subagent_consult_budget",
+    "consult_partner_id": "consult_partner_id",
+    "partner_discussion_group_id": "partner_discussion_group_id",
     "auto_route": "auto_route",
 }
 
@@ -35,6 +39,7 @@ class OutgoingAttachment(BaseModel):
     base64: str | None = None
     filename: str | None = None
     mime_type: str | None = None
+    id: str | None = None
 
 
 class NotebookReference(BaseModel):
@@ -64,6 +69,8 @@ class ReadingViewport(BaseModel):
 
     locator: int | None = Field(default=None, ge=0)
     selection: str | None = None
+    # Playback position of a video material, reported by the reader on each turn.
+    time_seconds: float | None = Field(default=None, ge=0)
 
 
 class TimedMediaViewport(BaseModel):
@@ -86,6 +93,18 @@ class MasteryCardAnswer(BaseModel):
 
     question_id: str = Field(min_length=1)
     text: str = Field(min_length=1)
+    answers: dict[str, StrictStr] | None = Field(default=None, min_length=1, max_length=4)
+
+    @field_validator("answers")
+    @classmethod
+    def validate_group_answers(cls, value: dict[str, str] | None) -> dict[str, str] | None:
+        if value is not None:
+            for question_id, answer in value.items():
+                if not question_id.strip() or len(question_id) > 200:
+                    raise ValueError("group answers require bounded nonempty question IDs")
+                if not answer.strip() or len(answer) > 8000:
+                    raise ValueError("group answers require bounded nonempty answer text")
+        return value
 
 
 class MasteryCardSkip(BaseModel):
@@ -116,11 +135,18 @@ class TurnRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     content: str
+    # Browser-minted causal identity for a newly submitted user row. A retry
+    # can then distinguish its own persisted row from identical text sent in
+    # another tab without relying on clocks or stale transcript baselines.
+    client_submission_id: str | None = Field(default=None, min_length=1, max_length=100)
     capability: str | None = "chat"
     session_id: str | None = None
     tools: list[str] | None = None
     knowledge_bases: list[str] = Field(default_factory=list)
     language: str | None = None
+    # Only an explicit session selector sets this. Omitted means keep the
+    # conversation's override; null returns it to the account default.
+    reply_language_override: str | None = None
     config: dict[str, Any] = Field(default_factory=dict)
 
     notebook_references: list[NotebookReference] = Field(default_factory=list)
@@ -131,11 +157,19 @@ class TurnRequest(BaseModel):
     reading_references: list[ReadingReference] = Field(default_factory=list)
     memory_references: list[MemoryReference] = Field(default_factory=list)
     attachments: list[OutgoingAttachment] = Field(default_factory=list)
+    # Per-conversation narrowing of the workspace's skill and MCP selections.
+    # Empty means inherit — everything the workspace allows — so a client that
+    # never picks behaves exactly as it did before the pickers existed. A
+    # non-empty list is intersected with the workspace allowlist, never added to
+    # it: a conversation can narrow its own reach but never widen it.
     skills: list[str] = Field(default_factory=list)
+    mcp: list[str] = Field(default_factory=list)
 
     persona: str | None = None
     llm_selection: LLMSelection | None = None
     workspace_mode: str | None = None
+    # Content workspace ownership; omitted means inherit, null/empty means the general workspace.
+    workspace_id: str | None = None
     mastery_path_id: str | None = None
     #: What this mastery conversation is for — "outline" | "study" | "review".
     #: Durable session state (see
@@ -158,12 +192,27 @@ class TurnRequest(BaseModel):
     course_id: str | None = None
     persist_user_message: bool = True
     regenerate: bool = False
-    regenerated_from_message_id: int | None = None
+    # A saved failed-turn Resend repeats the old request without changing the
+    # conversation's current settings for future turns.
+    preserve_session_preferences: bool = False
+    # This turn runs in `capability` without making it the conversation's mode
+    # (a reading "Quiz me" asks the quiz engine once; the next message is chat).
+    capability_once: bool = False
+    # SQLite message rowids are integers; PocketBase message record ids are
+    # opaque strings. Preserve either form in the SESSION event for clients.
+    regenerated_from_message_id: int | str | None = None
     superseded_turn_id: str | None = None
     followup_question_context: dict[str, Any] | None = None
     selection_tutor_context: dict[str, Any] | None = None
     subagent_consult_budget: int | None = Field(default=None, ge=0)
+    consult_partner_id: str | None = None
+    partner_discussion_group_id: str | None = None
     auto_route: bool | None = None
+
+    @field_validator("reply_language_override")
+    @classmethod
+    def _validate_reply_language_override(cls, value: str | None) -> str | None:
+        return validate_reply_language_override(value)
 
     @model_validator(mode="before")
     @classmethod

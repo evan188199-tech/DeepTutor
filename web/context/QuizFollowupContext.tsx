@@ -26,9 +26,14 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { updateNotebookEntry } from "@/lib/notebook-api";
 import { shouldAppendEventContent } from "@/lib/stream";
 import { hasPendingAskUser } from "@/lib/ask-user-state";
+import {
+  SUBMIT_CONNECT_RETRY_INTERVAL_MS,
+  SUBMIT_CONNECT_RETRY_LIMIT,
+} from "@/lib/send-retry";
 import {
   type ChatMessage,
   type LLMSelection,
@@ -216,6 +221,7 @@ interface ProviderProps {
 }
 
 export function QuizFollowupProvider({ children }: ProviderProps) {
+  const { t } = useTranslation();
   const [threads, setThreads] = useState<Record<string, FollowupThreadState>>(
     {},
   );
@@ -256,6 +262,30 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
     [],
   );
 
+  const persistFollowupSessionId = useCallback(
+    (key: string, entryId: number, sessionId: string) => {
+      const write = () =>
+        updateNotebookEntry(entryId, { followup_session_id: sessionId });
+      void (async () => {
+        try {
+          await write();
+        } catch {
+          try {
+            await write();
+          } catch {
+            updateThread(key, (prev) => ({
+              ...prev,
+              error:
+                prev.error ||
+                t("Failed to link this follow-up chat to its notebook entry."),
+            }));
+          }
+        }
+      })();
+    },
+    [t, updateThread],
+  );
+
   const handleThreadEvent = useCallback(
     (key: string, event: StreamEvent) => {
       if (event.type === "session") {
@@ -275,9 +305,7 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
         if (runner) runner.questionKey = nextSessionId;
         const entryId = entryIdsRef.current.get(key);
         if (entryId) {
-          void updateNotebookEntry(entryId, {
-            followup_session_id: nextSessionId,
-          }).catch(() => {});
+          persistFollowupSessionId(key, entryId, nextSessionId);
         }
         return;
       }
@@ -344,7 +372,7 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
         return next;
       });
     },
-    [updateThread],
+    [persistFollowupSessionId, updateThread],
   );
 
   const ensureRunner = useCallback(
@@ -390,7 +418,7 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
       const attempt = options.attempt ?? 0;
       const runner = ensureRunner(key);
       if (!runner.client.connected) {
-        if (attempt >= 10) {
+        if (attempt >= SUBMIT_CONNECT_RETRY_LIMIT) {
           updateThread(key, (prev) => ({
             ...prev,
             isStreaming: false,
@@ -402,7 +430,7 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
         return new Promise<boolean>((resolve) => {
           window.setTimeout(
             () => resolve(send(key, message, { ...options, attempt: attempt + 1 })),
-            200,
+            SUBMIT_CONNECT_RETRY_INTERVAL_MS,
           );
         });
       }
@@ -436,6 +464,8 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
         followup_question_context: followupQuestionContext,
         selection_tutor_context: selectionTutorContext,
         subagent_consult_budget: subagentConsultBudget,
+        consult_partner_id: consultPartnerId,
+        partner_discussion_group_id: partnerDiscussionGroupId,
         auto_route: autoRoute,
         ...capabilityConfig
       } = input.config ?? {};
@@ -468,6 +498,8 @@ export function QuizFollowupProvider({ children }: ProviderProps) {
               >,
             }
           : {}),
+        ...(typeof consultPartnerId === "string" && consultPartnerId ? { consult_partner_id: consultPartnerId } : {}),
+        ...(typeof partnerDiscussionGroupId === "string" && partnerDiscussionGroupId ? { partner_discussion_group_id: partnerDiscussionGroupId } : {}),
         ...(typeof subagentConsultBudget === "number"
           ? { subagent_consult_budget: subagentConsultBudget }
           : {}),

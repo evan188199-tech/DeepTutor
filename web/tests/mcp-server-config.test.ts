@@ -95,7 +95,7 @@ test("a hand-written disabled_tools blocklist survives GET → edit → PUT", as
 
     await updateMcpSettings(MCP_ADMIN_BASE_PATH, { docs: built });
     const put = stub.calls[1];
-    assert.equal(put.url, MCP_ADMIN_BASE_PATH);
+    assert.equal(put.url, `${MCP_ADMIN_BASE_PATH}?dt_workspace=`);
     assert.equal(put.init?.method, "PUT");
     const sent = JSON.parse(String(put.init?.body)) as {
       servers: Record<string, McpServerConfig>;
@@ -110,7 +110,7 @@ test("the request path comes from the caller's surface, not a hardcoded base", a
   const stub = stubFetch([{ servers: {}, status: [] }]);
   try {
     await getMcpSettings("/api/space/mcp/servers");
-    assert.equal(stub.calls[0].url, "/api/space/mcp/servers");
+    assert.equal(stub.calls[0].url, "/api/space/mcp/servers?dt_workspace=");
   } finally {
     stub.restore();
   }
@@ -286,4 +286,14 @@ test("a disabled server reads Disabled, not a stuck Connecting", () => {
   assert.equal(mcpRowStatus(enabled, undefined), "connecting");
   assert.equal(mcpRowStatus(enabled, row("connected")), "connected");
   assert.equal(mcpRowStatus(enabled, row("error")), "error");
+});
+
+test("private-network selection survives normalization and form edits without changing legacy defaults", () => {
+  const selected = normalizeServerConfig({ url: "http://research.internal:8080/mcp", allow_private_network: true });
+  assert.equal(selected.allow_private_network, true);
+  const unchanged = buildMcpServerConfig(draftFrom(selected), selected);
+  assert.equal(unchanged.allow_private_network, true);
+  const revoked = buildMcpServerConfig({ ...draftFrom(selected), allowPrivateNetwork: false }, selected);
+  assert.equal(revoked.allow_private_network, false);
+  assert.equal(normalizeServerConfig({ url: "https://example.com/mcp" }).allow_private_network, undefined);
 });

@@ -124,7 +124,7 @@ def _build_openai_client(
     config: LLMClientConfig,
     *,
     disable_ssl_verify: bool,
-    sdk_max_retries: int | None = None,
+    sdk_max_retries: int | None = 0,
 ) -> Any:
     # A stale SSL_CERT_FILE (common with cloned conda envs) makes httpx's
     # create_ssl_context raise FileNotFoundError mid-__init__, aborting client
@@ -188,7 +188,8 @@ class _KeyRotatingCompletions:
         self._clients = clients
 
     async def create(self, **kwargs: Any) -> Any:
-        for attempt in range(2):
+        attempts = max(2, len(self._key_pool))
+        for attempt in range(attempts):
             api_key = self._key_pool.next()
             try:
                 return await self._clients[api_key].chat.completions.create(**kwargs)
@@ -199,7 +200,7 @@ class _KeyRotatingCompletions:
                 if status != 429:
                     raise
                 self._key_pool.mark_429(api_key)
-                if attempt:
+                if attempt == attempts - 1:
                     raise
         raise RuntimeError("LLM key rotation exhausted")
 
@@ -237,11 +238,17 @@ def build_openai_client(config: LLMClientConfig) -> Any:
     handle itself owns an HTTP connection pool, so reusing it is both faster
     and prevents a new allocator/socket high-water mark on every turn.
     """
+    from deeptutor.services.llm.metrics import instrument_client
+
     disable_ssl_verify = bool(load_system_settings()["disable_ssl_verify"])
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
-        return _build_openai_client(config, disable_ssl_verify=disable_ssl_verify)
+        return instrument_client(
+            _build_openai_client(config, disable_ssl_verify=disable_ssl_verify),
+            model=config.model or "",
+            provider=config.binding,
+        )
 
     key = _client_cache_key(config, loop, disable_ssl_verify)
     with _agentic_client_pool_lock:
@@ -249,7 +256,11 @@ def build_openai_client(config: LLMClientConfig) -> Any:
         if cached is not None:
             _agentic_client_pool.move_to_end(key)
             return cached
-        client = _build_openai_client(config, disable_ssl_verify=disable_ssl_verify)
+        client = instrument_client(
+            _build_openai_client(config, disable_ssl_verify=disable_ssl_verify),
+            model=config.model or "",
+            provider=config.binding,
+        )
         _agentic_client_pool[key] = client
         _agentic_client_pool.move_to_end(key)
         while len(_agentic_client_pool) > _AGENTIC_CLIENT_POOL_MAXSIZE:
@@ -440,6 +451,8 @@ class _ProviderOpenAIAdapter:
                             _openai_tool_call(tool_call, index=index)
                             for index, tool_call in enumerate(response.tool_calls or [])
                         ],
+                        reasoning_content=response.reasoning_content,
+                        thinking_blocks=response.thinking_blocks,
                         provider_specific_fields=response.provider_specific_fields,
                     ),
                     finish_reason=(
@@ -518,6 +531,7 @@ class _ProviderOpenAIStream:
     async def close(self) -> None:
         if self._task and not self._task.done():
             self._task.cancel()
+            await asyncio.gather(self._task, return_exceptions=True)
 
     def _raise_for_error_response(self, response: Any) -> None:
         """Turn an error-shaped response back into the exception it describes.

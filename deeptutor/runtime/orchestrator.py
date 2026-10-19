@@ -9,6 +9,7 @@ All consumers (CLI, WebSocket, SDK) call the orchestrator.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 from typing import Any, AsyncIterator
 import uuid
@@ -20,6 +21,8 @@ from deeptutor.events.event_bus import Event, EventType, get_event_bus
 from deeptutor.runtime.registry.capability_registry import get_capability_registry
 from deeptutor.runtime.registry.tool_registry import get_tool_registry
 from deeptutor.runtime.stream_bus import StreamBus, register_bus, unregister_bus
+from deeptutor.services.prompt.lookup import prompt_text
+from deeptutor.services.prompt.manager import get_prompt_manager
 
 logger = logging.getLogger(__name__)
 
@@ -130,9 +133,42 @@ class ChatOrchestrator:
             register_bus(_turn_id, bus)
 
         async def _run() -> None:
+            from deeptutor.services.llm.metrics import TurnUsage, current_usage
+
+            turn_usage = current_usage.get()
+            usage_token = None
+            if (
+                turn_usage is None
+                or not _turn_id
+                or turn_usage.turn_id != _turn_id
+                or turn_usage.session_id != context.session_id
+            ):
+                turn_usage = TurnUsage(
+                    session_id=context.session_id, turn_id=_turn_id, source=cap_name
+                )
+                usage_token = current_usage.set(turn_usage)
             status = "completed"
+            terminal_error_metadata: dict[str, Any] = {}
             try:
                 await capability.run(context, bus)
+                if bus.result_completion is False:
+                    status = "failed"
+                    terminal_error_metadata = {
+                        "error_code": "capability_incomplete",
+                        "retryable": True,
+                    }
+                    prompts = get_prompt_manager().load_prompts(
+                        "capabilities", "turn_status", language=context.language
+                    )
+                    await bus.error(
+                        prompt_text(prompts, ("notices", "capability_incomplete")),
+                        source=cap_name,
+                        metadata={
+                            "turn_terminal": True,
+                            "status": status,
+                            **terminal_error_metadata,
+                        },
+                    )
             except Exception as exc:
                 status = "failed"
                 logger.error("Capability %s failed: %s", cap_name, exc, exc_info=True)
@@ -149,6 +185,11 @@ class ChatOrchestrator:
                 partial_response = getattr(exc, "partial_response", None)
                 if isinstance(partial_response, bool):
                     error_metadata["partial_response"] = partial_response
+                terminal_error_metadata = {
+                    key: error_metadata[key]
+                    for key in ("error_code", "retryable", "partial_response")
+                    if key in error_metadata
+                }
                 await bus.error(
                     str(exc),
                     source=cap_name,
@@ -159,20 +200,36 @@ class ChatOrchestrator:
                     StreamEvent(
                         type=StreamEventType.DONE,
                         source=cap_name,
-                        metadata={"status": status},
+                        metadata={
+                            "status": status,
+                            **terminal_error_metadata,
+                            **({"usage_summary": turn_usage.summary()} if turn_usage.calls else {}),
+                        },
                     )
                 )
+                if usage_token is not None:
+                    current_usage.reset(usage_token)
                 await bus.close()
                 if _turn_id:
                     unregister_bus(_turn_id)
 
         stream = bus.subscribe()
         task = asyncio.create_task(_run())
+        try:
+            async for event in stream:
+                yield event
+            await task
+        finally:
+            # The capability runs in its own task, so a consumer that stops
+            # reading — a cancelled turn, or a stream closed early — does not
+            # stop it. Left running, it keeps calling the model and tools for a
+            # turn already reported as stopped; left parked on ``ask_user``, it
+            # is collected mid-await and ``_run`` never unregisters the bus.
+            if not task.done():
+                task.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await task
 
-        async for event in stream:
-            yield event
-
-        await task
         await self._publish_completion(context, cap_name)
 
     async def _publish_completion(self, context: UnifiedContext, cap_name: str) -> None:

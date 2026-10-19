@@ -1,14 +1,24 @@
 from __future__ import annotations
 
 import builtins
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json
+import logging
+import os
 from pathlib import Path
+import signal
+import subprocess
+import sys
+from threading import Thread
+import time
+from types import SimpleNamespace
 
 import pytest
 
 from deeptutor.runtime import launcher
 from deeptutor.runtime import process as runtime_process
 from deeptutor.runtime.home import validate_runtime_home
-from deeptutor.services.app_update import UpdateJobStore, update_store_root
+from deeptutor.services.app_update import UpdateJob, UpdateJobStore, update_store_root
 
 
 class _FakeTty:
@@ -22,6 +32,56 @@ class _AcceptedConnection:
 
     def __exit__(self, *_args: object) -> None:
         return None
+
+
+def test_loopback_health_checks_ignore_configured_proxy(monkeypatch) -> None:
+    """A proxy must not make healthy local backend/frontend probes fail."""
+
+    def serve(status: int) -> tuple[ThreadingHTTPServer, Thread]:
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self) -> None:
+                self.send_response(status)
+                self.end_headers()
+
+            def log_message(self, *_args: object) -> None:
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        worker = Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        return server, worker
+
+    ready, ready_worker = serve(204)
+    proxy, proxy_worker = serve(502)
+    url = f"http://127.0.0.1:{ready.server_port}/health"
+    monkeypatch.setattr(
+        launcher.urlrequest,
+        "getproxies",
+        lambda: {"http": f"http://127.0.0.1:{proxy.server_port}"},
+    )
+    monkeypatch.setattr(launcher.urlrequest, "proxy_bypass", lambda _host: False)
+    monkeypatch.setattr(launcher.urlrequest, "_opener", None)
+    try:
+        # Prove this test environment really directs ordinary urllib traffic
+        # through the proxy; a false green here would miss the regression.
+        with pytest.raises(launcher.urlerror.HTTPError) as excinfo:
+            launcher.urlrequest.urlopen(url, timeout=1)
+        assert excinfo.value.code == 502
+
+        assert launcher._http_ready(url, timeout=1)
+        launcher._wait_for_http(
+            name="Backend",
+            url=url,
+            process=None,
+            timeout=2,
+            env_name=launcher.BACKEND_READY_TIMEOUT_ENV,
+            should_stop=lambda: False,
+        )
+    finally:
+        for server, worker in ((ready, ready_worker), (proxy, proxy_worker)):
+            server.shutdown()
+            server.server_close()
+            worker.join(timeout=1)
 
 
 def test_port_probe_detects_ipv6_only_loopback_listener(monkeypatch) -> None:
@@ -88,7 +148,12 @@ def test_start_does_not_create_nested_data_tree(monkeypatch, tmp_path: Path) -> 
     assert not bad_home.exists()
 
 
-def test_launcher_hands_pending_update_to_worker(tmp_path: Path) -> None:
+def test_launcher_hands_pending_update_to_worker(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from deeptutor.services import app_update
+
+    monkeypatch.setattr(app_update, "running_under_systemd_service", lambda: False)
     store = UpdateJobStore(update_store_root(tmp_path))
     pending = store.create(current_version="1.6.1", target_version="1.7.0")
     launched: list[Path] = []
@@ -105,6 +170,65 @@ def test_launcher_hands_pending_update_to_worker(tmp_path: Path) -> None:
     assert job.id == pending.id
     assert job.status == "handoff"
     assert job.restart_home == str(tmp_path.resolve())
+
+
+def test_launcher_keeps_systemd_service_running_for_pending_update(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from deeptutor.services import app_update
+
+    store = UpdateJobStore(update_store_root(tmp_path))
+    store.create(current_version="1.6.1", target_version="1.7.0")
+    monkeypatch.setattr(app_update, "running_under_systemd_service", lambda: True)
+    launched: list[Path] = []
+
+    assert (
+        launcher._handoff_pending_update(
+            tmp_path,
+            restart_argv=["start", "--home", str(tmp_path.resolve())],
+            worker_launcher=launched.append,
+        )
+        is False
+    )
+    assert launched == []
+    assert store.load().status == "failed"
+    assert not store.active_path.exists()
+
+
+def test_launcher_handoff_failure_still_logged_when_marking_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A handoff failure must leave a trace even if mark_failed fails too."""
+
+    from deeptutor.services import app_update
+
+    monkeypatch.setattr(app_update, "running_under_systemd_service", lambda: False)
+    store = UpdateJobStore(update_store_root(tmp_path))
+    store.create(current_version="1.6.1", target_version="1.7.0")
+
+    def failing_worker_launcher(_root: Path) -> None:
+        raise RuntimeError("worker spawn boom")
+
+    def broken_mark_failed(_self: UpdateJobStore, _job_id: str, _error: str) -> UpdateJob:
+        raise OSError("state write boom")
+
+    monkeypatch.setattr(UpdateJobStore, "mark_failed", broken_mark_failed)
+    logs: list[str] = []
+    monkeypatch.setattr(launcher, "_log", logs.append)
+
+    assert (
+        launcher._handoff_pending_update(
+            tmp_path,
+            restart_argv=["start", "--home", str(tmp_path.resolve())],
+            worker_launcher=failing_worker_launcher,
+        )
+        is False
+    )
+    assert logs, "double handoff failure vanished without any log"
+    trace = " | ".join(logs)
+    assert "Launcher handoff failed" in trace
+    assert "worker spawn boom" in trace
+    assert "state write boom" in trace
 
 
 def test_launcher_completes_update_only_after_restart(tmp_path: Path) -> None:
@@ -215,6 +339,196 @@ def test_resolve_port_conflicts_non_tty_exits_with_message(tmp_path: Path, monke
         )
 
     assert "8000" in str(excinfo.value)
+
+
+@pytest.mark.parametrize("role", ["start.backend", "start.frontend", "backend_worker"])
+def test_reclaim_requires_same_deployment_and_dead_launcher(tmp_path, monkeypatch, role):
+    import psutil
+
+    home = tmp_path / "home"
+    frontend = home / "web"
+    env = {launcher.DEEPTUTOR_HOME_ENV: str(home), launcher.LAUNCHER_PID_ENV: "4242"}
+    backend = SimpleNamespace(
+        pid=100,
+        cmdline=lambda: [sys.executable, "-m", "uvicorn", "deeptutor.api.main:app"],
+        exe=lambda: sys.executable,
+        cwd=lambda: str(home),
+    )
+    process = SimpleNamespace(
+        pid=101,
+        environ=lambda: env,
+        create_time=lambda: 123.0,
+        parents=lambda: [backend],
+        cmdline=backend.cmdline,
+        exe=backend.exe,
+        cwd=backend.cwd,
+    )
+    if role == "start.frontend":
+        process.cmdline = lambda: ["next-server (v16.2.3)"]
+        process.exe = lambda: "/usr/local/bin/node"
+        process.cwd = lambda: str(frontend)
+    elif role == "backend_worker":
+        process.cmdline = lambda: [
+            sys.executable,
+            "-c",
+            "from multiprocessing.spawn import spawn_main",
+        ]
+    resolved_role = "start.frontend" if role == "start.frontend" else "start.backend"
+    monkeypatch.setattr(psutil, "Process", lambda _pid: process)
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda _pid: False)
+
+    def inspect():
+        return launcher._owned_orphan_started_at(
+            101, role=resolved_role, runtime_home=home, frontend_cwd=frontend
+        )
+
+    assert inspect() == 123.0
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda _pid: True)
+    assert inspect() is None
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda _pid: False)
+    env[launcher.DEEPTUTOR_HOME_ENV] = str(tmp_path / "another-install")
+    assert inspect() is None
+    env[launcher.DEEPTUTOR_HOME_ENV] = str(home)
+    env.pop(launcher.LAUNCHER_PID_ENV)
+    assert inspect() is None
+
+
+@pytest.mark.parametrize("fault", ["command", "interpreter", "cwd", "access_denied"])
+def test_reclaim_rejects_unverified_backend_identity(tmp_path, monkeypatch, fault):
+    import psutil
+
+    def environment():
+        if fault == "access_denied":
+            raise psutil.AccessDenied(101)
+        return {launcher.DEEPTUTOR_HOME_ENV: str(tmp_path), launcher.LAUNCHER_PID_ENV: "4242"}
+
+    process = SimpleNamespace(
+        pid=101,
+        environ=environment,
+        create_time=lambda: 123.0,
+        parents=lambda: [],
+        cmdline=lambda: [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "foreign.api:app" if fault == "command" else "deeptutor.api.main:app",
+        ],
+        exe=lambda: "/another/python" if fault == "interpreter" else sys.executable,
+        cwd=lambda: str(tmp_path / "other") if fault == "cwd" else str(tmp_path),
+    )
+    monkeypatch.setattr(psutil, "Process", lambda _pid: process)
+    monkeypatch.setattr(launcher, "_is_pid_alive", lambda _pid: False)
+    assert (
+        launcher._owned_orphan_started_at(
+            101, role="start.backend", runtime_home=tmp_path, frontend_cwd=None
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize("case", ["owned", "unknown", "mixed", "pid_reused", "still_busy"])
+def test_noninteractive_restart_reclaims_only_verified_orphans_once(tmp_path, monkeypatch, case):
+    occupied = {8000}
+    attempts, signals, inspected = [], [], []
+    entries = [] if case == "unknown" else [(101, "backend")]
+    if case == "mixed":
+        entries.append((102, "foreign"))
+
+    def identity(pid, **_kwargs):
+        inspected.append(pid)
+        if pid == 102:
+            return None
+        return 456.0 if case == "pid_reused" and len(inspected) > 1 else 123.0
+
+    def reclaim(listeners, *, listener_guard):
+        attempts.append(listeners)
+        if listener_guard(8000, 101):
+            signals.append(101)
+            if case == "owned":
+                occupied.clear()
+
+    monkeypatch.setattr(launcher.sys, "stdin", None)
+    monkeypatch.setattr(launcher, "_port_accepts_connection", lambda port: port in occupied)
+    monkeypatch.setattr(launcher, "_port_listeners", lambda _port: entries)
+    monkeypatch.setattr(launcher, "_owned_orphan_started_at", identity)
+    monkeypatch.setattr(launcher, "_kill_port_listeners", reclaim)
+    kwargs = dict(
+        backend_port=8000,
+        frontend_port=3784,
+        check_frontend=False,
+        settings_dir=tmp_path,
+        runtime_home=tmp_path,
+    )
+    if case == "owned":
+        assert launcher._resolve_port_conflicts(**kwargs) == (8000, 3784)
+    else:
+        with pytest.raises(SystemExit):
+            launcher._resolve_port_conflicts(**kwargs)
+    assert len(attempts) == (0 if case in {"unknown", "mixed"} else 1)
+    assert signals == ([] if case in {"unknown", "mixed", "pid_reused"} else [101])
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX orphan lifecycle integration")
+def test_noninteractive_restart_recovers_an_actual_orphaned_backend_listener(tmp_path, monkeypatch):
+    """#1795: simulate launcher death with an isolated socket without starting the app."""
+    import psutil
+
+    (tmp_path / "uvicorn.py").write_text(
+        "import socket,time,json,os\ns=socket.socket()\ns.bind(('127.0.0.1',0))\n"
+        "s.listen()\nwith open('ready.json','w') as f: json.dump({'port':s.getsockname()[1]},f)\n"
+        "time.sleep(60)\n"
+    )
+    parent_code = (
+        "import os,subprocess,sys\n"
+        f"os.environ[{launcher.LAUNCHER_PID_ENV!r}]=str(os.getpid())\n"
+        "p=subprocess.Popen([sys.executable,'-m','uvicorn','deeptutor.api.main:app'],stdout=subprocess.DEVNULL)\n"
+        "print(p.pid,flush=True)\n"
+    )
+    env = os.environ.copy()
+    env[launcher.DEEPTUTOR_HOME_ENV] = str(tmp_path)
+    env.pop("PYTHONPATH", None)
+    child = psutil.Process(
+        int(
+            subprocess.check_output(
+                [sys.executable, "-c", parent_code],
+                cwd=tmp_path,
+                env=env,
+                text=True,
+                timeout=5,
+            )
+        )
+    )
+    try:
+        ready = tmp_path / "ready.json"
+        deadline = time.monotonic() + 5
+        while not ready.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        port = json.loads(ready.read_text())["port"]
+        assert launcher._port_accepts_connection(port)
+        assert (
+            launcher._owned_orphan_started_at(
+                child.pid, role="start.backend", runtime_home=tmp_path, frontend_cwd=None
+            )
+            == child.create_time()
+        )
+        monkeypatch.setattr(launcher.sys, "stdin", None)
+        # Enumerate only this test's listener, independent of lsof availability.
+        monkeypatch.setattr(
+            launcher, "_port_listeners", lambda _port: [(child.pid, "controlled uvicorn")]
+        )
+        assert launcher._resolve_port_conflicts(
+            backend_port=port,
+            frontend_port=3784,
+            check_frontend=False,
+            settings_dir=tmp_path,
+            runtime_home=tmp_path,
+        ) == (port, 3784)
+        assert not launcher._port_accepts_connection(port)
+    finally:
+        try:
+            child.kill()
+        except psutil.NoSuchProcess:
+            pass
 
 
 def test_resolve_port_conflicts_kill_option_frees_port(tmp_path: Path, monkeypatch) -> None:
@@ -507,6 +821,7 @@ def test_start_uses_ipv4_loopback_for_frontend_proxy(
         system_json_path=settings_dir / "system.json",
     )
     captured_envs: dict[str, dict[str, str]] = {}
+    termination_order = []
 
     monkeypatch.setattr(launcher, "_relax_console_encoding", lambda: None)
     monkeypatch.setattr(launcher, "_reset_runtime_singletons", lambda: None)
@@ -539,8 +854,17 @@ def test_start_uses_ipv4_loopback_for_frontend_proxy(
     )
     monkeypatch.setattr(launcher, "_install_signal_handlers", lambda _callback, **_kwargs: None)
     monkeypatch.setattr(launcher.atexit, "register", lambda _callback: None)
-    monkeypatch.setattr(launcher, "_wait_for_http", lambda **_kwargs: None)
-    monkeypatch.setattr(launcher, "_terminate", lambda _process: None)
+
+    def wait_for_http(**kwargs):
+        if kwargs["process"].name == "frontend":
+            raise RuntimeError("captured launch environment")
+
+    monkeypatch.setattr(launcher, "_wait_for_http", wait_for_http)
+    monkeypatch.setattr(
+        launcher,
+        "_terminate",
+        lambda process: termination_order.append(process.name) if process else None,
+    )
 
     def _capture_spawn(_command, *, cwd, env, name):
         assert cwd == tmp_path
@@ -548,7 +872,7 @@ def test_start_uses_ipv4_loopback_for_frontend_proxy(
         if name == "backend":
             return launcher.ManagedProcess("backend", object(), None)
         assert name == "frontend"
-        raise RuntimeError("captured launch environment")
+        return launcher.ManagedProcess("frontend", object(), None)
 
     monkeypatch.setattr(launcher, "_spawn", _capture_spawn)
 
@@ -562,6 +886,7 @@ def test_start_uses_ipv4_loopback_for_frontend_proxy(
     assert "DEEPTUTOR_NEXT_DIST_DIR" not in captured_envs["frontend"]
     assert launcher.DETACHED_WORKER_ENV not in captured_envs["backend"]
     assert launcher.DETACHED_TOKEN_ENV not in captured_envs["backend"]
+    assert termination_order == ["backend", "frontend"]
 
 
 def test_foreground_signal_handlers_keep_windows_ctrl_c(monkeypatch) -> None:
@@ -700,3 +1025,327 @@ def test_stop_requests_only_the_registered_detached_launcher(
     assert launcher.stop(tmp_path, timeout=0.5) is True
     assert not paths.state.exists()
     assert not paths.stop.exists()
+
+
+def test_ready_timeout_is_overridable_for_slow_hardware(monkeypatch) -> None:
+    """An ARM board with a workspace to migrate can need past 60s (#1435).
+
+    The launcher killed a backend that was still initialising and let the
+    supervisor restart it into the same wall, so the wait has to be a property
+    of the machine rather than a constant.
+    """
+    monkeypatch.setenv(launcher.BACKEND_READY_TIMEOUT_ENV, "180")
+    assert launcher._ready_timeout(launcher.BACKEND_READY_TIMEOUT_ENV, 60) == 180
+
+    for unusable in ("", "   ", "soon", "0", "-5"):
+        monkeypatch.setenv(launcher.BACKEND_READY_TIMEOUT_ENV, unusable)
+        assert launcher._ready_timeout(launcher.BACKEND_READY_TIMEOUT_ENV, 60) == 60
+
+    monkeypatch.delenv(launcher.BACKEND_READY_TIMEOUT_ENV, raising=False)
+    assert launcher._ready_timeout(launcher.BACKEND_READY_TIMEOUT_ENV, 60) == 60
+
+
+def test_ready_timeout_failure_names_the_override(monkeypatch) -> None:
+    """A bare "did not become ready in 60s" left the reporter nothing to do."""
+    process = SimpleNamespace(process=SimpleNamespace(poll=lambda: None))
+    clock = iter([0.0, 0.0, 999.0])
+    monkeypatch.setattr(launcher.time, "monotonic", lambda: next(clock))
+    monkeypatch.setattr(launcher.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        launcher._LOOPBACK_OPENER,
+        "open",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(OSError("refused")),
+    )
+
+    with pytest.raises(RuntimeError) as excinfo:
+        launcher._wait_for_http(
+            name="Backend",
+            url="http://127.0.0.1:65535/",
+            process=process,
+            timeout=60,
+            env_name=launcher.BACKEND_READY_TIMEOUT_ENV,
+            should_stop=lambda: False,
+        )
+
+    assert launcher.BACKEND_READY_TIMEOUT_ENV in str(excinfo.value)
+
+
+def test_windows_children_and_console_tools_allocate_no_console(
+    monkeypatch, tmp_path: Path
+) -> None:
+    """Nothing the console-less detached worker starts may open a window.
+
+    Empty console windows flashed on the desktop for every probe, and the one
+    Windows gave the node child was a real hazard: closing it delivered
+    CTRL_C_EXIT to node, which the launcher read as its frontend exiting and
+    answered by stopping the backend — the whole app died from a window close
+    (#1501).
+    """
+    monkeypatch.setattr(launcher.os, "name", "nt")
+    monkeypatch.setattr(launcher.subprocess, "CREATE_NEW_PROCESS_GROUP", 0x200, raising=False)
+    monkeypatch.setattr(launcher.subprocess, "CREATE_NO_WINDOW", 0x08000000, raising=False)
+    runs: list[dict[str, object]] = []
+    popens: list[dict[str, object]] = []
+
+    class _Completed:
+        returncode = 0
+        stdout = ""
+
+    def fake_run(command, **kwargs):
+        runs.append({"command": command, "kwargs": kwargs})
+        return _Completed()
+
+    class _Process:
+        pid = 4242
+        stdout = None
+
+    def fake_popen(command, **kwargs):
+        popens.append({"command": command, "kwargs": kwargs})
+        return _Process()
+
+    monkeypatch.setattr(launcher.subprocess, "run", fake_run)
+    monkeypatch.setattr(launcher.subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(launcher.threading, "Thread", lambda **_kwargs: _NoopThread())
+    monkeypatch.setattr(launcher.shutil, "which", lambda name: name)
+
+    launcher._spawn(["node", "server.js"], cwd=tmp_path, env={}, name="frontend")
+    launcher._send_tree_signal(4242, None, launcher.KILL_SIGNAL)
+    launcher._port_listeners_windows(3782)
+    launcher._ensure_web_dependencies(tmp_path, "npm")
+
+    assert popens[0]["kwargs"]["creationflags"] == 0x200 | 0x08000000
+    assert [run["command"][0] for run in runs] == ["taskkill", "netstat", "npm"]
+    for run in runs:
+        assert run["kwargs"]["creationflags"] == 0x08000000, run["command"]
+
+
+class _NoopThread:
+    def start(self) -> None:
+        return None
+
+
+@pytest.mark.parametrize("probe", ["netstat", "tasklist", "lsof", "ps"])
+def test_process_probes_tolerate_non_utf8_output(monkeypatch, probe: str) -> None:
+    """A localized utility must not crash or hide a listener in UTF-8 mode."""
+    import subprocess
+    import sys
+
+    run = subprocess.run
+    outputs = {
+        "netstat": b"\xbb localized heading\n  TCP  127.0.0.1:3782  0.0.0.0:0  LISTENING  123\n",
+        "tasklist": b'"python.exe","123","\xbb session","1","0 K"\n',
+        "lsof": b"\xbb diagnostic\np123\n",
+        "ps": b"node next-server \xbb\n",
+    }
+
+    for name in outputs:
+        if name != probe:
+            outputs[name] = outputs[name].replace(b"\xbb", b"localized")
+
+    def run_probe(args, **kwargs):
+        # Use a real child pipe, with UTF-8 decoding as in the reported crash.
+        kwargs["encoding"] = "utf-8"
+        return run(
+            [sys.executable, "-c", f"import sys; sys.stdout.buffer.write({outputs[args[0]]!r})"],
+            **kwargs,
+        )
+
+    monkeypatch.setattr(launcher.shutil, "which", lambda name: name)
+    monkeypatch.setattr(launcher.subprocess, "run", run_probe)
+    if probe in {"netstat", "tasklist"}:
+        assert launcher._port_listeners_windows(3782) == [(123, "python.exe")]
+    else:
+        monkeypatch.setattr(launcher, "os", SimpleNamespace(name="posix"))
+        if probe == "lsof":
+            assert launcher._port_listeners(3782) == [(123, "node next-server localized")]
+        else:
+            assert launcher._process_command(123) == "node next-server \ufffd"
+
+
+@pytest.mark.parametrize("platform", ["nt", "posix"])
+def test_port_listeners_tolerate_missing_stdout(monkeypatch, platform: str) -> None:
+    """A failed subprocess reader may leave stdout unset on Windows."""
+    monkeypatch.setattr(launcher, "os", SimpleNamespace(name=platform))
+    monkeypatch.setattr(launcher.shutil, "which", lambda name: name)
+    monkeypatch.setattr(
+        launcher.subprocess, "run", lambda *args, **kwargs: SimpleNamespace(stdout=None)
+    )
+    assert launcher._port_listeners(3782) == []
+
+
+class _StubbornPopen:
+    """Popen stand-in that stays alive until a fake signal lets it exit."""
+
+    def __init__(self, *, pid: int = 4242) -> None:
+        self.pid = pid
+        self.exited = False
+
+    def poll(self) -> int | None:
+        return 0 if self.exited else None
+
+    def wait(self, timeout: float | None = None) -> int:
+        if not self.exited:
+            raise subprocess.TimeoutExpired(cmd="backend", timeout=timeout)
+        return 0
+
+
+def test_terminate_warns_when_both_signal_rounds_fail(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A child no signal reaches must surface every failed round."""
+    child = _StubbornPopen()
+    proc = launcher.ManagedProcess(name="backend", process=child, pgid=4242)
+    sent: list[int] = []
+
+    def fake_send(pid, pgid, sig):
+        sent.append(sig)
+        # Neither round is delivered: SIGTERM is refused, SIGKILL vanishes.
+        raise PermissionError("operation not permitted")
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._terminate(proc)
+
+    assert sent == [signal.SIGTERM, launcher.KILL_SIGNAL]
+    warnings = [record.getMessage() for record in caplog.records]
+    assert any("SIGTERM" in message for message in warnings)
+    assert any("SIGKILL" in message for message in warnings)
+
+
+def test_terminate_warns_on_sigterm_but_accepts_kill_escalation(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The ladder keeps its shape: refused SIGTERM, working SIGKILL, done."""
+    child = _StubbornPopen()
+    proc = launcher.ManagedProcess(name="backend", process=child, pgid=4242)
+
+    def fake_send(pid, pgid, sig):
+        if sig == launcher.KILL_SIGNAL:
+            child.exited = True
+            return
+        raise PermissionError("operation not permitted")
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._terminate(proc)
+
+    assert child.exited is True
+    warnings = [record.getMessage() for record in caplog.records]
+    assert any("SIGTERM" in message for message in warnings)
+    assert not any("SIGKILL" in message for message in warnings)
+
+
+def test_terminate_skips_absent_or_exited_child(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Nothing to stop means no signal and no warning."""
+    sent: list[int] = []
+
+    def fake_send(pid, pgid, sig):
+        sent.append(sig)
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+    exited = _StubbornPopen()
+    exited.exited = True
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._terminate(None)
+        launcher._terminate(launcher.ManagedProcess(name="web", process=exited, pgid=None))
+
+    assert sent == []
+    assert caplog.records == []
+
+
+def test_signal_target_treats_already_gone_target_as_terminated(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """ESRCH means the target exited on its own; that is not a failure."""
+
+    def fake_send(pid, pgid, sig):
+        raise ProcessLookupError()
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._signal_target(123, None, signal.SIGTERM, target="port 8000 listener")
+
+    assert caplog.records == []
+
+
+def test_windows_taskkill_failures_surface_but_missing_processes_do_not(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A failing taskkill must be logged; one that found no process must not."""
+    monkeypatch.setattr(launcher, "os", SimpleNamespace(name="nt"))
+    monkeypatch.setattr(launcher, "_no_window_kwargs", lambda: {})
+    codes: list[int] = []
+    monkeypatch.setattr(
+        launcher.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=codes.pop(0)),
+    )
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        for code in (1, 0, 128):
+            codes.append(code)
+            launcher._signal_target(7, None, signal.SIGTERM, target="backend (pid=7)")
+
+    warnings = [record.getMessage() for record in caplog.records]
+    assert len(warnings) == 1
+    assert "SIGTERM" in warnings[0]
+    assert "taskkill" in (caplog.records[0].exc_text or "")
+
+
+def test_kill_port_listeners_isolates_one_targets_sigterm_failure(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """One unreachable listener must not spare the others or hide itself."""
+    occupied = {8000}
+
+    def fake_send(pid, pgid, sig):
+        if pid == 123:
+            raise PermissionError("operation not permitted")
+        occupied.discard(8000)
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+    monkeypatch.setattr(launcher, "_port_accepts_connection", lambda port: port in occupied)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._kill_port_listeners({8000: [(123, "python uvicorn"), (456, "node")]})
+
+    assert occupied == set()
+    assert any("123" in record.getMessage() for record in caplog.records)
+
+
+def test_kill_port_listeners_reports_kill_round_failures_per_target(
+    monkeypatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """SIGTERM-ignoring listeners escalate; KILL failures stay per-target."""
+    occupied = {8000}
+    sent: list[tuple[int, int]] = []
+    clock = {"now": 0.0}
+
+    def fake_send(pid, pgid, sig):
+        sent.append((pid, sig))
+        if sig == launcher.KILL_SIGNAL and pid == 123:
+            raise OSError("no such process")
+        # pid 456 accepts both signals; zombie 123 keeps holding the port.
+
+    def fake_sleep(seconds: float) -> None:
+        clock["now"] += seconds
+
+    monkeypatch.setattr(launcher, "_send_tree_signal", fake_send)
+    monkeypatch.setattr(launcher, "_port_accepts_connection", lambda port: port in occupied)
+    monkeypatch.setattr(launcher.time, "monotonic", lambda: clock["now"])
+    monkeypatch.setattr(launcher.time, "sleep", fake_sleep)
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.runtime.launcher"):
+        launcher._kill_port_listeners({8000: [(123, "python uvicorn"), (456, "node")]})
+
+    assert (123, signal.SIGTERM) in sent
+    assert (456, signal.SIGTERM) in sent
+    assert (123, launcher.KILL_SIGNAL) in sent
+    assert (456, launcher.KILL_SIGNAL) in sent
+    assert any("SIGKILL" in record.getMessage() for record in caplog.records)

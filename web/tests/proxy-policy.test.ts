@@ -14,6 +14,7 @@ import {
   CODEX_CALLBACK_API_PATH,
   backendForwardingHeaders,
   CODEX_CALLBACK_PATH,
+  HANDOFF_PATH,
   classifyToken,
   frontendForwardingHost,
   isAuthExempt,
@@ -22,7 +23,9 @@ import {
   isCloudflareTunnelHost,
   isRetiredPagePath,
   trustedCloudflareClientIp,
+  isWebSocketPath,
 } from "../lib/proxy-policy";
+import { prepareBackendForwardHeaders } from "../lib/backend-forward";
 
 function makeToken(payload: Record<string, unknown>): string {
   const encode = (value: unknown) =>
@@ -36,6 +39,9 @@ test("isBackendPath matches /api and /ws paths only", () => {
   assert.equal(isBackendPath("/chat"), false);
   assert.equal(isBackendPath("/apidocs"), false); // no trailing slash → not backend
   assert.equal(isBackendPath("/logo.png"), false);
+  assert.equal(isWebSocketPath("/ws"), true);
+  assert.equal(isWebSocketPath("/ws/books"), true);
+  assert.equal(isWebSocketPath("/ws-extra"), false);
 });
 
 test("backend proxy forwards the frontend host and Cloudflare client IP only", () => {
@@ -134,6 +140,7 @@ test("large knowledge uploads bypass the buffering proxy", () => {
     unstable_doesMiddlewareMatch({ config: proxyConfig, url });
 
   assert.equal(matches("http://localhost/api/knowledge-bases"), false);
+  assert.equal(matches("http://localhost/api/knowledge-bases/list"), true);
   assert.equal(
     matches("http://localhost/api/knowledge-bases/my%20kb/upload"),
     false,
@@ -210,6 +217,82 @@ test("isAuthExempt allows auth pages and Next internals", () => {
   assert.equal(isAuthExempt("/access/device?pairing=test1234"), true);
   assert.equal(isAuthExempt("/_next/data/build/chat.json"), true);
   assert.equal(isAuthExempt("/favicon-32x32.png"), true);
+});
+
+test("public handoff page is exempt without exposing protected route prefixes", () => {
+  assert.equal(isAuthExempt(HANDOFF_PATH), true);
+  assert.equal(isAuthExempt("/handoff/extra"), false);
+  assert.equal(isAuthExempt("/handoff-lookalike"), false);
+});
+
+test("backend forwarding replaces client identity headers with frontend host", () => {
+  const headers = prepareBackendForwardHeaders(
+    new Headers({
+      connection: "keep-alive, x-remove-me",
+      cookie: "dt_token=session",
+      forwarded: "for=1.2.3.4;host=attacker.example",
+      host: "app.example",
+      "x-forwarded-for": "1.2.3.4",
+      "x-forwarded-host": "attacker.example",
+      "x-forwarded-proto": "https",
+      "x-real-ip": "1.2.3.4",
+      "x-deeptutor-frontend-host": "attacker.example",
+      "x-remove-me": "hop-by-hop",
+    }),
+  );
+
+  assert.equal(headers.get("x-deeptutor-frontend-host"), "app.example");
+  assert.equal(headers.get("cookie"), "dt_token=session");
+  for (const name of [
+    "connection",
+    "forwarded",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-proto",
+    "x-real-ip",
+    "x-remove-me",
+  ]) {
+    assert.equal(headers.has(name), false, name);
+  }
+});
+
+test("backend forwarding does not invent a frontend host from the Next URL", () => {
+  const headers = prepareBackendForwardHeaders(new Headers({
+    "x-forwarded-host": "app.example",
+    "x-deeptutor-frontend-host": "app.example",
+  }));
+  assert.equal(headers.has("x-deeptutor-frontend-host"), false);
+});
+
+test("backend forwarding preserves only a valid WebSocket upgrade on /ws", () => {
+  const source = new Headers({
+    connection: "keep-alive, Upgrade, x-remove-me",
+    upgrade: "websocket",
+    host: "app.example",
+    "sec-websocket-key": "test-key",
+    "x-forwarded-for": "1.2.3.4",
+    "x-remove-me": "hop-by-hop",
+  });
+  const websocket = prepareBackendForwardHeaders(source, {
+    allowWebSocketUpgrade: true,
+  });
+  assert.equal(websocket.get("connection"), "Upgrade");
+  assert.equal(websocket.get("upgrade"), "websocket");
+  assert.equal(websocket.get("sec-websocket-key"), "test-key");
+  assert.equal(websocket.get("x-deeptutor-frontend-host"), "app.example");
+  assert.equal(websocket.has("x-forwarded-for"), false);
+  assert.equal(websocket.has("x-remove-me"), false);
+
+  const http = prepareBackendForwardHeaders(source);
+  assert.equal(http.has("connection"), false);
+  assert.equal(http.has("upgrade"), false);
+
+  const invalid = prepareBackendForwardHeaders(
+    new Headers({ connection: "Upgrade", upgrade: "h2c" }),
+    { allowWebSocketUpgrade: true },
+  );
+  assert.equal(invalid.has("connection"), false);
+  assert.equal(invalid.has("upgrade"), false);
 });
 
 test("isAuthExempt does NOT exempt protected app routes", () => {

@@ -16,6 +16,10 @@ const pane = readFileSync(
   path.resolve(process.cwd(), "components/reading/ReaderPane.tsx"),
   "utf8",
 );
+const speechHook = readFileSync(
+  path.resolve(process.cwd(), "components/reading/use-read-aloud-speech.ts"),
+  "utf8",
+);
 const api = readFileSync(
   path.resolve(process.cwd(), "lib/reading-api.ts"),
   "utf8",
@@ -44,6 +48,27 @@ test("the browser sends a locator and selection, not trusted visible text", () =
   assert.doesNotMatch(api, /visible_text\?: string/);
 });
 
+test("reading quiz answers send only the selected index", () => {
+  assert.match(api, /export async function submitReadingQuizAnswers/);
+  assert.match(
+    api,
+    /answers: payload\.answers\.map\(\(row\) => \(\{[\s\S]*question_id: row\.question_id,[\s\S]*selected_index: row\.selected_index,[\s\S]*\}\)\)/,
+  );
+  const submitFn = api.slice(api.indexOf("submitReadingQuizAnswers"));
+  assert.doesNotMatch(submitFn, /correct_choice_index/);
+  assert.match(component, /submitReadingQuizAnswers\(materialId,/);
+  assert.match(component, /selected_index: choiceIndex/);
+  const persistStart = component.indexOf("function persistAnswer");
+  const persistEnd = component.indexOf("questions.map", persistStart);
+  assert.notEqual(persistStart, -1);
+  assert.notEqual(persistEnd, -1);
+  assert.doesNotMatch(
+    component.slice(persistStart, persistEnd),
+    /correct_choice_index/,
+  );
+  assert.match(pane, /sessionId=\{sessionId\}/);
+});
+
 test("a malformed extension catalog cannot crash the whole reader", () => {
   assert.match(api, /if \(!Array\.isArray\(payload\)\) return \[\]/);
   assert.match(
@@ -52,21 +77,17 @@ test("a malformed extension catalog cannot crash the whole reader", () => {
   );
 });
 
-test("read aloud prefers configured server TTS and falls back to browser speech", () => {
-  assert.match(component, /apiUrl\("\/api\/voice\/tts"\)/);
-  assert.match(component, /await playServerSpeech\(text, token\)/);
-  assert.match(component, /speakBrowserSpeech\(text, locale, token\)/);
+test("browser speech is stoppable and cannot continue after navigation", () => {
+  assert.match(component, /useReadAloudSpeech\(\)/);
   assert.match(
     component,
-    /const \[speaking, setSpeaking\] = useState\(false\)/,
+    /useEffect\(\(\) => stopSpeaking, \[locator, materialId, stopSpeaking\]\)/,
   );
-  assert.match(component, /const stopSpeaking = useCallback\(\(\) =>/);
-  assert.match(component, /window\.speechSynthesis\?\.cancel\(\)/);
-  assert.match(component, /audio\?\.pause\(\)/);
-  assert.match(component, /URL\.revokeObjectURL\(url\)/);
-  assert.match(component, /utterance\.onend = \(\)/);
-  assert.match(component, /utterance\.onerror = \(\)/);
-  assert.match(component, /\}, \[locator, materialId, stopSpeaking\]\);/);
+  assert.match(speechHook, /const \[speaking, setSpeaking\] = useState\(false\)/);
+  assert.match(speechHook, /window\.speechSynthesis\?\.cancel\(\)/);
+  assert.match(speechHook, /utterance\.onend = \(\) => \{/);
+  assert.match(speechHook, /utterance\.onerror = \(\) => \{/);
+  assert.match(component, /\[locator, materialId, stopSpeaking\]/);
   assert.match(component, /aria-label=\{t\("Stop reading aloud"\)\}/);
 });
 
@@ -148,7 +169,7 @@ test("reading quizzes reveal grading only after the learner answers", () => {
   assert.match(component, /correct_choice_index\?: number/);
   assert.match(component, /const \[answers, setAnswers\] = useState/);
   assert.match(component, /aria-pressed=\{selected === choiceIndex\}/);
-  assert.match(component, /selected === correctChoiceIndex/);
+  assert.match(component, /verdicts\[key\]/);
   assert.match(component, /t\("Correct"\).*t\("Incorrect"\)/s);
 });
 

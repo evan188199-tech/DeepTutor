@@ -38,8 +38,7 @@ MAX_PLACEHOLDER_CHARS = 120
 
 # Labels the model sometimes adds as its own catch-all option. The card
 # already renders a free-form "Other" row whenever ``allow_free_text``
-# is on, so a model-supplied duplicate is dropped (exact match only —
-# being clever here risks eating legitimate options).
+# is on, so a model-supplied duplicate is dropped.
 _REDUNDANT_OTHER_LABELS = frozenset({"other", "其他", "其它"})
 
 
@@ -236,6 +235,11 @@ def _drop_half_written_options(raw: Any) -> Any:
     return {**raw, "options": kept}
 
 
+def _option_match_key(label: str) -> str:
+    """Compare labels like ``mastery_quiz`` compares option bodies."""
+    return "".join(label.split()).casefold()
+
+
 def _build_question(raw: Any, idx: int, used_ids: set[str]) -> AskUserQuestion | str:
     if not isinstance(raw, dict):
         return f"Question #{idx + 1} must be an object."
@@ -261,17 +265,33 @@ def _build_question(raw: Any, idx: int, used_ids: set[str]) -> AskUserQuestion |
             return f"Question #{idx + 1}: `options` must be an array."
         cleaned: list[AskUserOption] = []
         seen_labels: set[str] = set()
+        seen_bodies: set[str] = set()
         for opt in options_raw:
             normalised = _build_option(opt)
             if normalised is None:
                 continue
             # The card auto-renders an "Other" free-text row; drop a
             # model-supplied duplicate so the user never sees two.
-            if allow_free_text and normalised.label.lower() in _REDUNDANT_OTHER_LABELS:
+            match_key = _option_match_key(normalised.label)
+            if allow_free_text and match_key in _REDUNDANT_OTHER_LABELS:
                 continue
-            if normalised.label in seen_labels:
+            # Two labels that differ only by whitespace or case render as the
+            # same choice, so keep the first rather than shipping an
+            # unanswerable card (#1409).
+            if match_key in seen_labels:
                 continue
-            seen_labels.add(normalised.label)
+            # Two options whose visible text matches once whitespace and case
+            # are folded leave the learner nothing to pick between — the same
+            # duplicate-body rule the mastery quiz contract enforces at
+            # registration (#1409). An option with no body *is* its label, so
+            # label-only cards are governed by label uniqueness alone.
+            body = (normalised.description or "").strip()
+            if body:
+                body_key = " ".join(body.split()).casefold()
+                if body_key in seen_bodies:
+                    continue
+                seen_bodies.add(body_key)
+            seen_labels.add(match_key)
             cleaned.append(normalised)
             if len(cleaned) >= MAX_OPTIONS:
                 break

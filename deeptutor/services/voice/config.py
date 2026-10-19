@@ -22,6 +22,25 @@ STT_BASE64_JSON = "base64_json"  # OpenRouter: {model, input_audio:{data,format}
 
 # OpenAI caps speech input at 4096 chars; keep a safe generic ceiling.
 DEFAULT_MAX_INPUT_CHARS = 4096
+DEFAULT_TTS_REQUEST_TIMEOUT = 60
+TTS_REQUEST_TIMEOUT_MIN = 5
+TTS_REQUEST_TIMEOUT_MAX = 600
+
+
+def resolve_tts_request_timeout(value: object) -> int:
+    """An unset catalog field keeps the historical default; invalid edits fail loudly."""
+    if value is None or value == "":
+        return DEFAULT_TTS_REQUEST_TIMEOUT
+    try:
+        timeout = int(str(value).strip())
+    except (TypeError, ValueError):
+        timeout = 0
+    if not TTS_REQUEST_TIMEOUT_MIN <= timeout <= TTS_REQUEST_TIMEOUT_MAX:
+        raise ValueError(
+            f"Speech request timeout must be a whole number between "
+            f"{TTS_REQUEST_TIMEOUT_MIN} and {TTS_REQUEST_TIMEOUT_MAX} seconds."
+        )
+    return timeout
 
 
 @dataclass(slots=True)
@@ -33,14 +52,19 @@ class TTSConfig:
     adapter: str = "openai_compat"
     auth_style: str = AUTH_BEARER
     api_key: str = ""
+    app_id: str = ""  # Volcengine legacy Speech application; empty uses X-Api-Key.
+    resource_id: str = ""
     base_url: str = ""
     api_version: str | None = None
     extra_headers: dict[str, str] = field(default_factory=dict)
     voice: str = ""
     response_format: str = "mp3"
     speed: float | None = None
+    language: str | None = None
+    sample_rate: int = 24000
+    instructions: str = ""
     max_input_chars: int = DEFAULT_MAX_INPUT_CHARS
-    request_timeout: int = 60
+    request_timeout: int = DEFAULT_TTS_REQUEST_TIMEOUT
 
 
 @dataclass(slots=True)
@@ -53,6 +77,8 @@ class STTConfig:
     request_style: str = STT_MULTIPART
     auth_style: str = AUTH_BEARER
     api_key: str = ""
+    app_id: str = ""  # Volcengine legacy Speech application; empty uses X-Api-Key.
+    resource_id: str = ""
     base_url: str = ""
     api_version: str | None = None
     extra_headers: dict[str, str] = field(default_factory=dict)

@@ -115,7 +115,7 @@ def test_binding_cached(monkeypatch) -> None:
 
 def test_exclusive_compose_drops_builtins_but_keeps_coexisting_rag() -> None:
     # Issue #650: the KB built-ins coexist when has_kb is set (a co-selected
-    # real KB the capability does not own is both searchable and enumerable);
+    # real KB the capability does not own is searchable and enumerable);
     # other built-ins/toggles stay dropped.
     composed = compose_enabled_tools(
         registry=get_tool_registry(),
@@ -133,6 +133,7 @@ def test_exclusive_compose_drops_builtins_but_keeps_coexisting_rag() -> None:
         "consult_subagent",
         "rag",
         "kb_files",
+        "knowledge_frontier",
         "ask_user",
     }
 
@@ -294,3 +295,46 @@ async def test_session_id_persists_across_turns(monkeypatch, tmp_path) -> None:
     ctx3 = UnifiedContext(user_message="hi", knowledge_bases=["myagent"], session_id="chatB")
     spec3 = cap.augment_kwargs("consult_subagent", {"question": "Q"}, ctx3)["_subagent"]
     assert spec3["state"]["session_id"] is None
+
+
+def test_group_selection_requires_discussion_and_uses_stable_identity(monkeypatch):
+    from types import SimpleNamespace
+
+    monkeypatch.setattr(
+        "deeptutor.services.partner_groups.manager.get_partner_group_manager",
+        lambda: SimpleNamespace(get_group=lambda _id: SimpleNamespace(name="Study panel")),
+    )
+    context = UnifiedContext(
+        user_message="Original question",
+        runtime=TurnRuntimeContext(partner_discussion_group_id="group-1"),
+    )
+    cap = SubagentCapability()
+    assert cap.is_active(context)
+    assert "MUST" in cap.system_block(context, language="en", prompts={}).content
+    assert cap.finish_instruction(context, "An answer without discussion")
+    spec = cap.augment_kwargs("consult_subagent", {}, context)["_subagent"]
+    assert spec["kind"] == "partner_group"
+    assert spec["partner_id"] == "group-1"
+    assert spec["budget"] == 1
+    assert spec["original_question"] == "Original question"
+    spec["state"]["count"] = 1
+    assert not cap.finish_instruction(context, "Synthesis")
+
+
+def test_partner_selected_directly_without_connection_kb(monkeypatch):
+    monkeypatch.setattr(
+        "deeptutor.multi_user.partner_access.visible_partner_cards",
+        lambda: [{"partner_id": "panda", "name": "Panda"}],
+    )
+    context = UnifiedContext(
+        user_message="Question", runtime=TurnRuntimeContext(consult_partner_id="panda")
+    )
+    conn = connection_for_turn(context)
+    assert conn == {"name": "Panda", "kind": "partner", "partner_id": "panda", "cwd": ""}
+    assert SubagentCapability().finish_instruction(context, "Must consult first")
+
+
+def test_legacy_partner_kb_is_not_a_subagent_selection(monkeypatch):
+    _bind(monkeypatch, kind="partner")
+    context = UnifiedContext(user_message="hi", knowledge_bases=["myagent"])
+    assert not SubagentCapability().is_active(context)

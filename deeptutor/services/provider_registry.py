@@ -153,8 +153,11 @@ PROVIDER_ALIASES = {
     "atlas-cloud": "atlascloud",
     "eden_ai": "edenai",
     "novita_ai": "novita",
-    "orca_router": "orcarouter",
-    "orca-router": "orcarouter",
+    "cheaper_inference": "cheaperinference",
+    "api route": "api_route",
+    "future_infra": "futureinfra",
+    "y-api": "y_api",
+    "yapi": "y_api",
 }
 
 
@@ -167,6 +170,19 @@ def canonical_provider_name(name: str | None) -> str | None:
         return None
     key = to_snake(key.replace("-", "_"))
     return PROVIDER_ALIASES.get(key, key)
+
+
+# These Claude families reject explicit temperature and use adaptive thinking.
+# Keep one family list for direct Anthropic calls and OpenAI-compatible gateways.
+# Older Opus/Sonnet families still accept temperature and budget-token thinking.
+ANTHROPIC_EFFORT_BASED_FAMILIES: tuple[str, ...] = (
+    "claude-opus-4-7",
+    "claude-opus-4-8",
+    "claude-opus-5",
+    "claude-sonnet-5",
+    "claude-fable-5",
+    "claude-mythos-5",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -212,17 +228,6 @@ PROVIDERS: tuple[ProviderSpec, ...] = (
         detect_by_base_keyword="openrouter",
         default_api_base="https://openrouter.ai/api/v1",
         supports_prompt_caching=True,
-    ),
-    ProviderSpec(
-        name="orcarouter",
-        keywords=("orcarouter", "orca_router", "orca router"),
-        env_key="ORCAROUTER_API_KEY",
-        display_name="OrcaRouter",
-        backend="openai_compat",
-        is_gateway=True,
-        detect_by_key_prefix="sk-orca-",
-        detect_by_base_keyword="orcarouter",
-        default_api_base="https://api.orcarouter.ai/v1",
     ),
     ProviderSpec(
         name="edenai",
@@ -274,6 +279,87 @@ PROVIDERS: tuple[ProviderSpec, ...] = (
         is_gateway=True,
         detect_by_base_keyword="atlascloud",
         default_api_base="https://api.atlascloud.ai/v1",
+    ),
+    ProviderSpec(
+        name="unifically",
+        keywords=("unifically",),
+        env_key="UNIFICALLY_API_KEY",
+        display_name="Unifically",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="unifically",
+        default_api_base="https://api.unifically.com/v1",
+    ),
+    ProviderSpec(
+        name="cheaperinference",
+        keywords=("cheaperinference",),
+        env_key="CHEAPER_INFERENCE_API_KEY",
+        display_name="Cheaper Inference",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="cheaperinference",
+        default_api_base="https://api.cheaperinference.com/v1",
+    ),
+    ProviderSpec(
+        name="api_route",
+        keywords=("api_route", "api-route", "api route"),
+        env_key="API_ROUTE_API_KEY",
+        display_name="API Route",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="api-route.com",
+        default_api_base="https://global.api-route.com/v1",
+    ),
+    ProviderSpec(
+        name="requesty",
+        keywords=("requesty",),
+        env_key="REQUESTY_API_KEY",
+        display_name="Requesty",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="requesty",
+        default_api_base="https://router.requesty.ai/v1",
+    ),
+    ProviderSpec(
+        name="futureinfra",
+        keywords=("futureinfra",),
+        env_key="FUTUREINFRA_API_KEY",
+        display_name="FutureInfra",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="futureinfra",
+        default_api_base="https://futureinfra.ai/v1/ai",
+    ),
+    ProviderSpec(
+        name="opper",
+        keywords=("opper",),
+        env_key="OPPER_API_KEY",
+        display_name="Opper",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="api.opper.ai",
+        default_api_base="https://api.opper.ai/v3/compat",
+    ),
+    ProviderSpec(
+        name="y_api",
+        keywords=("y_api", "y-api", "yapi"),
+        env_key="Y_API_KEY",
+        display_name="Y-API",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="y-api",
+        default_api_base="https://api.y-api.bestvirtualgoods.com/v1",
+        api_base_by_format=(("anthropic", "https://api.y-api.bestvirtualgoods.com"),),
+    ),
+    ProviderSpec(
+        name="onomeo",
+        keywords=("onomeo",),
+        env_key="ONOMEO_API_KEY",
+        display_name="onomeo",
+        backend="openai_compat",
+        is_gateway=True,
+        detect_by_base_keyword="onomeo",
+        default_api_base="https://onomeo.com/v1",
     ),
     ProviderSpec(
         name="volcengine",
@@ -329,6 +415,11 @@ PROVIDERS: tuple[ProviderSpec, ...] = (
         backend="anthropic",
         default_api_base="https://api.anthropic.com/v1",
         supports_prompt_caching=True,
+        # This model rule also applies when Claude is reached through a
+        # generic OpenAI-compatible binding or gateway.
+        model_overrides=tuple(
+            (family, {"temperature": None}) for family in ANTHROPIC_EFFORT_BASED_FAMILIES
+        ),
     ),
     ProviderSpec(
         name="openai",

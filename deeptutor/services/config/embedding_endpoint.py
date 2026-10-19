@@ -101,9 +101,10 @@ EMBEDDING_PROVIDER_LABELS = {
     "openai": "OpenAI",
     "gemini": "Gemini",
     "openrouter": "OpenRouter",
-    "orcarouter": "OrcaRouter",
+    "opper": "Opper",
     "jina": "Jina",
     "vllm": "vLLM / LM Studio",
+    "lemonade": "Lemonade Server",
     "siliconflow": "SiliconFlow",
     "ollama": "Ollama",
     "cohere": "Cohere",
@@ -113,11 +114,12 @@ EMBEDDING_PROVIDER_DEFAULT_ENDPOINTS = {
     "openai": "https://api.openai.com/v1/embeddings",
     "gemini": gemini_embedding_endpoint(GEMINI_DEFAULT_EMBEDDING_MODEL),
     "openrouter": "https://openrouter.ai/api/v1/embeddings",
-    "orcarouter": "https://api.orcarouter.ai/v1/embeddings",
+    "opper": "https://api.opper.ai/v3/compat/embeddings",
     "cohere": "https://api.cohere.com/v2/embed",
     "jina": "https://api.jina.ai/v1/embeddings",
     "ollama": "http://localhost:11434/api/embed",
     "vllm": "http://localhost:8000/v1/embeddings",
+    "lemonade": "http://localhost:13305/v1/embeddings",
     "siliconflow": "https://api.siliconflow.cn/v1/embeddings",
     "aliyun": (
         "https://dashscope.aliyuncs.com/api/v1/services/embeddings/"
@@ -128,9 +130,10 @@ EMBEDDING_PROVIDER_DEFAULT_ENDPOINTS = {
 EMBEDDING_PROVIDERS_REQUIRING_EMBEDDINGS_PATH = {
     "openai",
     "openrouter",
-    "orcarouter",
+    "opper",
     "jina",
     "vllm",
+    "lemonade",
     "siliconflow",
 }
 
@@ -223,6 +226,10 @@ def normalize_embedding_endpoint_for_display(
             return trimmed
         if trimmed.endswith("/v1"):
             return f"{trimmed}/embeddings"
+        if provider_name == "lemonade":
+            parsed = urlparse(trimmed if "://" in trimmed else f"http://{trimmed}")
+            if parsed.scheme and parsed.netloc and parsed.path.rstrip("/") in {"", "/"}:
+                return _same_origin_url(trimmed, "/v1/embeddings")
     if provider_name == "ollama":
         if trimmed.endswith("/api/embed"):
             return trimmed

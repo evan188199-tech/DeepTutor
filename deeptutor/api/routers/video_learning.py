@@ -1,4 +1,4 @@
-"""Authenticated Immersive Watching and administrator provider settings."""
+"""Authenticated video providers and administrator provider settings."""
 
 from __future__ import annotations
 
@@ -17,14 +17,20 @@ from deeptutor.services.notebook.service import NotebookCorruptedError
 from deeptutor.video_learning import (
     TimedMediaError,
     TimedMediaNotFound,
+    create_mark,
+    delete_mark,
+    get_mark,
     get_timed_media_store,
     invidious_account,
     load_video_learning_settings,
+    marks_list,
     material_with_playback,
     refresh_invidious_transcript,
     resolve_material,
     save_video_learning_settings,
+    suggest_marks,
     test_invidious_connection,
+    update_mark,
 )
 from deeptutor.video_learning import notes as video_notes
 from deeptutor.video_learning.marks import (
@@ -78,8 +84,6 @@ class MarkCreateRequest(BaseModel):
     end_locator: int = Field(default=0, ge=0)
     quote: str = Field(default="", max_length=4000)
     note: str = Field(default="", max_length=2000)
-    author: str = Field(default="user", max_length=32)
-    source: str = Field(default="immersive", max_length=32)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -181,7 +185,7 @@ async def invidious_account_callback(token: str = "", state: str = "") -> Redire
     except Exception as exc:
         result = invidious_account.authorization_failure_code(exc, has_token=bool(token))
     return RedirectResponse(
-        f"/watching?account={result}",
+        f"/reading?account={result}",
         status_code=303,
         headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
     )
@@ -324,7 +328,7 @@ async def save_video_progress(material_id: str, payload: ProgressRequest) -> dic
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             known_duration = float(material.get("metadata", {}).get("duration_seconds") or 0)
             duration = known_duration or float(payload.duration_seconds or 0)
             position = min(payload.time_seconds, duration) if duration > 0 else payload.time_seconds
@@ -395,12 +399,30 @@ async def delete_video_note(material_id: str, note_id: str) -> dict[str, str]:
         raise _note_error(exc) from exc
 
 
+@router.get("/materials/{material_id}/marks")
+async def list_video_marks(material_id: str) -> list[dict[str, Any]]:
+    try:
+        material = get_timed_media_store().get(material_id)
+        return marks_list(material)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
+@router.get("/materials/{material_id}/marks/{mark_id}")
+async def get_video_mark(material_id: str, mark_id: str) -> dict[str, Any]:
+    try:
+        material = get_timed_media_store().get(material_id)
+        return get_mark(material, mark_id)
+    except Exception as exc:
+        raise _http_error(exc) from exc
+
+
 @router.post("/materials/{material_id}/marks", status_code=201)
 async def create_video_mark(material_id: str, payload: MarkCreateRequest) -> dict[str, Any]:
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             mark = create_mark(material, payload.model_dump())
             store.save(material)
         return mark
@@ -416,7 +438,7 @@ async def update_video_mark(
         store = get_timed_media_store()
         fields = payload.model_dump(exclude_unset=True)
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             mark = update_mark(material, mark_id, fields)
             store.save(material)
         return mark
@@ -429,7 +451,7 @@ async def delete_video_mark(material_id: str, mark_id: str) -> dict[str, bool]:
     try:
         store = get_timed_media_store()
         with store.lock(material_id):
-            material = store.get(material_id)
+            material = store.get(material_id, lock_held=True)
             delete_mark(material, mark_id)
             store.save(material)
         return {"ok": True}

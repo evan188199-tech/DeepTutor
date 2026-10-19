@@ -7,6 +7,10 @@ import WhisperComposer from "@/components/whisper/WhisperComposer";
 import WhisperMessageList from "@/components/whisper/WhisperMessageList";
 import WhisperRoomChip from "@/components/whisper/WhisperRoomChip";
 import { useCapabilityFilter } from "@/features/capabilities/useCapabilityCatalog";
+import {
+  SUBMIT_CONNECT_RETRY_INTERVAL_MS,
+  SUBMIT_CONNECT_RETRY_LIMIT,
+} from "@/lib/send-retry";
 import type {
   StartTurnMessage,
   StreamEvent,
@@ -21,12 +25,7 @@ import {
   type WhisperSeat,
 } from "@/lib/whisper-transcript";
 
-function newMessageId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
+import { randomUuid } from "@/lib/random-uuid";
 
 function looksLikeRoomEnded(text: string): boolean {
   const t = (text || "").toLowerCase();
@@ -95,7 +94,7 @@ export default function WhisperPage() {
       setMessages((prev) => [
         ...prev,
         {
-          id: newMessageId(),
+          id: randomUuid(),
           role: "system",
           text,
           stage: event.stage,
@@ -112,7 +111,7 @@ export default function WhisperPage() {
     setMessages((prev) => [
       ...prev,
       {
-        id: newMessageId(),
+        id: randomUuid(),
         role: "assistant",
         text,
         stage: event.stage || undefined,
@@ -194,12 +193,12 @@ export default function WhisperPage() {
       setEverConnected(true);
       return;
     }
-    if (attempt >= 10) {
+    if (attempt >= SUBMIT_CONNECT_RETRY_LIMIT) {
       setBusy(false);
       setMessages((prev) => [
         ...prev,
         {
-          id: newMessageId(),
+          id: randomUuid(),
           role: "system",
           text: "Connection failed. Please try again.",
         },
@@ -209,7 +208,7 @@ export default function WhisperPage() {
     const timer = setTimeout(() => {
       retryTimersRef.current.delete(timer);
       sendWithRetry(payload, attempt + 1);
-    }, 200);
+    }, SUBMIT_CONNECT_RETRY_INTERVAL_MS);
     retryTimersRef.current.add(timer);
   }
 
@@ -221,7 +220,7 @@ export default function WhisperPage() {
       setMessages((prev) => [
         ...prev,
         {
-          id: newMessageId(),
+          id: randomUuid(),
           role: "user",
           text,
           localSeat: seat,

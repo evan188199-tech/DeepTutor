@@ -33,6 +33,8 @@ from deeptutor.runtime.agentic.labels import LABEL_UNKNOWN, find_inline_labels
 from deeptutor.runtime.agentic.messages import (
     assistant_message,
     assistant_message_with_tool_calls,
+    extend_transient_model_messages,
+    with_transient_model_messages,
 )
 from deeptutor.runtime.agentic.tool_dispatch import DispatchOutcome
 from deeptutor.runtime.agentic.usage import UsageTracker
@@ -212,6 +214,10 @@ async def run_agentic_loop(
     iterations don't spawn empty "Reasoning…" cards.
     """
     messages = initial_messages
+    # Retrieved image bytes are request-local. They must never enter the
+    # durable conversation (where a synthetic user message would be persisted
+    # and displayed as if the person authored it).
+    transient_model_messages: list[dict[str, Any]] = []
     aggregated_sources: list[dict[str, Any]] = []
     final_text = ""
     final_label_seen = ""
@@ -220,7 +226,9 @@ async def run_agentic_loop(
     max_iter = max(1, max_iterations)
 
     for iteration in range(max_iter):
-        await host.guard_context_window(messages)
+        await host.guard_context_window(
+            with_transient_model_messages(messages, transient_model_messages)
+        )
         before_iteration = getattr(host, "before_iteration", None)
         if before_iteration is not None:
             await before_iteration(
@@ -229,11 +237,12 @@ async def run_agentic_loop(
                 max_iterations=max_iter,
             )
         iter_meta, final_meta = host.build_iteration_trace_meta(iteration)
+        request_messages = with_transient_model_messages(messages, transient_model_messages)
 
         step = await run_labeled_step(
             client=client,
             model=model,
-            messages=messages,
+            messages=request_messages,
             completion_kwargs=completion_kwargs,
             tool_schemas=tool_schemas,
             allowed_labels=protocol.allowed,
@@ -316,6 +325,7 @@ async def run_agentic_loop(
             )
             aggregated_sources.extend(outcome.sources)
             messages.extend(outcome.tool_messages)
+            extend_transient_model_messages(transient_model_messages, outcome.model_messages)
             if outcome.pause:
                 resumed = await host.resolve_pause(outcome)
                 if not resumed:
@@ -451,9 +461,11 @@ def _append_repair_messages(
     provider rejects a history that lost it.
     """
     clipped = str(step.text or "").strip()
-    if clipped:
+    if clipped or step.reasoning_content or step.thinking_blocks:
         if len(clipped) > _REPAIR_PREVIEW_CHARS:
             clipped = clipped[:_REPAIR_PREVIEW_CHARS].rstrip() + "\n...[truncated]"
+        # A reasoning-only response has no visible draft, but it still
+        # produced an assistant turn whose provider state belongs in history.
         messages.append(
             assistant_message(
                 clipped,

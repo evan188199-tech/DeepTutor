@@ -1,6 +1,7 @@
 """API endpoint tests for the mastery_path router."""
 
 import json
+import time
 from unittest.mock import AsyncMock, patch
 
 from fastapi import FastAPI
@@ -8,7 +9,15 @@ from fastapi.testclient import TestClient
 import pytest
 
 from deeptutor.api.routers.mastery_path import router, ws_router
-from deeptutor.learning.models import LearningProgress, PendingQuestion, QuizAttempt
+from deeptutor.learning.models import (
+    KnowledgePoint,
+    KnowledgeType,
+    LearningModule,
+    LearningProgress,
+    PendingQuestion,
+    QuizAttempt,
+)
+from deeptutor.learning.scheduler import SpacedRepetitionScheduler
 from deeptutor.learning.service import LearningService
 from deeptutor.learning.storage import LearningStore
 
@@ -48,7 +57,92 @@ def _module_payload(module_id: str = "m1", kp_id: str = "kp1") -> dict:
     }
 
 
+def test_path_retention_setting_persists_and_reschedules_review(client, tmp_path):
+    store = LearningStore(root=tmp_path)
+    progress = LearningProgress(book_id="srs-path", name="SRS path")
+    progress.knowledge_types["kp1"] = KnowledgeType.CONCEPT
+    scheduler = SpacedRepetitionScheduler()
+    state = scheduler.get_initial_state(KnowledgeType.CONCEPT, now=time.time())
+    state.last_review_at = time.time()
+    state.next_review_at = state.last_review_at + 4 * 86400
+    progress.repetition_states["kp1"] = state
+    store.save(progress)
+    old_due = state.next_review_at
+
+    response = client.put(
+        "/api/mastery-paths/topics/srs-path/review-settings",
+        json={"desired_retention": 0.97},
+    )
+    assert response.status_code == 200
+    assert response.json()["review_settings"] == {
+        "desired_retention": 0.97,
+        "scope": "path",
+    }
+    reloaded = LearningStore(root=tmp_path).load("srs-path")
+    assert reloaded is not None
+    assert reloaded.desired_retention == 0.97
+    assert reloaded.repetition_states["kp1"].desired_retention == 0.97
+    assert reloaded.repetition_states["kp1"].next_review_at < old_due
+    assert client.get("/api/mastery-paths/topics/srs-path/review-settings").json() == {
+        "desired_retention": 0.97,
+        "scope": "path",
+    }
+
+
+@pytest.mark.parametrize("invalid", [0.5, 1.0, "NaN"])
+def test_path_retention_setting_rejects_invalid_values(client, tmp_path, invalid):
+    store = LearningStore(root=tmp_path)
+    store.save(LearningProgress(book_id="srs-path"))
+    response = client.put(
+        "/api/mastery-paths/topics/srs-path/review-settings",
+        json={"desired_retention": invalid},
+    )
+    assert response.status_code == 422
+    assert store.load("srs-path").desired_retention == 0.9
+
+
+def test_path_retention_setting_requires_existing_path(client):
+    response = client.put(
+        "/api/mastery-paths/topics/missing/review-settings",
+        json={"desired_retention": 0.92},
+    )
+    assert response.status_code == 404
+
+
 # -- GET /progress (list_all) --------------------------------------------
+
+
+class TestReadingLearningRecords:
+    def test_summary_returns_progress_and_activity(self, app, client):
+        store = LearningStore(root=app.state.learning_root)
+        store.record_reading_position("rm_one", locator=3, percentage=0.3)
+        store.record_reading_activity(
+            "rm_one",
+            extension_id="sample",
+            action="open",
+            locator=3,
+            result_type="card",
+        )
+
+        response = client.get("/api/mastery-paths/reading/records")
+
+        assert response.status_code == 200, response.text
+        data = response.json()
+        assert data["progress"] == [
+            {
+                "material_id": "rm_one",
+                "latest_locator": 3,
+                "latest_percentage": 0.3,
+                "furthest_locator": 3,
+                "furthest_percentage": 0.3,
+                "updated_at": data["progress"][0]["updated_at"],
+            }
+        ]
+        assert len(data["activities"]) == 1
+        assert data["activities"][0]["material_id"] == "rm_one"
+        assert data["activities"][0]["extension_id"] == "sample"
+        assert data["activities"][0]["action"] == "open"
+        assert data["activities"][0]["result_type"] == "card"
 
 
 class TestListProgress:
@@ -132,6 +226,81 @@ class TestListProgress:
 
 
 class TestTopicProductApi:
+    def test_topic_relations_round_trip_through_create_and_reorder_edit(self, client):
+        created = client.post(
+            "/api/mastery-paths/topics",
+            json={
+                "name": "Structured route",
+                "goal": "Keep objective provenance",
+                "sources": [
+                    {
+                        "client_ref": "notes",
+                        "kind": "notebook",
+                        "label": "Study notes",
+                    }
+                ],
+                "modules": [
+                    {
+                        "name": "Region",
+                        "knowledge_points": [
+                            {"client_ref": "first", "name": "First objective"},
+                            {
+                                "client_ref": "second",
+                                "name": "Second objective",
+                                "prerequisite_refs": ["first"],
+                                "topic_source_refs": ["notes"],
+                            },
+                        ],
+                    }
+                ],
+            },
+        ).json()
+        module = created["map"]["modules"][0]
+        first, second = module["knowledge_points"]
+        source_id = created["sources"][0]["id"]
+        assert second["prerequisite_ids"] == [first["id"]]
+        assert second["topic_source_ids"] == [source_id]
+
+        response = client.put(
+            f"/api/mastery-paths/topics/{created['path_id']}/map",
+            json={
+                "modules": [
+                    {
+                        "id": module["id"],
+                        "name": "Reordered region",
+                        "knowledge_points": [
+                            {
+                                "id": second["id"],
+                                "name": "Second objective, renamed",
+                                "type": second["type"],
+                                "module_id": module["id"],
+                                "prerequisite_ids": second["prerequisite_ids"],
+                                "topic_source_ids": second["topic_source_ids"],
+                            },
+                            {
+                                "id": first["id"],
+                                "name": first["name"],
+                                "type": first["type"],
+                                "module_id": module["id"],
+                                "prerequisite_ids": first["prerequisite_ids"],
+                                "topic_source_ids": first["topic_source_ids"],
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+
+        assert response.status_code == 200
+        edited = response.json()["map"]["modules"][0]["knowledge_points"]
+        # A renamed objective gets fresh identity so previous mastery evidence
+        # cannot silently follow a changed learning target.
+        assert edited[0]["id"] != second["id"]
+        assert edited[1]["id"] == first["id"]
+        assert edited[0]["name"] == "Second objective, renamed"
+        assert edited[0]["prerequisite_ids"] == [first["id"]]
+        assert edited[0]["topic_source_ids"] == [source_id]
+
     def test_edit_topic_map_preserves_reordered_evidence_by_entity_id(self, client, app):
         created = client.post(
             "/api/mastery-paths/topics",
@@ -203,6 +372,81 @@ class TestTopicProductApi:
         assert progress is not None
         assert progress.mastery_levels == {first_id: 0.2, third_id: 0.9}
         assert [attempt.question_id for attempt in progress.quiz_attempts] == ["third-evidence"]
+
+    def test_edit_legacy_topic_map_preserves_all_objectives_and_evidence(self, client, app):
+        module = LearningModule(
+            id="legacy-module",
+            name="Legacy region",
+            order=0,
+            knowledge_points=[
+                KnowledgePoint(
+                    id=f"legacy-kp-{index}",
+                    name=f"Objective {index}",
+                    type=KnowledgeType.CONCEPT,
+                    module_id="legacy-module",
+                )
+                for index in range(8)
+            ],
+        )
+        progress = LearningProgress(book_id="legacy-path", name="Legacy route", modules=[module])
+        last_id = module.knowledge_points[-1].id
+        progress.mastery_levels[last_id] = 0.9
+        progress.quiz_attempts.append(
+            QuizAttempt(
+                question_id="legacy-evidence",
+                knowledge_point_id=last_id,
+                module_id=module.id,
+                is_correct=True,
+            )
+        )
+        store = LearningStore(root=app.state.learning_root)
+        store.save(progress)
+        edited = module.model_dump(mode="json")
+        edited["knowledge_points"][0]["type"] = "memory"
+        edited["knowledge_points"].reverse()
+
+        response = client.put(
+            "/api/mastery-paths/topics/legacy-path/map", json={"modules": [edited]}
+        )
+
+        assert response.status_code == 200, response.text
+        reloaded = store.load("legacy-path")
+        assert reloaded is not None
+        updated_points = reloaded.modules[0].knowledge_points
+        assert [point.id for point in updated_points[:-1]] == [
+            point.id for point in reversed(module.knowledge_points[1:])
+        ]
+        assert updated_points[-1].id != module.knowledge_points[0].id
+        assert updated_points[-1].type == KnowledgeType.MEMORY
+        assert reloaded.mastery_levels[last_id] == 0.9
+        assert [attempt.question_id for attempt in reloaded.quiz_attempts] == ["legacy-evidence"]
+
+    def test_edit_legacy_topic_map_cannot_add_a_ninth_objective(self, client, app):
+        points = [
+            KnowledgePoint(
+                id=f"legacy-kp-{index}",
+                name=f"Objective {index}",
+                type=KnowledgeType.CONCEPT,
+                module_id="legacy-module",
+            )
+            for index in range(8)
+        ]
+        module = LearningModule(
+            id="legacy-module", name="Legacy region", order=0, knowledge_points=points
+        )
+        store = LearningStore(root=app.state.learning_root)
+        store.save(LearningProgress(book_id="legacy-path", modules=[module]))
+        edited = module.model_dump(mode="json")
+        edited["knowledge_points"].append({"name": "New objective", "type": "concept"})
+
+        response = client.put(
+            "/api/mastery-paths/topics/legacy-path/map", json={"modules": [edited]}
+        )
+
+        assert response.status_code == 422
+        reloaded = store.load("legacy-path")
+        assert reloaded is not None
+        assert len(reloaded.modules[0].knowledge_points) == 8
 
     def test_edit_topic_map_rejects_empty_region_instead_of_silently_dropping_it(self, client):
         created = client.post(
@@ -811,6 +1055,8 @@ class TestObjectiveReport:
         assert objective["gate"] == "qualitative"  # concept type
         assert [a["prompt"] for a in objective["attempts"]] == ["What is 2+2?"]
         assert objective["attempts"][0]["answer"] == "4"
+        assert objective["evidence_count"] == 1
+        assert objective["evidence"][0]["assessment_type"] == "quiz"
         assert "do-not-expose" not in resp.text
 
     def test_report_for_unknown_objective_returns_404(self, client):

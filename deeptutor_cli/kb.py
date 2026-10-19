@@ -2,7 +2,7 @@
 CLI Knowledge Base Command
 ===========================
 
-Manage llamaindex knowledge bases from the command line.
+Manage knowledge bases from the command line.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -21,6 +21,9 @@ from deeptutor.knowledge.naming import validate_knowledge_base_name
 from deeptutor.services.path_service import get_path_service
 from deeptutor.services.rag.factory import DEFAULT_PROVIDER
 from deeptutor.services.rag.file_routing import FileTypeRouter
+
+if TYPE_CHECKING:  # pragma: no cover - imported for type annotations only
+    from deeptutor.services.rag.eval import EvalDataset, EvalReport, ProgressFn, QueryEvaluation
 
 console = Console()
 
@@ -56,6 +59,138 @@ def _collect_documents(docs: list[str], docs_dir: Optional[str]) -> list[str]:
         unique.append(key)
 
     return unique
+
+
+def _load_eval_dataset(dataset: str) -> EvalDataset:
+    """Load the QA set for ``kb eval``, exiting with a readable message when it is invalid."""
+    from deeptutor.services.rag.eval import EvalDatasetError, load_dataset
+
+    try:
+        return load_dataset(dataset)
+    except EvalDatasetError as exc:
+        console.print(f"[red]{exc}[/]")
+        raise typer.Exit(code=1) from exc
+
+
+def _resolve_eval_provider(mgr: KnowledgeBaseManager, name: str) -> str:
+    """Return the provider bound to ``name``, rejecting engines that return no ranked chunks."""
+    from deeptutor.services.rag.factory import PAGEINDEX_OSS_PROVIDER, PAGEINDEX_PROVIDER
+    from deeptutor.services.rag.provider_binding import resolve_bound_provider
+
+    provider = resolve_bound_provider(str(mgr.base_dir), name)
+    if provider in {PAGEINDEX_PROVIDER, PAGEINDEX_OSS_PROVIDER}:
+        console.print(
+            "[red]PageIndex answers by reasoning over pages inside an agent loop, so it "
+            "returns no ranked chunks to score. Evaluate a KB bound to llamaindex, "
+            "graphrag, lightrag, a LightRAG server, WeKnora or IMA instead.[/]"
+        )
+        raise typer.Exit(code=1)
+    return provider
+
+
+def _build_eval_progress(top_k: int, fmt: str) -> ProgressFn:
+    """Return a per-case progress printer that stays silent while emitting JSON."""
+    from deeptutor.services.rag.eval import format_metric
+
+    recall_key = f"recall@{top_k}"
+
+    def _report(index: int, total: int, item: QueryEvaluation) -> None:
+        if fmt == "json":
+            return
+        if item.failed:
+            console.print(f"  {index}/{total} [red]failed[/] {item.case_id}: {item.error}")
+            return
+        value = format_metric(item.metrics.values()[recall_key])
+        console.print(f"  {index}/{total} [green]ok[/] {item.case_id} {recall_key}={value}")
+
+    return _report
+
+
+def _save_eval_report(save: str, payload: str) -> None:
+    """Write a serialized evaluation report to ``save``, creating parent directories."""
+    target = Path(save).expanduser()
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(payload, encoding="utf-8")
+    except OSError as exc:
+        typer.echo(f"Could not write report: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"Report written to {target}", err=True)
+
+
+def _render_eval_report(report: EvalReport, name: str, provider: str) -> None:
+    """Print the per-case metric table followed by the aggregate summary lines."""
+    columns = report.metric_columns()
+    table = Table(title=f"Retrieval evaluation - {name} ({provider})")
+    table.add_column("Case", style="bold")
+    table.add_column("Status")
+    table.add_column("Query", overflow="fold", max_width=48)
+    for column in columns:
+        table.add_column(column, justify="right")
+    for item in report.evaluations:
+        cells = report.format_metrics(item)
+        table.add_row(
+            item.case_id,
+            "[red]failed[/]" if item.failed else "[green]ok[/]",
+            item.query,
+            *(cells[column] for column in columns),
+        )
+    console.print(table)
+    for line in report.summary_lines():
+        console.print(line)
+
+
+def _parse_rewrite_flag(value: Optional[str]) -> Optional[bool]:
+    """Map a ``--rewrite`` value to the three-state rewrite flag, or None to defer to settings.
+
+    Args:
+        value: ``None`` (flag omitted, defer to settings), ``"off"`` or ``"standalone"``.
+
+    Returns:
+        ``False`` for ``"off"``, ``True`` for ``"standalone"``, ``None`` when omitted.
+
+    Raises:
+        typer.BadParameter: If ``value`` is not a recognized strategy.
+    """
+    if value is None:
+        return None
+    normalized = value.strip().lower()
+    if normalized == "off":
+        return False
+    if normalized == "standalone":
+        return True
+    raise typer.BadParameter(
+        f"unknown rewrite strategy '{value}'; expected 'off' or 'standalone'",
+        param_hint="--rewrite",
+    )
+
+
+def _load_eval_report(path: str) -> dict:
+    """Load a saved ``kb eval --save`` report for ``kb eval-diff``, exiting readably on error.
+
+    Args:
+        path: Path to a report JSON file written by ``kb eval --save``.
+
+    Returns:
+        The parsed report as a mapping, ready for
+        :func:`deeptutor.services.rag.eval.diff_reports`.
+
+    Raises:
+        typer.Exit: If the file is missing, is not valid JSON, or is not a JSON object.
+    """
+    target = Path(path).expanduser()
+    if not target.exists():
+        console.print(f"[red]Report not found: {target}[/]")
+        raise typer.Exit(code=1)
+    try:
+        loaded = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        console.print(f"[red]Could not read report '{target}': {exc}[/]")
+        raise typer.Exit(code=1) from exc
+    if not isinstance(loaded, dict):
+        console.print(f"[red]Report '{target}' is not a JSON object.[/]")
+        raise typer.Exit(code=1)
+    return loaded
 
 
 def register(app: typer.Typer) -> None:
@@ -181,6 +316,26 @@ def register(app: typer.Typer) -> None:
             console.print(f"[red]KB creation failed: {exc}[/]")
             raise typer.Exit(code=1) from exc
         console.print("[green]Knowledge base created successfully.[/]")
+
+    @app.command("connect-kiwix")
+    def kb_connect_kiwix(
+        name: str = typer.Argument(..., help="New KB name."),
+        server_url: str = typer.Option(..., "--server-url", help="kiwix-serve base URL."),
+        zim_name: str = typer.Option(..., "--zim-name", help="One ZIM name served by Kiwix."),
+    ) -> None:
+        """Connect an existing ZIM archive without copying or indexing it."""
+        from deeptutor.services.rag.pipelines.kiwix.client import KiwixClient
+
+        try:
+            client = KiwixClient(server_url, zim_name)
+            title = asyncio.run(client.probe())
+            _get_kb_manager().register_kiwix_kb(
+                name, client.base_url, client.zim_name, zim_title=title
+            )
+        except Exception as exc:
+            console.print(f"[red]Could not connect Kiwix archive: {exc}[/]")
+            raise typer.Exit(code=1) from exc
+        console.print(f"[green]Connected '{name}' to Kiwix archive '{title}'.[/]")
 
     @app.command("add")
     def kb_add(
@@ -313,6 +468,122 @@ def register(app: typer.Typer) -> None:
         provider = str(result.get("provider", DEFAULT_PROVIDER))
         console.print(f"[bold]Provider:[/] {provider}")
         console.print(f"[bold]Answer:[/]\n{answer}")
+
+    @app.command("eval")
+    def kb_eval(
+        name: str = typer.Argument(..., help="KB name."),
+        dataset: str = typer.Option(..., "--dataset", "-d", help="QA set file (.jsonl or .json)."),
+        top_k: int = typer.Option(5, "--top-k", "-k", help="Rank cutoff for the metrics."),
+        mode: Optional[str] = typer.Option(
+            None, "--mode", help="Search mode for engines that support one (e.g. hybrid)."
+        ),
+        limit: Optional[int] = typer.Option(
+            None, "--limit", help="Evaluate only the first N cases of the set."
+        ),
+        min_ratio: float = typer.Option(
+            0.5, "--min-ratio", help="Token coverage a retrieved chunk needs to count as a match."
+        ),
+        save: Optional[str] = typer.Option(None, "--save", help="Write the JSON report to a file."),
+        fmt: str = typer.Option("rich", "--format", "-f", help="Output format: rich | json."),
+        rewrite: Optional[str] = typer.Option(
+            None,
+            "--rewrite",
+            help="Force the query-rewrite layer: off | standalone. Omit to defer to settings.",
+        ),
+    ) -> None:
+        """Score a knowledge base's retrieval quality against a QA set."""
+        from deeptutor.services.rag.eval import MatchPolicy, RetrievalEvaluator
+
+        rewrite_flag = _parse_rewrite_flag(rewrite)
+
+        mgr = _get_kb_manager()
+        if name not in mgr.list_knowledge_bases():
+            console.print(f"[red]Knowledge base '{name}' not found.[/]")
+            raise typer.Exit(code=1)
+
+        eval_set = _load_eval_dataset(dataset)
+        provider = _resolve_eval_provider(mgr, name)
+
+        try:
+            evaluator = RetrievalEvaluator(
+                kb_name=name,
+                kb_base_dir=str(mgr.base_dir),
+                k=top_k,
+                mode=mode,
+                query_limit=limit,
+                policy=MatchPolicy(min_ratio=min_ratio),
+                provider=provider,
+                rewrite=rewrite_flag,
+            )
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+        cases = eval_set.limited(limit)
+        if fmt != "json":
+            suffix = ""
+            if rewrite_flag is True:
+                suffix = ", rewrite=standalone"
+            elif rewrite_flag is False:
+                suffix = ", rewrite=off"
+            console.print(
+                f"[bold]Evaluating[/] '{name}' ({provider}) on {len(cases)} case(s), "
+                f"k={top_k}{suffix} ..."
+            )
+
+        progress = _build_eval_progress(top_k, fmt)
+        try:
+            report = asyncio.run(evaluator.evaluate(eval_set, progress=progress))
+        except Exception as exc:
+            console.print(f"[red]Evaluation failed: {exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+        payload = report.to_json()
+        if save:
+            _save_eval_report(save, payload)
+
+        if fmt == "json":
+            console.print_json(payload)
+            return
+
+        _render_eval_report(report, name, provider)
+
+    @app.command("eval-diff")
+    def kb_eval_diff(
+        baseline: str = typer.Argument(..., help="Baseline report JSON (from `kb eval --save`)."),
+        candidate: str = typer.Argument(..., help="Candidate report JSON (from `kb eval --save`)."),
+        fmt: str = typer.Option("rich", "--format", "-f", help="Output format: rich | json."),
+    ) -> None:
+        """Diff two `kb eval` reports to quantify a retrieval change.
+
+        Records a baseline before a settings change (e.g. turning the query-rewrite
+        layer on), a candidate after, and shows the per-metric and per-case movement.
+        """
+        from deeptutor.services.rag.eval.diff import diff_reports
+
+        base_report = _load_eval_report(baseline)
+        cand_report = _load_eval_report(candidate)
+
+        try:
+            diff = diff_reports(
+                base_report,
+                cand_report,
+                baseline_label=Path(baseline).stem,
+                candidate_label=Path(candidate).stem,
+            )
+        except ValueError as exc:
+            console.print(f"[red]{exc}[/]")
+            raise typer.Exit(code=1) from exc
+
+        if fmt == "json":
+            console.print_json(data=diff.to_dict())
+            return
+
+        for line in diff.summary_lines():
+            console.print(line)
+
+        if diff.has_regression:
+            raise typer.Exit(code=2)
 
     # ── GitHub source commands ──────────────────────────────────────
 

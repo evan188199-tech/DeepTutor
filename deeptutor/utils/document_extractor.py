@@ -36,6 +36,14 @@ from defusedxml import ElementTree as DefusedElementTree
 from defusedxml.common import DefusedXmlException
 
 from deeptutor.services.rag.file_routing import FileTypeRouter
+from deeptutor.utils.document_images import (
+    EmbeddedImage,
+    build_marker,
+    extract_docx_rich,
+    extract_pdf_images,
+    extract_pptx_rich,
+    image_index_from_name,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +73,13 @@ MAX_DOC_BYTES = 20 * 1024 * 1024
 MAX_TOTAL_DOC_BYTES = 25 * 1024 * 1024
 MAX_EXTRACTED_CHARS_PER_DOC = 200_000
 MAX_EXTRACTED_CHARS_TOTAL = 150_000
+
+# Embedded images harvested from document attachments are emitted as extra
+# image-type records and injected into the LLM request. Per-document caps live
+# in ``document_images``; these bound what one chat turn may carry in total so
+# a deck of image-heavy slides cannot balloon the request payload without end.
+MAX_EMBEDDED_IMAGES_PER_TURN = 16
+MAX_EMBEDDED_IMAGE_BYTES_PER_TURN = 12 * 1024 * 1024
 
 
 def _current_limits() -> tuple[int, int, int, int]:
@@ -96,6 +111,8 @@ _PDF_MAGIC = b"%PDF-"
 _OOXML_MAGIC = b"PK\x03\x04"
 
 _EPUB_CONTENT_EXTENSIONS: frozenset[str] = frozenset({".xhtml", ".html", ".htm"})
+#: Where an EPUB declares its package document, relative to the book root.
+_EPUB_CONTAINER_PATH = "META-INF/container.xml"
 _EPUB_MAX_MEMBERS = 4096
 _EPUB_MAX_MEMBER_BYTES = 20 * 1024 * 1024
 _EPUB_MAX_TOTAL_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
@@ -174,6 +191,8 @@ class EpubOutlineItem:
     locator: int
     title: str
     level: int = 1
+    source_href: str = ""
+    source_anchor: str = ""
 
 
 def is_document_extension(filename: str) -> bool:
@@ -366,6 +385,20 @@ def _extract_pdf(data: bytes, filename: str) -> str:
                 pages = [
                     f"--- Page {i} ---\n{page.get_text() or ''}" for i, page in enumerate(doc, 1)
                 ]
+            pdf_images = extract_pdf_images(data)
+            if pdf_images.collection.images:
+                marker_by_page: dict[int, list[str]] = {}
+                for page_number, indices in pdf_images.page_map:
+                    marker_by_page[page_number] = [
+                        build_marker(pdf_images.collection.images[index]) for index in indices
+                    ]
+                pages = [
+                    page_text + ("\n" + "\n".join(marker_by_page[i]) if i in marker_by_page else "")
+                    for i, page_text in enumerate(pages, 1)
+                ]
+                note = pdf_images.collection.summary_note()
+                if note:
+                    pages.append(note)
             return "\n\n".join(pages)
         except CorruptDocumentError:
             raise
@@ -412,6 +445,27 @@ def _extract_pdf(data: bytes, filename: str) -> str:
 
 
 def _extract_docx(data: bytes, filename: str) -> str:
+    """Body text with inline ``[图片 N: name]`` markers where images sit.
+
+    The rich OOXML walk is primary: it sees table text that ``doc.paragraphs``
+    misses, and it is the only variant that knows where the pictures are. The
+    python-docx / raw-OOXML paths remain as fallbacks for documents the safe
+    XML parser refuses.
+    """
+    try:
+        rich = extract_docx_rich(data)
+    except Exception as exc:
+        rich = None
+        logger.info("docx rich extraction failed on %s; falling back: %s", filename, exc)
+
+    if rich is not None:
+        text = "\n\n".join(rich.paragraphs)
+        note = rich.collection.summary_note()
+        if note:
+            text = f"{text}\n\n{note}" if text else note
+        if text.strip():
+            return text
+
     global DocxDocument
     if DocxDocument is _NOT_LOADED:
         try:
@@ -489,6 +543,25 @@ def _extract_xlsx(data: bytes, filename: str) -> str:
 
 
 def _extract_pptx(data: bytes, filename: str) -> str:
+    """Slide text with image markers, then the legacy text-only paths."""
+    try:
+        rich = extract_pptx_rich(data)
+    except Exception as exc:
+        rich = None
+        logger.info("pptx rich extraction failed on %s; falling back: %s", filename, exc)
+
+    if rich is not None and any(slide.strip() for slide in rich.slides):
+        rich_slides = [
+            f"--- Slide {index} ---\n{slide}".rstrip()
+            for index, slide in enumerate(rich.slides, 1)
+            if slide.strip()
+        ]
+        text = "\n\n".join(rich_slides)
+        note = rich.collection.summary_note()
+        if note:
+            text += f"\n\n{note}"
+        return text
+
     global PptxPresentation
     if PptxPresentation is _NOT_LOADED:
         try:
@@ -642,29 +715,61 @@ def _epub_html_members(names: list[str]) -> list[str]:
     return [name for name in names if _ext(name) in _EPUB_CONTENT_EXTENSIONS]
 
 
+def _epub_is_packaging_residue(name: str) -> bool:
+    """Whether an archive member is packaging leftovers, not book content.
+
+    macOS writes a ``__MACOSX/`` tree of AppleDouble resource forks (``._x``)
+    alongside the real files. They carry the content file's extension while
+    holding binary metadata, so a fallback that matches on extension alone
+    reads them as chapters.
+    """
+    return any(part == "__MACOSX" or part.startswith(".") for part in name.split("/") if part)
+
+
+def _epub_open_package(
+    zf: zipfile.ZipFile,
+    filename: str,
+) -> tuple[list[str], str, Any | None]:
+    """Locate an EPUB's package document: content members, OPF path, OPF root.
+
+    The standard chain is ``META-INF/container.xml`` -> ``rootfile`` -> OPF.
+    Finder's "Compress" wraps the selection in a folder, which puts that whole
+    chain one level down; looking only at the archive root made every such
+    book fall back to extension matching, losing spine order and picking up
+    ``__MACOSX`` resource forks as chapters (#1447). Resolving the wrapper
+    here keeps both readers of the package — spine and navigation — agreeing
+    on where the book is.
+    """
+    names = [name for name in zf.namelist() if not _epub_is_packaging_residue(name)]
+    container = next((name for name in names if name.endswith(_EPUB_CONTAINER_PATH)), "")
+    if not container:
+        return names, "", None
+    prefix = container[: -len(_EPUB_CONTAINER_PATH)]
+
+    container_root = _epub_parse_member(zf, container, filename)
+    if container_root is None:
+        return names, "", None
+
+    rootfile = ""
+    for node in container_root.iter():
+        if _local_name(node.tag) == "rootfile":
+            rootfile = node.get("full-path") or ""
+            break
+    opf_path = f"{prefix}{rootfile}" if rootfile else ""
+    if not opf_path or opf_path not in set(names):
+        return names, "", None
+
+    return names, opf_path, _epub_parse_member(zf, opf_path, filename)
+
+
 def _epub_content_files(zf: zipfile.ZipFile, filename: str) -> list[str]:
     """Resolve the XHTML content documents of an EPUB in reading order.
 
-    Follows the standard chain ``META-INF/container.xml`` -> OPF package
-    document -> spine ``itemref`` order. Falls back to every HTML/XHTML
-    member in archive order when package metadata is missing or unusable.
+    Falls back to every HTML/XHTML member in archive order when package
+    metadata is missing or unusable.
     """
-    names = zf.namelist()
+    names, opf_path, opf_root = _epub_open_package(zf, filename)
     name_set = set(names)
-
-    container_root = _epub_parse_member(zf, "META-INF/container.xml", filename)
-    if container_root is None:
-        return _epub_html_members(names)
-
-    opf_path = ""
-    for node in container_root.iter():
-        if _local_name(node.tag) == "rootfile":
-            opf_path = node.get("full-path") or ""
-            break
-    if not opf_path or opf_path not in name_set:
-        return _epub_html_members(names)
-
-    opf_root = _epub_parse_member(zf, opf_path, filename)
     if opf_root is None:
         return _epub_html_members(names)
 
@@ -706,20 +811,7 @@ def _epub_package_navigation(
     spine_members: list[str],
 ) -> list[EpubOutlineItem]:
     """Read EPUB3 nav or EPUB2 NCX entries and map them to spine locators."""
-    container_root = _epub_parse_member(zf, "META-INF/container.xml", filename)
-    if container_root is None:
-        return []
-    opf_path = next(
-        (
-            str(node.get("full-path") or "")
-            for node in container_root.iter()
-            if _local_name(node.tag) == "rootfile"
-        ),
-        "",
-    )
-    if not opf_path:
-        return []
-    opf_root = _epub_parse_member(zf, opf_path, filename)
+    _, opf_path, opf_root = _epub_open_package(zf, filename)
     if opf_root is None:
         return []
 
@@ -751,10 +843,15 @@ def _epub_package_navigation(
 
     locator_by_member = {member: index for index, member in enumerate(spine_members, start=1)}
 
-    def resolve_locator(href: str, base_member: str) -> int:
-        path = unquote(href.split("#", 1)[0])
+    def resolve_target(href: str, base_member: str) -> tuple[int, str, str]:
+        raw_path, separator, raw_anchor = href.partition("#")
+        path = unquote(raw_path)
         member = posixpath.normpath(posixpath.join(posixpath.dirname(base_member), path))
-        return locator_by_member.get(member, 0)
+        return (
+            locator_by_member.get(member, 0),
+            member,
+            unquote(raw_anchor) if separator else "",
+        )
 
     rows: list[EpubOutlineItem] = []
     if nav_member:
@@ -785,9 +882,19 @@ def _epub_package_navigation(
                         )
                         href = str(link.get("href") or "") if link is not None else ""
                         title = _epub_element_text(link) if link is not None else ""
-                        locator = resolve_locator(href, nav_member) if href else 0
+                        locator, source_href, source_anchor = (
+                            resolve_target(href, nav_member) if href else (0, "", "")
+                        )
                         if locator and title:
-                            rows.append(EpubOutlineItem(locator, title, max(1, level)))
+                            rows.append(
+                                EpubOutlineItem(
+                                    locator,
+                                    title,
+                                    max(1, level),
+                                    source_href,
+                                    source_anchor,
+                                )
+                            )
                         for item in child:
                             if _local_name(item.tag) == "ol":
                                 walk_nav(item, level + 1)
@@ -815,9 +922,19 @@ def _epub_package_navigation(
                     )
                     title = _epub_element_text(label) if label is not None else ""
                     href = str(content.get("src") or "") if content is not None else ""
-                    locator = resolve_locator(href, ncx_member) if href else 0
+                    locator, source_href, source_anchor = (
+                        resolve_target(href, ncx_member) if href else (0, "", "")
+                    )
                     if locator and title:
-                        rows.append(EpubOutlineItem(locator, title, max(1, level)))
+                        rows.append(
+                            EpubOutlineItem(
+                                locator,
+                                title,
+                                max(1, level),
+                                source_href,
+                                source_anchor,
+                            )
+                        )
                     walk_ncx(point, level + 1)
 
             nav_map = next(
@@ -858,6 +975,67 @@ def extract_epub_spine(
             units.append(EpubSpineUnit(href=member, text=text, title=heading))
         outline = _epub_package_navigation(zf, filename, members)
     return tuple(units), tuple(outline)
+
+
+def normalize_epub_archive(data: bytes, filename: str) -> bytes:
+    """Return an EPUB archive that browser OCF readers can open directly.
+
+    The text extractor understands Finder-style packages with a top-level
+    directory and ``__MACOSX`` residue. Browser EPUB readers are stricter: they
+    expect ``META-INF/container.xml`` at the archive root. Repack only those
+    non-conforming archives so ordinary books keep their original bytes.
+    """
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as zf:
+            _validate_epub_archive(zf, filename)
+            infos = [info for info in zf.infolist() if not info.is_dir()]
+            useful = [info for info in infos if not _epub_is_packaging_residue(info.filename)]
+            has_residue = len(useful) != len(infos)
+            container = next(
+                (info.filename for info in useful if info.filename.endswith(_EPUB_CONTAINER_PATH)),
+                "",
+            )
+            prefix = container[: -len(_EPUB_CONTAINER_PATH)] if container else ""
+            if prefix and not all(info.filename.startswith(prefix) for info in useful):
+                # A package document buried among unrelated root files is not
+                # a wrapped book. Leave it for the extractor's fallback path.
+                prefix = ""
+            if not prefix and not has_residue:
+                return data
+
+            output = io.BytesIO()
+            with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as normalized:
+                mimetype_name = f"{prefix}mimetype"
+                mimetype_info = next(
+                    (info for info in useful if info.filename == mimetype_name), None
+                )
+                if mimetype_info is None:
+                    normalized.writestr(
+                        "mimetype",
+                        b"application/epub+zip",
+                        compress_type=zipfile.ZIP_STORED,
+                    )
+                else:
+                    normalized.writestr(
+                        "mimetype",
+                        zf.read(mimetype_info),
+                        compress_type=zipfile.ZIP_STORED,
+                    )
+
+                for info in useful:
+                    name = info.filename[len(prefix) :] if prefix else info.filename
+                    if not name or name == "mimetype":
+                        continue
+                    normalized.writestr(name, zf.read(info), compress_type=zipfile.ZIP_DEFLATED)
+            return output.getvalue()
+    except zipfile.BadZipFile as exc:
+        raise CorruptDocumentError(
+            f"{filename}: failed to open Office ZIP package ({exc})", filename=filename
+        ) from exc
+    except OSError as exc:
+        raise CorruptDocumentError(
+            f"{filename}: failed to normalize EPUB archive ({exc})", filename=filename
+        ) from exc
 
 
 def _extract_epub(data: bytes, filename: str) -> str:
@@ -1090,6 +1268,26 @@ def _collect_pptx_shape_text(shape, out: list[str]) -> None:
         out.append(text)
 
 
+def _embedded_images_for_document(filename: str, data: bytes) -> tuple[EmbeddedImage, ...]:
+    """Best-effort embedded-image harvest for the chat attachment path.
+
+    Re-parses the document after the text pass (the shared text API stays
+    text-only for its many callers). Failures never fail the message — the
+    text extraction result stands on its own.
+    """
+    ext = _ext(filename)
+    try:
+        if ext == ".docx":
+            return extract_docx_rich(data).collection.images
+        if ext == ".pptx":
+            return extract_pptx_rich(data).collection.images
+        if ext == ".pdf":
+            return extract_pdf_images(data).collection.images
+    except Exception:
+        logger.info("embedded image extraction failed for %s", filename, exc_info=True)
+    return ()
+
+
 def extract_documents_from_records(
     records: Iterable[dict],
 ) -> tuple[list[str], list[dict]]:
@@ -1112,6 +1310,12 @@ def extract_documents_from_records(
         stored under ``extracted_text`` so the chat UI can preview office
         documents without re-running the parser. Image / non-document
         records are returned unchanged.
+
+        Documents with embedded pictures additionally emit image-type
+        records (one per extracted picture, base64-filled, ``embedded``
+        flag set) immediately after the document's own record; callers
+        persist them so the multimodal pipeline forwards the pictures to
+        vision-capable models and the UI previews them inline.
     """
     doc_texts: list[str] = []
     updated: list[dict] = []
@@ -1119,6 +1323,8 @@ def extract_documents_from_records(
     total_bytes = 0
     total_chars = 0
     over_quota = False
+    embedded_images = 0
+    embedded_image_bytes = 0
 
     for raw in records:
         record = dict(raw)
@@ -1185,6 +1391,41 @@ def extract_documents_from_records(
             text = (
                 text[:remaining_budget]
                 + f"... (truncated, {len(text)} chars total; turn quota hit)"
+            )
+
+        # Harvest embedded pictures and emit them as image-type records right
+        # after the document, so vision models see what the text refers to and
+        # the UI previews them like any pasted screenshot.
+        doc_id = str(record.get("id") or "")
+        stem = filename[: -len(_ext(filename))] or filename
+        images = _embedded_images_for_document(filename, data)
+        emitted: list[EmbeddedImage] = []
+        for image in images:
+            if embedded_images >= MAX_EMBEDDED_IMAGES_PER_TURN:
+                break
+            if embedded_image_bytes + len(image.data) > MAX_EMBEDDED_IMAGE_BYTES_PER_TURN:
+                break
+            ext = f".{image.name.rsplit('.', 1)[-1]}" if "." in image.name else ".png"
+            embedded_images += 1
+            embedded_image_bytes += len(image.data)
+            emitted.append(image)
+            updated.append(
+                {
+                    "type": "image",
+                    "url": "",
+                    "base64": base64.b64encode(image.data).decode("ascii"),
+                    "filename": f"{stem}-图{image_index_from_name(image.name)}{ext}",
+                    "mime_type": image.mime_type,
+                    "id": f"{doc_id}-e{image_index_from_name(image.name):02d}" if doc_id else "",
+                    "embedded": True,
+                }
+            )
+        if images and len(emitted) < len(images):
+            text += f"\n[本文件还有 {len(images) - len(emitted)} 张图片因数量/大小上限未随消息提供]"
+        if emitted:
+            text += (
+                f"\n[本文件内嵌 {len(emitted)} 张图片，已作为图片附件随本条消息提供，"
+                "编号与本文件文本中的 [图片 N] 标记对应]"
             )
 
         total_chars += len(text)

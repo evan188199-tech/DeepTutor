@@ -34,6 +34,9 @@ export interface YouTubeSessionStatus {
   next_prefetch_at: string | null;
 }
 
+export type VideoMark = VideoLearningMark;
+export type SuggestedVideoMark = VideoMarkSuggestion;
+
 export interface TimedSegment extends TranscriptCue {
   locator: number;
 }
@@ -86,7 +89,7 @@ export interface TimedMediaMaterial {
 
 export type VideoMarkKind = "key_point" | "question" | "review";
 export type VideoMarkAuthor = "user" | "assistant";
-export type VideoMarkSource = "immersive" | "remote_phone";
+export type VideoMarkSource = "immersive";
 
 export interface VideoLearningMark {
   mark_id: string;
@@ -345,17 +348,29 @@ export async function saveVideoProgress(
   );
 }
 
+export async function listVideoMarks(
+  materialId: string,
+): Promise<VideoLearningMark[]> {
+  return unwrap(
+    await apiFetch(
+      apiUrl(
+        `/api/video-learning/materials/${encodeURIComponent(materialId)}/marks`,
+      ),
+      { cache: "no-store" },
+    ),
+  );
+}
+
 export async function createVideoMark(
   materialId: string,
   payload: {
     kind: VideoMarkKind;
     start_seconds: number;
-    end_seconds: number;
+    end_seconds?: number | null;
     start_locator?: number;
     end_locator?: number;
     quote?: string;
     note?: string;
-    author?: VideoMarkAuthor;
   },
 ): Promise<VideoLearningMark> {
   return unwrap(
@@ -405,7 +420,7 @@ export async function deleteVideoMark(
 
 export async function suggestVideoMarks(
   materialId: string,
-  timeSeconds: number,
+  timeSeconds = 0,
 ): Promise<VideoMarkSuggestion[]> {
   const payload = await unwrap<{ suggestions: VideoMarkSuggestion[] }>(
     await apiFetch(

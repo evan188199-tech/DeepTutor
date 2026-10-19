@@ -1,7 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { UsageFooter } from "./UsageFooter";
+import { cumulativeMessageUsage, messageUsage } from "./usage-summary";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   BookMarked,
   BookOpen,
@@ -11,7 +21,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardList,
-  Coins,
   Copy,
   AlertCircle,
   Database,
@@ -21,6 +30,7 @@ import {
   RefreshCcw,
   Square,
   UserRound,
+  UsersRound,
   Volume2,
   X,
   Trash2,
@@ -29,19 +39,25 @@ import {
 import { useTranslation } from "react-i18next";
 import type { SelectedHistorySession } from "@/components/chat/HistorySessionPicker";
 import type { SelectedQuestionEntry } from "@/components/chat/QuestionBankPicker";
+import { ActivityFold, FoldCaret } from "@/components/activity";
 import AssistantResponse from "@/components/common/AssistantResponse";
 import {
   InlineFileCardProvider,
   mergeGeneratedFiles,
 } from "@/components/common/InlineFileCard";
-import Tooltip from "@/components/common/Tooltip";
+import Tooltip from "@/shared/ui/Tooltip";
 import type {
   MessageAttachment,
   MessageRequestSnapshot,
 } from "@/features/chat/ChatStateAdapter";
 import { apiFetch, apiUrl } from "@/lib/api";
+import { notify } from "@/lib/notifications";
 import { docIconFor } from "@/lib/doc-attachments";
 import { useVoiceAutoplay } from "@/hooks/useVoiceAutoplay";
+import {
+  SPEECH_PLAYBACK_FAILURE_MESSAGE,
+  SPEECH_TIMEOUT_MESSAGE,
+} from "@/lib/voice-settings";
 import { extractMathAnimatorResult } from "@/lib/math-animator-types";
 import {
   extractQuizQuestions,
@@ -54,6 +70,7 @@ import { hasVisibleMarkdownContent } from "@/lib/markdown-display";
 import type { SelectedBookReference } from "@/lib/book-references";
 import { buildVisiblePath, type SiblingInfo } from "@/lib/message-branches";
 import { turnAnchorKey } from "@/lib/chat-outline";
+import { readingPassageHref } from "@/lib/reading-citations";
 import { shouldSubmitOnEnter } from "@/lib/composer-keyboard";
 import { useImeComposing } from "@/lib/use-ime-composing";
 import type { SpaceMemoryFile } from "@/lib/space-items";
@@ -62,21 +79,21 @@ import {
   extractAskUserPayload,
   extractMessageSegments,
   leadingTraceEvents,
+  type MessageSegment,
 } from "@/components/chat/home/AskUserOptions";
-import { MasteryQuestionCard } from "@/components/chat/home/MasteryQuestionCard";
 import {
+  collectMasteryAnswerRejections,
   collectMasteryGrades,
   collectMasterySkips,
   extractMasteryQuestion,
   type MasteryGradeResult,
+  type MasteryAnswerRejection,
   type MasteryQuestion,
 } from "@/lib/mastery-question";
 import { SetupCredentialCard } from "@/components/chat/home/SetupCredentialCard";
 import { extractSetupCredential } from "@/lib/setup-signals";
 import { PartnerDraftCard } from "@/components/chat/home/PartnerDraftCard";
 import { extractPartnerDraft } from "@/lib/partner-draft";
-import { CourseHandoffCards } from "@/components/chat/home/CourseHandoffCard";
-import { MasteryHandoffCards } from "@/components/chat/home/MasteryHandoffCard";
 import {
   extractCourseHandoffs,
   stripLeakedHandoffJson,
@@ -88,9 +105,13 @@ import ContextReferenceTree, {
 import {
   AssistantActivity,
   NestedTraceFlow,
+  TraceFlow,
 } from "@/features/chat/trace/TracePresentation";
+import { hasSettledFinalRound } from "@/features/chat/trace/selectors";
 import type { MessageTraceMetadata } from "@/features/chat/trace/memory";
+import { supportsSubmissionReplacement, type OrphanedFailedTurn } from "@/lib/session-api";
 import { agentGlyph } from "@/components/agents/agent-icons";
+import { useConsultationReference } from "@/hooks/useConsultationReference";
 import { useConnectedAgentKinds } from "@/hooks/useConnectedAgentKinds";
 import {
   authoritativeResearchReport,
@@ -100,6 +121,21 @@ import {
 
 const MathAnimatorViewer = dynamic(
   () => import("@/components/math-animator/MathAnimatorViewer"),
+  { ssr: false },
+);
+const MasteryQuestionCard = dynamic(
+  () => import("@/components/chat/home/MasteryQuestionCard"), { ssr: false },
+);
+const MasterySourcePresentation = dynamic(
+  () => import("@/components/chat/home/MasterySourcePresentation").then(module => module.MasterySourcePresentation),
+  { ssr: false },
+);
+const CourseHandoffCards = dynamic(
+  () => import("@/components/chat/home/CourseHandoffCard").then(module => module.CourseHandoffCards),
+  { ssr: false },
+);
+const MasteryHandoffCards = dynamic(
+  () => import("@/components/chat/home/MasteryHandoffCard").then(module => module.MasteryHandoffCards),
   { ssr: false },
 );
 const QuizViewer = dynamic(() => import("@/components/quiz/QuizViewer"), {
@@ -115,6 +151,7 @@ const VisualizationViewer = dynamic(
   { ssr: false },
 );
 
+
 interface ChatMessageItem {
   id?: number;
   role: "user" | "assistant" | "system";
@@ -125,6 +162,11 @@ interface ChatMessageItem {
   attachments?: MessageAttachment[];
   requestSnapshot?: MessageRequestSnapshot;
   parentMessageId?: number | null;
+  /** The server never accepted this submission (#1594) — rendered as an
+   *  unsent message, not an ordinary sent one. */
+  failedSubmission?: boolean;
+  failedSubmissionNeedsReview?: boolean;
+  orphanedFailedTurn?: OrphanedFailedTurn;
 }
 
 interface NotebookReferenceGroup {
@@ -153,6 +195,283 @@ const MODE_BADGE_LABELS: Record<string, string> = {
 // A capability with no entry is title-cased rather than printed raw: an
 // unlisted mode used to surface its internal id ("immersive_reading") in the
 // conversation, which reads as a bug to everyone who sees it.
+/**
+ * What a run of working-out actually contains, for the memo below.
+ *
+ * Prose is identified by its length rather than its text because a streamed
+ * segment only ever grows; a run of steps by how many events it holds.
+ *
+ * ``settled`` says a turn has moved on to writing its answer, and then only
+ * the shape matters. The region a turn is working in stays open in the event
+ * stream and keeps absorbing everything that arrives, so a finished run of
+ * steps went on counting the answer's own deltas — 3300 events for a trace
+ * drawing two rows — and reported itself as changed on every one of them.
+ * Nothing below the answer can alter the working-out above it: a new round
+ * would take the answer back into the process, which moves the shape.
+ */
+/**
+ * The width of an ActivityRow's mark column: the 15px dot cell, the 10px gap
+ * after it, and the 2px the stack insets itself by. Pulling a row left by
+ * this lands its text on the same edge as the prose around it.
+ */
+const ROW_GUTTER = 27;
+
+function processContentKey(
+  segments: MessageSegment[],
+  settled: boolean,
+): string {
+  return segments
+    .map((seg) =>
+      seg.kind === "ask_user"
+        ? `q${seg.key}:${JSON.stringify(seg.data)}`
+        : settled
+          ? seg.key
+          : seg.kind === "text"
+            ? `t${seg.key}:${seg.text.length}`
+            : seg.kind === "trace"
+              ? `r${seg.key}:${seg.events.length}`
+              : seg.key,
+    )
+    .join("|");
+}
+
+/**
+ * Prose and the steps it introduced, in the order they were written.
+ *
+ * Spacing is owned here rather than left to each piece. Markdown carries a
+ * bottom margin and the trace rows carried only a top one, so a row sat 24px
+ * below the sentence that introduced it and flush against the one that
+ * followed — reading as a heading for the next paragraph instead of as the
+ * step between them. Both margins are stripped and one gap governs the whole
+ * column, so the rhythm is even whichever way you read it.
+ *
+ * Alignment is owned here too, for the same reason. A trace row carries its
+ * own mark column, so its text started {@link ROW_GUTTER}px right of the
+ * prose above it and the column had four left edges inside 42px — the rule,
+ * the prose, the dots, the row text. Read down it, every other line stepped
+ * sideways. The rows are pulled back by exactly that gutter instead, which
+ * leaves two edges: one content edge that prose and steps share, and the
+ * dots hanging in the margin beside it, which is what a bullet gutter is.
+ *
+ * Memoized on what it holds rather than on the props it is handed.
+ * ``messageSegments`` is rebuilt from scratch on every streamed delta, so the
+ * working-out — which stops changing the moment a turn starts writing its
+ * answer — arrived as a brand-new element tree on every frame of that answer.
+ * React cannot skip a subtree whose elements it has never seen, so the whole
+ * trace re-rendered for the answer's full length: profiled over one 35s turn,
+ * 2905 renders costing 10.3s, none of which changed a pixel.
+ *
+ * ``events`` is deliberately left out of the comparison. It is read only to
+ * verify reading-material locators, and anything that could verify one is a
+ * tool call — which lands in a run of steps and moves the key on its own.
+ */
+const ProcessBody = memo(
+  function ProcessBody({
+    segments,
+    events,
+    language,
+    isStreaming,
+    readingMaterialId,
+    readingMaterialRevision,
+  }: {
+    segments: MessageSegment[];
+    events: StreamEvent[];
+    /** The turn has moved on to its answer, so this run is finished. */
+    settled: boolean;
+    language?: string;
+    isStreaming?: boolean;
+    readingMaterialId?: string;
+    readingMaterialRevision?: number;
+  }) {
+    return (
+      <div
+        className="flex flex-col gap-3"
+        // The padding is the content edge — where prose starts and where a
+        // row's text is pulled back to. Wide enough to hold the dots.
+        style={{ paddingLeft: ROW_GUTTER }}
+      >
+        {segments.map((seg) =>
+          seg.kind === "text" ? (
+            <div key={seg.key} className="[&_.md-renderer>*:last-child]:mb-0">
+              <AssistantResponse
+                content={seg.text}
+                language={language}
+                isStreaming={isStreaming}
+                readingMaterialId={readingMaterialId}
+                readingMaterialRevision={readingMaterialRevision}
+                events={events}
+              />
+            </div>
+          ) : seg.kind === "trace" ? (
+            <div
+              key={seg.key}
+              className="[&>div]:mb-0"
+              style={{ marginLeft: -ROW_GUTTER }}
+            >
+              <TraceFlow events={seg.events} isStreaming={isStreaming} />
+            </div>
+          ) : seg.kind === "ask_user" && seg.data.resolved ? (
+            <AskUserOptions
+              key={seg.key}
+              data={seg.data}
+              onSubmit={() => false}
+            />
+          ) : null,
+        )}
+      </div>
+    );
+  },
+  (a, b) =>
+    a.language === b.language &&
+    a.isStreaming === b.isStreaming &&
+    a.settled === b.settled &&
+    a.readingMaterialId === b.readingMaterialId &&
+    a.readingMaterialRevision === b.readingMaterialRevision &&
+    processContentKey(a.segments, a.settled) ===
+      processContentKey(b.segments, b.settled),
+);
+
+/**
+ * A run of working-out that folds itself away.
+ *
+ * Used for the runs that follow a card — the leading run rides in the
+ * message's activity header instead, which is already a disclosure and
+ * already pinned at the top, so the common turn shows one line of chrome
+ * rather than two.
+ */
+function ProcessFold({
+  segments,
+  settled,
+  children,
+}: {
+  segments: MessageSegment[];
+  /** The turn has moved on: fold by default, and say what is inside. */
+  settled: boolean;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation();
+  const [userOpen, setUserOpen] = useState<boolean | null>(null);
+  const open = userOpen ?? !settled;
+  const toolCalls = countProcessToolCalls(segments);
+
+  return (
+    <div className="mb-3">
+      {/* Same shape as the activity header this fold echoes: the label first,
+          the caret after it. The header has an orb holding the left column,
+          so a leading caret here would make the two controls read as two
+          different kinds of thing. */}
+      <button
+        type="button"
+        onClick={() => setUserOpen(!open)}
+        aria-expanded={open}
+        className="group/act flex items-center gap-2 text-left text-[12px] font-medium text-[var(--muted-foreground)]/55 transition-colors hover:text-[var(--foreground)]"
+      >
+        {toolCalls > 0
+          ? t("{{count}} tool calls", { count: toolCalls })
+          : t("Working notes")}
+        <FoldCaret open={open} />
+      </button>
+      <ActivityFold open={open}>
+        <div className="pt-1">{children}</div>
+      </ActivityFold>
+    </div>
+  );
+}
+
+/**
+ * One row of the assistant message: a run of working-out, a card, or answer
+ * prose. Cards and the answer stand on their own; a process run is what the
+ * turn did before either of them and folds away once the turn has settled.
+ */
+type MessageBlock =
+  | { kind: "process"; key: string; segments: MessageSegment[] }
+  | { kind: "card"; key: string; segment: MessageSegment }
+  | { kind: "answer"; key: string; segment: MessageSegment };
+
+/**
+ * Split a message into its blocks.
+ *
+ * A mastery question ends its turn, so the prose introducing it is teaching,
+ * not commentary awaiting a later answer. Keep learner-facing text since the
+ * previous card outside the fold even when tool work separates its parts.
+ * Reasoning and tool payloads are trace segments and still fold normally.
+ * Answered clarifications belong to the same process as the
+ * work before and after them; only pending cards stand outside the fold.
+ */
+function buildMessageBlocks(
+  segments: MessageSegment[],
+  answerStart: number,
+  isMastery: boolean,
+): MessageBlock[] {
+  const teaching = new Set<number>();
+  const preserveTeachingBefore = (index: number) => {
+    let before = index - 1;
+    while (before >= 0 && segments[before].kind === "trace") before -= 1;
+    // Later tool work cannot demote an already-written lesson into working
+    // notes in a Mastery turn. Ordinary chat preserves only the immediate
+    // introduction to its question, keeping earlier exploration folded.
+    while (before >= 0) {
+      const preceding = segments[before];
+      if (preceding.kind === "text") teaching.add(before);
+      else if (!isMastery || preceding.kind !== "trace") break;
+      before -= 1;
+    }
+  };
+  segments.forEach((segment, index) => {
+    if (segment.kind === "mastery_question") preserveTeachingBefore(index);
+  });
+  // Keep Mastery teaching/feedback visible before an assessment arrives and
+  // when a turn ends with bookkeeping without posing an assessment at all.
+  // Explicitly retracted prose is already a trace, not a text segment.
+  if (isMastery) preserveTeachingBefore(segments.length);
+  const blocks: MessageBlock[] = [];
+  let run: MessageSegment[] = [];
+  const flush = () => {
+    if (!run.length) return;
+    blocks.push({ kind: "process", key: `p-${run[0].key}`, segments: run });
+    run = [];
+  };
+  segments.slice(0, answerStart).forEach((segment, index) => {
+    if (
+      (segment.kind === "ask_user" && !segment.data.resolved) ||
+      segment.kind === "mastery_question"
+    ) {
+      flush();
+      blocks.push({ kind: "card", key: segment.key, segment });
+      return;
+    }
+    if (teaching.has(index)) {
+      flush();
+      blocks.push({ kind: "answer", key: segment.key, segment });
+      return;
+    }
+    run.push(segment);
+  });
+  flush();
+  segments.slice(answerStart).forEach((segment) => {
+    blocks.push({ kind: "answer", key: segment.key, segment });
+  });
+  return blocks;
+}
+
+/**
+ * How many steps a run of working-out took, for the line that names it.
+ *
+ * Steps only. Counting the paragraphs of commentary alongside them read as a
+ * measure of how much was said rather than how much was done, which is the
+ * thing a reader is deciding whether to open.
+ */
+function countProcessToolCalls(segments: MessageSegment[]): number {
+  let toolCalls = 0;
+  for (const segment of segments) {
+    if (segment.kind !== "trace") continue;
+    for (const event of segment.events) {
+      if (event.type === "tool_call") toolCalls += 1;
+    }
+  }
+  return toolCalls;
+}
+
 export function getModeBadgeLabel(capability?: string | null): string {
   if (!capability) return MODE_BADGE_LABELS.chat;
   const known = MODE_BADGE_LABELS[capability];
@@ -350,10 +669,12 @@ export const AssistantMessage = memo(function AssistantMessage({
   onSubmitUserReply,
   onAnswerMasteryQuestion,
   onSkipMasteryQuestion,
+  onChallengeMasteryQuestion,
   researchRequestSnapshot,
   onTraceToggle,
   masteryGrades,
   masterySkips,
+  masteryAnswerRejections,
 }: {
   msg: {
     id?: number;
@@ -372,11 +693,14 @@ export const AssistantMessage = memo(function AssistantMessage({
   /** Every question the learner dropped, by id — collected the same way and
    *  for the same reason: the skip lands on a later turn than the card. */
   masterySkips?: Set<string>;
+  masteryAnswerRejections?: Map<string, MasteryAnswerRejection>;
   outlineStatus?: "editing" | "researching" | "done" | "failed";
   sessionId?: string | null;
   language?: string;
   researchRequestSnapshot?: MessageRequestSnapshot | null;
-  onTraceToggle?: (open: boolean) => void;
+  /** Notified when a persisted trace is opened or collapsed. Takes the id so
+   *  the list can hand one callback to every row — see ``handleTraceToggle``. */
+  onTraceToggle?: (messageId: number, open: boolean) => void;
   onConfirmOutline?: (
     outline: Array<{ title: string; overview: string }>,
     topic: string,
@@ -408,6 +732,7 @@ export const AssistantMessage = memo(function AssistantMessage({
   onAnswerMasteryQuestion?: (answer: {
     questionId: string;
     text: string;
+    answers?: Array<{ questionId: string; text: string }>;
   }) => void | boolean | Promise<void | boolean>;
   /** Drop a question the learner does not want to answer. Same turn-starting
    *  shape as answering it, because the engine holds one open question per
@@ -415,7 +740,9 @@ export const AssistantMessage = memo(function AssistantMessage({
   onSkipMasteryQuestion?: (
     questionId: string,
   ) => void | boolean | Promise<void | boolean>;
+  onChallengeMasteryQuestion?: (questionId: string) => void | boolean | Promise<void | boolean>;
 }) {
+  const { t } = useTranslation();
   const events = useMemo(() => msg.events ?? [], [msg.events]);
   const readingMaterialId = researchRequestSnapshot?.readingMaterialId;
   const readingMaterialRevision =
@@ -511,26 +838,31 @@ export const AssistantMessage = memo(function AssistantMessage({
         <MasteryQuestionCard
           question={question}
           grade={grade}
-          answered={Boolean(grade)}
+          answered={Boolean(grade) && grade?.complete !== false && grade?.final !== false}
           skipped={masterySkips?.has(question.questionId) ?? false}
           submittedAnswer={grade?.learnerAnswer ?? ""}
-          onSubmit={({ text }) =>
+          rejectionKey={!grade || grade.complete === false || grade.final === false ? masteryAnswerRejections?.get(question.questionId)?.retryKey : undefined}
+          onSubmit={({ text, answers }) =>
             onAnswerMasteryQuestion
               ? onAnswerMasteryQuestion({
                   questionId: question.questionId,
                   text: String(text ?? ""),
+                  ...(question.questionType === "group" ? { answers } : {}),
                 })
               : false
           }
           onSkip={onSkipMasteryQuestion}
+          onChallenge={onChallengeMasteryQuestion}
         />
       );
     },
     [
       masteryGrades,
       masterySkips,
+      masteryAnswerRejections,
       onAnswerMasteryQuestion,
       onSkipMasteryQuestion,
+  onChallengeMasteryQuestion,
     ],
   );
   // Set by ``request_credential`` when a configuration step needs a secret the
@@ -574,41 +906,132 @@ export const AssistantMessage = memo(function AssistantMessage({
     [courseHandoffs.length, isStreaming, msg.content],
   );
 
-  // Interleaved segments for the default chat surface — text emitted
-  // before the card renders above it; text emitted by the round that
-  // follows renders below. Only walked when this message will actually
-  // render through the default branch (the research / quiz / animator /
-  // visualize branches have their own layout and pin the card elsewhere).
-  const useInlineCardSegments =
+  // Interleaved segments for the default chat surface: the message is laid
+  // out in the order it was written — what DeepTutor said it was about to do,
+  // the work it then did, what it found, and so on down to the closing answer.
+  // Only walked when this message will actually render through the default
+  // branch (the research / quiz / animator / visualize branches have their own
+  // layout and pin their cards elsewhere).
+  const useInlineSegments =
     !outlinePreview &&
     !mathAnimatorResult &&
     !visualizeResult &&
     !(quizQuestions && quizQuestions.length > 0);
   const messageSegments = useMemo(
     () =>
-      useInlineCardSegments
+      useInlineSegments
         ? extractMessageSegments(msg.events, msg.content, {
             streaming: isStreaming,
           })
         : [],
-    [useInlineCardSegments, msg.events, msg.content, isStreaming],
+    [useInlineSegments, msg.events, msg.content, isStreaming],
   );
   // Either card kind: a clarifying ask_user, or a posed mastery question.
-  // Both interleave with the prose, and a message that has one lays itself
-  // out from the segments rather than from a single body string.
   const hasInlineCards =
-    useInlineCardSegments &&
+    useInlineSegments &&
     messageSegments.some(
       (seg) => seg.kind === "ask_user" || seg.kind === "mastery_question",
     );
-  // The activity block is pinned to the top of the message, so it can only
-  // show the rounds that ran BEFORE the first card. What the resumed rounds
-  // reason about renders below the card they answer, in stream order.
+  // Lay the body out from the segments whenever there is more to place than
+  // one run of prose. A message with nothing but text gets the plain body
+  // branch below, which is the same thing with less machinery.
+  const useSegmentLayout =
+    useInlineSegments && messageSegments.some((seg) => seg.kind !== "text");
+  // Every trace row now renders inline, where the work happened. The header
+  // block keeps its status line and nothing else — leaving rows up there too
+  // would show each step twice.
   const headerTraceEvents = useMemo(
     () =>
-      hasInlineCards ? leadingTraceEvents(events, messageSegments) : undefined,
-    [hasInlineCards, messageSegments, events],
+      useSegmentLayout ? leadingTraceEvents(events, messageSegments) : undefined,
+    [useSegmentLayout, messageSegments, events],
   );
+
+  // Where the working-out stops and the answer starts.
+  //
+  // Everything a turn writes is worth watching while it works, and almost
+  // none of it is worth re-reading afterwards. So the two are separate
+  // layers: the process stays open and streams live, then folds itself into
+  // one line the moment the turn settles into its closing answer.
+  //
+  // The boundary is the trailing run of prose — the text after the last step —
+  // and it is structural, not timed: whatever is being written right now is
+  // always placed as the answer, from its first character.
+  // Teaching before a mastery question is also answer prose; the block
+  // builder preserves it separately because that card ends the turn.
+  //
+  // Waiting for the terminal round before promoting it is what an earlier cut
+  // did, and it meant the closing answer streamed INSIDE the collapsible
+  // process and jumped out of it once finished. That leaks a question the
+  // reader should never have been asked to hold — "is this the answer yet?" —
+  // and it is a question we cannot answer at that point anyway: a round only
+  // reveals whether it called tools after its prose is complete.
+  //
+  // Placing it optimistically inverts which case pays. Commentary is demoted
+  // into the process when its round turns out to have called a tool, and that
+  // costs one 14px slide at the exact moment the tool row appears below it —
+  // motion that reads as the two being grouped. The answer, which is the text
+  // the reader actually came for, never moves at all.
+  const answerStart = useMemo(() => {
+    let idx = messageSegments.length;
+    while (idx > 0 && messageSegments[idx - 1].kind === "text") idx -= 1;
+    return idx;
+  }, [messageSegments]);
+  // A turn that has started writing its answer is no longer changing the
+  // working-out above it, which is what lets that whole subtree stop
+  // re-deriving itself on every delta. Structural, like the boundary: if a new
+  // round starts, the answer goes back into the process and this goes false.
+  const processSettled = answerStart < messageSegments.length;
+  // Separately again: whether the working-out folds itself away. This is the
+  // one thing that does need the terminal-round signal, since it is the claim
+  // that there is no more work coming at all.
+  const settledIntoAnswer = !isStreaming || hasSettledFinalRound(events);
+  // Pending questions stay outside the disclosure so they remain answerable.
+  // Once answered, a clarification joins the surrounding process so resumed
+  // work continues under the original activity header.
+  const messageBlocks = useMemo(
+    () => buildMessageBlocks(messageSegments, answerStart, msg.capability === "mastery_path"),
+    [messageSegments, answerStart, msg.capability],
+  );
+  // The leading run rides in the activity header, which is already pinned at
+  // the top and already is a disclosure — giving it the process keeps the
+  // message to ONE line of chrome instead of a status line plus a fold.
+  // Only the segment layout hands its process to the header; a message with
+  // nothing but prose renders through the plain body branch below, which would
+  // otherwise draw the same opening sentence a second time.
+  const headerProcess =
+    useSegmentLayout && messageBlocks[0]?.kind === "process"
+      ? messageBlocks[0]
+      : null;
+  const bodyBlocks = headerProcess ? messageBlocks.slice(1) : messageBlocks;
+
+  const renderSegments = useCallback(
+    (segments: MessageSegment[]) => (
+      <ProcessBody
+        segments={segments}
+        events={events}
+        settled={processSettled}
+        language={language}
+        isStreaming={isStreaming}
+        readingMaterialId={readingMaterialId}
+        readingMaterialRevision={readingMaterialRevision}
+      />
+    ),
+    [
+      language,
+      isStreaming,
+      readingMaterialId,
+      readingMaterialRevision,
+      events,
+      processSettled,
+    ],
+  );
+  const headerProcessSummary = useMemo(() => {
+    if (!headerProcess) return undefined;
+    const toolCalls = countProcessToolCalls(headerProcess.segments);
+    return toolCalls > 0
+      ? t("{{count}} tool calls", { count: toolCalls })
+      : undefined;
+  }, [headerProcess, t]);
 
   const researchInProgress =
     outlineStatus === "researching" ||
@@ -643,9 +1066,16 @@ export const AssistantMessage = memo(function AssistantMessage({
         className="mb-3"
         onTraceToggle={
           msg.id != null && msg.trace?.turn_id
-            ? (open) => onTraceToggle?.(open)
+            ? (open) => onTraceToggle?.(msg.id as number, open)
             : undefined
         }
+        // The turn's working-out, folded behind this same header. One line of
+        // chrome does both jobs: it says what is happening while the turn runs
+        // and, once it settles, what it did on the way to the answer.
+        processContent={
+          headerProcess ? renderSegments(headerProcess.segments) : undefined
+        }
+        processSummary={headerProcessSummary}
       />
       {outlinePreview && outlinePreview.sub_topics.length > 0 ? (
         <>
@@ -721,39 +1151,43 @@ export const AssistantMessage = memo(function AssistantMessage({
             language={language}
           />
         </>
-      ) : hasInlineCards ? (
-        // Default chat surface with one or more cards: render text and
-        // cards in the exact order they were streamed, so the narration
-        // that introduced a card sits above it and whatever the next round
-        // said sits below.
-        messageSegments.map((seg) =>
-          seg.kind === "text" ? (
+      ) : useSegmentLayout ? (
+        // Default chat surface. The working-out (prose interleaved with the
+        // steps it introduced) is one layer, folded once the turn settles; the
+        // closing answer is the other and always stands plain. Pending cards
+        // stay outside the process until the user answers them.
+        bodyBlocks.map((block) =>
+          block.kind === "process" ? (
+            <ProcessFold
+              key={block.key}
+              segments={block.segments}
+              settled={settledIntoAnswer}
+            >
+              {renderSegments(block.segments)}
+            </ProcessFold>
+          ) : block.kind === "card" ? (
+            block.segment.kind === "mastery_question" ? (
+              <div key={block.key}>
+                {renderMasteryCard(block.segment.question)}
+              </div>
+            ) : block.segment.kind === "ask_user" ? (
+              <AskUserOptions
+                key={block.key}
+                data={block.segment.data}
+                onSubmit={submitReply}
+              />
+            ) : null
+          ) : block.segment.kind === "text" ? (
             <AssistantResponse
-              key={seg.key}
-              content={seg.text}
+              key={block.key}
+              content={block.segment.text}
               language={language}
               isStreaming={isStreaming}
               readingMaterialId={readingMaterialId}
               readingMaterialRevision={readingMaterialRevision}
               events={events}
             />
-          ) : seg.kind === "trace" ? (
-            // What DeepTutor worked out after the user answered — shown
-            // where they are looking, not back up in the header block.
-            <NestedTraceFlow
-              key={seg.key}
-              events={seg.events}
-              isStreaming={isStreaming}
-            />
-          ) : seg.kind === "mastery_question" ? (
-            <div key={seg.key}>{renderMasteryCard(seg.question)}</div>
-          ) : (
-            <AskUserOptions
-              key={seg.key}
-              data={seg.data}
-              onSubmit={submitReply}
-            />
-          ),
+          ) : null,
         )
       ) : (
         <AssistantResponse
@@ -765,6 +1199,11 @@ export const AssistantMessage = memo(function AssistantMessage({
           events={events}
         />
       )}
+      {events.some(event => event.type === "sources" &&
+        Array.isArray(event.metadata.sources) && event.metadata.sources.some(source =>
+          source && typeof source === "object" &&
+          (source.presentation === "teaching" || source.presentation === "reveal"))) &&
+        <MasterySourcePresentation events={events} />}
       {/* Non-default branches (quiz, math animator, visualize) keep the
           card below the body. The default branch inlines it via
           ``messageSegments``; the research branch renders its own card
@@ -785,47 +1224,13 @@ export const AssistantMessage = memo(function AssistantMessage({
       {partnerDraft ? <PartnerDraftCard data={partnerDraft} /> : null}
       {/* Course Study's hand-offs sit last: they are what to do *after* reading
           the answer, so they belong below it rather than competing with it. */}
-      <CourseHandoffCards handoffs={courseHandoffs} />
-      <MasteryHandoffCards handoffs={masteryHandoffs} />
+      {courseHandoffs.length > 0 && <CourseHandoffCards handoffs={courseHandoffs} />}
+      {masteryHandoffs.length > 0 && <MasteryHandoffCards handoffs={masteryHandoffs} />}
     </>
   );
 });
 
 AssistantMessage.displayName = "AssistantMessage";
-
-function CostFooter({
-  cost,
-  tokens,
-  calls,
-}: {
-  cost: number;
-  tokens: number;
-  calls: number;
-}) {
-  const { t } = useTranslation();
-  const formatCost = (usd: number) => {
-    if (usd < 0.01) return `$${usd.toFixed(4)}`;
-    return `$${usd.toFixed(2)}`;
-  };
-  const formatTokens = (n: number) => {
-    if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
-    return String(n);
-  };
-  return (
-    <div className="flex items-center gap-1.5 text-[11px] text-[var(--muted-foreground)]/70">
-      <Coins size={11} strokeWidth={1.5} className="shrink-0" />
-      <span>{formatCost(cost)}</span>
-      <span className="opacity-50">·</span>
-      <span>
-        {formatTokens(tokens)} {t("tokens")}
-      </span>
-      <span className="opacity-50">·</span>
-      <span>
-        {calls} {t("calls")}
-      </span>
-    </div>
-  );
-}
 
 // Claude-style icon-only message action: a quiet 15px glyph with the label
 // in an instant tooltip, brightening on hover.
@@ -932,10 +1337,24 @@ export function CopyActionButton({
   );
 }
 
-// Speaker button: synthesizes the reply via the configured TTS provider and
-// plays it. On the first manual play of a session it offers to auto-play the
-// rest; `autoPlayFresh` triggers playback automatically for a reply that just
-// finished generating when auto-play is on.
+// Speaker button: synthesizes this one reply and plays it. Auto-play of later
+// replies is a Settings preference (`autoPlayFresh`), not a first-click prompt.
+let activePlayback: { owner: object; stop: () => void } | null = null;
+
+async function ttsErrorMessage(resp: Response): Promise<string> {
+  try {
+    const body = (await resp.json()) as { detail?: unknown };
+    if (typeof body.detail === "string" && body.detail.trim()) return body.detail;
+    if (Array.isArray(body.detail)) {
+      const first = body.detail[0] as { msg?: string } | undefined;
+      if (typeof first?.msg === "string" && first.msg.trim()) return first.msg;
+    }
+  } catch {
+    /* non-JSON error body */
+  }
+  return "";
+}
+
 export function PlayAudioButton({
   content,
   conversationKey,
@@ -946,19 +1365,18 @@ export function PlayAudioButton({
   autoPlayFresh: boolean;
 }) {
   const { t } = useTranslation();
-  const {
-    autoplayEnabled,
-    enableForSession,
-    markPrompted,
-    shouldPromptOnFirstPlay,
-  } = useVoiceAutoplay(conversationKey);
+  const { autoplayEnabled } = useVoiceAutoplay(conversationKey);
   const [state, setState] = useState<"idle" | "loading" | "playing">("idle");
-  const [showPrompt, setShowPrompt] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const urlRef = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const genRef = useRef(0);
   const autoPlayedRef = useRef(false);
+  const playbackOwnerRef = useRef<object>({});
 
   const cleanup = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
@@ -969,57 +1387,87 @@ export function PlayAudioButton({
     }
   }, []);
 
+  const stop = useCallback(() => {
+    genRef.current += 1;
+    cleanup();
+    setState("idle");
+    if (activePlayback?.owner === playbackOwnerRef.current) activePlayback = null;
+  }, [cleanup]);
+
   const play = useCallback(async () => {
+    activePlayback?.stop();
+    const gen = ++genRef.current;
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    activePlayback = { owner: playbackOwnerRef.current, stop };
     setState("loading");
     try {
       const resp = await apiFetch(apiUrl("/api/voice/tts"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: content }),
+        signal: ac.signal,
       });
+      if (gen !== genRef.current) return;
       if (!resp.ok) {
-        cleanup();
-        setState("idle");
+        const detail = await ttsErrorMessage(resp);
+        if (gen !== genRef.current) return;
+        notify(
+          t(detail || (resp.status === 504 ? SPEECH_TIMEOUT_MESSAGE : SPEECH_PLAYBACK_FAILURE_MESSAGE)),
+          { tone: "error" },
+        );
+        stop();
         return;
       }
       const blob = await resp.blob();
-      cleanup();
+      if (gen !== genRef.current) return;
+      if (urlRef.current) {
+        URL.revokeObjectURL(urlRef.current);
+        urlRef.current = null;
+      }
       const url = URL.createObjectURL(blob);
       urlRef.current = url;
       const audio = new Audio(url);
       audioRef.current = audio;
       audio.onended = () => {
+        if (gen !== genRef.current) return;
         setState("idle");
         cleanup();
+        if (activePlayback?.owner === playbackOwnerRef.current) activePlayback = null;
       };
       audio.onerror = () => {
-        setState("idle");
-        cleanup();
+        if (gen !== genRef.current) return;
+        notify(t(SPEECH_PLAYBACK_FAILURE_MESSAGE), {
+          tone: "error",
+        });
+        stop();
       };
       await audio.play();
+      if (gen !== genRef.current) {
+        audio.pause();
+        return;
+      }
       setState("playing");
-    } catch {
-      cleanup();
-      setState("idle");
+    } catch (err) {
+      if (gen !== genRef.current) return;
+      if (err instanceof Error && err.name === "AbortError") return;
+      notify(t(SPEECH_PLAYBACK_FAILURE_MESSAGE), {
+        tone: "error",
+      });
+      stop();
     }
-  }, [cleanup, content]);
+  }, [cleanup, content, stop, t]);
 
   const handleClick = useCallback(() => {
     if (state === "playing" || state === "loading") {
-      cleanup();
-      setState("idle");
+      stop();
       return;
     }
-    const willPrompt = shouldPromptOnFirstPlay();
     void play();
-    if (willPrompt) {
-      markPrompted();
-      setShowPrompt(true);
-    }
-  }, [cleanup, markPrompted, play, shouldPromptOnFirstPlay, state]);
+  }, [play, state, stop]);
 
-  // Auto-play a freshly-generated reply when enabled, exactly once. Deferred
-  // to a timer so synthesis (which sets state) starts off the effect body.
+  // Auto-play a freshly-generated reply when Settings auto-play is on.
   useEffect(() => {
     if (!autoPlayFresh || !autoplayEnabled) return;
     if (autoPlayedRef.current) return;
@@ -1029,7 +1477,11 @@ export function PlayAudioButton({
     return () => window.clearTimeout(id);
   }, [autoPlayFresh, autoplayEnabled, content, play]);
 
-  useEffect(() => cleanup, [cleanup]);
+  useEffect(() => () => {
+    genRef.current += 1;
+    cleanup();
+    if (activePlayback?.owner === playbackOwnerRef.current) activePlayback = null;
+  }, [cleanup]);
 
   return (
     <div className="relative inline-flex">
@@ -1056,32 +1508,6 @@ export function PlayAudioButton({
           )}
         </button>
       </Tooltip>
-      {showPrompt && (
-        <div className="absolute bottom-full left-0 z-30 mb-2 w-60 rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 shadow-lg">
-          <p className="text-[12px] leading-relaxed text-[var(--foreground)]">
-            {t("Auto-play replies in this conversation?")}
-          </p>
-          <div className="mt-2.5 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setShowPrompt(false)}
-              className="rounded-md px-2.5 py-1 text-[11.5px] text-[var(--muted-foreground)] hover:bg-[var(--muted)]/50 hover:text-[var(--foreground)]"
-            >
-              {t("Not now")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                enableForSession();
-                setShowPrompt(false);
-              }}
-              className="rounded-md bg-[var(--primary)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--primary-foreground)] hover:bg-[var(--primary)]/90"
-            >
-              {t("Turn on")}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1170,43 +1596,81 @@ export const UserMessage = memo(function UserMessage({
   onPreviewAttachment,
   onCopy,
   onEdit,
+  onDiscardFailedSubmission,
+  onRetryFailedSubmission,
   editDisabled,
   siblingInfo,
   onSwitchBranch,
   availableKbNames,
+  kbDisplayNames,
   showModeBadge,
+  onOpenConsultation,
 }: {
   msg: ChatMessageItem;
   index: number;
   onPreviewAttachment?: (attachment: MessageAttachment) => void;
   onCopy?: CopyHandler;
-  onEdit?: (messageId: number, newContent: string) => void;
+  onEdit?: (messageId: number, newContent: string) => void | boolean | Promise<void | boolean>;
+  onDiscardFailedSubmission?: (messageId: number) => boolean | Promise<boolean>;
+  onRetryFailedSubmission?: (messageId: number) => boolean | Promise<boolean>;
   editDisabled?: boolean;
   siblingInfo?: SiblingInfo;
   onSwitchBranch?: (parentMessageId: number | null, childId: number) => void;
   /** Names of KBs confirmed to exist. Omitted when the KB list is unavailable. */
   availableKbNames?: Set<string>;
+  /** Qualified KB ref -> display name from the selection catalog; the chip
+   *  label falls back to the raw ref when no entry matches. */
+  kbDisplayNames?: Record<string, string>;
   /** Label the bubble with its capability. A single-capability surface
    *  already names the mode in its own chrome. */
   showModeBadge?: boolean;
+  onOpenConsultation?: () => void;
 }) {
   const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(msg.content);
+  const [discarding, setDiscarding] = useState(false);
+  const [discardFailed, setDiscardFailed] = useState(false);
+  const [submittingEdit, setSubmittingEdit] = useState(false);
+  const [editFailed, setEditFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const { isComposingRef, onCompositionStart, onCompositionEnd } =
     useImeComposing();
   // Connected subagents ride in knowledge_bases (same selection path) but are
   // agents, not KBs — this maps a selected name to its backend kind so the
   // reference chip can badge it with the agent's brand icon.
   const agentKinds = useConnectedAgentKinds();
-  if (msg.content.startsWith("[Quiz Performance]")) return null;
+  const consultation = useConsultationReference(msg.requestSnapshot?.config);
   // ``msg.id`` can be a negative client-side sentinel for optimistic
   // (just-sent, not yet reconciled with the server) rows. We still allow
   // the Edit button to surface — ``editMessage`` in the context handles
   // the optimistic case by triggering a session reload to resolve the
   // real id before submitting the branch.
+  const [replacementAvailable, setReplacementAvailable] = useState(false);
+  const needsReplacement = Boolean(msg.failedSubmission && onEdit);
+  useEffect(() => {
+    if (!needsReplacement) return;
+    let active = true;
+    void supportsSubmissionReplacement().then(value => {
+      if (active) setReplacementAvailable(value);
+    });
+    return () => { active = false; };
+  }, [needsReplacement]);
+  if (msg.content.startsWith("[Quiz Performance]")) return null;
   const canEdit =
-    Boolean(onEdit) && typeof msg.id === "number" && !editDisabled;
+    Boolean(onEdit) && typeof msg.id === "number" && !editDisabled && (!msg.failedSubmission || replacementAvailable);
+  const discardDraft = async () => {
+    if (!onDiscardFailedSubmission || typeof msg.id !== "number" || editDisabled || discarding) return;
+    setDiscarding(true);
+    setDiscardFailed(false);
+    try {
+      if (!await onDiscardFailedSubmission(msg.id)) setDiscardFailed(true);
+    } catch {
+      setDiscardFailed(true);
+    } finally {
+      setDiscarding(false);
+    }
+  };
   const startEdit = () => {
     if (!canEdit) return;
     setDraft(msg.content);
@@ -1216,15 +1680,24 @@ export const UserMessage = memo(function UserMessage({
     setEditing(false);
     setDraft(msg.content);
   };
-  const submitEdit = () => {
+  const submitEdit = async () => {
+    if (submittingEdit) return;
     const trimmed = draft.trim();
     if (!trimmed || trimmed === msg.content) {
       cancelEdit();
       return;
     }
     if (typeof msg.id !== "number") return;
-    onEdit?.(msg.id, trimmed);
-    setEditing(false);
+    setSubmittingEdit(true);
+    setEditFailed(false);
+    try {
+      if (await onEdit?.(msg.id, trimmed) === false) setEditFailed(true);
+      else setEditing(false);
+    } catch {
+      setEditFailed(true);
+    } finally {
+      setSubmittingEdit(false);
+    }
   };
 
   // Everything this turn carried — file attachments plus the request
@@ -1232,6 +1705,13 @@ export const UserMessage = memo(function UserMessage({
   // the bubble (the sent-message mirror of the composer's tree).
   const snap = msg.requestSnapshot;
   const refTreeItems: ContextTreeItem[] = [
+    ...(consultation ? [{
+      key: `${consultation.kind}-${consultation.id}`,
+      icon: consultation.kind === "partner_group" ? UsersRound : UserRound,
+      kind: t(consultation.kind === "partner_group" ? "Organize partner discussion" : "Ask partner"),
+      label: consultation.name,
+      onClick: onOpenConsultation,
+    }] : []),
     ...(msg.attachments ?? []).map((a, ai): ContextTreeItem => {
       const filename = a.filename || t("Attachment");
       const spec = docIconFor(filename);
@@ -1258,15 +1738,16 @@ export const UserMessage = memo(function UserMessage({
             // Brand SVG marks share the lucide call signature (size/strokeWidth/
             // className); cast bridges the structural-variance gap.
             icon: (agentGlyph(agentKind) ?? Bot) as unknown as LucideIcon,
-            kind: t("Agent"),
+            kind: t("Ask subagent"),
             label: name,
+            onClick: onOpenConsultation,
           };
         }
         return {
           key: `kb-${name}`,
           icon: Database,
           kind: t("Knowledge"),
-          label: name,
+          label: kbDisplayNames?.[name] ?? name,
         };
       }),
     ...(snap?.bookReferences ?? []).map((ref): ContextTreeItem => ({
@@ -1356,6 +1837,7 @@ export const UserMessage = memo(function UserMessage({
             <textarea
               autoFocus
               value={draft}
+              disabled={submittingEdit}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
@@ -1382,6 +1864,7 @@ export const UserMessage = memo(function UserMessage({
                 <button
                   type="button"
                   onClick={cancelEdit}
+                  disabled={submittingEdit}
                   className="rounded-md px-2 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)] hover:bg-[var(--muted)]/40"
                 >
                   {t("Cancel")}
@@ -1389,22 +1872,64 @@ export const UserMessage = memo(function UserMessage({
                 <button
                   type="button"
                   onClick={submitEdit}
-                  disabled={!draft.trim() || draft.trim() === msg.content}
+                  disabled={submittingEdit || !draft.trim() || draft.trim() === msg.content}
                   className="rounded-md bg-[var(--primary)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--primary-foreground)] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {t("Send")}
                 </button>
               </div>
             </div>
+            {editFailed && <p role="alert" className="text-xs text-[var(--destructive)]">{t("The edit could not be sent. Your draft is still here; please retry.")}</p>}
           </div>
         ) : (
           <div
             data-turn-bubble="true"
             className="rounded-2xl bg-[var(--secondary)] px-4 py-2.5 text-[14px] leading-relaxed text-[var(--foreground)] shadow-sm"
           >
+            {snap?.readingSelection ? (
+              <ReadingPassageQuote
+                quote={snap.readingSelection.quote}
+                href={
+                  snap.readingMaterialId && snap.readingSelection.locator
+                    ? readingPassageHref(
+                        snap.readingMaterialId,
+                        snap.readingSelection.locator,
+                        snap.readingMaterialRevision,
+                      )
+                    : undefined
+                }
+              />
+            ) : null}
             <div className="whitespace-pre-wrap">{msg.content}</div>
           </div>
         )}
+        {/* Recovery records are local to this browser. Keep their actions
+            visible so an old pending submission can be resolved in place. */}
+        {!editing && msg.failedSubmission ? (
+          <div
+            data-unsent="true"
+            className="flex items-center gap-1 pr-1 text-[11px] font-medium text-[var(--destructive)]"
+          >
+            <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            {t("Not sent")}
+            {onRetryFailedSubmission && !msg.failedSubmissionNeedsReview && typeof msg.id === "number" && (
+              <button type="button" disabled={editDisabled || retrying} onClick={async () => {
+                if (retrying || typeof msg.id !== "number") return;
+                setRetrying(true);
+                try { await onRetryFailedSubmission(msg.id); } finally { setRetrying(false); }
+              }} className="ml-2 rounded-md px-2 py-1 disabled:opacity-40">{t("Retry")}</button>
+            )}
+            {onDiscardFailedSubmission && typeof msg.id === "number" && msg.id < 0 && (
+              <button type="button" onClick={() => void discardDraft()} disabled={editDisabled || discarding}
+                className="ml-2 rounded-md px-2 py-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)]/50 disabled:cursor-not-allowed disabled:opacity-40">
+                {discarding ? t("Discarding…") : t("Discard unsent draft")}
+              </button>
+            )}
+          </div>
+        ) : null}
+        {discardFailed && <p role="alert" className="max-w-full text-right text-xs text-[var(--destructive)]">
+          {t("This draft could not be discarded. Please retry or copy it before leaving.")}
+        </p>}
         {!editing && refTreeItems.length > 0 && (
           <div className="pr-1">
             <ContextReferenceTree
@@ -1415,8 +1940,12 @@ export const UserMessage = memo(function UserMessage({
             />
           </div>
         )}
+        {/* Branch navigation is the only way back to the pre-edit branch
+            after an edit forks the transcript (#1410): it stays on this
+            action row, outside the hover reveal that gates Copy/Edit, so
+            the way back to history is visible without hovering. */}
         {!editing && (onCopy || canEdit || siblingInfo) && msg.content && (
-          <div className="flex h-7 items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+          <div className="flex h-7 items-center justify-end gap-1">
             {siblingInfo && siblingInfo.total > 1 && (
               <BranchNavigator
                 info={siblingInfo}
@@ -1425,15 +1954,19 @@ export const UserMessage = memo(function UserMessage({
                 }
               />
             )}
-            {onCopy && (
-              <CopyActionButton content={msg.content} onCopy={onCopy} />
-            )}
-            {canEdit && (
-              <RoughActionButton
-                icon={Pencil}
-                label={t("Edit")}
-                onClick={startEdit}
-              />
+            {(onCopy || canEdit) && (
+              <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                {onCopy && (
+                  <CopyActionButton content={msg.content} onCopy={onCopy} />
+                )}
+                {canEdit && (
+                  <RoughActionButton
+                    icon={Pencil}
+                    label={t("Edit")}
+                    onClick={startEdit}
+                  />
+                )}
+              </div>
             )}
           </div>
         )}
@@ -1444,6 +1977,30 @@ export const UserMessage = memo(function UserMessage({
 
 UserMessage.displayName = "UserMessage";
 
+/**
+ * The passage a reading question was asked about, at the top of its bubble.
+ *
+ * A link, not a label: it is written in the reader's citation form, so the
+ * reader's own capture-phase handler scrolls the document back to it.
+ */
+function ReadingPassageQuote({ quote, href }: { quote: string; href?: string }) {
+  const { t } = useTranslation();
+  const className =
+    "mb-1.5 block border-l-2 border-[color-mix(in_srgb,var(--primary)_45%,transparent)] pl-2.5 text-[12.5px] leading-relaxed text-[var(--muted-foreground)]";
+  const text = <span className="line-clamp-3">{quote}</span>;
+  return href ? (
+    <a
+      href={href}
+      aria-label={`${t("Go to this passage")}: ${quote}`}
+      className={`${className} transition-colors hover:text-[var(--foreground)]`}
+    >
+      {text}
+    </a>
+  ) : (
+    <div className={className}>{text}</div>
+  );
+}
+
 export const ChatMessageList = memo(function ChatMessageList({
   messages,
   isStreaming,
@@ -1451,16 +2008,23 @@ export const ChatMessageList = memo(function ChatMessageList({
   language,
   onCopyAssistantMessage,
   onRegenerateMessage,
+  canResendLastTurn = false,
+  onResendLastTurn,
   onConfirmOutline,
   onPreviewAttachment,
+  onOpenConsultation,
   onDeleteTurn,
+  onDiscardFailedSubmission,
+  onRetryFailedSubmission,
   selectedBranches,
   onEditMessage,
   onSwitchBranch,
   availableKbNames,
+  kbDisplayNames,
   onSubmitUserReply,
   onAnswerMasteryQuestion,
   onSkipMasteryQuestion,
+  onChallengeMasteryQuestion,
   showModeBadge = true,
   onLoadMessageTrace,
   onReleaseMessageTrace,
@@ -1471,6 +2035,10 @@ export const ChatMessageList = memo(function ChatMessageList({
   language?: string;
   onCopyAssistantMessage: CopyHandler;
   onRegenerateMessage: () => void;
+  /** True when the last turn failed (not cancelled) and streaming has
+   *  stopped. Drives the Resend affordance on the trailing assistant. */
+  canResendLastTurn?: boolean;
+  onResendLastTurn?: () => void;
   onConfirmOutline?: (
     outline: Array<{ title: string; overview: string }>,
     topic: string,
@@ -1478,10 +2046,13 @@ export const ChatMessageList = memo(function ChatMessageList({
     requestSnapshot?: MessageRequestSnapshot | null,
   ) => void;
   onPreviewAttachment?: (attachment: MessageAttachment) => void;
+  onOpenConsultation?: (events: StreamEvent[]) => void;
   onDeleteTurn?: (messageId: number) => void;
+  onDiscardFailedSubmission?: (messageId: number) => boolean | Promise<boolean>;
+  onRetryFailedSubmission?: (messageId: number) => boolean | Promise<boolean>;
   /** Edit-branching: selected sibling at each branch point. */
   selectedBranches?: Record<string, number>;
-  onEditMessage?: (messageId: number, newContent: string) => void;
+  onEditMessage?: (messageId: number, newContent: string) => void | boolean | Promise<void | boolean>;
   onSwitchBranch?: (parentMessageId: number | null, childId: number) => void;
   /**
    * Deliver an ``ask_user`` reply back to the backend so the agentic
@@ -1507,15 +2078,21 @@ export const ChatMessageList = memo(function ChatMessageList({
   onAnswerMasteryQuestion?: (answer: {
     questionId: string;
     text: string;
+    answers?: Array<{ questionId: string; text: string }>;
   }) => void | boolean | Promise<void | boolean>;
   /** Drop a question instead of answering it; also starts a turn. */
   onSkipMasteryQuestion?: (
     questionId: string,
   ) => void | boolean | Promise<void | boolean>;
+  onChallengeMasteryQuestion?: (questionId: string) => void | boolean | Promise<void | boolean>;
   /** Names of KBs confirmed to exist. Omitted when the KB list is unavailable. */
   availableKbNames?: Set<string>;
+  /** Qualified KB ref -> display name, from the same catalog the composer
+   *  resolves against. Snapshots store the ref; only the chip label should
+   *  show the human-readable name (falls back to the ref when unmapped). */
+  kbDisplayNames?: Record<string, string>;
   /** Label each user bubble with its capability. Off on surfaces that run a
-   *  single capability and already name it in their own chrome. */
+   *  single capability and already name it in its own chrome. */
   showModeBadge?: boolean;
   onLoadMessageTrace?: (messageId: number) => Promise<void>;
   onReleaseMessageTrace?: (messageId: number) => void;
@@ -1551,6 +2128,21 @@ export const ChatMessageList = memo(function ChatMessageList({
   //
   // The followup is dropped from the visible row list so only the
   // merged bubble renders.
+  // One callback for every row rather than a closure per row per render.
+  // ``AssistantMessage`` is memoized, and a fresh function defeats that
+  // outright: every message in the conversation re-rendered on every streamed
+  // delta of the turn at the bottom.
+  const handleTraceToggle = useCallback(
+    (messageId: number, open: boolean) => {
+      if (open) {
+        void onLoadMessageTrace?.(messageId);
+      } else {
+        onReleaseMessageTrace?.(messageId);
+      }
+    },
+    [onLoadMessageTrace, onReleaseMessageTrace],
+  );
+
   const deepResearchMergeMap = useMemo(() => {
     const map = new Map<
       number,
@@ -1592,6 +2184,10 @@ export const ChatMessageList = memo(function ChatMessageList({
   );
   const masterySkips = useMemo(
     () => collectMasterySkips(visibleMessages),
+    [visibleMessages],
+  );
+  const masteryAnswerRejections = useMemo(
+    () => collectMasteryAnswerRejections(visibleMessages),
     [visibleMessages],
   );
 
@@ -1666,6 +2262,11 @@ export const ChatMessageList = memo(function ChatMessageList({
       });
   }, [visibleMessages, deepResearchMergeMap]);
 
+  const usageByRow = useMemo(() => {
+    const totals = cumulativeMessageUsage(messageRows.map(row => row.msg));
+    return new Map(messageRows.map((row, index) => [row.originalIndex, totals[index]]));
+  }, [messageRows]);
+
   const lastRenderedAssistantIndex = useMemo(() => {
     for (let idx = messageRows.length - 1; idx >= 0; idx -= 1) {
       if (messageRows[idx].msg.role === "assistant")
@@ -1698,11 +2299,19 @@ export const ChatMessageList = memo(function ChatMessageList({
 
   return (
     <>
-      {messageRows.map(({ msg, originalIndex, pairedUserMessage }) => {
+      {messageRows.map(({ msg, originalIndex, pairedUserMessage }, rowIndex) => {
         const i = originalIndex;
         if (msg.role === "user") {
           const sib =
             msg.id !== undefined ? siblingsByMessageId.get(msg.id) : undefined;
+          const reply = messageRows[rowIndex + 1]?.msg;
+          const orphanedFailure =
+            reply?.role === "assistant" && reply.parentMessageId === msg.id
+              ? null
+              : msg.orphanedFailedTurn;
+          const consultationEvents = reply?.role === "assistant"
+            ? (reply.events ?? []).filter(event => event.metadata?.trace_kind === "subagent_event")
+            : [];
           return (
             <div
               key={`${msg.role}-${i}`}
@@ -1716,12 +2325,40 @@ export const ChatMessageList = memo(function ChatMessageList({
                 onPreviewAttachment={onPreviewAttachment}
                 onCopy={onCopyAssistantMessage}
                 onEdit={onEditMessage}
+                onDiscardFailedSubmission={onDiscardFailedSubmission}
+                onRetryFailedSubmission={onRetryFailedSubmission}
                 editDisabled={isStreaming}
                 siblingInfo={sib}
                 onSwitchBranch={onSwitchBranch}
                 availableKbNames={availableKbNames}
+                kbDisplayNames={kbDisplayNames}
                 showModeBadge={showModeBadge}
+                onOpenConsultation={consultationEvents.length && onOpenConsultation
+                  ? () => onOpenConsultation(consultationEvents)
+                  : undefined}
               />
+              {orphanedFailure ? (
+                <div
+                  role="alert"
+                  data-orphaned-failed-turn={orphanedFailure.turn_id}
+                  className="mt-3 flex w-full max-w-[min(520px,90%)] items-center gap-2 rounded-xl border border-[var(--destructive)]/30 bg-[var(--destructive)]/5 px-3 py-2"
+                >
+                  <AlertCircle className="h-4 w-4 shrink-0 text-[var(--destructive)]" />
+                  <span className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[var(--foreground)]">
+                    {orphanedFailure.error || t("The turn was interrupted.")}
+                  </span>
+                  {!isStreaming && rowIndex === messageRows.length - 1 &&
+                    canResendLastTurn && orphanedFailure.retryable && onResendLastTurn ? (
+                    <button
+                      type="button"
+                      onClick={onResendLastTurn}
+                      className="shrink-0 rounded-md px-2 py-1 text-[11.5px] font-medium text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
+                    >
+                      {t("Retry")}
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           );
         }
@@ -1730,36 +2367,42 @@ export const ChatMessageList = memo(function ChatMessageList({
           isStreaming && i === lastRenderedAssistantIndex;
         const msgDone = !isActiveAssistant;
         const showActions = msgDone && hasVisibleMarkdownContent(msg.content);
+        const events = msg.events ?? [];
+        const terminalError = [...events].reverse().find(
+          (event) => event.type === "error" && Boolean(event.metadata?.turn_terminal),
+        ) ?? (!hasVisibleMarkdownContent(msg.content)
+          ? [...events].reverse().find((event) => event.type === "error")
+          : undefined);
+        const stopped = terminalError?.metadata?.status === "cancelled" ||
+          events.some((event) => event.type === "done" && event.metadata?.status === "cancelled");
+        const emptyResponse = !hasVisibleMarkdownContent(msg.content) &&
+          !msg.attachments?.length &&
+          !events.some((event) => ["result", "tool_call", "tool_result", "wait_for_input"].includes(event.type));
+        const terminalErrorRetryable = Boolean(
+          (terminalError?.metadata as { retryable?: boolean } | undefined)
+            ?.retryable,
+        );
         const isLastAssistant = i === lastRenderedAssistantIndex;
         const showRegenerate =
-          showActions &&
           !isStreaming &&
           isLastAssistant &&
           Boolean(pairedUserMessage) &&
           (!pairedUserMessage?.capability ||
-            pairedUserMessage?.capability === "chat");
+            pairedUserMessage?.capability === "chat") &&
+          (showActions || terminalErrorRetryable);
+        const showResend =
+          !isStreaming &&
+          isLastAssistant &&
+          canResendLastTurn &&
+          Boolean(pairedUserMessage?.requestSnapshot) &&
+          Boolean(onResendLastTurn);
         const deletableTurnUserId =
           msgDone && pairedUserMessage?.id != null && onDeleteTurn
             ? pairedUserMessage.id
             : null;
         const showDelete = deletableTurnUserId != null;
 
-        const costSummary = (() => {
-          if (!msgDone) return null;
-          const resultEv = msg.events?.find((e) => e.type === "result");
-          if (!resultEv) return null;
-          const meta = resultEv.metadata?.metadata as
-            Record<string, unknown> | undefined;
-          const cs = meta?.cost_summary as
-            | {
-                total_cost_usd?: number;
-                total_tokens?: number;
-                total_calls?: number;
-              }
-            | undefined;
-          if (!cs || !cs.total_calls) return null;
-          return cs;
-        })();
+        const costSummary = msgDone ? messageUsage(msg.events) : null;
 
         return (
           <div
@@ -1783,19 +2426,14 @@ export const ChatMessageList = memo(function ChatMessageList({
                 onSubmitUserReply={onSubmitUserReply}
                 onAnswerMasteryQuestion={onAnswerMasteryQuestion}
                 onSkipMasteryQuestion={onSkipMasteryQuestion}
+                onChallengeMasteryQuestion={onChallengeMasteryQuestion}
                 researchRequestSnapshot={
                   pairedUserMessage?.requestSnapshot ?? null
                 }
-                onTraceToggle={(open) => {
-                  if (msg.id == null) return;
-                  if (open) {
-                    void onLoadMessageTrace?.(msg.id);
-                  } else {
-                    onReleaseMessageTrace?.(msg.id);
-                  }
-                }}
+                onTraceToggle={handleTraceToggle}
                 masteryGrades={masteryGrades}
                 masterySkips={masterySkips}
+                masteryAnswerRejections={masteryAnswerRejections}
               />
             </InlineFileCardProvider>
             <GeneratedFileCards
@@ -1808,20 +2446,20 @@ export const ChatMessageList = memo(function ChatMessageList({
               // with a turn_terminal error event. Surface it as an error
               // card with an inline retry instead of leaving a bare trace.
               if (isActiveAssistant) return null;
-              const terminalError = (msg.events ?? []).find(
-                (e) =>
-                  e.type === "error" &&
-                  Boolean(
-                    (e.metadata as { turn_terminal?: boolean } | undefined)
-                      ?.turn_terminal,
-                  ),
+              if (stopped) return (
+                <div role="status" className="mt-3 flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+                  <Square className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>{t("Stopped")}</span>
+                </div>
               );
-              if (!terminalError) return null;
+              if (!terminalError && !emptyResponse) return null;
               return (
-                <div className="mt-3 flex w-full max-w-[min(520px,90%)] items-center gap-2 rounded-xl border border-[var(--destructive)]/30 bg-[var(--destructive)]/5 px-3 py-2">
+                <div role="alert" className="mt-3 flex w-full max-w-[min(520px,90%)] items-center gap-2 rounded-xl border border-[var(--destructive)]/30 bg-[var(--destructive)]/5 px-3 py-2">
                   <AlertCircle className="h-4 w-4 shrink-0 text-[var(--destructive)]" />
                   <span className="min-w-0 flex-1 text-[12px] leading-[1.5] text-[var(--foreground)]">
-                    {terminalError.content || t("The turn was interrupted.")}
+                    {terminalError?.content || (terminalError
+                      ? t("The turn was interrupted.")
+                      : t("No response was generated. Please try again."))}
                   </span>
                   {showRegenerate ? (
                     <button
@@ -1830,6 +2468,15 @@ export const ChatMessageList = memo(function ChatMessageList({
                       className="shrink-0 rounded-md px-2 py-1 text-[11.5px] font-medium text-[var(--destructive)] hover:bg-[var(--destructive)]/10"
                     >
                       {t("Retry")}
+                    </button>
+                  ) : null}
+                  {showResend && !showRegenerate ? (
+                    <button
+                      type="button"
+                      onClick={() => onResendLastTurn?.()}
+                      className="shrink-0 rounded-md px-2 py-1 text-[11.5px] font-medium text-[var(--foreground)] hover:bg-[var(--muted)]"
+                    >
+                      {t("Resend")}
                     </button>
                   ) : null}
                 </div>
@@ -1861,6 +2508,13 @@ export const ChatMessageList = memo(function ChatMessageList({
                         onClick={() => onRegenerateMessage()}
                       />
                     )}
+                    {showResend && (
+                      <RoughActionButton
+                        icon={RefreshCcw}
+                        label={t("Resend")}
+                        onClick={() => onResendLastTurn?.()}
+                      />
+                    )}
                     {showDelete && (
                       <DeleteTurnButton
                         onDelete={() => onDeleteTurn?.(deletableTurnUserId)}
@@ -1870,11 +2524,7 @@ export const ChatMessageList = memo(function ChatMessageList({
                 )}
                 {costSummary && (
                   <div className="ml-auto">
-                    <CostFooter
-                      cost={costSummary.total_cost_usd ?? 0}
-                      tokens={costSummary.total_tokens ?? 0}
-                      calls={costSummary.total_calls ?? 0}
-                    />
+                    <UsageFooter turn={costSummary} session={usageByRow.get(i) ?? costSummary} />
                   </div>
                 )}
               </div>

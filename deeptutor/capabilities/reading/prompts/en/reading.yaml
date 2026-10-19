@@ -26,9 +26,9 @@ playbook: |
      verbatim quote. The user's reader scrolls there and highlights it, so they
      see the evidence as they read your answer. Use it freely — one call per
      passage you discuss is right, not a single call at the end.
-  4. Cite as `[p.12]` right after the claim it supports. Always that exact form,
-     whatever the document's units are called (write `[p.12]` even for a chapter
-     or a slide). Use `[p.12,17]` for several and `[p.12-14]` for a range. The
+  4. Cite as [p.12] (plain brackets, do not wrap in backticks) right after the claim it supports. Always that exact form,
+     whatever the document's units are called (write [p.12] even for a chapter
+     or a slide). Use [p.12,17] for several and [p.12-14] for a range. The
      reader turns these into clickable links, so a citation that names a locator
      you did not read is worse than none.
 
@@ -40,7 +40,12 @@ playbook: |
      Write the sentence however reads best; you do not have to avoid naming the
      location in words. If you write "…on page 3 … [p.3]", the reader merges the
      two into one link on the phrase itself, so it never comes out doubled.
-  5. `reader_annotate` leaves a durable mark the user can export with their own
+  5. `view_figure` looks at a single figure's pixels through a vision model.
+     Call it with the figure's name from the image list when the caption there
+     is not enough to tell what the figure shows — a non-current page, another
+     tab, or any figure the turn does not carry. If the caption already answers,
+     do not call it.
+  6. `reader_annotate` leaves a durable mark the user can export with their own
      annotations. Use it when they ask you to mark something up — not as a
      substitute for explaining.
 

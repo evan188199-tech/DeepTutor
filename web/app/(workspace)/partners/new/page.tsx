@@ -7,6 +7,7 @@
  * partner's Channels tab.
  */
 
+import { PageContainer, PageHeader } from '@/components/layout/FeaturePage'
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ import {
 import AssetPicker, {
   type AssetSelection,
 } from "@/components/partners/AssetPicker";
+import PartnerWorkspacePicker from "@/components/partners/PartnerWorkspacePicker";
 import PartnerAvatar from "@/components/partners/PartnerAvatar";
 import FaceEditor, { type FaceValue } from "@/components/partners/FaceEditor";
 import PartnerModelPicker from "@/components/partners/PartnerModelPicker";
@@ -64,6 +66,8 @@ export default function NewPartnerPage() {
   const [backupSelection, setBackupSelection] = useState<LLMSelection | null>(
     null,
   );
+  const [workspaceId, setWorkspaceId] = useState("");
+  const [workspaceName, setWorkspaceName] = useState("");
   const [assets, setAssets] = useState<AssetSelection>({
     knowledge_bases: [],
     skills: [],
@@ -151,7 +155,8 @@ export default function NewPartnerPage() {
         // Never null for MCP: the list stays explicit so a server configured
         // later is not silently inherited by this partner.
         mcp_tools: mcpTools,
-        assets,
+        workspace_id: workspaceId,
+        assets: workspaceId ? undefined : assets,
         start: true,
       });
       // Land in the chat tab — the partner is ready to talk to right away
@@ -214,7 +219,7 @@ export default function NewPartnerPage() {
     library: {
       title: t("Hand over some knowledge"),
       subtitle: t(
-        "Give it a slice of your knowledge — copied into the partner's own workspace.",
+        "Choose a shared workspace or copy resources into a private workspace.",
       ),
     },
     review: {
@@ -290,29 +295,9 @@ export default function NewPartnerPage() {
 
       {/* Step body */}
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div
-          key={step}
-          className="mx-auto w-full max-w-2xl px-6 pb-8 pt-10 animate-fade-in"
-        >
-          <header className="mb-7 flex items-start gap-4">
-            {step === "identity" || step === "review" ? (
-              <PartnerAvatar
-                name={name || "?"}
-                emoji={face.emoji}
-                color={face.color}
-                image={face.avatar}
-                size={48}
-              />
-            ) : null}
-            <div>
-              <h1 className="text-[22px] font-semibold tracking-tight text-[var(--foreground)]">
-                {stepTitle[step].title}
-              </h1>
-              <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--muted-foreground)]">
-                {stepTitle[step].subtitle}
-              </p>
-            </div>
-          </header>
+        <PageContainer key={step} className="animate-fade-in">
+          <PageHeader title={stepTitle[step].title} description={stepTitle[step].subtitle} />
+          <div className="max-w-2xl">
 
           {step === "identity" && (
             <div className="space-y-5">
@@ -360,6 +345,7 @@ export default function NewPartnerPage() {
                   <option value="">{t("Auto (English)")}</option>
                   <option value="en">English</option>
                   <option value="zh">中文</option>
+                  <option value="uk">Українська</option>
                 </select>
               </div>
             </div>
@@ -419,11 +405,22 @@ export default function NewPartnerPage() {
           )}
 
           {step === "library" && (
-            <AssetPicker
-              value={assets}
-              onChange={setAssets}
-              preselectAllSkills
-            />
+            <div className="space-y-6">
+              <PartnerWorkspacePicker
+                value={workspaceId}
+                onChange={(id, label) => {
+                  setWorkspaceId(id);
+                  setWorkspaceName(label);
+                }}
+              />
+              {!workspaceId && (
+                <AssetPicker
+                  value={assets}
+                  onChange={setAssets}
+                  preselectAllSkills
+                />
+              )}
+            </div>
           )}
 
           {step === "review" && (
@@ -433,6 +430,12 @@ export default function NewPartnerPage() {
                   [t("Name"), name.trim() || "—"],
                   [t("Description"), description.trim() || "—"],
                   [t("Soul"), soulSummary],
+                  [
+                    t("Workspace"),
+                    workspaceId
+                      ? workspaceName
+                      : t("Partner private workspace"),
+                  ],
                   [t("Model"), modelSummary],
                   [t("Backup model"), backupSummary],
                   [
@@ -445,13 +448,15 @@ export default function NewPartnerPage() {
                   ],
                   [
                     t("Library"),
-                    assetCount > 0
-                      ? t("{{count}} items will be copied", {
-                          count: assetCount,
-                        })
-                      : t(
-                          "Nothing assigned yet — this partner only knows what you tell it.",
-                        ),
+                    workspaceId
+                      ? t("Live workspace resources")
+                      : assetCount > 0
+                        ? t("{{count}} items will be copied", {
+                            count: assetCount,
+                          })
+                        : t(
+                            "Nothing assigned yet — this partner only knows what you tell it.",
+                          ),
                   ],
                 ].map(([label, valueText]) => (
                   <div
@@ -479,12 +484,14 @@ export default function NewPartnerPage() {
               )}
             </div>
           )}
-        </div>
+          </div>
+        </PageContainer>
       </div>
 
       {/* Footer actions */}
-      <div className="border-t border-[var(--border)] px-6 py-3.5">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
+      <div className="border-t border-[var(--border)]">
+        <PageContainer spacing="toolbar">
+        <div className="flex w-full max-w-2xl items-center justify-between">
           <button
             type="button"
             onClick={goBack}
@@ -520,6 +527,7 @@ export default function NewPartnerPage() {
             </button>
           )}
         </div>
+        </PageContainer>
       </div>
     </div>
   );

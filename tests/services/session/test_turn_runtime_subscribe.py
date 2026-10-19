@@ -9,12 +9,14 @@ import pytest
 from deeptutor.core.stream import StreamEvent, StreamEventType
 from deeptutor.learning.storage import LearningStore
 from deeptutor.services.courses import CourseService
+from deeptutor.services.session._turn_runtime_shared import _resolve_turn_failure_metadata
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 from deeptutor.services.session.turn_runtime import (
     TurnRuntimeManager,
     _resolve_turn_outcome,
     _TurnExecution,
 )
+from deeptutor.services.session.turns import lifecycle as lifecycle_module
 
 
 def _isolate_learning_store(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -87,6 +89,25 @@ def test_non_terminal_error_keeps_completed_done_status() -> None:
 
     assert status == "completed"
     assert error == ""
+
+
+def test_terminal_error_metadata_resolves_retry_contract() -> None:
+    code, retryable = _resolve_turn_failure_metadata(
+        [
+            {
+                "type": "error",
+                "content": "The model exhausted its output budget.",
+                "metadata": {
+                    "turn_terminal": True,
+                    "error_code": "reasoning_budget_exhausted",
+                    "retryable": True,
+                },
+            }
+        ]
+    )
+
+    assert code == "reasoning_budget_exhausted"
+    assert retryable is True
 
 
 @pytest.mark.asyncio
@@ -193,23 +214,67 @@ async def test_replacing_subscription_does_not_synthesize_duplicate_done(tmp_pat
 
 
 @pytest.mark.asyncio
-async def test_subscribe_turn_does_not_mutate_remote_running_turn(tmp_path) -> None:
+async def test_subscribe_turn_does_not_mutate_remote_running_turn(tmp_path, monkeypatch) -> None:
     """A subscriber may be on a different worker from the turn owner."""
 
+    monkeypatch.setattr(lifecycle_module, "_SUBSCRIPTION_POLL_SECONDS", 0.01)
     store = SQLiteSessionStore(tmp_path / "chat_history.db")
     runtime = TurnRuntimeManager(store)
     session = await store.ensure_session(None)
     turn = await store.create_turn(session["id"], capability="chat")
 
     events: list[dict] = []
-    async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
-        events.append(event)
+
+    async def _collect() -> None:
+        async for event in runtime.subscribe_turn(turn["id"], after_seq=0):
+            events.append(event)
+
+    task = asyncio.create_task(_collect())
+    await asyncio.sleep(0.04)
 
     persisted = await store.get_turn(turn["id"])
     assert persisted is not None
     assert persisted["status"] == "running"
     assert persisted["error"] == ""
     assert events == []
+    assert await store.update_turn_status(turn["id"], "completed") is True
+    await asyncio.wait_for(task, timeout=1)
+    assert [event["type"] for event in events] == ["done"]
+
+
+@pytest.mark.asyncio
+async def test_worker_lost_unblocks_a_stale_local_subscriber(tmp_path, monkeypatch) -> None:
+    """Recovery's durable terminal state reaches an abandoned live queue."""
+
+    monkeypatch.setattr(lifecycle_module, "_SUBSCRIPTION_POLL_SECONDS", 0.01)
+    store = SQLiteSessionStore(tmp_path / "chat_history.db")
+    runtime = TurnRuntimeManager(store)
+    session = await store.ensure_session(None)
+    turn = await store.create_turn(session["id"], capability="mastery_path")
+    execution = _TurnExecution(
+        turn_id=turn["id"], session_id=session["id"], capability="mastery_path", payload={}
+    )
+    runtime._executions[turn["id"]] = execution
+    events: list[dict] = []
+
+    async def _collect() -> None:
+        async for event in runtime.subscribe_turn(turn["id"]):
+            events.append(event)
+
+    task = asyncio.create_task(_collect())
+    for _ in range(100):
+        if execution.subscribers:
+            break
+        await asyncio.sleep(0.01)
+    assert execution.subscribers
+    assert await store.transition_turn(
+        turn["id"], "failed", error="Worker lost", failure_code="worker_lost", retryable=True
+    )
+    await asyncio.wait_for(task, timeout=1)
+
+    assert [event["type"] for event in events] == ["error", "done"]
+    assert events[0]["metadata"]["error_code"] == "worker_lost"
+    assert events[1]["metadata"]["status"] == "failed"
 
 
 @pytest.mark.asyncio
@@ -240,14 +305,27 @@ async def test_subscribe_failed_turn_synthesizes_ordered_error_and_done(tmp_path
     runtime = TurnRuntimeManager(store)
     session = await store.ensure_session(None)
     turn = await store.create_turn(session["id"], capability="chat")
-    assert await store.update_turn_status(turn["id"], "failed", "provider failed") is True
+    assert (
+        await store.transition_turn(
+            turn["id"],
+            "failed",
+            error="provider failed",
+            failure_code="reasoning_budget_exhausted",
+            retryable=True,
+        )
+        is True
+    )
 
     events = [event async for event in runtime.subscribe_turn(turn["id"], after_seq=0)]
 
     assert [event["type"] for event in events] == ["error", "done"]
     assert [event["seq"] for event in events] == [1, 2]
     assert events[0]["metadata"]["turn_terminal"] is True
+    assert events[0]["metadata"]["error_code"] == "reasoning_budget_exhausted"
+    assert events[0]["metadata"]["retryable"] is True
     assert events[1]["metadata"]["status"] == "failed"
+    assert events[1]["metadata"]["error_code"] == "reasoning_budget_exhausted"
+    assert events[1]["metadata"]["retryable"] is True
 
 
 @pytest.mark.asyncio
@@ -492,6 +570,19 @@ async def test_reconnect_after_turn_completion_still_carries_message_ids(
                 content="hello there",
                 metadata={"call_kind": "llm_final_response"},
             )
+            yield StreamEvent(
+                type=StreamEventType.DONE,
+                source="chat",
+                metadata={
+                    "status": "completed",
+                    "usage_summary": {
+                        "total_tokens": 120,
+                        "total_calls": 1,
+                        "cache_hit_rate": 0.75,
+                        "ttft_seconds": 1.5,
+                    },
+                },
+            )
 
     async def _noop_title(**_kwargs):
         return None
@@ -529,12 +620,19 @@ async def test_reconnect_after_turn_completion_still_carries_message_ids(
     messages = await store.get_messages(session["id"])
     assert [m["role"] for m in messages] == ["user", "assistant"]
     real_assistant_id = messages[1]["id"]
+    saved_usage = next(
+        e["metadata"]["usage_summary"] for e in messages[1]["events"] if e["type"] == "done"
+    )
+    assert saved_usage["total_tokens"] == 120
+    assert saved_usage["cache_hit_rate"] == 0.75
 
     # The client reconnects now and asks to catch up from the start.
     events = [event async for event in runtime.subscribe_turn(turn_id, after_seq=0)]
     done_events = [e for e in events if e["type"] == "done"]
     assert len(done_events) == 1
     assert done_events[0]["metadata"].get("assistant_message_id") == real_assistant_id
+
+    assert done_events[0]["metadata"]["usage_summary"] == saved_usage
 
 
 def _open_mastery_question(path_id: str, *, question_id: str = "q-1"):
@@ -1024,3 +1122,73 @@ async def test_no_path_push_when_the_turn_never_moved(tmp_path) -> None:
     )
 
     assert [event for event in execution.events if event["type"] == "session_meta"] == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("preparation_fails", [False, True])
+async def test_context_preparation_usage_is_included_in_durable_turn_total(
+    monkeypatch, tmp_path, preparation_fails
+):
+    """#1920/#1926: summary work is paid before the capability starts."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from deeptutor.core.capability_protocol import CapabilityManifest, TurnCapability
+    from deeptutor.runtime.orchestrator import ChatOrchestrator
+    from deeptutor.services.llm.metrics import CallMeasurement, current_usage
+
+    store = SQLiteSessionStore(tmp_path / "usage.db")
+    runtime = TurnRuntimeManager(store)
+
+    def measure(tokens):
+        meter = CallMeasurement(model="test", provider="test")
+        meter.finish(
+            SimpleNamespace(
+                usage={"prompt_tokens": tokens, "completion_tokens": 1, "total_tokens": tokens + 1}
+            )
+        )
+
+    class Builder:
+        async def build(self, **kwargs):
+            measure(100)
+            if preparation_fails:
+                raise RuntimeError("Preparation unavailable")
+            return SimpleNamespace(
+                conversation_history=[],
+                conversation_summary="",
+                context_text="",
+                token_count=0,
+                budget=0,
+            )
+
+    class Capability(TurnCapability):
+        manifest = CapabilityManifest(name="chat", description="Usage regression")
+
+        async def run(self, context, stream):
+            measure(20)
+            await stream.content("The answer", source="chat")
+
+    orchestrator = ChatOrchestrator.__new__(ChatOrchestrator)
+    orchestrator._cap_registry = MagicMock()
+    orchestrator._cap_registry.get.return_value = Capability()
+    orchestrator._tool_registry = MagicMock()
+    bus = MagicMock()
+    bus.publish = AsyncMock()
+    monkeypatch.setattr("deeptutor.runtime.orchestrator.get_event_bus", lambda: bus)
+    monkeypatch.setattr("deeptutor.runtime.orchestrator.ChatOrchestrator", lambda: orchestrator)
+    monkeypatch.setattr(runtime, "_create_context_builder", lambda **kwargs: Builder())
+    monkeypatch.setattr(runtime, "_maybe_generate_session_title", AsyncMock())
+    session, turn = await runtime.start_turn(
+        {"content": "Continue", "capability": "chat", "tools": []}
+    )
+    events = [e async for e in runtime.subscribe_turn(turn["id"])]
+    done = next(e for e in events if e["type"] == "done")
+    assert done["metadata"]["usage_summary"]["prompt_tokens"] == (100 if preparation_fails else 120)
+    assert done["metadata"]["usage_summary"]["total_calls"] == (1 if preparation_fails else 2)
+    messages = await store.get_messages(session["id"])
+    if preparation_fails:
+        assert done["metadata"]["status"] == "failed"
+        assert current_usage.get() is None
+        return
+    stored = next(e for e in messages[-1]["events"] if e["type"] == "done")
+    assert stored["metadata"]["usage_summary"] == done["metadata"]["usage_summary"]
+    assert current_usage.get() is None

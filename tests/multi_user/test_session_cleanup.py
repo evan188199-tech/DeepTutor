@@ -16,6 +16,13 @@ def test_delete_session_cleans_only_current_user_artifacts(as_user, monkeypatch)
     attachment_id = "upload-1"
 
     class _SessionStore:
+        async def get_session(self, candidate: str) -> dict[str, str] | None:
+            """The router looks the row up first, so a 404 can't be deleted."""
+            return {"session_id": candidate} if candidate == session_id else None
+
+        async def list_sessions(self, *, limit: int, offset: int) -> list[dict[str, str]]:
+            return [{"session_id": session_id}][offset : offset + limit]
+
         async def delete_session(self, candidate: str) -> bool:
             return candidate == session_id
 

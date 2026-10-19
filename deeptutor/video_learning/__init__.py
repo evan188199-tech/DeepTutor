@@ -11,6 +11,13 @@ from .marks import (
     MARK_AUTHORS,
     MARK_KINDS,
     MarkNotFound,
+    create_mark,
+    delete_mark,
+    get_mark,
+    marks_list,
+    normalize_mark,
+    suggest_marks,
+    update_mark,
 )
 from .service import (
     PROVIDER_RESOLVERS,
@@ -56,4 +63,11 @@ __all__ = [
     "MARK_AUTHORS",
     "MARK_KINDS",
     "MarkNotFound",
+    "create_mark",
+    "delete_mark",
+    "get_mark",
+    "marks_list",
+    "normalize_mark",
+    "suggest_marks",
+    "update_mark",
 ]

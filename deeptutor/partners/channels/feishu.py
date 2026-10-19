@@ -1,13 +1,18 @@
 """Feishu/Lark channel implementation using lark-oapi SDK with WebSocket long connection."""
 
 import asyncio
+import base64
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from http import HTTPStatus
 import importlib.util
+import inspect
 import json
 import os
 import re
+import shlex
 import threading
+from threading import Lock
 import time
 from typing import Any, Literal
 import uuid
@@ -22,6 +27,54 @@ from deeptutor.partners.config.schema import DeliveryOverrides, StreamingSupport
 from deeptutor.partners.helpers import split_markdown_table_row
 
 FEISHU_AVAILABLE = importlib.util.find_spec("lark_oapi") is not None
+
+
+def _card_aware_ws_client(base_client: type[Any], ws_module: Any) -> type[Any]:
+    """Dispatch card callbacks skipped by supported lark-oapi WebSocket clients.
+
+    The SDK's event dispatcher already understands card actions; older WS
+    clients return before calling it. Keep the original CARD frame type when
+    writing the callback response so Feishu can replace the clicked card.
+    """
+
+    class CardAwareClient(base_client):
+        async def _handle_data_frame(self, frame: Any) -> None:
+            message_type = ws_module._get_by_key(frame.headers, ws_module.HEADER_TYPE)
+            if message_type != ws_module.MessageType.CARD.value:
+                await super()._handle_data_frame(frame)
+                return
+
+            headers = frame.headers
+            message_id = ws_module._get_by_key(headers, ws_module.HEADER_MESSAGE_ID)
+            part_count = int(ws_module._get_by_key(headers, ws_module.HEADER_SUM))
+            part_number = int(ws_module._get_by_key(headers, ws_module.HEADER_SEQ))
+            payload = frame.payload
+            if part_count > 1:
+                payload = self._combine(message_id, part_count, part_number, payload)
+                if payload is None:
+                    return
+
+            response = ws_module.Response(code=HTTPStatus.OK)
+            try:
+                started = time.monotonic()
+                result = self._event_handler.do_without_validation(payload)
+                elapsed_ms = round((time.monotonic() - started) * 1000)
+                header = headers.add()
+                header.key = ws_module.HEADER_BIZ_RT
+                header.value = str(elapsed_ms)
+                if result is not None:
+                    response.data = base64.b64encode(
+                        ws_module.JSON.marshal(result).encode(ws_module.UTF_8)
+                    )
+            except Exception:
+                logger.exception("Feishu card callback failed (message_id={})", message_id)
+                response = ws_module.Response(code=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+            frame.payload = ws_module.JSON.marshal(response).encode(ws_module.UTF_8)
+            await self._write_message(frame.SerializeToString())
+
+    return CardAwareClient
+
 
 # Message type display mapping
 MSG_TYPE_MAP = {
@@ -235,6 +288,26 @@ def _extract_post_text(content_json: dict) -> str:
     return text
 
 
+async def _shutdown_ws_client(client: Any, ws_loop: asyncio.AbstractEventLoop) -> None:
+    """Cancel the SDK WebSocket client's tasks and close its connection.
+
+    ``lark.ws.Client`` has no ``stop()``: its ``start()`` ends in a module-level
+    ``_select()`` that never returns, so a reloaded or disabled channel used to
+    keep a live connection receiving events under a closed-over channel object.
+    Cancelling the loop's tasks makes ``start()`` return to the listener thread.
+    """
+    for task in asyncio.all_tasks(ws_loop):
+        if task is not asyncio.current_task() and not task.done():
+            task.cancel()
+    conn = getattr(client, "_conn", None)
+    if conn is None:
+        return
+    try:
+        await conn.close()
+    except Exception as e:  # noqa: BLE001 - teardown is best effort
+        logger.debug("Error closing Feishu WebSocket connection: {}", e)
+
+
 class FeishuConfig(DeliveryOverrides, StreamingSupport):
     """Feishu/Lark channel configuration using WebSocket long connection."""
 
@@ -247,6 +320,40 @@ class FeishuConfig(DeliveryOverrides, StreamingSupport):
     allow_from: list[str] = Field(default_factory=list)
     react_emoji: str = "THUMBSUP"
     group_policy: Literal["open", "mention"] = "mention"
+
+    # Group chats keep the bot's answer (and its narration/progress) threaded
+    # under the triggering message so one chatty turn does not flood the main
+    # timeline. A p2p chat has no such problem — there a thread is just a panel
+    # the reader has to open — so p2p always gets a plain reply, whatever this
+    # is set to.
+    reply_in_thread: bool = Field(
+        default=True,
+        description=(
+            "Deliver group-chat replies inside the message's thread; "
+            "single chats always get a plain reply."
+        ),
+    )
+
+    # Reasoning output never reaches a channel, so a thinking-heavy turn shows
+    # nothing until the first answer token. The notice is a short message
+    # ("🤔 正在思考…") that is deleted again as soon as the answer starts.
+    thinking_notice: bool = Field(
+        default=True,
+        description=(
+            "Post a brief 'thinking…' notice while the model reasons, removed "
+            "once the answer starts arriving."
+        ),
+    )
+
+    # CardKit renders streamed text with a client-side typewriter effect whose
+    # pace comes from ``streaming_config``. The platform defaults (1 character
+    # per 70 ms ≈ 14 chars/s) sit far below an LLM's output rate, so the card
+    # kept typing long after the turn had finished. Keep the pace ahead of the
+    # model; set either value to 0 to fall back to the platform defaults.
+    # https://open.feishu.cn/document/cardkit-v1/streaming-updates-openapi-overview
+    stream_print_frequency_ms: int = Field(default=30, ge=0, le=2000)
+    stream_print_step: int = Field(default=6, ge=0, le=500)
+    stream_print_strategy: Literal["fast", "delay"] = "fast"
 
 
 _STREAM_ELEMENT_ID = "streaming_md"
@@ -261,6 +368,29 @@ class _FeishuStreamBuf:
     sequence: int = 0
     last_edit: float = 0.0
     stream_id: str | None = None
+    reply_to_message_id: str | None = None
+    # When the first delta of this segment arrived, so the card's live/closed
+    # logs can show how far behind the reader the stream actually ran.
+    started_at: float = field(default_factory=time.monotonic)
+    updates: int = 0
+    # Card creation failures used to be retried on *every* delta (two blocking
+    # API calls each, no backoff), which turned a reply into a slow dribble.
+    # Count them and give up on live streaming for the segment instead.
+    create_failures: int = 0
+    stream_disabled: bool = False
+
+
+@dataclass
+class _ModelPicker:
+    """Server-owned model choices; card button values contain only an index."""
+
+    sender_id: str
+    providers: list[dict[str, Any]]
+    options: list[dict[str, Any]]
+    current: dict[str, str]
+    created_at: float
+    pending: bool = False
+    pending_index: int | None = None
 
 
 class FeishuChannel(BaseChannel):
@@ -278,7 +408,23 @@ class FeishuChannel(BaseChannel):
     name = "feishu"
     display_name = "Feishu"
 
-    _STREAM_EDIT_INTERVAL = 0.5  # throttle between CardKit streaming updates
+    # One CardKit content update costs a round trip (~0.5s on a warm
+    # connection, ~2s cold). Coalescing already sends the full text each time,
+    # so a slower cadence keeps the serial outbound lane ahead of the model
+    # instead of queueing updates behind it.
+    _STREAM_EDIT_INTERVAL = 1.0
+    _STREAM_CREATE_RETRY_INTERVAL = 3.0  # min seconds between card-creation retries
+    _MAX_STREAM_CREATE_FAILURES = 3  # then fall back to buffered delivery
+    _MAX_THINKING_NOTICES = 50  # notices awaiting their answer, per channel
+    _MAX_CONFIRMED_STREAMS = 1000
+    _WORKING_REACTION_TTL = 60 * 60
+    _MAX_WORKING_REACTIONS = 1000
+    _REACTION_DELETE_RETRY_DELAYS = (0.15, 0.5)
+    _REACTION_LATE_RETRY_DELAYS = (0, 5, 30, 120)
+    _MODEL_PAGE_SIZE = 6
+    _MODEL_PICKER_TTL = 60 * 60
+    _MAX_MODEL_PICKERS = 100
+    _WS_SHUTDOWN_TIMEOUT = 3.0
 
     @classmethod
     def default_config(cls) -> dict[str, Any]:
@@ -292,8 +438,17 @@ class FeishuChannel(BaseChannel):
         self._client: Any = None
         self._ws_client: Any = None
         self._ws_thread: threading.Thread | None = None
+        self._ws_loop: asyncio.AbstractEventLoop | None = None
         self._processed_message_ids: OrderedDict[str, None] = OrderedDict()  # Ordered dedup cache
         self._stream_bufs: dict[str, _FeishuStreamBuf] = {}
+        self._confirmed_streams: OrderedDict[str, None] = OrderedDict()
+        self._working_reactions: OrderedDict[str, tuple[str, float]] = OrderedDict()
+        self._reaction_cleanup_tasks: dict[tuple[str, str], asyncio.Task[None]] = {}
+        self._reaction_expiry_tasks: dict[str, asyncio.Task[None]] = {}
+        self._model_pickers: OrderedDict[str, _ModelPicker] = OrderedDict()
+        # chat_id → message id of the "thinking…" notice awaiting an answer.
+        self._thinking_notices: OrderedDict[str, str] = OrderedDict()
+        self._model_picker_lock = Lock()
         self._loop: asyncio.AbstractEventLoop | None = None
 
     @staticmethod
@@ -301,6 +456,20 @@ class FeishuChannel(BaseChannel):
         """Scope streaming buffers to the stream segment when available."""
         meta = metadata or {}
         return str(meta.get("_stream_id") or chat_id)
+
+    def _confirm_stream_delivery(self, stream_key: str) -> None:
+        self._confirmed_streams[stream_key] = None
+        self._confirmed_streams.move_to_end(stream_key)
+        while len(self._confirmed_streams) > self._MAX_CONFIRMED_STREAMS:
+            self._confirmed_streams.popitem(last=False)
+
+    def consume_stream_delivery(self, metadata: dict[str, Any]) -> bool:
+        """Confirm the final card reached Feishu before suppressing plain text."""
+        stream_id = str(metadata.get("_stream_id") or "")
+        if stream_id and stream_id in self._confirmed_streams:
+            self._confirmed_streams.pop(stream_id)
+            return True
+        return False
 
     @staticmethod
     def _register_optional_event(builder: Any, method_name: str, handler: Any) -> Any:
@@ -332,6 +501,19 @@ class FeishuChannel(BaseChannel):
         import lark_oapi as lark
         from lark_oapi.core.const import FEISHU_DOMAIN, LARK_DOMAIN
 
+        from deeptutor.partners.channels.lark_http import install_keep_alive
+
+        # Every sync call would otherwise open a new connection (DNS + TCP +
+        # TLS ≈ 2s per call on a remote host), which the serial outbound lane
+        # pays per message. Verified before it is installed.
+        if not install_keep_alive():
+            logger.warning(
+                "Feishu keep-alive HTTP transport unavailable; every API call "
+                "will pay a fresh connection"
+            )
+
+        ws_module = lark.ws.client
+
         self._running = True
         self._loop = asyncio.get_running_loop()
         sdk_domain = LARK_DOMAIN if self.config.domain == "lark" else FEISHU_DOMAIN
@@ -360,18 +542,27 @@ class FeishuChannel(BaseChannel):
             "register_p2_im_chat_access_event_bot_p2p_chat_entered_v1",
             self._on_bot_p2p_chat_entered,
         )
+        builder = self._register_optional_event(
+            builder, "register_p2_card_action_trigger", self._on_card_action_sync
+        )
         event_handler = builder.build()
 
-        # Create WebSocket client for long connection
-        self._ws_client = lark.ws.Client(
+        # The supported SDK's WS client drops CARD frames before its callback
+        # dispatcher runs. Route those frames while preserving the SDK's normal
+        # EVENT path and response envelope.
+        ws_client_cls = _card_aware_ws_client(lark.ws.Client, ws_module)
+        ws_kwargs: dict[str, Any] = {
+            "event_handler": event_handler,
+            "log_level": lark.LogLevel.INFO,
+            "domain": sdk_domain,
+        }
+        # extra_ua_tags was added after the minimum supported SDK version.
+        if "extra_ua_tags" in inspect.signature(lark.ws.Client.__init__).parameters:
+            ws_kwargs["extra_ua_tags"] = ["channel"]
+        self._ws_client = ws_client_cls(
             self.config.app_id,
             self.config.app_secret,
-            event_handler=event_handler,
-            log_level=lark.LogLevel.INFO,
-            domain=sdk_domain,
-            # Without this tag Feishu uses the personal-client protocol and may
-            # omit group @mention events over WebSocket.
-            extra_ua_tags=["channel"],
+            **ws_kwargs,
         )
 
         # Start WebSocket client in a separate thread with reconnect loop.
@@ -386,13 +577,17 @@ class FeishuChannel(BaseChannel):
 
             ws_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(ws_loop)
+            self._ws_loop = ws_loop
             # Patch the module-level loop used by lark's ws Client.start()
             _lark_ws_client.loop = ws_loop
+            ws_client = self._ws_client
             try:
                 while self._running:
                     try:
                         self.set_setup_state("connecting")
-                        self._ws_client.start()
+                        ws_client.start()
+                    except asyncio.CancelledError:
+                        break
                     except Exception as e:
                         logger.warning("Feishu WebSocket error: {}", e)
                         self.set_setup_state(
@@ -402,6 +597,14 @@ class FeishuChannel(BaseChannel):
                     if self._running:
                         time.sleep(5)
             finally:
+                # ``start()`` leaves ping/receive tasks pending; close them and
+                # the socket before the loop dies so Feishu sees this listener
+                # go away instead of keeping a zombie connection.
+                try:
+                    ws_loop.run_until_complete(_shutdown_ws_client(ws_client, ws_loop))
+                except Exception as e:  # noqa: BLE001 - teardown is best effort
+                    logger.debug("Error shutting down Feishu WebSocket: {}", e)
+                self._ws_loop = None
                 ws_loop.close()
 
         self._ws_thread = threading.Thread(target=run_ws, daemon=True)
@@ -415,15 +618,60 @@ class FeishuChannel(BaseChannel):
         while self._running:
             await asyncio.sleep(1)
 
+    def _request_ws_shutdown(self) -> None:
+        """Ask the listener thread's WebSocket client to drop its connection.
+
+        Safe to call from any thread; the SDK's ``start()`` returns once its
+        tasks are cancelled, which lets ``run_ws`` finish and close the socket.
+        """
+        ws_loop = self._ws_loop
+        ws_client = self._ws_client
+        if ws_loop is None or ws_client is None or ws_loop.is_closed():
+            return
+        try:
+            ws_loop.call_soon_threadsafe(
+                lambda: ws_loop.create_task(_shutdown_ws_client(ws_client, ws_loop))
+            )
+        except RuntimeError:
+            return
+
     async def stop(self) -> None:
         """
-        Stop the Feishu bot.
+        Stop the Feishu bot and release its WebSocket long connection.
 
-        Notice: lark.ws.Client does not expose stop method， simply exiting the program will close the client.
+        Notice: lark.ws.Client does not expose stop; the listener loop is ended
+        by cancelling the SDK's pending tasks and closing its connection, so a
+        reload does not leave a second listener subscribed to the same app.
 
         Reference: https://github.com/larksuite/oapi-sdk-python/blob/v2_main/lark_oapi/ws/client.py#L86
         """
         self._running = False
+        self._request_ws_shutdown()
+        thread = self._ws_thread
+        if thread is not None and thread.is_alive():
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, thread.join, self._WS_SHUTDOWN_TIMEOUT)
+            if thread.is_alive():
+                logger.warning(
+                    "Feishu WebSocket listener still running after {}s",
+                    self._WS_SHUTDOWN_TIMEOUT,
+                )
+        self._ws_thread = None
+        self._ws_client = None
+        self._confirmed_streams.clear()
+        cleanup_tasks = [
+            *self._reaction_cleanup_tasks.values(),
+            *self._reaction_expiry_tasks.values(),
+        ]
+        for task in cleanup_tasks:
+            task.cancel()
+        if cleanup_tasks:
+            await asyncio.gather(*cleanup_tasks, return_exceptions=True)
+        self._reaction_cleanup_tasks.clear()
+        self._reaction_expiry_tasks.clear()
+        self._working_reactions.clear()
+        with self._model_picker_lock:
+            self._model_pickers.clear()
         logger.info("Feishu bot stopped")
 
     def _is_bot_mentioned(self, message: Any) -> bool:
@@ -449,7 +697,7 @@ class FeishuChannel(BaseChannel):
             return True
         return self._is_bot_mentioned(message)
 
-    def _add_reaction_sync(self, message_id: str, emoji_type: str) -> None:
+    def _add_reaction_sync(self, message_id: str, emoji_type: str) -> str | None:
         """Sync helper for adding reaction (runs in thread pool)."""
         from lark_oapi.api.im.v1 import (
             CreateMessageReactionRequest,
@@ -477,8 +725,108 @@ class FeishuChannel(BaseChannel):
                 )
             else:
                 logger.debug("Added {} reaction to message {}", emoji_type, message_id)
+                reaction_id = getattr(getattr(response, "data", None), "reaction_id", None)
+                return reaction_id if isinstance(reaction_id, str) and reaction_id else None
         except Exception as e:
             logger.warning("Error adding reaction: {}", e)
+        return None
+
+    def _prune_working_reactions(self) -> list[tuple[str, tuple[str, float]]]:
+        """Bound receipts for turns that never produce a deliverable answer."""
+        now = time.monotonic()
+        expired: list[tuple[str, tuple[str, float]]] = []
+        while self._working_reactions:
+            _, (_, created_at) = next(iter(self._working_reactions.items()))
+            if (
+                len(self._working_reactions) <= self._MAX_WORKING_REACTIONS
+                and now - created_at < self._WORKING_REACTION_TTL
+            ):
+                break
+            message_id, receipt = self._working_reactions.popitem(last=False)
+            expiry_task = self._reaction_expiry_tasks.pop(message_id, None)
+            if expiry_task:
+                expiry_task.cancel()
+            expired.append((message_id, receipt))
+        return expired
+
+    def _remove_reaction_sync(self, message_id: str, reaction_id: str) -> bool:
+        from lark_oapi.api.im.v1 import DeleteMessageReactionRequest
+
+        try:
+            request = (
+                DeleteMessageReactionRequest.builder()
+                .message_id(message_id)
+                .reaction_id(reaction_id)
+                .build()
+            )
+            response = self._client.im.v1.message_reaction.delete(request)
+            if response.success():
+                return True
+            logger.warning(
+                "Failed to remove Feishu working reaction: code={}, msg={}",
+                response.code,
+                response.msg,
+            )
+        except Exception as e:
+            logger.warning("Error removing Feishu working reaction: {}", e)
+        return False
+
+    async def _delete_reaction(self, message_id: str, reaction_id: str) -> bool:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self._remove_reaction_sync, message_id, reaction_id)
+
+    def _clear_reaction_receipt(self, message_id: str, receipt: tuple[str, float]) -> None:
+        if self._working_reactions.get(message_id) != receipt:
+            return
+        self._working_reactions.pop(message_id, None)
+        expiry_task = self._reaction_expiry_tasks.pop(message_id, None)
+        if expiry_task and expiry_task is not asyncio.current_task():
+            expiry_task.cancel()
+
+    def _schedule_reaction_expiry(self, message_id: str, receipt: tuple[str, float]) -> None:
+        async def expire() -> None:
+            try:
+                await asyncio.sleep(self._WORKING_REACTION_TTL)
+                if self._working_reactions.get(message_id) == receipt:
+                    await self._finish_reaction(message_id)
+            finally:
+                if self._reaction_expiry_tasks.get(message_id) is asyncio.current_task():
+                    self._reaction_expiry_tasks.pop(message_id, None)
+
+        self._reaction_expiry_tasks[message_id] = asyncio.create_task(expire())
+
+    def _schedule_reaction_cleanup(self, message_id: str, receipt: tuple[str, float]) -> None:
+        key = (message_id, receipt[0])
+        if key in self._reaction_cleanup_tasks:
+            return
+
+        async def retry() -> None:
+            try:
+                for delay in self._REACTION_LATE_RETRY_DELAYS:
+                    if delay:
+                        await asyncio.sleep(delay)
+                    if not self._client:
+                        return
+                    if await self._delete_reaction(*key):
+                        self._clear_reaction_receipt(message_id, receipt)
+                        return
+            finally:
+                self._reaction_cleanup_tasks.pop(key, None)
+
+        self._reaction_cleanup_tasks[key] = asyncio.create_task(retry())
+
+    async def _finish_reaction(self, message_id: str) -> None:
+        receipt = self._working_reactions.get(message_id)
+        if not receipt or not self._client:
+            return
+        reaction_id, _ = receipt
+        for delay in (0, *self._REACTION_DELETE_RETRY_DELAYS):
+            if delay:
+                await asyncio.sleep(delay)
+            if await self._delete_reaction(message_id, reaction_id):
+                self._clear_reaction_receipt(message_id, receipt)
+                return
+        self._schedule_reaction_cleanup(message_id, receipt)
 
     async def _add_reaction(self, message_id: str, emoji_type: str = "THUMBSUP") -> None:
         """
@@ -490,7 +838,21 @@ class FeishuChannel(BaseChannel):
             return
 
         loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._add_reaction_sync, message_id, emoji_type)
+        reaction_id = await loop.run_in_executor(
+            None, self._add_reaction_sync, message_id, emoji_type
+        )
+        if reaction_id:
+            previous = self._working_reactions.get(message_id)
+            if previous:
+                previous_expiry = self._reaction_expiry_tasks.pop(message_id, None)
+                if previous_expiry:
+                    previous_expiry.cancel()
+                self._schedule_reaction_cleanup(message_id, previous)
+            receipt = (reaction_id, time.monotonic())
+            self._working_reactions[message_id] = receipt
+            self._schedule_reaction_expiry(message_id, receipt)
+            for old_message_id, old_receipt in self._prune_working_reactions():
+                self._schedule_reaction_cleanup(old_message_id, old_receipt)
 
     # Regex to match markdown tables (header + separator + data rows)
     _TABLE_RE = re.compile(
@@ -908,13 +1270,153 @@ class FeishuChannel(BaseChannel):
 
         return None, f"[{msg_type}: download failed]"
 
-    def _send_message_sync(
-        self, receive_id_type: str, receive_id: str, msg_type: str, content: str
-    ) -> bool:
-        """Send a single message (text/image/file/interactive) synchronously."""
+    @staticmethod
+    def _is_group_chat(receive_id: str) -> bool:
+        """Group chats are addressed by ``oc_`` chat id; p2p chats by ``ou_`` open id."""
+        return str(receive_id).startswith("oc_")
+
+    def _thread_reply_enabled(self, receive_id: str) -> bool:
+        """Whether this outbound message belongs inside a Feishu thread."""
+        enabled = bool(getattr(self.config, "reply_in_thread", True))
+        return enabled and self._is_group_chat(receive_id)
+
+    # ── thinking notice ─────────────────────────────────────────────
+
+    def _post_notice_sync(self, receive_id: str, content: str) -> str | None:
+        """Post the "thinking…" notice and return its message id.
+
+        Kept separate from ``_send_message_sync`` so the retraction has an id
+        to work with without widening that method's contract.
+        """
         from lark_oapi.api.im.v1 import CreateMessageRequest, CreateMessageRequestBody
 
         try:
+            request = (
+                CreateMessageRequest.builder()
+                .receive_id_type("chat_id" if self._is_group_chat(receive_id) else "open_id")
+                .request_body(
+                    CreateMessageRequestBody.builder()
+                    .receive_id(receive_id)
+                    .msg_type("text")
+                    .content(json.dumps({"text": content}, ensure_ascii=False))
+                    .build()
+                )
+                .build()
+            )
+            response = self._client.im.v1.message.create(request)
+            if not response.success():
+                logger.debug(
+                    "Feishu thinking notice rejected: code={}, msg={}",
+                    response.code,
+                    response.msg,
+                )
+                return None
+            message_id = getattr(getattr(response, "data", None), "message_id", None)
+            return message_id if isinstance(message_id, str) and message_id else "posted"
+        except Exception as e:
+            logger.debug("Error posting Feishu thinking notice: {}", e)
+            return None
+
+    def _delete_message_sync(self, message_id: str) -> bool:
+        from lark_oapi.api.im.v1 import DeleteMessageRequest
+
+        try:
+            request = DeleteMessageRequest.builder().message_id(message_id).build()
+            response = self._client.im.v1.message.delete(request)
+            if response.success():
+                return True
+            logger.debug(
+                "Failed to retract Feishu notice {}: code={}, msg={}",
+                message_id,
+                response.code,
+                response.msg,
+            )
+        except Exception as e:
+            logger.debug("Error retracting Feishu notice {}: {}", message_id, e)
+        return False
+
+    def _remember_thinking_notice(self, chat_id: str, message_id: str) -> None:
+        self._thinking_notices[chat_id] = message_id
+        self._thinking_notices.move_to_end(chat_id)
+        while len(self._thinking_notices) > self._MAX_THINKING_NOTICES:
+            self._thinking_notices.popitem(last=False)
+
+    async def _post_thinking_notice(self, chat_id: str, content: str) -> None:
+        """Show the reader that the turn is alive before any answer text exists."""
+        if not bool(getattr(self.config, "thinking_notice", True)) or not self._client:
+            return
+        loop = asyncio.get_running_loop()
+        message_id = await loop.run_in_executor(None, self._post_notice_sync, chat_id, content)
+        if message_id:
+            self._remember_thinking_notice(chat_id, message_id)
+
+    async def _retract_thinking_notice(self, chat_id: str) -> None:
+        """Remove the notice once real output exists (best effort)."""
+        message_id = self._thinking_notices.pop(chat_id, None)
+        if not message_id or not self._client:
+            return
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._delete_message_sync, message_id)
+
+    def _send_message_sync(
+        self,
+        receive_id_type: str,
+        receive_id: str,
+        msg_type: str,
+        content: str,
+        reply_to_message_id: str | None = None,
+        *,
+        reply_in_thread: bool | None = None,
+    ) -> bool:
+        """Send a message as a real Feishu reply when its source is known."""
+        from lark_oapi.api.im.v1 import (
+            CreateMessageRequest,
+            CreateMessageRequestBody,
+            ReplyMessageRequest,
+            ReplyMessageRequestBody,
+        )
+
+        use_thread = (
+            self._thread_reply_enabled(receive_id)
+            if reply_in_thread is None
+            else bool(reply_in_thread)
+        )
+
+        try:
+            if reply_to_message_id:
+                request = (
+                    ReplyMessageRequest.builder()
+                    .message_id(reply_to_message_id)
+                    .request_body(
+                        ReplyMessageRequestBody.builder()
+                        .msg_type(msg_type)
+                        .content(content)
+                        .reply_in_thread(use_thread)
+                        .build()
+                    )
+                    .build()
+                )
+                response = self._client.im.v1.message.reply(request)
+                if response.success():
+                    logger.debug(
+                        "Feishu {} reply sent to {} (message_id={})",
+                        msg_type,
+                        receive_id,
+                        reply_to_message_id,
+                    )
+                    return True
+                # A rejected reply may be an expired source message or an
+                # unsupported type in a thread. Preserve the answer via the
+                # original create path; a transport exception is different,
+                # because its send outcome is unknown and a fallback may duplicate.
+                logger.warning(
+                    "Feishu {} reply rejected (message_id={}, code={}, msg={}); "
+                    "falling back to a standalone message",
+                    msg_type,
+                    reply_to_message_id,
+                    response.code,
+                    response.msg,
+                )
             request = (
                 CreateMessageRequest.builder()
                 .receive_id_type(receive_id_type)
@@ -945,15 +1447,60 @@ class FeishuChannel(BaseChannel):
 
     # ── CardKit streaming (send_delta) ───────────────────────────────
 
-    def _create_streaming_card_sync(self, receive_id_type: str, chat_id: str) -> str | None:
-        """Create a CardKit streaming card, send it to chat, return card_id."""
+    def _streaming_config(self) -> dict[str, Any] | None:
+        """Client-side typewriter pace for streamed text, or ``None`` for defaults.
+
+        Feishu prints streamed markdown character by character; without an
+        explicit ``streaming_config`` the pace is 1 char per 70 ms, which no
+        model-generated answer can be rendered at. Clients older than 7.23
+        ignore these parameters and keep their own defaults.
+        """
+        frequency = int(getattr(self.config, "stream_print_frequency_ms", 0) or 0)
+        step = int(getattr(self.config, "stream_print_step", 0) or 0)
+        if frequency <= 0 or step <= 0:
+            return None
+        strategy = str(getattr(self.config, "stream_print_strategy", "fast") or "fast")
+        return {
+            "print_frequency_ms": {"default": frequency},
+            "print_step": {"default": step},
+            "print_strategy": strategy if strategy in {"fast", "delay"} else "fast",
+        }
+
+    def _create_streaming_card_sync(
+        self,
+        receive_id_type: str,
+        chat_id: str,
+        reply_to_message_id: str | None = None,
+        initial_text: str = "",
+    ) -> str | None:
+        """Create a CardKit streaming card, send it to chat, return card_id.
+
+        ``initial_text`` rides along in the card JSON so the first chunk of the
+        reply is visible with the card itself: creating an empty entity and then
+        pushing the same text costs one extra round trip (~0.5–2s depending on
+        the connection), and the reader waits for it.
+        """
         from lark_oapi.api.cardkit.v1 import CreateCardRequest, CreateCardRequestBody
 
+        card_config: dict[str, Any] = {
+            "wide_screen_mode": True,
+            "update_multi": True,
+            "streaming_mode": True,
+        }
+        streaming_config = self._streaming_config()
+        if streaming_config is not None:
+            card_config["streaming_config"] = streaming_config
         card_json = {
             "schema": "2.0",
-            "config": {"wide_screen_mode": True, "update_multi": True, "streaming_mode": True},
+            "config": card_config,
             "body": {
-                "elements": [{"tag": "markdown", "content": "", "element_id": _STREAM_ELEMENT_ID}]
+                "elements": [
+                    {
+                        "tag": "markdown",
+                        "content": initial_text,
+                        "element_id": _STREAM_ELEMENT_ID,
+                    }
+                ]
             },
         }
         try:
@@ -980,7 +1527,9 @@ class FeishuChannel(BaseChannel):
                 card_content = json.dumps(
                     {"type": "card", "data": {"card_id": card_id}}, ensure_ascii=False
                 )
-                if self._send_message_sync(receive_id_type, chat_id, "interactive", card_content):
+                if self._send_message_sync(
+                    receive_id_type, chat_id, "interactive", card_content, reply_to_message_id
+                ):
                     return card_id
                 logger.warning(
                     "Created Feishu streaming card {} but failed to send it to {}",
@@ -1079,12 +1628,14 @@ class FeishuChannel(BaseChannel):
         meta = metadata or {}
         stream_key = self._stream_key(chat_id, meta)
         loop = asyncio.get_running_loop()
-        rid_type = "chat_id" if chat_id.startswith("oc_") else "open_id"
+        rid_type = "chat_id" if self._is_group_chat(chat_id) else "open_id"
+        inbound_message_id = str(meta.get("message_id") or "").strip() or None
 
         if meta.get("_stream_end"):
             buf = self._stream_bufs.pop(stream_key, None)
-            if not buf or not buf.text:
+            if not buf or not buf.text.strip():
                 return
+            reply_to_message_id = buf.reply_to_message_id or inbound_message_id
             if buf.card_id:
                 buf.sequence += 1
                 ok = await loop.run_in_executor(
@@ -1096,30 +1647,66 @@ class FeishuChannel(BaseChannel):
                 )
                 if ok:
                     buf.sequence += 1
-                    await loop.run_in_executor(
+                    closed = await loop.run_in_executor(
                         None,
                         self._close_streaming_mode_sync,
                         buf.card_id,
                         buf.sequence,
+                    )
+                    if not closed:
+                        # The final content update already succeeded. A new
+                        # card here would duplicate an answer the user can see.
+                        logger.warning(
+                            "Feishu streaming card {} displayed its final text but could not close",
+                            buf.card_id,
+                        )
+                    if meta.get("_stream_final"):
+                        self._confirm_stream_delivery(stream_key)
+                        if reply_to_message_id:
+                            await self._finish_reaction(reply_to_message_id)
+                    logger.info(
+                        "Feishu streaming card {} closed for {}: {} chars, {} updates, "
+                        "{:.1f}s after the first delta",
+                        buf.card_id,
+                        stream_key,
+                        len(buf.text),
+                        buf.updates,
+                        time.monotonic() - buf.started_at,
                     )
                     return
                 logger.warning(
                     "Feishu streaming card {} final update failed, falling back to regular card",
                     buf.card_id,
                 )
+            delivered = True
+            await self._retract_thinking_notice(chat_id)
             for chunk in self._split_elements_by_table_limit(self._build_card_elements(buf.text)):
                 card = json.dumps(
                     {"config": {"wide_screen_mode": True}, "elements": chunk},
                     ensure_ascii=False,
                 )
-                await loop.run_in_executor(
-                    None, self._send_message_sync, rid_type, chat_id, "interactive", card
+                sent = await loop.run_in_executor(
+                    None,
+                    self._send_message_sync,
+                    rid_type,
+                    chat_id,
+                    "interactive",
+                    card,
+                    reply_to_message_id,
                 )
+                delivered = delivered and sent
+            if delivered and meta.get("_stream_final"):
+                self._confirm_stream_delivery(stream_key)
+                if reply_to_message_id:
+                    await self._finish_reaction(reply_to_message_id)
             return
 
         buf = self._stream_bufs.get(stream_key)
         if buf is None:
-            buf = _FeishuStreamBuf(stream_id=meta.get("_stream_id"))
+            buf = _FeishuStreamBuf(
+                stream_id=meta.get("_stream_id"),
+                reply_to_message_id=inbound_message_id,
+            )
             self._stream_bufs[stream_key] = buf
         buf.text += delta
         if not buf.text.strip():
@@ -1127,22 +1714,403 @@ class FeishuChannel(BaseChannel):
 
         now = time.monotonic()
         if buf.card_id is None:
+            if buf.stream_disabled:
+                # Live streaming gave up on this segment; ``_stream_end``
+                # delivers the buffered text as a regular card instead.
+                return
+            if buf.create_failures and (now - buf.last_edit) < self._STREAM_CREATE_RETRY_INTERVAL:
+                return
             card_id = await loop.run_in_executor(
-                None, self._create_streaming_card_sync, rid_type, chat_id
+                None,
+                self._create_streaming_card_sync,
+                rid_type,
+                chat_id,
+                buf.reply_to_message_id,
+                buf.text,
             )
             if card_id:
                 buf.card_id = card_id
+                # The card was created carrying this text, so the sequence is
+                # already at the first content push.
                 buf.sequence = 1
-                await loop.run_in_executor(
-                    None, self._stream_update_text_sync, card_id, buf.text, 1
-                )
+                buf.create_failures = 0
+                buf.updates += 1
                 buf.last_edit = now
+                # Real output is on screen now — drop the "thinking…" notice.
+                await self._retract_thinking_notice(chat_id)
+                logger.info(
+                    "Feishu streaming card {} live for {} after {:.1f}s ({} chars queued)",
+                    card_id,
+                    stream_key,
+                    now - buf.started_at,
+                    len(buf.text),
+                )
+            else:
+                buf.create_failures += 1
+                buf.last_edit = now
+                if buf.create_failures >= self._MAX_STREAM_CREATE_FAILURES:
+                    buf.stream_disabled = True
+                    logger.warning(
+                        "Feishu live streaming disabled for {} after {} card-creation "
+                        "failures; the reply will be delivered as a regular card",
+                        stream_key,
+                        buf.create_failures,
+                    )
         elif (now - buf.last_edit) >= self._STREAM_EDIT_INTERVAL:
             buf.sequence += 1
             await loop.run_in_executor(
                 None, self._stream_update_text_sync, buf.card_id, buf.text, buf.sequence
             )
+            buf.updates += 1
             buf.last_edit = now
+
+    def _prune_model_pickers(self) -> None:
+        """Called while the picker lock is held."""
+        now = time.monotonic()
+        for picker_id, picker in list(self._model_pickers.items()):
+            if now - picker.created_at >= self._MODEL_PICKER_TTL:
+                del self._model_pickers[picker_id]
+        while len(self._model_pickers) > self._MAX_MODEL_PICKERS:
+            self._model_pickers.popitem(last=False)
+
+    @staticmethod
+    def _model_label(option: dict[str, Any]) -> str:
+        provider = str(option.get("provider_label") or option.get("profile_name") or "LLM")
+        model = str(option.get("model_name") or option.get("model") or "model")
+        return f"{provider} · {model}"
+
+    @staticmethod
+    def _provider_label(provider: dict[str, Any]) -> str:
+        return str(
+            provider.get("profile_name")
+            or provider.get("provider_label")
+            or provider.get("profile_id")
+            or "LLM"
+        )
+
+    @staticmethod
+    def _provider_option_indices(picker: _ModelPicker, provider_index: int) -> list[int]:
+        profile_id = picker.providers[provider_index]["profile_id"]
+        return [
+            index
+            for index, option in enumerate(picker.options)
+            if option.get("profile_id") == profile_id
+        ]
+
+    def _provider_picker_card(self, picker_id: str, picker: _ModelPicker) -> dict[str, Any]:
+        elements: list[dict[str, Any]] = [
+            {"tag": "div", "text": {"tag": "plain_text", "content": "Choose a provider"}}
+        ]
+        for index, provider in enumerate(picker.providers):
+            current = picker.current.get("profile_id") == provider.get("profile_id")
+            elements.append(
+                {
+                    "tag": "action",
+                    "actions": [
+                        {
+                            "tag": "button",
+                            "text": {
+                                "tag": "plain_text",
+                                "content": f"{'✓ ' if current else ''}{self._provider_label(provider)}"[
+                                    :90
+                                ],
+                            },
+                            "type": "primary" if current else "default",
+                            "value": {
+                                "picker_id": picker_id,
+                                "action": "pick_provider",
+                                "index": index,
+                            },
+                        }
+                    ],
+                }
+            )
+        return {
+            "config": {"wide_screen_mode": True},
+            "header": {"title": {"tag": "plain_text", "content": "Switch model"}},
+            "elements": elements,
+        }
+
+    def _model_picker_card(
+        self,
+        picker_id: str,
+        picker: _ModelPicker,
+        provider_index: int,
+        page: int,
+        *,
+        status: str = "",
+    ) -> dict[str, Any]:
+        option_indices = self._provider_option_indices(picker, provider_index)
+        total_pages = max(
+            1, (len(option_indices) + self._MODEL_PAGE_SIZE - 1) // self._MODEL_PAGE_SIZE
+        )
+        page = max(0, min(page, total_pages - 1))
+        start = page * self._MODEL_PAGE_SIZE
+        provider = picker.providers[provider_index]
+        name_counts: dict[str, int] = {}
+        for index in option_indices:
+            option = picker.options[index]
+            name = str(option.get("model_name") or option.get("model") or "model").casefold()
+            name_counts[name] = name_counts.get(name, 0) + 1
+        elements: list[dict[str, Any]] = []
+        if status:
+            elements.append({"tag": "div", "text": {"tag": "plain_text", "content": status}})
+        elements.append(
+            {
+                "tag": "div",
+                "text": {
+                    "tag": "plain_text",
+                    "content": (
+                        f"{self._provider_label(provider)} · Choose a model · "
+                        f"Page {page + 1} of {total_pages}"
+                    ),
+                },
+            }
+        )
+        for local_index, index in enumerate(
+            option_indices[start : start + self._MODEL_PAGE_SIZE], start=start
+        ):
+            option = picker.options[index]
+            current = picker.current.get("profile_id") == option.get(
+                "profile_id"
+            ) and picker.current.get("model_id") == option.get("model_id")
+            model_name = str(option.get("model_name") or option.get("model") or "model")
+            if name_counts[model_name.casefold()] > 1:
+                model_name += f" ({option['model']})"
+            label = f"{'✓ ' if current else ''}{local_index + 1}. {model_name}"
+            elements.append(
+                {
+                    "tag": "action",
+                    "actions": [
+                        {
+                            "tag": "button",
+                            "text": {"tag": "plain_text", "content": label[:90]},
+                            "type": "primary" if current else "default",
+                            "value": {
+                                "picker_id": picker_id,
+                                "action": "select",
+                                "provider_index": provider_index,
+                                "index": index,
+                            },
+                        }
+                    ],
+                }
+            )
+        navigation = []
+        for label, target in (("◀ Previous", page - 1), ("Next ▶", page + 1)):
+            if 0 <= target < total_pages:
+                navigation.append(
+                    {
+                        "tag": "button",
+                        "text": {"tag": "plain_text", "content": label},
+                        "type": "default",
+                        "value": {
+                            "picker_id": picker_id,
+                            "action": "page",
+                            "provider_index": provider_index,
+                            "page": target,
+                        },
+                    }
+                )
+        navigation.append(
+            {
+                "tag": "button",
+                "text": {"tag": "plain_text", "content": "◀ Providers"},
+                "type": "default",
+                "value": {"picker_id": picker_id, "action": "providers"},
+            }
+        )
+        elements.append({"tag": "action", "actions": navigation})
+        return {
+            "config": {"wide_screen_mode": True},
+            "header": {"title": {"tag": "plain_text", "content": "Switch model"}},
+            "elements": elements,
+        }
+
+    @staticmethod
+    def _model_status_card(content: str) -> dict[str, Any]:
+        return {
+            "config": {"wide_screen_mode": True},
+            "header": {"title": {"tag": "plain_text", "content": "Switch model"}},
+            "elements": [{"tag": "div", "text": {"tag": "plain_text", "content": content}}],
+        }
+
+    def _patch_model_card_sync(self, message_id: str, card: dict[str, Any]) -> bool:
+        """Replace the clicked card after the command finishes."""
+        from lark_oapi.api.im.v1 import PatchMessageRequest, PatchMessageRequestBody
+
+        try:
+            request = (
+                PatchMessageRequest.builder()
+                .message_id(message_id)
+                .request_body(
+                    PatchMessageRequestBody.builder()
+                    .content(json.dumps(card, ensure_ascii=False))
+                    .build()
+                )
+                .build()
+            )
+            response = self._client.im.v1.message.patch(request)
+            if response.success():
+                return True
+            logger.warning(
+                "Failed to patch Feishu model picker {}: code={}, msg={}",
+                message_id,
+                response.code,
+                response.msg,
+            )
+        except Exception as exc:
+            logger.warning("Error patching Feishu model picker {}: {}", message_id, exc)
+        return False
+
+    async def _queue_model_choice(
+        self,
+        *,
+        sender_id: str,
+        message_id: str,
+        picker_id: str,
+        option: dict[str, Any],
+    ) -> None:
+        """Enter the normal Partner command runner after the callback has returned."""
+        command = (
+            "/model "
+            f"{shlex.quote(str(option['profile_id']))} "
+            f"{shlex.quote(str(option['model_id']))}"
+        )
+        await self._handle_message(
+            sender_id=sender_id,
+            chat_id=sender_id,
+            content=command,
+            metadata={
+                "chat_type": "p2p",
+                "_feishu_model_picker_message_id": message_id,
+                "_feishu_model_picker_id": picker_id,
+            },
+        )
+
+    def _on_card_action_sync(self, data: Any) -> Any:
+        """Return page/status cards within Feishu's callback deadline."""
+        from lark_oapi.event.callback.model.p2_card_action_trigger import (
+            CallBackCard,
+            CallBackToast,
+            P2CardActionTriggerResponse,
+        )
+
+        def card_response(card: dict[str, Any]) -> Any:
+            response = P2CardActionTriggerResponse()
+            response.card = CallBackCard()
+            response.card.type = "raw"
+            response.card.data = card
+            return response
+
+        def error_response(message: str) -> Any:
+            response = P2CardActionTriggerResponse()
+            response.toast = CallBackToast()
+            response.toast.type = "error"
+            response.toast.content = message
+            return response
+
+        event = getattr(data, "event", None)
+        value = getattr(getattr(event, "action", None), "value", None)
+        operator = getattr(event, "operator", None)
+        context = getattr(event, "context", None)
+        if not isinstance(value, dict):
+            return error_response("Invalid model picker action.")
+        picker_id = value.get("picker_id")
+        sender_id = str(getattr(operator, "open_id", "") or "")
+        message_id = str(getattr(context, "open_message_id", "") or "")
+        if not isinstance(picker_id, str) or not sender_id or not message_id:
+            return error_response("Invalid model picker action.")
+        with self._model_picker_lock:
+            self._prune_model_pickers()
+            picker = self._model_pickers.get(picker_id)
+            if picker is None or picker.sender_id != sender_id or not self.is_allowed(sender_id):
+                return error_response("This model picker expired. Send /model again.")
+            if picker.pending:
+                return error_response("A model switch is already in progress.")
+            action = value.get("action")
+            if action == "providers":
+                return card_response(self._provider_picker_card(picker_id, picker))
+            if action == "pick_provider":
+                provider_index = value.get("index")
+                if (
+                    type(provider_index) is not int
+                    or not 0 <= provider_index < len(picker.providers)
+                    or not self._provider_option_indices(picker, provider_index)
+                ):
+                    return error_response("Invalid model provider.")
+                return card_response(self._model_picker_card(picker_id, picker, provider_index, 0))
+            provider_index = value.get("provider_index")
+            if type(provider_index) is not int or not 0 <= provider_index < len(picker.providers):
+                return error_response("Invalid model provider.")
+            option_indices = self._provider_option_indices(picker, provider_index)
+            if action == "page":
+                page = value.get("page")
+                if type(page) is not int or not 0 <= page * self._MODEL_PAGE_SIZE < len(
+                    option_indices
+                ):
+                    return error_response("Invalid model picker page.")
+                return card_response(
+                    self._model_picker_card(picker_id, picker, provider_index, page)
+                )
+            if action != "select":
+                return error_response("Invalid model picker action.")
+            index = value.get("index")
+            if type(index) is not int or index not in option_indices:
+                return error_response("Invalid model choice.")
+            loop = self._loop
+            if loop is None or not loop.is_running():
+                return error_response("The bot is reconnecting. Send /model again.")
+            option = picker.options[index]
+            current = next(
+                (
+                    row
+                    for row in picker.options
+                    if row.get("profile_id") == picker.current.get("profile_id")
+                    and row.get("model_id") == picker.current.get("model_id")
+                ),
+                None,
+            )
+            previous = self._model_label(current) if current else "default"
+            pending_page = option_indices.index(index) // self._MODEL_PAGE_SIZE
+            pending_card = self._model_picker_card(
+                picker_id,
+                picker,
+                provider_index,
+                pending_page,
+                status=f"⏳ Switching model: {previous} → {self._model_label(option)}…",
+            )
+            picker.pending = True
+            picker.pending_index = index
+            try:
+                queued = asyncio.run_coroutine_threadsafe(
+                    self._queue_model_choice(
+                        sender_id=sender_id,
+                        message_id=message_id,
+                        picker_id=picker_id,
+                        option=option,
+                    ),
+                    loop,
+                )
+            except RuntimeError:
+                picker.pending = False
+                picker.pending_index = None
+                return error_response("The bot is reconnecting. Send /model again.")
+
+            def release_failed_queue(future: Any) -> None:
+                if not future.cancelled() and future.exception() is None:
+                    return
+                with self._model_picker_lock:
+                    live = self._model_pickers.get(picker_id)
+                    if live is picker and live.pending_index == index:
+                        live.pending = False
+                        live.pending_index = None
+
+        # A completed future runs its callback immediately in this thread.
+        # Register it after releasing the picker lock so a fast queue failure
+        # can clear the pending state without deadlocking the card callback.
+        queued.add_done_callback(release_failed_queue)
+        return card_response(pending_card)
 
     async def send(self, msg: OutboundMessage) -> None:
         """Send a message through Feishu, including media (images/files) if present."""
@@ -1151,25 +2119,164 @@ class FeishuChannel(BaseChannel):
             return
 
         try:
-            receive_id_type = "chat_id" if msg.chat_id.startswith("oc_") else "open_id"
+            receive_id_type = "chat_id" if self._is_group_chat(msg.chat_id) else "open_id"
             loop = asyncio.get_running_loop()
+            metadata = msg.metadata or {}
+            origin_message_id = str(metadata.get("message_id") or "").strip() or None
+            reply_to_message_id = str(msg.reply_to or origin_message_id or "").strip() or None
+
+            if metadata.get("_thinking_notice"):
+                await self._post_thinking_notice(msg.chat_id, msg.content)
+                return
+            if not metadata.get("_progress"):
+                # The answer (or any final output) supersedes the placeholder.
+                await self._retract_thinking_notice(msg.chat_id)
+
+            picker_message_id = str(metadata.get("_feishu_model_picker_message_id") or "")
+            if picker_message_id:
+                completed = bool(metadata.get("_feishu_model_switch_success"))
+                content = msg.content if completed else f"⚠️ {msg.content}"
+                card = self._model_status_card(content)
+                picker_id = str(metadata.get("_feishu_model_picker_id") or "")
+                with self._model_picker_lock:
+                    picker = self._model_pickers.get(picker_id)
+                    if (
+                        picker is not None
+                        and picker.sender_id == msg.chat_id
+                        and picker.pending_index is not None
+                    ):
+                        index = picker.pending_index
+                        option = picker.options[index]
+                        if completed:
+                            picker.current = {
+                                "profile_id": str(option["profile_id"]),
+                                "model_id": str(option["model_id"]),
+                            }
+                        picker.pending = False
+                        picker.pending_index = None
+                        provider_index = next(
+                            (
+                                i
+                                for i, provider in enumerate(picker.providers)
+                                if provider["profile_id"] == option["profile_id"]
+                            ),
+                            None,
+                        )
+                        if provider_index is not None:
+                            option_indices = self._provider_option_indices(picker, provider_index)
+                            page = option_indices.index(index) // self._MODEL_PAGE_SIZE
+                            card = self._model_picker_card(
+                                picker_id, picker, provider_index, page, status=content
+                            )
+                patched = await loop.run_in_executor(
+                    None, self._patch_model_card_sync, picker_message_id, card
+                )
+                if not patched:
+                    await loop.run_in_executor(
+                        None,
+                        self._send_message_sync,
+                        "open_id",
+                        msg.chat_id,
+                        "text",
+                        json.dumps({"text": content}, ensure_ascii=False),
+                    )
+                return
+
+            raw_options = metadata.get("_feishu_model_options")
+            picker_options = (
+                [
+                    option
+                    for option in raw_options
+                    if isinstance(option, dict)
+                    and option.get("profile_id")
+                    and option.get("model_id")
+                    and option.get("model")
+                ]
+                if isinstance(raw_options, list)
+                else []
+            )
+            if picker_options and msg.chat_id.startswith("ou_"):
+                listed_providers = {
+                    str(row.get("profile_id")): row
+                    for row in (metadata.get("_feishu_model_providers") or [])
+                    if isinstance(row, dict) and row.get("profile_id")
+                }
+                providers: list[dict[str, Any]] = []
+                seen_profiles: set[str] = set()
+                for option in picker_options:
+                    profile_id = str(option["profile_id"])
+                    if profile_id in seen_profiles:
+                        continue
+                    seen_profiles.add(profile_id)
+                    listed = listed_providers.get(profile_id) or {}
+                    providers.append(
+                        {
+                            "profile_id": profile_id,
+                            "profile_name": listed.get("profile_name")
+                            or option.get("profile_name"),
+                            "provider_label": listed.get("provider_label")
+                            or option.get("provider_label"),
+                        }
+                    )
+                picker_id = uuid.uuid4().hex[:16]
+                picker = _ModelPicker(
+                    sender_id=msg.chat_id,
+                    providers=providers,
+                    options=picker_options,
+                    current=dict(metadata.get("_feishu_model_current") or {}),
+                    created_at=time.monotonic(),
+                )
+                with self._model_picker_lock:
+                    self._model_pickers[picker_id] = picker
+                    self._prune_model_pickers()
+                sent = await loop.run_in_executor(
+                    None,
+                    self._send_message_sync,
+                    "open_id",
+                    msg.chat_id,
+                    "interactive",
+                    json.dumps(self._provider_picker_card(picker_id, picker), ensure_ascii=False),
+                    reply_to_message_id,
+                )
+                if sent:
+                    if origin_message_id:
+                        await self._finish_reaction(origin_message_id)
+                    return
+                with self._model_picker_lock:
+                    self._model_pickers.pop(picker_id, None)
+
+            delivered = True
+            sent_any = False
+
+            async def send_payload(msg_type: str, content: str) -> None:
+                nonlocal delivered, sent_any
+                sent_any = True
+                sent = await loop.run_in_executor(
+                    None,
+                    self._send_message_sync,
+                    receive_id_type,
+                    msg.chat_id,
+                    msg_type,
+                    content,
+                    reply_to_message_id,
+                )
+                delivered = delivered and sent
 
             for file_path in msg.media:
                 if not os.path.isfile(file_path):
                     logger.warning("Media file not found: {}", file_path)
+                    delivered = False
                     continue
                 ext = os.path.splitext(file_path)[1].lower()
                 if ext in self._IMAGE_EXTS:
                     key = await loop.run_in_executor(None, self._upload_image_sync, file_path)
                     if key:
-                        await loop.run_in_executor(
-                            None,
-                            self._send_message_sync,
-                            receive_id_type,
-                            msg.chat_id,
+                        await send_payload(
                             "image",
                             json.dumps({"image_key": key}, ensure_ascii=False),
                         )
+                    else:
+                        delivered = False
                 else:
                     key = await loop.run_in_executor(None, self._upload_file_sync, file_path)
                     if key:
@@ -1179,14 +2286,12 @@ class FeishuChannel(BaseChannel):
                             media_type = "media"
                         else:
                             media_type = "file"
-                        await loop.run_in_executor(
-                            None,
-                            self._send_message_sync,
-                            receive_id_type,
-                            msg.chat_id,
+                        await send_payload(
                             media_type,
                             json.dumps({"file_key": key}, ensure_ascii=False),
                         )
+                    else:
+                        delivered = False
 
             if msg.content and msg.content.strip():
                 fmt = self._detect_msg_format(msg.content)
@@ -1194,40 +2299,25 @@ class FeishuChannel(BaseChannel):
                 if fmt == "text":
                     # Short plain text – send as simple text message
                     text_body = json.dumps({"text": msg.content.strip()}, ensure_ascii=False)
-                    await loop.run_in_executor(
-                        None,
-                        self._send_message_sync,
-                        receive_id_type,
-                        msg.chat_id,
-                        "text",
-                        text_body,
-                    )
+                    await send_payload("text", text_body)
 
                 elif fmt == "post":
                     # Medium content with links – send as rich-text post
                     post_body = self._markdown_to_post(msg.content)
-                    await loop.run_in_executor(
-                        None,
-                        self._send_message_sync,
-                        receive_id_type,
-                        msg.chat_id,
-                        "post",
-                        post_body,
-                    )
+                    await send_payload("post", post_body)
 
                 else:
                     # Complex / long content – send as interactive card
                     elements = self._build_card_elements(msg.content)
                     for chunk in self._split_elements_by_table_limit(elements):
                         card = {"config": {"wide_screen_mode": True}, "elements": chunk}
-                        await loop.run_in_executor(
-                            None,
-                            self._send_message_sync,
-                            receive_id_type,
-                            msg.chat_id,
+                        await send_payload(
                             "interactive",
                             json.dumps(card, ensure_ascii=False),
                         )
+
+            if sent_any and delivered and origin_message_id and not metadata.get("_progress"):
+                await self._finish_reaction(origin_message_id)
 
         except Exception as e:
             logger.error("Error sending Feishu message: {}", e)
@@ -1269,9 +2359,8 @@ class FeishuChannel(BaseChannel):
             if chat_type == "group" and not self._is_group_message_for_bot(message):
                 logger.debug("Feishu: skipping group message (not mentioned)")
                 return
-
-            # Add reaction
-            await self._add_reaction(message_id, self.config.react_emoji)
+            if not self.is_allowed(sender_id):
+                return
 
             # Parse content
             content_parts = []
@@ -1334,6 +2423,10 @@ class FeishuChannel(BaseChannel):
 
             if not content and not media_paths:
                 return
+
+            # Only acknowledge a message that can reach the partner runner;
+            # unsupported empty events have no final reply to clear the badge.
+            await self._add_reaction(message_id, self.config.react_emoji)
 
             # Forward to message bus
             reply_to = chat_id if chat_type == "group" else sender_id

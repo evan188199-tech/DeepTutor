@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 import typer
 
@@ -27,7 +28,7 @@ from .skill import register as register_skill
 from .workspace_cmd import register as register_workspace
 
 set_mode(RunMode.CLI)
-configure_logging()
+configure_logging(console_stream=sys.stderr)
 
 app = typer.Typer(
     name="deeptutor",
@@ -42,7 +43,7 @@ kb_app = typer.Typer(help="Manage knowledge bases.")
 skill_app = typer.Typer(help="Manage skills and install from hubs (ClawHub, …).")
 memory_app = typer.Typer(help="View and manage lightweight memory.")
 plugin_app = typer.Typer(help="List plugins.")
-config_app = typer.Typer(help="Inspect configuration.")
+config_app = typer.Typer(help="Inspect and apply configuration.")
 session_app = typer.Typer(help="Manage shared sessions.")
 notebook_app = typer.Typer(help="Manage notebooks and imported markdown records.")
 provider_app = typer.Typer(help="Manage provider OAuth login.")
@@ -91,6 +92,9 @@ def run_capability(
     ),
     message: str = typer.Argument(..., help="Message to send."),
     session: str | None = typer.Option(None, "--session", help="Existing session id."),
+    workspace: str | None = typer.Option(
+        None, "--workspace", help="Registered workspace id; omit for default."
+    ),
     tool: list[str] = typer.Option([], "--tool", "-t", help="Enabled tool(s)."),
     kb: list[str] = typer.Option([], "--kb", help="Knowledge base name."),
     notebook_ref: list[str] = typer.Option([], "--notebook-ref", help="Notebook references."),
@@ -119,7 +123,8 @@ def run_capability(
         notebook_refs=notebook_ref,
         history_refs=history_ref,
     )
-    maybe_run(run_turn_and_render(app=DeepTutorApp(), request=request, fmt=fmt))
+    client = DeepTutorApp(workspace_id=workspace) if workspace is not None else DeepTutorApp()
+    maybe_run(run_turn_and_render(app=client, request=request, fmt=fmt))
 
 
 @app.command()
@@ -209,8 +214,8 @@ def serve(
         reload=reload,
         workers=backend_workers,
         reload_excludes=["web/*", "data/*"] if reload else None,
-        # Next sanitizes proxy headers; disable Uvicorn's generic XFF trust so
-        # request.client still identifies the actual backend peer.
+        # Keep request.client tied to the actual peer; XFF is client-controlled
+        # unless the deployment explicitly provides a trusted proxy.
         proxy_headers=False,
         ws_max_size=get_ws_max_size(),
         timeout_keep_alive=HTTP_KEEP_ALIVE_TIMEOUT,

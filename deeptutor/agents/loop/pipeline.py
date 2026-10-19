@@ -31,6 +31,7 @@ from deeptutor.agents._shared.tool_composition import (
     ToolMountFlags,
     compose_enabled_tools,
     default_optional_tools,
+    partner_can_record_questions,
     user_has_mastery_topics,
     user_has_memory,
     user_has_notebooks,
@@ -85,7 +86,7 @@ from deeptutor.services.llm import (
     supports_tools,  # noqa: F401  (re-exported for tests)
 )
 from deeptutor.services.llm.context_window import resolve_effective_context_window
-from deeptutor.services.prompt import get_prompt_manager
+from deeptutor.services.prompt import get_prompt_manager, normalize_language
 from deeptutor.services.prompt.lookup import prompt_text as _prompt_text
 from deeptutor.tools.builtin import PARTNER_BUILTIN_TOOL_NAMES
 
@@ -104,6 +105,9 @@ KB_SEED_CHARS_PER_KB = 4000
 # tool calls ends the loop early — that is the normal exit.
 DEFAULT_MAX_ROUNDS = 8
 CONTEXT_WINDOW_GUARD_RATIO = 0.9
+# Provider image token accounting varies by model and resolution. Reserve a
+# conservative amount for each image instead of treating source pixels as free.
+IMAGE_TOKEN_GUARD_RESERVE = 4096
 _DispatchOutcome = DispatchOutcome
 
 
@@ -235,7 +239,9 @@ class AgenticLoopPipeline:
         event_stage: str = "responding",
         emit_result: bool = True,
     ) -> None:
-        self.language = "zh" if language.lower().startswith("zh") else "en"
+        # Prompt resources fall back to English; the requested output language
+        # must still reach the assembler's final language directive.
+        self.language = normalize_language(language)
         self.llm_config = get_llm_config()
         self.binding = getattr(self.llm_config, "binding", None) or "openai"
         self.model = getattr(self.llm_config, "model", None)
@@ -407,6 +413,12 @@ class AgenticLoopPipeline:
         )
         if tool_schemas is not None and self._tool_view is not None:
             self._tool_view.attach(tool_schemas)
+        if tool_schemas:
+            # Reuse the last admitted order, including deferred tools loaded
+            # during that turn. Removed/unauthorized tools stay removed.
+            prior = (context.runtime.previous_model_turn or {}).get("tools") or []
+            order = {item["function"]["name"]: i for i, item in enumerate(prior)}
+            tool_schemas.sort(key=lambda item: order.get(item["function"]["name"], len(order)))
 
         loop = AgentLoop(
             pipeline=self,
@@ -443,7 +455,13 @@ class AgenticLoopPipeline:
             capability_blocks=self._capability_system_blocks(context),
             include_tool_manifest=include_tool_manifest,
         )
-        return self._prompt_assembler.render(self._last_prompt_blocks)
+        stable_blocks, self._runtime_snapshots = self._prompt_assembler.split_for_replay(
+            self._last_prompt_blocks
+        )
+        return self._prompt_assembler.render(
+            stable_blocks,
+            allow_user_override=not bool(context.metadata.get("reply_language_fixed")),
+        )
 
     def _build_loop_messages(
         self,
@@ -470,7 +488,12 @@ class AgenticLoopPipeline:
             kb_seed=kb_seed,
         )
         messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt}]
-        for item in context.conversation_history:
+        history = context.runtime.model_history
+        if history is not None:
+            from copy import deepcopy
+
+            messages.extend(deepcopy(history))
+        for item in context.conversation_history if history is None else []:
             role = item.get("role")
             content = item.get("content")
             if role in {"user", "assistant"} and isinstance(content, (str, list)):
@@ -488,6 +511,47 @@ class AgenticLoopPipeline:
                     "[Conversation summary]",
                 )
                 messages.append({"role": "system", "content": f"{header}\n{content}"})
+        previous_snapshots = {
+            item["_context_snapshot"]: item.get("content")
+            for item in messages
+            if isinstance(item.get("_context_snapshot"), str)
+        }
+        snapshots = dict(self._runtime_snapshots)
+        # The rolling summary is a runtime fact like any other: it is rewritten
+        # when compaction runs, so it must reach the model as a *trailing*
+        # snapshot rather than a leading system message. Appended last, a
+        # rewrite (and the compaction that causes it) only ever adds bytes after
+        # everything the previous request already sent, keeping that request a
+        # prompt-cache hit; the snapshot tag makes the unchanged case a no-op on
+        # later turns instead of re-appending a fresh copy every turn.
+        from deeptutor.services.session.model_history import (
+            SUMMARY_SNAPSHOT_NAME,
+            summary_snapshot,
+        )
+
+        metadata = context.metadata if isinstance(context.metadata, dict) else {}
+        summary_row = summary_snapshot(str(metadata.get("conversation_summary") or ""))
+        if summary_row is not None:
+            snapshots[SUMMARY_SNAPSHOT_NAME] = summary_row["content"]
+        for name in sorted(previous_snapshots.keys() - snapshots.keys()):
+            snapshots[name] = (
+                f"[Runtime context: {name}]\nThis section is now empty; earlier values no longer apply."
+            )
+        # A changed runtime section replaces its old version in this request.
+        # The archive remains intact; actual dialogue/tool evidence is untouched.
+        messages = [
+            item
+            for item in messages
+            if not (
+                item.get("role") == "user"
+                and isinstance(item.get("_context_snapshot"), str)
+                and snapshots.get(item["_context_snapshot"]) != item.get("content")
+            )
+        ]
+        self._model_turn_start = len(messages)
+        for name, snapshot in snapshots.items():
+            if previous_snapshots.get(name) != snapshot:
+                messages.append({"role": "user", "content": snapshot, "_context_snapshot": name})
         messages.append({"role": "user", "content": user_content})
         return self._prepare_messages_with_attachments(messages, context)
 
@@ -601,9 +665,13 @@ class AgenticLoopPipeline:
 
     def _tool_scope(self, context: UnifiedContext) -> ToolScope:
         """Per-turn policy inputs for the provider layer."""
+        from deeptutor.services.workspace.resources import current_resources
+
+        selected_mcp = current_resources().mcp
         raw_filter = context.metadata.get("mcp_tools_filter")
         return ToolScope(
             owner_id=self._current_owner_id(),
+            workspace_mcp=frozenset(selected_mcp) if selected_mcp is not None else None,
             is_partner=self._is_partner_turn(context),
             session_id=context.session_id,
             caller_whitelist=(
@@ -684,11 +752,16 @@ class AgenticLoopPipeline:
 
     def _compose_enabled_tools(self, context: UnifiedContext) -> list[str]:
         is_partner = self._is_partner_turn(context)
+        from deeptutor.tools.research_tools import scientific_context
+
         composed = compose_enabled_tools(
             registry=self.tool_lookup,
             requested_tools=context.enabled_tools,
             optional_whitelist=LOOP_OPTIONAL_TOOLS,
             mount_flags=ToolMountFlags(
+                has_scientific_research=scientific_context(
+                    context.user_message, context.active_capability, context.enabled_tools or []
+                ),
                 # PageIndex KBs are read via the preloaded MCP tools, not rag —
                 # a conversation with only PageIndex KBs doesn't mount rag at all.
                 # Excludes KBs owned by an exclusive capability (an Obsidian vault
@@ -701,7 +774,11 @@ class AgenticLoopPipeline:
                 has_sources=False,
                 has_memory=user_has_memory(),
                 has_notebooks=user_has_notebooks(),
-                has_question_bank=user_has_question_bank(),
+                # A partner turn mounts the bank even when it is still empty:
+                # the tool's record action must be available to file the FIRST
+                # wrong question the learner owns up to (#1244). Product chat
+                # keeps the entries-exist gate.
+                has_question_bank=user_has_question_bank() or partner_can_record_questions(),
                 has_skills=bool(context.skills_manifest),
                 has_deferred_tools=getattr(self, "_deferred_loader", None) is not None,
                 has_exec=getattr(self, "_exec_enabled", False),
@@ -802,6 +879,47 @@ class AgenticLoopPipeline:
             if (seed := cap.pre_loop_seed(context))
         ]
         return "\n\n".join(seed for seed in seeds if seed)
+
+    def _capability_skips_kb_seed(self, context: UnifiedContext) -> bool:
+        """Let an active capability say this turn's message is not a query.
+
+        The KB seed searches the raw user message. That is right for a
+        question, and wrong for a quiz pick like "A": the search has no
+        context and short-query backends reject it (#1624). The KBs stay
+        mounted, so the model can still retrieve with a real query.
+        """
+        for cap in self._active_loop_capabilities(context):
+            hook = getattr(cap, "skip_kb_seed", None)
+            if not callable(hook):
+                continue
+            try:
+                if hook(context):
+                    return True
+            except Exception:
+                logger.warning(
+                    "kb seed hook failed for capability %s",
+                    getattr(cap, "name", "?"),
+                    exc_info=True,
+                )
+        return False
+
+    def _capability_settlement_recovery(
+        self,
+        context: UnifiedContext,
+    ) -> tuple[str, tuple[str, ...]] | None:
+        """Ask for a receipt-backed, restricted final tool action after settlement."""
+        for cap in self._active_loop_capabilities(context):
+            hook = getattr(cap, "settlement_recovery", None)
+            if not callable(hook):
+                continue
+            try:
+                recovery = hook(context)
+            except Exception:
+                logger.warning("Settlement recovery failed for %s", cap.name, exc_info=True)
+                continue
+            if recovery is not None:
+                return recovery
+        return None
 
     def _capability_finish_instruction(self, context: UnifiedContext, final_text: str) -> str:
         """Let an active capability reject a narrow tool-less finish once.
@@ -949,8 +1067,6 @@ class AgenticLoopPipeline:
         context: UnifiedContext,
     ) -> list[dict[str, Any]]:
         schemas = self.tool_lookup.build_openai_schemas(enabled_tools)
-        kb_choices = self._coexisting_rag_kbs(context)
-        notebook_choices = self._notebook_choices()
         for schema in schemas:
             function = schema.get("function") if isinstance(schema, dict) else None
             if not isinstance(function, dict):
@@ -962,25 +1078,11 @@ class AgenticLoopPipeline:
             if function.get("name") == "rag" and isinstance(properties, dict):
                 if isinstance(properties.get("query"), dict):
                     properties["query"].setdefault("minLength", 1)
-                if isinstance(properties.get("kb_name"), dict):
-                    properties["kb_name"]["enum"] = kb_choices
             if function.get("name") == "geogebra_analysis" and isinstance(properties, dict):
                 properties.pop("image_base64", None)
                 required = parameters.get("required")
                 if isinstance(required, list):
                     parameters["required"] = [n for n in required if n != "image_base64"]
-            if (
-                function.get("name") in {"list_notebook", "write_note"}
-                and isinstance(properties, dict)
-                and notebook_choices
-                and isinstance(properties.get("notebook_id"), dict)
-            ):
-                nb_schema = properties["notebook_id"]
-                nb_schema["enum"] = [choice["id"] for choice in notebook_choices]
-                rendered = "; ".join(f"{c['id']} = {c['name']}" for c in notebook_choices)
-                nb_schema["description"] = (
-                    f"{nb_schema.get('description', '').rstrip(' .')}. Available: {rendered}."
-                )
             parameters["additionalProperties"] = False
         return schemas
 
@@ -1069,6 +1171,12 @@ class AgenticLoopPipeline:
         iteration_index: int,
         stage: str = "exploring",
     ) -> DispatchOutcome:
+        # Capabilities may bind records to text the turn has actually published.
+        # Model messages also contain discarded/private prose and are not proof
+        # of delivery. The callback reads the existing bus; it adds no ledger.
+        context.extension("published_assistant_content")["snapshot"] = lambda: (
+            stream.public_content_snapshot(source=self.event_source, stage=stage)
+        )
         too_many = None
         if len(tool_calls) > MAX_PARALLEL_TOOL_CALLS:
             too_many = self._t(
@@ -1297,8 +1405,16 @@ class AgenticLoopPipeline:
             sandbox_user_id=self._current_user_id(),
         )
         task_dir = Path(runtime_workspace.output_dir) if runtime_workspace is not None else task_dir
-        if tool_name == "rag":
-            kwargs.setdefault("mode", "hybrid")
+        if tool_name in {"rag", "preprint"}:
+            if tool_name == "rag":
+                kwargs.setdefault("mode", "hybrid")
+            else:
+                kwargs["_research_registry"] = self.tool_lookup
+            from deeptutor.services.llm.capabilities import supports_vision
+
+            kwargs["_vision_supported"] = supports_vision(
+                getattr(self, "binding", ""), getattr(self, "model", None)
+            )
         elif tool_name == "kb_files":
             # The report is read by the user as much as by the model, so it is
             # written in the turn's language. Injected server-side; the tool
@@ -1423,6 +1539,8 @@ class AgenticLoopPipeline:
         kbs = self._coexisting_rag_kbs(context)
         query = (context.user_message or "").strip()
         if not kbs or not query:
+            return ""
+        if self._capability_skips_kb_seed(context):
             return ""
         if len(kbs) > KB_SEED_MAX_KBS:
             kbs = kbs[:KB_SEED_MAX_KBS]
@@ -1557,6 +1675,7 @@ class AgenticLoopPipeline:
         self,
         messages: list[dict[str, Any]],
         stream: StreamBus,
+        tool_schemas: list[dict[str, Any]] | None = None,
     ) -> None:
         try:
             window = resolve_effective_context_window(
@@ -1569,19 +1688,31 @@ class AgenticLoopPipeline:
         if not window or window <= 0:
             return
         budget = int(window * CONTEXT_WINDOW_GUARD_RATIO)
-        if self._estimate_messages_tokens(messages) <= budget:
+        # Each message is counted once; the running total moves as tool results are snipped.
+        counts = [self._request_message_tokens(msg) for msg in messages]
+        total = sum(counts) + self._tool_schema_tokens(tool_schemas)
+        if total <= budget:
             return
+        marker = self._tool_result_snip_marker()
         snipped = False
-        for msg in messages:
-            if msg.get("role") != "tool":
-                continue
-            marker = self._tool_result_snip_marker()
-            if msg.get("content") == marker:
+        for index, msg in enumerate(messages):
+            if msg.get("role") != "tool" or msg.get("content") == marker:
                 continue
             msg["content"] = marker
             snipped = True
-            if self._estimate_messages_tokens(messages) <= budget:
+            after = self._request_message_tokens(msg)
+            total += after - counts[index]
+            counts[index] = after
+            if total <= budget:
                 break
+        if total > budget:
+            logger.warning(
+                "Context-window guard: request is about %d tokens against a %d-token budget "
+                "(window %d) and no tool results are left to trim; sending it as-is",
+                total,
+                budget,
+                window,
+            )
         if snipped:
             await stream.progress(
                 self._t("notices.context_window_guard"),
@@ -1621,19 +1752,26 @@ class AgenticLoopPipeline:
             return 0
 
     @staticmethod
-    def _estimate_messages_tokens(messages: list[dict[str, Any]]) -> int:
-        from deeptutor.services.session.context_builder import count_tokens
+    def _request_message_tokens(message: dict[str, Any]) -> int:
+        """Tokens one message costs in the request, counted as history planning counts it."""
+        from deeptutor.services.session.context_builder import _count_model_context_tokens
 
-        total = 0
-        for msg in messages:
-            content = msg.get("content")
-            if isinstance(content, str):
-                total += count_tokens(content)
-            elif isinstance(content, list):
-                for part in content:
-                    if isinstance(part, dict) and part.get("type") == "text":
-                        total += count_tokens(str(part.get("text") or ""))
-        return total
+        # ``_call_llm`` strips this bookkeeping key before the provider sees the message.
+        sent = {key: value for key, value in message.items() if key != "_context_snapshot"}
+        return _count_model_context_tokens(sent)
+
+    @staticmethod
+    def _tool_schema_tokens(tool_schemas: list[dict[str, Any]] | None) -> int:
+        """Tokens the ``tools`` payload costs when the request carries it."""
+        if not tool_schemas:
+            return 0
+        from deeptutor.services.session.context_builder import _count_model_context_tokens
+
+        return _count_model_context_tokens(tool_schemas)
+
+    @staticmethod
+    def _estimate_messages_tokens(messages: list[dict[str, Any]]) -> int:
+        return sum(AgenticLoopPipeline._request_message_tokens(msg) for msg in messages)
 
     # ---- LLM client ------------------------------------------------------
 
@@ -1755,8 +1893,8 @@ class AgenticLoopPipeline:
         returns say nothing about the size of the collection they came from. The
         inventory is read here instead (off the event loop: a directory walk per
         local KB, and a cached browse call for a connected library that exposes
-        one) and rendered into the system prompt, which keeps the prompt
-        byte-stable for the whole turn and makes counts answerable without a tool
+        one) and rendered into a runtime snapshot, which is appended again only
+        when its contents change and makes counts answerable without a tool
         round-trip.
 
         PageIndex KBs are excluded: ``_pageindex_system_note`` already lists
@@ -1797,8 +1935,8 @@ class AgenticLoopPipeline:
     def _pageindex_system_note(self) -> str:
         """Retrieval instructions for attached PageIndex KBs.
 
-        Populated by ``_prepare_deferred_tools`` once per turn, so the system
-        prompt stays byte-stable for the whole turn (KB cache prefix).
+        Populated by ``_prepare_deferred_tools`` once per turn and included in
+        the independently updated tool-context snapshot.
         """
         providers = getattr(self, "_pageindex_providers", None) or set()
         if not providers:

@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from datetime import datetime
+from functools import wraps
 import json
 import logging
 import re
@@ -25,10 +26,14 @@ import time
 from typing import Any
 import uuid
 
+from deeptutor.services.session.protocol import ActiveTurnConflict
+from deeptutor.services.workspace.context import current_workspace_id
+
 from .ask_user_trace import filter_ask_user_events
 from .event_preview import MAX_TRACE_PREVIEW_EVENTS, compact_trace_preview
 from .provider_response_state import redact_private_message_metadata
 from .scope import StoreScope
+from .search import bounded_search_excerpt, normalize_search_query
 from .workspace_preferences import upgrade_workspace_preferences
 
 logger = logging.getLogger(__name__)
@@ -37,6 +42,28 @@ _VALID_ID = re.compile(r"^[a-zA-Z0-9_-]+$")
 _ACTIVE_TURN_STATUSES = frozenset({"queued", "running", "waiting_input"})
 _TERMINAL_TURN_STATUSES = frozenset({"completed", "failed", "cancelled"})
 _ALL_TURN_STATUSES = _ACTIVE_TURN_STATUSES | _TERMINAL_TURN_STATUSES
+# The deployed PocketBase messages collection has no parent column. Keep the
+# link inside its JSON metadata until the collection schema can be upgraded.
+_PARENT_MESSAGE_METADATA_KEY = "_parent_message_id"
+_SUMMARY_CURSOR_PREFERENCE_KEY = "_summary_message_id"
+
+
+def _captured_store_context(method):
+    """Provider-created stores cannot be redirected by a later ambient scope."""
+
+    @wraps(method)
+    async def call(self, *args, **kwargs):
+        if self.store_scope is None:
+            return await method(self, *args, **kwargs)
+        from deeptutor.multi_user.context import get_current_user
+        from deeptutor.services.workspace.context import workspace_context
+
+        if get_current_user().id != self.store_scope.owner_id:
+            raise ValueError("Session store belongs to another account.")
+        with workspace_context(self._workspace_scope):
+            return await method(self, *args, **kwargs)
+
+    return call
 
 
 def _validate_id(value: str, name: str = "id") -> str:
@@ -96,17 +123,48 @@ def _current_user_id() -> str:
     return _validate_id(get_current_user().id, "user_id")
 
 
-def _find_session_record(pb: Any, session_id: str, user_id: str) -> Any | None:
+def _find_session_record(
+    pb: Any, session_id: str, user_id: str, *, recycled: bool | None = None
+) -> Any | None:
     """Return the ``sessions`` record for *session_id* owned by *user_id*.
 
     Scoping every session lookup by ``user_id`` is the single point that keeps
     one user from reading or mutating another's sessions on the shared
     PocketBase backend. Returns ``None`` when no such row exists for this user.
+
+    ``recycled`` narrows the match by ``deleted_at`` — ``False`` requires an
+    active session, ``True`` requires one already in the recycle bin, and
+    ``None`` (the default) ignores the recycle-bin state entirely, preserving
+    lookup behaviour for callers that predate it. One column carries this:
+    a row is in the bin exactly when ``deleted_at`` is set.
     """
     records = pb.collection("sessions").get_full_list(
-        query_params={"filter": f'session_id="{session_id}" && user_id="{user_id}"'}
+        query_params={
+            "filter": _workspace_filter(f'session_id="{session_id}" && user_id="{user_id}"')
+        }
     )
-    return records[0] if records else None
+    if not records:
+        return None
+    record = records[0]
+    if not _in_workspace(record):
+        return None
+    if recycled is not None and bool(_to_float(getattr(record, "deleted_at", None))) != recycled:
+        return None
+    return record
+
+
+def _workspace_filter(expression: str) -> str:
+    workspace_id = current_workspace_id()
+    field = "preferences_json.workspace_id"
+    partition = (
+        f"{field}={json.dumps(workspace_id)}" if workspace_id else f'({field}=null || {field}="")'
+    )
+    return f"({expression}) && {partition}"
+
+
+def _in_workspace(record) -> bool:
+    prefs = _json_loads(getattr(record, "preferences_json", None), {})
+    return str(prefs.get("workspace_id") or "") == current_workspace_id()
 
 
 class PocketBaseSessionStore:
@@ -115,7 +173,11 @@ class PocketBaseSessionStore:
     def __init__(self) -> None:
         self._closed = False
         self.store_scope: StoreScope | None = None
+        from deeptutor.services.workspace.context import get_workspace_scope
 
+        self._workspace_scope = get_workspace_scope()
+
+    @_captured_store_context
     async def close(self) -> None:
         """Prevent lifecycle owners from retaining an already-closed store."""
         self._closed = True
@@ -124,6 +186,7 @@ class PocketBaseSessionStore:
     # Sessions
     # ------------------------------------------------------------------
 
+    @_captured_store_context
     async def migrate_workspace_preferences(self) -> int:
         """Persist canonical workspace metadata for the current PocketBase user.
 
@@ -158,6 +221,10 @@ class PocketBaseSessionStore:
                     or created_at
                 )
                 payload: dict[str, Any] = {}
+                if _to_float(getattr(record, "deleted_at", None)):
+                    upgraded = {**upgraded, "archived": True}
+                    payload["deleted_at"] = None
+                    payload["preferences_json"] = upgraded
                 if upgraded != current:
                     payload["preferences_json"] = upgraded
                     migrated += 1
@@ -171,6 +238,7 @@ class PocketBaseSessionStore:
 
         return await asyncio.to_thread(_migrate)
 
+    @_captured_store_context
     async def create_session(
         self,
         title: str | None = None,
@@ -192,7 +260,7 @@ class PocketBaseSessionStore:
                         "title": resolved_title[:100],
                         "compressed_summary": "",
                         "summary_up_to_msg_id": 0,
-                        "preferences_json": {},
+                        "preferences_json": {"workspace_id": current_workspace_id()},
                         "capability": "",
                         "status": "idle",
                         "session_created_at": now,
@@ -204,13 +272,14 @@ class PocketBaseSessionStore:
         record = await asyncio.to_thread(_create)
         return self._session_record_to_dict(record, resolved_id, resolved_title, now)
 
+    @_captured_store_context
     async def get_session(self, session_id: str) -> dict[str, Any] | None:
         sid = _validate_id(session_id, "session_id")
         uid = _current_user_id()
 
         def _get():
             try:
-                return _find_session_record(_pb(), sid, uid)
+                return _find_session_record(_pb(), sid, uid, recycled=False)
             except Exception:
                 return None
 
@@ -219,6 +288,7 @@ class PocketBaseSessionStore:
             return None
         return self._session_record_to_dict(record)
 
+    @_captured_store_context
     async def ensure_session(
         self,
         session_id: str | None = None,
@@ -251,6 +321,10 @@ class PocketBaseSessionStore:
             or time.time()
         )
         preferences_raw = getattr(record, "preferences_json", None)
+        preferences = _json_loads(preferences_raw, {})
+        preferences = dict(preferences) if isinstance(preferences, dict) else {}
+        summary_cursor = preferences.pop(_SUMMARY_CURSOR_PREFERENCE_KEY, None)
+        deleted_at_raw = getattr(record, "deleted_at", None)
         return {
             "id": sid,
             "session_id": sid,
@@ -258,16 +332,20 @@ class PocketBaseSessionStore:
             "created_at": created,
             "updated_at": updated,
             "compressed_summary": getattr(record, "compressed_summary", "") or "",
-            "summary_up_to_msg_id": int(getattr(record, "summary_up_to_msg_id", 0) or 0),
+            "summary_up_to_msg_id": summary_cursor
+            or int(getattr(record, "summary_up_to_msg_id", 0) or 0),
             # PocketBase has no local schema-upgrade hook. Normalize at the
             # repository boundary so old remote rows immediately satisfy the
             # same API contract; their next preference write persists it.
-            "preferences": upgrade_workspace_preferences(_json_loads(preferences_raw, {})),
+            "preferences": upgrade_workspace_preferences(preferences),
             "capability": getattr(record, "capability", "") or "",
             "status": getattr(record, "status", "idle") or "idle",
             "active_turn_id": "",
+            "is_deleted": bool(_to_float(getattr(record, "deleted_at", None))),
+            "deleted_at": _to_float(deleted_at_raw) if deleted_at_raw not in (None, "") else None,
         }
 
+    @_captured_store_context
     async def update_session_title(self, session_id: str, title: str) -> bool:
         sid = _validate_id(session_id, "session_id")
         uid = _current_user_id()
@@ -291,6 +369,7 @@ class PocketBaseSessionStore:
             logger.warning(f"update_session_title failed: {exc}")
             return False
 
+    @_captured_store_context
     async def import_legacy_session(
         self,
         session_id: str,
@@ -326,7 +405,10 @@ class PocketBaseSessionStore:
                             "title": (title or "New conversation")[:100],
                             "compressed_summary": "",
                             "summary_up_to_msg_id": 0,
-                            "preferences_json": preferences or {},
+                            "preferences_json": {
+                                **(preferences or {}),
+                                "workspace_id": current_workspace_id(),
+                            },
                             "capability": "chat",
                             "status": "idle",
                             "session_created_at": float(created_at),
@@ -368,48 +450,279 @@ class PocketBaseSessionStore:
 
         return await asyncio.to_thread(_import)
 
+    @_captured_store_context
     async def delete_session(self, session_id: str) -> bool:
+        """Permanently remove a conversation and its stored messages."""
         sid = _validate_id(session_id, "session_id")
         uid = _current_user_id()
 
-        def _delete():
+        def _do():
             record = _find_session_record(_pb(), sid, uid)
+            if record is None:
+                return False
+            # These collections use logical session IDs, not cascading relations.
+            for name in ("turn_events", "turns", "messages"):
+                collection = _pb().collection(name)
+                for child in collection.get_full_list(
+                    query_params={"filter": f'session_id="{sid}"'}
+                ):
+                    collection.delete(child.id)
+            _pb().collection("sessions").delete(record.id)
+            return True
+
+        try:
+            return await asyncio.to_thread(_do)
+        except Exception as exc:
+            logger.warning(f"delete_session failed: {exc}")
+            return False
+
+    @_captured_store_context
+    async def soft_delete_session(self, session_id: str) -> bool:
+        """Move a session to the recycle bin (soft delete)."""
+        sid = _validate_id(session_id, "session_id")
+        uid = _current_user_id()
+
+        def _do():
+            record = _find_session_record(_pb(), sid, uid, recycled=False)
+            if record is None:
+                return False
+            _pb().collection("sessions").update(record.id, {"deleted_at": time.time()})
+            return True
+
+        try:
+            return await asyncio.to_thread(_do)
+        except Exception as exc:
+            logger.warning(f"soft_delete_session failed: {exc}")
+            return False
+
+    @_captured_store_context
+    async def restore_session(self, session_id: str) -> bool:
+        """Restore a soft-deleted session from the recycle bin."""
+        sid = _validate_id(session_id, "session_id")
+        uid = _current_user_id()
+
+        def _do():
+            record = _find_session_record(_pb(), sid, uid, recycled=True)
+            if record is None:
+                return False
+            _pb().collection("sessions").update(record.id, {"deleted_at": None})
+            return True
+
+        try:
+            return await asyncio.to_thread(_do)
+        except Exception as exc:
+            logger.warning(f"restore_session failed: {exc}")
+            return False
+
+    @_captured_store_context
+    async def hard_delete_session(self, session_id: str) -> bool:
+        """Permanently delete a session from the recycle bin.
+
+        Requires a prior soft-delete (defence-in-depth), matching the SQLite
+        backend's guard against accidentally skipping the recycle bin.
+        """
+        sid = _validate_id(session_id, "session_id")
+        uid = _current_user_id()
+
+        def _do():
+            record = _find_session_record(_pb(), sid, uid, recycled=True)
             if record is None:
                 return False
             _pb().collection("sessions").delete(record.id)
             return True
 
         try:
-            return await asyncio.to_thread(_delete)
+            return await asyncio.to_thread(_do)
         except Exception as exc:
-            logger.warning(f"delete_session failed: {exc}")
+            logger.warning(f"hard_delete_session failed: {exc}")
             return False
 
+    @_captured_store_context
+    async def list_deleted_sessions(self, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+        """List soft-deleted sessions ordered by deletion time.
+
+        PocketBase filter strings can't be trusted across server versions for
+        boolean comparisons, so the soft-delete filter and the ``deleted_at``
+        ordering are both applied client-side after fetching the user's rows.
+        """
+        uid = _current_user_id()
+
+        def _do():
+            records = (
+                _pb()
+                .collection("sessions")
+                .get_full_list(query_params={"filter": _workspace_filter(f'user_id="{uid}"')})
+            )
+            deleted = [
+                r for r in records if _in_workspace(r) and _to_float(getattr(r, "deleted_at", None))
+            ]
+            deleted.sort(key=lambda r: _to_float(getattr(r, "deleted_at", None)), reverse=True)
+            page = deleted[offset : offset + limit]
+            return [self._session_record_to_dict(r) for r in page]
+
+        try:
+            return await asyncio.to_thread(_do)
+        except Exception as exc:
+            logger.warning(f"list_deleted_sessions failed: {exc}")
+            return []
+
+    @_captured_store_context
     async def list_sessions(
         self,
         limit: int = 50,
         offset: int = 0,
+        *,
+        workspace_id: str | None = None,
     ) -> list[dict[str, Any]]:
+        limit = max(1, int(limit))
+        offset = max(0, int(offset))
         page = (offset // limit) + 1
+        skip = offset % limit
         uid = _current_user_id()
 
         def _list():
             query_params: dict[str, Any] = {
-                "sort": "-session_updated_at",
-                "filter": f'user_id="{uid}"',
+                "sort": "-session_updated_at,session_id",
+                "filter": _workspace_filter(f'user_id="{uid}" && deleted_at = null'),
             }
-            return _pb().collection("sessions").get_list(page, limit, query_params=query_params)
+            if workspace_id is not None:
+                field = "preferences_json.workspace_id"
+                scope = (
+                    f"{field}={json.dumps(workspace_id)}"
+                    if workspace_id
+                    else f'({field}=null || {field}="")'
+                )
+                query_params["filter"] += (
+                    f" && {scope}"
+                    " && (preferences_json.archived=null || preferences_json.archived=false)"
+                    ' && (preferences_json.parent_session_id=null || preferences_json.parent_session_id="")'
+                )
+            collection = _pb().collection("sessions")
+            result = collection.get_list(page, limit, query_params=query_params)
+            records = list(result.items)
+            if skip and len(records) == limit:
+                records.extend(
+                    collection.get_list(page + 1, limit, query_params=query_params).items
+                )
+            return records[skip : skip + limit]
 
         try:
             result = await asyncio.to_thread(_list)
             # Reading conversations are listed like any other: the sidebar
             # groups them under their collection and a click returns to the
             # reader. See the note on ``_WHERE_NATIVE`` in the SQLite store.
-            return [self._session_record_to_dict(r) for r in result.items]
+            #
+            # The filter above excludes soft-deleted rows on real PocketBase
+            # servers; this is a defensive re-check for servers/mocks where
+            # boolean filter comparisons behave unexpectedly.
+            return [
+                self._session_record_to_dict(r)
+                for r in result
+                if not _to_float(getattr(r, "deleted_at", None)) and _in_workspace(r)
+            ]
         except Exception as exc:
             logger.warning(f"list_sessions failed: {exc}")
             return []
 
+    @_captured_store_context
+    async def search_sessions(
+        self,
+        query: str,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """Search the current user's native sessions without loading transcripts."""
+        normalized = normalize_search_query(query)
+        if not normalized:
+            return {"sessions": [], "total": 0}
+        uid = _current_user_id()
+        bounded_limit = max(1, min(int(limit), 100))
+        bounded_offset = max(0, int(offset))
+
+        def _search() -> dict[str, Any]:
+            pb = _pb()
+            records = pb.collection("sessions").get_full_list(
+                query_params={
+                    "filter": _workspace_filter(f"user_id={json.dumps(uid)} && deleted_at = null")
+                }
+            )
+            records = [
+                record
+                for record in records
+                if _in_workspace(record)
+                and not _to_float(getattr(record, "deleted_at", None))
+                and not str(getattr(record, "session_id", "") or "").startswith("imported_")
+            ]
+            records.sort(
+                key=lambda record: (
+                    -(
+                        _to_float(getattr(record, "session_updated_at", None))
+                        or _to_float(getattr(record, "updated", None))
+                    ),
+                    str(getattr(record, "session_id", "")),
+                ),
+            )
+
+            matched: list[tuple[Any, Any | None]] = []
+            query_literal = json.dumps(normalized, ensure_ascii=False)
+            for record in records:
+                sid = _validate_id(str(getattr(record, "session_id", "")), "session_id")
+                message_page = pb.collection("messages").get_list(
+                    1,
+                    1,
+                    query_params={
+                        "filter": (
+                            f"session_id={json.dumps(sid)} && "
+                            '(role="user" || role="assistant") && '
+                            f"content~{query_literal}"
+                        ),
+                        "sort": "-msg_created_at,-created",
+                    },
+                )
+                matching_messages = self._page_items(message_page)
+                title = str(getattr(record, "title", "") or "")
+                if normalized.casefold() in title.casefold() or matching_messages:
+                    matched.append((record, matching_messages[0] if matching_messages else None))
+
+            page = matched[bounded_offset : bounded_offset + bounded_limit]
+            sessions: list[dict[str, Any]] = []
+            for record, match in page:
+                session = self._session_record_to_dict(record)
+                sid = session["session_id"]
+                summary_page = pb.collection("messages").get_list(
+                    1,
+                    1,
+                    query_params={
+                        "filter": f'session_id={json.dumps(sid)} && role!="system"',
+                        "sort": "-msg_created_at,-created",
+                    },
+                )
+                summary_items = self._page_items(summary_page)
+                session["message_count"] = self._page_total(summary_page)
+                session["last_message"] = str(
+                    getattr(summary_items[0], "content", "") if summary_items else ""
+                )
+                session["match_message_id"] = getattr(match, "id", None)
+                session["match_role"] = getattr(match, "role", None)
+                session["match_created_at"] = (
+                    _to_float(getattr(match, "msg_created_at", None)) if match is not None else None
+                )
+                match_content = (
+                    str(getattr(match, "content", "") or "")
+                    if match is not None
+                    else session["title"]
+                )
+                session["match_excerpt"] = bounded_search_excerpt(match_content, normalized)
+                sessions.append(session)
+            return {"sessions": sessions, "total": len(matched)}
+
+        try:
+            return await asyncio.to_thread(_search)
+        except Exception as exc:
+            logger.warning(f"search_sessions failed: {exc}")
+            return {"sessions": [], "total": 0}
+
+    @_captured_store_context
     async def get_session_summaries(
         self,
         session_ids: list[str],
@@ -435,6 +748,7 @@ class PocketBaseSessionStore:
         )
         return [summary for summary in summaries if summary is not None]
 
+    @_captured_store_context
     async def _get_message_summary(self, session_id: str) -> dict[str, Any]:
         """Fetch one preview row plus PocketBase's aggregate count."""
 
@@ -449,7 +763,7 @@ class PocketBaseSessionStore:
                     1,
                     query_params={
                         "filter": f'session_id="{sid}" && role!="system"',
-                        "sort": "-msg_created_at",
+                        "sort": "-msg_created_at,-created",
                     },
                 )
             )
@@ -467,7 +781,8 @@ class PocketBaseSessionStore:
             logger.warning(f"get message summary failed: {exc}")
             return {"message_count": 0, "last_message": ""}
 
-    async def update_summary(self, session_id: str, summary: str, up_to_msg_id: int) -> bool:
+    @_captured_store_context
+    async def update_summary(self, session_id: str, summary: str, up_to_msg_id: int | str) -> bool:
         sid = _validate_id(session_id, "session_id")
         uid = _current_user_id()
 
@@ -475,11 +790,22 @@ class PocketBaseSessionStore:
             record = _find_session_record(_pb(), sid, uid)
             if record is None:
                 return False
+            preferences = _json_loads(getattr(record, "preferences_json", None), {})
+            preferences = dict(preferences) if isinstance(preferences, dict) else {}
+            # The existing server field is numeric. Keep native record IDs in
+            # its JSON preferences field, hidden at the repository boundary.
+            if isinstance(up_to_msg_id, str):
+                preferences[_SUMMARY_CURSOR_PREFERENCE_KEY] = up_to_msg_id
+            else:
+                preferences.pop(_SUMMARY_CURSOR_PREFERENCE_KEY, None)
             _pb().collection("sessions").update(
                 record.id,
                 {
                     "compressed_summary": summary,
-                    "summary_up_to_msg_id": max(0, int(up_to_msg_id)),
+                    "summary_up_to_msg_id": 0
+                    if isinstance(up_to_msg_id, str)
+                    else max(0, up_to_msg_id),
+                    "preferences_json": preferences,
                 },
             )
             return True
@@ -490,6 +816,7 @@ class PocketBaseSessionStore:
             logger.warning(f"update_summary failed: {exc}")
             return False
 
+    @_captured_store_context
     async def update_session_preferences(
         self, session_id: str, preferences: dict[str, Any]
     ) -> bool:
@@ -508,6 +835,9 @@ class PocketBaseSessionStore:
                 record = _find_session_record(_pb(), sid, uid)
                 if record is None:
                     return False
+                current = _json_loads(getattr(record, "preferences_json", None), {})
+                if isinstance(current, dict) and _SUMMARY_CURSOR_PREFERENCE_KEY in current:
+                    merged[_SUMMARY_CURSOR_PREFERENCE_KEY] = current[_SUMMARY_CURSOR_PREFERENCE_KEY]
                 _pb().collection("sessions").update(
                     record.id,
                     {"preferences_json": merged, "session_updated_at": time.time()},
@@ -522,6 +852,7 @@ class PocketBaseSessionStore:
             logger.warning(f"update_session_preferences failed: {exc}")
             return False
 
+    @_captured_store_context
     async def get_session_with_messages(self, session_id: str) -> dict[str, Any] | None:
         session = await self.get_session(session_id)
         if session is None:
@@ -542,6 +873,7 @@ class PocketBaseSessionStore:
     # current user's own session, so these rows don't carry a separate
     # ``user_id`` filter — the session boundary above is the access gate.
 
+    @_captured_store_context
     async def add_message(
         self,
         session_id: str,
@@ -553,14 +885,15 @@ class PocketBaseSessionStore:
         metadata: dict[str, Any] | None = None,
         parent_message_id: int | str | None = None,
     ) -> int | str:
-        # ``parent_message_id`` is accepted to match the protocol shape but is
-        # not yet wired through PocketBase storage — branching only works on
-        # the SQLite backend today.
-        _ = parent_message_id
         sid = _validate_id(session_id, "session_id")
         now = time.time()
+        stored_metadata = dict(metadata or {})
+        if parent_message_id is not None:
+            stored_metadata[_PARENT_MESSAGE_METADATA_KEY] = str(parent_message_id)
 
         def _add():
+            if _find_session_record(_pb(), sid, _current_user_id()) is None:
+                raise ValueError("Session not found in this workspace")
             payload = {
                 "session_id": sid,
                 "role": role,
@@ -568,7 +901,7 @@ class PocketBaseSessionStore:
                 "capability": capability or "",
                 "events_json": events or [],
                 "attachments_json": attachments or [],
-                "metadata_json": metadata or {},
+                "metadata_json": stored_metadata,
                 "msg_created_at": now,
             }
             record = _pb().collection("messages").create(payload)
@@ -592,8 +925,12 @@ class PocketBaseSessionStore:
             logger.warning(f"add_message failed: {exc}")
             return 0
 
+    @_captured_store_context
     async def delete_message(self, message_id: int | str) -> bool:
         def _delete():
+            row = _pb().collection("messages").get_one(_validate_id(str(message_id)))
+            if _find_session_record(_pb(), str(row.session_id), _current_user_id()) is None:
+                return False
             _pb().collection("messages").delete(str(message_id))
             return True
 
@@ -603,9 +940,12 @@ class PocketBaseSessionStore:
             logger.warning(f"delete_message failed: {exc}")
             return False
 
+    @_captured_store_context
     async def get_last_message(
         self, session_id: str, role: str | None = None
     ) -> dict[str, Any] | None:
+        if await self.get_session(session_id) is None:
+            return None
         sid = _validate_id(session_id, "session_id")
         filter_str = f'session_id="{sid}"'
         if role:
@@ -701,7 +1041,123 @@ class PocketBaseSessionStore:
             **bounds,
         }
 
+    @_captured_store_context
+    async def usage_records(self, start_at: float, end_at: float) -> list[dict[str, Any]]:
+        from .usage_statistics import summaries_from_events
+
+        # PB uses an admin client: derive every message/turn scope from owned sessions.
+        owner = _current_user_id()
+
+        def read() -> list[dict[str, Any]]:
+            pb = _pb()
+
+            def pages(collection: str, query: dict[str, str]):
+                page = 1
+                while True:
+                    response = pb.collection(collection).get_list(page, 200, query_params=query)
+                    rows = self._page_items(response)
+                    yield from rows
+                    if page * 200 >= self._page_total(response) or not rows:
+                        break
+                    page += 1
+
+            sessions = pb.collection("sessions").get_full_list(
+                query_params={
+                    "filter": _workspace_filter(f'user_id="{owner}"'),
+                    "fields": "session_id,user_id,preferences_json",
+                }
+            )
+            ids = [
+                _validate_id(str(row.session_id), "session_id")
+                for row in sessions
+                if getattr(row, "user_id", None) == owner
+                and _in_workspace(row)
+                and not str(row.session_id).startswith("imported_")
+            ]
+            result: list[dict[str, Any]] = []
+            for offset in range(0, len(ids), 30):
+                owned = ids[offset : offset + 30]
+                scope = " || ".join(f'session_id="{sid}"' for sid in owned)
+                records: dict[str, dict[str, Any]] = {}
+                message_metadata: dict[str, dict[str, Any]] = {}
+                for row in pages(
+                    "messages",
+                    {
+                        "filter": f'({scope}) && role="assistant" && msg_created_at >= {float(start_at)} && msg_created_at < {float(end_at)}',
+                        "fields": "id,session_id,role,msg_created_at,events_json,metadata_json",
+                        "sort": "msg_created_at,id",
+                    },
+                ):
+                    if getattr(row, "session_id", None) not in owned:
+                        continue
+                    message_metadata[str(row.id)] = _json_loads(
+                        getattr(row, "metadata_json", None), {}
+                    )
+                    records[str(row.id)] = {
+                        "session_id": row.session_id,
+                        "created_at": _to_float(getattr(row, "msg_created_at", None)),
+                        "summaries": summaries_from_events(
+                            _json_loads(getattr(row, "events_json", None), []),
+                            message_metadata[str(row.id)],
+                        ),
+                    }
+                message_ids = list(records)
+                for start in range(0, len(message_ids), 30):
+                    message_scope = " || ".join(
+                        f'assistant_message_id="{_validate_id(mid, "message_id")}"'
+                        for mid in message_ids[start : start + 30]
+                    )
+                    turns: dict[str, str] = {}
+                    for row in pages(
+                        "turns",
+                        {
+                            "filter": f"({scope}) && ({message_scope})",
+                            "fields": "turn_id,session_id,assistant_message_id",
+                            "sort": "turn_id",
+                        },
+                    ):
+                        mid = str(getattr(row, "assistant_message_id", ""))
+                        if (
+                            mid in records
+                            and getattr(row, "session_id", None) == records[mid]["session_id"]
+                        ):
+                            turns[_validate_id(str(row.turn_id), "turn_id")] = mid
+                            records[mid]["turn_id"] = str(row.turn_id)
+                    if not turns:
+                        continue
+                    turn_scope = " || ".join(f'turn_id="{tid}"' for tid in turns)
+                    events: dict[str, list[dict[str, Any]]] = {tid: [] for tid in turns}
+                    for row in pages(
+                        "turn_events",
+                        {
+                            "filter": f'({turn_scope}) && (type="result" || type="done" || metadata_json.model != null)',
+                            "fields": "turn_id,type,metadata_json,seq",
+                            "sort": "turn_id,seq",
+                        },
+                    ):
+                        tid = getattr(row, "turn_id", None)
+                        if tid in events:
+                            events[tid].append(
+                                {
+                                    "type": getattr(row, "type", ""),
+                                    "metadata": _json_loads(
+                                        getattr(row, "metadata_json", None), {}
+                                    ),
+                                }
+                            )
+                    for tid, values in events.items():
+                        canonical = summaries_from_events(values, message_metadata[turns[tid]])
+                        if canonical:
+                            records[turns[tid]]["summaries"] = canonical
+                result.extend(records.values())
+            return result
+
+        return await asyncio.to_thread(read)
+
+    @_captured_store_context
     async def get_messages(self, session_id: str) -> list[dict[str, Any]]:
+        if await self.get_session(session_id) is None:
+            return []
         sid = _validate_id(session_id, "session_id")
 
         def _get() -> list[dict[str, Any]]:
@@ -747,6 +1203,7 @@ class PocketBaseSessionStore:
             logger.warning(f"get_messages failed: {exc}")
             return []
 
+    @_captured_store_context
     async def get_messages_for_context(
         self, session_id: str, leaf_message_id: int | None = None
     ) -> list[dict[str, Any]]:
@@ -767,7 +1224,10 @@ class PocketBaseSessionStore:
         ]
 
     def _message_record_to_dict(self, record: Any) -> dict[str, Any]:
-        return {
+        raw_metadata = _json_loads(getattr(record, "metadata_json", None), {})
+        metadata = dict(raw_metadata) if isinstance(raw_metadata, dict) else {}
+        parent_message_id = metadata.pop(_PARENT_MESSAGE_METADATA_KEY, None)
+        message = {
             "id": getattr(record, "id", ""),
             "session_id": getattr(record, "session_id", ""),
             "role": getattr(record, "role", ""),
@@ -775,14 +1235,18 @@ class PocketBaseSessionStore:
             "capability": getattr(record, "capability", "") or "",
             "events": _json_loads(getattr(record, "events_json", None), []),
             "attachments": _json_loads(getattr(record, "attachments_json", None), []),
-            "metadata": _json_loads(getattr(record, "metadata_json", None), {}),
+            "metadata": metadata,
             "created_at": _to_float(getattr(record, "msg_created_at", None)),
         }
+        if parent_message_id is not None:
+            message["parent_message_id"] = parent_message_id
+        return message
 
     # ------------------------------------------------------------------
     # Turns
     # ------------------------------------------------------------------
 
+    @_captured_store_context
     async def begin_turn(
         self,
         session_id: str,
@@ -815,7 +1279,10 @@ class PocketBaseSessionStore:
                 if getattr(record, "status", "") in _ACTIVE_TURN_STATUSES
             ]
             if active:
-                raise RuntimeError(f"Session already has an active turn: {active[0].turn_id}")
+                raise ActiveTurnConflict(
+                    f"Session already has an active turn: {active[0].turn_id}",
+                    turn_id=str(active[0].turn_id),
+                )
             return (
                 _pb()
                 .collection("turns")
@@ -859,9 +1326,11 @@ class PocketBaseSessionStore:
             "assistant_message_id": None,
         }
 
+    @_captured_store_context
     async def create_turn(self, session_id: str, capability: str = "") -> dict[str, Any]:
         return await self.begin_turn(session_id, capability)
 
+    @_captured_store_context
     async def get_turn(self, turn_id: str) -> dict[str, Any] | None:
         tid = _validate_id(turn_id, "turn_id")
 
@@ -872,9 +1341,14 @@ class PocketBaseSessionStore:
             return records[0] if records else None
 
         record = await asyncio.to_thread(_get)
+        if record and await self.get_session(str(getattr(record, "session_id", ""))) is None:
+            return None
         return self._turn_record_to_dict(record) if record else None
 
+    @_captured_store_context
     async def get_active_turn(self, session_id: str) -> dict[str, Any] | None:
+        if await self.get_session(session_id) is None:
+            return None
         sid = _validate_id(session_id, "session_id")
 
         def _get():
@@ -896,7 +1370,10 @@ class PocketBaseSessionStore:
         record = await asyncio.to_thread(_get)
         return self._turn_record_to_dict(record) if record else None
 
+    @_captured_store_context
     async def list_active_turns(self, session_id: str) -> list[dict[str, Any]]:
+        if await self.get_session(session_id) is None:
+            return []
         sid = _validate_id(session_id, "session_id")
 
         def _list():
@@ -921,6 +1398,36 @@ class PocketBaseSessionStore:
         except Exception:
             return []
 
+    @_captured_store_context
+    async def list_orphaned_failed_turns(self, session_id: str) -> list[dict[str, Any]]:
+        if await self.get_session(session_id) is None:
+            return []
+        sid = _validate_id(session_id, "session_id")
+
+        def _list():
+            return (
+                _pb()
+                .collection("turns")
+                .get_full_list(
+                    query_params={
+                        "filter": f'session_id="{sid}" && status="failed"',
+                        "sort": "turn_created_at",
+                    }
+                )
+            )
+
+        try:
+            records = await asyncio.to_thread(_list)
+        except Exception:
+            logger.exception("Could not list orphaned failed turns for session %s", sid)
+            return []
+        return [
+            self._turn_record_to_dict(record)
+            for record in records
+            if not getattr(record, "assistant_message_id", None)
+        ]
+
+    @_captured_store_context
     async def list_nonterminal_turns(self) -> list[dict[str, Any]]:
         def _list():
             records = (
@@ -933,8 +1440,13 @@ class PocketBaseSessionStore:
             ]
 
         records = await asyncio.to_thread(_list)
-        return [self._turn_record_to_dict(record) for record in records]
+        result = []
+        for record in records:
+            if await self.get_session(str(getattr(record, "session_id", ""))) is not None:
+                result.append(self._turn_record_to_dict(record))
+        return result
 
+    @_captured_store_context
     async def transition_turn(
         self,
         turn_id: str,
@@ -948,6 +1460,8 @@ class PocketBaseSessionStore:
     ) -> bool:
         if status not in _ALL_TURN_STATUSES:
             raise ValueError(f"Unsupported turn status: {status}")
+        if await self.get_turn(turn_id) is None:
+            return False
         tid = _validate_id(turn_id, "turn_id")
         now = time.time()
         finished_at = now if status in _TERMINAL_TURN_STATUSES else None
@@ -989,6 +1503,7 @@ class PocketBaseSessionStore:
 
         return updated
 
+    @_captured_store_context
     async def update_turn_status(self, turn_id: str, status: str, error: str = "") -> bool:
         return await self.transition_turn(turn_id, status, error=error)
 
@@ -1013,7 +1528,10 @@ class PocketBaseSessionStore:
             "assistant_message_id": getattr(record, "assistant_message_id", None),
         }
 
+    @_captured_store_context
     async def link_turn_message(self, turn_id: str, assistant_message_id: int | str) -> bool:
+        if await self.get_turn(turn_id) is None:
+            return False
         tid = _validate_id(turn_id, "turn_id")
         message_id = _validate_id(str(assistant_message_id), "assistant_message_id")
 
@@ -1040,6 +1558,7 @@ class PocketBaseSessionStore:
 
         return await asyncio.to_thread(_link)
 
+    @_captured_store_context
     async def get_message_trace(
         self,
         session_id: str,
@@ -1115,16 +1634,19 @@ class PocketBaseSessionStore:
     # Turn events — synchronously durable before terminal transition
     # ------------------------------------------------------------------
 
+    @_captured_store_context
     async def append_turn_event(self, turn_id: str, event: dict[str, Any]) -> dict[str, Any]:
         """Single-event convenience wrapper over ``append_turn_events``."""
         persisted = await self.append_turn_events(turn_id, [event])
         return persisted[0]
 
+    @_captured_store_context
     async def append_turn_events(
         self, turn_id: str, events: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
         return await self.append_events(turn_id, events)
 
+    @_captured_store_context
     async def append_events(
         self,
         turn_id: str,
@@ -1133,6 +1655,8 @@ class PocketBaseSessionStore:
         fencing_token: int | None = None,
     ) -> list[dict[str, Any]]:
         """Idempotently persist a batch before the caller can publish DONE."""
+        if await self.get_turn(turn_id) is None:
+            raise ValueError("Turn not found in this workspace")
         tid = _validate_id(turn_id, "turn_id")
 
         def _persist() -> list[dict[str, Any]]:
@@ -1206,8 +1730,11 @@ class PocketBaseSessionStore:
 
         return await asyncio.to_thread(_persist)
 
+    @_captured_store_context
     async def get_turn_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         """Retrieve persisted turn events from PocketBase (post-turn replay)."""
+        if await self.get_turn(turn_id) is None:
+            return []
         tid = _validate_id(turn_id, "turn_id")
 
         def _get():
@@ -1240,5 +1767,6 @@ class PocketBaseSessionStore:
             logger.warning(f"get_turn_events failed: {exc}")
             return []
 
+    @_captured_store_context
     async def get_events(self, turn_id: str, after_seq: int = 0) -> list[dict[str, Any]]:
         return await self.get_turn_events(turn_id, after_seq)

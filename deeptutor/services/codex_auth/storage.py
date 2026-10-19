@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import replace
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,7 +15,7 @@ import tempfile
 import threading
 from typing import Any, BinaryIO
 
-from .contracts import CodexAuthError, CodexCredentials
+from .contracts import CatalogSnapshot, CodexAuthError, CodexCredentials
 
 _SCHEMA_VERSION = 1
 
@@ -183,6 +184,20 @@ class CodexCredentialStore:
         with self._locked():
             return int(self._read_state_unlocked()["generation"])
 
+    def mark_authentication_rejected(self, generation: int) -> None:
+        """Remember a rejected grant across turns, workers and restarts (#1454)."""
+        with self._locked():
+            state = self._read_state_unlocked()
+            if state["generation"] != generation:
+                return  # an old request must never invalidate a newly signed-in session
+            _atomic_write_json(self.state_path, {**state, "rejected_generation": generation})
+
+    def authentication_rejected(self, generation: int) -> bool:
+        with self._locked():
+            state = self._read_state_unlocked()
+            rejected = state.get("rejected_generation")
+            return type(rejected) is int and rejected == generation == state["generation"]
+
     def load_credentials(self) -> CodexCredentials | None:
         with self._locked():
             state_generation = int(self._read_state_unlocked()["generation"])
@@ -219,6 +234,7 @@ class CodexCredentialStore:
                 "schema_version": _SCHEMA_VERSION,
                 "generation": next_generation,
             }
+            next_state.pop("rejected_generation", None)
             _atomic_write_json(self.state_path, next_state)
             _atomic_write_json(self.credentials_path, committed.to_dict())
             return committed
@@ -230,6 +246,7 @@ class CodexCredentialStore:
             if expected_generation is not None and current_generation != expected_generation:
                 raise self._generation_changed()
             next_generation = current_generation + 1
+            state.pop("rejected_generation", None)
             _atomic_write_json(
                 self.state_path,
                 {
@@ -254,6 +271,63 @@ class CodexCredentialStore:
     def save_catalog_cache(self, payload: Mapping[str, Any]) -> None:
         with self._locked():
             _atomic_write_json(self.catalog_cache_path, payload)
+
+    def commit_catalog_cache(self, snapshot: CatalogSnapshot) -> None:
+        """Publish a response only while its credential owner and generation are current.
+
+        Validation and publication share logout's interprocess lock. Checking
+        before taking this lock would let a late 200 or 304 response recreate
+        a cache cleared by logout or overwrite a newer account's version history.
+        """
+        with self._locked():
+            generation = int(self._read_state_unlocked()["generation"])
+            if generation != snapshot.generation:
+                raise self._generation_changed()
+            payload = self._read_json(
+                self.credentials_path,
+                code="credential_corrupt",
+                message="Stored Codex credentials are invalid.",
+            )
+            if payload is None:
+                raise self._generation_changed()
+            credentials = CodexCredentials.from_dict(payload)
+            account_hash = hashlib.sha256(credentials.account_id.encode("utf-8")).hexdigest()
+            if credentials.generation != generation or account_hash != snapshot.account_hash:
+                raise self._generation_changed()
+            _atomic_write_json(self.catalog_cache_path, snapshot.to_dict())
+
+    def invalidate_catalog_models(self, account_hash: str, *, generation: int) -> None:
+        """Atomically invalidate matching models, retaining successful version history.
+
+        Matching and rewriting share the existing interprocess lock with logout,
+        so an in-flight auth error cannot recreate a cache that logout cleared.
+        A response for an older account or generation cannot invalidate a newer
+        catalog either.
+        """
+        with self._locked():
+            try:
+                payload = self._read_json(
+                    self.catalog_cache_path,
+                    code="catalog_corrupt",
+                    message="Stored Codex model data is invalid.",
+                )
+                if payload is None:
+                    return
+                snapshot = CatalogSnapshot.from_dict(payload)
+            except CodexAuthError as exc:
+                if exc.code != "catalog_corrupt":
+                    raise
+                self.catalog_cache_path.unlink(missing_ok=True)
+                return
+            if snapshot.account_hash != account_hash or snapshot.generation != generation:
+                return
+            if snapshot.client_version is None:
+                self.catalog_cache_path.unlink(missing_ok=True)
+                return
+            _atomic_write_json(
+                self.catalog_cache_path,
+                replace(snapshot, models=(), etag=None, models_valid=False).to_dict(),
+            )
 
     def clear_catalog_cache(self) -> None:
         with self._locked():

@@ -142,6 +142,32 @@ def test_damaged_notebook_is_reported_not_hidden(tmp_path) -> None:
         manager.get_notebook("broken01")
 
 
+def test_index_rebuild_reports_unreadable_files_instead_of_silence(tmp_path, caplog) -> None:
+    """Rebuilding the index must name each damaged file, never skip it silently.
+
+    A notebook file that exists but does not parse used to vanish from the
+    rebuilt index with no per-file log, so the damage was invisible until a
+    user noticed the entry missing.
+    """
+    import logging
+
+    manager = NotebookManager(base_dir=str(tmp_path))
+    good_id = manager.create_notebook("Good")["id"]
+    (tmp_path / "broken01.json").write_text("{ not json", encoding="utf-8")
+    manager.index_file.write_text("not json at all", encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING, logger="deeptutor.services.notebook.service"):
+        entries = manager._rebuild_index_entries()
+
+    assert good_id in {row["id"] for row in entries}
+    assert any("broken01.json" in record.getMessage() for record in caplog.records)
+
+    # The damaged file stays visible through the normal listing path too.
+    listed = {row["id"]: row for row in manager.list_notebooks()}
+    assert listed["broken01"]["unreadable"] is True
+    assert good_id in listed
+
+
 def test_list_notebooks_adopts_files_missing_from_the_index(tmp_path) -> None:
     """A notebook whose index row was lost is still listed."""
     manager = NotebookManager(base_dir=str(tmp_path))
@@ -232,3 +258,27 @@ def test_export_markdown_renders_titles_and_bodies(tmp_path) -> None:
     assert "> A short blurb" in markdown
     assert "## First entry" in markdown
     assert "Body text." in markdown
+
+
+def test_notebook_id_cannot_escape_base_dir(tmp_path) -> None:
+    """A traversal id must be rejected, never resolved outside ``base_dir``."""
+    import pytest
+
+    manager = NotebookManager(base_dir=str(tmp_path))
+
+    for evil in ("../../x", "/etc/passwd", "../../../../../system/auth/users"):
+        with pytest.raises(ValueError):
+            manager.get_notebook(evil)
+
+
+def test_save_notebook_uses_managed_id_not_content_id(tmp_path) -> None:
+    """A notebook's on-disk ``id`` must not redirect where it is written."""
+    manager = NotebookManager(base_dir=str(tmp_path))
+
+    payload = {"id": "../../../../../system/auth/users", "records": []}
+    manager._save_notebook("real-notebook-id", payload)
+
+    target = manager._get_notebook_file("real-notebook-id")
+    assert target.is_relative_to(tmp_path.resolve())
+    persisted = json.loads(target.read_text(encoding="utf-8"))
+    assert persisted["id"] == "../../../../../system/auth/users"

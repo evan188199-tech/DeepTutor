@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { apiFetch } from "@/lib/api";
 import {
   getReadingPosition,
-  rawMaterialUrl,
+  renderMaterialUrl,
   saveReadingPosition,
   type AnnotationItem,
   type UnitReference,
@@ -20,11 +20,19 @@ import {
   type EpubPageTurnDirection,
 } from "@/lib/epub-page-turn";
 import { extractEpubHeadings, type ReaderHeading } from "@/lib/reading-outline";
+import {
+  DEFAULT_READER_DISPLAY_PREFERENCES,
+  loadReaderDisplayPreferences,
+  saveReaderDisplayPreferences,
+  type ReaderDisplayPreferences,
+} from "@/lib/reading-display-preferences";
 import { cleanQuote } from "@/lib/reading-selection";
 import type { JumpRequest, SelectionPayload } from "./PdfDocumentView";
+import { ReaderDisplayControls } from "./ReaderDisplayControls";
 
 type EpubLocation = {
   start?: { cfi?: string; href?: string; percentage?: number };
+  atEnd?: boolean;
 };
 
 type EpubContents = {
@@ -45,8 +53,11 @@ type EpubAnnotationLayer = {
 
 type EpubRendition = {
   display: (target?: string) => Promise<unknown>;
+  currentLocation: () => EpubLocation | undefined;
   next: () => Promise<unknown>;
   prev: () => Promise<unknown>;
+  resize: (width: number, height: number) => void;
+  spread: (mode: "none" | "auto") => void;
   destroy: () => void;
   on: (event: string, callback: (...args: unknown[]) => void) => void;
   off: (event: string, callback: (...args: unknown[]) => void) => void;
@@ -57,11 +68,10 @@ type EpubRendition = {
     };
   };
   themes: {
-    register: (
-      name: string,
-      rules: Record<string, Record<string, string>>,
-    ) => void;
+    registerCss: (name: string, css: string) => void;
     select: (name: string) => void;
+    fontSize: (size: string) => void;
+    override: (name: string, value: string, priority?: boolean) => void;
   };
 };
 
@@ -77,7 +87,10 @@ type EpubBook = {
   package?: { metadata?: { direction?: string } };
   load: (path: string) => Promise<unknown>;
   spine: { get: (target: string | number) => EpubSection | undefined };
-  locations?: { percentageFromCfi?: (cfi: string) => number };
+  locations?: {
+    percentageFromCfi?: (cfi: string) => number | null;
+    generate?: (characters: number) => Promise<unknown>;
+  };
   renderTo: (
     element: Element,
     options: Record<string, unknown>,
@@ -93,6 +106,42 @@ const HIGHLIGHT_COLORS: Record<string, string> = {
   purple: "rgba(199, 174, 250, 0.55)",
 };
 
+function applyEpubDisplayPreferences(
+  rendition: EpubRendition,
+  preferences: ReaderDisplayPreferences,
+) {
+  const fontFamily = preferences.serif
+    ? "ui-serif, Georgia, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', serif"
+    : "ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif";
+  const paper =
+    preferences.readerTheme === "sepia"
+      ? { background: "#f4ecd8", color: "#473c2c" }
+      : preferences.readerTheme === "night"
+        ? { background: "#16181d", color: "#e8e5df" }
+        : null;
+
+  // The theme stylesheet is replaced on each preference change. EPUB
+  // publishers often set font and ink directly on paragraphs or spans; a
+  // body-only epub.js override cannot beat those declarations (#1447).
+  rendition.themes.registerCss(
+    "deeptutor",
+    `body { font-family: ${fontFamily} !important; font-size: ${preferences.fontSize}px !important; ${paper ? `background-color: ${paper.background} !important; color: ${paper.color} !important;` : ""} }
+     body :is(p, span, div, li, blockquote) { font-family: ${fontFamily} !important; font-size: inherit !important; ${paper ? `color: ${paper.color} !important;` : ""} }
+     body :is(h1, h2, h3, h4, h5, h6) { font-family: ${fontFamily} !important; ${paper ? `color: ${paper.color} !important;` : ""} }
+     body * { vertical-align: baseline; }
+     img { max-width: 100% !important; max-height: 85vh !important; height: auto !important; object-fit: contain !important; }`,
+  );
+  rendition.themes.select("deeptutor");
+  rendition.themes.fontSize(`${preferences.fontSize}px`);
+  // epub.js sets column-width but leaves column-count automatic. A wide pane
+  // can fit a third visible column after the sidebar collapses (#1447).
+  rendition.themes.override(
+    "column-count",
+    preferences.spreadMode === "none" ? "1" : "2",
+    true,
+  );
+}
+
 export interface EpubDocumentViewProps {
   materialId: string;
   unitCount: number;
@@ -103,6 +152,7 @@ export interface EpubDocumentViewProps {
   onSelection: (payload: SelectionPayload | null) => void;
   onAnnotationClick?: (annotation: AnnotationItem) => void;
   onVisibleLocatorChange?: (locator: number) => void;
+  onProgressChange?: (percentage: number | null) => void;
   onHeadingsChange?: (headings: ReaderHeading[]) => void;
   headingJump?: {
     id: string;
@@ -124,6 +174,7 @@ export function EpubDocumentView({
   onSelection,
   onAnnotationClick,
   onVisibleLocatorChange,
+  onProgressChange,
   onHeadingsChange,
   headingJump,
   onError,
@@ -138,12 +189,60 @@ export function EpubDocumentView({
   const refsRef = useRef(unitRefs);
   const annotationClickRef = useRef(onAnnotationClick);
   const visibleChangeRef = useRef(onVisibleLocatorChange);
+  const progressChangeRef = useRef(onProgressChange);
   const headingsChangeRef = useRef(onHeadingsChange);
   const headingsByLocatorRef = useRef<Map<number, ReaderHeading[]>>(new Map());
   const errorRef = useRef(onError);
   const locatorRef = useRef(1);
+  const preferencesRef = useRef(DEFAULT_READER_DISPLAY_PREFERENCES);
+  const activeSpreadRef = useRef(DEFAULT_READER_DISPLAY_PREFERENCES.spreadMode);
+  const relayoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const relayoutAnchorRef = useRef<string | undefined>(undefined);
+  const [preferences, setPreferences] = useState<ReaderDisplayPreferences>(
+    DEFAULT_READER_DISPLAY_PREFERENCES,
+  );
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const saved = loadReaderDisplayPreferences();
+    preferencesRef.current = saved;
+    setPreferences(saved);
+  }, []);
+
+  const updatePreferences = useCallback(
+    (next: Partial<ReaderDisplayPreferences>) => {
+      const merged = { ...preferencesRef.current, ...next };
+      preferencesRef.current = merged;
+      setPreferences(merged);
+      saveReaderDisplayPreferences(merged);
+    },
+    [],
+  );
+
+  const scheduleRelayout = useCallback((anchor?: string) => {
+    if (anchor) relayoutAnchorRef.current = anchor;
+    if (relayoutTimerRef.current) clearTimeout(relayoutTimerRef.current);
+    relayoutTimerRef.current = setTimeout(() => {
+      relayoutTimerRef.current = null;
+      const rendition = renditionRef.current;
+      const host = hostRef.current;
+      if (!rendition || !host) return;
+      const bounds = host.getBoundingClientRect();
+      const width = Math.round(bounds.width);
+      const height = Math.round(bounds.height);
+      if (!width || !height) return;
+      const cfi =
+        relayoutAnchorRef.current ?? rendition.currentLocation()?.start?.cfi;
+      relayoutAnchorRef.current = undefined;
+      rendition.resize(width, height);
+      if (cfi) {
+        void rendition.display(cfi).catch(() => {
+          // A stale publisher CFI must not break the current reading page.
+        });
+      }
+    }, 100);
+  }, []);
 
   useEffect(() => {
     refsRef.current = unitRefs;
@@ -151,6 +250,10 @@ export function EpubDocumentView({
   useEffect(() => {
     annotationClickRef.current = onAnnotationClick;
   }, [onAnnotationClick]);
+  useEffect(() => {
+    progressChangeRef.current = onProgressChange;
+  }, [onProgressChange]);
+
   useEffect(() => {
     visibleChangeRef.current = onVisibleLocatorChange;
   }, [onVisibleLocatorChange]);
@@ -180,21 +283,18 @@ export function EpubDocumentView({
     let book: EpubBook | null = null;
 
     const onRelocated = (raw: unknown) => {
+      if (cancelled) return;
       const location = raw as EpubLocation;
       const href = location.start?.href ?? "";
       const nextLocator = locatorForEpubHref(href, refsRef.current) || 1;
       const cfi = location.start?.cfi ?? "";
-      const percentage = Math.min(
-        1,
-        Math.max(
-          0,
-          Number(
-            location.start?.percentage ??
-              book?.locations?.percentageFromCfi?.(cfi) ??
-              (unitCount > 1 ? (nextLocator - 1) / (unitCount - 1) : 0),
-          ),
-        ),
-      );
+      const observed = location.atEnd ? 1
+        : book?.locations?.percentageFromCfi?.(cfi) ?? location.start?.percentage;
+      const percentage = typeof observed === "number" && Number.isFinite(observed)
+        ? Math.min(1, Math.max(0, observed)) : null;
+      // A spine entry is a chapter, not a fraction of the whole text (#1673).
+      // Until CFI locations are ready, publish uncertainty instead of 100%.
+      progressChangeRef.current?.(percentage);
       locatorRef.current = nextLocator;
       visibleChangeRef.current?.(nextLocator);
       headingsChangeRef.current?.(
@@ -205,7 +305,7 @@ export function EpubDocumentView({
         void saveReadingPosition(materialId, {
           locator: nextLocator,
           source_anchor: cfi,
-          percentage,
+          ...(percentage === null ? {} : { percentage }),
         }).catch(() => {
           // Reading must continue when a background progress write fails.
         });
@@ -315,7 +415,7 @@ export function EpubDocumentView({
         setLoadError("");
         const [module, response, position] = await Promise.all([
           import("epubjs"),
-          apiFetch(rawMaterialUrl(materialId), { cache: "no-store" }),
+          apiFetch(renderMaterialUrl(materialId), { cache: "no-store" }),
           getReadingPosition(materialId).catch(() => null),
         ]);
         if (!response.ok) throw new Error(t("Could not load this section."));
@@ -337,19 +437,12 @@ export function EpubDocumentView({
           width: "100%",
           height: "100%",
           flow: "paginated",
-          spread: "auto",
+          spread: preferencesRef.current.spreadMode,
           allowScriptedContent: false,
         });
         renditionRef.current = rendition;
-        rendition.themes.register("deeptutor", {
-          "body, p, span, div": {
-            "font-family":
-              "ui-serif, Georgia, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', serif !important",
-          },
-          "body *": { "vertical-align": "baseline" },
-          img: { "max-width": "100%", height: "auto" },
-        });
-        rendition.themes.select("deeptutor");
+        activeSpreadRef.current = preferencesRef.current.spreadMode;
+        applyEpubDisplayPreferences(rendition, preferencesRef.current);
         rendition.on("relocated", onRelocated);
         rendition.on("selected", onSelected);
         rendition.on("keydown", onRenditionKey);
@@ -370,7 +463,15 @@ export function EpubDocumentView({
               refsRef.current[0]?.source_href,
           );
         }
-        if (!cancelled) setLoading(false);
+        if (cancelled) return;
+        setLoading(false);
+        void book.locations?.generate?.(1600).then(() => {
+          if (cancelled || !rendition) return;
+          const location = rendition.currentLocation();
+          if (location) onRelocated(location);
+        }).catch(() => {
+          // CFI navigation still works when progress cannot be calculated.
+        });
       } catch (error) {
         if (cancelled) return;
         const message =
@@ -386,6 +487,9 @@ export function EpubDocumentView({
     return () => {
       cancelled = true;
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      if (relayoutTimerRef.current) clearTimeout(relayoutTimerRef.current);
+      relayoutTimerRef.current = null;
+      relayoutAnchorRef.current = undefined;
       if (rendition) {
         rendition.off("relocated", onRelocated);
         rendition.off("selected", onSelected);
@@ -400,18 +504,41 @@ export function EpubDocumentView({
   }, [materialId, unitCount, onSelection, t, turnPage]);
 
   useEffect(() => {
+    const rendition = renditionRef.current;
+    if (!rendition || loading) return;
+    applyEpubDisplayPreferences(rendition, preferences);
+    let anchor: string | undefined;
+    if (activeSpreadRef.current !== preferences.spreadMode) {
+      // Keep the current CFI before epub.js replaces its page geometry.
+      anchor = rendition.currentLocation()?.start?.cfi;
+      rendition.spread(preferences.spreadMode);
+      activeSpreadRef.current = preferences.spreadMode;
+    }
+    scheduleRelayout(anchor);
+  }, [loading, preferences, scheduleRelayout]);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (loading || !host || !renditionRef.current) return;
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => scheduleRelayout());
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [loading, scheduleRelayout]);
+
+  useEffect(() => {
     if (!headingJump || !renditionRef.current || !bookRef.current) return;
     const section = bookRef.current.spine.get(
       (headingJump.locator ?? locatorRef.current) - 1,
     );
-    const sourceHref = headingJump.sourceHref || section?.href;
+    const sourceHref = section?.href || headingJump.sourceHref;
     if (!sourceHref) return;
     void renditionRef.current
       .display(`${sourceHref}#${headingJump.id}`)
       .catch(() => {
         // A damaged publisher anchor leaves the reader on the current page.
       });
-  }, [headingJump]);
+  }, [headingJump, loading]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -502,47 +629,76 @@ export function EpubDocumentView({
     });
   }, [jump, unitRefs]);
 
+  const surface =
+    preferences.readerTheme === "sepia"
+      ? { background: "#f4ecd8", color: "#473c2c" }
+      : preferences.readerTheme === "night"
+        ? { background: "#16181d", color: "#e8e5df" }
+        : { background: "var(--background)" };
+
   return (
-    <div className="relative h-full min-h-0 overflow-hidden bg-[var(--background)] pb-[env(safe-area-inset-bottom)]">
-      <div
-        ref={hostRef}
-        className="h-full w-full"
-        aria-label={t("Immersive reading")}
-      />
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center gap-2 bg-[var(--background)] text-xs text-[var(--muted-foreground)]">
-          <Loader2 size={15} className="animate-spin" />
-          {t("Opening document…")}
-        </div>
-      )}
-      {!loading && loadError && (
+    <div
+      className="flex h-full min-h-0 flex-col overflow-hidden pb-[env(safe-area-inset-bottom)]"
+      style={surface}
+    >
+      <div className="flex shrink-0 items-center gap-2 overflow-x-auto border-b border-[var(--border)] px-2 py-2 sm:px-3">
+        <ReaderDisplayControls
+          preferences={preferences}
+          onChange={updatePreferences}
+          showSpread
+        />
+      </div>
+      <div className="relative min-h-0 flex-1">
         <div
-          role="alert"
-          className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[var(--destructive)]"
-        >
-          {loadError}
-        </div>
-      )}
-      {!loadError && (
-        <>
-          <button
-            type="button"
-            onClick={() => turnPage("previous")}
-            className="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_90%,transparent)] text-[var(--foreground)] shadow-sm backdrop-blur transition hover:bg-[var(--muted)]"
-            aria-label={t("Previous")}
+          ref={hostRef}
+          className="mx-auto h-full w-full"
+          style={{
+            maxWidth:
+              preferences.spreadMode === "none"
+                ? `calc(${preferences.lineWidth}ch + 4rem)`
+                : `calc(${preferences.lineWidth * 2}ch + 6rem)`,
+            fontSize: `${preferences.fontSize}px`,
+          }}
+          aria-label={t("Immersive reading")}
+        />
+        {loading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center gap-2 text-xs"
+            style={surface}
           >
-            <ChevronLeft size={19} />
-          </button>
-          <button
-            type="button"
-            onClick={() => turnPage("next")}
-            className="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--background)_90%,transparent)] text-[var(--foreground)] shadow-sm backdrop-blur transition hover:bg-[var(--muted)]"
-            aria-label={t("Next")}
+            <Loader2 size={15} className="animate-spin" />
+            {t("Opening document…")}
+          </div>
+        )}
+        {!loading && loadError && (
+          <div
+            role="alert"
+            className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[var(--destructive)]"
           >
-            <ChevronRight size={19} />
-          </button>
-        </>
-      )}
+            {loadError}
+          </div>
+        )}
+        {!loadError && (
+          <>
+            <button
+              type="button"
+              onClick={() => turnPage("previous")}
+              className="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-current/20 bg-[color-mix(in_srgb,currentColor_8%,transparent)] text-inherit shadow-sm backdrop-blur transition hover:bg-[color-mix(in_srgb,currentColor_14%,transparent)]"
+              aria-label={t("Previous")}
+            >
+              <ChevronLeft size={19} />
+            </button>
+            <button
+              type="button"
+              onClick={() => turnPage("next")}
+              className="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-current/20 bg-[color-mix(in_srgb,currentColor_8%,transparent)] text-inherit shadow-sm backdrop-blur transition hover:bg-[color-mix(in_srgb,currentColor_14%,transparent)]"
+              aria-label={t("Next")}
+            >
+              <ChevronRight size={19} />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

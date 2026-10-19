@@ -34,6 +34,7 @@ from .errors import (
     classify_embedding_error,
     classify_model_error,
 )
+from .pandas_compat import prepare_pandas_arrow_extensions
 from .provider import (
     COMPLETION_TYPE,
     resolve_completion_call_args,
@@ -49,6 +50,10 @@ logger = logging.getLogger(__name__)
 # kept for tests / call sites that reference the defaults directly.
 RESPONSE_TYPE = "Multiple Paragraphs"
 DEFAULT_COMMUNITY_LEVEL = 2
+# Deliberately not in agents.yaml with the other budgets: this is the
+# reachability probe, not a generation call a reader ever sees. It asks a
+# model to prove it answers at all, and a user tuning it would only be
+# able to make the health check lie.
 PROBE_MAX_TOKENS = 1024
 PROBE_TIMEOUT_SECONDS = 25
 EMBEDDING_PROBE_TEXT = "DeepTutor GraphRAG embedding compatibility test"
@@ -78,6 +83,25 @@ def _load_config(root_dir: Path):
 
     register_completion_adapter()
     config = load_config(root_dir=Path(root_dir))
+    from deeptutor.services.embedding.config import scoped_embedding_config
+
+    embedding = scoped_embedding_config()
+    if embedding is not None:
+        from .config import _embedding_model_entry, graphrag_embedding_api_base
+
+        fields = _embedding_model_entry(
+            model=embedding.model,
+            api_base=graphrag_embedding_api_base(
+                embedding.binding, embedding.effective_url or embedding.base_url
+            ),
+            api_key=embedding.api_key,
+            binding=embedding.binding,
+            dimension=embedding.dim,
+            send_dimensions=embedding.send_dimensions,
+            extra_headers=embedding.extra_headers,
+        )
+        for name, model_config in config.embedding_models.items():
+            config.embedding_models[name] = model_config.model_copy(update=fields)
     for model_config in config.completion_models.values():
         if model_config.type in {"litellm", COMPLETION_TYPE}:
             model_config.type = COMPLETION_TYPE
@@ -102,6 +126,7 @@ async def _run_isolated(work: Callable[[], Awaitable[_T]]) -> _T:
     """
 
     def _runner() -> _T:
+        prepare_pandas_arrow_extensions()
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:

@@ -83,6 +83,7 @@ from .exceptions import (
     LLMProviderError,
     LLMProviderTransportError,
     LLMRateLimitError,
+    LLMReasoningBudgetExhausted,
     LLMTimeoutError,
 )
 from .factory import (
@@ -97,6 +98,7 @@ from .factory import (
     stream,
 )
 from .multimodal import MultimodalResult, prepare_multimodal_messages
+from .types import TRUNCATED_FINISH_REASONS, StreamOutcome, finish_was_truncated
 from .utils import (
     build_auth_headers,
     build_chat_url,
@@ -133,11 +135,16 @@ __all__ = [
     # Multimodal
     "MultimodalResult",
     "prepare_multimodal_messages",
+    # Stream finish reporting
+    "StreamOutcome",
+    "TRUNCATED_FINISH_REASONS",
+    "finish_was_truncated",
     # Exceptions
     "LLMError",
     "LLMConfigError",
     "LLMProviderError",
     "LLMProviderTransportError",
+    "LLMReasoningBudgetExhausted",
     "LLMAPIError",
     "LLMTimeoutError",
     "LLMRateLimitError",

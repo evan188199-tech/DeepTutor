@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, HelpCircle, Loader2, Play, RotateCcw, Trash2 } from "lucide-react";
+import { Bookmark, HelpCircle, Loader2, Play, RotateCcw, Trash2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type {
@@ -26,23 +26,25 @@ const FILTERS: Array<VideoMarkKind | "all"> = [
 export function WatchingMarksPanel({
   marks,
   suggestions,
-  currentTime,
-  error,
-  busy,
+  currentTime = 0,
+  error = null,
+  busy = false,
   onSeek,
   onDelete,
   onReview,
   onSaveSuggestion,
+  onDismissSuggestion,
 }: {
   marks: VideoLearningMark[];
   suggestions: VideoMarkSuggestion[];
-  currentTime: number;
-  error: string | null;
-  busy: boolean;
+  currentTime?: number;
+  error?: string | null;
+  busy?: boolean;
   onSeek(seconds: number): void;
   onDelete(markId: string): void;
   onReview(mark: VideoLearningMark): void;
   onSaveSuggestion(suggestion: VideoMarkSuggestion): void;
+  onDismissSuggestion?(suggestion: VideoMarkSuggestion): void;
 }) {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<VideoMarkKind | "all">("all");
@@ -91,6 +93,17 @@ export function WatchingMarksPanel({
                 >
                   {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : t("Save")}
                 </button>
+                {onDismissSuggestion && (
+                  <button
+                    type="button"
+                    onClick={() => onDismissSuggestion(suggestion)}
+                    disabled={busy}
+                    aria-label={t("Dismiss suggestion")}
+                    className="rounded-md p-1 text-[var(--muted-foreground)] hover:bg-[var(--muted)] disabled:opacity-50"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
               {suggestion.quote && (
                 <p className="mt-1 text-sm">{suggestion.quote}</p>
@@ -154,7 +167,6 @@ export function WatchingMarksPanel({
                       onClick={() => onReview(mark)}
                       disabled={busy}
                       aria-label={t("Mark as reviewed")}
-                      title={t("Mark as reviewed")}
                       className="rounded-md p-1.5 hover:bg-[var(--muted)] disabled:opacity-50"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
@@ -165,7 +177,6 @@ export function WatchingMarksPanel({
                     onClick={() => onDelete(mark.mark_id)}
                     disabled={busy}
                     aria-label={t("Delete mark")}
-                    title={t("Delete mark")}
                     className="rounded-md p-1.5 text-[var(--destructive)] hover:bg-[var(--destructive)]/10 disabled:opacity-50"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

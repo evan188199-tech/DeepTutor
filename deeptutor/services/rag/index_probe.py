@@ -120,6 +120,7 @@ def provider_failure_summary(
     ``versions`` may carry a pre-computed :func:`inspect_kb_versions` result so
     bulk callers (e.g. ``KnowledgeBaseManager.get_info``) do not rescan and
     re-parse every index version just to collect failure text.
+
     """
     entries = versions if versions is not None else inspect_kb_versions(kb_dir, provider)
     failures: list[str] = []
@@ -142,6 +143,15 @@ def _inspect_llamaindex(storage_dir: Path) -> ProviderIndexProbe:
             "LlamaIndex storage directory does not exist.",
         )
 
+    if (storage_dir / ".building.json").exists():
+        meta = _read_json(storage_dir / "meta.json")
+        if not meta or meta.get("state") != "published" or not meta.get("readiness_verified"):
+            return ProviderIndexProbe(
+                DEFAULT_PROVIDER,
+                str(storage_dir),
+                False,
+                "Candidate index has not passed persistence verification.",
+            )
     docstore = storage_dir / "docstore.json"
     index_store = storage_dir / "index_store.json"
     vector_stores = sorted(path.name for path in storage_dir.glob("*vector_store.json"))

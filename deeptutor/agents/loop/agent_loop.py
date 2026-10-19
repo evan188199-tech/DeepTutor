@@ -5,12 +5,13 @@ One chat turn = ONE agent loop over a single growing conversation:
 * each round is one LLM call; its text streams to the user as a ``content``
   block, and its tool calls are dispatched with their ``role=tool`` results
   appended back into the conversation;
-* a round that DOES call tools is "narration" by default — its text is a
-  preamble to the tool work — and the loop continues; modes that intentionally
-  combine learner-facing prose with a tool call mark that prose answer-visible;
-* a round that calls NO tools is the ``finish``: its text IS the final
-  user-facing answer and the loop ends (the model deciding it is done; a
-  first round without tool calls is the "no exploration needed" fast path);
+* every round's text is part of the answer, in the order it was written. A
+  round that DOES call tools has written *commentary* — what it is about to do
+  and why — and the loop continues; the reader keeps that text, with the tool
+  work rendered inline beneath it, the way a terminal agent reads;
+* a round that calls NO tools is the ``finish``: its text closes the answer and
+  the loop ends (the model deciding it is done; a first round without tool
+  calls is the "no exploration needed" fast path);
 * if the exploration budget runs out while work is still in protocol, a
   small bounded settlement phase keeps tools available for already-started
   follow-up (including user input); one final tool-less round is forced only
@@ -19,10 +20,13 @@ One chat turn = ONE agent loop over a single growing conversation:
 ``ask_user`` pauses the turn for a reply and resumes in-protocol; an
 unresolved pause (or a terminator tool) halts the turn.
 
-There is no separate respond pass and no text destination has to be guessed
-mid-stream: every round's text streams to the user as it is generated, and a
-``call_role`` (``narration`` vs ``finish``) emitted when the round completes
-tells the frontend how to render that round's text.
+There is no separate respond pass and no text destination has to be guessed:
+every round's text streams to the user as it is generated and stays there. The
+``call_status`` marker a completed round emits carries two independent facts —
+``call_role`` (``narration`` = more work follows, ``finish`` = terminal) says
+where the turn is, while ``answer_visible`` says whether the text counts as
+answer content. It is ``True`` for every ordinary round; only a capability
+retracting a rejected round sets it ``False``.
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ from contextlib import suppress
 from dataclasses import dataclass, field
 import json
 import logging
+from time import monotonic
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
@@ -41,7 +46,12 @@ from deeptutor.agents.loop.context_budget import LLMRequestSnapshot
 from deeptutor.agents.loop.dsml_tool_calls import DSMLStreamFilter, extract_dsml_tool_calls
 from deeptutor.core.context import UnifiedContext
 from deeptutor.core.trace import build_trace_metadata, merge_trace_metadata, new_call_id
-from deeptutor.runtime.agentic.messages import assistant_message_with_tool_calls
+from deeptutor.runtime.agentic.messages import (
+    assistant_message_with_tool_calls,
+    extend_transient_model_messages,
+    image_content_hashes,
+    with_transient_model_messages,
+)
 from deeptutor.runtime.agentic.think_stream import InlineThinkFilter
 from deeptutor.runtime.agentic.tool_call_stream import ToolCallAccumulator
 from deeptutor.runtime.agentic.tool_dispatch import DispatchOutcome
@@ -49,18 +59,27 @@ from deeptutor.runtime.agentic.usage import message_content_chars, record_stream
 from deeptutor.runtime.stream_bus import StreamBus
 from deeptutor.services.llm import (
     LLMProviderTransportError,
+    LLMReasoningBudgetExhausted,
     clean_thinking_tags,
     supports_streaming,
 )
+from deeptutor.services.llm import finish_was_truncated as _finish_was_truncated
 from deeptutor.services.llm.capabilities import threads_session_id
-from deeptutor.services.llm.multimodal import should_degrade_to_text, strip_image_parts_inplace
+from deeptutor.services.llm.image_replay import deduplicate_user_images
+from deeptutor.services.llm.multimodal import (
+    has_image_parts,
+    should_degrade_to_text,
+    strip_image_parts_inplace,
+)
 from deeptutor.services.llm.request_compat import (
+    is_forced_tool_choice_unsupported,
     is_image_input_unsupported,
     is_stream_options_unsupported,
     is_tool_schema_unsupported,
     is_transient_transport_error,
     logged_error_text,
 )
+from deeptutor.services.llm.usage_frame import usage_breakdown
 from deeptutor.services.llm.utils import unreachable_endpoint_hint
 from deeptutor.services.session.provider_response_state import (
     normalize_provider_response_state,
@@ -77,19 +96,59 @@ LOOP_STAGE = "responding"
 # Settlement is deliberately small but large enough for the longest built-in
 # interaction boundary: register state -> ask/resume -> record result -> reply.
 # A single additional tool-less hard finish follows if all of these rounds
-# still request tools, making the total upper bound ``exploration + 4``.
+# still request tools. A receipt-backed capability delivery can use that final
+# round instead, with a restricted tool surface: the bound stays exploration + 4.
 MAX_SETTLEMENT_ROUNDS = 3
-_TRUNCATED_FINISH_REASONS = frozenset({"length", "max_tokens", "max_output_tokens"})
+# Reasoning-only completions can recur when a model rewrites its plan instead
+# of acting. Give it a stronger directive on the second miss, then use the
+# forced tool-less finish instead of spending the full exploration budget on
+# the same failure.
+MAX_REASONING_ONLY_RECOVERIES = 2
 # The SDK already retries failures that happen before response headers. These
 # short outer retries also cover SSE connections that fail before yielding any
 # user-visible output. Once output is visible, replay is unsafe because it can
 # duplicate prose or tool calls.
 _PROVIDER_RETRY_DELAYS = (0.5, 1.5)
+_STREAM_IDLE_TIMEOUT_SECONDS = 90.0
 
 
-def _finish_was_truncated(reason: str | None) -> bool:
-    """Return whether a provider ended generation because output hit a cap."""
-    return str(reason or "").strip().lower() in _TRUNCATED_FINISH_REASONS
+async def _bounded_stream_chunks(stream: Any):
+    """#1421: a connected provider that never produces a chunk must settle."""
+    iterator = stream.__aiter__()
+    while True:
+        try:
+            yield await asyncio.wait_for(iterator.__anext__(), _STREAM_IDLE_TIMEOUT_SECONDS)
+        except StopAsyncIteration:
+            return
+        except TimeoutError:
+            raise LLMProviderTransportError("The model provider stream timed out.") from None
+
+
+def _reasoning_budget_exhausted(result: "LLMCallResult", max_tokens: int) -> bool:
+    """Detect a round that spent its output budget without taking action."""
+    if result.tool_calls or result.visible_text.strip():
+        return False
+    has_reasoning = bool(result.reasoning_chars or result.reasoning_content) or any(
+        isinstance(item, dict) and item.get("type") == "reasoning"
+        for item in result.response_output_items
+    )
+    if not has_reasoning:
+        return False
+    # Content filtering is a terminal provider decision, not a reasoning
+    # budget failure. In particular, do not let the token-count fallback below
+    # turn a filtered response that happens to reach the cap into a retry loop.
+    if str(result.finish_reason or "").strip().lower() == "content_filter":
+        return False
+    if _finish_was_truncated(result.finish_reason):
+        return True
+    completion_tokens = result.usage.get("completion_tokens")
+    if completion_tokens is None or completion_tokens < max(1, int(max_tokens)):
+        return False
+    # Some gateways omit the terminal reason and report an incomplete
+    # reasoning response with a zero/absent reasoning-token detail.  Once the
+    # canonical completion counter reaches this round's request cap, the
+    # zero-visible-output shape is enough to identify the exhausted round.
+    return True
 
 
 def _join_answer_parts(parts: list[str], final_text: str) -> str:
@@ -105,6 +164,7 @@ class AgentLoopState:
     exploration_rounds: int = 0
     settlement_rounds: int = 0
     tool_steps: int = 0
+    reasoning_budget_recoveries: int = 0
     sources: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -117,6 +177,11 @@ class LLMCallResult:
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     # Anthropic's signed thinking blocks, replayed verbatim on the next round.
     thinking_blocks: list[dict[str, Any]] = field(default_factory=list)
+    usage: dict[str, int] = field(default_factory=dict)
+    output_chars: int = 0
+    reasoning_chars: int = 0
+    content_chars: int = 0
+    tool_call_chars: int = 0
     finish_reason: str = ""
     # This round's ``call_status`` metadata, set whether or not the round was
     # buffered. A streamed round needs it to publish a correction when its
@@ -179,6 +244,59 @@ def _assistant_round_message(result: LLMCallResult) -> dict[str, Any]:
     return message
 
 
+def _append_directive_to_parts(parts: list[Any], instruction: str) -> list[Any]:
+    """Extend a multimodal user message with a text directive, keeping its parts.
+
+    The trailing user message can carry content parts: a chat PDF's embedded
+    images arrive as ``image_url`` blocks beside the text that references them.
+    Text is appended to the message's own text part (the parts-list analogue of
+    the plain-string branch in :meth:`AgentLoop._append_loop_instruction`), and
+    a message holding nothing but images gets a text part of its own.
+
+    Only the directive is added. Rebuilding the message as a string instead
+    would fold every ``data:...;base64,`` payload into prompt text and send the
+    image bytes to the provider as language tokens on the next round.
+    """
+    updated = list(parts)
+    for index in range(len(updated) - 1, -1, -1):
+        part = updated[index]
+        if isinstance(part, dict) and isinstance(part.get("text"), str):
+            prior = part["text"].rstrip()
+            merged = f"{prior}\n\n{instruction}" if prior else instruction
+            updated[index] = {**part, "text": merged}
+            return updated
+    updated.append({"type": "text", "text": instruction})
+    return updated
+
+
+def _has_replayable_assistant_state(result: LLMCallResult) -> bool:
+    """Whether a tool-less round still has provider state to replay."""
+    return bool(
+        result.text
+        or result.reasoning_content
+        or result.response_output_items
+        or result.thinking_blocks
+    )
+
+
+def _reasoning_item_text(item: dict[str, Any]) -> str:
+    """Extract display-safe text from a Responses reasoning output item."""
+    parts: list[str] = []
+    for block in item.get("content") or []:
+        if not isinstance(block, dict):
+            continue
+        text = block.get("text")
+        if text:
+            parts.append(str(text))
+    for summary in item.get("summary") or []:
+        if not isinstance(summary, dict):
+            continue
+        text = summary.get("text")
+        if text:
+            parts.append(str(text))
+    return "".join(parts)
+
+
 class AgentLoop:
     """Run one chat turn as a single agent loop over one conversation."""
 
@@ -203,6 +321,14 @@ class AgentLoop:
         # the declared parameter types to decode string-marked containers.
         self._tool_schema_catalog = tool_schemas
         self._last_request: LLMRequestSnapshot | None = None
+        self._request_tools: list[dict[str, Any]] | None = tool_schemas
+        # #1611: retrieved pixels belong to this turn's requests, never to
+        # durable history. Both loop engines share the same ordering/budget.
+        self._transient_model_messages: list[dict[str, Any]] = []
+        context.extension("source_visual_evidence")["image_hashes"] = []
+        self._request_fingerprint = (context.runtime.previous_model_turn or {}).get(
+            "request_fingerprint"
+        )
         self.source = pipeline.event_source
         self.stage = pipeline.event_stage
 
@@ -232,11 +358,38 @@ class AgentLoop:
                 kb_seed=seed_block,
                 include_tool_manifest=bool(self.tool_schemas),
             )
-            outcome = await self._run_loop(
-                messages=messages,
-                state=state,
-                checkpoint_boundary=len(messages),
-            )
+            try:
+                outcome = await self._run_loop(
+                    messages=messages,
+                    state=state,
+                    checkpoint_boundary=len(messages),
+                )
+                if outcome.final_text and (
+                    messages[-1].get("role") != "assistant" or not messages[-1].get("content")
+                ):
+                    # Terminator tools and capability overrides can produce the
+                    # visible answer without a final model message.
+                    messages.append({"role": "assistant", "content": outcome.final_text})
+            finally:
+                from deeptutor.services.session.model_history import (
+                    complete_tool_results,
+                    normalize_model_turn,
+                )
+
+                # Keep the prepared input (including attachments and briefings)
+                # and every model/tool message, independently of display repair.
+                self.context.runtime.model_turn = normalize_model_turn(
+                    {
+                        "version": 1,
+                        "messages": complete_tool_results(
+                            messages[self.pipeline._model_turn_start :]
+                        ),
+                        "system": messages[0]["content"],
+                        "tools": self._request_tools,
+                        "route": {"provider": self.pipeline.binding, "model": self.pipeline.model},
+                        "request_fingerprint": self._request_fingerprint,
+                    }
+                )
         if outcome.provider_response_state is not None:
             self.context.runtime.provider_response_state = outcome.provider_response_state
 
@@ -291,21 +444,39 @@ class AgentLoop:
         settlement_label = self.pipeline._t("labels.final_response", default="Final response")
         exploration_budget = max(1, self.pipeline.effective_max_rounds(self.context))
         settlement_started = False
-        nudged_empty_finish = False
+        reasoning_only_recoveries = 0
         finish_redirect_used = False
+        recovery_tools: frozenset[str] | None = None
+        recovery_schemas: list[dict[str, Any]] | None = None
         continued_answer_parts: list[str] = []
         while True:
             settling = state.exploration_rounds >= exploration_budget
             if settling:
                 if state.settlement_rounds >= MAX_SETTLEMENT_ROUNDS:
-                    # A model may ignore the settlement directive and keep
-                    # requesting tools. One tool-less call is the absolute
-                    # stop, so malformed/empty tool cycles cannot run forever.
-                    return await self._forced_finish(
-                        messages,
-                        state,
-                        continued_answer_parts=continued_answer_parts,
-                    )
+                    if recovery_tools is not None:
+                        return await self._reject_capability_finish()
+                    recovery = self.pipeline._capability_settlement_recovery(self.context)
+                    if recovery is not None:
+                        instruction, names = recovery
+                        recovery_schemas = [
+                            schema
+                            for schema in self.tool_schemas or []
+                            if (schema.get("function") or {}).get("name") in names
+                        ]
+                        recovery_tools = frozenset(
+                            schema["function"]["name"] for schema in recovery_schemas
+                        )
+                        if not recovery_tools:
+                            return await self._reject_capability_finish()
+                        self._append_loop_instruction(messages, instruction)
+                    else:
+                        # Tool-less salvage and restricted delivery share the
+                        # same final slot; neither can reopen exploration.
+                        return await self._forced_finish(
+                            messages,
+                            state,
+                            continued_answer_parts=continued_answer_parts,
+                        )
                 if not settlement_started:
                     await self._begin_settlement(messages)
                     settlement_started = True
@@ -316,13 +487,19 @@ class AgentLoop:
                     call_kind="agent_loop_round",
                     trace_role="response" if settling else "explore",
                     max_tokens=self.pipeline.loop_max_tokens,
-                    tool_schemas=self.tool_schemas,
+                    tool_schemas=recovery_schemas
+                    if recovery_tools is not None
+                    else self.tool_schemas,
                     defer_visible_output=self.pipeline._capability_buffers_visible_output(
                         self.context
                     ),
                     tool_choice=(self.pipeline.initial_tool_choice if state.rounds == 0 else None),
                 )
             except Exception as exc:
+                from deeptutor.core.capability_protocol import CapabilityPrerequisiteError
+
+                if isinstance(exc, CapabilityPrerequisiteError):
+                    raise
                 # A mid-loop LLM failure (timeout / transient network) must not
                 # discard a turn that already gathered useful work. Salvage it
                 # with a forced finish; only a failure on the very first round
@@ -342,6 +519,7 @@ class AgentLoop:
                     messages,
                     state,
                     reason="error",
+                    error=str(exc),
                     continued_answer_parts=continued_answer_parts,
                 )
             state.rounds += 1
@@ -349,9 +527,47 @@ class AgentLoop:
                 state.settlement_rounds += 1
             else:
                 state.exploration_rounds += 1
+            if recovery_tools is not None and any(
+                str(call.get("name") or "").strip() not in recovery_tools
+                for call in result.tool_calls
+            ):
+                # Provider schema hints are not an execution permission. Reject
+                # the entire batch before binding or dispatching any rogue tool.
+                await self._discard_deferred_output(result)
+                return await self._reject_capability_finish()
             if not result.tool_calls:
                 final_text = self._clean(result.text)
-                if _finish_was_truncated(result.finish_reason):
+                if _finish_was_truncated(result.finish_reason) or _reasoning_budget_exhausted(
+                    result, self.pipeline.loop_max_tokens
+                ):
+                    if _reasoning_budget_exhausted(result, self.pipeline.loop_max_tokens):
+                        await self._release_deferred_output(result)
+                        if state.reasoning_budget_recoveries >= 1:
+                            message = self.pipeline._t(
+                                "notices.reasoning_budget_exhausted",
+                                default=(
+                                    "The model exhausted its output budget on internal "
+                                    "reasoning twice without producing an answer or "
+                                    "tool action. Please retry, lower reasoning effort, "
+                                    "or split the task into smaller steps."
+                                ),
+                            )
+                            logger.warning(
+                                "reasoning budget exhausted repeatedly; stopping turn "
+                                "rounds=%d recoveries=%d",
+                                state.rounds,
+                                state.reasoning_budget_recoveries,
+                            )
+                            raise LLMReasoningBudgetExhausted(
+                                message,
+                                diagnostics={
+                                    "rounds": state.rounds,
+                                    "reasoning_chars": result.reasoning_chars,
+                                    "completion_tokens": result.usage.get("completion_tokens"),
+                                    "reasoning_tokens": result.usage.get("reasoning_tokens"),
+                                },
+                            )
+                        state.reasoning_budget_recoveries += 1
                     # ``length`` is an incomplete generation, not the model's
                     # decision to finish. Keep its visible prefix in protocol
                     # and ask for a continuation. The ordinary exploration /
@@ -371,7 +587,7 @@ class AgentLoop:
                     )
                     if result.visible_text:
                         continued_answer_parts.append(result.visible_text)
-                    if result.text:
+                    if _has_replayable_assistant_state(result):
                         messages.append(_assistant_round_message(result))
                     if result.visible_text:
                         instruction = self.pipeline._t(
@@ -407,13 +623,20 @@ class AgentLoop:
                         )
                     self._append_loop_instruction(messages, instruction)
                     continue
-                if not final_text and not nudged_empty_finish:
+                if not final_text:
                     # The round produced only internal reasoning (e.g. the
                     # whole reply inside <think>) — the model planned but
                     # never acted. Keep its raw text in-conversation (the
-                    # plan/script lives there) and nudge it once to act
-                    # instead of falling back to an empty answer.
-                    nudged_empty_finish = True
+                    # plan/script lives there) and ask it to act instead of
+                    # accepting an empty answer.
+                    reasoning_only_recoveries += 1
+                    logger.warning(
+                        "agent loop finish produced reasoning only "
+                        "(round=%d, finish_reason=%s, reasoning_chars=%d)",
+                        state.rounds,
+                        result.finish_reason or "none",
+                        len(result.reasoning_content) + len(result.text),
+                    )
                     await self.stream.progress(
                         self.pipeline._t(
                             "notices.empty_finish_nudged",
@@ -426,8 +649,26 @@ class AgentLoop:
                         stage=self.stage,
                         metadata={"trace_kind": "warning"},
                     )
-                    if result.text:
+                    if _has_replayable_assistant_state(result):
                         messages.append(_assistant_round_message(result))
+                    if reasoning_only_recoveries >= MAX_REASONING_ONLY_RECOVERIES:
+                        self._append_loop_instruction(
+                            messages,
+                            self.pipeline._t(
+                                "loop.repeat_reasoning_only_nudge",
+                                default=(
+                                    "Your previous rounds produced only internal "
+                                    "reasoning — no tool call and no user-facing "
+                                    "answer. Do not reason further. Select the most "
+                                    "likely next action and produce it now."
+                                ),
+                            ),
+                        )
+                        return await self._forced_finish(
+                            messages,
+                            state,
+                            continued_answer_parts=continued_answer_parts,
+                        )
                     self._append_loop_instruction(
                         messages,
                         self.pipeline._t(
@@ -453,19 +694,7 @@ class AgentLoop:
                             messages.append(_assistant_round_message(result))
                         self._append_loop_instruction(messages, finish_redirect)
                         continue
-                    await self.stream.progress(
-                        self.pipeline._t(
-                            "notices.capability_finish_rejected",
-                            default=(
-                                "The model did not complete the required interactive step. "
-                                "Please retry the turn."
-                            ),
-                        ),
-                        source=self.source,
-                        stage=self.stage,
-                        metadata={"trace_kind": "warning"},
-                    )
-                    return LoopOutcome(final_text="", completed=False)
+                    return await self._reject_capability_finish()
                 final_override = self.pipeline._capability_final_text_override(
                     self.context, final_text
                 )
@@ -483,6 +712,7 @@ class AgentLoop:
                     )
                 await self._release_deferred_output(result)
                 # Finish: the text streamed live this round IS the answer.
+                messages.append(_assistant_round_message(result))
                 return await self._finalize_finish(
                     final_text,
                     visible_text=result.visible_text,
@@ -495,6 +725,28 @@ class AgentLoop:
                 )
 
             tool_names = tuple(str(call.get("name") or "") for call in result.tool_calls)
+            if _finish_was_truncated(result.finish_reason):
+                # A round that hits the cap *while writing a tool call* never
+                # reaches the continuation branch above, so the only thing the
+                # reader used to see was the arg guard's "missing <arg>" — which
+                # reads as a model that forgot a field, not one whose JSON was
+                # cut off mid-argument. That is how a truncated
+                # ``submit_visualization`` became an empty canvas with nothing
+                # on screen explaining why (#1546).
+                await self.stream.progress(
+                    self.pipeline._t(
+                        "notices.tool_call_truncated",
+                        default=(
+                            "The model reached its output token limit while writing a "
+                            "tool call, so the call may be incomplete. If this repeats, "
+                            "raise this capability's max tokens or pick a model that "
+                            "reasons less."
+                        ),
+                    ),
+                    source=self.source,
+                    stage=self.stage,
+                    metadata={"trace_kind": "warning"},
+                )
             output_policy = self.pipeline._capability_tool_round_output_policy(
                 self.context,
                 self._clean(result.text),
@@ -503,8 +755,10 @@ class AgentLoop:
             if output_policy == "discard":
                 await self._discard_deferred_output(result)
             else:
-                if output_policy == "publish" and result.deferred_completion_metadata is not None:
-                    result.deferred_completion_metadata["answer_visible"] = True
+                # ``publish`` needs no marker any more: a tool round's prose is
+                # answer content by default. The hook is still consulted because
+                # capabilities act on it (partner_group saves the formal answer
+                # from the very round it classifies).
                 await self._release_deferred_output(result)
             assistant = assistant_message_with_tool_calls(
                 result.text,
@@ -530,6 +784,7 @@ class AgentLoop:
             state.tool_steps += 1
             state.sources.extend(dispatch.sources)
             messages.extend(dispatch.tool_messages)
+            extend_transient_model_messages(self._transient_model_messages, dispatch.model_messages)
 
             if dispatch.pause:
                 resumed = await self.pipeline._await_user_reply_and_resolve(
@@ -596,7 +851,11 @@ class AgentLoop:
     def _append_loop_instruction(messages: list[dict[str, Any]], instruction: str) -> None:
         """Append a loop directive without creating consecutive user roles."""
         if messages and messages[-1].get("role") == "user":
-            prior = str(messages[-1].get("content") or "").rstrip()
+            content = messages[-1].get("content")
+            if isinstance(content, list):
+                messages[-1]["content"] = _append_directive_to_parts(content, instruction)
+                return
+            prior = str(content or "").rstrip()
             messages[-1]["content"] = f"{prior}\n\n{instruction}" if prior else instruction
             return
         messages.append({"role": "user", "content": instruction})
@@ -608,7 +867,7 @@ class AgentLoop:
         dispatch: DispatchOutcome,
         checkpoint_boundary: int,
     ) -> int:
-        summary = _last_context_checkpoint_summary(dispatch)
+        summary, state = _last_context_checkpoint(dispatch)
         if not summary:
             return checkpoint_boundary
         prefix = messages[:checkpoint_boundary]
@@ -618,8 +877,29 @@ class AgentLoop:
                 "content": f"[Context checkpoint]\n{summary}",
             }
         )
+        boundary = len(prefix)
+        if state:
+            # State sits past the boundary, so the next fold replaces it rather
+            # than leaving a stale copy beside every summary.
+            prefix.append({"role": "system", "content": state})
         messages[:] = prefix
-        return len(messages)
+        return boundary
+
+    async def _reject_capability_finish(self) -> LoopOutcome:
+        """Fail a turn whose required interaction could not be completed."""
+        await self.stream.progress(
+            self.pipeline._t(
+                "notices.capability_finish_rejected",
+                default=(
+                    "The model did not complete the required interactive step. "
+                    "Please retry the turn."
+                ),
+            ),
+            source=self.source,
+            stage=self.stage,
+            metadata={"trace_kind": "warning"},
+        )
+        return LoopOutcome(final_text="", completed=False)
 
     async def _forced_finish(
         self,
@@ -627,12 +907,24 @@ class AgentLoop:
         state: AgentLoopState,
         *,
         reason: str = "budget",
+        error: str = "",
         continued_answer_parts: list[str] | None = None,
     ) -> LoopOutcome:
+        # A tool-free salvage reply cannot satisfy an outstanding interaction.
+        # Empty text asks capabilities about state, without inventing prose to
+        # validate or giving the model another chance to claim completion.
+        if self.pipeline._capability_finish_instruction(self.context, ""):
+            return await self._reject_capability_finish()
         if reason == "error":
+            # The caller has the exception and logs it; without it here the
+            # reader is told a step failed and never which one or why — the
+            # same silence ``tool_error_message_factory`` was built to end.
             notice = self.pipeline._t(
                 "notices.loop_error_finish",
-                default="A step failed; answering with what has been gathered.",
+                error=error,
+                default=f"A step failed ({error}); answering with what has been gathered."
+                if error
+                else "A step failed; answering with what has been gathered.",
             )
         else:
             notice = self.pipeline._t(
@@ -661,6 +953,10 @@ class AgentLoop:
             # prevents callers from offering an accurate retry action.
             raise
         except Exception as exc:
+            from deeptutor.core.capability_protocol import CapabilityPrerequisiteError
+
+            if isinstance(exc, CapabilityPrerequisiteError):
+                raise
             # The salvage call itself failed (e.g. the provider is still
             # returning unusable data). Don't bubble up and lose the turn —
             # emit the graceful fallback answer instead.
@@ -670,10 +966,40 @@ class AgentLoop:
                 continued_answer_parts=continued_answer_parts,
             )
         state.rounds += 1
+        # Two readings of one scene, at different precisions. The budget
+        # check fires only when this round demonstrably hit its cap — that is
+        # a configuration the user can act on (lower the effort, split the
+        # task), so it is worth failing the turn with the counters that prove
+        # it. Everything else that reasoned without answering is a softer
+        # miss: the turn still ends, but it says which kind of empty it was
+        # rather than reporting an opaque model failure.
+        if _reasoning_budget_exhausted(result, self.pipeline.loop_max_tokens):
+            message = self.pipeline._t(
+                "notices.reasoning_budget_exhausted",
+                default=(
+                    "The model exhausted its output budget on internal reasoning "
+                    "without producing an answer or tool action. Please retry, "
+                    "lower reasoning effort, or split the task into smaller steps."
+                ),
+            )
+            raise LLMReasoningBudgetExhausted(
+                message,
+                diagnostics={
+                    "rounds": state.rounds,
+                    "reasoning_chars": result.reasoning_chars,
+                    "completion_tokens": result.usage.get("completion_tokens"),
+                    "reasoning_tokens": result.usage.get("reasoning_tokens"),
+                },
+            )
+        reasoning_without_answer = bool(result.reasoning_content) or bool(
+            result.text.strip() and not self._clean(result.text)
+        )
+        messages.append(_assistant_round_message(result))
         return await self._finalize_finish(
             result.text,
             visible_text=result.visible_text,
             continued_answer_parts=continued_answer_parts,
+            empty_response_kind=("reasoning_only" if reasoning_without_answer else None),
             provider_response_state=_provider_response_state(
                 result.response_output_items,
                 result.reasoning_content,
@@ -688,6 +1014,7 @@ class AgentLoop:
         visible_text: str | None = None,
         continued_answer_parts: list[str] | None = None,
         allow_empty: bool = False,
+        empty_response_kind: str | None = None,
         provider_response_state: dict[str, Any] | None = None,
     ) -> LoopOutcome:
         cleaned_text = self._clean(raw_text)
@@ -701,13 +1028,22 @@ class AgentLoop:
         if not final_text and not allow_empty:
             # The finish round produced no usable text; nothing streamed to
             # the user, so emit a fallback answer here.
-            final_text = self.pipeline._t(
-                "notices.empty_final_response",
-                default=(
-                    "I could not produce a useful response from the model "
-                    "output. Please try again or narrow the request."
-                ),
-            )
+            if empty_response_kind == "reasoning_only":
+                final_text = self.pipeline._t(
+                    "notices.reasoning_only_final_response",
+                    default=(
+                        "The model produced internal reasoning but no usable "
+                        "answer. Please try again or narrow the request."
+                    ),
+                )
+            else:
+                final_text = self.pipeline._t(
+                    "notices.empty_final_response",
+                    default=(
+                        "I could not produce a useful response from the model "
+                        "output. Please try again or narrow the request."
+                    ),
+                )
             await self.pipeline._emit_protocol_fallback_final_response(self.stream, final_text)
         return LoopOutcome(
             final_text=final_text,
@@ -737,13 +1073,16 @@ class AgentLoop:
     async def _discard_deferred_output(self, result: LLMCallResult) -> None:
         """Take a rejected round's prose back out of the answer.
 
-        Two shapes reach here. A *buffered* round is simply never published:
-        closing its trace as ``narration`` is the whole retraction. A round
+        Two shapes reach here. A *buffered* round is simply never published,
+        so closing its trace as retracted is the whole retraction. A round
         that already **streamed** — the ordinary case now that only protocol
-        capabilities buffer — was published optimistically and closed as
-        ``finish``, so its retraction has to be a correction: the same
-        ``call_id``, re-marked ``narration``, which is what moves that text out
-        of the answer and into the collapsed trace on the reader's side.
+        capabilities buffer — was published optimistically, so its retraction
+        has to be a correction: the same ``call_id`` re-marked
+        ``answer_visible: False``, which is what moves that text out of the
+        answer and into the collapsed trace on the reader's side.
+
+        This is the ONLY way prose leaves the answer. Ordinary commentary
+        written before a tool call stays where the reader saw it.
 
         Emitting nothing in that second case was what left rejected prose
         sitting in the answer as though it had been accepted.
@@ -752,7 +1091,7 @@ class AgentLoop:
         if metadata is not None:
             metadata = dict(metadata)
             metadata["call_role"] = "narration"
-            metadata.pop("answer_visible", None)
+            metadata["answer_visible"] = False
             metadata["finish_rejected"] = True
             await self.stream.progress(
                 "",
@@ -778,9 +1117,34 @@ class AgentLoop:
         defer_visible_output: bool = False,
         tool_choice: str | None = None,
     ) -> LLMCallResult:
-        await self.pipeline._guard_context_window(messages, self.stream)
+        prepare = getattr(self.pipeline, "prepare_model_request", None)
+        lesson_messages = await prepare(self.context, self.stream, messages) if prepare else []
+        request_messages = with_transient_model_messages(messages, self._transient_model_messages)
+        # Current tool pixels take precedence over cached lesson pages. Neither
+        # belongs in the durable dialogue; the hook runs again on forced finish.
+        if lesson_messages and not has_image_parts(self._transient_model_messages):
+            request_messages = [*request_messages, *lesson_messages]
+        project = getattr(self.pipeline, "project_model_request", None)
+        if project is not None:
+            request_messages = project(request_messages)
+        projected_messages = deduplicate_user_images(
+            [
+                {
+                    key: value
+                    for key, value in message.items()
+                    if key not in {"_context_snapshot", "_lesson_packet"}
+                }
+                for message in request_messages
+            ]
+        )
+        await self.pipeline._guard_context_window(
+            projected_messages, self.stream, tool_schemas=tool_schemas
+        )
         stage = self.stage
         call_id = new_call_id(f"{self.source}-{stage}")
+        # Runtime-only invocation identity: reviewed mutations can require a
+        # subsequent model call, rather than trust an LLM-supplied argument.
+        self.context.extension("agent_loop")["model_call_id"] = call_id
         trace_meta = build_trace_metadata(
             call_id=call_id,
             phase=stage,
@@ -802,7 +1166,7 @@ class AgentLoop:
 
         kwargs: dict[str, Any] = {
             "model": self.pipeline.model,
-            "messages": messages,
+            "messages": projected_messages,
             "stream": True,
             **self.pipeline._completion_kwargs(max_tokens=max_tokens),
         }
@@ -826,6 +1190,22 @@ class AgentLoop:
                 else "auto"
             )
         forced_tool_choice = isinstance(kwargs.get("tool_choice"), dict)
+        self._request_tools = tool_schemas
+        from deeptutor.services.llm.request_cache import compare_requests, fingerprint_request
+
+        fingerprint = fingerprint_request(
+            kwargs["messages"],
+            kwargs.get("tools"),
+            {
+                "provider": self.pipeline.binding,
+                "model": self.pipeline.model,
+                "base_url": getattr(self.pipeline.llm_config, "base_url", None),
+                "wire_api": getattr(self.pipeline.llm_config, "wire_api", None),
+            },
+        )
+        request_cache = compare_requests(self._request_fingerprint, fingerprint)
+        self._request_fingerprint = fingerprint
+        trace_meta = merge_trace_metadata(trace_meta, {"request_cache": request_cache})
         # What this request actually carried, pinned now: the loop keeps
         # appending to ``messages`` and the deferred loader keeps appending to
         # ``tool_schemas``, so the turn's context budget is read off the last
@@ -839,7 +1219,9 @@ class AgentLoop:
         carried = list(tool_schemas or [])
         if not carried and self._last_request is not None:
             carried = self._last_request.tool_schemas
-        self._last_request = LLMRequestSnapshot(messages=list(messages), tool_schemas=carried)
+        self._last_request = LLMRequestSnapshot(
+            messages=list(kwargs["messages"]), tool_schemas=carried
+        )
 
         chunk_meta = merge_trace_metadata(trace_meta, {"trace_kind": "llm_chunk"})
 
@@ -868,28 +1250,41 @@ class AgentLoop:
                 )
             )
             output_chars = 0
+            reasoning_chars = 0
+            content_chars = 0
+            tool_call_chars = 0
+            call_started_at = monotonic()
+            last_reasoning_progress_at = call_started_at
+            action_started = False
             finish_reason = ""
+            reasoning_progress_task: asyncio.Task[None] | None = None
             think_filter = InlineThinkFilter()
             # DeepSeek's Anthropic-compatible endpoint can interleave
             # user-facing prose and DSML calls in one content stream.
             dsml_filter = DSMLStreamFilter()
-            answer_content_emitted = False
             visible_text_parts: list[str] = []
             output_emitted = False
 
             async def _emit_segments(segments: list[tuple[str, str]]) -> None:
-                nonlocal answer_content_emitted, output_emitted
+                nonlocal action_started, content_chars, output_emitted
+                nonlocal reasoning_chars
                 for kind, segment in segments:
                     if kind == "thinking":
                         # Reasoning goes to the trace on every round shape.
                         # A forced tool round used to skip this whole function,
                         # which discarded the model's own inline ``<think>``
                         # block along with the prose it was written around.
+                        reasoning_chars += len(segment)
                         output_emitted = True
+                        await _ensure_reasoning_progress_task()
                         await self.stream.thinking(
                             segment, source=self.source, stage=stage, metadata=chunk_meta
                         )
+                        await _maybe_emit_reasoning_progress()
                         continue
+                    if segment.strip():
+                        action_started = True
+                        content_chars += len(segment)
                     if forced_tool_choice:
                         # This round exists to produce a call, so its prose is
                         # not an answer and must not reach the reader — but
@@ -897,17 +1292,92 @@ class AgentLoop:
                         continue
                     output_emitted = True
                     visible_text_parts.append(segment)
-                    if segment.strip():
-                        answer_content_emitted = True
                     if not defer_visible_output:
                         await self.stream.content(
                             segment, source=self.source, stage=stage, metadata=chunk_meta
                         )
 
+            async def _maybe_emit_reasoning_progress() -> None:
+                nonlocal last_reasoning_progress_at
+                if action_started or reasoning_chars <= 0:
+                    return
+                now = monotonic()
+                if now - last_reasoning_progress_at < 15.0:
+                    return
+                last_reasoning_progress_at = now
+                await self.stream.progress(
+                    self.pipeline._t(
+                        "notices.reasoning_progress",
+                        default=(
+                            "The model is still reasoning; it has not produced an "
+                            "answer or tool action yet."
+                        ),
+                    ),
+                    source=self.source,
+                    stage=stage,
+                    metadata=merge_trace_metadata(
+                        trace_meta,
+                        {
+                            "trace_kind": "reasoning_progress",
+                            "reasoning_chars": reasoning_chars,
+                            "elapsed_s": round(now - call_started_at, 1),
+                        },
+                    ),
+                )
+
+            async def _reasoning_progress_loop() -> None:
+                """Keep progress visible while a provider is between chunks."""
+                while True:
+                    await asyncio.sleep(15.0)
+                    if action_started or reasoning_chars <= 0:
+                        return
+                    await _maybe_emit_reasoning_progress()
+
+            async def _ensure_reasoning_progress_task() -> None:
+                nonlocal reasoning_progress_task
+                if reasoning_progress_task is None or reasoning_progress_task.done():
+                    reasoning_progress_task = asyncio.create_task(_reasoning_progress_loop())
+
+            async def _stop_reasoning_progress_task() -> None:
+                nonlocal reasoning_progress_task
+                task = reasoning_progress_task
+                reasoning_progress_task = None
+                if task is None or task.done():
+                    return
+                task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await task
+
             response_stream = None
             try:
-                response_stream = await self._create_response_stream(kwargs, trace_meta, stage)
-                async for chunk in response_stream:
+                sent_content = [message.get("content") for message in kwargs["messages"]]
+                sent_had_images = has_image_parts(kwargs["messages"])
+                # The loop owns retries. Bound both connection setup and idle
+                # reads so cold-start failures cannot park a durable turn.
+                response_stream = await asyncio.wait_for(
+                    self._create_response_stream(kwargs, trace_meta, stage),
+                    _STREAM_IDLE_TIMEOUT_SECONDS,
+                )
+                # A declared vision capability is not evidence of delivered
+                # pixels when the provider actually falls back to text.
+                self.context.extension("source_visual_evidence")["image_hashes"] = (
+                    image_content_hashes(kwargs["messages"])
+                )
+                # Retain an actual provider fallback for later rounds. The
+                # request-only image deduplication must never overwrite history.
+                if sent_had_images and not has_image_parts(kwargs["messages"]):
+                    # Degrade all canonical copies too, including duplicates
+                    # replaced only on the wire. Otherwise the next round would
+                    # retry images the provider has already rejected.
+                    strip_image_parts_inplace(messages)
+                    strip_image_parts_inplace(self._transient_model_messages)
+                else:
+                    for original, accepted, sent in zip(
+                        request_messages, kwargs["messages"], sent_content
+                    ):
+                        if "content" in accepted and accepted["content"] is not sent:
+                            original["content"] = accepted["content"]
+                async for chunk in _bounded_stream_chunks(response_stream):
                     usage = getattr(chunk, "usage", None)
                     if usage is not None:
                         usage_seen = usage
@@ -925,6 +1395,8 @@ class AgentLoop:
                         # handled below. Both end at the same emitter.
                         preview = provider_fields.get("tool_args_preview")
                         if isinstance(preview, dict) and ask_user_drafts is not None:
+                            if str(preview.get("arguments") or ""):
+                                action_started = True
                             await ask_user_drafts.observe(
                                 call_id=str(preview.get("id") or ""),
                                 tool_name=str(preview.get("name") or ""),
@@ -943,6 +1415,43 @@ class AgentLoop:
                             response_output_items = [
                                 dict(item) for item in native_items if isinstance(item, dict)
                             ]
+                        provider_reasoning = provider_fields.get("reasoning_content")
+                        if (
+                            not reasoning_parts
+                            and isinstance(provider_reasoning, str)
+                            and provider_reasoning
+                        ):
+                            reasoning_parts.append(provider_reasoning)
+                            reasoning_chars += len(provider_reasoning)
+                            output_chars += len(provider_reasoning)
+                            output_emitted = True
+                            await _ensure_reasoning_progress_task()
+                            await self.stream.thinking(
+                                provider_reasoning,
+                                source=self.source,
+                                stage=stage,
+                                metadata=chunk_meta,
+                            )
+                            await _maybe_emit_reasoning_progress()
+                        if not reasoning_parts:
+                            for item in native_items or []:
+                                if not isinstance(item, dict) or item.get("type") != "reasoning":
+                                    continue
+                                item_reasoning = _reasoning_item_text(item)
+                                if not item_reasoning:
+                                    continue
+                                reasoning_parts.append(item_reasoning)
+                                reasoning_chars += len(item_reasoning)
+                                output_chars += len(item_reasoning)
+                                output_emitted = True
+                                await _ensure_reasoning_progress_task()
+                                await self.stream.thinking(
+                                    item_reasoning,
+                                    source=self.source,
+                                    stage=stage,
+                                    metadata=chunk_meta,
+                                )
+                                await _maybe_emit_reasoning_progress()
                     delta = getattr(choice, "delta", None)
                     if delta is None:
                         continue
@@ -954,11 +1463,14 @@ class AgentLoop:
                     )
                     if reasoning_text:
                         reasoning_parts.append(reasoning_text)
+                        reasoning_chars += len(reasoning_text)
                         output_chars += len(reasoning_text)
                         output_emitted = True
+                        await _ensure_reasoning_progress_task()
                         await self.stream.thinking(
                             reasoning_text, source=self.source, stage=stage, metadata=chunk_meta
                         )
+                        await _maybe_emit_reasoning_progress()
 
                     content = getattr(delta, "content", None)
                     if content:
@@ -972,7 +1484,11 @@ class AgentLoop:
                             await _emit_segments(think_filter.feed(visible_content))
 
                     for tc_delta in getattr(delta, "tool_calls", None) or []:
-                        output_chars += tool_acc.feed(tc_delta)
+                        fed_chars = tool_acc.feed(tc_delta)
+                        tool_call_chars += fed_chars
+                        output_chars += fed_chars
+                        if fed_chars:
+                            action_started = True
                         if ask_user_drafts is not None:
                             index = int(getattr(tc_delta, "index", 0) or 0)
                             part = tool_acc.part_at(index)
@@ -982,8 +1498,30 @@ class AgentLoop:
                                     tool_name=str(part.get("name") or ""),
                                     arguments=str(part.get("arguments") or ""),
                                 )
+            except asyncio.CancelledError:
+                if text_parts or reasoning_parts:
+                    messages.append(
+                        _assistant_round_message(
+                            LLMCallResult(
+                                text="".join(text_parts),
+                                reasoning_content="".join(reasoning_parts),
+                                thinking_blocks=thinking_blocks,
+                            )
+                        )
+                    )
+                raise
             except Exception as exc:
                 if not is_transient_transport_error(exc):
+                    if text_parts or reasoning_parts:
+                        messages.append(
+                            _assistant_round_message(
+                                LLMCallResult(
+                                    text="".join(text_parts),
+                                    reasoning_content="".join(reasoning_parts),
+                                    thinking_blocks=thinking_blocks,
+                                )
+                            )
+                        )
                     raise
                 can_retry = not output_emitted and attempt < len(_PROVIDER_RETRY_DELAYS)
                 if can_retry:
@@ -1013,6 +1551,16 @@ class AgentLoop:
                     continue
 
                 partial_response = output_emitted
+                if text_parts or reasoning_parts:
+                    messages.append(
+                        _assistant_round_message(
+                            LLMCallResult(
+                                text="".join(text_parts),
+                                reasoning_content="".join(reasoning_parts),
+                                thinking_blocks=thinking_blocks,
+                            )
+                        )
+                    )
                 await self.stream.progress(
                     "",
                     source=self.source,
@@ -1055,6 +1603,7 @@ class AgentLoop:
                     partial_response=partial_response,
                 ) from exc
             finally:
+                await _stop_reasoning_progress_task()
                 close = getattr(response_stream, "close", None)
                 if callable(close):
                     with suppress(Exception):
@@ -1066,6 +1615,7 @@ class AgentLoop:
             await _emit_segments(think_filter.feed(dsml_tail))
         await _emit_segments(think_filter.flush())
         text = "".join(text_parts)
+        usage_details = usage_breakdown(usage_seen)
         record_streamed_usage(
             self.pipeline.usage,
             usage_seen,
@@ -1137,24 +1687,81 @@ class AgentLoop:
             )
 
         truncated_round = call_kind == "agent_loop_round" and _finish_was_truncated(finish_reason)
+        visible_text = "".join(visible_text_parts)
+        reasoning_budget_exhausted = bool(
+            call_kind == "agent_loop_round"
+            and not tool_calls
+            and not visible_text.strip()
+            and (
+                reasoning_chars > 0
+                or bool(reasoning_parts)
+                or any(
+                    isinstance(item, dict) and item.get("type") == "reasoning"
+                    for item in response_output_items
+                )
+            )
+            and str(finish_reason or "").strip().lower() != "content_filter"
+            and (
+                truncated_round
+                or (usage_details.get("completion_tokens", 0) >= max(1, int(max_tokens)))
+            )
+        )
         completion_metadata: dict[str, Any] = {
             "trace_kind": "call_status",
             "call_state": "complete",
-            # A round with tool calls is narration; a tool-less round is the
-            # finish whose text is the user-facing answer. Token-truncated
-            # output remains visible but is not terminal: the loop continues.
+            # ``call_role`` states this round's PHASE, not whether its text is
+            # shown: ``narration`` is mid-turn commentary (more work follows),
+            # ``finish`` is the terminal round. Token-truncated output is
+            # visible but not terminal, so it stays ``narration``.
             "call_role": "narration" if tool_calls or truncated_round else "finish",
+            # Every round's prose belongs to the answer, in the order it was
+            # written. Commentary written before a tool call is what the reader
+            # is told while the work happens, not an internal preamble to hide,
+            # so the only text that ever leaves the answer is text a capability
+            # explicitly retracts (see ``_discard_deferred_output``).
+            "answer_visible": True,
+            "finish_reason": finish_reason or "stop",
+            "requested_max_tokens": int(max_tokens),
+            "usage_reported": bool(usage_details),
+            "output_chars": output_chars,
+            "reasoning_chars": reasoning_chars,
+            "content_chars": content_chars,
+            "tool_call_chars": tool_call_chars,
+            "tool_call_count": len(tool_calls),
         }
-        mastery_tool_round = bool(tool_calls) and bool(self.context.metadata.get("mastery_mode"))
-        if (dsml_calls or truncated_round or mastery_tool_round) and answer_content_emitted:
-            # DSML providers may intentionally combine tutor feedback and an
-            # ask_user/tool call in the same round. Preserve only that cleaned
-            # surrounding prose in the answer surfaces. Truncated rounds also
-            # keep their partial answer visible while retaining a truthful
-            # non-terminal ``narration`` role. Mastery rounds likewise combine
-            # learner-facing teaching with state/quiz tools; that teaching is
-            # answer content, not an internal tool preamble.
-            completion_metadata["answer_visible"] = True
+        for key in ("prompt_tokens", "completion_tokens", "total_tokens", "reasoning_tokens"):
+            completion_metadata[key] = usage_details.get(key, "unavailable")
+        if reasoning_budget_exhausted:
+            completion_metadata["reasoning_budget_exhausted"] = True
+        log_line = (
+            "agent_loop_round_complete model=%s call_id=%s finish_reason=%s "
+            "requested_max_tokens=%d usage_reported=%s prompt_tokens=%s "
+            "completion_tokens=%s reasoning_tokens=%s output_chars=%d "
+            "reasoning_chars=%d content_chars=%d tool_call_chars=%d tool_call_count=%d"
+        )
+        log_args = (
+            self.pipeline.model,
+            call_id,
+            finish_reason or "stop",
+            int(max_tokens),
+            bool(usage_details),
+            usage_details.get("prompt_tokens", "unavailable"),
+            usage_details.get("completion_tokens", "unavailable"),
+            usage_details.get("reasoning_tokens", "unavailable"),
+            output_chars,
+            reasoning_chars,
+            content_chars,
+            tool_call_chars,
+            len(tool_calls),
+        )
+        if (
+            truncated_round
+            or reasoning_budget_exhausted
+            or (not tool_calls and not visible_text.strip())
+        ):
+            logger.warning(log_line, *log_args)
+        else:
+            logger.info(log_line, *log_args)
 
         completion_event_metadata = merge_trace_metadata(trace_meta, completion_metadata)
         if forced_tool_choice and not tool_calls and text:
@@ -1174,11 +1781,16 @@ class AgentLoop:
             )
         return LLMCallResult(
             text=text,
-            visible_text="".join(visible_text_parts),
+            visible_text=visible_text,
             response_output_items=response_output_items,
             reasoning_content="".join(reasoning_parts),
             tool_calls=tool_calls,
             thinking_blocks=thinking_blocks,
+            usage=usage_details,
+            output_chars=output_chars,
+            reasoning_chars=reasoning_chars,
+            content_chars=content_chars,
+            tool_call_chars=tool_call_chars,
             finish_reason=finish_reason,
             completion_metadata=completion_event_metadata,
             deferred_chunk_metadata=chunk_meta if defer_visible_output else None,
@@ -1218,6 +1830,15 @@ class AgentLoop:
         try:
             return await self.client.chat.completions.create(**kwargs)
         except Exception as exc:
+            if (
+                kwargs.get("tools")
+                and kwargs.get("tool_choice") != "auto"
+                and is_forced_tool_choice_unsupported(exc)
+            ):
+                # Some thinking models reject a forced choice while supporting
+                # the schemas themselves. Keep the tool surface and its cache.
+                retry_kwargs = {**kwargs, "tool_choice": "auto"}
+                return await self._create_response_stream(retry_kwargs, trace_meta, stage)
             if kwargs.get("tools") and is_tool_schema_unsupported(exc):
                 # Capture the provider's raw rejection body. Without it there is
                 # no way to tell *which* parameter/shape a new model family
@@ -1246,6 +1867,7 @@ class AgentLoop:
                 retry_kwargs.pop("tools", None)
                 retry_kwargs.pop("tool_choice", None)
                 self.tool_schemas = None
+                self._request_tools = None
                 return await self.client.chat.completions.create(**retry_kwargs)
             if "stream_options" in kwargs and is_stream_options_unsupported(exc):
                 retry_kwargs = dict(kwargs)
@@ -1306,8 +1928,13 @@ async def _single_chunk_stream(response: Any) -> Any:
     )
 
 
-def _last_context_checkpoint_summary(dispatch: DispatchOutcome) -> str:
-    summary = ""
+def _last_context_checkpoint(dispatch: DispatchOutcome) -> tuple[str, str]:
+    """``(summary, state)`` of the round's last checkpoint.
+
+    ``summary`` is history the fold keeps; ``state`` is the optional current
+    state that replaces the previous fold's copy instead of stacking with it.
+    """
+    summary, state = "", ""
     for tool_message in dispatch.tool_messages:
         tool_call_id = str(tool_message.get("tool_call_id") or "")
         metadata = dispatch.tool_metadata_by_id.get(tool_call_id) or {}
@@ -1317,7 +1944,8 @@ def _last_context_checkpoint_summary(dispatch: DispatchOutcome) -> str:
         candidate = str(checkpoint.get("summary") or "").strip()
         if candidate:
             summary = candidate
-    return summary
+            state = str(checkpoint.get("state") or "").strip()
+    return summary, state
 
 
 __all__ = [

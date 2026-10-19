@@ -32,11 +32,13 @@ const SEGMENT_COLORS: Record<string, string> = {
   persona_style: "#f97316",
   partner_turn_policy: "#d946ef",
   memory: "#a855f7",
+  learning_journal: "#3b82f6",
   knowledge_base_note: "#8b5cf6",
   skills: "#06b6d4",
   sources: "#0891b2",
   notebooks: "#e879a3",
   workspace: "#65a30d",
+  workspace_instructions: "#0d9488",
   capability: "#64748b",
 };
 

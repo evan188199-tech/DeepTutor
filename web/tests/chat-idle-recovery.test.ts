@@ -106,12 +106,21 @@ test("the loader vets the stored status and skips subscribing to a stale turn", 
 
   // The verdict has to reach both the state and the subscribe: opening a
   // socket for a turn we just judged dead would wait for events that can
-  // never arrive.
+  // never arrive. The dispatched status starts from the verdict (it is
+  // only overridden when an unsent submission is restored, #1594).
   assert.match(adapter, /const loadedStatus = resolveLoadedRunStatus\(/);
-  assert.match(adapter, /status: loadedStatus,/);
+  assert.match(adapter, /let restoredStatus = loadedStatus;/);
+  assert.match(adapter, /status: restoredStatus,/);
   assert.match(
     adapter,
-    /if \(loadedStatus === "running" && \(activeTurn\?\.turn_id \|\| activeTurn\?\.id\)\)/,
+    /const activeTurnId = activeTurn\?\.turn_id \|\| activeTurn\?\.id \|\| "";/,
+  );
+  assert.match(adapter, /if \(activeTurnId && loadedStatus === "running"\)/);
+  // The parked (waiting_input) resubscribe is gated the same way: only an
+  // actively parked turn opens a socket for its stream.
+  assert.match(
+    adapter,
+    /else if \(activeTurnId && String\(session\.status \|\| ""\) === "waiting_input"\)/,
   );
 
   // And a row with nothing in it is not a message. One such row used to be

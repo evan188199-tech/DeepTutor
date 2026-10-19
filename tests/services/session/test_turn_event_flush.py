@@ -1,9 +1,7 @@
-"""Post-stream turn-event flush: batching and PocketBase upload.
+"""Turn-event batching, prefix durability and PocketBase upload.
 
-The turn runtime buffers every live event in memory and persists the whole
-batch, including DONE and any post-turn ``session_meta`` title update, once
-the turn has fully finished. Everything on that path must stay O(1) round
-trips with respect to the event count.
+Live prefixes persist in bounded batches; terminal and post-turn metadata are
+flushed before teardown. Concurrent writers share one persistence attempt.
 """
 
 from __future__ import annotations
@@ -240,8 +238,10 @@ async def test_flush_survives_turn_deleted_mid_drain(tmp_path) -> None:
 async def test_pb_append_turn_events_is_durable_before_return(fake_pb) -> None:
     store = PocketBaseSessionStore()
     with as_user("alice"):
-        events = _buffered("s1", "turn_1", 4)
-        persisted = await store.append_turn_events("turn_1", events)
+        await store.create_session(session_id="s1")
+        turn = await store.create_turn("s1", capability="chat")
+        events = _buffered("s1", turn["turn_id"], 4)
+        persisted = await store.append_turn_events(turn["turn_id"], events)
 
         # Annotated payloads come back synchronously with their seqs intact —
         # the runtime receives the durable sequence numbers without another fetch.
@@ -249,15 +249,19 @@ async def test_pb_append_turn_events_is_durable_before_return(fake_pb) -> None:
 
         rows = fake_pb.collection("turn_events").get_full_list()
         assert sorted(int(row.seq) for row in rows) == [1, 2, 3, 4]
-        assert all(row.turn_id == "turn_1" for row in rows)
+        assert all(row.turn_id == turn["turn_id"] for row in rows)
         assert all(row.session_id == "s1" for row in rows)
 
 
 async def test_pb_append_turn_event_single_delegates_to_batch(fake_pb) -> None:
     store = PocketBaseSessionStore()
     with as_user("alice"):
-        payload = await store.append_turn_event("turn_9", {"type": "content", "content": "x"})
-        assert payload["turn_id"] == "turn_9"
+        await store.create_session(session_id="s_single")
+        turn = await store.create_turn("s_single", capability="chat")
+        payload = await store.append_turn_event(
+            turn["turn_id"], {"type": "content", "content": "x"}
+        )
+        assert payload["turn_id"] == turn["turn_id"]
         assert payload["seq"]  # fallback seq assigned
         rows = fake_pb.collection("turn_events").get_full_list()
         assert len(rows) == 1

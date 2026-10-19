@@ -124,3 +124,15 @@ export function formatMarkTime(value: number): string {
     ? `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
     : `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
+
+export const cuesToRange = rangeFromCues;
+
+export function cuesToSegmentLocators(
+  indexes: number[],
+  cues: TranscriptCue[],
+): { start_locator: number; end_locator: number } {
+  const range = rangeFromCues(cues, indexes);
+  if (!range) return { start_locator: 0, end_locator: 0 };
+  const segments = cues.map((cue, index) => ({ ...cue, locator: index + 1 }));
+  return locatorsForRange(segments, range.start_seconds, range.end_seconds);
+}

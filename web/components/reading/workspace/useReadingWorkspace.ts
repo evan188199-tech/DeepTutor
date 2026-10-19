@@ -1,5 +1,7 @@
 "use client";
 
+import { readingCollectionRoute, readingSessionRoute } from "@/lib/learning-routes";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +12,6 @@ import { courseSessionConfiguration } from "@/lib/course-session-scope";
 import {
   addBookmark,
   deleteBookmark,
-  getMaterial,
   getReadingTranscript,
   listBookmarks,
   type ReadingBookmark,
@@ -23,12 +24,10 @@ import { setReadingWorkspace } from "@/lib/reading-turn-state";
 import { READING_WORKSPACE_MODE } from "@/lib/workspace-mode";
 import {
   activateReadingMaterial,
-  deleteReadingConversation,
   generateMasteryPathFromReading,
   getReadingWorkspace,
   listReadingConversations,
   organizeReadingNotes,
-  renameReadingConversation,
   removeReadingWorkspaceMaterial,
   updateReadingWorkspace,
   type OrganizedReadingNotes,
@@ -64,7 +63,6 @@ export function useReadingWorkspace(
     configureSession,
     loadSession,
     newSession,
-    cancelStreamingTurn,
   } = useChatStateAdapter();
 
   const [workspace, setWorkspace] = useState<ReadingWorkspace | null>(null);
@@ -137,21 +135,12 @@ export function useReadingWorkspace(
       closeMaterial();
       return;
     }
-    let cancelled = false;
-    void getMaterial(active.material_id)
-      .then((detail) => {
-        if (!cancelled) return openMaterial(detail);
-      })
-      .catch((caught) => {
-        if (!cancelled)
-          setError(
-            caught instanceof Error ? caught.message : t("Open failed."),
-          );
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [activeTab?.material, closeMaterial, openMaterial, t]);
+    // Let ReadingContext own the request from its first tick. Prefetching the
+    // detail here left `loading` false until that fetch completed, so the
+    // reader briefly rendered its unavailable state between workspace and
+    // material hydration (most visibly in Safari).
+    void openMaterial(active.material_id);
+  }, [activeTab?.material, closeMaterial, openMaterial]);
 
   // Poll while anything is still being processed, backing off as the wait
   // grows. A flat 2.5s forever means a source wedged in "processing" quietly
@@ -425,7 +414,7 @@ export function useReadingWorkspace(
   const newConversation = useCallback(() => {
     if (!workspace) return;
     newSession({ ...sessionConfiguration, capability: null });
-    router.push(`/reading/${workspace.workspace_id}`);
+    router.push(readingCollectionRoute(workspace.workspace_id));
   }, [
     newSession,
     router,
@@ -457,52 +446,12 @@ export function useReadingWorkspace(
     window.history.replaceState(
       null,
       "",
-      `/reading/${encodeURIComponent(workspaceId)}/sessions/${encodeURIComponent(state.sessionId)}`,
+      readingSessionRoute(workspaceId, state.sessionId),
     );
     void listReadingConversations(workspaceId)
       .then(setConversations)
       .catch(() => {});
   }, [sessionIdParam, state.sessionId, workspaceId]);
-
-  const renameConversation = useCallback(
-    async (sessionId: string, title: string) => {
-      await renameReadingConversation(workspaceId, sessionId, title);
-      setConversations(await listReadingConversations(workspaceId));
-    },
-    [workspaceId],
-  );
-
-  // Mirrors /chat's delete: drop the row, and if it was the conversation on
-  // screen, fall back to a fresh draft rather than leaving the reader looking
-  // at a transcript that no longer exists.
-  const deleteConversation = useCallback(
-    async (sessionId: string) => {
-      await deleteReadingConversation(workspaceId, sessionId);
-      setConversations(await listReadingConversations(workspaceId));
-      if (sessionId === sessionIdParam) {
-        cancelStreamingTurn();
-        newSession({ ...sessionConfiguration, capability: null });
-        router.push(`/reading/${workspaceId}`);
-      }
-    },
-    [
-      cancelStreamingTurn,
-      newSession,
-      router,
-      sessionConfiguration,
-      sessionIdParam,
-      workspaceId,
-    ],
-  );
-
-  const openConversation = useCallback(
-    async (sessionId: string) => {
-      router.push(`/reading/${workspaceId}/sessions/${sessionId}`);
-      await loadSession(sessionId);
-      configureSession(sessionConfiguration, sessionId);
-    },
-    [configureSession, loadSession, router, sessionConfiguration, workspaceId],
-  );
 
   const organizeNotes = useCallback(async () => {
     if (!workspace) return;
@@ -581,9 +530,6 @@ export function useReadingWorkspace(
     switchMaterial,
     removeMaterial,
     newConversation,
-    openConversation,
-    renameConversation,
-    deleteConversation,
     organizeNotes,
     buildMasteryPath,
     renameWorkspace,

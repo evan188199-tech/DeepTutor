@@ -7,6 +7,8 @@ single-question shorthand which auto-wraps into a one-element list.
 
 from __future__ import annotations
 
+import pytest
+
 from deeptutor.tools.ask_user import (
     MAX_HEADER_CHARS,
     MAX_OPTION_CHARS,
@@ -283,6 +285,44 @@ def test_v3_drops_model_supplied_other_option() -> None:
     assert _labels(payload.questions[0]) == ("A", "B")
 
 
+@pytest.mark.parametrize(
+    ("options", "expected"),
+    [
+        (["First answer", " first   ANSWER "], ("First answer",)),
+        (["Straße", "STRASSE"], ("Straße",)),
+        (
+            [
+                {"label": "First answer", "description": "keep"},
+                {"label": "  first\tanswer  ", "description": "drop"},
+            ],
+            ("First answer",),
+        ),
+    ],
+)
+def test_ask_user_drops_duplicate_labels_like_mastery_quiz(options, expected) -> None:
+    """A visible duplicate makes an interactive question unanswerable (#1409)."""
+    payload, err = build_ask_user_payload(
+        questions=[{"prompt": "Which answer?", "options": options}]
+    )
+    assert err is None
+    assert payload is not None
+    assert _labels(payload.questions[0]) == expected
+
+
+def test_ask_user_deduplicates_even_when_free_text_is_disabled() -> None:
+    payload, _ = build_ask_user_payload(
+        questions=[
+            {
+                "prompt": "Which answer?",
+                "options": ["Answer", " answer "],
+                "allow_free_text": False,
+            }
+        ]
+    )
+    assert payload is not None
+    assert _labels(payload.questions[0]) == ("Answer",)
+
+
 def test_v3_keeps_other_option_when_free_text_disabled() -> None:
     """Without the automatic free-text row there is no duplicate to drop."""
     payload, _ = build_ask_user_payload(
@@ -290,6 +330,69 @@ def test_v3_keeps_other_option_when_free_text_disabled() -> None:
     )
     assert payload is not None
     assert _labels(payload.questions[0]) == ("A", "Other")
+
+
+def test_v3_drops_an_option_whose_body_duplicates_another() -> None:
+    """Two options with the same visible text leave the learner nothing to
+    pick between (#1409: a duplicated choice makes the question unanswerable).
+
+    The mastery quiz contract already refuses duplicate bodies at
+    registration; the clarification-card channel gets the same rule here.
+    """
+    payload, _ = build_ask_user_payload(
+        questions=[
+            {
+                "prompt": "x",
+                "options": [
+                    {"label": "B", "description": "8"},
+                    {"label": "C", "description": "8"},
+                    {"label": "D", "description": "-2"},
+                ],
+            }
+        ]
+    )
+    assert payload is not None
+    assert _labels(payload.questions[0]) == ("B", "D")
+
+
+def test_v3_duplicate_body_comparison_ignores_case_and_spacing() -> None:
+    """Near-duplicates that differ only by case or spacing read as the same
+    choice to a learner, so the same rule applies to them."""
+    payload, _ = build_ask_user_payload(
+        questions=[
+            {
+                "prompt": "x",
+                "options": [
+                    {"label": "A", "description": "Rerank  the query."},
+                    {"label": "B", "description": "  rerank the query.  "},
+                    {"label": "C", "description": "Rewrite the query."},
+                ],
+            }
+        ]
+    )
+    assert payload is not None
+    assert _labels(payload.questions[0]) == ("A", "C")
+
+
+def test_v3_label_only_options_are_never_body_deduped() -> None:
+    """An option with no body is its label; distinct labels are distinct
+    choices even though every description is empty."""
+    payload, _ = build_ask_user_payload(questions=[{"prompt": "x", "options": ["A", "B", "C"]}])
+    assert payload is not None
+    assert _labels(payload.questions[0]) == ("A", "B", "C")
+
+
+def test_v3_duplicate_body_check_is_per_question() -> None:
+    """Two different questions may offer the same answer text."""
+    payload, _ = build_ask_user_payload(
+        questions=[
+            {"prompt": "x", "options": [{"label": "A", "description": "same"}]},
+            {"prompt": "y", "options": [{"label": "A", "description": "same"}]},
+        ]
+    )
+    assert payload is not None
+    assert _labels(payload.questions[0]) == ("A",)
+    assert _labels(payload.questions[1]) == ("A",)
 
 
 # ------------------------- frontend contract shape ------------------------
@@ -358,6 +461,18 @@ def test_prompt_decodes_dense_unicode_escapes() -> None:
     assert payload is not None
     assert payload.intro == "「数制转换」"
     assert payload.questions[0].prompt == "「数制转换」"
+
+
+def test_option_label_decodes_escaped_emoji() -> None:
+    """Escaped emoji arrive as surrogate pairs and must decode to UTF-8 text."""
+    escaped = "\\ud83d\\udc4d\\u662f\\u7684"
+    payload, err = build_ask_user_payload(
+        questions=[{"prompt": "Ready?", "options": [escaped, "No"]}],
+    )
+    assert err is None
+    assert payload is not None
+    label = payload.questions[0].options[0].label
+    assert label == "👍是的"
 
 
 # --------------------------- streaming previews ---------------------------

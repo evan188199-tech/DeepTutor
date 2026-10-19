@@ -75,7 +75,7 @@ def test_agentic_kwargs_enable_qwen_thinking_for_custom_binding() -> None:
     assert kwargs["extra_body"] == {"enable_thinking": True}
 
 
-def test_agentic_kwargs_disable_qwen_thinking_for_custom_minimal_reasoning() -> None:
+def test_agentic_kwargs_omit_thinking_for_qwen_instruct() -> None:
     kwargs = build_completion_kwargs(
         temperature=0.7,
         model="Qwen/Qwen3-235B-A22B-Instruct",
@@ -85,7 +85,7 @@ def test_agentic_kwargs_disable_qwen_thinking_for_custom_minimal_reasoning() -> 
     )
 
     assert "reasoning_effort" not in kwargs
-    assert kwargs["extra_body"] == {"enable_thinking": False}
+    assert "extra_body" not in kwargs
 
 
 def test_agentic_kwargs_preserve_legacy_shape_without_binding() -> None:
@@ -227,6 +227,42 @@ async def test_provider_stream_raises_an_error_response_instead_of_streaming_it(
 
 
 @pytest.mark.asyncio
+async def test_closing_native_stream_awaits_provider_cancellation() -> None:
+    import asyncio
+
+    started = asyncio.Event()
+    stopped = asyncio.Event()
+
+    class Provider:
+        async def chat_stream(self, **_kwargs):
+            started.set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                stopped.set()
+
+    stream = _stream_for(Provider())
+    stream.__aiter__()
+    await started.wait()
+    await stream.close()
+    assert stopped.is_set()
+
+
+def test_agentic_sdk_does_not_multiply_the_loop_retry_budget():
+    # The real SDK constructor pins the absence of its hidden retry ladder.
+    client = agentic_client._build_openai_client(
+        LLMClientConfig(
+            binding="custom", model="test", api_key="k", base_url="https://provider.example/v1"
+        ),
+        disable_ssl_verify=False,
+    )
+    assert client.max_retries == 0
+    import asyncio
+
+    asyncio.run(client.close())
+
+
+@pytest.mark.asyncio
 async def test_provider_stream_marks_an_error_after_output_as_partial() -> None:
     """An error that interrupts a visible answer must not be replayed."""
 
@@ -344,7 +380,7 @@ def test_build_openai_client_routes_oauth_backend_through_adapter(monkeypatch) -
 
 
 @pytest.mark.asyncio
-async def test_build_openai_client_rotates_api_keys_after_429(monkeypatch) -> None:
+async def test_build_openai_client_tries_every_api_key_after_429(monkeypatch) -> None:
     await agentic_client.close_agentic_client_pool()
     seen_keys: list[str] = []
 
@@ -357,7 +393,7 @@ async def test_build_openai_client_rotates_api_keys_after_429(monkeypatch) -> No
 
         async def create(self, **_kwargs):
             seen_keys.append(self.api_key)
-            if self.api_key == "key-a":
+            if self.api_key != "key-c":
                 raise RateLimitError("rate limited")
             return "ok"
 
@@ -376,7 +412,7 @@ async def test_build_openai_client_rotates_api_keys_after_429(monkeypatch) -> No
         LLMClientConfig(
             binding="openai",
             model="gpt-test",
-            api_key=["key-a", "key-b"],
+            api_key=["key-a", "key-b", "key-c"],
             base_url="https://example.test/v1",
         )
     )
@@ -384,7 +420,7 @@ async def test_build_openai_client_rotates_api_keys_after_429(monkeypatch) -> No
     result = await client.chat.completions.create(model="gpt-test", messages=[])
 
     assert result == "ok"
-    assert seen_keys == ["key-a", "key-b"]
+    assert seen_keys == ["key-a", "key-b", "key-c"]
     await agentic_client.close_agentic_client_pool()
 
 
@@ -556,6 +592,14 @@ def test_registered_cloud_openai_compat_providers_enable_native_tools() -> None:
         "nvidia_nim",
         "aihubmix",
         "atlascloud",
+        "unifically",
+        "cheaperinference",
+        "api_route",
+        "requesty",
+        "futureinfra",
+        "opper",
+        "y_api",
+        "onomeo",
         "edenai",
         "novita",
         "volcengine_coding_plan",
@@ -683,6 +727,7 @@ async def test_agentic_client_pool_reuses_and_bounds_clients(monkeypatch) -> Non
     class FakeClient:
         def __init__(self) -> None:
             self.closed = 0
+            self.chat = SimpleNamespace(completions=SimpleNamespace(create=None))
 
         async def close(self) -> None:
             self.closed += 1

@@ -44,6 +44,7 @@ class WorkspaceRuntimeContext:
     output_dir: str = ""
     logical_output_dir: str = "outputs"
     security_level: str = "off"
+    instructions: str = ""
 
 
 @dataclass
@@ -53,7 +54,14 @@ class TurnRuntimeContext:
     turn_id: str = ""
     wait_for_user_reply: Callable[[], Awaitable[dict[str, Any] | None]] | None = None
     provider_response_state: dict[str, Any] | None = None
+    # Private model history and this turn's retained protocol. Display history
+    # remains separate so non-loop capabilities and public APIs keep their view.
+    model_history: list[dict[str, Any]] | None = None
+    model_turn: dict[str, Any] | None = None
+    previous_model_turn: dict[str, Any] | None = None
     subagent_consult_budget: int | None = None
+    consult_partner_id: str | None = None
+    partner_discussion_group_id: str | None = None
     min_loop_rounds: int = 0
     workspace: WorkspaceRuntimeContext | None = None
 
@@ -97,7 +105,8 @@ class UnifiedContext:
         attachments: Images / files sent with the message.
         config_overrides: Per-request config tweaks (e.g. temperature).
         language: UI / response language ("en" | "zh").
-        memory_context: Memory snapshot text injected into the system prompt.
+        memory_context: Memory text in the latest runtime-context snapshot.
+        learning_journal_context: Mission and handoff snapshot taken at turn start.
         persona_context: Selected persona's instructions, eagerly injected
             into the system prompt (a persona must shape the voice from the
             first token; empty when no persona is active).
@@ -110,7 +119,7 @@ class UnifiedContext:
         source_manifest: Plain-text manifest of attached sources (one line per
             source: id/name/type/preview). Empty when no sources are attached.
             Consumed by the chat capability to render an "Attached Sources"
-            section in the system prompt and to enable the ``read_source`` tool.
+            section in runtime context and to enable the ``read_source`` tool.
         runtime: Private, non-serializable callbacks and provider state.
         interaction: Mutable user/loop interaction state.
         capability_output: Structured terminal capability output.
@@ -130,6 +139,7 @@ class UnifiedContext:
     config_overrides: dict[str, Any] = field(default_factory=dict)
     language: str = "en"
     memory_context: str = ""
+    learning_journal_context: str = ""
     persona_context: str = ""
     sidebar_context: str = ""
     skills_manifest: str = ""
