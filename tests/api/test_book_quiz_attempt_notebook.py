@@ -8,7 +8,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from deeptutor.api.routers import book as book_router
-from deeptutor.book.models import Progress
+from deeptutor.book.models import Book, Progress
 import deeptutor.services.session as session_package
 from deeptutor.services.session.sqlite_store import SQLiteSessionStore
 
@@ -47,9 +47,8 @@ class _FakeResolvedBook:
             chapter_id="",
             block_by_id=lambda _: block,
         )
-        self.book = SimpleNamespace(
+        self.book = Book(
             title="Compiled Book",
-            chat_session_id="",
             metadata={"page_chat_sessions": {"page-1": "page-chat-1"}},
         )
         self.engine = SimpleNamespace(
